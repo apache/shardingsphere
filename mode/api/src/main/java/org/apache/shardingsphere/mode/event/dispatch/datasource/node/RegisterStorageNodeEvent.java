@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.dispatch.datasource.nodes;
+package org.apache.shardingsphere.mode.event.dispatch.datasource.node;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

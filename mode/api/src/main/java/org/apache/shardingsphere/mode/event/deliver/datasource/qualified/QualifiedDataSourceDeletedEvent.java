@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSou
 /**
  * Qualified data source deleted event.
  */
+// TODO add DeliverEvent interface
 @RequiredArgsConstructor
 @Getter
 public final class QualifiedDataSourceDeletedEvent {
