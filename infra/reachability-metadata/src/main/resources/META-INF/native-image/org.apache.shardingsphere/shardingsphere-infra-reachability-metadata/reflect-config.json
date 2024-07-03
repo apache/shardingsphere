@@ -46,12 +46,12 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ResourceMetaDataChangedSubscriber",
-  "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.schema.table.CreateOrAlterTableEvent"] }, {"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.schema.table.DropTableEvent"] }]
+  "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber",
+  "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.CreateOrAlterTableEvent"] }, {"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.DropTableEvent"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.StateChangedSubscriber",
-  "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent"] }]
+  "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StateChangedSubscriber",
+  "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent"] }]
 }
 ]
