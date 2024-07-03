@@ -15,33 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule.alter;
+package org.apache.shardingsphere.mode.event.dispatch.rule.drop;
 
-import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Alter rule item event.
+ * Drop named rule item event.
  */
-public interface AlterRuleItemEvent extends RuleItemChangedEvent {
+@RequiredArgsConstructor
+@Getter
+public final class DropNamedRuleItemEvent implements DropRuleItemEvent {
     
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    private final String databaseName;
     
-    /**
-     * Get active version key.
-     *
-     * @return active version key
-     */
-    String getActiveVersionKey();
+    private final String itemName;
     
-    /**
-     * Get active version.
-     *
-     * @return active version
-     */
-    String getActiveVersion();
+    private final String type;
 }

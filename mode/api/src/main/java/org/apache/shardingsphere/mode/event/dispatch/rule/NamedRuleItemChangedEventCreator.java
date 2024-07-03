@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mode.event.dispatch.rule;
 
-import org.apache.shardingsphere.infra.rule.event.rule.RuleItemChangedEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 

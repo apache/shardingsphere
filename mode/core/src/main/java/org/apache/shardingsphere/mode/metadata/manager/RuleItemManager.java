@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
