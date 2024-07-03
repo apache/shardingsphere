@@ -44,11 +44,11 @@ public final class ReadwriteSplittingSQLRouter implements DecorateSQLRouter<Read
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
-            String dataSourceName = each.getDataSourceMapper().getLogicName();
-            rule.findDataSourceGroupRule(dataSourceName).ifPresent(optional -> {
+            String logicDataSourceName = each.getDataSourceMapper().getActualName();
+            rule.findDataSourceGroupRule(logicDataSourceName).ifPresent(optional -> {
                 toBeRemoved.add(each);
                 String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(optional, connectionContext).route(queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
-                toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
+                toBeAdded.add(new RouteUnit(new RouteMapper(logicDataSourceName, actualDataSourceName), each.getTableMappers()));
             });
         }
         routeContext.getRouteUnits().removeAll(toBeRemoved);
