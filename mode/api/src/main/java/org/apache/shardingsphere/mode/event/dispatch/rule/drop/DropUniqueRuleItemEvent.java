@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.rule.drop;
+package org.apache.shardingsphere.mode.event.dispatch.rule.drop;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
