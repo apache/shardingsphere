@@ -27,9 +27,9 @@ import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNod
 import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.nodes.AlterStorageNodeEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.nodes.RegisterStorageNodeEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.nodes.UnregisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.node.AlterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.node.RegisterStorageNodeEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.node.UnregisterStorageNodeEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.AlterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.RegisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.UnregisterStorageUnitEvent;
