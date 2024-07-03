@@ -75,7 +75,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         dataSourceMap = contextManager.getStorageUnits(currentDatabaseName).entrySet()
                 .stream().collect(Collectors.toMap(entry -> getKey(currentDatabaseName, entry.getKey()), entry -> entry.getValue().getDataSource()));
         connectionContext = new ConnectionContext(cachedConnections::keySet);
-        connectionContext.setCurrentDatabase(currentDatabaseName);
+        connectionContext.setCurrentDatabaseName(currentDatabaseName);
     }
     
     private String getKey(final String databaseName, final String dataSourceName) {

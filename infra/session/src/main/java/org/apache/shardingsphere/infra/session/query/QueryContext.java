@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.session.query;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 
 import java.util.List;
 
@@ -37,17 +39,25 @@ public final class QueryContext {
     
     private final HintValueContext hintValueContext;
     
+    private final ConnectionContext connectionContext;
+    
+    private final ShardingSphereMetaData metaData;
+    
     private final boolean useCache;
     
-    public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext) {
-        this(sqlStatementContext, sql, params, hintValueContext, false);
+    public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext, final ConnectionContext connectionContext,
+                        final ShardingSphereMetaData metaData) {
+        this(sqlStatementContext, sql, params, hintValueContext, connectionContext, metaData, false);
     }
     
-    public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext, final boolean useCache) {
+    public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext, final ConnectionContext connectionContext,
+                        final ShardingSphereMetaData metaData, final boolean useCache) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         parameters = params;
         this.hintValueContext = hintValueContext;
+        this.connectionContext = connectionContext;
+        this.metaData = metaData;
         this.useCache = useCache;
     }
 }

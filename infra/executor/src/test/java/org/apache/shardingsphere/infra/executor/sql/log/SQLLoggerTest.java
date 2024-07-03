@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +52,8 @@ class SQLLoggerTest {
     
     private static List<LoggingEvent> appenderList;
     
-    private final QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class), SQL, Collections.emptyList(), new HintValueContext());
+    private final QueryContext queryContext =
+            new QueryContext(mock(SQLStatementContext.class), SQL, Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
     
     private Collection<ExecutionUnit> executionUnits;
     

@@ -259,7 +259,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         String sql = SQLHintUtils.removeHint(originSQL);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(metaData.getDatabase(usedDatabaseName).getProtocolType()).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
-        return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
+        return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connection.getDatabaseConnectionManager().getConnectionContext(), metaData);
     }
     
     private void prepareExecute(final QueryContext queryContext) throws SQLException {
@@ -267,7 +267,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         usedDatabaseName = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName())
                 : connection.getCurrentDatabaseName();
-        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(connection.getCurrentDatabaseName());
+        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         sqlStatementContext = queryContext.getSqlStatementContext();
         clearStatements();
     }

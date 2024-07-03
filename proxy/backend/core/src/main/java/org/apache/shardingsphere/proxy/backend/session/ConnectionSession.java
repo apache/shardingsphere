@@ -98,9 +98,10 @@ public final class ConnectionSession {
      *
      * @param currentDatabaseName current database name
      */
-    public void setCurrentDatabase(final String currentDatabaseName) {
+    public void setCurrentDatabaseName(final String currentDatabaseName) {
         if (null == currentDatabaseName || !currentDatabaseName.equals(this.currentDatabaseName)) {
             this.currentDatabaseName = currentDatabaseName;
+            connectionContext.get().setCurrentDatabaseName(currentDatabaseName);
         }
     }
     
