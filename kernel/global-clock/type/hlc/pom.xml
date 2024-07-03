@@ -24,13 +24,9 @@
         <version>5.5.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-global-clock-hlc</artifactId>
+    <name>${project.artifactId}</name>
     
     <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-global-clock-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-global-clock-core</artifactId>

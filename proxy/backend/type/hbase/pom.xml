@@ -24,6 +24,7 @@
         <version>5.5.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-backend-hbase</artifactId>
+    <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>

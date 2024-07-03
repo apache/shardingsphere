@@ -49,14 +49,20 @@ Apache ShardingSphere 提供 BASE 事务，集成了 Seata 的实现。本文所
 
 ### 启动 Seata Server
 
-按照 [seata-fescar-workshop](https://github.com/seata/fescar-workshop) 或 https://hub.docker.com/r/seataio/seata-server 中的步骤，
-下载并启动 Seata 服务器。
+按照如下任一链接的步骤，下载并启动 Seata 服务器。
+合理的启动方式应通过 Docker Hub 中的 `seataio/seata-server` 的 Docker Image 来实例化 Seata 服务器。
+对于 `apache/incubator-seata:v2.0.0` 及更早的 Seata 版本，应使用 Docker Hub 中的 `seataio/seata-server`。
+否则应使用 Docker Hub 中的 `apache/seata-server`。
+
+- [seata-fescar-workshop](https://github.com/seata/fescar-workshop)
+- https://hub.docker.com/r/seataio/seata-server
+- https://hub.docker.com/r/apache/seata-server
 
 ### 创建 undo_log 表
 
-在每一个分片数据库实例中执创建 `undo_log` 表（以 MySQL 为例）。
+在每一个 ShardingSphere 涉及的真实数据库实例中创建 `undo_log` 表。
 SQL 的内容以 https://github.com/apache/incubator-seata/tree/v2.0.0/script/client/at/db 内对应的数据库为准。
-
+以下内容以 MySQL 为例。
 ```sql
 CREATE TABLE IF NOT EXISTS `undo_log`
 (
@@ -95,6 +101,16 @@ client {
     application.id = example
     transaction.service.group = default_tx_group
 }
+```
+
+一个最小配置的 `seata.conf` 如下。
+请注意，由 ShardingSphere 管理的 `seata.conf` 中， `client.transaction.service.group` 的默认值设置为 `default` 是出于历史原因。
+假设用户使用的 Seata Server 和 Seata Client 的 `registry.conf` 中，`registry.type` 和 `config.type` 均为 `file`，
+则对于 `registry.conf` 的 `config.file.name` 配置的 `.conf` 文件中，事务分组名在 `apache/incubator-seata:v1.5.1` 之后默认值为 `default_tx_group`，
+反之则为 `my_test_tx_group`。
+
+```conf
+client.application.id = example
 ```
 
 根据实际场景修改 Seata 的 `registry.conf` 文件。

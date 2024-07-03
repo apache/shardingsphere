@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSph
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.service.pojo.ShardingSphereSchemaDataAlteredPOJO;
+import org.apache.shardingsphere.mode.persist.pojo.ShardingSphereSchemaDataAlteredPOJO;
 
 import java.util.ArrayList;
 import java.util.Map;
