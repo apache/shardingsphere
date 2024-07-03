@@ -124,7 +124,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext, final List<Object> params, final HintValueContext hintValueContext) {
-        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, hintValueContext);
+        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {

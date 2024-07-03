@@ -69,7 +69,7 @@ class UseDatabaseExecutorTest {
         UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
         executor.execute(connectionSession);
-        verify(connectionSession).setCurrentDatabase(anyString());
+        verify(connectionSession).setCurrentDatabaseName(anyString());
     }
     
     @Test

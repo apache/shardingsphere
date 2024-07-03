@@ -43,6 +43,6 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName) && authorityChecker.isAuthorized(databaseName),
                 () -> new UnknownDatabaseException(databaseName));
-        connectionSession.setCurrentDatabase(databaseName);
+        connectionSession.setCurrentDatabaseName(databaseName);
     }
 }

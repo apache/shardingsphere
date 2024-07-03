@@ -80,15 +80,17 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(databaseName).containsDataSource(), () -> new EmptyStorageUnitException(databaseName));
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         try {
-            connectionSession.setCurrentDatabase(databaseName);
+            connectionSession.setCurrentDatabaseName(databaseName);
             SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                     connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
-            databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext),
+            databaseConnector = databaseConnectorFactory.newInstance(
+                    new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(),
+                            ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()),
                     connectionSession.getDatabaseConnectionManager(), false);
             responseHeader = databaseConnector.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {
-            connectionSession.setCurrentDatabase(originDatabase);
+            connectionSession.setCurrentDatabaseName(originDatabase);
             databaseConnector.close();
         }
     }

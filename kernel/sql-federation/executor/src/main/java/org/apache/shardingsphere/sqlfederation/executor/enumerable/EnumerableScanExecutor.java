@@ -210,7 +210,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         List<Object> params = getParameters(sqlString.getParamIndexes());
         HintValueContext hintValueContext = new HintValueContext();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getDatabaseName(), hintValueContext).bind(sqlStatement, params);
-        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, useCache);
+        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, new ConnectionContext(Collections::emptySet), metaData, useCache);
     }
     
     private List<Object> getParameters(final int[] paramIndexes) {

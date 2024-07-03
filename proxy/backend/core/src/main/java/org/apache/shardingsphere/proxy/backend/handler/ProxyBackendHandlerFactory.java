@@ -92,7 +92,8 @@ public final class ProxyBackendHandlerFactory {
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
                 : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement,
                         Collections.emptyList());
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
         connectionSession.setQueryContext(queryContext);
         return newInstance(databaseType, queryContext, connectionSession, false);
     }

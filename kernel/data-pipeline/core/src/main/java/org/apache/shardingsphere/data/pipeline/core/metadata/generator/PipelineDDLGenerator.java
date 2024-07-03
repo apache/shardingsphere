@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -104,8 +103,7 @@ public final class PipelineDDLGenerator {
     }
     
     private String decorateActualSQL(final String databaseName, final String targetTableName, final SQLParserEngine parserEngine, final String sql) {
-        QueryContext queryContext = getQueryContext(databaseName, parserEngine, sql);
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext instanceof CreateTableStatementContext) {
             appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
@@ -125,9 +123,8 @@ public final class PipelineDDLGenerator {
         return doDecorateActualTable(replaceMap, sql);
     }
     
-    private QueryContext getQueryContext(final String databaseName, final SQLParserEngine parserEngine, final String sql) {
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(null, databaseName, new HintValueContext()).bind(parserEngine.parse(sql, true), Collections.emptyList());
-        return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext());
+    private SQLStatementContext parseSQL(final String databaseName, final SQLParserEngine parserEngine, final String sql) {
+        return new SQLBindEngine(null, databaseName, new HintValueContext()).bind(parserEngine.parse(sql, true), Collections.emptyList());
     }
     
     private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {
@@ -183,8 +180,7 @@ public final class PipelineDDLGenerator {
     }
     
     private String replaceTableNameWithPrefix(final String sql, final String prefix, final String databaseName, final SQLParserEngine parserEngine) {
-        QueryContext queryContext = getQueryContext(databaseName, parserEngine, sql);
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext
                 || sqlStatementContext instanceof CreateIndexStatementContext || sqlStatementContext instanceof AlterTableStatementContext) {
             if (((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
