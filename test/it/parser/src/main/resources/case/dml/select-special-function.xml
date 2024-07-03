@@ -1249,13 +1249,6 @@
                 <expr>
                     <function function-name="ROW_NUMBER" start-index="7" stop-index="25" text="ROW_NUMBER() OVER w" />
                 </expr>
-                <window start-index="22" stop-index="34">
-                    <window-item start-index="27" stop-index="34">
-                        <order-by>
-                            <column-item name="user_id" order-direction="ASC" start-index="32" stop-index="34"/>
-                        </order-by>
-                    </window-item>
-                </window>
             </expression-projection>
         </projections>
         <from>
