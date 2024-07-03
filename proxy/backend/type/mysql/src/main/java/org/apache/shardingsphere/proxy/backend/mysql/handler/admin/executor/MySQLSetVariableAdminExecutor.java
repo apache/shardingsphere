@@ -93,8 +93,9 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(sqlStatement, Collections.emptyList());
-        DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance()
-                .newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext()), connectionSession.getDatabaseConnectionManager(), false);
+        DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance().newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), metaDataContexts.getMetaData()),
+                connectionSession.getDatabaseConnectionManager(), false);
         try {
             databaseBackendHandler.execute();
         } finally {

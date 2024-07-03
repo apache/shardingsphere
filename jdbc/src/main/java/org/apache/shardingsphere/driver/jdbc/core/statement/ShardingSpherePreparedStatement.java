@@ -144,7 +144,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         String usedDatabaseName = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName())
                 : connection.getCurrentDatabaseName();
-        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(connection.getCurrentDatabaseName());
+        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         usedDatabase = metaData.getDatabase(usedDatabaseName);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
@@ -273,7 +273,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
-        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, true);
+        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, connection.getDatabaseConnectionManager().getConnectionContext(), metaData, true);
     }
     
     private void replay() throws SQLException {

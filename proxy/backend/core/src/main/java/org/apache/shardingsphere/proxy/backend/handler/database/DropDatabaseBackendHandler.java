@@ -49,7 +49,7 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
         check(sqlStatement, connectionSession.getConnectionContext().getGrantee());
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             checkSupportedDropCurrentDatabase(connectionSession);
-            connectionSession.setCurrentDatabase(null);
+            connectionSession.setCurrentDatabaseName(null);
         }
         if (ProxyContext.getInstance().databaseExists(sqlStatement.getDatabaseName())) {
             ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(sqlStatement.getDatabaseName());

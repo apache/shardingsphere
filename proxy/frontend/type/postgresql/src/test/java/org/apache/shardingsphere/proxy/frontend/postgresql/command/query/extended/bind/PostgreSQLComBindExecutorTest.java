@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatem
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLEmptyStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -68,11 +70,16 @@ class PostgreSQLComBindExecutorTest {
     @Mock
     private PostgreSQLComBindPacket bindPacket;
     
-    @Mock(answer = Answers.CALLS_REAL_METHODS)
+    @Mock
     private ConnectionSession connectionSession;
     
     @InjectMocks
     private PostgreSQLComBindExecutor executor;
+    
+    @BeforeEach
+    void setup() {
+        connectionSession.setGrantee(mock(Grantee.class));
+    }
     
     @Test
     void assertExecuteBind() throws SQLException {
@@ -124,7 +131,8 @@ class PostgreSQLComBindExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
         when(contextManager.getDatabase(databaseName)).thenReturn(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute();
-        assertThat(connectionSession.getQueryContext().getParameters(), is(Arrays.asList(parameters.get(1), parameters.get(0))));
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
     }
 }

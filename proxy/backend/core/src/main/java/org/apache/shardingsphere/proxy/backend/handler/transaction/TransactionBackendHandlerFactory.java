@@ -19,12 +19,13 @@ package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
@@ -82,7 +83,8 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof XAStatement) {
             return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
         }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
         return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
     }
 }

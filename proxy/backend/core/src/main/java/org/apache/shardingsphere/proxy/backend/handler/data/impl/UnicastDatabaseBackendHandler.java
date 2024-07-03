@@ -58,11 +58,11 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(unicastDatabaseName).containsDataSource(),
                 () -> new EmptyStorageUnitException(unicastDatabaseName));
         try {
-            connectionSession.setCurrentDatabase(unicastDatabaseName);
+            connectionSession.setCurrentDatabaseName(unicastDatabaseName);
             databaseConnector = databaseConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
             return databaseConnector.execute();
         } finally {
-            connectionSession.setCurrentDatabase(originalDatabaseName);
+            connectionSession.setCurrentDatabaseName(originalDatabaseName);
         }
     }
     

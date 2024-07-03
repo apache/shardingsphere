@@ -144,12 +144,12 @@ public abstract class SQLRewriterIT {
         if (sqlStatementContext instanceof CursorDefinitionAware) {
             ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(databaseName, metaData, sqlStatementParserEngine));
         }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext);
-        ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
-        RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(new ConnectionContext(Collections::emptySet), queryContext, globalRuleMetaData, database);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, globalRuleMetaData, props);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorContext()).thenReturn(new CursorConnectionContext());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, metaData);
+        ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
+        RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(connectionContext, queryContext, globalRuleMetaData, database);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, globalRuleMetaData, props);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(queryContext, routeContext, connectionContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singleton(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())

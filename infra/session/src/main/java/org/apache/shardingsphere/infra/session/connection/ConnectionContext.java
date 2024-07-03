@@ -48,7 +48,7 @@ public final class ConnectionContext implements AutoCloseable {
     private final TransactionConnectionContext transactionContext = new TransactionConnectionContext();
     
     @Setter(AccessLevel.NONE)
-    private String databaseName;
+    private String currentDatabaseName;
     
     public ConnectionContext(final UsedDataSourceProvider usedDataSourceProvider) {
         this(usedDataSourceProvider, null);
@@ -84,21 +84,21 @@ public final class ConnectionContext implements AutoCloseable {
     /**
      * Set current database name.
      *
-     * @param databaseName database name
+     * @param currentDatabaseName current database name
      */
-    public void setCurrentDatabase(final String databaseName) {
-        if (null != databaseName && !databaseName.equals(this.databaseName)) {
-            this.databaseName = databaseName;
+    public void setCurrentDatabaseName(final String currentDatabaseName) {
+        if (null != currentDatabaseName && !currentDatabaseName.equals(this.currentDatabaseName)) {
+            this.currentDatabaseName = currentDatabaseName;
         }
     }
     
     /**
-     * Get database name.
+     * Get current database name.
      *
-     * @return database name
+     * @return current database name
      */
-    public Optional<String> getDatabaseName() {
-        return Optional.ofNullable(databaseName);
+    public Optional<String> getCurrentDatabaseName() {
+        return Optional.ofNullable(currentDatabaseName);
     }
     
     @Override
