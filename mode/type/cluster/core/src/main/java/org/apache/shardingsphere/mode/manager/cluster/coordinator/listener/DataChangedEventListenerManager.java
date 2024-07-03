@@ -22,10 +22,10 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 /**
- * Meta data watch listener manager.
+ * Data changed event listener manager.
  */
 @RequiredArgsConstructor
-public final class MetaDataWatchListenerManager {
+public final class DataChangedEventListenerManager {
     
     private final ClusterPersistRepository repository;
     

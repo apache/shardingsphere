@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataWatchListenerManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.DataChangedEventListenerManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.processor.ListenerAssistedProcessor;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
@@ -51,7 +51,7 @@ public final class ListenerAssistedMetaDataChangedSubscriber implements EventSub
         if (!processor.isPresent()) {
             return;
         }
-        new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository())
+        new DataChangedEventListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository())
                 .addListener(processor.get().getListenerKey(event), new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
         processor.get().processor(contextManager, event);
     }
@@ -67,7 +67,7 @@ public final class ListenerAssistedMetaDataChangedSubscriber implements EventSub
         if (!processor.isPresent()) {
             return;
         }
-        new MetaDataWatchListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()).removeListener(processor.get().getListenerKey(event));
+        new DataChangedEventListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()).removeListener(processor.get().getListenerKey(event));
         processor.get().processor(contextManager, event);
     }
 }
