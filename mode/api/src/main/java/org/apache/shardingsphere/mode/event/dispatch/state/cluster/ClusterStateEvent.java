@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.event.dispatch.state.cluster;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterState;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ClusterStateEvent implements GovernanceEvent {
+public final class ClusterStateEvent implements DispatchEvent {
     
     private final ClusterState clusterState;
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.event.dispatch.state.compute;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class LabelsEvent implements GovernanceEvent {
+public final class LabelsEvent implements DispatchEvent {
     
     private final String instanceId;
     

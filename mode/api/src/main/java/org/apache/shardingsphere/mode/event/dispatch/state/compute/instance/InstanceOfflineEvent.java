@@ -20,14 +20,14 @@ package org.apache.shardingsphere.mode.event.dispatch.state.compute.instance;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Compute node instance offline event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InstanceOfflineEvent implements GovernanceEvent {
+public final class InstanceOfflineEvent implements DispatchEvent {
     
     private final InstanceMetaData instanceMetaData;
 }

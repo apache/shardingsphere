@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.event.dispatch.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Alter global rule configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterGlobalRuleConfigurationEvent implements GovernanceEvent {
+public final class AlterGlobalRuleConfigurationEvent implements DispatchEvent {
     
     private final String ruleSimpleName;
     

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Create or alter table event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateOrAlterTableEvent implements GovernanceEvent {
+public final class CreateOrAlterTableEvent implements DispatchEvent {
     
     private final String databaseName;
     

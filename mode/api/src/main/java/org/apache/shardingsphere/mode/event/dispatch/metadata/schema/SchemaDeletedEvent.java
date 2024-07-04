@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.event.dispatch.metadata.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Schema deleted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaDeletedEvent implements GovernanceEvent {
+public final class SchemaDeletedEvent implements DispatchEvent {
     
     private final String databaseName;
     

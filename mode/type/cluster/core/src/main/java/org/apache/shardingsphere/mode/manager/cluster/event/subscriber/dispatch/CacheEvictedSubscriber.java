@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 
@@ -29,12 +29,12 @@ import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 public final class CacheEvictedSubscriber implements EventSubscriber {
     
     /**
-     * Callback of any {@link GovernanceEvent}.
+     * Callback of any {@link DispatchEvent}.
      *
      * @param ignored unused
      */
     @Subscribe
-    public void onGovernanceEvent(final GovernanceEvent ignored) {
+    public void onGovernanceEvent(final DispatchEvent ignored) {
         OrderedServicesCache.clearCache();
     }
 }

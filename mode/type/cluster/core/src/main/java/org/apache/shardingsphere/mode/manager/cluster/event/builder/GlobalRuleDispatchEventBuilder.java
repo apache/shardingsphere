@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.config.AlterGlobalRuleConfigurationEvent;
-import org.apache.shardingsphere.mode.event.builder.dispatch.DispatchEventBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +32,7 @@ import java.util.Optional;
 /**
  * Global rule dispatch event builder.
  */
-public final class GlobalRuleDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
+public final class GlobalRuleDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {
@@ -46,7 +45,7 @@ public final class GlobalRuleDispatchEventBuilder implements DispatchEventBuilde
     }
     
     @Override
-    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
+    public Optional<DispatchEvent> build(final DataChangedEvent event) {
         if (GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
             return GlobalNodePath.getRuleName(event.getKey()).map(optional -> new AlterGlobalRuleConfigurationEvent(optional, event.getKey(), event.getValue()));
         }

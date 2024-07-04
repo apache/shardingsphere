@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.builder.dispatch.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessCompletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessEvent;
@@ -43,7 +42,7 @@ import java.util.regex.Pattern;
 /**
  * Compute node state dispatch event builder.
  */
-public final class ComputeNodeStateDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
+public final class ComputeNodeStateDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {
@@ -56,10 +55,10 @@ public final class ComputeNodeStateDispatchEventBuilder implements DispatchEvent
     }
     
     @Override
-    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
+    public Optional<DispatchEvent> build(final DataChangedEvent event) {
         String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
-            Optional<GovernanceEvent> result = createInstanceGovernanceEvent(event, instanceId);
+            Optional<DispatchEvent> result = createInstanceGovernanceEvent(event, instanceId);
             if (result.isPresent()) {
                 return result;
             }
@@ -74,7 +73,7 @@ public final class ComputeNodeStateDispatchEventBuilder implements DispatchEvent
     }
     
     @SuppressWarnings("unchecked")
-    private Optional<GovernanceEvent> createInstanceGovernanceEvent(final DataChangedEvent event, final String instanceId) {
+    private Optional<DispatchEvent> createInstanceGovernanceEvent(final DataChangedEvent event, final String instanceId) {
         if (event.getKey().equals(ComputeNode.getComputeNodeStateNodePath(instanceId)) && Type.DELETED != event.getType()) {
             return Optional.of(new ComputeNodeInstanceStateChangedEvent(instanceId, event.getValue()));
         }
@@ -87,7 +86,7 @@ public final class ComputeNodeStateDispatchEventBuilder implements DispatchEvent
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createReportLocalProcessesEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createReportLocalProcessesEvent(final DataChangedEvent event) {
         Matcher matcher = getShowProcessListTriggerMatcher(event);
         if (!matcher.find()) {
             return Optional.empty();
@@ -105,7 +104,7 @@ public final class ComputeNodeStateDispatchEventBuilder implements DispatchEvent
         return Pattern.compile(ComputeNode.getShowProcessListTriggerNodePath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
     
-    private Optional<GovernanceEvent> createKillLocalProcessEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createKillLocalProcessEvent(final DataChangedEvent event) {
         Matcher matcher = getKillProcessTriggerMatcher(event);
         if (!matcher.find()) {
             return Optional.empty();

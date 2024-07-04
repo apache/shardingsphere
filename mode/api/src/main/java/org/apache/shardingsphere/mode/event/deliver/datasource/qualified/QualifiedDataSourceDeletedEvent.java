@@ -20,13 +20,14 @@ package org.apache.shardingsphere.mode.event.deliver.datasource.qualified;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.mode.event.deliver.DeliverEvent;
 
 /**
  * Qualified data source deleted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QualifiedDataSourceDeletedEvent {
+public final class QualifiedDataSourceDeletedEvent implements DeliverEvent {
     
     private final QualifiedDataSource qualifiedDataSource;
 }

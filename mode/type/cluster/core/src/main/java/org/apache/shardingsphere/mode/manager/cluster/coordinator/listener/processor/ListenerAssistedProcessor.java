@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.processor;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
  * @param <T> class type of implemented governance event
  */
 @SingletonSPI
-public interface ListenerAssistedProcessor<T extends GovernanceEvent> extends TypedSPI {
+public interface ListenerAssistedProcessor<T extends DispatchEvent> extends TypedSPI {
     
     /**
      * Get listener key.
