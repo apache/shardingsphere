@@ -86,4 +86,15 @@
     <sql-case id="select_with_year_function" value="SELECT YEAR('1999-09-09');" db-types="MySQL"/>
     <sql-case id="select_with_yearweek_function" value="SELECT YEARWEEK('1988-08-08');" db-types="MySQL"/>
     <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL"/>
+    <sql-case id="select_row_number" value="SELECT ROW_NUMBER() OVER w FROM t_order" db-types="MySQL" />
+    <sql-case id="select_rpad" value="SELECT RPAD('Hello', 10, '*')" db-types="MySQL" />
+    <sql-case id="select_rtrim" value="SELECT RTRIM('  Hello  ')" db-types="MySQL" />
+    <sql-case id="select_schema" value="SELECT SCHEMA()" db-types="MySQL" />
+    <sql-case id="select_sec_to_time" value="SELECT SEC_TO_TIME(3600)" db-types="MySQL" />
+    <sql-case id="select_second" value="SELECT SECOND('2020-06-10 12:34:56')" db-types="MySQL" />
+    <sql-case id="select_session_user" value="SELECT SESSION_USER()" db-types="MySQL" />
+    <sql-case id="select_sha" value="SELECT SHA('test_string')" db-types="MySQL" />
+    <sql-case id="select_sign" value="SELECT SIGN(-5)" db-types="MySQL" />
+    <sql-case id="select_sin" value="SELECT SIN(0.5)" db-types="MySQL" />
+    <sql-case id="select_sleep" value="SELECT SLEEP(5)" db-types="MySQL" />
 </sql-cases>

@@ -1585,4 +1585,155 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_row_number">
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="ROW_NUMBER() OVER w" start-index="7" stop-index="25">
+                <expr>
+                    <function function-name="ROW_NUMBER" start-index="7" stop-index="25" text="ROW_NUMBER() OVER w" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="32" stop-index="38" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_rpad">
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="RPAD('Hello', 10, '*')" start-index="7" stop-index="28">
+                <expr>
+                    <function function-name="RPAD" start-index="7" stop-index="28" text="RPAD('Hello', 10, '*')">
+                        <parameter>
+                            <literal-expression value="Hello" start-index="12" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="10" start-index="21" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="*" start-index="25" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_rtrim">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="RTRIM('  Hello  ')" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="RTRIM" start-index="7" stop-index="24" text="RTRIM('  Hello  ')">
+                        <parameter>
+                            <literal-expression value="  Hello  " start-index="13" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_schema">
+        <projections start-index="7" stop-index="14">
+            <expression-projection text="SCHEMA()" start-index="7" stop-index="14">
+                <expr>
+                    <function function-name="SCHEMA" start-index="7" stop-index="14" text="SCHEMA()" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_sec_to_time">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="SEC_TO_TIME(3600)" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="SEC_TO_TIME" start-index="7" stop-index="23" text="SEC_TO_TIME(3600)" >
+                        <parameter>
+                            <literal-expression value="3600" start-index="19" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_second">
+        <projections start-index="7" stop-index="35">
+            <expression-projection text="SECOND('2020-06-10 12:34:56')" start-index="7" stop-index="35">
+                <expr>
+                    <function function-name="SECOND" start-index="7" stop-index="35" text="SECOND('2020-06-10 12:34:56')">
+                        <parameter>
+                            <literal-expression value="2020-06-10 12:34:56" start-index="14" stop-index="34" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_session_user">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="SESSION_USER()" start-index="7" stop-index="20">
+                <expr>
+                    <function function-name="SESSION_USER" start-index="7" stop-index="20" text="SESSION_USER()" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_sha">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="SHA('test_string')" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="SHA" start-index="7" stop-index="24" text="SHA('test_string')">
+                        <parameter>
+                            <literal-expression value="test_string" start-index="11" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_sign">
+        <projections start-index="7" stop-index="14">
+            <expression-projection text="SIGN(-5)" start-index="7" stop-index="14">
+                <expr>
+                    <function function-name="SIGN" start-index="7" stop-index="14" text="SIGN(-5)">
+                        <parameter>
+                            <literal-expression value="-5" start-index="12" stop-index="13" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_sin">
+        <projections start-index="7" stop-index="14">
+            <expression-projection text="SIN(0.5)" start-index="7" stop-index="14">
+                <expr>
+                    <function function-name="SIN" start-index="7" stop-index="14" text="SIN(0.5)">
+                        <parameter>
+                            <literal-expression value="0.5" start-index="11" stop-index="13" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_sleep">
+        <projections start-index="7" stop-index="14">
+            <expression-projection text="SLEEP(5)" start-index="7" stop-index="14">
+                <expr>
+                    <function function-name="SLEEP" start-index="7" stop-index="14" text="SLEEP(5)">
+                        <parameter>
+                            <literal-expression value="5" start-index="13" stop-index="13" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
