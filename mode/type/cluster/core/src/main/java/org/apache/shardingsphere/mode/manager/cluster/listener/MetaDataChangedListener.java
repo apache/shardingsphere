@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.listener;
+package org.apache.shardingsphere.mode.manager.cluster.listener;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;

@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.DataChangedEventListenerManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.processor.ListenerAssistedProcessor;
+import org.apache.shardingsphere.mode.manager.cluster.listener.DataChangedEventListenerManager;
+import org.apache.shardingsphere.mode.manager.cluster.listener.processor.ListenerAssistedProcessor;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataChangedListener;
+import org.apache.shardingsphere.mode.manager.cluster.listener.MetaDataChangedListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Optional;
