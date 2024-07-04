@@ -75,8 +75,6 @@ class PartialSQLRouteExecutorTest {
         storageUnits.put("ds_1", null);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         connectionContext.setCurrentDatabaseName(DefaultDatabase.LOGIC_NAME);
-        when(metaData.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(database);
     }
     
     @Test
