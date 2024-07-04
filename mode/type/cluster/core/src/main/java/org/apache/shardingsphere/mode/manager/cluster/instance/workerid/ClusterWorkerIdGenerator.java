@@ -22,10 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdReservationNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
+import org.apache.shardingsphere.mode.manager.cluster.persist.ReservationPersistService;
 import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -41,18 +40,18 @@ import java.util.stream.IntStream;
 @Slf4j
 public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
-    private final ClusterPersistRepository repository;
-    
     private final String instanceId;
     
     private final ComputeNodePersistService computeNodePersistService;
     
+    private final ReservationPersistService reservationPersistService;
+    
     private final AtomicBoolean isWarned = new AtomicBoolean(false);
     
     public ClusterWorkerIdGenerator(final ClusterPersistRepository repository, final String instanceId) {
-        this.repository = repository;
         this.instanceId = instanceId;
         computeNodePersistService = new ComputeNodePersistService(repository);
+        reservationPersistService = new ReservationPersistService(repository);
     }
     
     @Override
@@ -82,11 +81,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         PriorityQueue<Integer> availableWorkerIds = IntStream.range(0, 1024).boxed().filter(each -> !assignedWorkerIds.contains(each)).collect(Collectors.toCollection(PriorityQueue::new));
         Integer preselectedWorkerId = availableWorkerIds.poll();
         Preconditions.checkNotNull(preselectedWorkerId, "Preselected worker-id can not be null.");
-        try {
-            return repository.persistExclusiveEphemeral(WorkerIdReservationNode.getWorkerIdReservationPath(preselectedWorkerId), instanceId) ? Optional.of(preselectedWorkerId) : Optional.empty();
-        } catch (final ClusterPersistRepositoryException ignore) {
-            return Optional.empty();
-        }
+        return reservationPersistService.reserveWorkerId(preselectedWorkerId, instanceId);
     }
     
     private void logWarning(final int generatedWorkerId, final Properties props) {

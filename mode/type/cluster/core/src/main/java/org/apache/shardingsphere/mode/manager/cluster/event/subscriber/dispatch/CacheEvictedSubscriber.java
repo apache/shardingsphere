@@ -34,7 +34,7 @@ public final class CacheEvictedSubscriber implements EventSubscriber {
      * @param ignored unused
      */
     @Subscribe
-    public void onGovernanceEvent(final DispatchEvent ignored) {
+    public void cleanCache(final DispatchEvent ignored) {
         OrderedServicesCache.clearCache();
     }
 }

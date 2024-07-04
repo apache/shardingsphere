@@ -56,10 +56,10 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        createGovernanceEvent(event).ifPresent(eventBusContext::post);
+        createDispatchEvent(event).ifPresent(eventBusContext::post);
     }
     
-    private Optional<DispatchEvent> createGovernanceEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createDispatchEvent(final DataChangedEvent event) {
         String key = event.getKey();
         Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
         Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(key);

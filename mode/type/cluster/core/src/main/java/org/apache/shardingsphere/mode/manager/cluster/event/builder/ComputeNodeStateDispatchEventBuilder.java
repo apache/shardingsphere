@@ -58,7 +58,7 @@ public final class ComputeNodeStateDispatchEventBuilder implements DispatchEvent
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
         String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
-            Optional<DispatchEvent> result = createInstanceGovernanceEvent(event, instanceId);
+            Optional<DispatchEvent> result = createInstanceDispatchEvent(event, instanceId);
             if (result.isPresent()) {
                 return result;
             }
@@ -73,7 +73,7 @@ public final class ComputeNodeStateDispatchEventBuilder implements DispatchEvent
     }
     
     @SuppressWarnings("unchecked")
-    private Optional<DispatchEvent> createInstanceGovernanceEvent(final DataChangedEvent event, final String instanceId) {
+    private Optional<DispatchEvent> createInstanceDispatchEvent(final DataChangedEvent event, final String instanceId) {
         if (event.getKey().equals(ComputeNode.getComputeNodeStateNodePath(instanceId)) && Type.DELETED != event.getType()) {
             return Optional.of(new ComputeNodeInstanceStateChangedEvent(instanceId, event.getValue()));
         }
