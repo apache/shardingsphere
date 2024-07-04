@@ -59,6 +59,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -134,7 +135,20 @@ class BroadcastSqlRouterTest {
         CreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         return new QueryContext(new CreateTableStatementContext(createTableStatement, DefaultDatabase.LOGIC_NAME), "CREATE TABLE", new LinkedList<>(), new HintValueContext(),
-                mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+                mockConnectionContext(), mockMetaData());
+    }
+    
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        return result;
+    }
+    
+    private ShardingSphereMetaData mockMetaData() {
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
+        return result;
     }
     
     private Map<String, DataSource> createMultiDataSourceMap() throws SQLException {

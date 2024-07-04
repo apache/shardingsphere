@@ -80,6 +80,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -124,16 +125,29 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForTCL() {
         TCLStatement tclStatement = mock(TCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(tclStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingDatabaseBroadcastRoutingEngine.class));
     }
     
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        return result;
+    }
+    
+    private ShardingSphereMetaData mockMetaData() {
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
+        return result;
+    }
+    
     @Test
     void assertNewInstanceForDDLWithShardingRule() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingTableBroadcastRoutingEngine.class));
     }
@@ -144,7 +158,7 @@ class ShardingRouteEngineFactoryTest {
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
         DALStatement dalStatement = mock(DALStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
@@ -154,7 +168,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForDALWithoutTables() {
         DALStatement dalStatement = mock(DALStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingDataSourceGroupBroadcastRoutingEngine.class));
@@ -164,7 +178,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForDALShow() {
         DALStatement dalStatement = mock(MySQLShowDatabasesStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingDatabaseBroadcastRoutingEngine.class));
@@ -182,7 +196,7 @@ class ShardingRouteEngineFactoryTest {
     
     private void assertNewInstanceForDALSet(final DALStatement dalStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingDatabaseBroadcastRoutingEngine.class));
@@ -221,7 +235,7 @@ class ShardingRouteEngineFactoryTest {
     private void assertNewInstanceForDCLForSingleTableWithShardingRule(final GrantStatement grantStatement) {
         grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         GrantStatementContext sqlStatementContext = new GrantStatementContext(grantStatement, DefaultDatabase.LOGIC_NAME);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingIgnoreRoutingEngine.class));
@@ -230,7 +244,7 @@ class ShardingRouteEngineFactoryTest {
     private void assertNewInstanceForDCLForSingleTableWithoutShardingRule(final GrantStatement grantStatement) {
         grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         GrantStatementContext sqlStatementContext = new GrantStatementContext(grantStatement, DefaultDatabase.LOGIC_NAME);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingIgnoreRoutingEngine.class));
@@ -240,7 +254,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForDCLForNoSingleTable() {
         DCLStatement dclStatement = mock(DCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dclStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingInstanceBroadcastRoutingEngine.class));
@@ -250,7 +264,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForSelectWithoutSingleTable() {
         SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
@@ -260,7 +274,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForSelectBroadcastTable() {
         SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
@@ -270,7 +284,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForAlwaysFalse() {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
@@ -283,7 +297,7 @@ class ShardingRouteEngineFactoryTest {
         tableNames.add("");
         when(shardingRule.getShardingLogicTableNames(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())).thenReturn(tableNames);
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
@@ -296,7 +310,7 @@ class ShardingRouteEngineFactoryTest {
         tableNames.add("1");
         tableNames.add("2");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingComplexRoutingEngine.class));
@@ -308,7 +322,7 @@ class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
@@ -320,7 +334,7 @@ class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
@@ -331,11 +345,12 @@ class ShardingRouteEngineFactoryTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         tableNames.add("t_order");
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
+        when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
         when(shardingRule.getShardingTable("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(shardingRule.isAllShardingTables(Collections.singletonList("t_order"))).thenReturn(true);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, mock(ConfigurationProperties.class),
                 new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
@@ -345,7 +360,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForCreateResourceGroup() {
         MySQLCreateResourceGroupStatement resourceGroupStatement = mock(MySQLCreateResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingInstanceBroadcastRoutingEngine.class));
@@ -355,7 +370,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForSetResourceGroup() {
         MySQLSetResourceGroupStatement resourceGroupStatement = mock(MySQLSetResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingInstanceBroadcastRoutingEngine.class));
@@ -367,7 +382,7 @@ class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(optimizeTableStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingTableBroadcastRoutingEngine.class));
@@ -379,7 +394,7 @@ class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(optimizeTableStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(Collections.emptyList());
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingIgnoreRoutingEngine.class));
@@ -394,10 +409,11 @@ class ShardingRouteEngineFactoryTest {
         Collection<String> tableNames = tableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
         when(cursorStatementContext.getTablesContext().getSimpleTables()).thenReturn(tableSegments);
         when(cursorStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
+        when(cursorStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
-        QueryContext queryContext = new QueryContext(cursorStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(cursorStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
@@ -410,7 +426,8 @@ class ShardingRouteEngineFactoryTest {
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         when(cursorStatementContext.getTablesContext().getSimpleTables()).thenReturn(tableSegments);
-        QueryContext queryContext = new QueryContext(cursorStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        when(cursorStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        QueryContext queryContext = new QueryContext(cursorStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingIgnoreRoutingEngine.class));
@@ -423,9 +440,10 @@ class ShardingRouteEngineFactoryTest {
         when(closeStatement.isCloseAll()).thenReturn(true);
         tableNames.add("t_order");
         when(closeStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
+        when(closeStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(closeStatementContext.getSqlStatement()).thenReturn(closeStatement);
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
-        QueryContext queryContext = new QueryContext(closeStatementContext, "", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        QueryContext queryContext = new QueryContext(closeStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext(Collections::emptySet));
         assertThat(actual, instanceOf(ShardingDatabaseBroadcastRoutingEngine.class));
