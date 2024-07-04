@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -61,12 +63,25 @@ class DatabaseConnectorFactoryTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+                new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
         assertThat(engine, instanceOf(DatabaseConnector.class));
+    }
+    
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        return result;
+    }
+    
+    private ShardingSphereMetaData mockMetaData() {
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
+        return result;
     }
     
     @Test
@@ -81,7 +96,7 @@ class DatabaseConnectorFactoryTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThat(
                 DatabaseConnectorFactory.getInstance().newInstance(
-                        new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class)),
+                        new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData()),
                         databaseConnectionManager,
                         false),
                 instanceOf(DatabaseConnector.class));
