@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.instance.workerid;
+package org.apache.shardingsphere.mode.manager.cluster.workerid;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;

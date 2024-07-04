@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.processor;
+package org.apache.shardingsphere.mode.manager.cluster.listener.processor;
 
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 
 /**
- * Create database listener assisted processor.
+ * Drop database listener assisted processor.
  */
-public final class CreateDatabaseListenerAssistedProcessor implements ListenerAssistedProcessor<CreateDatabaseListenerAssistedEvent> {
+public final class DropDatabaseListenerAssistedProcessor implements ListenerAssistedProcessor<DropDatabaseListenerAssistedEvent> {
     
     @Override
-    public String getListenerKey(final CreateDatabaseListenerAssistedEvent event) {
+    public String getListenerKey(final DropDatabaseListenerAssistedEvent event) {
         return DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName());
     }
     
     @Override
-    public void processor(final ContextManager contextManager, final CreateDatabaseListenerAssistedEvent event) {
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().addDatabase(event.getDatabaseName());
+    public void processor(final ContextManager contextManager, final DropDatabaseListenerAssistedEvent event) {
+        contextManager.getMetaDataContextManager().getResourceMetaDataManager().dropDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
     }
     
     @Override
     public String getType() {
-        return CreateDatabaseListenerAssistedEvent.class.getName();
+        return DropDatabaseListenerAssistedEvent.class.getName();
     }
 }
