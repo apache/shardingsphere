@@ -15,17 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node;
+package org.apache.shardingsphere.metadata.persist.node;
 
-import org.junit.jupiter.api.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class WorkerIdReservationNodeTest {
+/**
+ * Reservation node.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ReservationNode {
     
-    @Test
-    void assertGetWorkerIdReservationPath() {
-        assertThat(WorkerIdReservationNode.getWorkerIdReservationPath(1), is("/reservation/worker_id/1"));
+    private static final String ROOT_NODE = "reservation";
+    
+    private static final String WORKER_ID_NODE = "worker_id";
+    
+    /**
+     * Get worker id reservation path.
+     *
+     * @param workerId worker id
+     * @return worker id reservation path
+     */
+    public static String getWorkerIdReservationPath(final int workerId) {
+        return String.join("/", "", ROOT_NODE, WORKER_ID_NODE, String.valueOf(workerId));
     }
 }
