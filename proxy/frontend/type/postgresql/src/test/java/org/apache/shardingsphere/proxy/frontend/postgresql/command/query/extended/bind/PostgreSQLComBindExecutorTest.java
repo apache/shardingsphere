@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -51,6 +52,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -90,6 +92,8 @@ class PostgreSQLComBindExecutorTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(connectionSession.getCurrentDatabaseName()).thenReturn(databaseName);
+        ConnectionContext connectionContext = mockConnectionContext();
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         String statementId = "S_1";
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
@@ -99,6 +103,7 @@ class PostgreSQLComBindExecutorTest {
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)).thenReturn(true);
         when(contextManager.getDatabase(databaseName)).thenReturn(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Collection<DatabasePacket> actual = executor.execute();
@@ -117,6 +122,8 @@ class PostgreSQLComBindExecutorTest {
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(connectionSession.getCurrentDatabaseName()).thenReturn(databaseName);
+        ConnectionContext connectionContext = mockConnectionContext();
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         String statementId = "S_1";
         List<Object> parameters = Arrays.asList(1, "updated_name");
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("update test set name = $2 where id = $1",
@@ -129,10 +136,17 @@ class PostgreSQLComBindExecutorTest {
         when(bindPacket.readParameters(anyList())).thenReturn(parameters);
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)).thenReturn(true);
         when(contextManager.getDatabase(databaseName)).thenReturn(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
+    }
+    
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("postgres"));
+        return result;
     }
 }
