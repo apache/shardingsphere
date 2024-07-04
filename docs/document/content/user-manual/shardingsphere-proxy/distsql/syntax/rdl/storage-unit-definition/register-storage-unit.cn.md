@@ -64,12 +64,11 @@ value ::=
 - `storageUnitName` 区分大小写；
 - `storageUnitName` 在当前逻辑库中需要唯一；
 - `storageUnitName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
-- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致；
-- `ifNotExists` 子句用于避免出现 `Duplicate storage unit` 的错误。
+- `PROPERTIES` 为可选参数，用于自定义连接池属性，`key` 必须和连接池参数名一致。
 
 ### 示例
 
-- 使用标准模式注册存储单元
+- 使用 HOST & PORT 方式注册存储单元
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
@@ -81,10 +80,10 @@ REGISTER STORAGE UNIT ds_0 (
 );
 ```
 
-- 使用标准模式注册存储单元并设置连接池参数
+- 使用 HOST & PORT 方式注册存储单元并设置连接池属性
 
 ```sql
-REGISTER STORAGE UNIT ds_0 (
+REGISTER STORAGE UNIT ds_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_1",
@@ -94,11 +93,11 @@ REGISTER STORAGE UNIT ds_0 (
 );
 ```
 
-- 使用 URL 模式注册存储单元并设置连接池参数
+- 使用 URL 方式注册存储单元并设置连接池属性
 
 ```sql
-REGISTER STORAGE UNIT ds_0 (
-    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
+REGISTER STORAGE UNIT ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
