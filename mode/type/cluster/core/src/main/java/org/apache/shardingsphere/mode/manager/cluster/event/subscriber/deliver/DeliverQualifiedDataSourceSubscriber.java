@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.deliver.datasource.qualified.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
 
 /**
  * Deliver data source status subscriber.

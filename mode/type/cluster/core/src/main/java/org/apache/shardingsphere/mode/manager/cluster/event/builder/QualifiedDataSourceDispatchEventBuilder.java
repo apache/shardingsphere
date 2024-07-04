@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.state.storage.QualifiedDataSourceStateEvent;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
-import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceStateSwapper;
 

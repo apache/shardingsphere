@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSou
 import org.apache.shardingsphere.mode.event.deliver.datasource.qualified.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.deliver.DeliverQualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

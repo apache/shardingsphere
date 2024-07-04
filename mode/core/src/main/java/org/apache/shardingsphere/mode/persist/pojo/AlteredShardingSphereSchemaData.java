@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Schema altered pojo.
+ * Altered shardingSphere schema data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereSchemaDataAlteredPOJO {
+public final class AlteredShardingSphereSchemaData {
     
     private final String databaseName;
     
