@@ -22,11 +22,13 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -118,14 +120,28 @@ public final class ResourceSwitchManager {
     
     private Map<StorageNode, DataSource> getToBeRemovedStaleDataSource(final ResourceMetaData resourceMetaData, final Collection<String> storageUnitNames) {
         Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUnitNames.size(), 1F);
+        Map<String, StorageUnit> reservedStorageUnits = getReservedStorageUnits(resourceMetaData, storageUnitNames);
         for (String each : storageUnitNames) {
             if (!resourceMetaData.getStorageUnits().containsKey(each)) {
-                return Collections.emptyMap();
+                continue;
             }
             StorageNode storageNode = resourceMetaData.getStorageUnits().get(each).getStorageNode();
+            if (isStorageNodeInUsed(reservedStorageUnits, storageNode)) {
+                continue;
+            }
             result.put(storageNode, resourceMetaData.getDataSources().get(storageNode));
         }
         return result;
+    }
+    
+    private Map<String, StorageUnit> getReservedStorageUnits(final ResourceMetaData resourceMetaData, final Collection<String> storageUnitNames) {
+        Map<String, StorageUnit> result = new HashMap<>(resourceMetaData.getStorageUnits());
+        result.keySet().removeIf(storageUnitNames::contains);
+        return result;
+    }
+    
+    private boolean isStorageNodeInUsed(final Map<String, StorageUnit> reservedStorageUnits, final StorageNode storageNode) {
+        return reservedStorageUnits.values().stream().anyMatch(each -> each.getStorageNode().equals(storageNode));
     }
     
     private void removeToBeRemovedStorageUnitNames(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap,
