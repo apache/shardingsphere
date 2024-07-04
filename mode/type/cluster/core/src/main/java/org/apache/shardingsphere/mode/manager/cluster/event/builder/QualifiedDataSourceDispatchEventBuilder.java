@@ -19,11 +19,10 @@ package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.builder.dispatch.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.state.storage.QualifiedDataSourceStateEvent;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.storage.node.QualifiedDataSourceNode;
@@ -38,7 +37,7 @@ import java.util.Optional;
 /**
  * Qualified data source dispatch event builder.
  */
-public final class QualifiedDataSourceDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
+public final class QualifiedDataSourceDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {
@@ -51,7 +50,7 @@ public final class QualifiedDataSourceDispatchEventBuilder implements DispatchEv
     }
     
     @Override
-    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
+    public Optional<DispatchEvent> build(final DataChangedEvent event) {
         if (Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }

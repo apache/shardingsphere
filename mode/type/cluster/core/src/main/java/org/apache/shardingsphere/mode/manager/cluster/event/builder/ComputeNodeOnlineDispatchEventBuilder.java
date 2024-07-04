@@ -23,12 +23,11 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.builder.dispatch.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
 
@@ -42,7 +41,7 @@ import java.util.regex.Pattern;
 /**
  *  Compute node online dispatch event builder.
  */
-public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
+public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {
@@ -55,14 +54,14 @@ public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEven
     }
     
     @Override
-    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
+    public Optional<DispatchEvent> build(final DataChangedEvent event) {
         if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
             return createInstanceEvent(event);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = getInstanceOnlinePathMatcher(event.getKey());
         if (matcher.find()) {
             ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));

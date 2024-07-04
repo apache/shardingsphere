@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.listener;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNode;
@@ -59,7 +59,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         createGovernanceEvent(event).ifPresent(eventBusContext::post);
     }
     
-    private Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createGovernanceEvent(final DataChangedEvent event) {
         String key = event.getKey();
         Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
         Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(key);
@@ -82,7 +82,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         return ruleConfigurationEventBuilder.build(databaseName.get(), event);
     }
     
-    private Optional<GovernanceEvent> createSchemaChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
+    private Optional<DispatchEvent> createSchemaChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
             return Optional.of(new SchemaAddedEvent(databaseName, schemaName));
         }
@@ -100,7 +100,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         return ViewMetaDataNode.isViewActiveVersionNode(key) || ViewMetaDataNode.isViewNode(key);
     }
     
-    private Optional<GovernanceEvent> createTableChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
+    private Optional<DispatchEvent> createTableChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
         if (Type.DELETED == event.getType() && TableMetaDataNode.isTableNode(event.getKey())) {
             Optional<String> tableName = TableMetaDataNode.getTableName(event.getKey());
             Preconditions.checkState(tableName.isPresent(), "Not found table name.");
@@ -114,7 +114,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createViewChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
+    private Optional<DispatchEvent> createViewChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
         if (Type.DELETED == event.getType() && ViewMetaDataNode.isViewNode(event.getKey())) {
             Optional<String> viewName = ViewMetaDataNode.getViewName(event.getKey());
             Preconditions.checkState(viewName.isPresent(), "Not found view name.");
@@ -128,7 +128,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createDataSourceEvent(final String databaseName, final DataChangedEvent event) {
+    private Optional<DispatchEvent> createDataSourceEvent(final String databaseName, final DataChangedEvent event) {
         if (DataSourceMetaDataNode.isDataSourceUnitActiveVersionNode(event.getKey()) || DataSourceMetaDataNode.isDataSourceUnitNode(event.getKey())) {
             return createStorageUnitChangedEvent(databaseName, event);
         }
@@ -138,7 +138,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createStorageUnitChangedEvent(final String databaseName, final DataChangedEvent event) {
+    private Optional<DispatchEvent> createStorageUnitChangedEvent(final String databaseName, final DataChangedEvent event) {
         Optional<String> dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitActiveVersionNode(event.getKey());
         if (dataSourceUnitName.isPresent()) {
             if (Type.ADDED == event.getType()) {
@@ -155,7 +155,7 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createStorageNodeChangedEvent(final String databaseName, final DataChangedEvent event) {
+    private Optional<DispatchEvent> createStorageNodeChangedEvent(final String databaseName, final DataChangedEvent event) {
         Optional<String> dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeActiveVersionNode(event.getKey());
         if (dataSourceNodeName.isPresent()) {
             if (Type.ADDED == event.getType()) {

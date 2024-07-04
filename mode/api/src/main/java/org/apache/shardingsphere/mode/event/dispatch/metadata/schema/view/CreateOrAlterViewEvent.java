@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Create or alter view event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateOrAlterViewEvent implements GovernanceEvent {
+public final class CreateOrAlterViewEvent implements DispatchEvent {
     
     private final String databaseName;
     

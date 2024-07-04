@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.event.dispatch.state.compute;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Report local processes event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReportLocalProcessesEvent implements GovernanceEvent {
+public final class ReportLocalProcessesEvent implements DispatchEvent {
     
     private final String instanceId;
     

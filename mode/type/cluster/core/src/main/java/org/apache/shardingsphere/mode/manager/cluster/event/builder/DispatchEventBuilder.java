@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.builder.dispatch;
+package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
@@ -35,7 +35,7 @@ class ComputeNodeOnlineDispatchEventBuilderTest {
     
     @Test
     void assertComputeNodeOnline() {
-        Optional<GovernanceEvent> actual = new ComputeNodeOnlineDispatchEventBuilder()
+        Optional<DispatchEvent> actual = new ComputeNodeOnlineDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
         assertTrue(actual.isPresent());
         InstanceOnlineEvent event = (InstanceOnlineEvent) actual.get();
@@ -48,7 +48,7 @@ class ComputeNodeOnlineDispatchEventBuilderTest {
     
     @Test
     void assertComputeNodeOffline() {
-        Optional<GovernanceEvent> actual = new ComputeNodeOnlineDispatchEventBuilder()
+        Optional<DispatchEvent> actual = new ComputeNodeOnlineDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.DELETED));
         assertTrue(actual.isPresent());
         InstanceOfflineEvent event = (InstanceOfflineEvent) actual.get();

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -34,7 +34,7 @@ class ClusterStateDispatchEventBuilderTest {
     
     @Test
     void assertCreateEventWhenReadOnly() {
-        Optional<GovernanceEvent> actual = new ClusterStateDispatchEventBuilder()
+        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.READ_ONLY));
@@ -42,7 +42,7 @@ class ClusterStateDispatchEventBuilderTest {
     
     @Test
     void assertCreateEventWhenUnavailable() {
-        Optional<GovernanceEvent> actual = new ClusterStateDispatchEventBuilder()
+        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.UNAVAILABLE.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.UNAVAILABLE));
@@ -50,7 +50,7 @@ class ClusterStateDispatchEventBuilderTest {
     
     @Test
     void assertCreateEventWhenEnabled() {
-        Optional<GovernanceEvent> actual = new ClusterStateDispatchEventBuilder()
+        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
                 .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.OK.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.OK));

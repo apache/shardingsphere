@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event;
+package org.apache.shardingsphere.mode.event.dispatch;
 
 /**
- * Governance event.
+ * Dispatch event.
  */
-public interface GovernanceEvent {
+public interface DispatchEvent {
 }

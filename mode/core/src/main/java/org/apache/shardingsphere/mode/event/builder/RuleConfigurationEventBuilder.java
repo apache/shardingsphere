@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.event.builder;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -47,9 +47,9 @@ public final class RuleConfigurationEventBuilder {
      * @param event data changed event
      * @return rule changed event
      */
-    public Optional<GovernanceEvent> build(final String databaseName, final DataChangedEvent event) {
+    public Optional<DispatchEvent> build(final String databaseName, final DataChangedEvent event) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
-            Optional<GovernanceEvent> result = build(each.getRuleNodePath(), databaseName, event);
+            Optional<DispatchEvent> result = build(each.getRuleNodePath(), databaseName, event);
             if (result.isPresent()) {
                 return result;
             }
@@ -57,7 +57,7 @@ public final class RuleConfigurationEventBuilder {
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> build(final RuleNodePath ruleNodePath, final String databaseName, final DataChangedEvent event) {
+    private Optional<DispatchEvent> build(final RuleNodePath ruleNodePath, final String databaseName, final DataChangedEvent event) {
         if (!ruleNodePath.getRoot().isValidatedPath(event.getKey()) || Type.DELETED != event.getType() && Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
