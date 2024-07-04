@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.pojo.ShardingSphereSchemaDataAlteredPOJO;
+import org.apache.shardingsphere.mode.persist.pojo.AlteredShardingSphereSchemaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@ class StatisticsCollectJobTest {
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
         new StatisticsCollectJob(contextManager).execute(null);
-        verify(contextManager.getPersistServiceFacade()).persist(any(ShardingSphereSchemaDataAlteredPOJO.class));
+        verify(contextManager.getPersistServiceFacade()).persist(any(AlteredShardingSphereSchemaData.class));
     }
     
     private ShardingSphereStatistics mockStatistics() {

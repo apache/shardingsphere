@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.persist.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedPOJO;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
@@ -34,10 +34,10 @@ public final class ListenerAssistedPersistService {
     /**
      * Persist database name listener assisted.
      *
-     * @param listenerAssistedPOJO listener assisted pojo
+     * @param listenerAssisted listener assisted pojo
      */
-    public void persistDatabaseNameListenerAssisted(final ListenerAssistedPOJO listenerAssistedPOJO) {
-        repository.persistEphemeral(ListenerAssistedNodePath.getDatabaseNameNodePath(listenerAssistedPOJO.getDatabaseName()), YamlEngine.marshal(listenerAssistedPOJO));
+    public void persistDatabaseNameListenerAssisted(final ListenerAssisted listenerAssisted) {
+        repository.persistEphemeral(ListenerAssistedNodePath.getDatabaseNameNodePath(listenerAssisted.getDatabaseName()), YamlEngine.marshal(listenerAssisted));
     }
     
     /**

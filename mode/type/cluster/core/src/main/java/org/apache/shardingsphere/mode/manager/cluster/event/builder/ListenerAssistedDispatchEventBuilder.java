@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedPOJO;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
 import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
 
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class ListenerAssistedDispatchEventBuilder implements DispatchEventBuilde
         if (!databaseName.isPresent()) {
             return Optional.empty();
         }
-        ListenerAssistedPOJO data = YamlEngine.unmarshal(event.getValue(), ListenerAssistedPOJO.class);
+        ListenerAssisted data = YamlEngine.unmarshal(event.getValue(), ListenerAssisted.class);
         if (ListenerAssistedType.CREATE_DATABASE == data.getListenerAssistedType()) {
             return Optional.of(new CreateDatabaseListenerAssistedEvent(databaseName.get()));
         }

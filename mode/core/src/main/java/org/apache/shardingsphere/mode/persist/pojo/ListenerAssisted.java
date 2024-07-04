@@ -24,13 +24,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Listener assisted pojo.
+ * Listener assisted.
  */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public final class ListenerAssistedPOJO implements YamlConfiguration {
+public final class ListenerAssisted implements YamlConfiguration {
     
     private String databaseName;
     
