@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationBindContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
@@ -124,19 +125,18 @@ public final class SQLFederationEngine implements AutoCloseable {
     /**
      * Decide use SQL federation or not.
      *
-     * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
-     * @param defaultDatabase default database
+     * @param queryContext query context
      * @param globalRuleMetaData global rule meta data
      * @return use SQL federation or not
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase defaultDatabase, final RuleMetaData globalRuleMetaData) {
+    public boolean decide(final QueryContext queryContext, final RuleMetaData globalRuleMetaData) {
         // TODO BEGIN: move this logic to SQLFederationDecider implement class when we remove sql federation type
-        if (isQuerySystemSchema(sqlStatementContext, defaultDatabase)) {
+        if (isQuerySystemSchema(queryContext)) {
             return true;
         }
         // TODO END
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         boolean sqlFederationEnabled = sqlFederationRule.getConfiguration().isSqlFederationEnabled();
         if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
@@ -146,14 +146,14 @@ public final class SQLFederationEngine implements AutoCloseable {
             return true;
         }
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        Collection<String> usedDatabaseNames = getUsedDatabaseNames(selectStatementContext, defaultDatabase);
-        if (usedDatabaseNames.size() > 1) {
+        Collection<String> databaseNames = selectStatementContext.getTablesContext().getDatabaseNames();
+        if (databaseNames.size() > 1) {
             return true;
         }
-        ShardingSphereDatabase currentDatabase = metaData.getDatabase(usedDatabaseNames.iterator().next());
+        ShardingSphereDatabase currentDatabase = metaData.getDatabase(databaseNames.iterator().next());
         Collection<DataNode> includedDataNodes = new HashSet<>();
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
-            boolean isUseSQLFederation = entry.getValue().decide(selectStatementContext, parameters, globalRuleMetaData, currentDatabase, entry.getKey(), includedDataNodes);
+            boolean isUseSQLFederation = entry.getValue().decide(selectStatementContext, queryContext.getParameters(), globalRuleMetaData, currentDatabase, entry.getKey(), includedDataNodes);
             if (isUseSQLFederation) {
                 return true;
             }
@@ -161,12 +161,13 @@ public final class SQLFederationEngine implements AutoCloseable {
         return false;
     }
     
-    private boolean isQuerySystemSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase defaultDatabase) {
+    private boolean isQuerySystemSchema(final QueryContext queryContext) {
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        ShardingSphereDatabase database = selectStatementContext.getTablesContext().getDatabaseNames().stream().map(metaData::getDatabase).findFirst().orElse(defaultDatabase);
+        ShardingSphereDatabase database = queryContext.getUsedDatabase();
         return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
                 || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
     }
