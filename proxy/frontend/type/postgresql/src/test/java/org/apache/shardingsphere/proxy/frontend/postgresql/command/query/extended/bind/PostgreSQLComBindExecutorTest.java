@@ -135,7 +135,6 @@ class PostgreSQLComBindExecutorTest {
         when(bindPacket.readParameters(anyList())).thenReturn(parameters);
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)).thenReturn(true);
         when(contextManager.getDatabase(databaseName)).thenReturn(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Collection<DatabasePacket> actual = executor.execute();
