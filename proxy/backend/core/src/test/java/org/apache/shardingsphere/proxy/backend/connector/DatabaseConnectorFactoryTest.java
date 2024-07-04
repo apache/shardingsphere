@@ -63,7 +63,7 @@ class DatabaseConnectorFactoryTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         QueryContext queryContext =
-                new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData());
+                new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -74,13 +74,6 @@ class DatabaseConnectorFactoryTest {
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
-        return result;
-    }
-    
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
         return result;
     }
     
@@ -96,7 +89,7 @@ class DatabaseConnectorFactoryTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThat(
                 DatabaseConnectorFactory.getInstance().newInstance(
-                        new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData()),
+                        new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                         databaseConnectionManager,
                         false),
                 instanceOf(DatabaseConnector.class));

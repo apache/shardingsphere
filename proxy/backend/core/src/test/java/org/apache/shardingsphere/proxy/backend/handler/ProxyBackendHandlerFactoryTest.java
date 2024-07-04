@@ -114,13 +114,6 @@ class ProxyBackendHandlerFactoryTest {
         return result;
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
-        return result;
-    }
-    
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mockDatabase();
@@ -132,7 +125,7 @@ class ProxyBackendHandlerFactoryTest {
                 new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()),
                 new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build(), Collections.emptyMap())));
-        ShardingSphereMetaData metaData = mockMetaData();
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaDataContexts.getMetaData()).thenReturn(metaData);
         when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         return result;

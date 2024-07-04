@@ -83,7 +83,7 @@ class ShardingSQLAuditorTest {
     @Test
     void assertCheckSuccess() {
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mockMetaData()),
+        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 globalRuleMetaData, databases.get("foo_db"), rule);
         verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
     }
@@ -94,18 +94,11 @@ class ShardingSQLAuditorTest {
         return result;
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
-        return result;
-    }
-    
     @Test
     void assertCheckSuccessByDisableAuditNames() {
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mockMetaData()),
+        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 globalRuleMetaData, databases.get("foo_db"), rule);
         verify(rule.getAuditors().get("auditor_1"), times(0)).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
     }
@@ -116,7 +109,7 @@ class ShardingSQLAuditorTest {
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         doThrow(new DMLWithoutShardingKeyException()).when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
         DMLWithoutShardingKeyException ex = assertThrows(DMLWithoutShardingKeyException.class, () -> new ShardingSQLAuditor().audit(
-                new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mockMetaData()), globalRuleMetaData,
+                new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mock(ShardingSphereMetaData.class)), globalRuleMetaData,
                 databases.get("foo_db"), rule));
         assertThat(ex.getMessage(), is("Not allow DML operation without sharding conditions."));
         verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatem
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDeleteStatement;
@@ -59,7 +58,7 @@ class SQLRouteCountAdviceTest {
     @Test
     void assertInsertRoute() {
         QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLInsertStatement()), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
-                mockMetaData());
+                mock(ShardingSphereMetaData.class));
         assertRoute(queryContext, "INSERT=1");
     }
     
@@ -69,31 +68,24 @@ class SQLRouteCountAdviceTest {
         return result;
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
-        return result;
-    }
-    
     @Test
     void assertUpdateRoute() {
         QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLUpdateStatement()), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
-                mockMetaData());
+                mock(ShardingSphereMetaData.class));
         assertRoute(queryContext, "UPDATE=1");
     }
     
     @Test
     void assertDeleteRoute() {
         QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLDeleteStatement()), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
-                mockMetaData());
+                mock(ShardingSphereMetaData.class));
         assertRoute(queryContext, "DELETE=1");
     }
     
     @Test
     void assertSelectRoute() {
         QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLSelectStatement()), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
-                mockMetaData());
+                mock(ShardingSphereMetaData.class));
         assertRoute(queryContext, "SELECT=1");
     }
     

@@ -65,7 +65,7 @@ class DatabaseBackendHandlerFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
         DatabaseBackendHandler actual =
                 DatabaseBackendHandlerFactory.newInstance(
-                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData()),
+                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                         mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
@@ -76,13 +76,6 @@ class DatabaseBackendHandlerFactoryTest {
         return result;
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
-        return result;
-    }
-    
     @Test
     void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
@@ -90,7 +83,7 @@ class DatabaseBackendHandlerFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         DatabaseBackendHandler actual =
                 DatabaseBackendHandlerFactory.newInstance(
-                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData()),
+                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                         mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
@@ -104,7 +97,7 @@ class DatabaseBackendHandlerFactoryTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DatabaseBackendHandler actual =
                 DatabaseBackendHandlerFactory.newInstance(
-                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mockMetaData()),
+                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                         connectionSession, false);
         assertThat(actual, instanceOf(DatabaseConnector.class));
     }

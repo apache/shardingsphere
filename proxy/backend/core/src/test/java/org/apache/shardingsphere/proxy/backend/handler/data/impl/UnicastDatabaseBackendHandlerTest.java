@@ -96,20 +96,13 @@ class UnicastDatabaseBackendHandlerTest {
         mockDatabaseConnector(new UpdateResponseHeader(mock(SQLStatement.class)));
         unicastDatabaseBackendHandler =
                 new UnicastDatabaseBackendHandler(new QueryContext(mock(SQLStatementContext.class), EXECUTE_SQL, Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
-                        mockMetaData()), connectionSession);
+                        mock(ShardingSphereMetaData.class)), connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
     }
     
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
-        return result;
-    }
-    
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
         return result;
     }
     
