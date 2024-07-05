@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.engine;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
@@ -170,12 +169,6 @@ public final class SQLFederationEngine implements AutoCloseable {
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
         return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
                 || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
-    }
-    
-    private Collection<String> getUsedDatabaseNames(final SelectStatementContext selectStatementContext, final ShardingSphereDatabase defaultDatabase) {
-        Collection<String> result = new CaseInsensitiveSet<>(selectStatementContext.getTablesContext().getDatabaseNames());
-        result.add(defaultDatabase.getName());
-        return result;
     }
     
     /**
