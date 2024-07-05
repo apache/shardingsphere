@@ -19,11 +19,11 @@ package org.apache.shardingsphere.test.e2e.container.compose;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.mode.StandaloneContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -43,29 +43,32 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     /**
      * Get container composer.
      *
-     * @param testParam test parameter
+     * @param key key
+     * @param scenario scenario
+     * @param databaseType databaseType
+     * @param adapterMode adapterMode
+     * @param adapterType adapterType
      * @return composed container
      */
-    public ContainerComposer getContainerComposer(final E2ETestParameter testParam) {
-        String key = testParam.getKey();
+    public ContainerComposer getContainerComposer(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
         if (containerComposers.containsKey(key)) {
             return containerComposers.get(key);
         }
         synchronized (containerComposers) {
             if (!containerComposers.containsKey(key)) {
-                containerComposers.put(key, createContainerComposer(testParam));
+                containerComposers.put(key, createContainerComposer(isClusterMode(adapterMode, adapterType), scenario, databaseType, adapterMode, adapterType));
             }
             return containerComposers.get(key);
         }
     }
     
-    private ContainerComposer createContainerComposer(final E2ETestParameter testParam) {
-        return isClusterMode(testParam) ? new ClusterContainerComposer(testParam) : new StandaloneContainerComposer(testParam);
+    private boolean isClusterMode(final AdapterMode adapterMode, final AdapterType adapterType) {
+        // TODO cluster mode often throw exception sometimes, issue is #15517
+        return AdapterMode.CLUSTER == adapterMode && AdapterType.PROXY == adapterType;
     }
     
-    private boolean isClusterMode(final E2ETestParameter testParam) {
-        // TODO cluster mode often throw exception sometimes, issue is #15517
-        return AdapterMode.CLUSTER.getValue().equalsIgnoreCase(testParam.getMode()) && AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
+    private ContainerComposer createContainerComposer(final boolean clusterMode, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
+        return clusterMode ? new ClusterContainerComposer(scenario, databaseType, adapterMode, adapterType) : new StandaloneContainerComposer(scenario, databaseType, adapterMode, adapterType);
     }
     
     @Override
