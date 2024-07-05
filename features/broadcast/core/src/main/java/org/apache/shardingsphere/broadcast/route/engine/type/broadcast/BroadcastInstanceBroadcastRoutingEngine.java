@@ -31,7 +31,7 @@ import java.util.Collections;
  * Broadcast routing engine for database instance.
  */
 @RequiredArgsConstructor
-public class BroadcastInstanceBroadcastRoutingEngine implements BroadcastRouteEngine {
+public final class BroadcastInstanceBroadcastRoutingEngine implements BroadcastRouteEngine {
     
     private final ResourceMetaData resourceMetaData;
     
