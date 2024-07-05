@@ -19,30 +19,26 @@ package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.listener.DataChangedEventListenerManager;
-import org.apache.shardingsphere.mode.manager.cluster.listener.processor.ListenerAssistedProcessor;
-import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.listener.MetaDataChangedListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.Optional;
-
 /**
- * Listener assisted meta data changed subscriber.
+ * Listener assisted subscriber.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 @RequiredArgsConstructor
-public final class ListenerAssistedMetaDataChangedSubscriber implements EventSubscriber {
+public final class ListenerAssistedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
     private final DataChangedEventListenerManager listenerManager;
     
-    public ListenerAssistedMetaDataChangedSubscriber(final ContextManager contextManager) {
+    public ListenerAssistedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         listenerManager = new DataChangedEventListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository());
     }
@@ -54,12 +50,10 @@ public final class ListenerAssistedMetaDataChangedSubscriber implements EventSub
      */
     @Subscribe
     public synchronized void renew(final CreateDatabaseListenerAssistedEvent event) {
-        Optional<ListenerAssistedProcessor> processor = TypedSPILoader.findService(ListenerAssistedProcessor.class, event.getClass().getName());
-        if (!processor.isPresent()) {
-            return;
-        }
-        listenerManager.addListener(processor.get().getListenerKey(event), new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
-        processor.get().processor(contextManager, event);
+        listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()),
+                new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
+        contextManager.getMetaDataContextManager().getResourceMetaDataManager().addDatabase(event.getDatabaseName());
+        contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
     }
     
     /**
@@ -69,11 +63,8 @@ public final class ListenerAssistedMetaDataChangedSubscriber implements EventSub
      */
     @Subscribe
     public synchronized void renew(final DropDatabaseListenerAssistedEvent event) {
-        Optional<ListenerAssistedProcessor> processor = TypedSPILoader.findService(ListenerAssistedProcessor.class, event.getClass().getName());
-        if (!processor.isPresent()) {
-            return;
-        }
-        listenerManager.removeListener(processor.get().getListenerKey(event));
-        processor.get().processor(contextManager, event);
+        listenerManager.removeListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()));
+        contextManager.getMetaDataContextManager().getResourceMetaDataManager().dropDatabase(event.getDatabaseName());
+        contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
     }
 }

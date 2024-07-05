@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ComputeNodeOnlineSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.DatabaseChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.GlobalRuleConfigurationEventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ListenerAssistedMetaDataChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ListenerAssistedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ProcessListChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.PropertiesEventSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.QualifiedDataSourceSubscriber;
@@ -50,7 +50,7 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
-                new ListenerAssistedMetaDataChangedSubscriber(contextManager),
+                new ListenerAssistedSubscriber(contextManager),
                 new StateChangedSubscriber(contextManager),
                 new DatabaseChangedSubscriber(contextManager),
                 new ProcessListChangedSubscriber(contextManager),
