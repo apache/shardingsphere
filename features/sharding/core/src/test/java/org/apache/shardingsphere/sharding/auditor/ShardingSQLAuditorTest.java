@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.auditor;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -72,6 +73,7 @@ class ShardingSQLAuditorTest {
     void setUp() {
         when(hintValueContext.getDisableAuditNames()).thenReturn(new HashSet<>(Collections.singletonList("auditor_1")));
         when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_table"));
+        when(((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(rule.findShardingTable("foo_table")).thenReturn(Optional.of(shardingTable));
         when(rule.getAuditStrategyConfiguration(shardingTable)).thenReturn(auditStrategy);
@@ -81,16 +83,22 @@ class ShardingSQLAuditorTest {
     @Test
     void assertCheckSuccess() {
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), mock(ShardingSphereMetaData.class)),
+        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 globalRuleMetaData, databases.get("foo_db"), rule);
         verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
+    }
+    
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        return result;
     }
     
     @Test
     void assertCheckSuccessByDisableAuditNames() {
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
-        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), mock(ShardingSphereMetaData.class)),
+        new ShardingSQLAuditor().audit(new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 globalRuleMetaData, databases.get("foo_db"), rule);
         verify(rule.getAuditors().get("auditor_1"), times(0)).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
     }
@@ -101,7 +109,7 @@ class ShardingSQLAuditorTest {
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         doThrow(new DMLWithoutShardingKeyException()).when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));
         DMLWithoutShardingKeyException ex = assertThrows(DMLWithoutShardingKeyException.class, () -> new ShardingSQLAuditor().audit(
-                new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), mock(ShardingSphereMetaData.class)), globalRuleMetaData,
+                new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mockConnectionContext(), mock(ShardingSphereMetaData.class)), globalRuleMetaData,
                 databases.get("foo_db"), rule));
         assertThat(ex.getMessage(), is("Not allow DML operation without sharding conditions."));
         verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, databases.get("foo_db"));

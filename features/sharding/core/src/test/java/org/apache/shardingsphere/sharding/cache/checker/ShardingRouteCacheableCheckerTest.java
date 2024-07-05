@@ -63,6 +63,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -70,6 +71,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ShardingRouteCacheableCheckerTest {
     
@@ -146,7 +148,13 @@ class ShardingRouteCacheableCheckerTest {
     
     private QueryContext createQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(createShardingSphereMetaData(database), DATABASE_NAME, new HintValueContext()).bind(parse(sql), params);
-        return new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), mock(ConnectionContext.class), mock(ShardingSphereMetaData.class));
+        return new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+    }
+    
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
+        return result;
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {

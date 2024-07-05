@@ -155,7 +155,9 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(result.getUsedDatabaseName()).thenReturn("db");
         when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(result.getStatementManager()).thenReturn(backendStatement);
-        when(result.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptySet));
+        ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
+        connectionContext.setCurrentDatabaseName("db");
+        when(result.getConnectionContext()).thenReturn(connectionContext);
         return result;
     }
     

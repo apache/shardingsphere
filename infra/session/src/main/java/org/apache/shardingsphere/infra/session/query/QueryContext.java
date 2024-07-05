@@ -19,8 +19,13 @@ package org.apache.shardingsphere.infra.session.query;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 
 import java.util.List;
@@ -43,6 +48,8 @@ public final class QueryContext {
     
     private final ShardingSphereMetaData metaData;
     
+    private final String usedDatabaseName;
+    
     private final boolean useCache;
     
     public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext, final ConnectionContext connectionContext,
@@ -58,6 +65,25 @@ public final class QueryContext {
         this.hintValueContext = hintValueContext;
         this.connectionContext = connectionContext;
         this.metaData = metaData;
+        usedDatabaseName = findUsedDatabaseNameFromSQLStatement(sqlStatementContext, connectionContext);
         this.useCache = useCache;
+    }
+    
+    private String findUsedDatabaseNameFromSQLStatement(final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
+        if (sqlStatementContext instanceof TableAvailable) {
+            return ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connectionContext.getCurrentDatabaseName().orElse(null));
+        }
+        return connectionContext.getCurrentDatabaseName().orElse(null);
+    }
+    
+    /**
+     * Get used database.
+     * 
+     * @return used database
+     */
+    public ShardingSphereDatabase getUsedDatabase() {
+        ShardingSpherePreconditions.checkNotNull(usedDatabaseName, NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(usedDatabaseName), () -> new UnknownDatabaseException(usedDatabaseName));
+        return metaData.getDatabase(usedDatabaseName);
     }
 }

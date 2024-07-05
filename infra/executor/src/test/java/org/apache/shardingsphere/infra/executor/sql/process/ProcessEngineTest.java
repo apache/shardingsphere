@@ -39,6 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -60,9 +61,12 @@ class ProcessEngineTest {
     
     @Test
     void assertExecuteSQL() {
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
-        new ProcessEngine().executeSQL(executionGroupContext, new QueryContext(new UpdateStatementContext(getSQLStatement(), DefaultDatabase.LOGIC_NAME), null, null, new HintValueContext(),
-                mock(ConnectionContext.class), mock(ShardingSphereMetaData.class)));
+        new ProcessEngine().executeSQL(executionGroupContext,
+                new QueryContext(new UpdateStatementContext(getSQLStatement(), DefaultDatabase.LOGIC_NAME), null, null, new HintValueContext(), connectionContext, metaData));
         verify(processRegistry).add(any());
     }
     
