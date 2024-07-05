@@ -112,13 +112,12 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             return createMemoryEnumerable(databaseName, schemaName, table, databaseType);
         }
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), scanContext, databaseType, federationContext.getQueryContext().isUseCache());
-        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, globalRuleMetaData, executorContext.getProps(), new ConnectionContext(Collections::emptySet));
         if (federationContext.isPreview()) {
             federationContext.getPreviewExecutionUnits().addAll(executionContext.getExecutionUnits());
             return createEmptyEnumerable();
         }
-        return createJDBCEnumerable(queryContext, database, executionContext);
+        return createJDBCEnumerable(queryContext, federationContext.getMetaData().getDatabase(databaseName), executionContext);
     }
     
     private AbstractEnumerable<Object> createJDBCEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
