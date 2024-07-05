@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.event.dispatch.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Alter properties event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterPropertiesEvent implements GovernanceEvent {
+public final class AlterPropertiesEvent implements DispatchEvent {
     
     private final String activeVersionKey;
     

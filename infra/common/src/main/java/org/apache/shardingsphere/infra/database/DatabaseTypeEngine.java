@@ -25,8 +25,11 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.hikari.metadata.HikariDataSourcePoolFieldMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.hikari.metadata.HikariDataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -115,7 +118,7 @@ public final class DatabaseTypeEngine {
     /**
      * Get storage type.
      * Similar to apache/hive 4.0.0's `org.apache.hive.jdbc.HiveDatabaseMetaData`, it does not implement {@link java.sql.DatabaseMetaData#getURL()}.
-     * So use {@link CatalogSwitchableDataSource#getUrl()} to try fuzzy matching.
+     * So use {@link CatalogSwitchableDataSource#getUrl()} and {@link ReflectionUtils#getFieldValue(Object, String)} to try fuzzy matching.
      *
      * @param dataSource data source
      * @return storage type
@@ -127,6 +130,12 @@ public final class DatabaseTypeEngine {
         } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
             if (dataSource instanceof CatalogSwitchableDataSource) {
                 return DatabaseTypeFactory.get(((CatalogSwitchableDataSource) dataSource).getUrl());
+            }
+            if (dataSource.getClass().getName().equals(new HikariDataSourcePoolMetaData().getType())) {
+                HikariDataSourcePoolFieldMetaData dataSourcePoolFieldMetaData = new HikariDataSourcePoolFieldMetaData();
+                String jdbcUrlFieldName = ReflectionUtils.<String>getFieldValue(dataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName())
+                        .orElseThrow(() -> new SQLWrapperException(sqlFeatureNotSupportedException));
+                return DatabaseTypeFactory.get(jdbcUrlFieldName);
             }
             throw new SQLWrapperException(sqlFeatureNotSupportedException);
         } catch (final SQLException ex) {

@@ -22,8 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
-import org.apache.shardingsphere.mode.event.builder.dispatch.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.DatabaseDataAddedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.DatabaseDataDeletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.SchemaDataAddedEvent;
@@ -42,7 +41,7 @@ import java.util.Optional;
 /**
  * ShardingSphere data dispatch event builder.
  */
-public final class ShardingSphereDataDispatchEventBuilder implements DispatchEventBuilder<GovernanceEvent> {
+public final class ShardingSphereDataDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {
@@ -55,7 +54,7 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
     }
     
     @Override
-    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
+    public Optional<DispatchEvent> build(final DataChangedEvent event) {
         if (isDatabaseChanged(event)) {
             return createDatabaseChangedEvent(event);
         }
@@ -90,7 +89,7 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
         return ShardingSphereDataNode.getRowUniqueKey(event.getKey()).isPresent();
     }
     
-    private Optional<GovernanceEvent> createDatabaseChangedEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createDatabaseChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = ShardingSphereDataNode.getDatabaseName(event.getKey());
         Preconditions.checkState(databaseName.isPresent());
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
@@ -102,7 +101,7 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createSchemaChangedEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createSchemaChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
         Preconditions.checkState(databaseName.isPresent());
         Optional<String> schemaName = ShardingSphereDataNode.getSchemaName(event.getKey());
@@ -116,7 +115,7 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createTableChangedEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createTableChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
         Preconditions.checkState(databaseName.isPresent());
         Optional<String> schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
@@ -124,7 +123,7 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
         return doCreateTableChangedEvent(event, databaseName.get(), schemaName.get());
     }
     
-    private Optional<GovernanceEvent> doCreateTableChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
+    private Optional<DispatchEvent> doCreateTableChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
         Optional<String> tableName = ShardingSphereDataNode.getTableName(event.getKey());
         Preconditions.checkState(tableName.isPresent());
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
@@ -136,7 +135,7 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createRowDataChangedEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createRowDataChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
         Preconditions.checkState(databaseName.isPresent());
         Optional<String> schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());

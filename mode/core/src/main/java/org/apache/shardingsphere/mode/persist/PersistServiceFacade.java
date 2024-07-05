@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.persist.service.QualifiedDataSourceStatePersistService;
-import org.apache.shardingsphere.mode.persist.pojo.ShardingSphereSchemaDataAlteredPOJO;
+import org.apache.shardingsphere.mode.persist.pojo.AlteredShardingSphereSchemaData;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.persist.service.StatePersistService;
 
@@ -71,7 +71,7 @@ public final class PersistServiceFacade {
      *
      * @param schemaDataAlteredPOJO sharding sphere schema data
      */
-    public void persist(final ShardingSphereSchemaDataAlteredPOJO schemaDataAlteredPOJO) {
+    public void persist(final AlteredShardingSphereSchemaData schemaDataAlteredPOJO) {
         String databaseName = schemaDataAlteredPOJO.getDatabaseName();
         String schemaName = schemaDataAlteredPOJO.getSchemaName();
         metaDataPersistService.getShardingSphereDataPersistService().getTableRowDataPersistService().persist(databaseName, schemaName, schemaDataAlteredPOJO.getTableName(),

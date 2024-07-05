@@ -243,7 +243,33 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
  [...]
 ```
 
-5. When using Seata's BASE integration, 
+5. To discuss the steps required to use XA distributed transactions under the GraalVM Native Image of ShardingSphere JDBC, 
+additional known prerequisites need to be introduced,
+   - `org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper#loadXADataSource(String)` will instantiate the `javax.sql.XADataSource` implementation class of each database driver through `java.lang.Class#getDeclaredConstructors`.
+   - The full class name of the `javax.sql.XADataSource` implementation class of each database driver is stored in the metadata of ShardingSphere by implementing the SPI of `org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition`.
+
+In the GraalVM Native Image, this actually requires the definition of the GraalVM Reachability Metadata of the third-party dependencies,
+while ShardingSphere itself only provides the corresponding GraalVM Reachability Metadata for `com.h2database:h2`.
+
+GraalVM Reachability Metadata of other database drivers such as `com.mysql:mysql-connector-j` should be defined by themselves,
+or the corresponding JSON should be submitted to https://github.com/oracle/graalvm-reachability-metadata .
+
+Take the `com.mysql.cj.jdbc.MysqlXADataSource` class of `com.mysql:mysql-connector-j:9.0.0` as an example,
+which is the implementation of `javax.sql.XADataSource` of MySQL JDBC Driver.
+Users need to define the following JSON in the `reflect-config.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` folder of their own project's claapath,
+to define the constructor of `com.mysql.cj.jdbc.MysqlXADataSource` inside the GraalVM Native Image.
+
+```json
+[
+{
+"condition":{"typeReachable":"com.mysql.cj.jdbc.MysqlXADataSource"},
+"name":"com.mysql.cj.jdbc.MysqlXADataSource",
+"allDeclaredConstructors": true
+}
+]
+```
+
+6. When using Seata's BASE integration, 
 users need to use a specific `io.seata:seata-all:1.8.0` version to avoid using the ByteBuddy Java API,
 and exclude the outdated Maven dependency of `org.antlr:antlr4-runtime:4.8` in `io.seata:seata-all:1.8.0`.
 Possible configuration examples are as follows,
@@ -276,7 +302,7 @@ Possible configuration examples are as follows,
 </project>
 ```
 
-6. When using the ClickHouse dialect through ShardingSphere JDBC, 
+7. When using the ClickHouse dialect through ShardingSphere JDBC, 
 users need to manually introduce the relevant optional modules and the ClickHouse JDBC driver with the classifier `http`.
 In principle, ShardingSphere's GraalVM Native Image integration does not want to use `com.clickhouse:clickhouse-jdbc` with classifier `all`, 
 because Uber Jar will cause the collection of duplicate GraalVM Reachability Metadata.
@@ -330,7 +356,7 @@ curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install java 21.0.2-graalce
 sdk use java 21.0.2-graalce
-sudo apt-get install build-essential libz-dev zlib1g-dev -y
+sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/

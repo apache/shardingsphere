@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.event.dispatch.state.storage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataS
  */
 @RequiredArgsConstructor
 @Getter
-public final class QualifiedDataSourceStateEvent implements GovernanceEvent {
+public final class QualifiedDataSourceStateEvent implements DispatchEvent {
     
     private final QualifiedDataSource qualifiedDataSource;
     

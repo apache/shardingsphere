@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -35,7 +35,7 @@ class QualifiedDataSourceDispatchEventBuilderTest {
     
     @Test
     void assertCreateEnabledQualifiedDataSourceChangedEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
+        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
@@ -47,7 +47,7 @@ class QualifiedDataSourceDispatchEventBuilderTest {
     
     @Test
     void assertCreateDisabledQualifiedDataSourceChangedEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
+        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
@@ -59,7 +59,7 @@ class QualifiedDataSourceDispatchEventBuilderTest {
     
     @Test
     void assertCreateEmptyEvent() {
-        Optional<GovernanceEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
+        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
                 new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }

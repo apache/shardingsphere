@@ -56,18 +56,15 @@ value ::=
 
 ### 补充说明
 
-- 修改存储单元前请确认已经在 Proxy 中创建逻辑数据库，并执行 `use` 命令成功选择一个逻辑数据库；
-- `ALTER STORAGE UNIT`不允许改变该存储单元关联的真实数据源；
+- 修改存储单元前请确认已经在 Proxy 中创建逻辑数据库，并执行 `use` 命令选择一个逻辑数据库；
+- `ALTER STORAGE UNIT`不允许改变该存储单元关联的真实数据源（通过 host、port 和 db 判断）；
 - `ALTER STORAGE UNIT`会发生连接池的切换，这个操作可能对进行中的业务造成影响，请谨慎使用；
-- 确认添加的存储单元是可以正常连接的， 否则将不能添加成功；
-- `storageUnitName` 区分大小写；
-- `storageUnitName` 在当前逻辑库中需要唯一；
-- `storageUnitName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
-- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致。
+- 请确认修改的存储单元是可以正常连接的， 否则将不能修改成功；
+- `PROPERTIES` 为可选参数，用于自定义连接池属性，`key` 必须和连接池参数名一致。
 
 ### 示例
 
-- 使用标准模式修改存储单元
+- 使用 HOST & PORT 方式修改存储单元
 
 ```sql
 ALTER STORAGE UNIT ds_0 (
@@ -79,10 +76,10 @@ ALTER STORAGE UNIT ds_0 (
 );
 ```
 
-- 使用标准模式修改存储单元并设置连接池参数
+- 使用 HOST & PORT 方式修改存储单元并设置连接池属性
 
 ```sql
-ALTER STORAGE UNIT ds_0 (
+ALTER STORAGE UNIT ds_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_1",
@@ -92,11 +89,11 @@ ALTER STORAGE UNIT ds_0 (
 );
 ```
 
-- 使用 URL 模式修改存储单元并设置连接池参数
+- 使用 URL 模式修改存储单元并设置连接池属性
 
 ```sql
-ALTER STORAGE UNIT ds_0 (
-    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
+ALTER STORAGE UNIT ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")

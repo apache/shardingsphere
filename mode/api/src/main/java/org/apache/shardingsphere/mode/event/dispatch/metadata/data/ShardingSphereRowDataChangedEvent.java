@@ -20,14 +20,14 @@ package org.apache.shardingsphere.mode.event.dispatch.metadata.data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Row data changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereRowDataChangedEvent implements GovernanceEvent {
+public final class ShardingSphereRowDataChangedEvent implements DispatchEvent {
     
     private final String databaseName;
     

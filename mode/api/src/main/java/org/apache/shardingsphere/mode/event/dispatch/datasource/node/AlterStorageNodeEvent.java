@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.event.dispatch.datasource.node;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Add data source node event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterStorageNodeEvent implements GovernanceEvent {
+public final class AlterStorageNodeEvent implements DispatchEvent {
     
     private final String databaseName;
     

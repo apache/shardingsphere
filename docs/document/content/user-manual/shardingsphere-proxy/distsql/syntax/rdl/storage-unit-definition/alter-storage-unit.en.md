@@ -57,19 +57,17 @@ value ::=
 ### Supplement
 
 - Before altering the storage units, please confirm that a database exists in Proxy, and execute the `use` command to
-  successfully select a database;
-- `ALTER STORAGE UNIT` is not allowed to change the real data source associated with this storageUnit;
+  select a database;
+- `ALTER STORAGE UNIT` is not allowed to change the real data source associated with this storageUnit (determined by host, port and db);
 - `ALTER STORAGE UNIT` will switch the connection pool. This operation may affect the ongoing business, please use it with
   caution;
-- `storageUnitName` is case-sensitive;
-- `storageUnitName` needs to be unique within the current database;
-- `storageUnitName` name only allows letters, numbers and `_`, and must start with a letter;
-- `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
-  parameter name.
+- Please confirm that the storage unit to be altered can be connected successfully, otherwise the altering will fail;
+- `PROPERTIES` is optional, used to customize connection pool properties, `key` must be the same as the connection pool
+  property name.
 
 ### Example
 
-- Alter storage unit using standard mode
+- Alter storage unit using HOST & PORT method
 
 ```sql
 ALTER STORAGE UNIT ds_0 (
@@ -81,10 +79,10 @@ ALTER STORAGE UNIT ds_0 (
 );
 ```
 
-- Alter storage unit and set connection pool parameters using standard mode
+- Alter storage unit and set connection pool properties using HOST & PORT method
 
 ```sql
-ALTER STORAGE UNIT ds_0 (
+ALTER STORAGE UNIT ds_1 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_1,
@@ -94,11 +92,11 @@ ALTER STORAGE UNIT ds_0 (
 );
 ```
 
-- Alter storage unit and set connection pool parameters using URL patterns
+- Alter storage unit and set connection pool properties using URL method
 
 ```sql
-ALTER STORAGE UNIT ds_0 (
-    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
+ALTER STORAGE UNIT ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
     USER=root,
     PASSWORD=root,
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")

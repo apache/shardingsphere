@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Drop table event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropTableEvent implements GovernanceEvent {
+public final class DropTableEvent implements DispatchEvent {
     
     private final String databaseName;
     

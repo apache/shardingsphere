@@ -65,28 +65,27 @@ value ::=
 - `storageUnitName` is case-sensitive;
 - `storageUnitName` needs to be unique within the current database;
 - `storageUnitName` name only allows letters, numbers and `_`, and must start with a letter;
-- `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
-  parameter name;
-- `ifNotExists` clause is used for avoid `Duplicate storage unit` error.
+- `PROPERTIES` is optional, used to customize connection pool properties, `key` must be the same as the connection pool
+  property name.
 
 ### Example
 
-- Register storage unit using standard mode
+- Register storage unit using HOST & PORT method
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
-    DB="db_1",
+    DB="db_0",
     USER="root",
     PASSWORD="root"
 );
 ```
 
-- Register storage unit and set connection pool parameters using standard mode
+- Register storage unit and set connection pool properties using HOST & PORT method
 
 ```sql
-REGISTER STORAGE UNIT ds_0 (
+REGISTER STORAGE UNIT ds_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_1",
@@ -96,11 +95,11 @@ REGISTER STORAGE UNIT ds_0 (
 );
 ```
 
-- Register storage unit and set connection pool parameters using URL patterns
+- Register storage unit and set connection pool properties using URL method
 
 ```sql
-REGISTER STORAGE UNIT ds_0 (
-    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
+REGISTER STORAGE UNIT ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")

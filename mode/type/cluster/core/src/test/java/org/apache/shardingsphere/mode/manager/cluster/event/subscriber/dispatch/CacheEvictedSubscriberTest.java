@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class CacheEvictedSubscriberTest {
     
     @Test
-    void assertOnGovernanceEvent() {
+    void assertClearCache() {
         EventBusContext eventBusContext = new EventBusContext();
         eventBusContext.register(new CacheEvictedSubscriber());
         OrderedServicesCache.cacheServices(getClass(), Collections.emptyList(), Collections.emptyMap());

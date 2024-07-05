@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.event.dispatch.rule;
 
-import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
  * Rule item changed event.
  */
-public interface RuleItemChangedEvent extends GovernanceEvent {
+public interface RuleItemChangedEvent extends DispatchEvent {
     
     /**
      * Get rule item type.
