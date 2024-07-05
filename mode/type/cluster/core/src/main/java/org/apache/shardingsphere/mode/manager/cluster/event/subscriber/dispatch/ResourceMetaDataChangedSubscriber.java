@@ -26,9 +26,14 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.Creat
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.CreateOrAlterViewEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropViewEvent;
+import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.lock.GlobalLockPersistService;
+import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Map;
 
@@ -49,6 +54,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) {
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().addSchema(event.getDatabaseName(), event.getSchemaName());
+        refreshShardingSphereStatisticsData();
     }
     
     /**
@@ -59,6 +65,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().dropSchema(event.getDatabaseName(), event.getSchemaName());
+        refreshShardingSphereStatisticsData();
     }
     
     /**
@@ -76,6 +83,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
                 .getTableMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
                 tables.values().iterator().next(), null);
+        refreshShardingSphereStatisticsData();
     }
     
     /**
@@ -86,6 +94,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
     @Subscribe
     public synchronized void renew(final DropTableEvent event) {
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
+        refreshShardingSphereStatisticsData();
     }
     
     /**
@@ -103,6 +112,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
                 .getViewMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
                 null, views.values().iterator().next());
+        refreshShardingSphereStatisticsData();
     }
     
     /**
@@ -113,5 +123,13 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
     @Subscribe
     public synchronized void renew(final DropViewEvent event) {
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());
+        refreshShardingSphereStatisticsData();
+    }
+    
+    private void refreshShardingSphereStatisticsData() {
+        PersistRepository repository = contextManager.getPersistServiceFacade().getRepository();
+        if (repository instanceof ClusterPersistRepository) {
+            new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) repository))).asyncRefresh();
+        }
     }
 }

@@ -23,10 +23,14 @@ import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.listener.DataChangedEventListenerManager;
 import org.apache.shardingsphere.mode.manager.cluster.listener.MetaDataChangedListener;
+import org.apache.shardingsphere.mode.manager.cluster.lock.GlobalLockPersistService;
+import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
  * Listener assisted subscriber.
@@ -54,6 +58,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
                 new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().addDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
+        refreshShardingSphereStatisticsData();
     }
     
     /**
@@ -66,5 +71,13 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
         listenerManager.removeListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()));
         contextManager.getMetaDataContextManager().getResourceMetaDataManager().dropDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
+        refreshShardingSphereStatisticsData();
+    }
+    
+    private void refreshShardingSphereStatisticsData() {
+        PersistRepository repository = contextManager.getPersistServiceFacade().getRepository();
+        if (repository instanceof ClusterPersistRepository) {
+            new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) repository))).asyncRefresh();
+        }
     }
 }

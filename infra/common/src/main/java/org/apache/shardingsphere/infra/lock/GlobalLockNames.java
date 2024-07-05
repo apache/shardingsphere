@@ -28,7 +28,9 @@ public enum GlobalLockNames {
     
     PREPARE("prepare_%s"),
     
-    GLOBAL_LOCK("global_clock");
+    GLOBAL_LOCK("global_clock"),
+    
+    STATISTICS("statistics");
     
     private final String lockName;
 }

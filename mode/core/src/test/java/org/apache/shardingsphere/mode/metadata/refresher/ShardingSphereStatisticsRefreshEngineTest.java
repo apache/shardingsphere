@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.job.statistics.collect;
+package org.apache.shardingsphere.mode.metadata.refresher;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabas
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.mode.lock.GlobalLockContext;
+import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.pojo.AlteredShardingSphereSchemaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -42,15 +44,16 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class StatisticsCollectJobTest {
+class ShardingSphereStatisticsRefreshEngineTest {
     
     @Test
-    void assertCollect() {
+    void assertRefresh() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereStatistics statistics = mockStatistics();
         when(contextManager.getMetaDataContexts().getStatistics()).thenReturn(statistics);
@@ -59,7 +62,9 @@ class StatisticsCollectJobTest {
         when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
-        new StatisticsCollectJob(contextManager).execute(null);
+        GlobalLockContext globalLockContext = mock(GlobalLockContext.class);
+        when(globalLockContext.tryLock(any(GlobalLockDefinition.class), anyLong())).thenReturn(true);
+        new ShardingSphereStatisticsRefreshEngine(contextManager, globalLockContext).refresh();
         verify(contextManager.getPersistServiceFacade()).persist(any(AlteredShardingSphereSchemaData.class));
     }
     
