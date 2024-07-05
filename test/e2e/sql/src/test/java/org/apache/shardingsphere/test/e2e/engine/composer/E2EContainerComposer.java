@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.e2e.engine.TotalSuitesCountCalculator;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.h2.tools.RunScript;
@@ -65,7 +67,8 @@ public abstract class E2EContainerComposer {
     private final Map<String, DataSource> expectedDataSourceMap;
     
     protected E2EContainerComposer(final E2ETestParameter testParam) {
-        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(testParam);
+        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
+                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
         containerComposer.start();
         actualDataSourceMap = containerComposer.getActualDataSourceMap();
         targetDataSource = containerComposer.getTargetDataSource();
