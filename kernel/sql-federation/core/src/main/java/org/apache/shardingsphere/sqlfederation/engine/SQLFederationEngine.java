@@ -150,10 +150,10 @@ public final class SQLFederationEngine implements AutoCloseable {
         if (databaseNames.size() > 1) {
             return true;
         }
-        ShardingSphereDatabase currentDatabase = metaData.getDatabase(databaseNames.iterator().next());
+        ShardingSphereDatabase usedDatabase = queryContext.getUsedDatabase();
         Collection<DataNode> includedDataNodes = new HashSet<>();
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
-            boolean isUseSQLFederation = entry.getValue().decide(selectStatementContext, queryContext.getParameters(), globalRuleMetaData, currentDatabase, entry.getKey(), includedDataNodes);
+            boolean isUseSQLFederation = entry.getValue().decide(selectStatementContext, queryContext.getParameters(), globalRuleMetaData, usedDatabase, entry.getKey(), includedDataNodes);
             if (isUseSQLFederation) {
                 return true;
             }
