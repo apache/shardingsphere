@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorS
  */
 public final class CursorStatementBinder implements SQLStatementBinder<CursorStatement> {
     
-    @SneakyThrows
     @Override
+    @SneakyThrows(ReflectiveOperationException.class)
     public CursorStatement bind(final CursorStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         CursorStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setCursorName(sqlStatement.getCursorName());

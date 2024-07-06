@@ -41,13 +41,12 @@ import java.util.Optional;
  */
 public final class SelectStatementBinder implements SQLStatementBinder<SelectStatement> {
     
-    @SneakyThrows
     @Override
     public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap(), Collections.emptyMap());
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         SelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
@@ -84,7 +83,6 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
      * @param externalTableBinderContexts external table binder contexts
      * @return bounded correlate subquery select statement
      */
-    @SneakyThrows
     public SelectStatement bindCorrelateSubquery(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                                  final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         return bind(sqlStatement, metaData, currentDatabaseName, outerTableBinderContexts, externalTableBinderContexts);

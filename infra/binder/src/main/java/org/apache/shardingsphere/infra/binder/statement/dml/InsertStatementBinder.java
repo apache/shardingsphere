@@ -47,7 +47,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
