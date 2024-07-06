@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.hbase.handler;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.SQLBindEngine;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
@@ -44,7 +45,7 @@ public final class HBaseBackendUpdateHandler implements DatabaseBackendHandler {
     
     @Override
     public UpdateResponseHeader execute() throws SQLException {
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, Collections.emptyList(), sqlStatement, "");
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(null, "", new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         Collection<UpdateResult> updateResults = updater.executeUpdate(converter.convert());
         return new UpdateResponseHeader(sqlStatement, updateResults);
