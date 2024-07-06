@@ -22,12 +22,13 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
-import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import javax.sql.DataSource;
@@ -47,6 +48,7 @@ import static org.hamcrest.Matchers.nullValue;
  * Background comes from <a href="https://github.com/testcontainers/testcontainers-java/issues/7954">testcontainers/testcontainers-java#7954</a>.
  */
 @EnabledInNativeImage
+@Testcontainers
 class MySQLTest {
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.mysql.";
@@ -58,8 +60,8 @@ class MySQLTest {
     private static final String DATABASE = "test";
     
     @SuppressWarnings("resource")
-    @ClassRule
-    public static GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("mysql:8.4.0-oracle"))
+    @Container
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>(DockerImageName.parse("mysql:8.4.0-oracle"))
             .withEnv("MYSQL_DATABASE", DATABASE)
             .withEnv("MYSQL_ROOT_PASSWORD", PASSWORD)
             .withExposedPorts(3306);
@@ -84,8 +86,7 @@ class MySQLTest {
     
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
-        container.start();
-        jdbcUrlPrefix = "jdbc:mysql://localhost:" + container.getMappedPort(3306) + "/";
+        jdbcUrlPrefix = "jdbc:mysql://localhost:" + CONTAINER.getMappedPort(3306) + "/";
         DataSource dataSource = createDataSource();
         testShardingService = new TestShardingService(dataSource);
         initEnvironment();

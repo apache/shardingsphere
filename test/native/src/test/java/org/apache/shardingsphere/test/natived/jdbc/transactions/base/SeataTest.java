@@ -21,13 +21,14 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
-import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -37,14 +38,15 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 @EnabledInNativeImage
+@Testcontainers
 class SeataTest {
     
     /**
      * TODO Further processing of `/health` awaits <a href="https://github.com/apache/incubator-seata/pull/6356">apache/incubator-seata#6356</a>.
      */
-    @ClassRule
     @SuppressWarnings("resource")
-    public static GenericContainer<?> container = new GenericContainer<>("seataio/seata-server:1.8.0")
+    @Container
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("seataio/seata-server:1.8.0")
             .withExposedPorts(7091, 8091)
             .waitingFor(Wait.forHttp("/health").forPort(7091).forStatusCode(HttpStatus.SC_UNAUTHORIZED));
     
@@ -64,8 +66,7 @@ class SeataTest {
     
     @Test
     void assertShardingInSeataTransactions() throws SQLException {
-        container.start();
-        DataSource dataSource = createDataSource(container.getMappedPort(8091));
+        DataSource dataSource = createDataSource(CONTAINER.getMappedPort(8091));
         testShardingService = new TestShardingService(dataSource);
         initEnvironment();
         testShardingService.processSuccess();
