@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCloseStatement;
@@ -114,7 +114,8 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(mock(MySQLStatement.class), Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(
+                mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(new MySQLAlterDatabaseStatement(), Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
@@ -132,19 +133,19 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertNewInstanceForCloseStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(mock(OpenGaussCloseStatement.class), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(new OpenGaussCloseStatement(), Collections.emptyList());
         assertThat(actual, instanceOf(CloseStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForMoveStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(mock(OpenGaussMoveStatement.class), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(new OpenGaussMoveStatement(), Collections.emptyList());
         assertThat(actual, instanceOf(MoveStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForFetchStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(mock(OpenGaussFetchStatement.class), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(new OpenGaussFetchStatement(), Collections.emptyList());
         assertThat(actual, instanceOf(FetchStatementContext.class));
     }
     
