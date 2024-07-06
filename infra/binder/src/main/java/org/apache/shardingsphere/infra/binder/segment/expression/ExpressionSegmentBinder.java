@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.expression;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.BinaryOperationExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ExistsSubqueryExpressionBinder;

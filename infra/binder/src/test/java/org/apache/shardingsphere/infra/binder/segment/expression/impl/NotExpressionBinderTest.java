@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
