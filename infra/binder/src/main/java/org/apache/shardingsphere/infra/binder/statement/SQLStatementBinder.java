@@ -30,10 +30,10 @@ public interface SQLStatementBinder<T extends SQLStatement> {
     /**
      * Bind SQL statement with metadata.
      *
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param metaData meta data
      * @param currentDatabaseName current database name
-     * @return bounded sql statement
+     * @return bounded SQL statement
      */
     T bind(T sqlStatement, ShardingSphereMetaData metaData, String currentDatabaseName);
 }

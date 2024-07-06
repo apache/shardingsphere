@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.enums;
 
 /**
- * Segment type enum.
+ * Segment type.
  */
 public enum SegmentType {
     
