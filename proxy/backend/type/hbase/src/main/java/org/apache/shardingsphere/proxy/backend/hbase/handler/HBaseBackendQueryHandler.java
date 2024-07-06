@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.binder.SQLBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.hbase.result.query.HBaseQueryResultSet;

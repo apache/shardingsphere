@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine;
+package org.apache.shardingsphere.infra.binder;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -60,8 +60,7 @@ public final class SQLBindEngine {
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
-        SQLStatement buoundedSQLStatement = bind(sqlStatement);
-        return SQLStatementContextFactory.newInstance(metaData, params, buoundedSQLStatement, currentDatabaseName);
+        return SQLStatementContextFactory.newInstance(metaData, params, bind(sqlStatement), currentDatabaseName);
     }
     
     private SQLStatement bind(final SQLStatement statement) {
