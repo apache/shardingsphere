@@ -41,7 +41,7 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         DeleteStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();

@@ -67,7 +67,7 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                 final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         MergeStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
