@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.groovy.util.Maps;
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.from.FunctionTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;

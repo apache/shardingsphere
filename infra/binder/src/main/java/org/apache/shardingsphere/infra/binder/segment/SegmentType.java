@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.enums;
+package org.apache.shardingsphere.infra.binder.segment;
 
 /**
  * Segment type.
