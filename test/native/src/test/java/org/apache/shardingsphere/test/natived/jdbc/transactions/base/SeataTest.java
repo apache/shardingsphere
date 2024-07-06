@@ -21,40 +21,55 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
+import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
+@EnabledInNativeImage
 class SeataTest {
+    
+    /**
+     * TODO Further processing of `/health` awaits <a href="https://github.com/apache/incubator-seata/pull/6356">apache/incubator-seata#6356</a>.
+     */
+    @ClassRule
+    @SuppressWarnings("resource")
+    public static GenericContainer<?> container = new GenericContainer<>("seataio/seata-server:1.8.0")
+            .withExposedPorts(7091, 8091)
+            .waitingFor(Wait.forHttp("/health").forPort(7091).forStatusCode(HttpStatus.SC_UNAUTHORIZED));
+    
+    private static final String SERVICE_DEFAULT_GROUP_LIST_KEY = "service.default.grouplist";
     
     private TestShardingService testShardingService;
     
-    /**
-     * TODO Since Seata Client 1.8.0 does not provide the function of defining `service.default.grouplist` through Java API, we need to use a hard-defined host port `39567` here.
-     * TODO Further processing of `/health` awaits <a href="https://github.com/apache/incubator-seata/pull/6356">apache/incubator-seata#6356</a>.
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    @SuppressWarnings({"resource", "deprecation"})
+    @BeforeAll
+    static void beforeAll() {
+        assertThat(System.getProperty(SERVICE_DEFAULT_GROUP_LIST_KEY), is(nullValue()));
+    }
+    
+    @AfterAll
+    static void afterAll() {
+        System.clearProperty(SERVICE_DEFAULT_GROUP_LIST_KEY);
+    }
+    
     @Test
-    @EnabledInNativeImage
     void assertShardingInSeataTransactions() throws SQLException {
-        try (
-                GenericContainer<?> container = new FixedHostPortGenericContainer<>("seataio/seata-server:1.8.0")
-                        .withFixedExposedPort(39567, 8091)
-                        .withExposedPorts(7091)
-                        .waitingFor(Wait.forHttp("/health").forPort(7091).forStatusCode(HttpStatus.SC_UNAUTHORIZED))) {
-            container.start();
-            DataSource dataSource = createDataSource();
-            testShardingService = new TestShardingService(dataSource);
-            initEnvironment();
-            testShardingService.processSuccess();
-            testShardingService.cleanEnvironment();
-        }
+        container.start();
+        DataSource dataSource = createDataSource(container.getMappedPort(8091));
+        testShardingService = new TestShardingService(dataSource);
+        initEnvironment();
+        testShardingService.processSuccess();
+        testShardingService.cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {
@@ -66,7 +81,8 @@ class SeataTest {
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private DataSource createDataSource() {
+    private DataSource createDataSource(final int hostPort) {
+        System.setProperty(SERVICE_DEFAULT_GROUP_LIST_KEY, "127.0.0.1:" + hostPort);
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/transactions/base/seata.yaml");

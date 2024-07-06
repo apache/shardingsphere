@@ -587,12 +587,12 @@
   "name":"org.apache.shardingsphere.infra.util.eventbus.EventSubscriber"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.event.subsciber.DeliverEventSubscriberRegistry$$Lambda/0x00007f65a7c51060"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.event.subsciber.DeliverEventSubscriberRegistry$$Lambda/0x00007f30ffc53708"},
   "name":"org.apache.shardingsphere.infra.util.eventbus.EventSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.infra.util.eventbus.EventSubscriber",
   "queryAllDeclaredMethods":true
 },
@@ -906,52 +906,52 @@
   "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigurationCustomizer"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.event.subsciber.DeliverEventSubscriberRegistry$$Lambda/0x00007f65a7c51060"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.event.subsciber.DeliverEventSubscriberRegistry$$Lambda/0x00007f30ffc53708"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.deliver.DeliverQualifiedDataSourceSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.CacheEvictedSubscriber",
-  "methods":[{"name":"onGovernanceEvent","parameterTypes":["org.apache.shardingsphere.infra.rule.event.GovernanceEvent"] }]
+  "methods":[{"name":"cleanCache","parameterTypes":["org.apache.shardingsphere.mode.event.dispatch.DispatchEvent"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.CacheEvictedSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ComputeNodeOnlineSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.DatabaseChangedSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.GlobalRuleConfigurationEventSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ListenerAssistedMetaDataChangedSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ProcessListChangedSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.PropertiesEventSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.QualifiedDataSourceSubscriber",
   "queryAllDeclaredMethods":true
 },
@@ -960,26 +960,26 @@
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.listener.MetaDataChangedListener$$Lambda/0x00007f65a7c67bd0"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.MetaDataChangedListener$$Lambda/0x00007f30ffc6a438"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.RuleItemChangedSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StateChangedSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f65a7c61ca8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry.ClusterDispatchEventSubscriberRegistry$$Lambda/0x00007f30ffc643b0"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StorageUnitEventSubscriber",
   "queryAllDeclaredMethods":true
 },
@@ -994,7 +994,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.PersistServiceFacade"},
-  "name":"org.apache.shardingsphere.mode.manager.standalone.persist.service.StandalonePersistServiceBuilder",
+  "name":"org.apache.shardingsphere.mode.manager.standalone.persist.StandalonePersistServiceBuilder",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

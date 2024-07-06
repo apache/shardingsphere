@@ -136,14 +136,14 @@
         <opentelemetry.version>1.31.0</opentelemetry.version>
         <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
         
-        <junit.version>5.10.2</junit.version>
+        <junit.version>5.10.3</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.0</awaitility.version>
-        <testcontainers.version>1.19.3</testcontainers.version>
+        <testcontainers.version>1.19.8</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
-        <graal-sdk.version>24.0.0</graal-sdk.version>
+        <graal-sdk.version>24.0.1</graal-sdk.version>
         <jedis.version>4.4.6</jedis.version>
         
         <!-- 3rd party library plugin versions -->

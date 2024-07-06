@@ -28,6 +28,7 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+@EnabledInNativeImage
 class ClickHouseTest {
     
     private TestShardingService testShardingService;
@@ -37,7 +38,6 @@ class ClickHouseTest {
      *      after {@link TestShardingService#processSuccessInClickHouse()}.
      *
      */
-    @EnabledInNativeImage
     @Test
     void assertShardingInLocalTransactions() {
         HikariConfig config = new HikariConfig();

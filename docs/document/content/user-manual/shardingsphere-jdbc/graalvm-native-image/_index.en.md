@@ -26,6 +26,18 @@ However, this will cause the failure of building the GraalVM Native Image when i
 A typical example is related to the `org.apache.hive:hive-jdbc:4.0.0` HiveServer2 JDBC Driver, which uses AWT-related classes. 
 GraalVM CE only supports AWT for GraalVM CE For JDK22 and higher versions.
 
+```shell
+com.sun.beans.introspect.ClassInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.ClassInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.ClassInfo
+java.beans.Introspector was unintentionally initialized at build time. To see why java.beans.Introspector got initialized use --trace-class-initialization=java.beans.Introspector
+com.sun.beans.util.Cache$Kind$2 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$2 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$2
+com.sun.beans.TypeResolver was unintentionally initialized at build time. To see why com.sun.beans.TypeResolver got initialized use --trace-class-initialization=com.sun.beans.TypeResolver
+java.beans.ThreadGroupContext was unintentionally initialized at build time. To see why java.beans.ThreadGroupContext got initialized use --trace-class-initialization=java.beans.ThreadGroupContext
+com.sun.beans.util.Cache$Kind was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind
+com.sun.beans.introspect.MethodInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.MethodInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.MethodInfo
+com.sun.beans.util.Cache$Kind$1 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$1 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$1
+com.sun.beans.util.Cache$Kind$3 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$3 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$3
+```
+
 ### Maven Ecology
 
 Users need to actively use the GraalVM Reachability Metadata central repository. 
@@ -295,6 +307,14 @@ Possible configuration examples are as follows,
             <exclusion>
                <groupId>org.antlr</groupId>
                <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-lang</groupId>
+               <artifactId>commons-lang</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-pool2</artifactId>
             </exclusion>
          </exclusions>
       </dependency>

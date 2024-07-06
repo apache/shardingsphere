@@ -19,12 +19,14 @@ package org.apache.shardingsphere.test.natived.jdbc.modes.cluster;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.etcd.jetcd.launcher.Etcd;
-import io.etcd.jetcd.launcher.EtcdCluster;
+import io.etcd.jetcd.test.EtcdClusterExtension;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.sql.DataSource;
 import java.net.URI;
@@ -36,11 +38,28 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+@EnabledInNativeImage
 class EtcdTest {
+    
+    @RegisterExtension
+    public static final EtcdClusterExtension CLUSTER = EtcdClusterExtension.builder()
+            .withNodes(1)
+            .withMountDirectory(false)
+            .build();
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.etcd.";
     
     private TestShardingService testShardingService;
+    
+    @BeforeAll
+    static void beforeAll() {
+        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists"), is(nullValue()));
+    }
+    
+    @AfterAll
+    static void afterAll() {
+        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
+    }
     
     /**
      * TODO On low-performance devices in Github Actions, `INSERT` related SQLs may throw a table not found error under nativeTest.
@@ -50,24 +69,16 @@ class EtcdTest {
      * @see org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository
      */
     @Test
-    @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException {
-        try (
-                EtcdCluster etcd = Etcd.builder()
-                        .withNodes(1)
-                        .withMountedDataDirectory(false)
-                        .build()) {
-            etcd.start();
-            DataSource dataSource = createDataSource(etcd.clientEndpoints());
-            testShardingService = new TestShardingService(dataSource);
-            initEnvironment();
-            Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-                dataSource.getConnection().close();
-                return true;
-            });
-            testShardingService.processSuccess();
-            testShardingService.cleanEnvironment();
-        }
+        DataSource dataSource = createDataSource(CLUSTER.clientEndpoints());
+        testShardingService = new TestShardingService(dataSource);
+        initEnvironment();
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
+            dataSource.getConnection().close();
+            return true;
+        });
+        testShardingService.processSuccess();
+        testShardingService.cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {
@@ -84,12 +95,7 @@ class EtcdTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/modes/cluster/etcd.yaml?placeholder-type=system_props");
-        try {
-            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists"), is(nullValue()));
-            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", clientEndpoint.toString());
-            return new HikariDataSource(config);
-        } finally {
-            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
-        }
+        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", clientEndpoint.toString());
+        return new HikariDataSource(config);
     }
 }
