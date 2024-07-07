@@ -86,7 +86,7 @@ public final class TableRefreshUtils {
     
     /**
      * Judge whether the rule need to be refreshed.
-     * 
+     *
      * @param ruleMetaData rule meta data
      * @param schemaName schema name
      * @param tableName table name

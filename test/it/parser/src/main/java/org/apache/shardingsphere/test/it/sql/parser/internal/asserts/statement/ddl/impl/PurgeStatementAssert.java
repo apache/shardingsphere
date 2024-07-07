@@ -33,7 +33,7 @@ public final class PurgeStatementAssert {
     
     /**
      * Assert analyze statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual purge statement
      * @param expected expected purge statement test case

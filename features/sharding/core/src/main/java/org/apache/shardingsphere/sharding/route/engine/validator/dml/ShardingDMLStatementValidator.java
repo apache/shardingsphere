@@ -62,7 +62,7 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
     
     /**
      * Judge whether is same route context or not.
-     * 
+     *
      * @param routeContext route context
      * @param subRouteContext  sub route context
      * @return whether is same route context or not
@@ -106,7 +106,7 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
     
     /**
      * Create shardingConditions.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
      * @param shardingRule shardingRule
      * @param assignments assignments

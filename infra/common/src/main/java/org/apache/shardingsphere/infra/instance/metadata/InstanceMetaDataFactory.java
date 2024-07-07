@@ -30,7 +30,7 @@ public final class InstanceMetaDataFactory {
     
     /**
      * Create instance meta data.
-     * 
+     *
      * @param instanceId instance ID
      * @param instanceType instance type 
      * @param attributes attributes

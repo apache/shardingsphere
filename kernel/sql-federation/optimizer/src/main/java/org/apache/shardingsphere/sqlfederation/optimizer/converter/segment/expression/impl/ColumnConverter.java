@@ -37,7 +37,7 @@ public final class ColumnConverter {
     
     /**
      * Convert column segment to sql node.
-     * 
+     *
      * @param segment column segment
      * @return sql node
      */

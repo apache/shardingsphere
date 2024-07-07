@@ -38,7 +38,7 @@ public final class RowExpressionConverter {
     
     /**
      * Convert row expression to sql node.
-     * 
+     *
      * @param segment row expression
      * @return sql node
      */

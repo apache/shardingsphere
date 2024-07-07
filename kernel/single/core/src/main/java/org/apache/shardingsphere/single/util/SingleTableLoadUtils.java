@@ -48,7 +48,7 @@ public final class SingleTableLoadUtils {
     
     /**
      * Get aggregated data source map.
-     * 
+     *
      * @param dataSourceMap data source map
      * @param builtRules built rules
      * @return aggregated data source map

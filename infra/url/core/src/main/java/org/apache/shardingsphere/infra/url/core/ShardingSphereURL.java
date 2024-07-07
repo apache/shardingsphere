@@ -40,7 +40,7 @@ public final class ShardingSphereURL {
     
     /**
      * Parse ShardingSphere URL.
-     * 
+     *
      * @param url URL
      * @return ShardingSphere URL
      */

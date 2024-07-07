@@ -34,7 +34,7 @@ public final class EncryptParameterAssignmentToken extends EncryptAssignmentToke
     
     /**
      * Add column name.
-     * 
+     *
      * @param columnName column name
      */
     public void addColumnName(final String columnName) {

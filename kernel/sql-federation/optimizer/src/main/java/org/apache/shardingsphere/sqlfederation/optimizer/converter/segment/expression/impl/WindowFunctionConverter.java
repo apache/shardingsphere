@@ -47,7 +47,7 @@ public final class WindowFunctionConverter {
     
     /**
      * Convert function segment to sql node.
-     * 
+     *
      * @param segment function segment
      * @return sql node
      */

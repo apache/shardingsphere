@@ -44,7 +44,7 @@ public final class IndexMetaDataUtils {
     
     /**
      * Get logic index name.
-     * 
+     *
      * @param actualIndexName actual index name
      * @param actualTableName actual table name
      * @return logic index name

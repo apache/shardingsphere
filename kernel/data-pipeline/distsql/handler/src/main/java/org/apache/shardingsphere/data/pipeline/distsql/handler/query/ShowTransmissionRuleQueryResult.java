@@ -42,7 +42,7 @@ public final class ShowTransmissionRuleQueryResult {
     
     /**
      * Get rows.
-     * 
+     *
      * @return query result row
      */
     public Collection<LocalDataQueryResultRow> getRows() {
@@ -56,7 +56,7 @@ public final class ShowTransmissionRuleQueryResult {
     
     /**
      * Get column names.
-     * 
+     *
      * @return column names
      */
     public Collection<String> getColumnNames() {

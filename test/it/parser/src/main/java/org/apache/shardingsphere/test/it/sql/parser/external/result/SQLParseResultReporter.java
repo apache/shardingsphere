@@ -26,7 +26,7 @@ public interface SQLParseResultReporter extends AutoCloseable {
     
     /**
      * Print result.
-     * 
+     *
      * @param sqlCaseId SQL case ID
      * @param databaseType database type
      * @param sql SQL

@@ -35,7 +35,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     
     /**
      * Swap rule item configuration.
-     * 
+     *
      * @param event alter rule item event
      * @param yamlContent YAML content
      * @return rule item configuration
@@ -44,7 +44,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     
     /**
      * Find rule configuration.
-     * 
+     *
      * @param database database
      * @return found rule configuration
      */
@@ -52,7 +52,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     
     /**
      * Change rule item configuration.
-     * 
+     *
      * @param event alter rule item event
      * @param currentRuleConfig current rule configuration
      * @param toBeChangedItemConfig to be changed item configuration
@@ -61,7 +61,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     
     /**
      * Drop rule item configuration.
-     * 
+     *
      * @param event drop rule item event
      * @param currentRuleConfig current rule configuration
      */

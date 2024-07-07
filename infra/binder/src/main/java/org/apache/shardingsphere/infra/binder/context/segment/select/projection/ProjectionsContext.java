@@ -90,7 +90,7 @@ public final class ProjectionsContext {
     
     /**
      * Judge is unqualified shorthand projection or not.
-     * 
+     *
      * @return is unqualified shorthand projection or not
      */
     public boolean isUnqualifiedShorthandProjection() {
@@ -103,7 +103,7 @@ public final class ProjectionsContext {
     
     /**
      * Find alias.
-     * 
+     *
      * @param projectionName projection name
      * @return projection alias
      */
@@ -129,7 +129,7 @@ public final class ProjectionsContext {
     
     /**
      * Find projection index.
-     * 
+     *
      * @param projectionName projection name
      * @return projection index
      */
@@ -146,7 +146,7 @@ public final class ProjectionsContext {
     
     /**
      * Get aggregation projections.
-     * 
+     *
      * @return aggregation projections
      */
     public List<AggregationProjection> getAggregationProjections() {
@@ -172,7 +172,7 @@ public final class ProjectionsContext {
     
     /**
      * Find column projection.
-     * 
+     *
      * @param columnIndex column index
      * @return found column projection
      */

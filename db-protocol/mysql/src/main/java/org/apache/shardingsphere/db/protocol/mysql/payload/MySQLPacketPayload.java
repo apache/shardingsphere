@@ -40,7 +40,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read 1 byte fixed length integer from byte buffers.
-     * 
+     *
      * @return 1 byte fixed length integer
      */
     public int readInt1() {
@@ -49,7 +49,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write 1 byte fixed length integer to byte buffers.
-     * 
+     *
      * @param value 1 byte fixed length integer
      */
     public void writeInt1(final int value) {
@@ -58,7 +58,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read 2 byte fixed length integer from byte buffers.
-     * 
+     *
      * @return 2 byte fixed length integer
      */
     public int readInt2() {
@@ -67,7 +67,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write 2 byte fixed length integer to byte buffers.
-     * 
+     *
      * @param value 2 byte fixed length integer
      */
     public void writeInt2(final int value) {
@@ -76,7 +76,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read 3 byte fixed length integer from byte buffers.
-     * 
+     *
      * @return 3 byte fixed length integer
      */
     public int readInt3() {
@@ -85,7 +85,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write 3 byte fixed length integer to byte buffers.
-     * 
+     *
      * @param value 3 byte fixed length integer
      */
     public void writeInt3(final int value) {
@@ -94,7 +94,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read 4 byte fixed length integer from byte buffers.
-     * 
+     *
      * @return 4 byte fixed length integer
      */
     public int readInt4() {
@@ -103,7 +103,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write 4 byte fixed length integer to byte buffers.
-     * 
+     *
      * @param value 4 byte fixed length integer
      */
     public void writeInt4(final int value) {
@@ -112,7 +112,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read 6 byte fixed length integer from byte buffers.
-     * 
+     *
      * @return 6 byte fixed length integer
      */
     public long readInt6() {
@@ -125,7 +125,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write 6 byte fixed length integer to byte buffers.
-     * 
+     *
      * @param value 6 byte fixed length integer
      */
     public void writeInt6(final long value) {
@@ -134,7 +134,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read 8 byte fixed length integer from byte buffers.
-     * 
+     *
      * @return 8 byte fixed length integer
      */
     public long readInt8() {
@@ -143,7 +143,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write 8 byte fixed length integer to byte buffers.
-     * 
+     *
      * @param value 8 byte fixed length integer
      */
     public void writeInt8(final long value) {
@@ -152,7 +152,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read lenenc integer from byte buffers.
-     * 
+     *
      * @return lenenc integer
      */
     public long readIntLenenc() {
@@ -174,7 +174,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write lenenc integer to byte buffers.
-     * 
+     *
      * @param value lenenc integer
      */
     public void writeIntLenenc(final long value) {
@@ -212,7 +212,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read lenenc string from byte buffers.
-     * 
+     *
      * @return lenenc string
      */
     public String readStringLenenc() {
@@ -233,7 +233,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write lenenc string to byte buffers.
-     * 
+     *
      * @param value fixed length string
      */
     public void writeStringLenenc(final String value) {
@@ -262,7 +262,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read fixed length string from byte buffers.
-     * 
+     *
      * @param length length of fixed string
      * @return fixed length string
      */
@@ -286,7 +286,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write variable length string to byte buffers.
-     * 
+     *
      * @param value fixed length string
      */
     public void writeStringFix(final String value) {
@@ -295,7 +295,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write variable length bytes to byte buffers.
-     * 
+     *
      * @param value fixed length bytes
      */
     public void writeBytes(final byte[] value) {
@@ -304,7 +304,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read variable length string from byte buffers.
-     * 
+     *
      * @return variable length string
      */
     public String readStringVar() {
@@ -314,7 +314,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write fixed length string to byte buffers.
-     * 
+     *
      * @param value variable length string
      */
     public void writeStringVar(final String value) {
@@ -323,7 +323,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read null terminated string from byte buffers.
-     * 
+     *
      * @return null terminated string
      */
     public String readStringNul() {
@@ -344,7 +344,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write null terminated string to byte buffers.
-     * 
+     *
      * @param value null terminated string
      */
     public void writeStringNul(final String value) {
@@ -354,7 +354,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read rest of packet string from byte buffers and return bytes.
-     * 
+     *
      * @return rest of packet string bytes
      */
     public byte[] readStringEOFByBytes() {
@@ -376,7 +376,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write rest of packet string to byte buffers.
-     * 
+     *
      * @param value rest of packet string
      */
     public void writeStringEOF(final String value) {
@@ -385,7 +385,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Skip reserved from byte buffers.
-     * 
+     *
      * @param length length of reserved
      */
     public void skipReserved(final int length) {
@@ -394,7 +394,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Write null for reserved to byte buffers.
-     * 
+     *
      * @param length length of reserved
      */
     public void writeReserved(final int length) {

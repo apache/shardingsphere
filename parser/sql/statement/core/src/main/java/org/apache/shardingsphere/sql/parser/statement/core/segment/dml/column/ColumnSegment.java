@@ -79,7 +79,7 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     /**
      * Get expression.
-     * 
+     *
      * @return expression
      */
     public String getExpression() {

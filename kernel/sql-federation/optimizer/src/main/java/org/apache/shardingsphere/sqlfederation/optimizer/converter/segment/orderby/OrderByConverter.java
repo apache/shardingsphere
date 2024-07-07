@@ -34,7 +34,7 @@ public final class OrderByConverter {
     
     /**
      * Convert order by segment to sql node.
-     * 
+     *
      * @param segment order by segment
      * @return sql node
      */

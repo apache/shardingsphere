@@ -235,7 +235,7 @@ public final class ShardingTable {
     
     /**
      * Find actual table index.
-     * 
+     *
      * @param dataSourceName data source name
      * @param actualTableName actual table name
      * @return actual table index
@@ -246,7 +246,7 @@ public final class ShardingTable {
     
     /**
      * Is existed.
-     * 
+     *
      * @param actualTableName actual table name
      * @return is existed or not
      */

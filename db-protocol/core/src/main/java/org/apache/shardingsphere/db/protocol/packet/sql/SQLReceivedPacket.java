@@ -24,7 +24,7 @@ public interface SQLReceivedPacket {
     
     /**
      * Get SQL.
-     * 
+     *
      * @return SQL.
      */
     String getSQL();

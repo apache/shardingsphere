@@ -29,7 +29,7 @@ public interface IndexAvailable {
     
     /**
      * Get index segments.
-     * 
+     *
      * @return index segments
      */
     Collection<IndexSegment> getIndexes();

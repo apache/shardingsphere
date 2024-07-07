@@ -36,7 +36,7 @@ public final class SetParameterStatementAssert {
     
     /**
      * Assert set parameter statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual set parameter statement
      * @param expected expected parameter statement test case

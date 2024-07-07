@@ -36,7 +36,7 @@ public interface RuleConfigurationDecorator<T extends RuleConfiguration> extends
     
     /**
      * Decorate rule configuration.
-     * 
+     *
      * @param databaseName database name
      * @param dataSources data sources
      * @param builtRules built rules

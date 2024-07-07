@@ -27,14 +27,14 @@ public interface DatabaseAdminQueryExecutor extends DatabaseAdminExecutor {
     
     /**
      * Get query result meta data.
-     * 
+     *
      * @return query result meta data
      */
     QueryResultMetaData getQueryResultMetaData();
     
     /**
      * Get merged result.
-     * 
+     *
      * @return  merged result
      */
     MergedResult getMergedResult();

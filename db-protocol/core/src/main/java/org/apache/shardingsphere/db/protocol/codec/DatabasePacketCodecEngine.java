@@ -32,7 +32,7 @@ public interface DatabasePacketCodecEngine {
     
     /**
      * Judge is valid header or not.
-     * 
+     *
      * @param readableBytes readable bytes
      * @return is valid header or not
      */
@@ -49,7 +49,7 @@ public interface DatabasePacketCodecEngine {
     
     /**
      * Encode.
-     * 
+     *
      * @param context channel handler context
      * @param message message of database packet
      * @param out output

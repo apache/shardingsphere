@@ -74,7 +74,7 @@ public final class UniqueRuleItemNodePath {
     
     /**
      * Judge whether active version path.
-     * 
+     *
      * @param path path to be judged
      * @return is active version path or not
      */

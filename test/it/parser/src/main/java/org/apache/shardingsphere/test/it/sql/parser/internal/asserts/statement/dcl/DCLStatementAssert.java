@@ -85,7 +85,7 @@ public final class DCLStatementAssert {
     
     /**
      * Assert DCL statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual DCL statement
      * @param expected expected DCL statement test case

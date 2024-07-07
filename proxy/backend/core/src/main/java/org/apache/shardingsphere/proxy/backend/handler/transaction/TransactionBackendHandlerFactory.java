@@ -49,7 +49,7 @@ public final class TransactionBackendHandlerFactory {
     
     /**
      * New instance of backend handler.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param connectionSession connection session

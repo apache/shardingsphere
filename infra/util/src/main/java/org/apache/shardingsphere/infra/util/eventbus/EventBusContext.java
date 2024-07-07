@@ -34,7 +34,7 @@ public final class EventBusContext {
     
     /**
      * Register event subscriber.
-     * 
+     *
      * @param subscriber event subscriber
      */
     public void register(final EventSubscriber subscriber) {
@@ -43,7 +43,7 @@ public final class EventBusContext {
     
     /**
      * Post event.
-     * 
+     *
      * @param event event
      */
     public void post(final Object event) {

@@ -62,7 +62,7 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
     
     /**
      * Value of integer.
-     * 
+     *
      * @param value integer value
      * @return command packet type enum
      * @throws PostgreSQLProtocolException PostgreSQL protocol exception

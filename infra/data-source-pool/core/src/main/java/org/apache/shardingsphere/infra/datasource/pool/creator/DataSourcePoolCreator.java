@@ -96,7 +96,7 @@ public final class DataSourcePoolCreator {
     
     /**
      * Create data source.
-     * 
+     *
      * @param dataSourceName data source name
      * @param props data source pool properties
      * @param cacheEnabled cache enabled

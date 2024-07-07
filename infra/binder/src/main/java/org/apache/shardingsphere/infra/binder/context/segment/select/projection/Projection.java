@@ -28,7 +28,7 @@ public interface Projection {
     
     /**
      * Get column name.
-     * 
+     *
      * @return column name
      */
     String getColumnName();

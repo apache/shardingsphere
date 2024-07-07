@@ -177,7 +177,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     /**
      * Get used data source names.
-     * 
+     *
      * @return used data source names
      */
     public Collection<String> getUsedDataSourceNames() {
@@ -300,7 +300,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     /**
      * Close connections.
-     * 
+     *
      * @param forceRollback is force rollback
      * @return SQL exception when connections close
      */

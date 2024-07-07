@@ -37,7 +37,7 @@ public final class SQLFederationFunctionUtils {
     
     /**
      * Registry user defined function.
-     * 
+     *
      * @param schemaName schema name
      * @param schemaPlus schema plus
      */
@@ -72,7 +72,7 @@ public final class SQLFederationFunctionUtils {
     
     /**
      * Mock pg_get_userbyid function.
-     * 
+     *
      * @param oid oid
      * @return user name
      */

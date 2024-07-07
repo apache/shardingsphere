@@ -33,7 +33,7 @@ public final class DatabaseNameUtils {
     
     /**
      * Get database name.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param currentDatabaseName current database name
      * @return database name

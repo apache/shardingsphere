@@ -177,7 +177,7 @@
         
         <!-- Check plugin versions -->
         <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
-        <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>2.24.1</spotless-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
@@ -1291,6 +1291,12 @@
                                         <!--suppress MavenModelInspection -->
                                         <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/copyright.txt</file>
                                     </licenseHeader>
+                                    <replaceRegex>
+                                        <!-- specify replacements using regex match and replace -->
+                                        <name>Formatting JavaDoc extra spaces</name>
+                                        <searchRegex>\*\s+(\r?\n)\s{5}\*</searchRegex>
+                                        <replacement>*$1     *</replacement>
+                                    </replaceRegex>
                                 </java>
                                 <pom>
                                     <sortPom>

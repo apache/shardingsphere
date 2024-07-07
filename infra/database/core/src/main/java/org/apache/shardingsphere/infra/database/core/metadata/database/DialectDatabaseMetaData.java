@@ -52,7 +52,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get default nulls order type.
-     * 
+     *
      * @return default nulls order type
      */
     // TODO Reuse java.sql.DatabaseMetaData.nullsAreSortedHigh and java.sql.DatabaseMetaData.nullsAreSortedLow
@@ -123,7 +123,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Is support three tier storage structure.
-     * 
+     *
      * @return support or not
      */
     default boolean isSupportThreeTierStorageStructure() {
@@ -132,7 +132,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Is support global CSN.
-     * 
+     *
      * @return support or not
      */
     default boolean isSupportGlobalCSN() {

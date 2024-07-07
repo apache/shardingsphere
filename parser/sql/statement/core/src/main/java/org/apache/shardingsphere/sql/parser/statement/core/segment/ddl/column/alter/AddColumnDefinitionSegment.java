@@ -45,7 +45,7 @@ public final class AddColumnDefinitionSegment implements AlterDefinitionSegment 
     
     /**
      * Get column position.
-     * 
+     *
      * @return column position
      */
     public Optional<ColumnPositionSegment> getColumnPosition() {

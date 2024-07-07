@@ -49,7 +49,7 @@ public final class ProjectionsConverter {
     
     /**
      * Convert projections segment to sql node list.
-     * 
+     *
      * @param segment projections segment
      * @return sql node list
      */

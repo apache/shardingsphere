@@ -34,7 +34,7 @@ public interface ParameterMarkerSegment extends SQLSegment {
     
     /**
      * Get bounded info.
-     * 
+     *
      * @return bounded info
      */
     ColumnSegmentBoundedInfo getBoundedInfo();

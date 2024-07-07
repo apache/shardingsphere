@@ -78,7 +78,7 @@ public final class QueryContext {
     
     /**
      * Get used database.
-     * 
+     *
      * @return used database
      */
     public ShardingSphereDatabase getUsedDatabase() {

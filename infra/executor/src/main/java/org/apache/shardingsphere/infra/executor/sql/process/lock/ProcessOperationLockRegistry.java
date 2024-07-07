@@ -44,7 +44,7 @@ public final class ProcessOperationLockRegistry {
     
     /**
      * Wait until release ready.
-     * 
+     *
      * @param lockId lock ID
      * @param releaseStrategy process operation lock release strategy
      * @return release ready or not
@@ -63,7 +63,7 @@ public final class ProcessOperationLockRegistry {
     
     /**
      * Notify lock.
-     * 
+     *
      * @param lockId lock ID
      */
     public void notify(final String lockId) {

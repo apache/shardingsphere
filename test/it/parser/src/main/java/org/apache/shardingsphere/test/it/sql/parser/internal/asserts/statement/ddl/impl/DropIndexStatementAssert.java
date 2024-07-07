@@ -43,7 +43,7 @@ public final class DropIndexStatementAssert {
     
     /**
      * Assert drop index statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual drop index statement
      * @param expected expected drop index statement test case

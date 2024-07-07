@@ -41,7 +41,7 @@ public final class WindowConverter {
     
     /**
      * Convert window segment to sql node list.
-     * 
+     *
      * @param segment window segment
      * @return sql node list
      */

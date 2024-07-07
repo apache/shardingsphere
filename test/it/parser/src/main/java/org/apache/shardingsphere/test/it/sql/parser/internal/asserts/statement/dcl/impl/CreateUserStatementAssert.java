@@ -31,7 +31,7 @@ public final class CreateUserStatementAssert {
     
     /**
      * Assert create user statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual create user statement
      * @param expected expected create user statement test case

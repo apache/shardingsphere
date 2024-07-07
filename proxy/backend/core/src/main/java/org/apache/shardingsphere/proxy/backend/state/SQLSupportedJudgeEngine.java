@@ -34,7 +34,7 @@ public final class SQLSupportedJudgeEngine {
     
     /**
      * Judge whether to support SQL.
-     * 
+     *
      * @param sqlStatement SQL statement to be judged
      * @return supported or not
      */

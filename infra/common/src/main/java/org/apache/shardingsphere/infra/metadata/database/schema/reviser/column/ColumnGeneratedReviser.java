@@ -26,7 +26,7 @@ public interface ColumnGeneratedReviser {
     
     /**
      * Revise generated column.
-     * 
+     *
      * @param originalMetaData original column meta data
      * @return revised generated column
      */

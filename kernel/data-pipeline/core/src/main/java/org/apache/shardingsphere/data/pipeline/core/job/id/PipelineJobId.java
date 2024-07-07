@@ -33,7 +33,7 @@ public interface PipelineJobId {
     
     /**
      * Get pipeline job type.
-     * 
+     *
      * @return pipeline job type
      */
     PipelineJobType getJobType();

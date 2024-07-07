@@ -43,7 +43,7 @@ public final class SubqueryTableConverter {
     
     /**
      * Convert subquery table segment to sql node.
-     * 
+     *
      * @param segment subquery table segment
      * @return sql node
      */

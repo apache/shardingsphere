@@ -40,7 +40,7 @@ public final class PostgreSQLIndexSQLGenerator extends AbstractPostgreSQLDDLAdap
     
     /**
      * Generate create index SQL.
-     * 
+     *
      * @param context context
      * @return generated SQL
      * @throws SQLException SQL exception

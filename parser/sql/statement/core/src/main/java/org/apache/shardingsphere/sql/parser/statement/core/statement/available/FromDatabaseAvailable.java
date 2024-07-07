@@ -28,7 +28,7 @@ public interface FromDatabaseAvailable {
     
     /**
      * Get database.
-     * 
+     *
      * @return database segment
      */
     Optional<DatabaseSegment> getDatabase();

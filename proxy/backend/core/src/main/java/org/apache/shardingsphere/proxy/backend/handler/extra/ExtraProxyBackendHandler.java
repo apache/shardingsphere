@@ -29,7 +29,7 @@ public interface ExtraProxyBackendHandler extends ProxyBackendHandler {
     
     /**
      * Whether accept to process SQL statement.
-     * 
+     *
      * @param sqlStatement SQL statement to be judged
      * @return accept or not
      */

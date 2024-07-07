@@ -29,7 +29,7 @@ public interface TestParameterLoadStrategy {
     
     /**
      * Load SQL case file summaries.
-     * 
+     *
      * @param uri URL to be loaded
      * @return loaded SQL file summaries
      */

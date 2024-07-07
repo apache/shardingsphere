@@ -31,7 +31,7 @@ public @interface RepositoryTupleKeyListNameGenerator {
     
     /**
      * Get repository tuple key list name generator class.
-     * 
+     *
      * @return repository tuple key list name generator class
      */
     Class<? extends Generator> value();

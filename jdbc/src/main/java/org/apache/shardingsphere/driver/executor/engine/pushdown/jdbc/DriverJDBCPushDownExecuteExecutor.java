@@ -70,7 +70,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
     
     /**
      * Execute.
-     * 
+     *
      * @param database database
      * @param executionContext execution context
      * @param prepareEngine prepare engine

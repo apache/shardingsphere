@@ -28,7 +28,7 @@ public interface TableNameReviser<T extends ShardingSphereRule> {
     
     /**
      * Revise table meta data.
-     * 
+     *
      * @param originalName original table name
      * @param rule rule
      * @return revised table name

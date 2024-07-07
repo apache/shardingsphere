@@ -40,7 +40,7 @@ public final class AlterIndexStatementAssert {
     
     /**
      * Assert alter index statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual alter index statement
      * @param expected expected alter index statement test case

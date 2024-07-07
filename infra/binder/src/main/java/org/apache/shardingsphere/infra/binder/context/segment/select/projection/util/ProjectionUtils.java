@@ -35,7 +35,7 @@ public final class ProjectionUtils {
     
     /**
      * Get column label from alias.
-     * 
+     *
      * @param alias alias
      * @param databaseType database type
      * @return column label
@@ -70,7 +70,7 @@ public final class ProjectionUtils {
     
     /**
      * Get column name from function.
-     * 
+     *
      * @param functionName function name
      * @param functionExpression function expression
      * @param databaseType database type
@@ -88,7 +88,7 @@ public final class ProjectionUtils {
     
     /**
      * Get column name from expression.
-     * 
+     *
      * @param expression expression
      * @param databaseType database type
      * @return column name
@@ -105,7 +105,7 @@ public final class ProjectionUtils {
     
     /**
      * Get column name from subquery segment.
-     * 
+     *
      * @param subquerySegment subquery segment
      * @param databaseType database type
      * @return column name

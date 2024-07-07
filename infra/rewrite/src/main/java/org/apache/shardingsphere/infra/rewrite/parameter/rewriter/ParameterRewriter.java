@@ -37,7 +37,7 @@ public interface ParameterRewriter {
     
     /**
      * Rewrite SQL parameters.
-     * 
+     *
      * @param paramBuilder parameter builder
      * @param sqlStatementContext SQL statement context
      * @param params SQL parameters

@@ -31,14 +31,14 @@ public interface SchemaTableAggregationReviser<T extends ShardingSphereRule> {
     
     /**
      * Add table meta data.
-     * 
+     *
      * @param metaData table meta data
      */
     void add(TableMetaData metaData);
     
     /**
      * Aggregate table meta data list.
-     * 
+     *
      * @param rule rule
      * @return aggregated meta data list
      */

@@ -31,7 +31,7 @@ public interface StorageUnitDefinitionProcessor<T extends ShardingSphereRule> {
     
     /**
      * Whether to ignore rule usage checking when unregister storage unit.
-     * 
+     *
      * @param sqlStatement unregister storage unit statement
      * @return ignored or not
      */
@@ -39,7 +39,7 @@ public interface StorageUnitDefinitionProcessor<T extends ShardingSphereRule> {
     
     /**
      * Get rule class.
-     * 
+     *
      * @return rule class
      */
     Class<T> getRuleClass();

@@ -31,7 +31,7 @@ public interface TableRowDataBasedPersistService {
     
     /**
      * Persist table row data.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
@@ -41,7 +41,7 @@ public interface TableRowDataBasedPersistService {
     
     /**
      * Delete table row data.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
@@ -51,7 +51,7 @@ public interface TableRowDataBasedPersistService {
     
     /**
      * Load table data.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name

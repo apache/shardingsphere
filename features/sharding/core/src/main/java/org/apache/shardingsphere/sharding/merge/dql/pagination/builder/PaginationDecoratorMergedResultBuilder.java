@@ -33,7 +33,7 @@ public interface PaginationDecoratorMergedResultBuilder extends DatabaseTypedSPI
     
     /**
      * Build decorator merged result.
-     * 
+     *
      * @param mergedResult merged result to be decorated
      * @param paginationContext pagination context
      * @return decorated decorator merged result

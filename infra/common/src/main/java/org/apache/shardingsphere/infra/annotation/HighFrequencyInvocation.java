@@ -31,7 +31,7 @@ public @interface HighFrequencyInvocation {
     
     /**
      * Whether invocation of the method can be cached.
-     * 
+     *
      * @return can be cached or not
      */
     boolean canBeCached() default false;

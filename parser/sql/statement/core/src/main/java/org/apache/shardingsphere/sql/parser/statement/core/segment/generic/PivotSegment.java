@@ -56,7 +56,7 @@ public final class PivotSegment implements SQLSegment {
     
     /**
      * Get pivot columns.
-     * 
+     *
      * @return pivot columns
      */
     public Collection<ColumnSegment> getPivotColumns() {

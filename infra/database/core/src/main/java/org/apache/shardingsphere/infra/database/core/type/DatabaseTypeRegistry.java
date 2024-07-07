@@ -49,7 +49,7 @@ public final class DatabaseTypeRegistry {
     
     /**
      * Get all branch database types.
-     * 
+     *
      * @return all branch database types
      */
     public Collection<DatabaseType> getAllBranchDatabaseTypes() {

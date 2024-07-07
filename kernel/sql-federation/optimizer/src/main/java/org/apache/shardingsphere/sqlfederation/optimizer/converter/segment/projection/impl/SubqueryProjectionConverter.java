@@ -42,7 +42,7 @@ public final class SubqueryProjectionConverter {
     
     /**
      * Convert subquery projection segment to sql node.
-     * 
+     *
      * @param segment subquery projection segment
      * @return sql node
      */

@@ -36,7 +36,7 @@ public interface ExecutionPrepareDecorator<T, R extends ShardingSphereRule> exte
     
     /**
      * Decorate execution groups.
-     * 
+     *
      * @param routeContext route context
      * @param rule ShardingSphere rule
      * @param executionGroups execution groups to be decorated

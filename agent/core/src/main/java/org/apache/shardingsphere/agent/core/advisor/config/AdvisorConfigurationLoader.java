@@ -38,7 +38,7 @@ public final class AdvisorConfigurationLoader {
     
     /**
      * Load advisor configurations.
-     * 
+     *
      * @param pluginJars plugin jars
      * @param pluginTypes plugin types
      * @return loaded configurations

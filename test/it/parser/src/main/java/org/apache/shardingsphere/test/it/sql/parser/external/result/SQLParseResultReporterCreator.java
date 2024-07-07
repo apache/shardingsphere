@@ -28,7 +28,7 @@ public interface SQLParseResultReporterCreator extends TypedSPI {
     
     /**
      * Create SQL parse result reporter.
-     * 
+     *
      * @param databaseType database type
      * @param resultPath result path
      * @return created SQL parse result reporter

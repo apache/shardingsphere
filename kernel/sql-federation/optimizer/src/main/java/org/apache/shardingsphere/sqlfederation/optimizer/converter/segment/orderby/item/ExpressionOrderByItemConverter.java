@@ -39,7 +39,7 @@ public final class ExpressionOrderByItemConverter {
     
     /**
      * Convert expression order by item segment to sql node.
-     * 
+     *
      * @param segment expression order by item segment
      * @return sql node
      */

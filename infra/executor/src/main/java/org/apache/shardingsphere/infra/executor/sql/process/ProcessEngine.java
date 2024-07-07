@@ -87,7 +87,7 @@ public final class ProcessEngine {
     
     /**
      * Complete SQL unit execution.
-     * 
+     *
      * @param executionUnit execution unit
      * @param processId process ID
      */
@@ -105,7 +105,7 @@ public final class ProcessEngine {
     
     /**
      * Complete SQL execution.
-     * 
+     *
      * @param processId process ID
      */
     public void completeSQLExecution(final String processId) {

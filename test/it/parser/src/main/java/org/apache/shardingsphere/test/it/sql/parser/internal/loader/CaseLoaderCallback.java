@@ -31,7 +31,7 @@ public interface CaseLoaderCallback<T> {
     
     /**
      * Load test cases from jar.
-     * 
+     *
      * @param jarFile jar file
      * @param rootDirectory root directory of test cases
      * @return loaded test cases
@@ -41,7 +41,7 @@ public interface CaseLoaderCallback<T> {
     
     /**
      * Load test cases from directory.
-     * 
+     *
      * @param rootDirectory root directory of test cases
      * @return loaded test cases
      * @throws IOException IO exception

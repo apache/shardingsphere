@@ -43,7 +43,7 @@ public enum SQLCommandType {
     
     /**
      * Data Query Language.
-     * 
+     *
      * <p>Such as {@code SELECT}.</p>
      */
     DQL(SelectStatement.class, "dql-integration", false, Arrays.asList("jdbc", "proxy")),

@@ -42,7 +42,7 @@ public @interface E2ETestCaseSettings {
     
     /**
      * Is batch execute.
-     * 
+     *
      * @return batch execute or not
      */
     boolean batch() default false;

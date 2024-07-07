@@ -31,7 +31,7 @@ public interface ConstraintReviser<T extends ShardingSphereRule> {
     
     /**
      * Revise constraint meta data.
-     * 
+     *
      * @param tableName table name
      * @param originalMetaData original constraint meta data
      * @param rule rule

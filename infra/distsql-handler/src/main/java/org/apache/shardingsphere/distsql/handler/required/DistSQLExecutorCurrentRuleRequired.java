@@ -33,7 +33,7 @@ public @interface DistSQLExecutorCurrentRuleRequired {
     
     /**
      * Get rule class.
-     * 
+     *
      * @return rule class
      */
     Class<? extends ShardingSphereRule> value();

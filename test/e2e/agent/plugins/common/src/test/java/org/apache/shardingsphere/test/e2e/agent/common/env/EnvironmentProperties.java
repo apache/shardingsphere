@@ -32,7 +32,7 @@ public final class EnvironmentProperties {
     
     /**
      * Load properties.
-     * 
+     *
      * @param propsFileName properties file name
      * @return properties
      * @throws RuntimeException runtime exception

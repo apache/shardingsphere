@@ -35,7 +35,7 @@ public final class SQLStatementVisitorFactory {
     
     /**
      * Create new instance of SQL visitor.
-     * 
+     *
      * @param databaseType database type
      * @param visitorRule SQL visitor rule
      * @return created instance

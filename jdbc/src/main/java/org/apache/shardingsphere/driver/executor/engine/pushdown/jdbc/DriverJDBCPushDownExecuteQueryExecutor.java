@@ -78,7 +78,7 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
     
     /**
      * Execute query.
-     * 
+     *
      * @param database database
      * @param queryContext query context
      * @param prepareEngine prepare engine

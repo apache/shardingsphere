@@ -33,7 +33,7 @@ public @interface RepositoryTupleField {
     
     /**
      * Get type.
-     * 
+     *
      * @return type
      */
     Type type();

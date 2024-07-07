@@ -41,7 +41,7 @@ public final class DistSQLExecutorAwareSetter {
     
     /**
      * Set aware context.
-     * 
+     *
      * @param contextManager context manager
      * @param database database
      * @param connectionContext connection context

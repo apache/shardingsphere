@@ -26,7 +26,7 @@ public interface TableAvailable {
     
     /**
      * Get tables context.
-     * 
+     *
      * @return tables context
      */
     TablesContext getTablesContext();

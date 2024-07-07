@@ -38,7 +38,7 @@ public final class OrderByItemConverterUtils {
     
     /**
      * Convert order by items to sql node.
-     * 
+     *
      * @param orderByItems order by items
      * @return SQL nodes converted by order by item
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception

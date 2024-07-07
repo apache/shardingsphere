@@ -33,7 +33,7 @@ public final class PipelineE2ECondition {
     
     /**
      * Judge whether pipeline E2E is enabled.
-     * 
+     *
      * @param databaseTypes database types
      * @return enabled or not
      */

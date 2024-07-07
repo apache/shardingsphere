@@ -42,7 +42,7 @@ public final class RuleConfigurationCheckEngine {
     
     /**
      * Check rule configuration.
-     * 
+     *
      * @param ruleConfig rule configuration to be checked
      * @param database database
      */

@@ -24,7 +24,7 @@ public interface ColumnNameReviser {
     
     /**
      * Revise column name.
-     * 
+     *
      * @param originalName original column name
      * @return revised column name
      */

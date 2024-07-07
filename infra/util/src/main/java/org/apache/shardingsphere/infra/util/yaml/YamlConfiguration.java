@@ -24,7 +24,7 @@ public interface YamlConfiguration {
     
     /**
      * Check whether the YAML configuration is empty, indicating the absence of any valid configuration items.
-     * 
+     *
      * @return check whether the YAML configuration is empty or not
      */
     default boolean isEmpty() {

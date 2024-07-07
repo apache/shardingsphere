@@ -34,7 +34,7 @@ public final class UseStatementAssert {
     
     /**
      * Assert use statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual use statement
      * @param expected expected use statement test case

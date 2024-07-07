@@ -69,7 +69,7 @@ public final class DriverRawPushDownExecuteQueryExecutor {
     
     /**
      * Execute query.
-     * 
+     *
      * @param database database
      * @param queryContext query context
      * @param statement statement

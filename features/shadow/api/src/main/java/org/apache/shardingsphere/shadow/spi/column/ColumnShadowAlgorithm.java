@@ -37,7 +37,7 @@ public interface ColumnShadowAlgorithm<T extends Comparable<?>> extends ShadowAl
     
     /**
      * Get shadow column.
-     * 
+     *
      * @return shadow column
      */
     String getShadowColumn();

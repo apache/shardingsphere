@@ -49,7 +49,7 @@ public interface PrimaryKeyIngestPosition<T> extends IngestPosition {
     
     /**
      * Get type.
-     * 
+     *
      * @return type
      */
     char getType();

@@ -39,7 +39,7 @@ public final class LimitClauseAssert {
     
     /**
      * Assert actual offset segment is correct with expected offset.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual offset
      * @param expected expected offset

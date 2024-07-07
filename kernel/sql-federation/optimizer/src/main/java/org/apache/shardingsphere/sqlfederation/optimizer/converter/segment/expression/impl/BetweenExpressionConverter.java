@@ -39,7 +39,7 @@ public final class BetweenExpressionConverter {
     
     /**
      * Convert between expression to sql node.
-     * 
+     *
      * @param expression between expression
      * @return sql node
      */

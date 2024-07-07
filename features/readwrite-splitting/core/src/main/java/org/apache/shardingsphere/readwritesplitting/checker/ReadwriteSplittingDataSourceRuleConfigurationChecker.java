@@ -56,7 +56,7 @@ public final class ReadwriteSplittingDataSourceRuleConfigurationChecker {
     
     /**
      * Check data sources.
-     * 
+     *
      * @param builtWriteDataSourceNames built write data source names
      * @param builtReadDataSourceNames built read data source names
      * @param builtRules built rules

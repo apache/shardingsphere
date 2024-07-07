@@ -41,7 +41,7 @@ public final class ExecuteCallbackFactory {
     
     /**
      * Create new instance of execute callback.
-     * 
+     *
      * @param database database
      * @param sqlStatement SQL statement
      * @param executeCallback statement execute callback

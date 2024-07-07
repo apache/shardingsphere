@@ -32,7 +32,7 @@ public final class YamlAdvisorsConfigurationLoader {
     
     /**
      * Load advisors configuration.
-     * 
+     *
      * @param inputStream input stream
      * @return loaded advisors configuration
      */

@@ -49,7 +49,7 @@ public interface ShardingSphereDistributionTransactionManager extends TypedSPI, 
     
     /**
      * Judge is in transaction or not.
-     * 
+     *
      * @return in transaction or not
      */
     boolean isInTransaction();

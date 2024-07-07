@@ -40,7 +40,7 @@ public final class DateTimeFormatterFactory {
     
     /**
      * Get standard date time formatter.
-     * 
+     *
      * @return standard date time formatter
      */
     public static DateTimeFormatter getStandardFormatter() {

@@ -37,7 +37,7 @@ public final class CreateLoginStatementAssert {
     
     /**
      * Assert create login statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual create login statement
      * @param expected expected create login statement test case

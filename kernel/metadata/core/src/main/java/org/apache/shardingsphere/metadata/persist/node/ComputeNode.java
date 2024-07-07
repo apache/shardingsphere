@@ -48,7 +48,7 @@ public final class ComputeNode {
     
     /**
      * Get online compute node path.
-     * 
+     *
      * @param instanceType instance type
      * @return path of online compute node
      */
@@ -78,7 +78,7 @@ public final class ComputeNode {
     
     /**
      * Get show process list trigger node path.
-     * 
+     *
      * @return show process list trigger node path
      */
     public static String getShowProcessListTriggerNodePath() {
@@ -156,7 +156,7 @@ public final class ComputeNode {
     
     /**
      * Get instance id by compute node path.
-     * 
+     *
      * @param computeNodePath compute node path
      * @return instance id
      */
@@ -168,7 +168,7 @@ public final class ComputeNode {
     
     /**
      * Get cluster state node path.
-     * 
+     *
      * @return cluster state node path
      */
     public static String getClusterStateNodePath() {
@@ -177,7 +177,7 @@ public final class ComputeNode {
     
     /**
      * Get compute node state node path.
-     * 
+     *
      * @param instanceId instance id
      * @return compute node state node path
      */

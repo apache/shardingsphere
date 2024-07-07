@@ -26,7 +26,7 @@ public interface CursorDefinitionAware {
     
     /**
      * Set up cursor definition.
-     * 
+     *
      * @param cursorStatementContext cursor statement context
      */
     void setUpCursorDefinition(CursorStatementContext cursorStatementContext);

@@ -142,7 +142,7 @@ public final class DDLStatementAssert {
     
     /**
      * Assert DDL statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual DDL statement
      * @param expected expected parser result

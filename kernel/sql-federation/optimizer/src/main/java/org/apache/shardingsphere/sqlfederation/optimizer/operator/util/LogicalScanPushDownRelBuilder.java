@@ -35,7 +35,7 @@ public final class LogicalScanPushDownRelBuilder extends RelBuilder {
     
     /**
      * Create logical scan push down rel builder.
-     * 
+     *
      * @param tableScan table scan
      * @return logical scan push down rel builder 
      */

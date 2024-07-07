@@ -58,7 +58,7 @@ public final class SubqueryProjectionSegment implements ProjectionSegment, Alias
     
     /**
      * Get alias segment.
-     * 
+     *
      * @return alias segment
      */
     public Optional<AliasSegment> getAliasSegment() {

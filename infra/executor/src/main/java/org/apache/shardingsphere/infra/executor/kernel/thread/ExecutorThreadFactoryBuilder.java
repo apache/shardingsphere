@@ -33,7 +33,7 @@ public final class ExecutorThreadFactoryBuilder {
     
     /**
      * Build thread factory with thread name format.
-     * 
+     *
      * @param nameFormat thread name format
      * @return thread factory
      */

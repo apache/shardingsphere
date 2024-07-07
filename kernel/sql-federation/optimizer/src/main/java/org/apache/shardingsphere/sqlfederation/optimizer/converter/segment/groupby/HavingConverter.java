@@ -33,7 +33,7 @@ public final class HavingConverter {
     
     /**
      * Convert having segment to sql node.
-     * 
+     *
      * @param segment having segment
      * @return sql node
      */

@@ -59,7 +59,7 @@ public final class SelectStatementAssert {
     
     /**
      * Assert select statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual select statement
      * @param expected expected select statement test case

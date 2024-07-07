@@ -50,7 +50,7 @@ public final class RuleMetaData {
     
     /**
      * Get rule configurations.
-     * 
+     *
      * @return got rule configurations
      */
     public Collection<RuleConfiguration> getConfigurations() {
@@ -154,7 +154,7 @@ public final class RuleMetaData {
     
     /**
      * Get rule attributes.
-     * 
+     *
      * @param attributeClass rule attribute class
      * @param <T> type of rule attributes
      * @return rule attributes

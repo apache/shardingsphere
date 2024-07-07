@@ -58,7 +58,7 @@ public interface ProxyBackendHandler {
     
     /**
      * Close.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     default void close() throws SQLException {

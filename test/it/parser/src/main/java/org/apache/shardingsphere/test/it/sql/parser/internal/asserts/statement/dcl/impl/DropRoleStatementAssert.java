@@ -31,7 +31,7 @@ public final class DropRoleStatementAssert {
     
     /**
      * Assert drop role statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual drop role statement
      * @param expected expected drop role statement test case

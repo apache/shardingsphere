@@ -62,7 +62,7 @@ public abstract class InsertStatement extends AbstractSQLStatement implements DM
     
     /**
      * Get insert columns segment.
-     * 
+     *
      * @return insert columns segment
      */
     public Optional<InsertColumnsSegment> getInsertColumns() {
@@ -71,7 +71,7 @@ public abstract class InsertStatement extends AbstractSQLStatement implements DM
     
     /**
      * Get columns.
-     * 
+     *
      * @return columns
      */
     public Collection<ColumnSegment> getColumns() {

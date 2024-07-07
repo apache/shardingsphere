@@ -24,7 +24,7 @@ public interface AuthenticationMethod {
     
     /**
      * Get authentication method name.
-     * 
+     *
      * @return authentication method name
      */
     String getMethodName();

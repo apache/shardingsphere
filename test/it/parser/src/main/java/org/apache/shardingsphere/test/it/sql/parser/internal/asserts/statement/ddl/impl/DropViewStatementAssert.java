@@ -32,7 +32,7 @@ public final class DropViewStatementAssert {
     
     /**
      * Assert drop view statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual drop view statement
      * @param expected expected drop view statement test case

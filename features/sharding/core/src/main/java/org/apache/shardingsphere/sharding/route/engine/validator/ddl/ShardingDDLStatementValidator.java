@@ -85,7 +85,7 @@ public abstract class ShardingDDLStatementValidator implements ShardingStatement
     
     /**
      * Judge whether route unit and data node are different size.
-     * 
+     *
      * @param shardingRule sharding rule
      * @param routeContext route context
      * @param tableName table name

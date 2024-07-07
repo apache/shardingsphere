@@ -33,7 +33,7 @@ public final class YamlAdvisorsConfigurationSwapper {
     
     /**
      * Swap from YAML advisors configuration to advisor configurations.
-     * 
+     *
      * @param yamlConfig YAML advisors configuration
      * @param pluginType plugin type
      * @return advisor configurations

@@ -43,7 +43,7 @@ public final class RepositoryTuplePersistService {
     
     /**
      * Load repository tuples.
-     * 
+     *
      * @param rootNode root node
      * @return loaded repository tuples
      */

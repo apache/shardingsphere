@@ -36,7 +36,7 @@ public final class ProxySQLComQueryParser {
     
     /**
      * Parse SQL.
-     * 
+     *
      * @param sql SQL to be parsed
      * @param databaseType database type
      * @param connectionSession connection session

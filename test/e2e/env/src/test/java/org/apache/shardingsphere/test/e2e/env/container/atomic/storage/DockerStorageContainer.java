@@ -152,7 +152,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     /**
      * Get database container mapped port.
-     * 
+     *
      * @return mapped database container port
      */
     public abstract int getMappedPort();

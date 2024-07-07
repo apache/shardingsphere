@@ -31,7 +31,7 @@ public final class EventSubscriberFixture implements EventSubscriber {
     
     /**
      * Listen.
-     * 
+     *
      * @param event event
      */
     @SuppressWarnings("unused")

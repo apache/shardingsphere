@@ -62,7 +62,7 @@ public final class PipelineDDLGenerator {
     
     /**
      * Generate logic DDL.
-     * 
+     *
      * @param databaseType database type
      * @param sourceDataSource source data source
      * @param schemaName schema name

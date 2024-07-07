@@ -39,7 +39,7 @@ public final class OptimizerSQLPropertiesBuilder {
     
     /**
      * Build optimizer SQL properties.
-     * 
+     *
      * @return built properties
      */
     public Properties build() {

@@ -38,7 +38,7 @@ public final class ListExpressionConverter {
     
     /**
      * Convert list expression to sql node.
-     * 
+     *
      * @param segment list expression
      * @return sql node
      */

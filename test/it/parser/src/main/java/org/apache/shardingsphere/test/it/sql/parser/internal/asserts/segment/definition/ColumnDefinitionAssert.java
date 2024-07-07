@@ -37,7 +37,7 @@ public final class ColumnDefinitionAssert {
     
     /**
      * Assert actual column definition segment is correct with expected column definition.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual column definition segment
      * @param expected expected column definition

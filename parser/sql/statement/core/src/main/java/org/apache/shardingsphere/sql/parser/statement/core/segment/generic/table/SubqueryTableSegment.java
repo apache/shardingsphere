@@ -58,7 +58,7 @@ public final class SubqueryTableSegment implements TableSegment {
     
     /**
      * Get pivot segment.
-     * 
+     *
      * @return pivot segment
      */
     public Optional<PivotSegment> getPivot() {

@@ -75,7 +75,7 @@ public final class OpenGaussMacCalculator {
     
     /**
      * Calculate client MAC.
-     * 
+     *
      * @param h3HexString h3 hex string value
      * @param nonce nonce
      * @param serverStoredKey server stored key

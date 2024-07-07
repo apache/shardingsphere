@@ -65,7 +65,7 @@ public final class PaginationContext {
     
     /**
      * Get offset segment.
-     * 
+     *
      * @return offset segment
      */
     public Optional<PaginationValueSegment> getOffsetSegment() {
@@ -83,7 +83,7 @@ public final class PaginationContext {
     
     /**
      * Get actual offset.
-     * 
+     *
      * @return actual offset
      */
     public long getActualOffset() {
@@ -138,7 +138,7 @@ public final class PaginationContext {
     
     /**
      * Get revised row count.
-     * 
+     *
      * @param selectStatementContext select statement context
      * @return revised row count
      */

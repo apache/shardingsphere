@@ -30,7 +30,7 @@ public interface SQLStatementConverter<S extends SQLStatement, T extends SqlNode
     
     /**
      * Convert.
-     * 
+     *
      * @param sqlStatement SQL statement be to converted
      * @return converted SQL node
      */

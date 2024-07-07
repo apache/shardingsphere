@@ -52,7 +52,7 @@ public final class ShadowRuleStatementChecker {
     
     /**
      * Check if there are duplicated rules.
-     * 
+     *
      * @param rules rules to be checked
      * @param thrower exception thrower
      */
@@ -100,7 +100,7 @@ public final class ShadowRuleStatementChecker {
     
     /**
      * Check if there are duplicated names with logical data sources.
-     * 
+     *
      * @param toBeCreatedRuleNames rule names
      * @param database ShardingSphere database
      */

@@ -63,7 +63,7 @@ public final class ShorthandProjection implements Projection {
     
     /**
      * Get owner.
-     * 
+     *
      * @return owner
      */
     public Optional<IdentifierValue> getOwner() {

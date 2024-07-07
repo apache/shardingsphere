@@ -31,7 +31,7 @@ public interface SQLDialectExceptionMapper extends DatabaseTypedSPI {
     
     /**
      * Convert SQL dialect exception into SQL exception.
-     * 
+     *
      * @param sqlDialectException SQL dialect exception
      * @return SQLException
      */

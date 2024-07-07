@@ -34,7 +34,7 @@ public interface ConditionValueGenerator<T extends ExpressionSegment> {
     
     /**
      * Generate route value.
-     * 
+     *
      * @param predicateRightValue predicate right value
      * @param column column
      * @param params SQL parameters

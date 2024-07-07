@@ -51,7 +51,7 @@ public abstract class MergeStatement extends AbstractSQLStatement implements DML
     
     /**
      * Get update statement.
-     * 
+     *
      * @return update statement
      */
     public Optional<UpdateStatement> getUpdate() {

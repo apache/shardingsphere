@@ -73,7 +73,7 @@ public final class DataSourcePoolReflection {
     
     /**
      * Convert to properties.
-     * 
+     *
      * @return properties converted from data source
      */
     public Map<String, Object> convertToProperties() {
@@ -117,7 +117,7 @@ public final class DataSourcePoolReflection {
     
     /**
      * Set data source field.
-     * 
+     *
      * @param fieldName field name
      * @param fieldValue field value
      */

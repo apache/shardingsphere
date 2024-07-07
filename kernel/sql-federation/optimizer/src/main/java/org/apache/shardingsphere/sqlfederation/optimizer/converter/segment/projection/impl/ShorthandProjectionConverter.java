@@ -39,7 +39,7 @@ public final class ShorthandProjectionConverter {
     
     /**
      * Convert shorthand projection segment to sql node.
-     * 
+     *
      * @param segment shorthand projection segment
      * @return sql node
      */

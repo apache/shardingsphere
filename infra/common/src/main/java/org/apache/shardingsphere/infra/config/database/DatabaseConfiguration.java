@@ -32,21 +32,21 @@ public interface DatabaseConfiguration {
     
     /**
      * Get rule configurations.
-     * 
+     *
      * @return rule configurations
      */
     Collection<RuleConfiguration> getRuleConfigurations();
     
     /**
      * Get storage units.
-     * 
+     *
      * @return storage units
      */
     Map<String, StorageUnit> getStorageUnits();
     
     /**
      * Get data sources.
-     * 
+     *
      * @return data sources
      */
     Map<StorageNode, DataSource> getDataSources();

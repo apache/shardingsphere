@@ -34,7 +34,7 @@ public final class SavepointStatementAssert {
     
     /**
      * Assert savepoint statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual savepoint statement
      * @param expected expected savepoint statement test case

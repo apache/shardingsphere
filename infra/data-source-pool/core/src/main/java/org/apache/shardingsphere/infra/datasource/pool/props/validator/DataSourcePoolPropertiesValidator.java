@@ -39,7 +39,7 @@ public final class DataSourcePoolPropertiesValidator {
     
     /**
      * Validate data source pool properties map.
-     * 
+     *
      * @param propsMap data source pool properties map
      * @return data source name and exception map
      */

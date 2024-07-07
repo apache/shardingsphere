@@ -33,7 +33,7 @@ public final class ClassBasedShardingAlgorithmFactory {
     
     /**
      * Create sharding algorithm.
-     * 
+     *
      * @param shardingAlgorithmClassName sharding algorithm class name
      * @param superShardingAlgorithmClass sharding algorithm super class
      * @param props properties

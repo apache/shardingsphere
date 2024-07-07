@@ -34,7 +34,7 @@ public interface ShardingSphereDataBasedPersistService {
     
     /**
      * Get table row data persist service.
-     * 
+     *
      * @return Stable row data persist service
      */
     TableRowDataBasedPersistService getTableRowDataPersistService();

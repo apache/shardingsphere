@@ -42,7 +42,7 @@ public final class AlterViewStatementAssert {
     
     /**
      * Assert alter view statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual alter view statement
      * @param expected expected alter view statement test case

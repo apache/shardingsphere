@@ -43,7 +43,7 @@ public final class MatchExpressionConverter {
     
     /**
      * Convert match against expression to sql node.
-     * 
+     *
      * @param segment match against expression
      * @return sql node
      */

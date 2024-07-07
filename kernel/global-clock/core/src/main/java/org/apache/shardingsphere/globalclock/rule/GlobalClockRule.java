@@ -66,7 +66,7 @@ public final class GlobalClockRule implements GlobalRule {
     
     /**
      * Get global clock provider type.
-     * 
+     *
      * @return global clock provider type
      */
     public String getGlobalClockProviderType() {

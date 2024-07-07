@@ -28,7 +28,7 @@ public interface E2ETestParameter {
     
     /**
      * Get test case context.
-     * 
+     *
      * @return test case context
      */
     IntegrationTestCaseContext getTestCaseContext();
@@ -49,7 +49,7 @@ public interface E2ETestParameter {
     
     /**
      * Get adapter.
-     * 
+     *
      * @return adapter
      */
     String getAdapter();
@@ -63,14 +63,14 @@ public interface E2ETestParameter {
     
     /**
      * Get sql command type.
-     * 
+     *
      * @return sql command type
      */
     SQLCommandType getSqlCommandType();
     
     /**
      * Get key.
-     * 
+     *
      * @return key of test parameter
      */
     default String getKey() {

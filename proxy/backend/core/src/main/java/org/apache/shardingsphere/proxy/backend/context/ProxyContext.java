@@ -81,7 +81,7 @@ public final class ProxyContext {
     
     /**
      * Get instance state context.
-     * 
+     *
      * @return instance state context
      */
     public Optional<InstanceStateContext> getInstanceStateContext() {

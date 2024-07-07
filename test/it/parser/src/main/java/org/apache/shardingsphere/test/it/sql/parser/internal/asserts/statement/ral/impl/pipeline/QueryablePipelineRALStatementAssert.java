@@ -45,7 +45,7 @@ public final class QueryablePipelineRALStatementAssert {
     
     /**
      * Assert query pipeline RAL statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual queryable pipeline RAL statement
      * @param expected expected queryable pipeline RAL statement test case

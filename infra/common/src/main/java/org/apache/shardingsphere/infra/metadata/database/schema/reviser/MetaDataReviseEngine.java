@@ -40,7 +40,7 @@ public final class MetaDataReviseEngine {
     
     /**
      * Revise meta data.
-     * 
+     *
      * @param schemaMetaDataMap schema meta data map
      * @param material generic schema builder material
      * @return revised meta data

@@ -121,7 +121,7 @@ public final class EncryptTable {
     
     /**
      * Get logic column by cipher column.
-     * 
+     *
      * @param cipherColumnName cipher column name
      * @return logic column name
      * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception

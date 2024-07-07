@@ -103,7 +103,7 @@ public final class BinaryOperationExpressionConverter {
     
     /**
      * Convert binary operation expression to sql node.
-     * 
+     *
      * @param segment binary operation expression
      * @return sql node
      */

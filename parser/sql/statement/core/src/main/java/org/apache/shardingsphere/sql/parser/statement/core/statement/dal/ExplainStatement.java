@@ -35,7 +35,7 @@ public abstract class ExplainStatement extends AbstractSQLStatement implements D
     
     /**
      * Get SQL statement.
-     * 
+     *
      * @return SQL statement
      */
     public Optional<SQLStatement> getSqlStatement() {
@@ -44,7 +44,7 @@ public abstract class ExplainStatement extends AbstractSQLStatement implements D
     
     /**
      * Get simple table.
-     * 
+     *
      * @return simple table
      */
     public Optional<SimpleTableSegment> getSimpleTable() {

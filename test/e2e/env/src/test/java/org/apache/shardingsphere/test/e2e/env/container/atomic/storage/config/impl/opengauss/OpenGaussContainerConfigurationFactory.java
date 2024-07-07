@@ -40,7 +40,7 @@ public final class OpenGaussContainerConfigurationFactory {
     
     /**
      * Create new instance of openGauss container configuration.
-     * 
+     *
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {

@@ -82,7 +82,7 @@ public final class ImporterConfiguration {
     
     /**
      * Get qualified tables.
-     * 
+     *
      * @return qualified tables
      */
     public Collection<CaseInsensitiveQualifiedTable> getQualifiedTables() {

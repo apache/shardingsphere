@@ -34,7 +34,7 @@ public final class SetAutoCommitStatementAssert {
     
     /**
      * Assert set auto commit statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual set auto commit statement
      * @param expected expected set auto commit statement test case

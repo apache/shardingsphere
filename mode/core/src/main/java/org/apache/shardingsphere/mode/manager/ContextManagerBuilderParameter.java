@@ -56,7 +56,7 @@ public final class ContextManagerBuilderParameter {
     
     /**
      * Get mode configuration.
-     * 
+     *
      * @return mode configuration
      */
     public ModeConfiguration getModeConfiguration() {

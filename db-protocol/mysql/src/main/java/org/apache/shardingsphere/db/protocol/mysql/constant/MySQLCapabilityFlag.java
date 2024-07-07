@@ -83,7 +83,7 @@ public enum MySQLCapabilityFlag {
     
     /**
      * Get handshake capability flags lower bit.
-     * 
+     *
      * @return handshake capability flags lower bit
      */
     public static int calculateHandshakeCapabilityFlagsLower() {

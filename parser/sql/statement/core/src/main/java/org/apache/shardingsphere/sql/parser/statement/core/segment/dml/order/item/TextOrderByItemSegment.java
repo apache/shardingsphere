@@ -31,7 +31,7 @@ public abstract class TextOrderByItemSegment extends OrderByItemSegment {
     
     /**
      * Get text.
-     * 
+     *
      * @return text
      */
     public abstract String getText();

@@ -32,7 +32,7 @@ public final class ShowDatabasesStatementAssert {
     
     /**
      * Assert show databases statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show databases statement
      * @param expected expected show databases statement test case

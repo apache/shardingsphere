@@ -38,7 +38,7 @@ public final class TokenUtils {
     
     /**
      * Get logic and actual table map.
-     * 
+     *
      * @param routeUnit route unit
      * @param sqlStatementContext SQL statement context
      * @param shardingRule sharding rule

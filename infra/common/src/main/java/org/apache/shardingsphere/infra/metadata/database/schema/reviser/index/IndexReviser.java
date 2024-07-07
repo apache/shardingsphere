@@ -31,7 +31,7 @@ public interface IndexReviser<T extends ShardingSphereRule> {
     
     /**
      * Revise index meta data.
-     * 
+     *
      * @param tableName table name
      * @param originalMetaData original index meta data
      * @param rule rule

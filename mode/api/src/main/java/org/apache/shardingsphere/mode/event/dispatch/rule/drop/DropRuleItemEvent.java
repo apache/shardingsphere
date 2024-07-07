@@ -26,7 +26,7 @@ public interface DropRuleItemEvent extends RuleItemChangedEvent {
     
     /**
      * Get database name.
-     * 
+     *
      * @return database name
      */
     String getDatabaseName();

@@ -33,7 +33,7 @@ public final class SQLLineComment {
     
     /**
      * Judge whether SQL line is comment.
-     * 
+     *
      * @param line SQL line
      * @return SQL line is comment or not
      */

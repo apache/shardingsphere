@@ -29,7 +29,7 @@ public interface GlobalRule extends ShardingSphereRule {
     
     /**
      * Refresh rule when databases changed.
-     * 
+     *
      * @param databases changed databases
      * @param changedType changed type
      */

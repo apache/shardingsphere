@@ -30,7 +30,7 @@ public final class AggregationUnitFactory {
     
     /**
      * Create aggregation unit instance.
-     * 
+     *
      * @param type aggregation function type
      * @param isDistinct is distinct
      * @return aggregation unit instance

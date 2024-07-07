@@ -43,7 +43,7 @@ public final class SingleRuleConfiguration implements DatabaseRuleConfiguration,
     
     /**
      * Get default data source.
-     * 
+     *
      * @return default data source
      */
     public Optional<String> getDefaultDataSource() {

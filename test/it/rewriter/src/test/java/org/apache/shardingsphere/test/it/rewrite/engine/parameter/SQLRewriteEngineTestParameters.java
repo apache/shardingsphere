@@ -49,7 +49,7 @@ public final class SQLRewriteEngineTestParameters {
     
     /**
      * To array.
-     * 
+     *
      * @return array value of test parameters
      */
     public Object[] toArray() {

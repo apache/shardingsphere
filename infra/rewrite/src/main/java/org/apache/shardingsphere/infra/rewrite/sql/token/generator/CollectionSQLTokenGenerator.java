@@ -31,7 +31,7 @@ public interface CollectionSQLTokenGenerator<T extends SQLStatementContext> exte
     
     /**
      * Generate SQL tokens.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
      * @return SQL tokens
      */

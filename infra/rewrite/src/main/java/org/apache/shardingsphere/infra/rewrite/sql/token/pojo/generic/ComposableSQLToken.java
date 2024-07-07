@@ -41,7 +41,7 @@ public final class ComposableSQLToken extends SQLToken implements Substitutable 
     
     /**
      * Add SQL token.
-     * 
+     *
      * @param sqlToken SQL token
      */
     public void addSQLToken(final SQLToken sqlToken) {

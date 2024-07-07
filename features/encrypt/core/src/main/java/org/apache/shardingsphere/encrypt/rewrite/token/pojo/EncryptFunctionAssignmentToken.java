@@ -49,7 +49,7 @@ public final class EncryptFunctionAssignmentToken extends EncryptAssignmentToken
     
     /**
      * Judge whether assignments is empty or not.
-     * 
+     *
      * @return whether assignments is empty or not
      */
     public boolean isAssignmentsEmpty() {

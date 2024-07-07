@@ -35,7 +35,7 @@ public final class SingleMetaDataValidatorFactory {
     
     /**
      * New instance of single meta data validator.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @return created instance
      */

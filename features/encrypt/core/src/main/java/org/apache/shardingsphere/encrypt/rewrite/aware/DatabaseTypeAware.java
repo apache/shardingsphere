@@ -26,7 +26,7 @@ public interface DatabaseTypeAware {
     
     /**
      * Set database type.
-     * 
+     *
      * @param databaseType database type
      */
     void setDatabaseType(DatabaseType databaseType);

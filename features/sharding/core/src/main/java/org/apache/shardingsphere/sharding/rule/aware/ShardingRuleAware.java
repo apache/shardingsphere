@@ -26,7 +26,7 @@ public interface ShardingRuleAware {
     
     /**
      * Set sharding rule.
-     * 
+     *
      * @param shardingRule sharding rule
      */
     void setShardingRule(ShardingRule shardingRule);

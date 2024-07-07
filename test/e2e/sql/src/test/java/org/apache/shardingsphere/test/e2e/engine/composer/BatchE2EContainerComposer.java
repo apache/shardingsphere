@@ -58,7 +58,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
     
     /**
      * Get data set.
-     * 
+     *
      * @param actualUpdateCounts actual update counts
      * @return data set
      */

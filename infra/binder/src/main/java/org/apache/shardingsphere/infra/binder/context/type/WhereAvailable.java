@@ -30,7 +30,7 @@ public interface WhereAvailable {
     
     /**
      * Get where segments.
-     * 
+     *
      * @return where segments
      */
     Collection<WhereSegment> getWhereSegments();

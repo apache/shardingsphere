@@ -34,7 +34,7 @@ public final class SQLSegmentAssert {
     
     /**
      * Assert generic attributes of actual SQL segment are same with expected SQL segment.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual SQL segment
      * @param expected expected SQL segment

@@ -46,7 +46,7 @@ public final class MemoryQueryResultRow {
     
     /**
      * Get data from cell.
-     * 
+     *
      * @param columnIndex column index
      * @return data from cell
      */

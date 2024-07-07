@@ -70,7 +70,7 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     
     /**
      * Get alias segment.
-     * 
+     *
      * @return alias segment
      */
     public Optional<AliasSegment> getAliasSegment() {

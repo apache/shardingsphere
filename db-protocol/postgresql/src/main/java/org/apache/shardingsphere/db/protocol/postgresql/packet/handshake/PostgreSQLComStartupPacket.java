@@ -50,7 +50,7 @@ public final class PostgreSQLComStartupPacket extends PostgreSQLPacket {
     
     /**
      * Get database.
-     * 
+     *
      * @return database
      */
     public String getDatabase() {
@@ -59,7 +59,7 @@ public final class PostgreSQLComStartupPacket extends PostgreSQLPacket {
     
     /**
      * Get username.
-     * 
+     *
      * @return username
      */
     public String getUsername() {
@@ -68,7 +68,7 @@ public final class PostgreSQLComStartupPacket extends PostgreSQLPacket {
     
     /**
      * Get client encoding.
-     * 
+     *
      * @return client encoding
      */
     public String getClientEncoding() {

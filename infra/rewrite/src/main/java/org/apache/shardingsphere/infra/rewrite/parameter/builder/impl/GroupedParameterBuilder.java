@@ -60,7 +60,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     
     /**
      * Get parameters.
-     * 
+     *
      * @param count parameters group count
      * @return parameters
      */
@@ -70,7 +70,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     
     /**
      * Get derived column name.
-     * 
+     *
      * @return derived column name
      */
     public Optional<String> getDerivedColumnName() {

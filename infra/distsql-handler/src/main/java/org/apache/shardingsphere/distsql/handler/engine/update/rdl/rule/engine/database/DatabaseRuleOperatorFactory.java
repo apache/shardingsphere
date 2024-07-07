@@ -37,7 +37,7 @@ public final class DatabaseRuleOperatorFactory {
     
     /**
      * Create new instance of database rule operator.
-     * 
+     *
      * @param contextManager context manager
      * @param executor database rule definition executor
      * @return created instance

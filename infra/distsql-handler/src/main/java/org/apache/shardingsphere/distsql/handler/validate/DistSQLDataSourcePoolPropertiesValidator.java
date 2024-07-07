@@ -31,7 +31,7 @@ public final class DistSQLDataSourcePoolPropertiesValidator {
     
     /**
      * Validate data source properties map.
-     * 
+     *
      * @param propsMap data source pool properties map
      */
     public void validate(final Map<String, DataSourcePoolProperties> propsMap) {

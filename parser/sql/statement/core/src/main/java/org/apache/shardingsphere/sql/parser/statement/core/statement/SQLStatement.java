@@ -38,7 +38,7 @@ public interface SQLStatement extends ASTNode {
     
     /**
      * Get database type.
-     * 
+     *
      * @return database type
      */
     default DatabaseType getDatabaseType() {
@@ -47,7 +47,7 @@ public interface SQLStatement extends ASTNode {
     
     /**
      * Get variable names.
-     * 
+     *
      * @return variable names
      */
     default Collection<String> getVariableNames() {

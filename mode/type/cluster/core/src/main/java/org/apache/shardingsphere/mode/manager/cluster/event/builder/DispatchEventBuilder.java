@@ -48,7 +48,7 @@ public interface DispatchEventBuilder<T> {
     
     /**
      * Create dispatch event.
-     * 
+     *
      * @param event registry center data changed event
      * @return dispatch event
      */

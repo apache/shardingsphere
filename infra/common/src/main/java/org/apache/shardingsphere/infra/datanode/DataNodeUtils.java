@@ -50,7 +50,7 @@ public final class DataNodeUtils {
     
     /**
      * Build data node.
-     * 
+     *
      * @param dataNode data node
      * @param dataSources dataSource map
      * @return data node collection
@@ -68,7 +68,7 @@ public final class DataNodeUtils {
     
     /**
      * Get format data nodes.
-     * 
+     *
      * @param amount amount
      * @param logicTable logic table
      * @param dataSources data source names

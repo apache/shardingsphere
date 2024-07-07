@@ -35,7 +35,7 @@ public final class ShowCreateTriggerStatementAssert {
     
     /**
      * Assert show create trigger statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show create trigger statement
      * @param expected expected show create trigger statement test case

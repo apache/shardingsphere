@@ -100,7 +100,7 @@ public final class Portal {
     
     /**
      * Do bind.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     public void bind() throws SQLException {

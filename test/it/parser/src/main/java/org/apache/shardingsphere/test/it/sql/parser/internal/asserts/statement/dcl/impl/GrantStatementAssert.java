@@ -35,7 +35,7 @@ public final class GrantStatementAssert {
     
     /**
      * Assert grant statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual grant statement
      * @param expected expected grant statement test case

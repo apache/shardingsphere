@@ -46,7 +46,7 @@ public interface ClusterPersistRepository extends PersistRepository {
     
     /**
      * Get distributed lock holder.
-     * 
+     *
      * @return distributed lock holder
      */
     DistributedLockHolder getDistributedLockHolder();

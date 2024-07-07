@@ -33,7 +33,7 @@ public interface ProjectionSegment extends SQLSegment {
     
     /**
      * Judge whether column is visible or not.
-     * 
+     *
      * @return whether column is visible or not
      */
     default boolean isVisible() {

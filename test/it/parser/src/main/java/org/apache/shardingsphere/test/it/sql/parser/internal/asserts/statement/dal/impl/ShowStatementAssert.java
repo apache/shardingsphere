@@ -36,7 +36,7 @@ public final class ShowStatementAssert {
     
     /**
      * Assert show statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show statement
      * @param expected expected show statement test case

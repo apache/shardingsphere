@@ -60,7 +60,7 @@ public final class DataSet {
     
     /**
      * Find data set meta data via data node.
-     * 
+     *
      * @param dataNode data node
      * @return data set meta data belong to current data node
      */

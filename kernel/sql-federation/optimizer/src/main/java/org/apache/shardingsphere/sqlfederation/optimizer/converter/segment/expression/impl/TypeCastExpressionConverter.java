@@ -41,7 +41,7 @@ public final class TypeCastExpressionConverter {
     
     /**
      * Convert type cast expression to sql node.
-     * 
+     *
      * @param segment type cast expression
      * @return sql node
      */

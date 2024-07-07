@@ -76,7 +76,7 @@ public final class ExpressionConverter {
     
     /**
      * Convert expression segment to sql node.
-     * 
+     *
      * @param segment expression segment
      * @return sql node
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception

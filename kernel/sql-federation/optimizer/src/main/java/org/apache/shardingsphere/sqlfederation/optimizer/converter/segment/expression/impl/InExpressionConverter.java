@@ -40,7 +40,7 @@ public final class InExpressionConverter {
     
     /**
      * Convert in expression to sql node.
-     * 
+     *
      * @param expression in expression
      * @return sql node
      */

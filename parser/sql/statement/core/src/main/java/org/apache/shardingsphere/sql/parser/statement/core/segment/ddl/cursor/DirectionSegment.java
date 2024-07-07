@@ -52,7 +52,7 @@ public final class DirectionSegment implements SQLSegment {
     
     /**
      * Get count.
-     * 
+     *
      * @return count
      */
     public Optional<Long> getCount() {

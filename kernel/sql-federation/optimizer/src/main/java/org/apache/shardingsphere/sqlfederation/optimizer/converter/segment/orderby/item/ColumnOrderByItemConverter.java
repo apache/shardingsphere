@@ -40,7 +40,7 @@ public final class ColumnOrderByItemConverter {
     
     /**
      * Convert column order by item segment to sql node.
-     * 
+     *
      * @param segment column order by item segment
      * @return sql node
      */

@@ -31,7 +31,7 @@ public final class SetConstraintsStatementAssert {
     
     /**
      * Assert set transaction statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual set constraints statement
      * @param expected expected set constraints statement test case

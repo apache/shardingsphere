@@ -34,9 +34,9 @@ public final class ZookeeperExceptionHandler {
     
     /**
      * Handle exception.
-     * 
+     *
      * <p>Ignore interrupt and connection invalid exception.</p>
-     * 
+     *
      * @param cause to be handled exception
      * @throws ClusterPersistRepositoryException cluster persist repository exception
      */

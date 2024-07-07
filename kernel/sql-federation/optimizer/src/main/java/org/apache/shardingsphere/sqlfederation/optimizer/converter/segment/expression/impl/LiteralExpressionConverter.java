@@ -55,7 +55,7 @@ public final class LiteralExpressionConverter {
     
     /**
      * Convert literal expression segment to sql node.
-     * 
+     *
      * @param segment literal expression segment
      * @return sql node
      */

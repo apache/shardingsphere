@@ -26,7 +26,7 @@ public interface StaticDataSourceContainedRuleAwareStatement {
     
     /**
      * Get names.
-     * 
+     *
      * @return names
      */
     Collection<String> getNames();

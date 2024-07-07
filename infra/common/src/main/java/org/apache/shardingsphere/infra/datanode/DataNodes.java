@@ -45,7 +45,7 @@ public final class DataNodes {
     
     /**
      * Get data nodes.
-     * 
+     *
      * @param tableName table name
      * @return data nodes
      */
