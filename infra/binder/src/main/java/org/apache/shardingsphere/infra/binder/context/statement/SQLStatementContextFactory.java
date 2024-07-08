@@ -126,17 +126,17 @@ public final class SQLStatementContextFactory {
      * Create SQL statement context.
      *
      * @param metaData metadata
-     * @param params SQL parameters
      * @param sqlStatement SQL statement
+     * @param params SQL parameters
      * @param currentDatabaseName current database name
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final List<Object> params, final SQLStatement sqlStatement, final String currentDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, currentDatabaseName);
+            return getDMLStatementContext(metaData, (DMLStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(metaData, params, (DDLStatement) sqlStatement, currentDatabaseName);
+            return getDDLStatementContext(metaData, (DDLStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement, currentDatabaseName);
@@ -147,7 +147,7 @@ public final class SQLStatementContextFactory {
         return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final DMLStatement sqlStatement, final String currentDatabaseName) {
+    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
             return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
         }
@@ -181,7 +181,7 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final DDLStatement sqlStatement, final String currentDatabaseName) {
+    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
