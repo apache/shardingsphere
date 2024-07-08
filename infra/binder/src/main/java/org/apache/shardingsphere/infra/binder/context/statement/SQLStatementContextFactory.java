@@ -147,8 +147,7 @@ public final class SQLStatementContextFactory {
         return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData,
-                                                              final List<Object> params, final DMLStatement sqlStatement, final String currentDatabaseName) {
+    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final DMLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
             return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
         }
@@ -182,8 +181,7 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
-                                                              final DDLStatement sqlStatement, final String currentDatabaseName) {
+    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final DDLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
