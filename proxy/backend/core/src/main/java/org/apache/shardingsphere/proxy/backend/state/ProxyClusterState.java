@@ -27,7 +27,7 @@ public interface ProxyClusterState extends TypedSPI {
     
     /**
      * Check SQL statement.
-     * 
+     *
      * @param sqlStatement SQL statement
      */
     void check(SQLStatement sqlStatement);

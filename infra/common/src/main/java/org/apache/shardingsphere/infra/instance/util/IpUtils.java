@@ -35,12 +35,12 @@ public final class IpUtils {
     
     /**
      * Get localhost IP address.
-     * 
+     *
      * <p>
      * It maybe get IP address of router.
      * Return unknown IP if exception occur.
      * </p>
-     * 
+     *
      * @return IP address of localhost 
      */
     public static String getIp() {

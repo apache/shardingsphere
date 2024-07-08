@@ -40,7 +40,7 @@ public final class ShowPluginsStatement extends QueryableRALStatement {
     
     /**
      * Get plugin class.
-     * 
+     *
      * @return plugin class
      */
     public Optional<String> getPluginClass() {

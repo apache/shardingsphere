@@ -36,7 +36,7 @@ public final class MethodTimeRecorder {
     
     /**
      * Record now.
-     * 
+     *
      * @param method method to be recorded
      */
     public void recordNow(final Method method) {

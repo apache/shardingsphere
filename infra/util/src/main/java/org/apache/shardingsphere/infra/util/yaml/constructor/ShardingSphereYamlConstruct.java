@@ -28,7 +28,7 @@ public interface ShardingSphereYamlConstruct extends Construct {
     
     /**
      * Get type.
-     * 
+     *
      * @return type
      */
     Class<?> getType();

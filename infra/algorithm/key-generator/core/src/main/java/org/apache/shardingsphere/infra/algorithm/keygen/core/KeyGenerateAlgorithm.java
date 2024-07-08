@@ -29,7 +29,7 @@ public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Generate keys.
-     * 
+     *
      * @param context algorithm SQL context 
      * @param keyGenerateCount key generate count
      * @return generated keys
@@ -38,7 +38,7 @@ public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Judge whether support auto increment or not.
-     * 
+     *
      * @return whether support auto increment or not
      */
     default boolean isSupportAutoIncrement() {

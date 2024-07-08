@@ -24,7 +24,7 @@ public interface SQLState {
     
     /**
      * Get value.
-     * 
+     *
      * @return value
      */
     String getValue();

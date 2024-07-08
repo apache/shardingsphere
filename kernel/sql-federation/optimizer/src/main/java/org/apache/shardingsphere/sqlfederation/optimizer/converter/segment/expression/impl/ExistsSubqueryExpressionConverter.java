@@ -37,7 +37,7 @@ public final class ExistsSubqueryExpressionConverter {
     
     /**
      * Convert exists subquery expression to sql node.
-     * 
+     *
      * @param expression exists subquery expression
      * @return sql node
      */

@@ -38,7 +38,7 @@ public abstract class ShowIndexStatement extends AbstractSQLStatement implements
     
     /**
      * Get from database.
-     * 
+     *
      * @return from database
      */
     public Optional<FromDatabaseSegment> getFromDatabase() {

@@ -32,7 +32,7 @@ public final class TransactionStatus {
     
     /**
      * Judge whether in connection held transaction.
-     * 
+     *
      * @param transactionType transaction type
      * @return is in connection held transaction or not
      */

@@ -40,7 +40,7 @@ public final class OptimizerContext {
     
     /**
      * Get parser context.
-     * 
+     *
      * @param databaseName database name
      * @return parser context
      */

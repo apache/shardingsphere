@@ -37,7 +37,7 @@ public final class RenameTableStatementAssert {
     
     /**
      * Assert rename table statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual rename table statement
      * @param expected expected rename table statement test case

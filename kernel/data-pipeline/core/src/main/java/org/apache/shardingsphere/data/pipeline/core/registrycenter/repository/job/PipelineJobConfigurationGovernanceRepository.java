@@ -43,7 +43,7 @@ public final class PipelineJobConfigurationGovernanceRepository {
     
     /**
      * Persist pipeline job configuration.
-     * 
+     *
      * @param jobId job ID
      * @param jobConfigPOJO job configuration POJO
      */

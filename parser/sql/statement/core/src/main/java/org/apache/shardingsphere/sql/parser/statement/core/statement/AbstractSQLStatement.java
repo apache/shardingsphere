@@ -47,7 +47,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     /**
      * Add parameter marker segment.
-     * 
+     *
      * @param parameterMarkerSegments parameter marker segment collection
      */
     public void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> parameterMarkerSegments) {

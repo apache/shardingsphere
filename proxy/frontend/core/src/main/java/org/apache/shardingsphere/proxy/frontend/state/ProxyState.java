@@ -28,7 +28,7 @@ public interface ProxyState {
     
     /**
      * Execute command.
-     * 
+     *
      * @param context channel handler context
      * @param message message
      * @param databaseProtocolFrontendEngine database protocol frontend engine

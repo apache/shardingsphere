@@ -29,7 +29,7 @@ public final class AdapterContainerUtils {
     
     /**
      * Get adapter container image.
-     * 
+     *
      * @return adapter container image
      */
     public static String getAdapterContainerImage() {

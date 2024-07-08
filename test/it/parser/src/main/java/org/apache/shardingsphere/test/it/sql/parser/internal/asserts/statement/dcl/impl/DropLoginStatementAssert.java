@@ -37,7 +37,7 @@ public final class DropLoginStatementAssert {
     
     /**
      * Assert drop login statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual drop login statement
      * @param expected expected drop login statement test case

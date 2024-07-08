@@ -39,7 +39,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
     
     /**
      * Renew cluster state.
-     * 
+     *
      * @param event cluster state event
      */
     @Subscribe
@@ -49,7 +49,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
     
     /**
      * Renew compute node instance state.
-     * 
+     *
      * @param event compute node instance state changed event
      */
     @Subscribe
@@ -59,7 +59,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
     
     /**
      * Renew instance worker id.
-     * 
+     *
      * @param event worker id event
      */
     @Subscribe
@@ -69,7 +69,7 @@ public final class StateChangedSubscriber implements EventSubscriber {
     
     /**
      * Renew instance labels.
-     * 
+     *
      * @param event label event
      */
     @Subscribe

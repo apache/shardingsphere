@@ -32,7 +32,7 @@ public final class GroupByClauseAssert {
     
     /**
      * Assert actual group by segment is correct with expected group by clause.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual group by segment
      * @param expected expected group by clause

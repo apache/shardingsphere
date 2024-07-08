@@ -34,7 +34,7 @@ public final class ShowTablesStatementAssert {
     
     /**
      * Assert show tables statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show tables statement
      * @param expected expected show tables statement test case

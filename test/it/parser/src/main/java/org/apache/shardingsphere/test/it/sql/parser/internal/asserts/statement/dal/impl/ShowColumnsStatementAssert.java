@@ -34,7 +34,7 @@ public final class ShowColumnsStatementAssert {
     
     /**
      * Assert show columns statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show columns statement
      * @param expected expected show columns statement test case

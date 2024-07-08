@@ -57,7 +57,7 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket impl
     
     /**
      * Read parameter types from Parse message.
-     * 
+     *
      * @return types of parameters
      */
     public List<PostgreSQLColumnType> readParameterTypes() {

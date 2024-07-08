@@ -31,14 +31,14 @@ public @interface RepositoryTupleEntity {
     
     /**
      * Get rule type name.
-     * 
+     *
      * @return rule type name
      */
     String value();
     
     /**
      * Whether leaf node.
-     * 
+     *
      * @return is leaf node or not
      */
     boolean leaf() default false;

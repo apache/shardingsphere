@@ -38,7 +38,7 @@ public final class EnumeratorUtils {
     
     /**
      * Create column types.
-     * 
+     *
      * @param columns columns
      * @param databaseType database type
      * @return column types
@@ -62,7 +62,7 @@ public final class EnumeratorUtils {
     
     /**
      * Convert to target type.
-     * 
+     *
      * @param columnTypes column types
      * @param rows rows
      * @return target type

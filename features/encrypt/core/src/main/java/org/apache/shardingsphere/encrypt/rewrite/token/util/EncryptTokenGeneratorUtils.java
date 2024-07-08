@@ -47,7 +47,7 @@ public final class EncryptTokenGeneratorUtils {
     
     /**
      * Judge whether all join conditions use same encryptor or not.
-     * 
+     *
      * @param joinConditions join conditions
      * @param encryptRule encrypt rule
      * @return whether all join conditions use same encryptor or not
@@ -118,7 +118,7 @@ public final class EncryptTokenGeneratorUtils {
     
     /**
      * Judge whether contains encrypt projection in combine statement or not.
-     * 
+     *
      * @param selectStatementContext select statement context
      * @param encryptRule encrypt rule
      * @return whether contains encrypt projection in combine statement or not

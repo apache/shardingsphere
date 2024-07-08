@@ -34,7 +34,7 @@ public final class IndexDefinitionAssert {
     
     /**
      * Assert actual index definition segment is correct with expected index definition.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual index definition segment
      * @param expected expected index definition

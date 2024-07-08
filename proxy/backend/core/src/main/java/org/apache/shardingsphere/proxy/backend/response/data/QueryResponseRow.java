@@ -34,7 +34,7 @@ public final class QueryResponseRow {
     
     /**
      * Get row data.
-     * 
+     *
      * @return row data
      */
     public List<Object> getData() {

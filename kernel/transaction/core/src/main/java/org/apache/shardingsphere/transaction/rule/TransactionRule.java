@@ -87,7 +87,7 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
     
     /**
      * Get resource.
-     * 
+     *
      * @return got resource
      */
     public ShardingSphereTransactionManagerEngine getResource() {
@@ -96,7 +96,7 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
     
     /**
      * Judge whether to implicit commit transaction.
-     * 
+     *
      * @param executionContext execution context
      * @param connectionTransaction connection transaction
      * @param isAutoCommit is auto commit

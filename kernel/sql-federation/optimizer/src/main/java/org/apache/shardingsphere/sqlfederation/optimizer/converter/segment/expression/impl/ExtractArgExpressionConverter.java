@@ -34,7 +34,7 @@ public final class ExtractArgExpressionConverter {
     
     /**
      * Convert extract arg expression to sql node.
-     * 
+     *
      * @param expression extract arg expression
      * @return sql node
      */

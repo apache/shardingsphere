@@ -33,7 +33,7 @@ public interface ShardingStatementValidator {
     
     /**
      * Validate whether sharding operation is supported before route.
-     * 
+     *
      * @param shardingRule sharding rule
      * @param sqlStatementContext SQL statement context
      * @param params SQL parameters
@@ -44,7 +44,7 @@ public interface ShardingStatementValidator {
     
     /**
      * Validate whether sharding operation is supported after route.
-     * 
+     *
      * @param shardingRule sharding rule
      * @param sqlStatementContext SQL statement context
      * @param hintValueContext hint value context

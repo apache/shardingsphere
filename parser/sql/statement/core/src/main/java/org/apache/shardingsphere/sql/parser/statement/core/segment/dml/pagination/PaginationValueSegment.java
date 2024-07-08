@@ -26,7 +26,7 @@ public interface PaginationValueSegment extends SQLSegment {
     
     /**
      * Is bound opened.
-     * 
+     *
      * @return bound opened
      */
     boolean isBoundOpened();

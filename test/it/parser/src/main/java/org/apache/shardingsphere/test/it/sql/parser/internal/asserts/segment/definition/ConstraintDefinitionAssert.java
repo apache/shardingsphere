@@ -39,7 +39,7 @@ public final class ConstraintDefinitionAssert {
     
     /**
      * Assert actual constraint definition segment is correct with expected constraint definition.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual constraint definition segment
      * @param expected expected constraint definition

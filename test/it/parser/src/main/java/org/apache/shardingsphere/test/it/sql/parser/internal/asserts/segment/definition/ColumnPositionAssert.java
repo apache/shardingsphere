@@ -38,7 +38,7 @@ public final class ColumnPositionAssert {
     
     /**
      * Assert actual column position segment is correct with expected column position.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual column position segment
      * @param expected expected column position

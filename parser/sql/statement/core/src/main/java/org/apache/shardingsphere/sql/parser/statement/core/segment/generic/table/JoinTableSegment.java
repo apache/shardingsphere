@@ -69,7 +69,7 @@ public final class JoinTableSegment implements TableSegment {
     
     /**
      * Get alias segment.
-     * 
+     *
      * @return alias segment
      */
     public Optional<AliasSegment> getAliasSegment() {

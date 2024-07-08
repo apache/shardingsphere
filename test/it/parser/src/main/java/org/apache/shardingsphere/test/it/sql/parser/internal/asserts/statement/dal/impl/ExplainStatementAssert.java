@@ -38,7 +38,7 @@ public final class ExplainStatementAssert {
     
     /**
      * Assert explain statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual explain statement
      * @param expected expected explain statement test case

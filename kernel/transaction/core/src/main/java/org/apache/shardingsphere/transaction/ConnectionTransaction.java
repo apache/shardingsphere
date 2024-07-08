@@ -47,7 +47,7 @@ public final class ConnectionTransaction {
     
     /**
      * Whether in transaction.
-     * 
+     *
      * @param transactionContext transaction connection context
      * @return in transaction or not
      */
@@ -66,7 +66,7 @@ public final class ConnectionTransaction {
     
     /**
      * Judge is local transaction or not.
-     * 
+     *
      * @return is local transaction or not
      */
     public boolean isLocalTransaction() {
@@ -119,7 +119,7 @@ public final class ConnectionTransaction {
     
     /**
      * Get distributed transaction operation type.
-     * 
+     *
      * @param autoCommit is auto commit
      * @return distributed transaction operation type
      */

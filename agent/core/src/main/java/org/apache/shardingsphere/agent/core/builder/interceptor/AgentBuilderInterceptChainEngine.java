@@ -29,7 +29,7 @@ public final class AgentBuilderInterceptChainEngine {
     
     /**
      * Intercept agent builder.
-     * 
+     *
      * @param builder origin agent builder
      * @param interceptors agent builder interceptors
      * @return intercepted agent builder

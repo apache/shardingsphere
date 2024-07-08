@@ -38,7 +38,7 @@ public final class OrderedServicesCache {
     
     /**
      * Find cached services.
-     * 
+     *
      * @param spiClass SPI class
      * @param types types
      * @return cached services
@@ -49,7 +49,7 @@ public final class OrderedServicesCache {
     
     /**
      * Cache services.
-     * 
+     *
      * @param spiClass SPI class
      * @param types types
      * @param services services to be cached

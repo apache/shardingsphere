@@ -32,7 +32,7 @@ public final class TruncateStatementAssert {
     
     /**
      * Assert truncate statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual truncate statement
      * @param expected expected truncate statement test case

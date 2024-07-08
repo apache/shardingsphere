@@ -28,7 +28,7 @@ public final class PostgreSQLTextBitUtils {
     
     /**
      * Get bit Text value in PostgreSQL text format.
-     * 
+     *
      * @param jdbcBitValue bit value for jdbc
      * @return bit text value in PostgreSQL text format
      */

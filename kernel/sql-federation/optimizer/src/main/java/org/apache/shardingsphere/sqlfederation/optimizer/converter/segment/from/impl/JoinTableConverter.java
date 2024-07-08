@@ -44,7 +44,7 @@ public final class JoinTableConverter {
     
     /**
      * Convert join table segment to sql node.
-     * 
+     *
      * @param segment join table segment
      * @return sql node
      */

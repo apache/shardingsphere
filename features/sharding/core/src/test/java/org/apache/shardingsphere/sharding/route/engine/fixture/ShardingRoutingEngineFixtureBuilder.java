@@ -70,7 +70,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create based sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createBasedShardingRule() {
@@ -84,7 +84,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create error sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createErrorShardingRule() {
@@ -98,7 +98,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create binding sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createBindingShardingRule() {
@@ -116,7 +116,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create broadcast sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createBroadcastShardingRule() {
@@ -133,7 +133,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create hint sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createHintShardingRule() {
@@ -145,7 +145,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create mixed sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createMixedShardingRule() {
@@ -163,7 +163,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create all sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createAllShardingRule() {
@@ -186,7 +186,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create interval table sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createIntervalTableShardingRule() {
@@ -234,7 +234,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create sharding conditions.
-     * 
+     *
      * @param tableName table name
      * @return created sharding conditions
      */

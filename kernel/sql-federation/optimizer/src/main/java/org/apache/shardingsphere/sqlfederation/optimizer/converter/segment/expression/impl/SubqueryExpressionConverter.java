@@ -33,7 +33,7 @@ public final class SubqueryExpressionConverter {
     
     /**
      * Convert subquery expression segment to sql node.
-     * 
+     *
      * @param expression subquery expression segment
      * @return sql node
      */

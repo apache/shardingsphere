@@ -41,7 +41,7 @@ public final class StatisticsAssembleUtils {
     
     /**
      * Assemble table data.
-     * 
+     *
      * @param table table
      * @param metaData meta data
      * @return ShardingSphere table data

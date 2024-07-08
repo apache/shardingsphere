@@ -33,7 +33,7 @@ public interface PipelineJobItemProgress {
     
     /**
      * Set status.
-     * 
+     *
      * @param jobStatus job status
      */
     void setStatus(JobStatus jobStatus);

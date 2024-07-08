@@ -57,7 +57,7 @@ public final class DriverRawPushDownExecuteUpdateExecutor {
     
     /**
      * Execute update.
-     * 
+     *
      * @param database database
      * @param executionContext execution context
      * @return updated row count

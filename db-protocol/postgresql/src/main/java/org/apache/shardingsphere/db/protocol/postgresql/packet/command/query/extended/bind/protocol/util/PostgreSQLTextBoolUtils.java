@@ -28,7 +28,7 @@ public final class PostgreSQLTextBoolUtils {
     
     /**
      * Get Boolean Text value in PostgreSQL text format.
-     * 
+     *
      * @param jdbcBoolValue bool value for jdbc
      * @return boolean value in PostgreSQL text format
      */

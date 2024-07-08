@@ -77,7 +77,7 @@ public final class ResourceMetaData {
     
     /**
      * Get not existed resource name.
-     * 
+     *
      * @param resourceNames resource names to be judged
      * @return not existed resource names
      */

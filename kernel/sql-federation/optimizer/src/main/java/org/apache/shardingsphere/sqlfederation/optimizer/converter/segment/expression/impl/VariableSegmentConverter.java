@@ -34,7 +34,7 @@ public final class VariableSegmentConverter {
     
     /**
      * Convert variable segment to sql node.
-     * 
+     *
      * @param segment variable segment
      * @return sql node
      */

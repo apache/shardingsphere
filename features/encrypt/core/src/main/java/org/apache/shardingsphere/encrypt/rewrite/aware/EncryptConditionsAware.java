@@ -28,7 +28,7 @@ public interface EncryptConditionsAware {
     
     /**
      * Set encrypt conditions.
-     * 
+     *
      * @param encryptConditions encrypt conditions
      */
     void setEncryptConditions(Collection<EncryptCondition> encryptConditions);

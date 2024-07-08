@@ -36,7 +36,7 @@ public final class RollbackStatementAssert {
     
     /**
      * Assert rollback statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual rollback statement
      * @param expected expected rollback statement test case

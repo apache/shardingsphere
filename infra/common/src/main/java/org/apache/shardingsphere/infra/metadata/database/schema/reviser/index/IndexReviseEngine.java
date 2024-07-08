@@ -41,7 +41,7 @@ public final class IndexReviseEngine<T extends ShardingSphereRule> {
     
     /**
      * Revise index meta data.
-     * 
+     *
      * @param tableName table name
      * @param originalMetaDataList original index meta data list
      * @return revised index meta data

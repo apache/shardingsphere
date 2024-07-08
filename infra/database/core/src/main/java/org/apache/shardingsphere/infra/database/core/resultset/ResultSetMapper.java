@@ -39,7 +39,7 @@ public final class ResultSetMapper {
     
     /**
      * Load result set value.
-     * 
+     *
      * @param resultSet result set to be loaded
      * @param columnIndex column index
      * @return data value

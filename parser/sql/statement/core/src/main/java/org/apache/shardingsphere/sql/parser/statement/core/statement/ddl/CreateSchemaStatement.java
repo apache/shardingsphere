@@ -33,7 +33,7 @@ public abstract class CreateSchemaStatement extends AbstractSQLStatement impleme
     
     /**
      * Get schema name.
-     * 
+     *
      * @return schema name
      */
     public Optional<IdentifierValue> getSchemaName() {

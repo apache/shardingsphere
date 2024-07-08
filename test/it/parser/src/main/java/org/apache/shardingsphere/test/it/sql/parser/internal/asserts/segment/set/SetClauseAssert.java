@@ -38,7 +38,7 @@ public final class SetClauseAssert {
     
     /**
      * Assert actual set assignment segment is correct with expected set assignment.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual set assignment segment
      * @param expected expected set clause

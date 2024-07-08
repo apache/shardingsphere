@@ -75,7 +75,7 @@ public final class ShardingSphereDatabase {
     
     /**
      * Create database meta data.
-     * 
+     *
      * @param name database name
      * @param protocolType database protocol type
      * @param storageTypes storage types
@@ -99,7 +99,7 @@ public final class ShardingSphereDatabase {
     
     /**
      * Create system database meta data.
-     * 
+     *
      * @param name system database name
      * @param protocolType protocol database type
      * @param props configuration properties

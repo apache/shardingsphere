@@ -40,7 +40,7 @@ public final class SQLTokenGenerators {
     
     /**
      * Add all SQL token generators.
-     * 
+     *
      * @param sqlTokenGenerators SQL token generators
      */
     public void addAll(final Collection<SQLTokenGenerator> sqlTokenGenerators) {

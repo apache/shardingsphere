@@ -54,7 +54,7 @@ public final class DeleteStatementAssert {
     
     /**
      * Assert delete statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual delete statement
      * @param expected expected delete statement test case

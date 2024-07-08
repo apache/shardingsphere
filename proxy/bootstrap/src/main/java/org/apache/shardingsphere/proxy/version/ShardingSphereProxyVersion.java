@@ -44,7 +44,7 @@ public final class ShardingSphereProxyVersion {
     
     /**
      * Set version.
-     * 
+     *
      * @param contextManager context manager
      */
     public static void setVersion(final ContextManager contextManager) {

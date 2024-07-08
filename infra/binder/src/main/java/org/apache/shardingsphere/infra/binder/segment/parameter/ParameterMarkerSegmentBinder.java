@@ -36,7 +36,7 @@ public final class ParameterMarkerSegmentBinder {
     
     /**
      * Bind parameter marker segment with metadata.
-     * 
+     *
      * @param parameterMarkerSegments parameter marker segments
      * @param parameterMarkerSegmentBoundedInfos parameter marker segment bounded infos
      * @return bounded parameter marker segment

@@ -92,7 +92,7 @@ public final class BroadcastRule implements DatabaseRule {
     
     /**
      * Get broadcast rule table names.
-     * 
+     *
      * @param logicTableNames logic table names
      * @return broadcast rule table names.
      */

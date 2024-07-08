@@ -91,7 +91,7 @@ public final class SingleRule implements DatabaseRule {
     
     /**
      * Judge whether all tables are in same compute node or not.
-     * 
+     *
      * @param dataNodes data nodes
      * @param singleTables single tables
      * @return whether all tables are in same compute node or not

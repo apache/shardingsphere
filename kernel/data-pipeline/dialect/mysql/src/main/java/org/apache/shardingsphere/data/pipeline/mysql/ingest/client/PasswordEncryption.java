@@ -58,7 +58,7 @@ public final class PasswordEncryption {
      * Encrypt password with sha2.
      *
      * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_caching_sha2_authentication_exchanges.html">Caching_sha2_password information</a>
-     * 
+     *
      * @param password password
      * @param seed 20-bytes random data from server
      * @return encrypted password

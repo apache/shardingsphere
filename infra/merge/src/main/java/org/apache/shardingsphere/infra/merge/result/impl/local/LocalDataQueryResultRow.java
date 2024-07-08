@@ -75,7 +75,7 @@ public final class LocalDataQueryResultRow {
     
     /**
      * Get data from cell.
-     * 
+     *
      * @param columnIndex column index
      * @return data from cell
      */

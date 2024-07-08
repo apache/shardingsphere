@@ -97,7 +97,7 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     
     /**
      * Get alias segment.
-     * 
+     *
      * @return alias segment
      */
     public Optional<AliasSegment> getAliasSegment() {

@@ -38,7 +38,7 @@ public final class StateContext {
     
     /**
      * Get cluster state.
-     * 
+     *
      * @return cluster state
      */
     public ClusterState getClusterState() {
@@ -47,7 +47,7 @@ public final class StateContext {
     
     /**
      * Switch cluster state.
-     * 
+     *
      * @param state to be switched cluster state
      */
     public void switchClusterState(final ClusterState state) {

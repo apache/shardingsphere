@@ -59,7 +59,7 @@ public final class UnaryOperationExpressionConverter {
     
     /**
      * Convert unary operation expression to sql node.
-     * 
+     *
      * @param segment unary operation expression
      * @return sql node
      */

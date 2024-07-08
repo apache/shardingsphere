@@ -51,7 +51,7 @@ public final class SQLTranslatorRule implements GlobalRule {
     
     /**
      * Translate SQL.
-     * 
+     *
      * @param sql to be translated SQL
      * @param parameters to be translated parameters
      * @param queryContext query context

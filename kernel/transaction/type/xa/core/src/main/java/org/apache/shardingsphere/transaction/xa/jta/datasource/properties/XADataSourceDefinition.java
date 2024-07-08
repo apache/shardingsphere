@@ -30,7 +30,7 @@ public interface XADataSourceDefinition extends DatabaseTypedSPI {
     
     /**
      * Get XA driver class names.
-     * 
+     *
      * @return XA driver class names
      */
     Collection<String> getXADriverClassNames();

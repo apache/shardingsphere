@@ -31,7 +31,7 @@ public final class PropertiesBuilder {
     
     /**
      * Build properties.
-     * 
+     *
      * @param props to be built properties
      * @return built properties
      */

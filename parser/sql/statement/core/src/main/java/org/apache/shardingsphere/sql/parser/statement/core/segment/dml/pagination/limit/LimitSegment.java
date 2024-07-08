@@ -41,7 +41,7 @@ public final class LimitSegment implements SQLSegment {
     
     /**
      * Get offset.
-     * 
+     *
      * @return offset
      */
     public Optional<PaginationValueSegment> getOffset() {

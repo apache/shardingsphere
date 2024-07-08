@@ -33,7 +33,7 @@ public interface DistributedLockCreator<C, P extends TypedProperties<?>> extends
     
     /**
      * Create distributed lock.
-     * 
+     *
      * @param lockKey lock key
      * @param client client
      * @param props props

@@ -41,7 +41,7 @@ public final class CommentStatementAssert {
     
     /**
      * Assert comment statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual comment statement
      * @param expected expected comment statement test case

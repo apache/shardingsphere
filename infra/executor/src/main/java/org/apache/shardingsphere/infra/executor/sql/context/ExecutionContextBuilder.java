@@ -45,7 +45,7 @@ public final class ExecutionContextBuilder {
     
     /**
      * Build execution contexts.
-     * 
+     *
      * @param database database
      * @param sqlRewriteResult SQL rewrite result
      * @param sqlStatementContext SQL statement context

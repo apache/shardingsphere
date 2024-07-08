@@ -36,7 +36,7 @@ public enum Paren {
     
     /**
      * Judge passed token is left paren or not.
-     * 
+     *
      * @param token token
      * @return is left paren or not
      */
@@ -46,7 +46,7 @@ public enum Paren {
     
     /**
      * Judge left paren match right paren or not.
-     * 
+     *
      * @param leftToken left token
      * @param rightToken right token
      * @return match or not

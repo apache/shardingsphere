@@ -31,7 +31,7 @@ public final class CreateRoleStatementAssert {
     
     /**
      * Assert create role statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual create role statement
      * @param expected expected create role statement test case

@@ -49,7 +49,7 @@ public final class StandardJdbcUrlParser {
     
     /**
      * Parse JDBC URL.
-     * 
+     *
      * @param jdbcUrl JDBC URL to be parsed
      * @return parsed JDBC URL
      */

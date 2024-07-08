@@ -38,7 +38,7 @@ public interface CharsetVariableProvider extends DatabaseTypedSPI {
     
     /**
      * Parse charset from variable.
-     * 
+     *
      * @param variableValue variable value
      * @return charset
      */

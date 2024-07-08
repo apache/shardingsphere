@@ -31,7 +31,7 @@ public final class DefaultYamlTupleProcessor {
     
     /**
      * Process node tuple.
-     * 
+     *
      * @param nodeTuple node tuple
      * @return processed node tuple
      */

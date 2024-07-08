@@ -49,7 +49,7 @@ public final class SQLFederationRule implements GlobalRule {
     
     /**
      * Get optimizer context.
-     * 
+     *
      * @return optimizer context
      */
     public OptimizerContext getOptimizerContext() {

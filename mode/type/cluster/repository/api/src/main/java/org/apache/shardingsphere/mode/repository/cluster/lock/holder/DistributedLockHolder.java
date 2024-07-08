@@ -47,7 +47,7 @@ public final class DistributedLockHolder {
     
     /**
      * Get distributed lock.
-     * 
+     *
      * @param lockKey lock key
      * @return distributed lock
      */

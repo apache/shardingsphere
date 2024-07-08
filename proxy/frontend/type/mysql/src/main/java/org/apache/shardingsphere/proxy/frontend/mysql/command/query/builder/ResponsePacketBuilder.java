@@ -47,7 +47,7 @@ public final class ResponsePacketBuilder {
     
     /**
      * Build query response packets.
-     * 
+     *
      * @param queryResponseHeader query response header
      * @param characterSet MySQL character set id
      * @param statusFlags server status flags

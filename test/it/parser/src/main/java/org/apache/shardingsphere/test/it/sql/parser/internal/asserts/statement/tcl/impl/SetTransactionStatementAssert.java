@@ -31,7 +31,7 @@ public final class SetTransactionStatementAssert {
     
     /**
      * Assert set transaction statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual set transaction statement
      * @param expected expected set transaction statement test case

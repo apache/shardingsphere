@@ -49,7 +49,7 @@ public final class SQLDialectFactory {
     
     /**
      * Get SQL dialect.
-     * 
+     *
      * @param databaseType database type
      * @return SQL dialect
      */

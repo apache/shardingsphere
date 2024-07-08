@@ -43,7 +43,7 @@ public final class CaseWhenExpressionConverter {
     
     /**
      * Convert case when expression to sql node.
-     * 
+     *
      * @param segment case when expression
      * @return sql node
      */

@@ -36,7 +36,7 @@ public enum MySQLNewParametersBoundFlag {
     
     /**
      * Value of new parameters bound flag.
-     * 
+     *
      * @param value value
      * @return new parameters bound flag
      * @throws MySQLProtocolException MySQL protocol exception

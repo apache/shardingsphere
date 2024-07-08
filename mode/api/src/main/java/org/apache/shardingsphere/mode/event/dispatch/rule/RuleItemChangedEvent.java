@@ -26,7 +26,7 @@ public interface RuleItemChangedEvent extends DispatchEvent {
     
     /**
      * Get rule item type.
-     * 
+     *
      * @return rule item type
      */
     String getType();

@@ -81,7 +81,7 @@ public final class EncryptGeneratorFixtureBuilder {
     
     /**
      * Create encrypt rule.
-     * 
+     *
      * @return created encrypt rule
      */
     public static EncryptRule createEncryptRule() {
@@ -102,7 +102,7 @@ public final class EncryptGeneratorFixtureBuilder {
     
     /**
      * Create insert statement context.
-     * 
+     *
      * @param params parameters
      * @return created insert statement context
      */
@@ -160,7 +160,7 @@ public final class EncryptGeneratorFixtureBuilder {
     
     /**
      * Create update statement context.
-     * 
+     *
      * @return created update statement context
      */
     public static UpdateStatementContext createUpdateStatementContext() {
@@ -186,7 +186,7 @@ public final class EncryptGeneratorFixtureBuilder {
     
     /**
      * Get previous SQL tokens.
-     * 
+     *
      * @return previous SQL tokens
      */
     public static List<SQLToken> getPreviousSQLTokens() {
@@ -206,7 +206,7 @@ public final class EncryptGeneratorFixtureBuilder {
     
     /**
      * Create select statement context.
-     * 
+     *
      * @return select statement context
      */
     public static SQLStatementContext createSelectStatementContext() {

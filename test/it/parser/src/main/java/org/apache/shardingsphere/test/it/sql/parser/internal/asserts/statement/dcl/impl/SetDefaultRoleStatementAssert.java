@@ -31,7 +31,7 @@ public final class SetDefaultRoleStatementAssert {
     
     /**
      * Assert set role statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual set role statement
      * @param expected expected set role statement test case

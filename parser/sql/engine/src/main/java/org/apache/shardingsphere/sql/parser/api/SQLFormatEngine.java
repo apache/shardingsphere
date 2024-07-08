@@ -42,7 +42,7 @@ public final class SQLFormatEngine {
     
     /**
      * Format SQL.
-     * 
+     *
      * @param sql SQL to be formatted
      * @param useCache whether to use cache
      * @param props properties

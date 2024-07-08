@@ -41,7 +41,7 @@ public abstract class SetTransactionStatement extends AbstractSQLStatement imple
     
     /**
      * Get isolation level.
-     * 
+     *
      * @return isolation level
      */
     public Optional<TransactionIsolationLevel> getIsolationLevel() {
@@ -50,7 +50,7 @@ public abstract class SetTransactionStatement extends AbstractSQLStatement imple
     
     /**
      * Get access mode.
-     * 
+     *
      * @return access mode 
      */
     public Optional<TransactionAccessType> getAccessMode() {

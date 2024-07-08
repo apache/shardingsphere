@@ -47,7 +47,7 @@ public final class DriverRawPushDownExecuteExecutor {
     
     /**
      * Execute.
-     * 
+     *
      * @param database database
      * @param executionContext execution context
      * @return is query result

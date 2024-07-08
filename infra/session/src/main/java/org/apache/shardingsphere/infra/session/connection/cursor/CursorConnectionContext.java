@@ -40,7 +40,7 @@ public final class CursorConnectionContext implements AutoCloseable {
     
     /**
      * Remove cursor.
-     * 
+     *
      * @param cursorName cursor name to be removed
      */
     public void removeCursor(final String cursorName) {

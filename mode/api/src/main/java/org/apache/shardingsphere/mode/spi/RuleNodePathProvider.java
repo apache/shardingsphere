@@ -30,7 +30,7 @@ public interface RuleNodePathProvider extends TypedSPI {
     
     /**
      * Get rule node path.
-     * 
+     *
      * @return got rule node path
      */
     RuleNodePath getRuleNodePath();

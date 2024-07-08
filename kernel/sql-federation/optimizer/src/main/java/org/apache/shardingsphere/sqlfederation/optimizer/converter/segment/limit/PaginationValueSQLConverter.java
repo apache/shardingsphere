@@ -37,7 +37,7 @@ public final class PaginationValueSQLConverter {
     
     /**
      * Convert pagination value segment to sql node.
-     * 
+     *
      * @param segment pagination value segment
      * @return sql node
      */

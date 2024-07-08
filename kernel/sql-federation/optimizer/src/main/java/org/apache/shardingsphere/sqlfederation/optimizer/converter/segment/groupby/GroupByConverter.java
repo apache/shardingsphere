@@ -34,7 +34,7 @@ public final class GroupByConverter {
     
     /**
      * Convert group by segment to sql node list.
-     * 
+     *
      * @param segment group by segment
      * @return sql node list
      */

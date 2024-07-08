@@ -38,7 +38,7 @@ public final class FrontDatabaseProtocolTypeFactory {
     
     /**
      * Get front database protocol type.
-     * 
+     *
      * @return front database protocol type
      */
     public static DatabaseType getDatabaseType() {

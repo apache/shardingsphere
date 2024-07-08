@@ -40,7 +40,7 @@ public final class SessionVariableRecordExecutor {
     
     /**
      * Record replayed variable.
-     * 
+     *
      * @param variableName variable name
      * @param assignValue assign value
      */

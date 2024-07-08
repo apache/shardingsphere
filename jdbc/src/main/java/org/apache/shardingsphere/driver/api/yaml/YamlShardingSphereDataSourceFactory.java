@@ -60,7 +60,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param yamlBytes YAML bytes for rule configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
@@ -73,7 +73,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param dataSourceMap data source map
      * @param yamlFile YAML file for rule configurations
      * @return ShardingSphere data source
@@ -86,7 +86,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param dataSource data source
      * @param yamlFile YAML file for rule configurations
      * @return ShardingSphere data source
@@ -99,7 +99,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param dataSourceMap data source map
      * @param yamlBytes YAML bytes for rule configurations
      * @return ShardingSphere data source
@@ -112,7 +112,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param dataSource data source
      * @param yamlBytes YAML bytes for rule configurations
      * @return ShardingSphere data source

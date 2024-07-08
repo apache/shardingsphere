@@ -38,7 +38,7 @@ public final class OnDuplicateKeyColumnsAssert {
     
     /**
      * Assert actual on duplicate key columns segment is correct with expected on duplicate key columns.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual on duplicate key columns segment
      * @param expected expected on duplicate key columns

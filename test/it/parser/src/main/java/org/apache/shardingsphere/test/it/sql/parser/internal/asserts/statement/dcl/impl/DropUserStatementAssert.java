@@ -31,7 +31,7 @@ public final class DropUserStatementAssert {
     
     /**
      * Assert drop user statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual drop user statement
      * @param expected expected drop user statement test case

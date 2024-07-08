@@ -35,7 +35,7 @@ public interface SchemaMetaDataAware {
     
     /**
      * Set schema meta data.
-     * 
+     *
      * @param schemas schema meta data map
      */
     void setSchemas(Map<String, ShardingSphereSchema> schemas);

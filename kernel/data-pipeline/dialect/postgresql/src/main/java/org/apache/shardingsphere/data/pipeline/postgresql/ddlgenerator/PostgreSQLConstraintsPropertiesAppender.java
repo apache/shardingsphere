@@ -41,7 +41,7 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
     
     /**
      * Append constraints properties.
-     * 
+     *
      * @param context create table sql context
      */
     public void append(final Map<String, Object> context) {

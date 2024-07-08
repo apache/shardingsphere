@@ -190,7 +190,7 @@ public final class DALStatementAssert {
     
     /**
      * Assert DAL statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual DAL statement
      * @param expected expected DAL statement test case

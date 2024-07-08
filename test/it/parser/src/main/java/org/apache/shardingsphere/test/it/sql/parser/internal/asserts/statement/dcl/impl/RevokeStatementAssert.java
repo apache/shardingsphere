@@ -35,7 +35,7 @@ public final class RevokeStatementAssert {
     
     /**
      * Assert revoke statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual revoke statement
      * @param expected expected revoke statement test case

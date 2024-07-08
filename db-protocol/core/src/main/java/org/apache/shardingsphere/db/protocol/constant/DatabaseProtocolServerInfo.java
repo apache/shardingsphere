@@ -58,7 +58,7 @@ public final class DatabaseProtocolServerInfo {
     
     /**
      * Get default protocol version.
-     * 
+     *
      * @param databaseType database type
      * @return default protocol version
      */

@@ -33,7 +33,7 @@ public final class MaskAlgorithmPropertiesChecker {
     
     /**
      * Check single char.
-     * 
+     *
      * @param props properties to be checked
      * @param propKey properties key to be checked
      * @param algorithm mask algorithm
@@ -45,7 +45,7 @@ public final class MaskAlgorithmPropertiesChecker {
     
     /**
      * Check at least one char.
-     * 
+     *
      * @param props properties to be checked
      * @param propKey properties key to be checked
      * @param algorithm mask algorithm
@@ -57,7 +57,7 @@ public final class MaskAlgorithmPropertiesChecker {
     
     /**
      * check positive integer.
-     * 
+     *
      * @param props properties to be checked
      * @param propKey properties key to be checked
      * @param algorithm mask algorithm

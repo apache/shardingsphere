@@ -58,7 +58,7 @@ public final class ProxyConfigurationLoader {
     // TODO remove COMPATIBLE_GLOBAL_CONFIG_FILE in next major version
     /**
      * to be removed.
-     * 
+     *
      * @deprecated to be removed
      */
     @Deprecated

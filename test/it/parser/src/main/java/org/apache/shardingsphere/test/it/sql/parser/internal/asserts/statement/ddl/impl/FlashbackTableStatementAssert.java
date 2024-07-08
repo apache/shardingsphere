@@ -32,7 +32,7 @@ public final class FlashbackTableStatementAssert {
     
     /**
      * Assert flashback table statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual flashback table statement
      * @param expected expected flashback table statement test case

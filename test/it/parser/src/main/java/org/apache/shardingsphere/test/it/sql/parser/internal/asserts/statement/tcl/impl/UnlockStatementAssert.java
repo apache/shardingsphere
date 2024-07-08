@@ -31,7 +31,7 @@ public final class UnlockStatementAssert {
     
     /**
      * Assert unlock statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual unlock statement
      * @param expected expected unlock statement test case

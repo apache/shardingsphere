@@ -48,7 +48,7 @@ public final class PaginationContextEngine {
     
     /**
      * Create pagination context.
-     * 
+     *
      * @param selectStatement SQL statement
      * @param projectionsContext projections context
      * @param params SQL parameters

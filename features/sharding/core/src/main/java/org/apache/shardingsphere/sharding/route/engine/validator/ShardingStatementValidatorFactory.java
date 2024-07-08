@@ -70,7 +70,7 @@ public final class ShardingStatementValidatorFactory {
     
     /**
      * New instance of sharding statement validator.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param shardingConditions sharding conditions
      * @return created instance

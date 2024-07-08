@@ -42,7 +42,7 @@ public final class ShowStorageUnitsStatement extends ResourceQueryStatement impl
     
     /**
      * Get usage count.
-     * 
+     *
      * @return usage count
      */
     public Optional<Integer> getUsageCount() {

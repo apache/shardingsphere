@@ -24,7 +24,7 @@ public interface PostgreSQLIdentifierTag {
     
     /**
      * Get identifier tag value.
-     * 
+     *
      * @return identifier tag value
      */
     char getValue();

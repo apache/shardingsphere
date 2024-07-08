@@ -41,7 +41,7 @@ public final class SimpleTableConverter {
     
     /**
      * Convert simple table segment to sql node.
-     * 
+     *
      * @param segment simple table segment
      * @return sql node
      */

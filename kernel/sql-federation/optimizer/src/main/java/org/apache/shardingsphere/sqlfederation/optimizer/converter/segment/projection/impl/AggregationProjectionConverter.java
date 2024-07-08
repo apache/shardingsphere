@@ -65,7 +65,7 @@ public final class AggregationProjectionConverter {
     
     /**
      * Convert aggregation projection segment to sql node.
-     * 
+     *
      * @param segment aggregation projection segment
      * @return sql node
      */

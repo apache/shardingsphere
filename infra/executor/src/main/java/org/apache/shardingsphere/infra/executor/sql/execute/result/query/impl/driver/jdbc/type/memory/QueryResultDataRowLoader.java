@@ -41,7 +41,7 @@ public final class QueryResultDataRowLoader {
     
     /**
      * Load query result data row.
-     * 
+     *
      * @param columnCount column count
      * @param resultSet result set
      * @return query result data row

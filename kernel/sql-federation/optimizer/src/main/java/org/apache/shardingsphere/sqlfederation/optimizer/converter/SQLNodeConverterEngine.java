@@ -47,7 +47,7 @@ public final class SQLNodeConverterEngine {
     
     /**
      * Convert SQL sql statement to SQL node.
-     * 
+     *
      * @param sqlStatement SQL sqlStatement to be converted
      * @return sqlNode converted SQL node
      * @throws OptimizationSQLNodeConvertException optimization SQL node convert exception

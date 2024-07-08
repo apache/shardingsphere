@@ -29,7 +29,7 @@ public final class LimitPaginationContextEngine {
     
     /**
      * Create pagination context.
-     * 
+     *
      * @param limitSegment limit segment
      * @param params SQL parameters
      * @return pagination context

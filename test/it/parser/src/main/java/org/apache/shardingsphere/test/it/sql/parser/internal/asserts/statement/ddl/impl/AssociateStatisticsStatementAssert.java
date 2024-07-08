@@ -44,7 +44,7 @@ public final class AssociateStatisticsStatementAssert {
     
     /**
      * Assert associate statistics statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual associate statistics statement
      * @param expected expected associate statistics statement test case

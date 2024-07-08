@@ -28,7 +28,7 @@ public enum DistSQLVariable {
     
     /**
      * Returns the variable constant of the specified variable name.
-     * 
+     *
      * @param variableName variable name
      * @return variable constant
      * @throws UnsupportedVariableException unsupported variable exception

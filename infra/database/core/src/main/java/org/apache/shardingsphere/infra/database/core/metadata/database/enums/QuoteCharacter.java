@@ -60,7 +60,7 @@ public enum QuoteCharacter {
     
     /**
      * Get quote character.
-     * 
+     *
      * @param value value to be get quote character
      * @return value of quote character
      */
@@ -73,7 +73,7 @@ public enum QuoteCharacter {
     
     /**
      * Wrap value with quote character.
-     * 
+     *
      * @param value value to be wrapped
      * @return wrapped value
      */
@@ -93,7 +93,7 @@ public enum QuoteCharacter {
     
     /**
      * Is wrapped by quote character.
-     * 
+     *
      * @param value value to be judged
      * @return is wrapped or not
      */

@@ -31,7 +31,7 @@ public final class BeginTransactionStatementAssert {
     
     /**
      * Assert begin transaction statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual begin transaction statement
      * @param expected expected begin transaction statement test case

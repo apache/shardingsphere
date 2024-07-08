@@ -39,7 +39,7 @@ public interface JobConfigurationChangedProcessor<T extends PipelineJobConfigura
     
     /**
      * Clean pipeline job.
-     * 
+     *
      * @param jobConfig pipeline job configuration
      */
     default void clean(final JobConfiguration jobConfig) {

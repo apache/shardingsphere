@@ -81,7 +81,7 @@ public final class DriverExecuteBatchExecutor {
     
     /**
      * Add batch.
-     * 
+     *
      * @param queryContext query context
      * @param database database
      */
@@ -98,7 +98,7 @@ public final class DriverExecuteBatchExecutor {
     
     /**
      * Execute batch.
-     * 
+     *
      * @param database database
      * @param sqlStatementContext SQL statement context
      * @param generatedValues generated values

@@ -34,7 +34,7 @@ public final class DatabaseOperateBackendHandlerFactory {
     
     /**
      * Create new instance of database operate backend handler.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param connectionSession connection session
      * @return created instance

@@ -40,7 +40,7 @@ public abstract class ShowTablesStatement extends AbstractSQLStatement implement
     
     /**
      * Get from database segment.
-     * 
+     *
      * @return from database segment
      */
     public Optional<FromDatabaseSegment> getFromDatabase() {

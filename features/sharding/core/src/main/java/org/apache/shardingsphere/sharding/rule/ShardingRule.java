@@ -503,7 +503,7 @@ public final class ShardingRule implements DatabaseRule {
     
     /**
      * Judge whether support auto increment or not.
-     * 
+     *
      * @param logicTableName logic table name
      * @return whether support auto increment or not
      */

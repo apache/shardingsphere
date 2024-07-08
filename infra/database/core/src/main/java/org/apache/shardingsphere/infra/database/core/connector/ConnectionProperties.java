@@ -26,14 +26,14 @@ public interface ConnectionProperties {
     
     /**
      * Get host name.
-     * 
+     *
      * @return host name
      */
     String getHostname();
     
     /**
      * Get port.
-     * 
+     *
      * @return port
      */
     int getPort();
@@ -47,14 +47,14 @@ public interface ConnectionProperties {
     
     /**
      * Get schema.
-     * 
+     *
      * @return schema
      */
     String getSchema();
     
     /**
      * Get query properties.
-     * 
+     *
      * @return query properties
      */
     Properties getQueryProperties();

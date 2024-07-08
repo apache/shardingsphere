@@ -30,7 +30,7 @@ public @interface InternalSQLParserITSettings {
     
     /**
      * Get to be tested database types.
-     * 
+     *
      * @return to be tested database types
      */
     String[] value();

@@ -40,7 +40,7 @@ public final class IndexOrderByItemConverter {
     
     /**
      * Convert index order by item segment to sql node.
-     * 
+     *
      * @param segment index order by item segment
      * @return sql node
      */

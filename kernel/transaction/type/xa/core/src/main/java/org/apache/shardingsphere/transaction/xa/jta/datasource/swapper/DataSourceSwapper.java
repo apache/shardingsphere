@@ -46,7 +46,7 @@ public final class DataSourceSwapper {
     
     /**
      * Swap data source to database access configuration.
-     * 
+     *
      * @param dataSource data source
      * @return XADataSource XA data source
      */

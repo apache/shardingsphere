@@ -37,7 +37,7 @@ public final class DenyUserStatementAssert {
     
     /**
      * Assert deny user statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual deny user statement
      * @param expected expected deny user statement test case

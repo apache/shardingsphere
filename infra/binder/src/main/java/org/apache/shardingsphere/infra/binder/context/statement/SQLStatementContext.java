@@ -27,14 +27,14 @@ public interface SQLStatementContext {
     
     /**
      * Get SQL statement.
-     * 
+     *
      * @return SQL statement
      */
     SQLStatement getSqlStatement();
     
     /**
      * Get database type.
-     * 
+     *
      * @return database type
      */
     DatabaseType getDatabaseType();

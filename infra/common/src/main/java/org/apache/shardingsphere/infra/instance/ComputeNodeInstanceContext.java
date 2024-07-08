@@ -125,7 +125,7 @@ public final class ComputeNodeInstanceContext {
     
     /**
      * Update instance label.
-     * 
+     *
      * @param instanceId instance id
      * @param labels collection of label
      */
@@ -166,7 +166,7 @@ public final class ComputeNodeInstanceContext {
     
     /**
      * Add compute node instance.
-     * 
+     *
      * @param instance compute node instance
      */
     public void addComputeNodeInstance(final ComputeNodeInstance instance) {
@@ -202,7 +202,7 @@ public final class ComputeNodeInstanceContext {
     
     /**
      * Get compute node instance by instance id.
-     * 
+     *
      * @param instanceId instance id
      * @return compute node instance
      */
@@ -212,7 +212,7 @@ public final class ComputeNodeInstanceContext {
     
     /**
      * Is cluster instance or not.
-     * 
+     *
      * @return true if is cluster, else false
      */
     public boolean isCluster() {

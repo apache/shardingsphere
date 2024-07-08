@@ -30,7 +30,7 @@ public interface DialectPipelineJobDataSourcePrepareOption extends DatabaseTyped
     
     /**
      * Is support if not exists on create schema SQL.
-     * 
+     *
      * @return supported or not
      */
     boolean isSupportIfNotExistsOnCreateSchema();

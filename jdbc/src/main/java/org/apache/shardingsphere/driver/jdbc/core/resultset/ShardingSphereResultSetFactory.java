@@ -53,7 +53,7 @@ public final class ShardingSphereResultSetFactory {
     
     /**
      * Create new instance of shardingSphere result set.
-     * 
+     *
      * @param database database
      * @param queryContext query context
      * @param queryResults query results

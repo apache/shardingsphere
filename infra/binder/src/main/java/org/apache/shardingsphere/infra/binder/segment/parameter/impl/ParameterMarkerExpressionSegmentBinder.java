@@ -56,7 +56,7 @@ public final class ParameterMarkerExpressionSegmentBinder {
     
     /**
      * Bind parameter marker expression segment with metadata.
-     * 
+     *
      * @param segment parameter marker expression segment
      * @param boundedInfos parameter marker expression segment bounded info map
      * @return bounded parameter marker expression segment

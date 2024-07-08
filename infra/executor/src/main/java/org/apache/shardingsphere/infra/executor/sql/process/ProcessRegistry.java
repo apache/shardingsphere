@@ -76,7 +76,7 @@ public final class ProcessRegistry {
     
     /**
      * Get process.
-     * 
+     *
      * @param id process ID
      * @return process
      */
@@ -86,7 +86,7 @@ public final class ProcessRegistry {
     
     /**
      * Remove process.
-     * 
+     *
      * @param id process ID
      */
     public void remove(final String id) {
@@ -95,7 +95,7 @@ public final class ProcessRegistry {
     
     /**
      * List all process.
-     * 
+     *
      * @return all processes
      */
     public Collection<Process> listAll() {

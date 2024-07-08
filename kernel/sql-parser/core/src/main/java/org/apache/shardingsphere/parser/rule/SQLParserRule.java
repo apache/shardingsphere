@@ -45,7 +45,7 @@ public final class SQLParserRule implements GlobalRule {
     
     /**
      * Get SQL parser engine.
-     * 
+     *
      * @param databaseType database type
      * @return SQL parser engine
      */

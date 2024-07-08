@@ -28,7 +28,7 @@ public interface SingleMetaDataValidator {
     
     /**
      * Validate single table meta data.
-     * 
+     *
      * @param rule single rule
      * @param sqlStatementContext SQL statement context
      * @param database database

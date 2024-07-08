@@ -41,7 +41,7 @@ public final class ShardingSphereURLLoadEngine {
     
     /**
      * Load configuration content.
-     * 
+     *
      * @return loaded content
      */
     public byte[] loadContent() {

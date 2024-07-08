@@ -37,7 +37,7 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
     
     /**
      * Check rule configuration.
-     * 
+     *
      * @param databaseName database name to be checked
      * @param ruleConfig rule configuration to be checked
      * @param dataSourceMap data sources to be checked
@@ -57,7 +57,7 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
     
     /**
      * Get table names.
-     * 
+     *
      * @param ruleConfig rule configuration
      * @return table names
      */

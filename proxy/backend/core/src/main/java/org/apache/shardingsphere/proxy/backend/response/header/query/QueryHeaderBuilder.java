@@ -32,7 +32,7 @@ public interface QueryHeaderBuilder extends DatabaseTypedSPI {
     
     /**
      * Build query header.
-     * 
+     *
      * @param queryResultMetaData query result meta data
      * @param database database
      * @param columnName column name

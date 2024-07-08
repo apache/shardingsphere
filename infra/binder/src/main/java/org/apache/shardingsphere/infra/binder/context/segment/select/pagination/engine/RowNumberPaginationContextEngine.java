@@ -63,7 +63,7 @@ public final class RowNumberPaginationContextEngine {
     
     /**
      * Create pagination context.
-     * 
+     *
      * @param expressions expressions
      * @param projectionsContext projections context
      * @param params SQL parameters

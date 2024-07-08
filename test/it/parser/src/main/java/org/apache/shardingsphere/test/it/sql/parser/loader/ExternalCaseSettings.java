@@ -32,28 +32,28 @@ public @interface ExternalCaseSettings {
     
     /**
      * Get to be tested database types.
-     * 
+     *
      * @return to be tested database types
      */
     String value();
     
     /**
      * Get test case URL.
-     * 
+     *
      * @return test case URL
      */
     String caseURL();
     
     /**
      * Get test case result URL.
-     * 
+     *
      * @return test case result URL
      */
     String resultURL();
     
     /**
      * Report type.
-     * 
+     *
      * @return get report type
      */
     String reportType() default "CSV";

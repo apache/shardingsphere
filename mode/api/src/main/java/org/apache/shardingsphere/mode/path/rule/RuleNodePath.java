@@ -67,7 +67,7 @@ public final class RuleNodePath {
     
     /**
      * Get named rule item node path.
-     * 
+     *
      * @param itemType item type
      * @return named rule item node path
      */

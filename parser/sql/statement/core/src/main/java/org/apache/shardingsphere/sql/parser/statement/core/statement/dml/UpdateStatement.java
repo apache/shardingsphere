@@ -46,7 +46,7 @@ public abstract class UpdateStatement extends AbstractSQLStatement implements DM
     
     /**
      * Get where.
-     * 
+     *
      * @return where segment
      */
     public Optional<WhereSegment> getWhere() {
@@ -55,7 +55,7 @@ public abstract class UpdateStatement extends AbstractSQLStatement implements DM
     
     /**
      * Get assignment segment.
-     * 
+     *
      * @return assignment segment
      */
     public Optional<SetAssignmentSegment> getAssignmentSegment() {

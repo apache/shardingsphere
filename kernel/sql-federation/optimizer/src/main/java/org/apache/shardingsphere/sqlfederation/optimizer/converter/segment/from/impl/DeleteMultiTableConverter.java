@@ -40,7 +40,7 @@ public final class DeleteMultiTableConverter {
     
     /**
      * Convert delete multi table segment to sql node.
-     * 
+     *
      * @param segment delete multi table segment
      * @return sql node
      */

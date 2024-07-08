@@ -37,7 +37,7 @@ public final class DataTypeLengthSegment implements SQLSegment {
     
     /**
      * Get scale.
-     * 
+     *
      * @return scale
      */
     public Optional<Integer> getScale() {

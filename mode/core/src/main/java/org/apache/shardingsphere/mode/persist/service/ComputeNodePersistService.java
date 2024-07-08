@@ -48,7 +48,7 @@ public final class ComputeNodePersistService {
     
     /**
      * Register compute node online.
-     * 
+     *
      * @param computeNodeInstance compute node instance
      */
     public void registerOnline(final ComputeNodeInstance computeNodeInstance) {

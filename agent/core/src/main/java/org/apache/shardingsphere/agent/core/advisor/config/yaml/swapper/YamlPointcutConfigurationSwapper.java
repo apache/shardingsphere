@@ -44,7 +44,7 @@ public final class YamlPointcutConfigurationSwapper {
     
     /**
      * Swap from YAML pointcut configuration to method pointcut.
-     * 
+     *
      * @param yamlConfig YAML pointcut configuration
      * @return method pointcut
      */

@@ -49,7 +49,7 @@ public abstract class SQLParserTestCase {
     
     /**
      * Get parameters.
-     * 
+     *
      * @return parameters
      */
     public List<String> getParameters() {

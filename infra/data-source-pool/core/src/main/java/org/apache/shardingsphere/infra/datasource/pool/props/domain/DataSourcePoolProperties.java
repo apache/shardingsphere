@@ -65,7 +65,7 @@ public final class DataSourcePoolProperties {
     
     /**
      * Get all standard properties.
-     * 
+     *
      * @return all standard properties
      */
     public Map<String, Object> getAllStandardProperties() {

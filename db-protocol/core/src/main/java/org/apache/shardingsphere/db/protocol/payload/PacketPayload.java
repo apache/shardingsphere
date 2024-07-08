@@ -28,14 +28,14 @@ public interface PacketPayload {
     
     /**
      * Get byte buf.
-     * 
+     *
      * @return byte buf
      */
     ByteBuf getByteBuf();
     
     /**
      * Get charset.
-     * 
+     *
      * @return charset
      */
     Charset getCharset();

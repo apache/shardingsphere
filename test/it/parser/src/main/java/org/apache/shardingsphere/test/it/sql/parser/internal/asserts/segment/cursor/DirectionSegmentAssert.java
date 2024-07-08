@@ -37,7 +37,7 @@ public final class DirectionSegmentAssert {
     
     /**
      * Assert actual direction segment is correct with expected direction segment.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual direction segment
      * @param expected expected direction segment

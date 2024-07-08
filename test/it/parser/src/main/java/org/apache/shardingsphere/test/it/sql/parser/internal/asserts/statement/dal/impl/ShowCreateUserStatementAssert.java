@@ -35,7 +35,7 @@ public final class ShowCreateUserStatementAssert {
     
     /**
      * Assert show create user statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show create user statement
      * @param expected expected show create user statement test case

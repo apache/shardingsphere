@@ -31,7 +31,7 @@ public final class SetPasswordStatementAssert {
     
     /**
      * Assert set password statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual set password statement
      * @param expected expected set password statement test case

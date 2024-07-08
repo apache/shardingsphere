@@ -30,7 +30,7 @@ public interface ITContainer extends Startable {
     
     /**
      * Get abbreviation.
-     * 
+     *
      * @return abbreviation
      */
     String getAbbreviation();

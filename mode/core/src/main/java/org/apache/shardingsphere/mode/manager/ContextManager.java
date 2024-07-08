@@ -90,7 +90,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Get meta data contexts.
-     * 
+     *
      * @return meta data contexts
      */
     public MetaDataContexts getMetaDataContexts() {
@@ -99,7 +99,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Renew meta data contexts.
-     * 
+     *
      * @param metaDataContexts meta data contexts
      */
     public void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
@@ -156,7 +156,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Reload table meta data.
-     * 
+     *
      * @param database to be reloaded database
      */
     public void refreshTableMetaData(final ShardingSphereDatabase database) {
@@ -189,7 +189,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Delete schema names.
-     * 
+     *
      * @param databaseName database name
      * @param reloadDatabase reload database
      * @param currentDatabase current database
@@ -201,7 +201,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Reload schema.
-     * 
+     *
      * @param database database
      * @param schemaName to be reloaded schema name
      * @param dataSourceName data source name
@@ -236,7 +236,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Reload table.
-     * 
+     *
      * @param database database
      * @param schemaName schema name
      * @param tableName to be reloaded table name
@@ -253,7 +253,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Reload table from single data source.
-     * 
+     *
      * @param database database
      * @param schemaName schema name
      * @param dataSourceName data source name

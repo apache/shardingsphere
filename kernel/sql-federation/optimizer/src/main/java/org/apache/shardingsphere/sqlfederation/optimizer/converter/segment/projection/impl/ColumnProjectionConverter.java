@@ -38,7 +38,7 @@ public final class ColumnProjectionConverter {
     
     /**
      * Convert column projection segment to sql node.
-     * 
+     *
      * @param segment column projection segment
      * @return sql node
      */

@@ -37,7 +37,7 @@ public final class AlterLoginStatementAssert {
     
     /**
      * Assert alter login statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual alter login statement
      * @param expected expected alter login statement test case

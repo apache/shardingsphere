@@ -33,7 +33,7 @@ public final class WhereConverter {
     
     /**
      * Convert where segment to sql node.
-     * 
+     *
      * @param segment where segment
      * @return sql node
      */

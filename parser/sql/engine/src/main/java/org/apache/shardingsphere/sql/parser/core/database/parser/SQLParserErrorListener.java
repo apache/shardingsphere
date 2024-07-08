@@ -34,7 +34,7 @@ public final class SQLParserErrorListener extends BaseErrorListener {
     
     /**
      * Get instance.
-     * 
+     *
      * @return instance
      */
     public static SQLParserErrorListener getInstance() {

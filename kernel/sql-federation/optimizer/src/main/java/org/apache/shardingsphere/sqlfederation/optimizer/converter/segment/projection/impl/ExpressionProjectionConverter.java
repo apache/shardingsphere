@@ -39,7 +39,7 @@ public final class ExpressionProjectionConverter {
     
     /**
      * Convert expression projection segment to sql node.
-     * 
+     *
      * @param segment expression projection segment
      * @return sql node
      */

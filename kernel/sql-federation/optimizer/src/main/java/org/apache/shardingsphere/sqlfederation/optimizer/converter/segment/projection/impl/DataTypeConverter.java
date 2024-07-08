@@ -37,7 +37,7 @@ public final class DataTypeConverter {
     
     /**
      * Convert data type segment to sql node.
-     * 
+     *
      * @param segment data type segment
      * @return sql node
      */

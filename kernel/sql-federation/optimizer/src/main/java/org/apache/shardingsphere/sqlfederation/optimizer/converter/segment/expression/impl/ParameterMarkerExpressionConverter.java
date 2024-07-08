@@ -34,7 +34,7 @@ public final class ParameterMarkerExpressionConverter {
     
     /**
      * Convert parameter marker expression segment to sql node.
-     * 
+     *
      * @param segment parameter marker expression segment
      * @return sql node
      */

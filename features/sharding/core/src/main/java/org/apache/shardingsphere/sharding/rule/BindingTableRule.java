@@ -41,7 +41,7 @@ public final class BindingTableRule {
     
     /**
      * Judge contains this logic table in this rule.
-     * 
+     *
      * @param logicTable logic table name
      * @return contains this logic table or not
      */
@@ -51,7 +51,7 @@ public final class BindingTableRule {
     
     /**
      * Deduce actual table name from other actual table name in same binding table rule.
-     * 
+     *
      * @param dataSource data source name
      * @param logicTable logic table name
      * @param otherLogicTable other logic table name in same binding table rule
@@ -84,7 +84,7 @@ public final class BindingTableRule {
     
     /**
      * Get logic and actual tables.
-     * 
+     *
      * @param dataSource data source
      * @param logicTable logic table
      * @param actualTable actual table

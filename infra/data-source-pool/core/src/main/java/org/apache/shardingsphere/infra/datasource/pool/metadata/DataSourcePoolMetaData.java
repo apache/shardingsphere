@@ -38,14 +38,14 @@ public interface DataSourcePoolMetaData extends TypedSPI {
     
     /**
      * Get skipped properties.
-     * 
+     *
      * @return skipped properties
      */
     Map<String, Object> getSkippedProperties();
     
     /**
      * Get property synonyms.
-     * 
+     *
      * @return property synonyms
      */
     Map<String, String> getPropertySynonyms();
@@ -59,7 +59,7 @@ public interface DataSourcePoolMetaData extends TypedSPI {
     
     /**
      * Get data source pool field meta data.
-     * 
+     *
      * @return data source pool field meta data
      */
     DataSourcePoolFieldMetaData getFieldMetaData();

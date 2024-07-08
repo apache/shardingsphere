@@ -74,7 +74,7 @@ public final class ConditionValue {
     
     /**
      * Get condition value.
-     * 
+     *
      * @return condition value
      */
     public Optional<Comparable<?>> getValue() {

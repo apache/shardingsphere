@@ -39,7 +39,7 @@ public final class CollateExpressionConverter {
     
     /**
      * Convert collate expression to sql node.
-     * 
+     *
      * @param segment collate expression
      * @return sql node
      */

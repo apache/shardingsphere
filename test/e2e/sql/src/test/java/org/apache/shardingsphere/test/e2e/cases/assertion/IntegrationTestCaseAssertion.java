@@ -63,7 +63,7 @@ public final class IntegrationTestCaseAssertion {
     
     /**
      * Get SQL values.
-     * 
+     *
      * @return SQL values
      */
     public Collection<SQLValue> getSQLValues() {

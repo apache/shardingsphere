@@ -39,7 +39,7 @@ public final class NotExpressionConverter {
     
     /**
      * Convert not expression to sql node.
-     * 
+     *
      * @param segment not expression
      * @return sql node
      */

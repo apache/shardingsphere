@@ -37,7 +37,7 @@ public final class ShowIndexStatementAssert {
     
     /**
      * Assert show index statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show index statement
      * @param expected expected show index statement test case

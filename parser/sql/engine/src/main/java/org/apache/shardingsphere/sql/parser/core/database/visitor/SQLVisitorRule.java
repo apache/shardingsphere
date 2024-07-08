@@ -724,7 +724,7 @@ public enum SQLVisitorRule {
     
     /**
      * Value of visitor rule.
-     * 
+     *
      * @param parseTreeClass parse tree class
      * @return visitor rule
      * @throws SQLASTVisitorException SQL AST visitor exception

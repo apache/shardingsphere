@@ -38,7 +38,7 @@ public final class CreateViewStatementAssert {
     
     /**
      * Assert create view statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual create view statement
      * @param expected expected create view statement test case

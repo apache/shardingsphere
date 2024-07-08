@@ -41,7 +41,7 @@ public final class TableConverter {
     
     /**
      * Convert table segment to sql node.
-     * 
+     *
      * @param segment table segment
      * @return sql node
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception

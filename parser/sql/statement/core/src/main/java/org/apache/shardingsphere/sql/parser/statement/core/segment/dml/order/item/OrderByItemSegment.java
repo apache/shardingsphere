@@ -54,7 +54,7 @@ public abstract class OrderByItemSegment implements SQLSegment {
     
     /**
      * Get nulls order type.
-     * 
+     *
      * @param databaseType database type
      * @return nulls order type
      */

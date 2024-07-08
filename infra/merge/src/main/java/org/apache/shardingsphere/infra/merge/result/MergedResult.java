@@ -29,7 +29,7 @@ public interface MergedResult {
     
     /**
      * Iterate next data.
-     * 
+     *
      * @return has next data
      * @throws SQLException SQL exception
      */
@@ -77,7 +77,7 @@ public interface MergedResult {
     
     /**
      * Judge ResultSet is null or not.
-     * 
+     *
      * @return ResultSet is null or not
      * @throws SQLException SQL exception
      */

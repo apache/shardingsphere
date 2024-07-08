@@ -71,7 +71,7 @@ public final class PortalContext {
     
     /**
      * Close all portals.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     public void closeAll() throws SQLException {

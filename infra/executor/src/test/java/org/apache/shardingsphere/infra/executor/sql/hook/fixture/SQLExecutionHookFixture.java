@@ -45,7 +45,7 @@ public final class SQLExecutionHookFixture implements SQLExecutionHook {
     
     /**
      * Contains action or not.
-     * 
+     *
      * @param action action
      * @return contains action or not
      */

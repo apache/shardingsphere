@@ -66,7 +66,7 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
     
     /**
      * Get size.
-     * 
+     *
      * @return size
      */
     public int getSize() {

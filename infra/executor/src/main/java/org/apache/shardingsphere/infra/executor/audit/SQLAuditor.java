@@ -34,7 +34,7 @@ public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> 
     
     /**
      * Audit SQL.
-     * 
+     *
      * @param queryContext query context
      * @param globalRuleMetaData global rule meta data
      * @param database current database

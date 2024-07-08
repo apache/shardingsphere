@@ -31,7 +31,7 @@ public final class AlterUserStatementAssert {
     
     /**
      * Assert alter user statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual alter user statement
      * @param expected expected alter user statement test case

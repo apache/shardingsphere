@@ -146,7 +146,7 @@ public enum PostgreSQLCommand {
     
     /**
      * Value of PostgreSQL command via SQL statement class.
-     * 
+     *
      * @param sqlStatementClass SQL statement class
      * @return PostgreSQL command
      */

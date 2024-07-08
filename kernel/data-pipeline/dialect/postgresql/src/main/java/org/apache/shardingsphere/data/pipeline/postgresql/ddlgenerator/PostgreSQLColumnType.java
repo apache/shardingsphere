@@ -39,7 +39,7 @@ public enum PostgreSQLColumnType {
     
     /**
      * Get value of column type.
-     * 
+     *
      * @param elemoid elemoid
      * @return value of column type
      */
