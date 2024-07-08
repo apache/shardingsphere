@@ -60,7 +60,7 @@ public final class SQLBindEngine {
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
-        return SQLStatementContextFactory.newInstance(metaData, params, bind(sqlStatement), currentDatabaseName);
+        return SQLStatementContextFactory.newInstance(metaData, bind(sqlStatement), params, currentDatabaseName);
     }
     
     private SQLStatement bind(final SQLStatement statement) {
