@@ -9,17 +9,33 @@ for i in {1..5}; do
   current=$(dirname "$current")
 done
 
-dir=$current
-# create corresponding fold
-eval `mkdir mergeClassFile`
-eval `mkdir mergeExecFile`
-eval `mkdir mergeReport`
+project=$current
+target=$project/target
 
-execMergePath='./mergeExecFile/merge.exec'
+echo $target
+# create corresponding fold
+mkdir -p $target/mergeClassFile
+mkdir -p $target/mergeExecFile
+mkdir -p $target/mergeReport
+mkdir -p $target/cli
+
+# Download jacoco's cli using wget
+curl -O https://repo1.maven.org/maven2/org/jacoco/jacoco/0.8.11/jacoco-0.8.11.zip
+
+# Extract the downloaded zip file
+unzip -o jacoco-0.8.11.zip -d jacoco-0.8.11
+
+# Move the decompressed jacococli.jar to the cli folder
+mv jacoco-0.8.11/lib/jacococli.jar $target/cli/jacococli.jar
+
+jacococli="$target/cli/jacococli.jar"
+
+execMergePath="$target/mergeExecFile/merge.exec"
+echo $execMergePath
 echo 'Start search jacoco.exec file'
 
 # Search all jacoco.exec file on whole SS
-execFiles=$(find $dir -name 'jacoco.exec')
+execFiles=$(find $project -name 'jacoco.exec')
 
 # Check if file exist
 if [ -z "$execFiles" ]
@@ -44,16 +60,16 @@ rm -rf "$execMergePath"/*
 
 echo "start aggregation jacoco.exec"
 # Use jacococli to merge files and output them to the specified file
-java -jar ./jacococli.jar merge "${execFileArray[@]}" --destfile $execMergePath
+java -jar $jacococli merge "${execFileArray[@]}" --destfile $execMergePath
 
 echo "Aggreration Success，Output file on：$execMergePath"
 
 echo "Start aggregation and compiling code"
 # Start aggregation all compiled code
-classOutPutDir='./mergeClassFile'
+classOutPutDir="$target/mergeClassFile"
 
 # Find all classes folders
-classFolders=$(find $dir -type d -name 'classes')
+classFolders=$(find $project -type d -name 'classes')
 
 # Check if the folder is found.
 if [ -z "$classFolders" ]
@@ -86,12 +102,12 @@ done
 echo "Copy Success，The compilation merge output folder is located in the：$classOutPutDir"
 
 echo "Start generating overall coverage reports"
-mergeReportDir='./mergeReport'
+mergeReportDir="$target/mergeReport"
 # make sure file is empty
 rm -rf "$mergeReportDir"/*
 # use jacococli generate html
-java -jar ./jacococli.jar report $execMergePath --classfiles $classOutPutDir --sourcefiles $dir --html $mergeReportDir
+java -jar $jacococli report $execMergePath --classfiles $classOutPutDir --sourcefiles $project --html $mergeReportDir
 # use jacococli generate xml
-java -jar ./jacococli.jar report $execMergePath --classfiles $classOutPutDir --sourcefiles $dir --xml $mergeReportDir/jacoco.xml
+java -jar $jacococli report $execMergePath --classfiles $classOutPutDir --sourcefiles $project --xml $mergeReportDir/jacoco.xml
 
 echo "Build success，report is on ：$mergeReportDir"
