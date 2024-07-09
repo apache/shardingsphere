@@ -38,7 +38,7 @@ import java.util.Map;
 @Getter
 public final class SQLStatementBinderContext {
     
-    private final ShardingSphereMetaData metaData; 
+    private final ShardingSphereMetaData metaData;
     
     private final String currentDatabaseName;
     
