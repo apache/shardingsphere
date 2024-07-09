@@ -40,7 +40,7 @@ public final class WhereSegmentBinder {
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded where segment
+     * @return bound where segment
      */
     public static WhereSegment bind(final WhereSegment segment, final SQLStatementBinderContext statementBinderContext,
                                     final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {

@@ -50,7 +50,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     private InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         InsertStatement result = copy(sqlStatement);
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(sqlStatement, metaData, currentDatabaseName);
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         Optional.ofNullable(sqlStatement.getTable()).ifPresent(optional -> result.setTable(SimpleTableSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts)));

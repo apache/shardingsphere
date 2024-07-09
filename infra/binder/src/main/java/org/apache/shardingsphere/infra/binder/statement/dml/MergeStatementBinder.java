@@ -70,7 +70,7 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
     private MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                 final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         MergeStatement result = copy(sqlStatement);
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(sqlStatement, metaData, currentDatabaseName);
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         Map<String, TableSegmentBinderContext> targetTableBinderContexts = new CaseInsensitiveMap<>();
         TableSegment boundedTargetTableSegment = TableSegmentBinder.bind(sqlStatement.getTarget(), statementBinderContext, targetTableBinderContexts, Collections.emptyMap());

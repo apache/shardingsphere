@@ -46,7 +46,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         UpdateStatement result = copy(sqlStatement);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(sqlStatement, metaData, currentDatabaseName);
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
         result.setTable(boundedTableSegment);
