@@ -43,7 +43,7 @@ public final class SQLBindEngine {
     private final HintValueContext hintValueContext;
     
     /**
-     * Bind SQL statement with metadata.
+     * Bind SQL statement.
      *
      * @param sqlStatement SQL statement
      * @param params parameters

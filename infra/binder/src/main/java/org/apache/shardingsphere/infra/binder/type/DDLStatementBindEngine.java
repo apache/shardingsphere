@@ -35,7 +35,7 @@ public final class DDLStatementBindEngine {
     
     /**
      * Bind DDL statement.
-     * 
+     *
      * @param statement to be bound DDL statement
      * @return bound DDL statement
      */
