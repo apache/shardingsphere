@@ -33,12 +33,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertS
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * Select statement binder.
+ * Insert statement binder.
  */
 public final class InsertStatementBinder implements SQLStatementBinder<InsertStatement> {
     
@@ -47,10 +47,9 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+        InsertStatement result = copy(sqlStatement);
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
@@ -62,9 +61,15 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
             tableBinderContexts.values().forEach(each -> result.getDerivedInsertColumns().addAll(getVisibleColumns(each.getProjectionSegments())));
         }
         sqlStatement.getInsertSelect().ifPresent(optional -> result.setInsertSelect(SubquerySegmentBinder.bind(optional, statementBinderContext, tableBinderContexts)));
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private InsertStatement copy(final InsertStatement sqlStatement) {
+        InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.getValues().addAll(sqlStatement.getValues());
-        sqlStatement.getOnDuplicateKeyColumns().ifPresent(result::setOnDuplicateKeyColumns);
         sqlStatement.getSetAssignment().ifPresent(result::setSetAssignment);
+        sqlStatement.getOnDuplicateKeyColumns().ifPresent(result::setOnDuplicateKeyColumns);
         sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
         sqlStatement.getOutputSegment().ifPresent(result::setOutputSegment);
         sqlStatement.getMultiTableInsertType().ifPresent(result::setMultiTableInsertType);
@@ -77,12 +82,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     }
     
     private Collection<ColumnSegment> getVisibleColumns(final Collection<ProjectionSegment> projectionSegments) {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        for (ProjectionSegment each : projectionSegments) {
-            if (each instanceof ColumnProjectionSegment && each.isVisible()) {
-                result.add(((ColumnProjectionSegment) each).getColumn());
-            }
-        }
-        return result;
+        return projectionSegments.stream()
+                .filter(each -> each instanceof ColumnProjectionSegment && each.isVisible()).map(each -> ((ColumnProjectionSegment) each).getColumn()).collect(Collectors.toList());
     }
 }
