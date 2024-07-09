@@ -41,6 +41,35 @@ import java.util.Optional;
  */
 public final class SelectStatementBinder implements SQLStatementBinder<SelectStatement> {
     
+    /**
+     * Bind correlate subquery select statement.
+     *
+     * @param sqlStatement subquery select statement
+     * @param metaData meta data
+     * @param currentDatabaseName current database name
+     * @param outerTableBinderContexts outer select statement table binder contexts
+     * @param externalTableBinderContexts external table binder contexts
+     * @return bounded correlate subquery select statement
+     */
+    public SelectStatement bindCorrelateSubquery(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
+                                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+        return bind(sqlStatement, metaData, currentDatabaseName, outerTableBinderContexts, externalTableBinderContexts);
+    }
+    
+    /**
+     * Bind with external table contexts.
+     *
+     * @param statement select statement
+     * @param metaData meta data
+     * @param currentDatabaseName current database name
+     * @param externalTableContexts external table contexts
+     * @return select statement
+     */
+    public SelectStatement bind(final SelectStatement statement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
+                                final Map<String, TableSegmentBinderContext> externalTableContexts) {
+        return bind(statement, metaData, currentDatabaseName, Collections.emptyMap(), externalTableContexts);
+    }
+    
     @Override
     public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap(), Collections.emptyMap());
@@ -76,34 +105,5 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
-    }
-    
-    /**
-     * Bind correlate subquery select statement.
-     *
-     * @param sqlStatement subquery select statement
-     * @param metaData meta data
-     * @param currentDatabaseName current database name
-     * @param outerTableBinderContexts outer select statement table binder contexts
-     * @param externalTableBinderContexts external table binder contexts
-     * @return bounded correlate subquery select statement
-     */
-    public SelectStatement bindCorrelateSubquery(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
-                                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        return bind(sqlStatement, metaData, currentDatabaseName, outerTableBinderContexts, externalTableBinderContexts);
-    }
-    
-    /**
-     * Bind with external table contexts.
-     *
-     * @param statement select statement
-     * @param metaData meta data
-     * @param currentDatabaseName current database name
-     * @param externalTableContexts external table contexts
-     * @return select statement
-     */
-    public SelectStatement bindWithExternalTableContexts(final SelectStatement statement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
-                                                         final Map<String, TableSegmentBinderContext> externalTableContexts) {
-        return bind(statement, metaData, currentDatabaseName, Collections.emptyMap(), externalTableContexts);
     }
 }
