@@ -32,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Update statement binder.
+ * Delete statement binder.
  */
 public final class DeleteStatementBinder implements SQLStatementBinder<DeleteStatement> {
     
@@ -44,13 +44,19 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
     @SneakyThrows(ReflectiveOperationException.class)
     private DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        DeleteStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+        DeleteStatement result = copy(sqlStatement);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
-        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
-        result.setTable(boundedTableSegment);
+        TableSegment boundTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
+        result.setTable(boundTableSegment);
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private DeleteStatement copy(final DeleteStatement sqlStatement) {
+        DeleteStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
         sqlStatement.getLimit().ifPresent(result::setLimit);
         sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
