@@ -20,23 +20,13 @@ package org.apache.shardingsphere.infra.binder;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementBinder;
-import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementBinder;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementBinder;
-import org.apache.shardingsphere.infra.binder.statement.dml.MergeStatementBinder;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
-import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementBinder;
+import org.apache.shardingsphere.infra.binder.type.DDLStatementBindEngine;
+import org.apache.shardingsphere.infra.binder.type.DMLStatementBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 import java.util.List;
 
@@ -53,51 +43,27 @@ public final class SQLBindEngine {
     private final HintValueContext hintValueContext;
     
     /**
-     * Bind SQL statement with metadata.
+     * Bind SQL statement.
      *
      * @param sqlStatement SQL statement
      * @param params parameters
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
-        return SQLStatementContextFactory.newInstance(metaData, bind(sqlStatement), params, currentDatabaseName);
+        SQLStatement boundSQLStatement = isNeedBind() ? bindSQLStatement(sqlStatement) : sqlStatement;
+        return SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, params, currentDatabaseName);
     }
     
-    private SQLStatement bind(final SQLStatement statement) {
-        if (hintValueContext.findHintDataSourceName().isPresent()) {
-            return statement;
-        }
+    private boolean isNeedBind() {
+        return !hintValueContext.findHintDataSourceName().isPresent();
+    }
+    
+    private SQLStatement bindSQLStatement(final SQLStatement statement) {
         if (statement instanceof DMLStatement) {
-            return bindDMLStatement(statement);
+            return new DMLStatementBindEngine(metaData, currentDatabaseName).bind((DMLStatement) statement);
         }
         if (statement instanceof DDLStatement) {
-            return bindDDLStatement(statement);
-        }
-        return statement;
-    }
-    
-    private SQLStatement bindDMLStatement(final SQLStatement statement) {
-        if (statement instanceof SelectStatement) {
-            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, currentDatabaseName);
-        }
-        if (statement instanceof InsertStatement) {
-            return new InsertStatementBinder().bind((InsertStatement) statement, metaData, currentDatabaseName);
-        }
-        if (statement instanceof UpdateStatement) {
-            return new UpdateStatementBinder().bind((UpdateStatement) statement, metaData, currentDatabaseName);
-        }
-        if (statement instanceof DeleteStatement) {
-            return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, currentDatabaseName);
-        }
-        if (statement instanceof MergeStatement) {
-            return new MergeStatementBinder().bind((MergeStatement) statement, metaData, currentDatabaseName);
-        }
-        return statement;
-    }
-    
-    private SQLStatement bindDDLStatement(final SQLStatement statement) {
-        if (statement instanceof CursorStatement) {
-            return new CursorStatementBinder().bind((CursorStatement) statement, metaData, currentDatabaseName);
+            return new DDLStatementBindEngine(metaData, currentDatabaseName).bind((DDLStatement) statement);
         }
         return statement;
     }
