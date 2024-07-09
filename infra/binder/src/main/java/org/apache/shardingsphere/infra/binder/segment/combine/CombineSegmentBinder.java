@@ -40,20 +40,20 @@ public final class CombineSegmentBinder {
      *
      * @param segment table segment
      * @param statementBinderContext statement binder context
-     * @return bounded combine segment
+     * @return bound combine segment
      */
     public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext statementBinderContext) {
         ShardingSphereMetaData metaData = statementBinderContext.getMetaData();
         String currentDatabaseName = statementBinderContext.getCurrentDatabaseName();
         Map<String, TableSegmentBinderContext> externalTableBinderContexts = statementBinderContext.getExternalTableBinderContexts();
-        SelectStatement boundedLeftSelect = new SelectStatementBinder().bind(segment.getLeft().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts);
-        SelectStatement boundedRightSelect = new SelectStatementBinder().bind(segment.getRight().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts);
-        SubquerySegment boundedLeft = new SubquerySegment(segment.getLeft().getStartIndex(), segment.getLeft().getStopIndex(), segment.getLeft().getText());
-        boundedLeft.setSelect(boundedLeftSelect);
-        boundedLeft.setSubqueryType(segment.getLeft().getSubqueryType());
+        SelectStatement boundLeftSelect = new SelectStatementBinder().bind(segment.getLeft().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts);
+        SelectStatement boundRightSelect = new SelectStatementBinder().bind(segment.getRight().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts);
+        SubquerySegment boundLeft = new SubquerySegment(segment.getLeft().getStartIndex(), segment.getLeft().getStopIndex(), segment.getLeft().getText());
+        boundLeft.setSelect(boundLeftSelect);
+        boundLeft.setSubqueryType(segment.getLeft().getSubqueryType());
         SubquerySegment boundedRight = new SubquerySegment(segment.getRight().getStartIndex(), segment.getRight().getStopIndex(), segment.getRight().getText());
-        boundedRight.setSelect(boundedRightSelect);
+        boundedRight.setSelect(boundRightSelect);
         boundedRight.setSubqueryType(segment.getRight().getSubqueryType());
-        return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundedLeft, segment.getCombineType(), boundedRight);
+        return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundLeft, segment.getCombineType(), boundedRight);
     }
 }
