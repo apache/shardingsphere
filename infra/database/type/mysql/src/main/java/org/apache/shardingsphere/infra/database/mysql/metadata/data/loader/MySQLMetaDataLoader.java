@@ -69,7 +69,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(material.getDataSource(), material.getActualTableNames());
-        Collection<String> viewNames = loadViewNames(material.getDataSource(), columnMetaDataMap.keySet());
+        Collection<String> viewNames = columnMetaDataMap.isEmpty() ? Collections.emptySet() : loadViewNames(material.getDataSource(), columnMetaDataMap.keySet());
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(material.getDataSource(), columnMetaDataMap.keySet());
         Map<String, Collection<ConstraintMetaData>> constraintMetaDataMap =
                 columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadConstraintMetaDataMap(material.getDataSource(), columnMetaDataMap.keySet());
