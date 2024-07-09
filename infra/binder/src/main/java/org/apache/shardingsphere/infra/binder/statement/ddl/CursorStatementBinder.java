@@ -29,11 +29,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorS
 public final class CursorStatementBinder implements SQLStatementBinder<CursorStatement> {
     
     @Override
-    @SneakyThrows(ReflectiveOperationException.class)
     public CursorStatement bind(final CursorStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        CursorStatement result = copy(sqlStatement);
+        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, currentDatabaseName));
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static CursorStatement copy(final CursorStatement sqlStatement) {
         CursorStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setCursorName(sqlStatement.getCursorName());
-        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, currentDatabaseName));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
