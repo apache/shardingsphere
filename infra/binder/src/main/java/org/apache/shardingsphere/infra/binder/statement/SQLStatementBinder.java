@@ -28,12 +28,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 public interface SQLStatementBinder<T extends SQLStatement> {
     
     /**
-     * Bind SQL statement with metadata.
+     * Bind SQL statement.
      *
      * @param sqlStatement SQL statement
      * @param metaData meta data
      * @param currentDatabaseName current database name
-     * @return bounded SQL statement
+     * @return bound SQL statement
      */
     T bind(T sqlStatement, ShardingSphereMetaData metaData, String currentDatabaseName);
 }
