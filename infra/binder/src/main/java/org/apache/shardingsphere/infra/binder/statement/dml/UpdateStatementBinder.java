@@ -42,10 +42,9 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+        UpdateStatement result = copy(sqlStatement);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
@@ -53,6 +52,12 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         result.setTable(boundedTableSegment);
         sqlStatement.getAssignmentSegment().ifPresent(optional -> result.setSetAssignment(AssignmentSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private UpdateStatement copy(final UpdateStatement sqlStatement) {
+        UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
         sqlStatement.getLimit().ifPresent(result::setLimit);
         sqlStatement.getWithSegment().ifPresent(result::setWithSegment);

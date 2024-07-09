@@ -46,10 +46,9 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap(), Collections.emptyMap());
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                  final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        SelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+        SelectStatement result = copy(sqlStatement);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
@@ -59,13 +58,19 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         boundedTableSegment.ifPresent(result::setFrom);
         result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), statementBinderContext, boundedTableSegment.orElse(null), tableBinderContexts, outerTableBinderContexts));
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
+        sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, statementBinderContext)));
+        sqlStatement.getLock().ifPresent(optional -> result.setLock(LockSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
         // TODO support other segment bind in select statement
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private SelectStatement copy(final SelectStatement sqlStatement) {
+        SelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         sqlStatement.getGroupBy().ifPresent(result::setGroupBy);
         sqlStatement.getHaving().ifPresent(result::setHaving);
         sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
-        sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, statementBinderContext)));
         sqlStatement.getLimit().ifPresent(result::setLimit);
-        sqlStatement.getLock().ifPresent(optional -> result.setLock(LockSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getWindow().ifPresent(result::setWindow);
         sqlStatement.getModelSegment().ifPresent(result::setModelSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());

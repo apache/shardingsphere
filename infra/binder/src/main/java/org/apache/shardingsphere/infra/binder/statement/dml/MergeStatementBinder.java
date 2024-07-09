@@ -67,10 +67,9 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
         return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
                                 final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        MergeStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+        MergeStatement result = copy(sqlStatement);
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         Map<String, TableSegmentBinderContext> targetTableBinderContexts = new CaseInsensitiveMap<>();
@@ -93,6 +92,12 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
         sqlStatement.getUpdate().ifPresent(
                 optional -> result.setUpdate(bindMergeUpdate(optional, (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, targetTableBinderContexts, sourceTableBinderContexts)));
         addParameterMarkerSegments(result);
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private MergeStatement copy(final MergeStatement sqlStatement) {
+        MergeStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
     }
