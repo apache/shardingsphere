@@ -47,9 +47,9 @@ public final class CombineSegmentBinder {
         String currentDatabaseName = statementBinderContext.getCurrentDatabaseName();
         Map<String, TableSegmentBinderContext> externalTableBinderContexts = statementBinderContext.getExternalTableBinderContexts();
         SelectStatement boundLeftSelect = new SelectStatementBinder().bind(
-                segment.getLeft().getSelect(),createBinderContext(segment.getLeft().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts));
+                segment.getLeft().getSelect(), createBinderContext(segment.getLeft().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts));
         SelectStatement boundRightSelect = new SelectStatementBinder().bind(
-                segment.getRight().getSelect(),createBinderContext(segment.getRight().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts));
+                segment.getRight().getSelect(), createBinderContext(segment.getRight().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts));
         SubquerySegment boundLeft = new SubquerySegment(segment.getLeft().getStartIndex(), segment.getLeft().getStopIndex(), segment.getLeft().getText());
         boundLeft.setSelect(boundLeftSelect);
         boundLeft.setSubqueryType(segment.getLeft().getSubqueryType());
