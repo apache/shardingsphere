@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.type;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
@@ -40,8 +41,9 @@ public final class DDLStatementBindEngine {
      * @return bound DDL statement
      */
     public DDLStatement bind(final DDLStatement statement) {
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(statement, metaData, currentDatabaseName);
         if (statement instanceof CursorStatement) {
-            return new CursorStatementBinder().bind((CursorStatement) statement, metaData, currentDatabaseName);
+            return new CursorStatementBinder().bind((CursorStatement) statement, binderContext);
         }
         return statement;
     }

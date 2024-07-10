@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.type;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
@@ -46,17 +47,18 @@ public final class DMLStatementBindEngine {
      * @return bound DML statement
      */
     public DMLStatement bind(final DMLStatement statement) {
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(statement, metaData, currentDatabaseName);
         if (statement instanceof SelectStatement) {
-            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, currentDatabaseName);
+            return new SelectStatementBinder().bind((SelectStatement) statement, binderContext);
         }
         if (statement instanceof InsertStatement) {
-            return new InsertStatementBinder().bind((InsertStatement) statement, metaData, currentDatabaseName);
+            return new InsertStatementBinder().bind((InsertStatement) statement, binderContext);
         }
         if (statement instanceof UpdateStatement) {
-            return new UpdateStatementBinder().bind((UpdateStatement) statement, metaData, currentDatabaseName);
+            return new UpdateStatementBinder().bind((UpdateStatement) statement, binderContext);
         }
         if (statement instanceof DeleteStatement) {
-            return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, currentDatabaseName);
+            return new DeleteStatementBinder().bind((DeleteStatement) statement, binderContext);
         }
         return statement;
     }
