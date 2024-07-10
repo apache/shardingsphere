@@ -62,7 +62,7 @@ class InsertStatementBinderTest {
                 new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
-        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(insertStatement));
         assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
         assertTrue(actual.getInsertColumns().isPresent());
@@ -105,7 +105,7 @@ class InsertStatementBinderTest {
         insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement, ""));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
-        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(insertStatement));
         assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
         assertTrue(actual.getInsertColumns().isPresent());
@@ -127,7 +127,7 @@ class InsertStatementBinderTest {
         insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement, ""));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
-        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(insertStatement));
         assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
         assertInsertColumns(actual.getDerivedInsertColumns());

@@ -54,7 +54,7 @@ class DeleteStatementBinderTest {
         deleteStatement.setTable(simpleTableSegment);
         deleteStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                 new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
-        DeleteStatement actual = new DeleteStatementBinder().bind(deleteStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        DeleteStatement actual = new DeleteStatementBinder().bind(deleteStatement, new SQLStatementBinderContext(deleteStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(deleteStatement));
         assertThat(actual.getTable(), not(deleteStatement.getTable()));
         assertThat(actual.getTable(), instanceOf(SimpleTableSegment.class));

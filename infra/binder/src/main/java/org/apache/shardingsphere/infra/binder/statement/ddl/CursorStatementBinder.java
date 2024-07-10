@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 
 /**
@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorS
 public final class CursorStatementBinder implements SQLStatementBinder<CursorStatement> {
     
     @Override
-    public CursorStatement bind(final CursorStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+    public CursorStatement bind(final CursorStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         CursorStatement result = copy(sqlStatement);
-        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, currentDatabaseName));
+        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), binderContext));
         return result;
     }
     

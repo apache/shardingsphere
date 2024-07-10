@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.binder.segment.where.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
@@ -38,20 +37,13 @@ import java.util.Map;
 public final class UpdateStatementBinder implements SQLStatementBinder<UpdateStatement> {
     
     @Override
-    public UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
-        return bind(sqlStatement, metaData, currentDatabaseName, Collections.emptyMap());
-    }
-    
-    private UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName,
-                                 final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+    public UpdateStatement bind(final UpdateStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         UpdateStatement result = copy(sqlStatement);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(sqlStatement, metaData, currentDatabaseName);
-        statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
-        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
+        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, Collections.emptyMap());
         result.setTable(boundedTableSegment);
-        sqlStatement.getAssignmentSegment().ifPresent(optional -> result.setSetAssignment(AssignmentSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
-        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
+        sqlStatement.getAssignmentSegment().ifPresent(optional -> result.setSetAssignment(AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, Collections.emptyMap())));
+        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, Collections.emptyMap())));
         return result;
     }
     

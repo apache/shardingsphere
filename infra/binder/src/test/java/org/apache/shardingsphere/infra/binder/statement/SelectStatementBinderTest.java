@@ -81,7 +81,7 @@ class SelectStatementBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         selectStatement.setFrom(simpleTableSegment);
         selectStatement.setWhere(mockWhereSegment());
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(selectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(selectStatement));
         assertTrue(actual.getFrom().isPresent());
         assertThat(actual.getFrom().get(), not(simpleTableSegment));
@@ -149,11 +149,11 @@ class SelectStatementBinderTest {
         ShardingSphereMetaData metaData =
                 new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), resourceMetaData, ruleMetaData, new ConfigurationProperties(new Properties()));
         SelectStatement selectStatement = (SelectStatement) parserEngine.parse(sql, false);
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, metaData, DefaultDatabase.LOGIC_NAME);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(selectStatement, metaData, DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(selectStatement));
         assertThat(actual, instanceOf(OracleSelectStatement.class));
-        assertTrue(((OracleSelectStatement) actual).getWithSegment().isPresent());
-        assertThat(((OracleSelectStatement) actual).getWithSegment().get().getCommonTableExpressions().size(), is(5));
+        assertTrue(actual.getWithSegment().isPresent());
+        assertThat(actual.getWithSegment().get().getCommonTableExpressions().size(), is(5));
     }
     
     @Test
@@ -179,11 +179,11 @@ class SelectStatementBinderTest {
         ShardingSphereMetaData metaData =
                 new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), resourceMetaData, ruleMetaData, new ConfigurationProperties(new Properties()));
         SelectStatement selectStatement = (SelectStatement) parserEngine.parse(sql, false);
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, metaData, DefaultDatabase.LOGIC_NAME);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(selectStatement, metaData, DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(selectStatement));
         assertThat(actual, instanceOf(OracleSelectStatement.class));
-        assertTrue(((OracleSelectStatement) actual).getWithSegment().isPresent());
-        assertThat(((OracleSelectStatement) actual).getWithSegment().get().getCommonTableExpressions().size(), is(1));
+        assertTrue(actual.getWithSegment().isPresent());
+        assertThat(actual.getWithSegment().get().getCommonTableExpressions().size(), is(1));
     }
     
     private Map<String, ShardingSphereSchema> buildSchemas() {
