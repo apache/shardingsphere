@@ -34,17 +34,17 @@ import java.util.Map;
 public final class WhereSegmentBinder {
     
     /**
-     * Bind where segment with metadata.
+     * Bind where segment.
      *
      * @param segment where segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound where segment
      */
-    public static WhereSegment bind(final WhereSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static WhereSegment bind(final WhereSegment segment, final SQLStatementBinderContext binderContext,
                                     final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         return new WhereSegment(segment.getStartIndex(), segment.getStopIndex(),
-                ExpressionSegmentBinder.bind(segment.getExpr(), SegmentType.PREDICATE, statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+                ExpressionSegmentBinder.bind(segment.getExpr(), SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts));
     }
 }

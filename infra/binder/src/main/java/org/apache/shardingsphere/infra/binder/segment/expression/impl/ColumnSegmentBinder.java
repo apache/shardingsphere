@@ -61,16 +61,16 @@ public final class ColumnSegmentBinder {
     private static final String UNKNOWN_SEGMENT_TYPE_MESSAGE = "unknown clause";
     
     /**
-     * Bind column segment with metadata.
+     * Bind column segment.
      *
      * @param segment table segment
      * @param parentSegmentType parent segment type
-     * @param statementBinderContext statement binder context
+     * @param binderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded column segment
      */
-    public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
+    public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                      final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (EXCLUDE_BIND_COLUMNS.contains(segment.getIdentifier().getValue().toUpperCase())) {
             return segment;
@@ -78,8 +78,8 @@ public final class ColumnSegmentBinder {
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         segment.getOwner().ifPresent(result::setOwner);
         Collection<TableSegmentBinderContext> tableBinderContextValues =
-                getTableSegmentBinderContexts(segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
-        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues, outerTableBinderContexts, statementBinderContext);
+                getTableSegmentBinderContexts(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues, outerTableBinderContexts, binderContext);
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, inputColumnSegment.orElse(null)));
         segment.getParentheses().forEach(each -> result.getParentheses().add(each));
@@ -87,22 +87,22 @@ public final class ColumnSegmentBinder {
     }
     
     private static Collection<TableSegmentBinderContext> getTableSegmentBinderContexts(final ColumnSegment segment, final SegmentType parentSegmentType,
-                                                                                       final SQLStatementBinderContext statementBinderContext,
+                                                                                       final SQLStatementBinderContext binderContext,
                                                                                        final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                                                                        final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment.getOwner().isPresent()) {
             return getTableBinderContextByOwner(segment.getOwner().get().getIdentifier().getValue().toLowerCase(), tableBinderContexts, outerTableBinderContexts,
-                    statementBinderContext.getExternalTableBinderContexts());
+                    binderContext.getExternalTableBinderContexts());
         }
-        if (!statementBinderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, statementBinderContext)) {
-            return Collections.singleton(new SimpleTableSegmentBinderContext(statementBinderContext.getJoinTableProjectionSegments()));
+        if (!binderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, binderContext)) {
+            return Collections.singleton(new SimpleTableSegmentBinderContext(binderContext.getJoinTableProjectionSegments()));
         }
         return tableBinderContexts.values();
     }
     
-    private static boolean isNeedUseJoinTableProjectionBind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext) {
+    private static boolean isNeedUseJoinTableProjectionBind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext) {
         return SegmentType.PROJECTION == parentSegmentType
-                || SegmentType.PREDICATE == parentSegmentType && statementBinderContext.getUsingColumnNames().contains(segment.getIdentifier().getValue().toLowerCase());
+                || SegmentType.PREDICATE == parentSegmentType && binderContext.getUsingColumnNames().contains(segment.getIdentifier().getValue().toLowerCase());
     }
     
     private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Map<String, TableSegmentBinderContext> tableBinderContexts,
@@ -121,7 +121,7 @@ public final class ColumnSegmentBinder {
     }
     
     private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
-                                                                  final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final SQLStatementBinderContext statementBinderContext) {
+                                                                  final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final SQLStatementBinderContext binderContext) {
         ColumnSegment result = null;
         boolean isFindInputColumn = false;
         for (TableSegmentBinderContext each : tableBinderContexts) {
@@ -143,18 +143,18 @@ public final class ColumnSegmentBinder {
             }
         }
         if (!isFindInputColumn) {
-            Optional<ProjectionSegment> projectionSegment = findInputColumnSegmentFromExternalTables(segment, statementBinderContext.getExternalTableBinderContexts());
+            Optional<ProjectionSegment> projectionSegment = findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts());
             isFindInputColumn = projectionSegment.isPresent();
             if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
                 result = ((ColumnProjectionSegment) projectionSegment.get()).getColumn();
             }
         }
         if (!isFindInputColumn) {
-            result = findInputColumnSegmentByVariables(segment, statementBinderContext.getVariableNames()).orElse(null);
+            result = findInputColumnSegmentByVariables(segment, binderContext.getVariableNames()).orElse(null);
             isFindInputColumn = null != result;
         }
         if (!isFindInputColumn) {
-            result = findInputColumnSegmentByPivotColumns(segment, statementBinderContext.getPivotColumnNames()).orElse(null);
+            result = findInputColumnSegmentByPivotColumns(segment, binderContext.getPivotColumnNames()).orElse(null);
             isFindInputColumn = null != result;
         }
         ShardingSpherePreconditions.checkState(isFindInputColumn || containsFunctionTable(tableBinderContexts, outerTableBinderContexts.values()),
@@ -233,7 +233,7 @@ public final class ColumnSegmentBinder {
     }
     
     /**
-     * Bind using column segment with metadata.
+     * Bind using column segment.
      *
      * @param segment using column segment
      * @param parentSegmentType parent segment type

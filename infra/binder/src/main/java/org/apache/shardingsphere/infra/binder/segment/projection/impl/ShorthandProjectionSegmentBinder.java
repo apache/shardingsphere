@@ -38,7 +38,7 @@ import java.util.Map;
 public final class ShorthandProjectionSegmentBinder {
     
     /**
-     * Bind column projection segment with metadata.
+     * Bind column projection segment.
      *
      * @param segment table segment
      * @param boundedTableSegment bounded table segment

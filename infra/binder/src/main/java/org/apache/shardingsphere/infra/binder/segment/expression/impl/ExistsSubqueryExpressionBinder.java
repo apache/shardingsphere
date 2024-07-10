@@ -36,13 +36,13 @@ public final class ExistsSubqueryExpressionBinder {
      * Bind exists subquery expression with metadata.
      *
      * @param segment exists subquery expression segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded exists subquery expression segment
      */
-    public static ExistsSubqueryExpression bind(final ExistsSubqueryExpression segment, final SQLStatementBinderContext statementBinderContext,
+    public static ExistsSubqueryExpression bind(final ExistsSubqueryExpression segment, final SQLStatementBinderContext binderContext,
                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts);
+        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
         ExistsSubqueryExpression result = new ExistsSubqueryExpression(segment.getStartIndex(), segment.getStopIndex(), boundedSubquery);
         result.setNot(segment.isNot());
         return result;

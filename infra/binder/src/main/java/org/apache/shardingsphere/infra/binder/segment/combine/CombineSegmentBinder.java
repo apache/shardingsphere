@@ -36,16 +36,16 @@ import java.util.Map;
 public final class CombineSegmentBinder {
     
     /**
-     * Bind combine segment with metadata.
+     * Bind combine segment.
      *
      * @param segment table segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @return bound combine segment
      */
-    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext statementBinderContext) {
-        ShardingSphereMetaData metaData = statementBinderContext.getMetaData();
-        String currentDatabaseName = statementBinderContext.getCurrentDatabaseName();
-        Map<String, TableSegmentBinderContext> externalTableBinderContexts = statementBinderContext.getExternalTableBinderContexts();
+    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext binderContext) {
+        ShardingSphereMetaData metaData = binderContext.getMetaData();
+        String currentDatabaseName = binderContext.getCurrentDatabaseName();
+        Map<String, TableSegmentBinderContext> externalTableBinderContexts = binderContext.getExternalTableBinderContexts();
         SelectStatement boundLeftSelect = new SelectStatementBinder().bind(
                 segment.getLeft().getSelect(), createBinderContext(segment.getLeft().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts));
         SelectStatement boundRightSelect = new SelectStatementBinder().bind(

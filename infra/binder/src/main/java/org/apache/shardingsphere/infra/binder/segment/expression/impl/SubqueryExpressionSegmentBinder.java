@@ -33,16 +33,16 @@ import java.util.Map;
 public final class SubqueryExpressionSegmentBinder {
     
     /**
-     * Bind subquery expression segment with metadata.
+     * Bind subquery expression segment.
      *
      * @param segment subquery expression segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded subquery expression segment
      */
-    public static SubqueryExpressionSegment bind(final SubqueryExpressionSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static SubqueryExpressionSegment bind(final SubqueryExpressionSegment segment, final SQLStatementBinderContext binderContext,
                                                  final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts);
+        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
         return new SubqueryExpressionSegment(boundedSubquery);
     }
 }

@@ -35,7 +35,7 @@ import java.util.Map;
 public final class ParameterMarkerSegmentBinder {
     
     /**
-     * Bind parameter marker segment with metadata.
+     * Bind parameter marker segment.
      *
      * @param parameterMarkerSegments parameter marker segments
      * @param parameterMarkerSegmentBoundedInfos parameter marker segment bounded infos

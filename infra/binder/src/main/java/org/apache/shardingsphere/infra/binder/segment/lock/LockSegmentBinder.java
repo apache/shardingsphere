@@ -37,18 +37,18 @@ import java.util.Map;
 public final class LockSegmentBinder {
     
     /**
-     * Bind lock segment with metadata.
+     * Bind lock segment.
      *
      * @param segment lock segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded lock segment
      */
-    public static LockSegment bind(final LockSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static LockSegment bind(final LockSegment segment, final SQLStatementBinderContext binderContext,
                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         Collection<ColumnSegment> boundedColumns = new LinkedList<>();
-        segment.getColumns().forEach(each -> boundedColumns.add(ColumnSegmentBinder.bind(each, SegmentType.LOCK, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
+        segment.getColumns().forEach(each -> boundedColumns.add(ColumnSegmentBinder.bind(each, SegmentType.LOCK, binderContext, tableBinderContexts, outerTableBinderContexts)));
         LockSegment result = new LockSegment(segment.getStartIndex(), segment.getStopIndex());
         result.getTables().addAll(segment.getTables());
         result.getColumns().addAll(boundedColumns);

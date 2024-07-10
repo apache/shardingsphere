@@ -39,11 +39,9 @@ class ExistsSubqueryExpressionBinderTest {
     void assertBindExistsSubqueryExpression() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0,
-                new SubquerySegment(0, 0, selectStatement, "t_test"));
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class),
-                DefaultDatabase.LOGIC_NAME, new MockedDatabaseType(), Collections.emptyList());
-        ExistsSubqueryExpression actual = ExistsSubqueryExpressionBinder.bind(existsSubqueryExpression, statementBinderContext, Collections.emptyMap());
+        ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, selectStatement, "t_test"));
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, new MockedDatabaseType(), Collections.emptyList());
+        ExistsSubqueryExpression actual = ExistsSubqueryExpressionBinder.bind(existsSubqueryExpression, binderContext, Collections.emptyMap());
         assertThat(actual.getStartIndex(), is(existsSubqueryExpression.getStartIndex()));
         assertThat(actual.getStopIndex(), is(existsSubqueryExpression.getStopIndex()));
         assertThat(actual.getText(), is("t_test"));

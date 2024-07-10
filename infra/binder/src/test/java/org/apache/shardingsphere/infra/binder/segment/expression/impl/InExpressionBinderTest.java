@@ -37,9 +37,9 @@ class InExpressionBinderTest {
         InExpression inExpression = new InExpression(0, 10,
                 new LiteralExpressionSegment(0, 0, "left"),
                 new LiteralExpressionSegment(0, 0, "right"), true);
-        SQLStatementBinderContext statementBinderContext = mock(SQLStatementBinderContext.class);
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
         InExpression actual = InExpressionBinder.bind(inExpression, SegmentType.PROJECTION,
-                statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
+                binderContext, Collections.emptyMap(), Collections.emptyMap());
         assertThat(actual.getText(), is("leftright"));
         assertTrue(actual.isNot());
     }

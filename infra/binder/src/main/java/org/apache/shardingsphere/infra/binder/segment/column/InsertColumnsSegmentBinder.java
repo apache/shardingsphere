@@ -38,17 +38,17 @@ import java.util.Map;
 public final class InsertColumnsSegmentBinder {
     
     /**
-     * Bind insert columns segment with metadata.
+     * Bind insert columns segment.
      *
      * @param segment insert columns segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded insert columns segment
      */
-    public static InsertColumnsSegment bind(final InsertColumnsSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static InsertColumnsSegment bind(final InsertColumnsSegment segment, final SQLStatementBinderContext binderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         Collection<ColumnSegment> boundedColumns = new LinkedList<>();
-        segment.getColumns().forEach(each -> boundedColumns.add(ColumnSegmentBinder.bind(each, SegmentType.INSERT_COLUMNS, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
+        segment.getColumns().forEach(each -> boundedColumns.add(ColumnSegmentBinder.bind(each, SegmentType.INSERT_COLUMNS, binderContext, tableBinderContexts, Collections.emptyMap())));
         return new InsertColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), boundedColumns);
     }
 }

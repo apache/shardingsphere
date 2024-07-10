@@ -36,17 +36,17 @@ import java.util.Map;
 public final class NotExpressionBinder {
     
     /**
-     * Bind not expression segment with metadata.
+     * Bind not expression segment.
      *
      * @param segment not expression
      * @param parentSegmentType parent segment type
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded not expression
      */
-    public static NotExpression bind(final NotExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
+    public static NotExpression bind(final NotExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                      final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ExpressionSegment boundedExpression = ExpressionSegmentBinder.bind(segment.getExpression(), parentSegmentType, statementBinderContext, tableBinderContexts, Collections.emptyMap());
+        ExpressionSegment boundedExpression = ExpressionSegmentBinder.bind(segment.getExpression(), parentSegmentType, binderContext, tableBinderContexts, Collections.emptyMap());
         return new NotExpression(segment.getStartIndex(), segment.getStopIndex(), boundedExpression, segment.getNotSign());
     }
 }

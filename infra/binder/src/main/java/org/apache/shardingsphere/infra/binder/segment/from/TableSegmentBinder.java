@@ -41,27 +41,27 @@ import java.util.Map;
 public final class TableSegmentBinder {
     
     /**
-     * Bind table segment with metadata.
+     * Bind table segment.
      *
      * @param segment table segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded table segment
      */
-    public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+    public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                     final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment instanceof SimpleTableSegment) {
-            return SimpleTableSegmentBinder.bind((SimpleTableSegment) segment, statementBinderContext, tableBinderContexts);
+            return SimpleTableSegmentBinder.bind((SimpleTableSegment) segment, binderContext, tableBinderContexts);
         }
         if (segment instanceof JoinTableSegment) {
-            return JoinTableSegmentBinder.bind((JoinTableSegment) segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+            return JoinTableSegmentBinder.bind((JoinTableSegment) segment, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof SubqueryTableSegment) {
-            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof DeleteMultiTableSegment) {
-            return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, statementBinderContext, tableBinderContexts);
+            return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, binderContext, tableBinderContexts);
         }
         if (segment instanceof FunctionTableSegment) {
             tableBinderContexts.put(segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText()).toLowerCase(), new FunctionTableSegmentBinderContext());

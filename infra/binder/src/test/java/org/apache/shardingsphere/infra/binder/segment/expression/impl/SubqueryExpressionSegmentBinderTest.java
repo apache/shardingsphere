@@ -42,10 +42,10 @@ class SubqueryExpressionSegmentBinderTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubquerySegment subquery = new SubquerySegment(0, 10, selectStatement, "subquery");
         SubqueryExpressionSegment segment = new SubqueryExpressionSegment(subquery);
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(null, null, null, null);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(null, null, null, null);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new HashMap<>();
-        SubqueryExpressionSegment actual = SubqueryExpressionSegmentBinder.bind(segment, statementBinderContext, tableBinderContexts);
-        SubqueryExpressionSegment expected = new SubqueryExpressionSegment(SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts));
+        SubqueryExpressionSegment actual = SubqueryExpressionSegmentBinder.bind(segment, binderContext, tableBinderContexts);
+        SubqueryExpressionSegment expected = new SubqueryExpressionSegment(SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts));
         assertThat(actual, isA(SubqueryExpressionSegment.class));
         assertThat(actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(actual.getStopIndex(), is(expected.getStopIndex()));
