@@ -36,9 +36,9 @@ class BinaryOperationExpressionBinderTest {
         BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(0, 0,
                 new LiteralExpressionSegment(0, 0, "test"),
                 new LiteralExpressionSegment(0, 0, "test"), "=", "test");
-        SQLStatementBinderContext statementBinderContext = mock(SQLStatementBinderContext.class);
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
         BinaryOperationExpression actual = BinaryOperationExpressionBinder.bind(binaryOperationExpression, SegmentType.PROJECTION,
-                statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
+                binderContext, Collections.emptyMap(), Collections.emptyMap());
         assertThat(actual.getLeft().getText(), is("test"));
         assertThat(actual.getRight().getText(), is("test"));
         assertThat(actual.getOperator(), is("="));

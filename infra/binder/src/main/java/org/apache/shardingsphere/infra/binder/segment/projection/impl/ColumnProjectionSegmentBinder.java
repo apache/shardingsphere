@@ -36,16 +36,16 @@ import java.util.Map;
 public final class ColumnProjectionSegmentBinder {
     
     /**
-     * Bind column projection segment with metadata.
+     * Bind column projection segment.
      *
      * @param segment table segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded column projection segment
      */
-    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final SQLStatementBinderContext statementBinderContext,
-                                               final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, statementBinderContext, tableBinderContexts, Collections.emptyMap());
+    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment,
+                                               final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, binderContext, tableBinderContexts, Collections.emptyMap());
         ColumnProjectionSegment result = new ColumnProjectionSegment(boundedColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
         result.setVisible(segment.isVisible());

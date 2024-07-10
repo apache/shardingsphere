@@ -39,17 +39,17 @@ public final class FunctionExpressionSegmentBinder {
      *
      * @param segment function expression segment
      * @param parentSegmentType parent segment type
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return function segment
      */
-    public static FunctionSegment bind(final FunctionSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
+    public static FunctionSegment bind(final FunctionSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                        final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         FunctionSegment result = new FunctionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getFunctionName(), segment.getText());
         result.setOwner(segment.getOwner());
         for (ExpressionSegment each : segment.getParameters()) {
-            result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+            result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
         }
         return result;
     }

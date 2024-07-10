@@ -36,19 +36,19 @@ import java.util.Map;
 public final class WithSegmentBinder {
     
     /**
-     * Bind with segment with metadata.
+     * Bind with segment.
      *
      * @param segment with segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param externalTableBinderContexts external table binder contexts
      * @return bounded with segment
      */
-    public static WithSegment bind(final WithSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+    public static WithSegment bind(final WithSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                    final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         Collection<CommonTableExpressionSegment> boundedCommonTableExpressions = new LinkedList<>();
         for (CommonTableExpressionSegment each : segment.getCommonTableExpressions()) {
-            CommonTableExpressionSegment boundedCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, statementBinderContext, tableBinderContexts);
+            CommonTableExpressionSegment boundedCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, tableBinderContexts);
             boundedCommonTableExpressions.add(boundedCommonTableExpression);
             each.getAliasName().ifPresent(aliasName -> externalTableBinderContexts.put(aliasName,
                     new SimpleTableSegmentBinderContext(boundedCommonTableExpression.getSubquery().getSelect().getProjections().getProjections())));

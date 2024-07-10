@@ -34,16 +34,16 @@ import java.util.Map;
 public final class CommonTableExpressionSegmentBinder {
     
     /**
-     * Bind common table expression segment with metadata.
+     * Bind common table expression segment.
      *
      * @param segment common table expression segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded common table expression segment
      */
-    public static CommonTableExpressionSegment bind(final CommonTableExpressionSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static CommonTableExpressionSegment bind(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts);
+        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getAliasSegment(), boundedSubquerySegment);
         // TODO bind with columns
         result.getColumns().addAll(segment.getColumns());

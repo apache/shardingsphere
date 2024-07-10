@@ -34,8 +34,8 @@ class NotExpressionBinderTest {
     @Test
     void assertBind() {
         NotExpression notExpression = new NotExpression(0, 10, new LiteralExpressionSegment(0, 0, "test"), true);
-        SQLStatementBinderContext statementBinderContext = mock(SQLStatementBinderContext.class);
-        NotExpression actual = NotExpressionBinder.bind(notExpression, SegmentType.PROJECTION, statementBinderContext, Collections.emptyMap());
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        NotExpression actual = NotExpressionBinder.bind(notExpression, SegmentType.PROJECTION, binderContext, Collections.emptyMap());
         assertThat(actual.getNotSign(), is(notExpression.getNotSign()));
         assertThat(actual.getStartIndex(), is(notExpression.getStartIndex()));
         assertThat(actual.getStopIndex(), is(notExpression.getStopIndex()));

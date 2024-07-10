@@ -35,19 +35,19 @@ import java.util.Map;
 public final class InExpressionBinder {
     
     /**
-     * Bind in expression segment with metadata.
+     * Bind in expression segment.
      *
      * @param segment in expression
      * @param parentSegmentType parent segment type
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded in expression
      */
-    public static InExpression bind(final InExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
+    public static InExpression bind(final InExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                     final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
-        ExpressionSegment boundedRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+        ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        ExpressionSegment boundedRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         return new InExpression(segment.getStartIndex(), segment.getStopIndex(), boundedLeft, boundedRight, segment.isNot());
     }
 }
