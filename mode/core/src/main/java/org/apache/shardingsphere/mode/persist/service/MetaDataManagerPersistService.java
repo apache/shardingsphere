@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -149,4 +150,14 @@ public interface MetaDataManagerPersistService {
      * @param props pros
      */
     void alterProperties(Properties props);
+    
+    /**
+     * After storage units altered.
+     *
+     * @param databaseName database name
+     * @param originalMetaDataContexts original meta data contexts
+     * @param isDropConfig is drop config
+     */
+    default void afterStorageUnitsAltered(String databaseName, MetaDataContexts originalMetaDataContexts, boolean isDropConfig) {
+    }
 }
