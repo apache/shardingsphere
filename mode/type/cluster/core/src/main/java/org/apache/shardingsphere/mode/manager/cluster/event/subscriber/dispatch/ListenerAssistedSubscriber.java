@@ -56,7 +56,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
     public synchronized void renew(final CreateDatabaseListenerAssistedEvent event) {
         listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()),
                 new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().addDatabase(event.getDatabaseName());
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
         refreshShardingSphereStatisticsData();
     }
@@ -69,7 +69,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final DropDatabaseListenerAssistedEvent event) {
         listenerManager.removeListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()));
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().dropDatabase(event.getDatabaseName());
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
         refreshShardingSphereStatisticsData();
     }

@@ -53,7 +53,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) {
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().addSchema(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addSchema(event.getDatabaseName(), event.getSchemaName());
         refreshShardingSphereStatisticsData();
     }
     
@@ -64,7 +64,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
      */
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().dropSchema(event.getDatabaseName(), event.getSchemaName());
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropSchema(event.getDatabaseName(), event.getSchemaName());
         refreshShardingSphereStatisticsData();
     }
     
@@ -81,7 +81,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
         }
         Map<String, ShardingSphereTable> tables = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
                 .getTableMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
                 tables.values().iterator().next(), null);
         refreshShardingSphereStatisticsData();
     }
@@ -93,7 +93,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
      */
     @Subscribe
     public synchronized void renew(final DropTableEvent event) {
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
         refreshShardingSphereStatisticsData();
     }
     
@@ -110,7 +110,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
         }
         Map<String, ShardingSphereView> views = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
                 .getViewMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
                 null, views.values().iterator().next());
         refreshShardingSphereStatisticsData();
     }
@@ -122,7 +122,7 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
      */
     @Subscribe
     public synchronized void renew(final DropViewEvent event) {
-        contextManager.getMetaDataContextManager().getResourceMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());
         refreshShardingSphereStatisticsData();
     }
     

@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * ShardingSphere database context manager.
+ * ShardingSphere database data manager.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereDatabaseManager {
+public final class ShardingSphereDatabaseDataManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     

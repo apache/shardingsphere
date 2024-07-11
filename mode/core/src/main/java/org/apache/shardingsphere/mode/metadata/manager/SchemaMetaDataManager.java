@@ -41,13 +41,13 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Resource meta data manager.
  */
-public final class ResourceMetaDataManager {
+public final class SchemaMetaDataManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
     private final MetaDataPersistService metaDataPersistService;
     
-    public ResourceMetaDataManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository) {
+    public SchemaMetaDataManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         metaDataPersistService = new MetaDataPersistService(repository);
     }
