@@ -160,4 +160,14 @@ public interface MetaDataManagerPersistService {
      */
     default void afterStorageUnitsAltered(String databaseName, MetaDataContexts originalMetaDataContexts, boolean isDropConfig) {
     }
+    
+    /**
+     * After rule configuration altered.
+     *
+     * @param databaseName database name
+     * @param originalMetaDataContexts original meta data contexts
+     * @param isDropConfig is drop config
+     */
+    default void afterRuleConfigurationAltered(String databaseName, MetaDataContexts originalMetaDataContexts, boolean isDropConfig) {
+    }
 }
