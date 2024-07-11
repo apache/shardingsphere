@@ -28,9 +28,8 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.persist.service.QualifiedDataSourceStatePersistService;
-import org.apache.shardingsphere.mode.persist.pojo.AlteredShardingSphereSchemaData;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.persist.service.StatePersistService;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
  * Persist service facade.
@@ -64,21 +63,5 @@ public final class PersistServiceFacade {
         metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(repository, metaDataContextManager);
         processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
         listenerAssistedPersistService = new ListenerAssistedPersistService(repository);
-    }
-    
-    /**
-     * Update when sharding sphere schema data altered.
-     *
-     * @param schemaDataAlteredPOJO sharding sphere schema data
-     */
-    public void persist(final AlteredShardingSphereSchemaData schemaDataAlteredPOJO) {
-        String databaseName = schemaDataAlteredPOJO.getDatabaseName();
-        String schemaName = schemaDataAlteredPOJO.getSchemaName();
-        metaDataPersistService.getShardingSphereDataPersistService().getTableRowDataPersistService().persist(databaseName, schemaName, schemaDataAlteredPOJO.getTableName(),
-                schemaDataAlteredPOJO.getAddedRows());
-        metaDataPersistService.getShardingSphereDataPersistService().getTableRowDataPersistService().persist(databaseName, schemaName, schemaDataAlteredPOJO.getTableName(),
-                schemaDataAlteredPOJO.getUpdatedRows());
-        metaDataPersistService.getShardingSphereDataPersistService().getTableRowDataPersistService().delete(databaseName, schemaName, schemaDataAlteredPOJO.getTableName(),
-                schemaDataAlteredPOJO.getDeletedRows());
     }
 }

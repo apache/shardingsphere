@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDa
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.pojo.AlteredShardingSphereSchemaData;
+import org.apache.shardingsphere.metadata.persist.data.AlteredShardingSphereDatabaseData;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -162,13 +162,13 @@ public final class ShardingSphereStatisticsRefreshEngine {
             return;
         }
         statistics.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
-        AlteredShardingSphereSchemaData schemaDataAlteredPOJO = getShardingSphereSchemaDataAlteredPOJO(databaseName, schemaName, tableData, changedTableData, table);
-        contextManager.getPersistServiceFacade().persist(schemaDataAlteredPOJO);
+        AlteredShardingSphereDatabaseData alteredShardingSphereDatabaseData = getShardingSphereSchemaDataAlteredPOJO(databaseName, schemaName, tableData, changedTableData, table);
+        contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereDataPersistService().update(alteredShardingSphereDatabaseData);
     }
     
-    private AlteredShardingSphereSchemaData getShardingSphereSchemaDataAlteredPOJO(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
-                                                                                   final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
-        AlteredShardingSphereSchemaData result = new AlteredShardingSphereSchemaData(databaseName, schemaName, tableData.getName());
+    private AlteredShardingSphereDatabaseData getShardingSphereSchemaDataAlteredPOJO(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
+                                                                                     final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
+        AlteredShardingSphereDatabaseData result = new AlteredShardingSphereDatabaseData(databaseName, schemaName, tableData.getName());
         Map<String, ShardingSphereRowData> tableDataMap = tableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
         Map<String, ShardingSphereRowData> changedTableDataMap = changedTableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
         YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getColumnValues()));
