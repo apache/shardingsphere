@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Table pg_namespace data collector.
@@ -39,18 +40,26 @@ public final class PgNamespaceTableCollector implements ShardingSphereStatistics
     
     private static final String PG_NAMESPACE = "pg_namespace";
     
-    private static final String COLUMN_NAMES = "oid, nspname, nspowner, nspacl";
+    private static final String PUBLIC_SCHEMA = "public";
     
-    private static final String SELECT_SQL = "SELECT " + COLUMN_NAMES + " FROM pg_catalog.pg_namespace";
+    private static final Long PUBLIC_SCHEMA_OID = 0L;
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
                                                      final RuleMetaData globalRuleMetaData) throws SQLException {
-        Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtils.collectRowData(databases.get(databaseName),
-                table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()), SELECT_SQL);
         ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE);
-        result.getRows().addAll(rows);
+        long oid = 1L;
+        for (Entry<String, ShardingSphereSchema> entry : databases.get(databaseName).getSchemas().entrySet()) {
+            result.getRows().add(new ShardingSphereRowData(getRow(PUBLIC_SCHEMA.equalsIgnoreCase(entry.getKey()) ? PUBLIC_SCHEMA_OID : oid++, entry.getKey(), table)));
+        }
         return Optional.of(result);
+    }
+    
+    private List<Object> getRow(final Long oid, final String schemaName, final ShardingSphereTable table) {
+        Map<String, Object> columnValues = new CaseInsensitiveMap<>(2, 1F);
+        columnValues.put("oid", oid);
+        columnValues.put("nspname", schemaName);
+        return ShardingSphereTableDataCollectorUtils.createRowValue(columnValues, table);
     }
     
     @Override
