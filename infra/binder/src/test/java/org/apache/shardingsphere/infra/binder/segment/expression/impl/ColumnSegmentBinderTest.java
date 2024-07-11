@@ -55,9 +55,9 @@ class ColumnSegmentBinderTest {
                 new IdentifierValue("t_order_item"), new IdentifierValue("item_id")));
         tableBinderContexts.put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedItemIdColumn))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        SQLStatementBinderContext statementBinderContext =
+        SQLStatementBinderContext binderContext =
                 new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
-        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap());
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, binderContext, tableBinderContexts, Collections.emptyMap());
         assertNotNull(actual.getColumnBoundedInfo());
         assertNull(actual.getOtherUsingColumnBoundedInfo());
         assertThat(actual.getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
@@ -77,10 +77,10 @@ class ColumnSegmentBinderTest {
         boundedOrderItemStatusColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order_item"), new IdentifierValue("status")));
         outerTableBinderContexts.put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedOrderItemStatusColumn))));
-        SQLStatementBinderContext statementBinderContext =
+        SQLStatementBinderContext binderContext =
                 new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
-        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, statementBinderContext, Collections.emptyMap(), outerTableBinderContexts);
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, Collections.emptyMap(), outerTableBinderContexts);
         assertNotNull(actual.getColumnBoundedInfo());
         assertNull(actual.getOtherUsingColumnBoundedInfo());
         assertThat(actual.getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));

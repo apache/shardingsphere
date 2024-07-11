@@ -36,18 +36,20 @@ import java.util.Map;
 public final class CombineSegmentBinder {
     
     /**
-     * Bind combine segment with metadata.
+     * Bind combine segment.
      *
      * @param segment table segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @return bound combine segment
      */
-    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext statementBinderContext) {
-        ShardingSphereMetaData metaData = statementBinderContext.getMetaData();
-        String currentDatabaseName = statementBinderContext.getCurrentDatabaseName();
-        Map<String, TableSegmentBinderContext> externalTableBinderContexts = statementBinderContext.getExternalTableBinderContexts();
-        SelectStatement boundLeftSelect = new SelectStatementBinder().bind(segment.getLeft().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts);
-        SelectStatement boundRightSelect = new SelectStatementBinder().bind(segment.getRight().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts);
+    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext binderContext) {
+        ShardingSphereMetaData metaData = binderContext.getMetaData();
+        String currentDatabaseName = binderContext.getCurrentDatabaseName();
+        Map<String, TableSegmentBinderContext> externalTableBinderContexts = binderContext.getExternalTableBinderContexts();
+        SelectStatement boundLeftSelect = new SelectStatementBinder().bind(
+                segment.getLeft().getSelect(), createBinderContext(segment.getLeft().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts));
+        SelectStatement boundRightSelect = new SelectStatementBinder().bind(
+                segment.getRight().getSelect(), createBinderContext(segment.getRight().getSelect(), metaData, currentDatabaseName, externalTableBinderContexts));
         SubquerySegment boundLeft = new SubquerySegment(segment.getLeft().getStartIndex(), segment.getLeft().getStopIndex(), segment.getLeft().getText());
         boundLeft.setSelect(boundLeftSelect);
         boundLeft.setSubqueryType(segment.getLeft().getSubqueryType());
@@ -55,5 +57,12 @@ public final class CombineSegmentBinder {
         boundedRight.setSelect(boundRightSelect);
         boundedRight.setSubqueryType(segment.getRight().getSubqueryType());
         return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundLeft, segment.getCombineType(), boundedRight);
+    }
+    
+    private static SQLStatementBinderContext createBinderContext(final SelectStatement select, final ShardingSphereMetaData metaData,
+                                                                 final String currentDatabaseName, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+        SQLStatementBinderContext result = new SQLStatementBinderContext(select, metaData, currentDatabaseName);
+        result.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
+        return result;
     }
 }

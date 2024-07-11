@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.infra.binder.type;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementBinder;
-import org.apache.shardingsphere.infra.binder.statement.dml.MergeStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
@@ -48,20 +47,18 @@ public final class DMLStatementBindEngine {
      * @return bound DML statement
      */
     public DMLStatement bind(final DMLStatement statement) {
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(statement, metaData, currentDatabaseName);
         if (statement instanceof SelectStatement) {
-            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, currentDatabaseName);
+            return new SelectStatementBinder().bind((SelectStatement) statement, binderContext);
         }
         if (statement instanceof InsertStatement) {
-            return new InsertStatementBinder().bind((InsertStatement) statement, metaData, currentDatabaseName);
+            return new InsertStatementBinder().bind((InsertStatement) statement, binderContext);
         }
         if (statement instanceof UpdateStatement) {
-            return new UpdateStatementBinder().bind((UpdateStatement) statement, metaData, currentDatabaseName);
+            return new UpdateStatementBinder().bind((UpdateStatement) statement, binderContext);
         }
         if (statement instanceof DeleteStatement) {
-            return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, currentDatabaseName);
-        }
-        if (statement instanceof MergeStatement) {
-            return new MergeStatementBinder().bind((MergeStatement) statement, metaData, currentDatabaseName);
+            return new DeleteStatementBinder().bind((DeleteStatement) statement, binderContext);
         }
         return statement;
     }

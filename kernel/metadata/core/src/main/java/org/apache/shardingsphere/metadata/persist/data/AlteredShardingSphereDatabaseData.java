@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.pojo;
+package org.apache.shardingsphere.metadata.persist.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Altered shardingSphere schema data.
+ * Altered ShardingSphere database data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlteredShardingSphereSchemaData {
+public final class AlteredShardingSphereDatabaseData {
     
     private final String databaseName;
     

@@ -34,16 +34,16 @@ import java.util.Map;
 public final class SubqueryProjectionSegmentBinder {
     
     /**
-     * Bind subquery projection segment with metadata.
+     * Bind subquery projection segment.
      *
      * @param segment subquery projection segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded subquery projection segment
      */
-    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final SQLStatementBinderContext binderContext,
                                                  final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts);
+        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
         SubqueryProjectionSegment result = new SubqueryProjectionSegment(boundedSubquerySegment, segment.getText());
         segment.getAliasSegment().ifPresent(result::setAlias);
         return result;

@@ -44,28 +44,28 @@ import java.util.Map;
 public final class ProjectionsSegmentBinder {
     
     /**
-     * Bind projections segment with metadata.
+     * Bind projections segment.
      *
      * @param segment table segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext statement binder context
      * @param boundedTableSegment bounded table segment
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded projections segment
      */
-    public static ProjectionsSegment bind(final ProjectionsSegment segment, final SQLStatementBinderContext statementBinderContext, final TableSegment boundedTableSegment,
+    public static ProjectionsSegment bind(final ProjectionsSegment segment, final SQLStatementBinderContext binderContext, final TableSegment boundedTableSegment,
                                           final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
-        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, statementBinderContext, boundedTableSegment, tableBinderContexts, outerTableBinderContexts)));
+        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, binderContext, boundedTableSegment, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
     
-    private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final SQLStatementBinderContext statementBinderContext,
+    private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final SQLStatementBinderContext binderContext,
                                           final TableSegment boundedTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                           final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (projectionSegment instanceof ColumnProjectionSegment) {
-            return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, statementBinderContext, tableBinderContexts);
+            return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, binderContext, tableBinderContexts);
         }
         if (projectionSegment instanceof ShorthandProjectionSegment) {
             return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundedTableSegment, tableBinderContexts);
@@ -74,12 +74,12 @@ public final class ProjectionsSegmentBinder {
             Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>(outerTableBinderContexts.size() + tableBinderContexts.size(), 1F);
             newOuterTableBinderContexts.putAll(outerTableBinderContexts);
             newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, statementBinderContext, newOuterTableBinderContexts);
+            return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, binderContext, newOuterTableBinderContexts);
         }
         if (projectionSegment instanceof ExpressionProjectionSegment) {
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(projectionSegment.getStartIndex(), projectionSegment.getStopIndex(),
                     ((ExpressionProjectionSegment) projectionSegment).getText(), ExpressionSegmentBinder.bind(((ExpressionProjectionSegment) projectionSegment).getExpr(), SegmentType.PROJECTION,
-                            statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+                            binderContext, tableBinderContexts, outerTableBinderContexts));
             result.setAlias(((ExpressionProjectionSegment) projectionSegment).getAliasSegment());
             return result;
         }

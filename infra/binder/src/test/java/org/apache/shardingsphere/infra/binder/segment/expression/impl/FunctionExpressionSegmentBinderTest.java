@@ -35,8 +35,8 @@ class FunctionExpressionSegmentBinderTest {
     @Test
     void assertBindFunctionExpressionSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "CONCAT", "('%','abc','%')");
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), DefaultDatabase.LOGIC_NAME, new MockedDatabaseType(), Collections.emptyList());
-        FunctionSegment actual = FunctionExpressionSegmentBinder.bind(functionSegment, SegmentType.PROJECTION, statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), DefaultDatabase.LOGIC_NAME, new MockedDatabaseType(), Collections.emptyList());
+        FunctionSegment actual = FunctionExpressionSegmentBinder.bind(functionSegment, SegmentType.PROJECTION, binderContext, Collections.emptyMap(), Collections.emptyMap());
         assertThat(actual.getStartIndex(), is(functionSegment.getStartIndex()));
         assertThat(actual.getStopIndex(), is(functionSegment.getStopIndex()));
         assertThat(actual.getFunctionName(), is("CONCAT"));
