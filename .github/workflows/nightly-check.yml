@@ -189,6 +189,7 @@ jobs:
           days-before-pr-stale: -1
           days-before-close: -1
           stale-issue-label: "stale"
+          any-of-issue-labels: "status: need more info,type: question"
           operations-per-run: 100
           remove-stale-when-updated: true
           stale-issue-message: >
