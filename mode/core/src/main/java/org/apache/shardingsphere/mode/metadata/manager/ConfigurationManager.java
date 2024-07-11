@@ -212,7 +212,7 @@ public final class ConfigurationManager {
         MetaDataContexts reloadMetaDataContexts = createMetaDataContextsByAlterRule(databaseName, database.getRuleMetaData().getConfigurations());
         alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName), isDropConfig);
         metaDataContexts.set(reloadMetaDataContexts);
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(buildShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
     }
     
     private MetaDataContexts createMetaDataContextsByAlterRule(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
@@ -350,7 +350,7 @@ public final class ConfigurationManager {
                 : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, computeNodeInstanceContext);
     }
     
-    private Map<String, ShardingSphereSchema> newShardingSphereSchemas(final ShardingSphereDatabase database) {
+    private Map<String, ShardingSphereSchema> buildShardingSphereSchemas(final ShardingSphereDatabase database) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(database.getSchemas().size(), 1F);
         database.getSchemas().forEach((key, value) -> result.put(key, new ShardingSphereSchema(value.getTables(), value.getViews())));
         return result;

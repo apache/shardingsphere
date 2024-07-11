@@ -183,6 +183,13 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName), isDropConfig);
     }
     
+    @Override
+    public void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final boolean isDropConfig) {
+        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        metaDataContextManager.getConfigurationManager().alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName), isDropConfig);
+    }
+    
     private void persistSchemaMetaData(final String databaseName, final MetaDataContexts reloadMetaDataContexts, final boolean isDropConfig) {
         if (isDropConfig) {
             reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService()

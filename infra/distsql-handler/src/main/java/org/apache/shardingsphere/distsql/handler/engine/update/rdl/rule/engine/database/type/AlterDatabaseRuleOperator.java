@@ -52,7 +52,9 @@ public final class AlterDatabaseRuleOperator implements DatabaseRuleOperator {
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
         metaDataManagerPersistService.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
-        return metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
+        Collection<MetaDataVersion> result = metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
+        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(),);
+        return result;
     }
     
     @SuppressWarnings("unchecked")
