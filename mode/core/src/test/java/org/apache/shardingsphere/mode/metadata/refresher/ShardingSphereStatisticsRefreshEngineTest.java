@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.pojo.AlteredShardingSphereSchemaData;
+import org.apache.shardingsphere.metadata.persist.data.AlteredShardingSphereDatabaseData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -65,7 +65,7 @@ class ShardingSphereStatisticsRefreshEngineTest {
         GlobalLockContext globalLockContext = mock(GlobalLockContext.class);
         when(globalLockContext.tryLock(any(GlobalLockDefinition.class), anyLong())).thenReturn(true);
         new ShardingSphereStatisticsRefreshEngine(contextManager, globalLockContext).refresh();
-        verify(contextManager.getPersistServiceFacade()).persist(any(AlteredShardingSphereSchemaData.class));
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereDataPersistService()).update(any(AlteredShardingSphereDatabaseData.class));
     }
     
     private ShardingSphereStatistics mockStatistics() {
