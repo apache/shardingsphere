@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
-import org.apache.shardingsphere.mode.metadata.manager.ResourceMetaDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
-import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseManager;
+import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDataManager;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,11 +39,11 @@ public class MetaDataContextManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
-    private final ShardingSphereDatabaseManager databaseManager;
+    private final ShardingSphereDatabaseDataManager databaseManager;
     
     private final ConfigurationManager configurationManager;
     
-    private final ResourceMetaDataManager resourceMetaDataManager;
+    private final SchemaMetaDataManager schemaMetaDataManager;
     
     private final RuleItemManager ruleItemManager;
     
@@ -55,9 +55,9 @@ public class MetaDataContextManager {
                                   final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         resourceSwitchManager = new ResourceSwitchManager();
-        databaseManager = new ShardingSphereDatabaseManager(metaDataContexts);
+        databaseManager = new ShardingSphereDatabaseDataManager(metaDataContexts);
         configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository, resourceSwitchManager);
-        resourceMetaDataManager = new ResourceMetaDataManager(metaDataContexts, repository);
+        schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, repository);
         ruleItemManager = new RuleItemManager(metaDataContexts, repository, configurationManager);
         metaDataPersistService = new MetaDataPersistService(repository);
     }
