@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -30,13 +30,13 @@ import java.util.Optional;
  * Limit value segment for parameter marker.
  */
 @Getter
-@EqualsAndHashCode(exclude = "boundedInfo", callSuper = true)
+@EqualsAndHashCode(exclude = "boundInfo", callSuper = true)
 public final class ParameterMarkerLimitValueSegment extends LimitValueSegment implements ParameterMarkerPaginationValueSegment {
     
     private final int parameterIndex;
     
     @Setter
-    private ColumnSegmentBoundedInfo boundedInfo;
+    private ColumnSegmentBoundInfo boundInfo;
     
     public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int paramIndex) {
         super(startIndex, stopIndex);
@@ -44,7 +44,7 @@ public final class ParameterMarkerLimitValueSegment extends LimitValueSegment im
     }
     
     @Override
-    public ColumnSegmentBoundedInfo getBoundedInfo() {
-        return Optional.ofNullable(boundedInfo).orElseGet(() -> new ColumnSegmentBoundedInfo(new IdentifierValue("")));
+    public ColumnSegmentBoundInfo getBoundInfo() {
+        return Optional.ofNullable(boundInfo).orElseGet(() -> new ColumnSegmentBoundInfo(new IdentifierValue("")));
     }
 }

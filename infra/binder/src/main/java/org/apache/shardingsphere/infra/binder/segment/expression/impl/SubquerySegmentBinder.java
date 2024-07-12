@@ -39,13 +39,13 @@ public final class SubquerySegmentBinder {
      * @param segment subquery segment
      * @param binderContext SQL statement binder context
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded subquery segment
+     * @return bound subquery segment
      */
     public static SubquerySegment bind(final SubquerySegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         SQLStatementBinderContext selectBinderContext = new SQLStatementBinderContext(segment.getSelect(), binderContext.getMetaData(), binderContext.getCurrentDatabaseName());
         selectBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
-        SelectStatement boundedSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);
-        SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundedSelectStatement, segment.getText());
+        SelectStatement boundSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);
+        SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundSelectStatement, segment.getText());
         result.setSubqueryType(segment.getSubqueryType());
         return result;
     }

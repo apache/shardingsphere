@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -36,7 +36,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(exclude = "boundedInfo")
+@EqualsAndHashCode(exclude = "boundInfo")
 public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment, ProjectionSegment, AliasAvailable, ParameterMarkerSegment {
     
     private final int startIndex;
@@ -51,7 +51,7 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     private AliasSegment alias;
     
     @Setter
-    private ColumnSegmentBoundedInfo boundedInfo;
+    private ColumnSegmentBoundInfo boundInfo;
     
     public ParameterMarkerExpressionSegment(final int startIndex, final int stopIndex, final int parameterMarkerIndex) {
         this.startIndex = startIndex;
@@ -81,8 +81,8 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     }
     
     @Override
-    public ColumnSegmentBoundedInfo getBoundedInfo() {
-        return Optional.ofNullable(boundedInfo).orElseGet(() -> new ColumnSegmentBoundedInfo(new IdentifierValue("")));
+    public ColumnSegmentBoundInfo getBoundInfo() {
+        return Optional.ofNullable(boundInfo).orElseGet(() -> new ColumnSegmentBoundInfo(new IdentifierValue("")));
     }
     
     @Override

@@ -43,15 +43,15 @@ public final class LockSegmentBinder {
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded lock segment
+     * @return bound lock segment
      */
     public static LockSegment bind(final LockSegment segment, final SQLStatementBinderContext binderContext,
                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        Collection<ColumnSegment> boundedColumns = new LinkedList<>();
-        segment.getColumns().forEach(each -> boundedColumns.add(ColumnSegmentBinder.bind(each, SegmentType.LOCK, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        Collection<ColumnSegment> boundColumns = new LinkedList<>();
+        segment.getColumns().forEach(each -> boundColumns.add(ColumnSegmentBinder.bind(each, SegmentType.LOCK, binderContext, tableBinderContexts, outerTableBinderContexts)));
         LockSegment result = new LockSegment(segment.getStartIndex(), segment.getStopIndex());
         result.getTables().addAll(segment.getTables());
-        result.getColumns().addAll(boundedColumns);
+        result.getColumns().addAll(boundColumns);
         return result;
     }
 }

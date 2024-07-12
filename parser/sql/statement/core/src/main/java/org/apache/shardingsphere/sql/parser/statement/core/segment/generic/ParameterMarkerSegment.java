@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.generic;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 /**
  * Parameter marker segment.
@@ -33,9 +33,9 @@ public interface ParameterMarkerSegment extends SQLSegment {
     int getParameterIndex();
     
     /**
-     * Get bounded info.
+     * Get bound info.
      *
-     * @return bounded info
+     * @return bound info
      */
-    ColumnSegmentBoundedInfo getBoundedInfo();
+    ColumnSegmentBoundInfo getBoundInfo();
 }

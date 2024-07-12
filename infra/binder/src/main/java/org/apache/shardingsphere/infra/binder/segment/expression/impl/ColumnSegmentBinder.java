@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public final class ColumnSegmentBinder {
         Collection<TableSegmentBinderContext> tableSegmentBinderContexts = getTableSegmentBinderContexts(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext);
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
-        result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, inputColumnSegment.orElse(null)));
+        result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, inputColumnSegment.orElse(null)));
         return result;
     }
     
@@ -225,16 +225,16 @@ public final class ColumnSegmentBinder {
         return false;
     }
     
-    private static ColumnSegmentBoundedInfo createColumnSegmentBoundedInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment) {
-        IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundedInfo().getOriginalDatabase();
-        IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundedInfo().getOriginalSchema();
-        IdentifierValue segmentOriginalTable = segment.getColumnBoundedInfo().getOriginalTable();
+    private static ColumnSegmentBoundInfo createColumnSegmentBoundInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment) {
+        IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalDatabase();
+        IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalSchema();
+        IdentifierValue segmentOriginalTable = segment.getColumnBoundInfo().getOriginalTable();
         IdentifierValue originalTable = Strings.isNullOrEmpty(segmentOriginalTable.getValue())
-                ? Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundedInfo().getOriginalTable()).orElse(segmentOriginalTable)
+                ? Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundInfo().getOriginalTable()).orElse(segmentOriginalTable)
                 : segmentOriginalTable;
-        IdentifierValue segmentOriginalColumn = segment.getColumnBoundedInfo().getOriginalColumn();
-        IdentifierValue originalColumn = Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundedInfo().getOriginalColumn()).orElse(segmentOriginalColumn);
-        return new ColumnSegmentBoundedInfo(originalDatabase, originalSchema, originalTable, originalColumn);
+        IdentifierValue segmentOriginalColumn = segment.getColumnBoundInfo().getOriginalColumn();
+        IdentifierValue originalColumn = Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundInfo().getOriginalColumn()).orElse(segmentOriginalColumn);
+        return new ColumnSegmentBoundInfo(originalDatabase, originalSchema, originalTable, originalColumn);
     }
     
     /**
@@ -243,7 +243,7 @@ public final class ColumnSegmentBinder {
      * @param segment using column segment
      * @param parentSegmentType parent segment type
      * @param tableBinderContexts table binder contexts
-     * @return bounded using column segment
+     * @return bound using column segment
      */
     public static ColumnSegment bindUsingColumn(final ColumnSegment segment, final SegmentType parentSegmentType, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
@@ -253,8 +253,8 @@ public final class ColumnSegmentBinder {
         ShardingSpherePreconditions.checkState(usingInputColumnSegments.size() >= 2,
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         Iterator<ColumnSegment> iterator = usingInputColumnSegments.iterator();
-        result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, iterator.next()));
-        result.setOtherUsingColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, iterator.next()));
+        result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, iterator.next()));
+        result.setOtherUsingColumnBoundInfo(createColumnSegmentBoundInfo(segment, iterator.next()));
         return result;
     }
     

@@ -54,9 +54,9 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         sqlStatement.getWithSegment()
                 .ifPresent(optional -> result.setWithSegment(WithSegmentBinder.bind(optional, binderContext, tableBinderContexts, binderContext.getExternalTableBinderContexts())));
-        Optional<TableSegment> boundedTableSegment = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts));
-        boundedTableSegment.ifPresent(result::setFrom);
-        result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), binderContext, boundedTableSegment.orElse(null), tableBinderContexts, outerTableBinderContexts));
+        Optional<TableSegment> boundTableSegment = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts));
+        boundTableSegment.ifPresent(result::setFrom);
+        result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), binderContext, boundTableSegment.orElse(null), tableBinderContexts, outerTableBinderContexts));
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, binderContext)));
         sqlStatement.getLock().ifPresent(optional -> result.setLock(LockSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));

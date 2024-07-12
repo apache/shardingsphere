@@ -42,17 +42,17 @@ public final class WithSegmentBinder {
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param externalTableBinderContexts external table binder contexts
-     * @return bounded with segment
+     * @return bound with segment
      */
     public static WithSegment bind(final WithSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                    final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        Collection<CommonTableExpressionSegment> boundedCommonTableExpressions = new LinkedList<>();
+        Collection<CommonTableExpressionSegment> boundCommonTableExpressions = new LinkedList<>();
         for (CommonTableExpressionSegment each : segment.getCommonTableExpressions()) {
-            CommonTableExpressionSegment boundedCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, tableBinderContexts);
-            boundedCommonTableExpressions.add(boundedCommonTableExpression);
+            CommonTableExpressionSegment boundCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, tableBinderContexts);
+            boundCommonTableExpressions.add(boundCommonTableExpression);
             each.getAliasName().ifPresent(aliasName -> externalTableBinderContexts.put(aliasName,
-                    new SimpleTableSegmentBinderContext(boundedCommonTableExpression.getSubquery().getSelect().getProjections().getProjections())));
+                    new SimpleTableSegmentBinderContext(boundCommonTableExpression.getSubquery().getSelect().getProjections().getProjections())));
         }
-        return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundedCommonTableExpressions);
+        return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundCommonTableExpressions);
     }
 }

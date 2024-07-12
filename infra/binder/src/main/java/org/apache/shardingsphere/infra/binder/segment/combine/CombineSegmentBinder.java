@@ -53,10 +53,10 @@ public final class CombineSegmentBinder {
         SubquerySegment boundLeft = new SubquerySegment(segment.getLeft().getStartIndex(), segment.getLeft().getStopIndex(), segment.getLeft().getText());
         boundLeft.setSelect(boundLeftSelect);
         boundLeft.setSubqueryType(segment.getLeft().getSubqueryType());
-        SubquerySegment boundedRight = new SubquerySegment(segment.getRight().getStartIndex(), segment.getRight().getStopIndex(), segment.getRight().getText());
-        boundedRight.setSelect(boundRightSelect);
-        boundedRight.setSubqueryType(segment.getRight().getSubqueryType());
-        return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundLeft, segment.getCombineType(), boundedRight);
+        SubquerySegment boundRight = new SubquerySegment(segment.getRight().getStartIndex(), segment.getRight().getStopIndex(), segment.getRight().getText());
+        boundRight.setSelect(boundRightSelect);
+        boundRight.setSubqueryType(segment.getRight().getSubqueryType());
+        return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundLeft, segment.getCombineType(), boundRight);
     }
     
     private static SQLStatementBinderContext createBinderContext(final SelectStatement select, final ShardingSphereMetaData metaData,

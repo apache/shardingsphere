@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Shor
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -63,38 +63,38 @@ public final class SubqueryTableSegmentBinder {
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded subquery table segment
+     * @return bound subquery table segment
      */
     public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final SQLStatementBinderContext binderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         fillPivotColumnNamesInBinderContext(segment, binderContext);
         SQLStatementBinderContext subQueryBinderContext = new SQLStatementBinderContext(segment.getSubquery().getSelect(), binderContext.getMetaData(), binderContext.getCurrentDatabaseName());
         subQueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
-        SelectStatement boundedSelect = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSubquery().getSelect(), subQueryBinderContext);
-        SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect, segment.getSubquery().getText());
-        boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
+        SelectStatement boundSelect = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSubquery().getSelect(), subQueryBinderContext);
+        SubquerySegment boundSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundSelect, segment.getSubquery().getText());
+        boundSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
-        bindParameterMarkerProjection(boundedSubquerySegment, subqueryTableName);
-        SubqueryTableSegment result = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), boundedSubquerySegment);
+        bindParameterMarkerProjection(boundSubquerySegment, subqueryTableName);
+        SubqueryTableSegment result = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         tableBinderContexts.put(subqueryTableName.getValue().toLowerCase(),
-                new SimpleTableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName, binderContext.getDatabaseType())));
+                new SimpleTableSegmentBinderContext(createSubqueryProjections(boundSelect.getProjections().getProjections(), subqueryTableName, binderContext.getDatabaseType())));
         return result;
     }
     
-    private static void bindParameterMarkerProjection(final SubquerySegment boundedSubquerySegment, final IdentifierValue subqueryTableName) {
-        SelectStatement boundedSelect = boundedSubquerySegment.getSelect();
-        Collection<ProjectionSegment> projections = new LinkedList<>(boundedSelect.getProjections().getProjections());
-        boundedSelect.getProjections().getProjections().clear();
+    private static void bindParameterMarkerProjection(final SubquerySegment boundSubquerySegment, final IdentifierValue subqueryTableName) {
+        SelectStatement boundSelect = boundSubquerySegment.getSelect();
+        Collection<ProjectionSegment> projections = new LinkedList<>(boundSelect.getProjections().getProjections());
+        boundSelect.getProjections().getProjections().clear();
         for (ProjectionSegment each : projections) {
             if (!(each instanceof ParameterMarkerExpressionSegment)) {
-                boundedSelect.getProjections().getProjections().add(each);
+                boundSelect.getProjections().getProjections().add(each);
                 continue;
             }
             ParameterMarkerExpressionSegment parameterMarkerProjection = (ParameterMarkerExpressionSegment) each;
-            // TODO add database and schema in ColumnSegmentBoundedInfo
-            boundedSelect.getProjections().getProjections().add(ParameterMarkerExpressionSegmentBinder.bind(parameterMarkerProjection, Collections.singletonMap(parameterMarkerProjection,
-                    new ColumnSegmentBoundedInfo(new IdentifierValue(""), new IdentifierValue(""), subqueryTableName, parameterMarkerProjection.getAlias().orElseGet(() -> new IdentifierValue(""))))));
+            // TODO add database and schema in ColumnSegmentBoundInfo
+            boundSelect.getProjections().getProjections().add(ParameterMarkerExpressionSegmentBinder.bind(parameterMarkerProjection, Collections.singletonMap(parameterMarkerProjection,
+                    new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), subqueryTableName, parameterMarkerProjection.getAlias().orElseGet(() -> new IdentifierValue(""))))));
         }
     }
     
@@ -125,9 +125,9 @@ public final class SubqueryTableSegmentBinder {
         if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
             newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
         }
-        newColumnSegment.setColumnBoundedInfo(
-                new ColumnSegmentBoundedInfo(originalColumn.getColumn().getColumnBoundedInfo().getOriginalDatabase(), originalColumn.getColumn().getColumnBoundedInfo().getOriginalSchema(),
-                        originalColumn.getColumn().getColumnBoundedInfo().getOriginalTable(), originalColumn.getColumn().getColumnBoundedInfo().getOriginalColumn()));
+        newColumnSegment.setColumnBoundInfo(
+                new ColumnSegmentBoundInfo(originalColumn.getColumn().getColumnBoundInfo().getOriginalDatabase(), originalColumn.getColumn().getColumnBoundInfo().getOriginalSchema(),
+                        originalColumn.getColumn().getColumnBoundInfo().getOriginalTable(), originalColumn.getColumn().getColumnBoundInfo().getOriginalColumn()));
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
         result.setVisible(originalColumn.isVisible());
         return result;

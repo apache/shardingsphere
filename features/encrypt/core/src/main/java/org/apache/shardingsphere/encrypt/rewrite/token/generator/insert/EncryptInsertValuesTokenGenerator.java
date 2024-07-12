@@ -200,8 +200,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         ColumnSegment result = new ColumnSegment(originalColumn.getStartIndex(), originalColumn.getStopIndex(), new IdentifierValue(columnName, originalColumn.getIdentifier().getQuoteCharacter()));
         result.setNestedObjectAttributes(originalColumn.getNestedObjectAttributes());
         originalColumn.getOwner().ifPresent(result::setOwner);
-        result.setColumnBoundedInfo(originalColumn.getColumnBoundedInfo());
-        result.setOtherUsingColumnBoundedInfo(originalColumn.getOtherUsingColumnBoundedInfo());
+        result.setColumnBoundInfo(originalColumn.getColumnBoundInfo());
+        result.setOtherUsingColumnBoundInfo(originalColumn.getOtherUsingColumnBoundInfo());
         result.setVariable(originalColumn.isVariable());
         return result;
     }

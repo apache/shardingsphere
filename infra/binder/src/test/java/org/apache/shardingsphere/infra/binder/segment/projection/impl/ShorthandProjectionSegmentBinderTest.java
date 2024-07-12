@@ -67,9 +67,9 @@ class ShorthandProjectionSegmentBinderTest {
         invisibleColumn.setVisible(false);
         Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
                 "o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
-        SimpleTableSegment boundedTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        boundedTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
-        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundedTableSegment, tableBinderContexts);
+        SimpleTableSegment boundTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        boundTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundTableSegment, tableBinderContexts);
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
         assertThat(visibleColumn.getColumnLabel(), is("order_id"));
@@ -82,9 +82,9 @@ class ShorthandProjectionSegmentBinderTest {
         invisibleColumn.setVisible(false);
         Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
                 "o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
-        SubqueryTableSegment boundedTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, mock(MySQLSelectStatement.class), ""));
-        boundedTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
-        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundedTableSegment, tableBinderContexts);
+        SubqueryTableSegment boundTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, mock(MySQLSelectStatement.class), ""));
+        boundTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundTableSegment, tableBinderContexts);
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
         assertThat(visibleColumn.getColumnLabel(), is("order_id"));
@@ -94,9 +94,9 @@ class ShorthandProjectionSegmentBinderTest {
     @Test
     void assertBindWithoutOwnerForJoinTableSegment() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        JoinTableSegment boundedTableSegment = new JoinTableSegment();
-        boundedTableSegment.getDerivedJoinTableProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
-        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, boundedTableSegment, Collections.emptyMap());
+        JoinTableSegment boundTableSegment = new JoinTableSegment();
+        boundTableSegment.getDerivedJoinTableProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, boundTableSegment, Collections.emptyMap());
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
         assertThat(visibleColumn.getColumnLabel(), is("order_id"));

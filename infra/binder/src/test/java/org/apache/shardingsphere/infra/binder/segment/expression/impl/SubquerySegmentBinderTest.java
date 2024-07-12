@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -74,37 +74,37 @@ class SubquerySegmentBinderTest {
         SubquerySegment subquerySegment = new SubquerySegment(39, 103, mysqlSelectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
         SQLStatementBinderContext sqlStatementBinderContext =
                 new SQLStatementBinderContext(createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
-        ColumnSegment boundedNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
-        boundedNameColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
+        boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order_item"), new IdentifierValue("user_id")));
-        sqlStatementBinderContext.getExternalTableBinderContexts().put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedNameColumn))));
+        sqlStatementBinderContext.getExternalTableBinderContexts().put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundNameColumn))));
         Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
         assertNotNull(actual.getSelect());
         assertTrue(actual.getSelect().getFrom().isPresent());
         assertInstanceOf(SimpleTableSegment.class, actual.getSelect().getFrom().get());
         assertThat(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getIdentifier().getValue(), is("t_order"));
-        assertNotNull(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundedInfo());
-        assertThat(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertNotNull(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundInfo());
+        assertThat(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(actual.getSelect().getWhere().isPresent());
         assertInstanceOf(ColumnSegment.class, actual.getSelect().getWhere().get().getExpr());
         assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getIdentifier().getValue(), is("status"));
-        assertNotNull(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundedInfo());
-        assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalColumn().getValue(), is("status"));
-        assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertNotNull(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundInfo());
+        assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+        assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertNotNull(actual.getSelect().getProjections());
         assertThat(actual.getSelect().getProjections().getProjections().size(), is(1));
         ProjectionSegment column = actual.getSelect().getProjections().getProjections().iterator().next();
         assertInstanceOf(ColumnProjectionSegment.class, column);
         assertThat(((ColumnProjectionSegment) column).getColumn().getIdentifier().getValue(), is("order_id"));
-        assertNotNull(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo());
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("order_id"));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertNotNull(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo());
+        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
     }
     
     @Test
@@ -139,10 +139,10 @@ class SubquerySegmentBinderTest {
         assertTrue(expressionSegment.getSubquery().getSelect().getFrom().isPresent());
         assertInstanceOf(SimpleTableSegment.class, expressionSegment.getSubquery().getSelect().getFrom().get());
         assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getIdentifier().getValue(), is("t_order"));
-        assertNotNull(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundedInfo());
-        assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(),
+        assertNotNull(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundInfo());
+        assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(),
                 is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(),
+        assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(),
                 is(DefaultDatabase.LOGIC_NAME));
         assertNotNull(expressionSegment.getSubquery().getSelect().getProjections());
         assertNotNull(expressionSegment.getSubquery().getSelect().getProjections().getProjections());
@@ -150,17 +150,17 @@ class SubquerySegmentBinderTest {
         ProjectionSegment column = expressionSegment.getSubquery().getSelect().getProjections().getProjections().iterator().next();
         assertInstanceOf(ColumnProjectionSegment.class, column);
         assertThat(((ColumnProjectionSegment) column).getColumn().getIdentifier().getValue(), is("order_id"));
-        assertNotNull(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo());
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("order_id"));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertNotNull(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo());
+        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(expressionSegment.getSubquery().getSelect().getWhere().isPresent());
-        assertNotNull(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundedInfo());
-        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalColumn().getValue(), is("status"));
-        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertNotNull(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo());
+        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
     }
     
     private ShardingSphereMetaData createMetaData() {

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 import java.util.Map;
 
@@ -35,19 +35,18 @@ public final class ParameterMarkerExpressionSegmentBinder {
      * Bind parameter marker expression segment.
      *
      * @param segment parameter marker expression segment
-     * @param boundedInfos parameter marker expression segment bounded info map
-     * @return bounded parameter marker expression segment
+     * @param boundInfos parameter marker expression segment bound info map
+     * @return bound parameter marker expression segment
      */
-    public static ParameterMarkerExpressionSegment bind(final ParameterMarkerExpressionSegment segment,
-                                                        final Map<ParameterMarkerSegment, ColumnSegmentBoundedInfo> boundedInfos) {
-        ColumnSegmentBoundedInfo boundedInfo = boundedInfos.get(segment);
-        if (null != boundedInfo) {
-            ParameterMarkerExpressionSegment result =
-                    new ParameterMarkerExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getParameterMarkerIndex(), segment.getParameterMarkerType());
-            segment.getAliasSegment().ifPresent(result::setAlias);
-            result.setBoundedInfo(boundedInfo);
-            return result;
+    public static ParameterMarkerExpressionSegment bind(final ParameterMarkerExpressionSegment segment, final Map<ParameterMarkerSegment, ColumnSegmentBoundInfo> boundInfos) {
+        ColumnSegmentBoundInfo boundInfo = boundInfos.get(segment);
+        if (null == boundInfo) {
+            return segment;
         }
-        return segment;
+        ParameterMarkerExpressionSegment result =
+                new ParameterMarkerExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getParameterMarkerIndex(), segment.getParameterMarkerType());
+        segment.getAliasSegment().ifPresent(result::setAlias);
+        result.setBoundInfo(boundInfo);
+        return result;
     }
 }

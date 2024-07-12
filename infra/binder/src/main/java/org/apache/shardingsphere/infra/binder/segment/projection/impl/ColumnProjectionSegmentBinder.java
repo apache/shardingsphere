@@ -41,12 +41,12 @@ public final class ColumnProjectionSegmentBinder {
      * @param segment table segment
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bounded column projection segment
+     * @return bound column projection segment
      */
     public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment,
                                                final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, binderContext, tableBinderContexts, Collections.emptyMap());
-        ColumnProjectionSegment result = new ColumnProjectionSegment(boundedColumn);
+        ColumnSegment boundColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, binderContext, tableBinderContexts, Collections.emptyMap());
+        ColumnProjectionSegment result = new ColumnProjectionSegment(boundColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
         result.setVisible(segment.isVisible());
         return result;
