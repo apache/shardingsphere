@@ -27,6 +27,6 @@ public final class PipelineJobCreationWithInvalidShardingCountException extends 
     private static final long serialVersionUID = 5829502315976905271L;
     
     public PipelineJobCreationWithInvalidShardingCountException(final String jobId) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Sharding count of job '%s' is 0.", jobId);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, String.format("Sharding count of job '%s' is 0.", jobId));
     }
 }

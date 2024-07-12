@@ -28,6 +28,6 @@ public final class UncompletedConsistencyCheckJobExistsException extends Pipelin
     private static final long serialVersionUID = 2854259384634892428L;
     
     public UncompletedConsistencyCheckJobExistsException(final String jobId, final ConsistencyCheckJobItemProgress progress) {
-        super(XOpenSQLState.GENERAL_ERROR, 13, "Uncompleted consistency check job '%s' exists, progress '%s'.", jobId, progress);
+        super(XOpenSQLState.GENERAL_ERROR, 13, String.format("Uncompleted consistency check job '%s' exists, progress '%s'.", jobId, progress));
     }
 }
