@@ -29,7 +29,7 @@ public abstract class ShardingSphereInternalException extends Exception {
     private static final long serialVersionUID = -8238061892944243621L;
     
     protected ShardingSphereInternalException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
+        super(formatMessage(errorMessage, args));
     }
     
     protected ShardingSphereInternalException(final Exception cause) {
@@ -38,5 +38,15 @@ public abstract class ShardingSphereInternalException extends Exception {
     
     protected ShardingSphereInternalException(final String message, final Exception cause) {
         super(message, cause);
+    }
+    
+    private static String formatMessage(final String reason, final Object[] messageArgs) {
+        if (null == reason) {
+            return null;
+        }
+        if (0 == messageArgs.length) {
+            return reason;
+        }
+        return String.format(reason, messageArgs);
     }
 }
