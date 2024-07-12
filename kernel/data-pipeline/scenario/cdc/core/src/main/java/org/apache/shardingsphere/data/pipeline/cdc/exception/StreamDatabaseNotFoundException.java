@@ -27,6 +27,6 @@ public final class StreamDatabaseNotFoundException extends PipelineCDCException 
     private static final long serialVersionUID = -1064162731346147038L;
     
     public StreamDatabaseNotFoundException(final String database) {
-        super(XOpenSQLState.NOT_FOUND, 1, "Database '%s' does not exist.", database);
+        super(XOpenSQLState.NOT_FOUND, 1, String.format("Database '%s' does not exist.", database));
     }
 }
