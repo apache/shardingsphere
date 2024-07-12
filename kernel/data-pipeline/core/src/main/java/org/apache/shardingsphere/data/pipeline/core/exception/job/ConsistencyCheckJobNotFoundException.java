@@ -27,6 +27,6 @@ public final class ConsistencyCheckJobNotFoundException extends PipelineJobExcep
     private static final long serialVersionUID = 6881217592831423520L;
     
     public ConsistencyCheckJobNotFoundException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 12, "Can not find consistency check job of '%s'.", jobId);
+        super(XOpenSQLState.GENERAL_ERROR, 12, String.format("Can not find consistency check job of '%s'.", jobId));
     }
 }

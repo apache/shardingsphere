@@ -30,8 +30,8 @@ public abstract class PipelineCDCException extends PipelineSQLException {
     
     private static final int CDC_CODE = 4;
     
-    protected PipelineCDCException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    protected PipelineCDCException(final SQLState sqlState, final int errorCode, final String reason) {
+        super(sqlState, getErrorCode(errorCode), reason);
     }
     
     private static int getErrorCode(final int errorCode) {

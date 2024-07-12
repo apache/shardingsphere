@@ -27,6 +27,6 @@ public final class PrepareJobWithoutUserException extends PipelineJobException {
     private static final long serialVersionUID = 7250019436391155770L;
     
     public PrepareJobWithoutUserException(final String username) {
-        super(XOpenSQLState.NOT_FOUND, 8, "User '%s' does exist.", username);
+        super(XOpenSQLState.NOT_FOUND, 8, String.format("User '%s' does exist.", username));
     }
 }

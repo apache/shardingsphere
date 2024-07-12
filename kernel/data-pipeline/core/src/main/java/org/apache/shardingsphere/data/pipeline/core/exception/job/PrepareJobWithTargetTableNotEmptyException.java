@@ -27,6 +27,6 @@ public final class PrepareJobWithTargetTableNotEmptyException extends PipelineJo
     private static final long serialVersionUID = -8462039913248251254L;
     
     public PrepareJobWithTargetTableNotEmptyException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 5, "Target table '%s' is not empty.", tableName);
+        super(XOpenSQLState.GENERAL_ERROR, 5, String.format("Target table '%s' is not empty.", tableName));
     }
 }

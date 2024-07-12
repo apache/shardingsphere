@@ -30,8 +30,8 @@ public abstract class PipelineDataException extends PipelineSQLException {
     
     private static final int JOB_CODE = 2;
     
-    protected PipelineDataException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    protected PipelineDataException(final SQLState sqlState, final int errorCode, final String reason) {
+        super(sqlState, getErrorCode(errorCode), reason);
     }
     
     protected PipelineDataException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {

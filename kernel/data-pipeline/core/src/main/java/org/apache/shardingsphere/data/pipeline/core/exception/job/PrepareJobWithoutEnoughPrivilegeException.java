@@ -29,6 +29,6 @@ public final class PrepareJobWithoutEnoughPrivilegeException extends PipelineJob
     private static final long serialVersionUID = -8462039913248251254L;
     
     public PrepareJobWithoutEnoughPrivilegeException(final Collection<String> privileges) {
-        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 6, "Source data source lacks '%s' privilege(s).", privileges);
+        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 6, String.format("Source data source lacks '%s' privilege(s).", privileges));
     }
 }

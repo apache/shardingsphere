@@ -27,6 +27,6 @@ public final class CreateTableSQLGenerateException extends PipelineJobException 
     private static final long serialVersionUID = -219467568498936298L;
     
     public CreateTableSQLGenerateException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 14, "Failed to get DDL for table '%s'.", tableName);
+        super(XOpenSQLState.GENERAL_ERROR, 14, String.format("Failed to get DDL for table '%s'.", tableName));
     }
 }

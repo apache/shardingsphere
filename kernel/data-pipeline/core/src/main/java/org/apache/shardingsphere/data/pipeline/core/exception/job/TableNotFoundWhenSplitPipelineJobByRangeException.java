@@ -27,6 +27,6 @@ public final class TableNotFoundWhenSplitPipelineJobByRangeException extends Pip
     private static final long serialVersionUID = -8509592086832334026L;
     
     public TableNotFoundWhenSplitPipelineJobByRangeException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 3, "Can not get meta data for table '%s' when split by range.", tableName);
+        super(XOpenSQLState.NOT_FOUND, 3, String.format("Can not get meta data for table '%s' when split by range.", tableName));
     }
 }
