@@ -258,7 +258,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 .getDatabase(databaseName).getResourceMetaData(), toBeDroppedStorageUnitNames);
         ConfigurationManager configurationManager = metaDataContextManager.getConfigurationManager();
         MetaDataContexts reloadMetaDataContexts = configurationManager.createMetaDataContexts(databaseName, false, switchingResource, null);
-        configurationManager.alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+        metaDataPersistService.persistMetaDataByReloadDatabase(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName), true);
         metaDataContextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName));

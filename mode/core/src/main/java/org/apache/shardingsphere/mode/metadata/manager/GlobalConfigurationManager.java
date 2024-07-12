@@ -41,7 +41,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Configuration context manager.
+ * Global configuration manager.
  */
 @Slf4j
 public final class GlobalConfigurationManager {
