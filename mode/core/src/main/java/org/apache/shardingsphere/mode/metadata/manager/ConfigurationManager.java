@@ -52,7 +52,6 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -73,85 +72,13 @@ public final class ConfigurationManager {
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
-    private final ResourceSwitchManager resourceSwitchManager;
-    
     private final MetaDataPersistService metaDataPersistService;
     
     public ConfigurationManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                final PersistRepository repository, final ResourceSwitchManager resourceSwitchManager) {
+                                final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        this.resourceSwitchManager = resourceSwitchManager;
         metaDataPersistService = new MetaDataPersistService(repository);
-    }
-    
-    /**
-     * Register storage unit.
-     *
-     * @param databaseName database name
-     * @param propsMap data source pool properties map
-     */
-    public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
-        try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
-            buildNewMetaDataContext(databaseName, switchingResource);
-        } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
-        }
-    }
-    
-    /**
-     * Alter storage unit.
-     *
-     * @param databaseName database name
-     * @param propsMap data source pool properties map
-     */
-    public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
-        try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
-            buildNewMetaDataContext(databaseName, switchingResource);
-        } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
-        }
-    }
-    
-    /**
-     * UnRegister storage unit.
-     *
-     * @param databaseName database name
-     * @param storageUnitName storage unit name
-     */
-    public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
-        try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
-                    Collections.singletonList(storageUnitName));
-            buildNewMetaDataContext(databaseName, switchingResource);
-        } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
-        }
-    }
-    
-    private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, switchingResource, null);
-        metaDataContexts.set(reloadMetaDataContexts);
-        metaDataContexts.get().getMetaData().getDatabases().putAll(buildShardingSphereDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
-        switchingResource.closeStaleDataSources();
-    }
-    
-    private Map<String, ShardingSphereDatabase> buildShardingSphereDatabase(final ShardingSphereDatabase originalDatabase) {
-        return Collections.singletonMap(originalDatabase.getName().toLowerCase(), new ShardingSphereDatabase(originalDatabase.getName(),
-                originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(), buildSchemas(originalDatabase)));
-    }
-    
-    private Map<String, ShardingSphereSchema> buildSchemas(final ShardingSphereDatabase originalDatabase) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(originalDatabase.getSchemas().size(), 1F);
-        originalDatabase.getSchemas().keySet().forEach(schemaName -> result.put(schemaName.toLowerCase(),
-                new ShardingSphereSchema(originalDatabase.getSchema(schemaName).getTables(),
-                        metaDataPersistService.getDatabaseMetaDataService().getViewMetaDataPersistService().load(originalDatabase.getName(), schemaName))));
-        return result;
     }
     
     /**
@@ -270,15 +197,6 @@ public final class ConfigurationManager {
             }
         }
         return result;
-    }
-    
-    @SneakyThrows(Exception.class)
-    private void closeStaleRules(final String databaseName) {
-        for (ShardingSphereRule each : metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
-            if (each instanceof AutoCloseable) {
-                ((AutoCloseable) each).close();
-            }
-        }
     }
     
     /**

@@ -44,7 +44,7 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getMetaDataContextManager().getConfigurationManager().registerStorageUnit(event.getDatabaseName(),
+        contextManager.getMetaDataContextManager().getStorageUnitManager().registerStorageUnit(event.getDatabaseName(),
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
@@ -59,7 +59,7 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getMetaDataContextManager().getConfigurationManager().alterStorageUnit(
+        contextManager.getMetaDataContextManager().getStorageUnitManager().alterStorageUnit(
                 event.getDatabaseName(), contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
@@ -73,6 +73,6 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
-        contextManager.getMetaDataContextManager().getConfigurationManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
+        contextManager.getMetaDataContextManager().getStorageUnitManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
 }
