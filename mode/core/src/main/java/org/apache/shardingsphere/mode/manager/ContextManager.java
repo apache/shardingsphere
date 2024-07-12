@@ -45,7 +45,6 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -173,11 +172,11 @@ public final class ContextManager implements AutoCloseable {
     
     private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
         MetaDataPersistService metaDataPersistService = persistServiceFacade.getMetaDataPersistService();
-        ConfigurationManager configurationManager = metaDataContextManager.getConfigurationManager();
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
-        SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().alterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
+        SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
         Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
-        Map<String, ShardingSphereDatabase> changedDatabases = configurationManager.createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs);
+        Map<String, ShardingSphereDatabase> changedDatabases = MetaDataContextsFactory
+                .createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, changedDatabases, props));

@@ -82,7 +82,7 @@ public final class StorageUnitManager {
     public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.registerStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -98,7 +98,7 @@ public final class StorageUnitManager {
     public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.alterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -114,7 +114,7 @@ public final class StorageUnitManager {
     public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
+            SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
                     Collections.singletonList(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
