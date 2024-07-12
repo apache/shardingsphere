@@ -11,11 +11,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up JDK 8
+      - name: Set up JDK 11 for Autogen
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 11
           cache: 'maven'
       - uses: actions/cache@v4
         with:
@@ -28,6 +28,13 @@ jobs:
       - name: Build Maven Env for Autogen
         run: ./mvnw clean install -T1C
 
+      - name: Set up JDK 8 for Jacoco
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: 'maven'
+
       - name: Build with Maven on Jacoco-exec
         run: ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
 
@@ -37,5 +44,5 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+#          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./target/mergeReport/jacoco.xml
