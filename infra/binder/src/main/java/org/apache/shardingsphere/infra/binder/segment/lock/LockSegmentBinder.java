@@ -23,12 +23,10 @@ import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Lock segment binder.
@@ -47,11 +45,10 @@ public final class LockSegmentBinder {
      */
     public static LockSegment bind(final LockSegment segment, final SQLStatementBinderContext binderContext,
                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        Collection<ColumnSegment> boundColumns = new LinkedList<>();
-        segment.getColumns().forEach(each -> boundColumns.add(ColumnSegmentBinder.bind(each, SegmentType.LOCK, binderContext, tableBinderContexts, outerTableBinderContexts)));
         LockSegment result = new LockSegment(segment.getStartIndex(), segment.getStopIndex());
         result.getTables().addAll(segment.getTables());
-        result.getColumns().addAll(boundColumns);
+        result.getColumns().addAll(segment.getColumns().stream()
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.LOCK, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
         return result;
     }
 }
