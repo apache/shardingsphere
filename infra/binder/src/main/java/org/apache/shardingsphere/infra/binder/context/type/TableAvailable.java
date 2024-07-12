@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.type;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-
-import java.util.Collection;
 
 /**
  * Table available.
@@ -28,15 +25,8 @@ import java.util.Collection;
 public interface TableAvailable {
     
     /**
-     * Get all table segments.
-     * 
-     * @return all table segments
-     */
-    Collection<SimpleTableSegment> getAllTables();
-    
-    /**
      * Get tables context.
-     * 
+     *
      * @return tables context
      */
     TablesContext getTablesContext();

@@ -38,5 +38,10 @@ All optional plugins are listed below in the form of `groupId:artifactId`.
   - `org.apache.shardingsphere:shardingsphere-infra-expr-espresso`，Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation
 - Database type identification
   - `org.apache.shardingsphere:shardingsphere-infra-database-testcontainers`, Adaptation of jdbcURL for `JDBC support` of `testcontainers-java` 
+  - `org.apache.shardingsphere:shardingsphere-infra-database-hive`, Adaptation of jdbcURL for `JDBC support` of Hive, and metadata loading implementation 
+  - `org.apache.shardingsphere:shardingsphere-infra-database-presto`, Adaptation of jdbcURL for `JDBC support` of Presto, and metadata loading implementation
+- SQL parsing
+  - `org.apache.shardingsphere:shardingsphere-parser-sql-clickhouse`, ClickHouse dialect implementation of SQL parsing
+  - `org.apache.shardingsphere:shardingsphere-parser-sql-hive`， Hive dialect implementation of SQL parsing
 
-In addition to the above optional plugins, ShardingSphere community developers have contributed a number of plugin implementations. These plugins can be found in [ShardingSphere Plugins](https://github.com/apache/shardingsphere-plugin) repository. Plugins in ShardingSphere Plugin repository would remain the same release plan with ShardingSphere, they can be retrieved at https://central.sonatype.com/, and install into ShardingSphere.
+In addition to the above optional plugins, ShardingSphere community developers have contributed a number of plugin implementations. These plugins can be found in [ShardingSphere Plugins](https://github.com/apache/shardingsphere-plugin) repository. Plugins in ShardingSphere Plugin repository would remain the same release plan with ShardingSphere, you can build plugin jar by yourself, and install into ShardingSphere.

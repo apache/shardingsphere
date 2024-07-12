@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.executor.sql.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -45,7 +45,7 @@ public final class ExecutionContextBuilder {
     
     /**
      * Build execution contexts.
-     * 
+     *
      * @param database database
      * @param sqlRewriteResult SQL rewrite result
      * @param sqlStatementContext SQL statement context
@@ -88,10 +88,8 @@ public final class ExecutionContextBuilder {
     }
     
     private static List<RouteMapper> getGenericTableRouteMappers(final SQLStatementContext sqlStatementContext) {
-        TablesContext tablesContext = null;
-        if (null != sqlStatementContext) {
-            tablesContext = sqlStatementContext.getTablesContext();
-        }
-        return null == tablesContext ? Collections.emptyList() : tablesContext.getTableNames().stream().map(each -> new RouteMapper(each, each)).collect(Collectors.toList());
+        return sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().stream().map(each -> new RouteMapper(each, each)).collect(Collectors.toList())
+                : Collections.emptyList();
     }
 }

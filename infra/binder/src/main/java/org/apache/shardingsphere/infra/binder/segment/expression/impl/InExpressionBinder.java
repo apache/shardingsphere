@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 
 import java.util.Map;
 
@@ -35,19 +35,19 @@ import java.util.Map;
 public final class InExpressionBinder {
     
     /**
-     * Bind in expression segment with metadata.
+     * Bind in expression segment.
      *
      * @param segment in expression
      * @param parentSegmentType parent segment type
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded in expression
+     * @return bound in expression
      */
-    public static InExpression bind(final InExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
+    public static InExpression bind(final InExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                     final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
-        ExpressionSegment boundedRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
-        return new InExpression(segment.getStartIndex(), segment.getStopIndex(), boundedLeft, boundedRight, segment.isNot());
+        ExpressionSegment boundLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        ExpressionSegment boundRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        return new InExpression(segment.getStartIndex(), segment.getStopIndex(), boundLeft, boundRight, segment.isNot());
     }
 }

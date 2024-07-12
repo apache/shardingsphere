@@ -41,7 +41,7 @@ public final class TargetObjectFixture {
      * @throws UnsupportedOperationException unsupported operation exception
      */
     public void callWhenExceptionThrown(final List<String> queue) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
     
     /**
@@ -60,6 +60,6 @@ public final class TargetObjectFixture {
      * @throws UnsupportedOperationException unsupported operation exception
      */
     public static void staticCallWhenExceptionThrown(final List<String> queue) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("");
     }
 }

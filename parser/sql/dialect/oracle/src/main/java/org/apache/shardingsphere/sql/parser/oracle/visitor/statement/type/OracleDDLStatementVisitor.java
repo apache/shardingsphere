@@ -92,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewLogContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOperatorContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProfileContext;
@@ -116,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropCo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropConstraintClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropContextContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDatabaseLinkContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDirectoryContext;
@@ -193,164 +195,164 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Trunca
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VarrayTypeSpecContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAttributeDimensionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAuditPolicyStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterClusterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseDictionaryStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseLinkStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDimensionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDiskgroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterHierarchyStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexTypeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterInmemoryJoinGroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterJavaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterLibraryStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterLockdownProfileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterMaterializedViewLogStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterMaterializedViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterMaterializedZonemapStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOperatorStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterPackageStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterPluggableDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterProfileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterRollbackSegmentStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSequenceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSessionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSynonymStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSystemStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTriggerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTypeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAnalyzeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAssociateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAuditStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCommentStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateClusterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateContextStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateControlFileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDatabaseLinkStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDimensionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDiskgroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateEditionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFlashbackArchiveStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateInmemoryJoinGroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateJavaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateLibraryStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateLockdownProfileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateMaterializedViewLogStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateMaterializedViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateNestedTableTypeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateObjectTypeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateOperatorStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreatePFileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateProfileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateRestorePointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateRollbackSegmentStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSPFileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSequenceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSubTypeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSynonymStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateVarrayTypeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropClusterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropContextStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDatabaseLinkStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDimensionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDiskgroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropFlashbackArchiveStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropFunctionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexTypeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropInmemoryJoinGroupStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropJavaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropLibraryStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropLockdownProfileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropMaterializedViewLogStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropMaterializedViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropMaterializedZonemapStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOperatorStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropPackageStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropPluggableDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropProfileStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRestorePointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropSequenceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropSynonymStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableSpaceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTriggerStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTypeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleNoAuditStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OraclePLSQLBlockStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OraclePurgeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleRenameStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleSwitchStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleSystemActionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.SQLStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterAttributeDimensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterAuditPolicyStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterClusterStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDatabaseDictionaryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDimensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterHierarchyStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterIndexTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterInMemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterJavaStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterLibraryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterMaterializedViewLogStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterMaterializedZoneMapStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterOperatorStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterPackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterPluggableDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSessionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSystemStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAnalyzeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAssociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAuditStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateClusterStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateContextStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateControlFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDimensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateEditionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateInMemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateJavaStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateLibraryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateMaterializedViewLogStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateNestedTableTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateObjectTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateOperatorStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreatePFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateRestorePointStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSPFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSubTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateVarrayTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropClusterStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropContextStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDimensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropEditionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropIndexTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropInMemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropJavaStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropLibraryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropMaterializedViewLogStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropMaterializedZoneMapStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropOperatorStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropPackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropPluggableDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropRestorePointStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleFlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePLSQLBlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleRenameStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSwitchStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSystemActionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleTruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.SQLStatementSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -746,7 +748,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         OracleAlterViewStatement result = new OracleAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
-        result.setConstraintDefinitionSegment((ConstraintDefinitionSegment) getAlterViewConstraintDefinition(ctx));
+        result.setConstraintDefinition((ConstraintDefinitionSegment) getAlterViewConstraintDefinition(ctx));
         return result;
     }
     
@@ -1196,7 +1198,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropTableSpace(final DropTableSpaceContext ctx) {
-        return new OracleDropTableSpaceStatement();
+        return new OracleDropTablespaceStatement();
     }
     
     @Override
@@ -1211,17 +1213,17 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreateInmemoryJoinGroup(final CreateInmemoryJoinGroupContext ctx) {
-        return new OracleCreateInmemoryJoinGroupStatement();
+        return new OracleCreateInMemoryJoinGroupStatement();
     }
     
     @Override
     public ASTNode visitAlterInmemoryJoinGroup(final AlterInmemoryJoinGroupContext ctx) {
-        return new OracleAlterInmemoryJoinGroupStatement();
+        return new OracleAlterInMemoryJoinGroupStatement();
     }
     
     @Override
     public ASTNode visitDropInmemoryJoinGroup(final DropInmemoryJoinGroupContext ctx) {
-        return new OracleDropInmemoryJoinGroupStatement();
+        return new OracleDropInMemoryJoinGroupStatement();
     }
     
     @Override
@@ -1271,7 +1273,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterMaterializedZonemap(final AlterMaterializedZonemapContext ctx) {
-        return new OracleAlterMaterializedZonemapStatement();
+        return new OracleAlterMaterializedZoneMapStatement();
     }
     
     @Override
@@ -1545,10 +1547,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             getSqlStatementsInPlsql().add(new SQLStatementSegment(ctx.insert().start.getStartIndex(), ctx.insert().stop.getStopIndex(), result));
             addToTempCursorForLoopStatements(result);
         }
-        if (null != ctx.lockTable()) {
+        if (null != ctx.lock()) {
             OracleStatementVisitor visitor = createOracleDMLStatementVisitor();
-            SQLStatement result = (SQLStatement) visitor.visitLockTable(ctx.lockTable());
-            getSqlStatementsInPlsql().add(new SQLStatementSegment(ctx.lockTable().start.getStartIndex(), ctx.lockTable().stop.getStopIndex(), result));
+            SQLStatement result = (SQLStatement) visitor.visitLock(ctx.lock());
+            getSqlStatementsInPlsql().add(new SQLStatementSegment(ctx.lock().start.getStartIndex(), ctx.lock().stop.getStopIndex(), result));
             addToTempCursorForLoopStatements(result);
         }
         if (null != ctx.merge()) {
@@ -1705,7 +1707,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropMaterializedZonemap(final DropMaterializedZonemapContext ctx) {
-        return new OracleDropMaterializedZonemapStatement();
+        return new OracleDropMaterializedZoneMapStatement();
     }
     
     @Override
@@ -1766,5 +1768,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitCreateOperator(final CreateOperatorContext ctx) {
         return new OracleCreateOperatorStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateOutline(final CreateOutlineContext ctx) {
+        return new OracleCreateOutlineStatement();
     }
 }

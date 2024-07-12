@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
+import org.apache.shardingsphere.mode.exception.LockedClusterException;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
@@ -42,7 +43,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
     public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkState(contextManager);
         checkAlgorithm(sqlStatement);
-        LockContext lockContext = contextManager.getInstanceContext().getLockContext();
+        LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {
             try {
@@ -55,7 +56,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
     }
     
     private void checkState(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(ClusterState.OK == contextManager.getClusterStateContext().getCurrentState(), () -> new IllegalStateException("Cluster is already locked"));
+        ShardingSpherePreconditions.checkState(ClusterState.OK == contextManager.getStateContext().getClusterState(), LockedClusterException::new);
     }
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {

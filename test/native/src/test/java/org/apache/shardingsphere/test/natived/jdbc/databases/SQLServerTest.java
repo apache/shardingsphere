@@ -26,11 +26,11 @@ import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+@EnabledInNativeImage
 class SQLServerTest {
     
     private TestShardingService testShardingService;
     
-    @EnabledInNativeImage
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
@@ -38,7 +38,7 @@ class SQLServerTest {
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/sqlserver.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
-        this.initEnvironment();
+        initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }

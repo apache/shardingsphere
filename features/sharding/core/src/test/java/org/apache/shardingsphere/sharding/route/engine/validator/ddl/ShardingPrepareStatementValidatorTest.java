@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -28,8 +29,8 @@ import org.apache.shardingsphere.sharding.exception.connection.EmptyShardingRout
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedPrepareRouteToSameDataSourceException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingPrepareStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -62,7 +63,7 @@ class ShardingPrepareStatementValidatorTest {
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
         assertThrows(EmptyShardingRouteResultException.class,
-                () -> new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(),
+                () -> new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
                         Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
@@ -74,7 +75,8 @@ class ShardingPrepareStatementValidatorTest {
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         assertDoesNotThrow(() -> new ShardingPrepareStatementValidator().postValidate(
-                shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
+                shardingRule, new PrepareStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
+                routeContext));
     }
     
     @Test
@@ -87,6 +89,7 @@ class ShardingPrepareStatementValidatorTest {
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         assertThrows(UnsupportedPrepareRouteToSameDataSourceException.class, () -> new ShardingPrepareStatementValidator().postValidate(
-                shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
+                shardingRule, new PrepareStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
+                routeContext));
     }
 }

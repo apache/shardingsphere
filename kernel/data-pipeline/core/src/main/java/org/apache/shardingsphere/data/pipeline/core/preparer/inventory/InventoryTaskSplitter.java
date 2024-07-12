@@ -183,13 +183,13 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition> getPositionByIntegerUniqueKeyRange(final InventoryDumperContext dumperContext, final long tableRecordsCount,
                                                                           final TransmissionJobItemContext jobItemContext, final PipelineDataSourceWrapper dataSource) {
-        if (0 == tableRecordsCount) {
-            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0, 0));
+        if (0L == tableRecordsCount) {
+            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0L, 0L));
         }
         Collection<IngestPosition> result = new LinkedList<>();
         Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dataSource, dumperContext);
         int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
-        long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
+        long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0L ? 1 : 0);
         long interval = (uniqueKeyValuesRange.getMaximum() - uniqueKeyValuesRange.getMinimum()) / splitCount;
         IntervalToRangeIterator rangeIterator = new IntervalToRangeIterator(uniqueKeyValuesRange.getMinimum(), uniqueKeyValuesRange.getMaximum(), interval);
         while (rangeIterator.hasNext()) {

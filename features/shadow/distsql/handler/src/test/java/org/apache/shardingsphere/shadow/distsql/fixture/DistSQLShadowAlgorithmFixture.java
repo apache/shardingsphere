@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.distsql.fixture;
 
-import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
+import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.hint.PreciseHintShadowValue;
 
 import java.util.Collection;
 

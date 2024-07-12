@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.S
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
+import org.apache.shardingsphere.single.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.exception.SingleTablesLoadingException;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
@@ -114,7 +114,7 @@ public final class SingleTableDataNodeLoader {
     
     private static Map<String, Collection<DataNode>> loadSpecifiedDataNodes(final Map<String, Collection<DataNode>> actualDataNodes, final Collection<String> featureRequiredSingleTables,
                                                                             final Map<String, Map<String, Collection<String>>> configuredTableMap) {
-        Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
+        Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>(actualDataNodes.size(), 1F);
         for (Entry<String, Collection<DataNode>> entry : actualDataNodes.entrySet()) {
             Collection<DataNode> singleNode = loadSpecifiedDataNode(entry.getValue(), featureRequiredSingleTables, configuredTableMap);
             if (!singleNode.isEmpty()) {
@@ -158,8 +158,8 @@ public final class SingleTableDataNodeLoader {
         if (configuredTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>();
         Collection<DataNode> dataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, protocolType, configuredTables);
+        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(dataNodes.size(), 1F);
         for (DataNode each : dataNodes) {
             Map<String, Collection<String>> schemaTables = result.getOrDefault(each.getDataSourceName(), new LinkedHashMap<>());
             Collection<String> tables = schemaTables.getOrDefault(each.getSchemaName(), new LinkedList<>());

@@ -263,7 +263,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     
     /**
      * Value of.
-     * 
+     *
      * @param value value
      * @return PostgreSQL column type
      * @throws PostgreSQLProtocolException PostgreSQL protocol exception

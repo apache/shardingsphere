@@ -1790,21 +1790,32 @@ importQualificationType
     : LIMIT TO | EXCEPT
     ;
 
-
 declare
-    : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
-    ;
-
-cursorOptions
-    : cursorOption*
+    : DECLARE cursorName cursorOption CURSOR ((WITH | WITHOUT) HOLD)? FOR select
     ;
 
 cursorOption
-    : NO SCROLL
-    | SCROLL
-    | BINARY
-    | ASENSITIVE
-    | INSENSITIVE
+    : BINARY? (ASENSITIVE | INSENSITIVE)? (NO? SCROLL)?
+    ;
+
+open
+    : OPEN cursorName (usingValueClause | usingSqlDescriptorClause)?
+    ;
+
+usingValueClause
+    : USING value (COMMA_ value)*
+    ;
+
+value
+    : aexprConst | hostVariable
+    ;
+
+usingSqlDescriptorClause
+    : USING SQL DESCRIPTOR descriptorName
+    ;
+
+descriptorName
+    : identifier | hostVariable
     ;
 
 move

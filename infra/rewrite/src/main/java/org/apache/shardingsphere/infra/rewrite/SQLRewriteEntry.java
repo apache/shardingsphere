@@ -61,11 +61,11 @@ public final class SQLRewriteEntry {
     
     /**
      * Rewrite.
-     * 
+     *
      * @param queryContext query context
      * @param routeContext route context
      * @param connectionContext connection context
-     * 
+     *
      * @return route unit and SQL rewrite result map
      */
     public SQLRewriteResult rewrite(final QueryContext queryContext, final RouteContext routeContext, final ConnectionContext connectionContext) {

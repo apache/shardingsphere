@@ -34,7 +34,7 @@ public interface InUsedStorageUnitRetriever<T extends ShardingSphereRule> extend
     
     /**
      * Get in used resources.
-     * 
+     *
      * @param sqlStatement show rules used storage unit statement
      * @param rule rule
      * @return in used resources

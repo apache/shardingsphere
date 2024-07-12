@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -27,9 +28,9 @@ import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteE
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,14 +44,13 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final List<Object> params, final ShardingSphereDatabase database,
                             final ConfigurationProperties props) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
-                : sqlStatementContext.getTablesContext().getTableNames();
-        RenameTableStatement renameTableStatement = (RenameTableStatement) sqlStatementContext.getSqlStatement();
-        List<SimpleTableSegment> renameTables = renameTableStatement.getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList());
-        if (!renameTables.isEmpty() && shardingRule.containsShardingTable(tableNames)) {
-            throw new UnsupportedShardingOperationException("RENAME TABLE", renameTables.get(0).getTableName().getIdentifier().getValue());
-        }
+        RenameTableStatementContext renameTableStatementContext = (RenameTableStatementContext) sqlStatementContext;
+        Collection<String> tableNames = renameTableStatementContext.getTablesContext().getSimpleTables().stream()
+                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
+        List<SimpleTableSegment> renameTables = renameTableStatementContext.getSqlStatement()
+                .getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkState(renameTables.isEmpty() || !shardingRule.containsShardingTable(tableNames),
+                () -> new UnsupportedShardingOperationException("RENAME TABLE", renameTables.get(0).getTableName().getIdentifier().getValue()));
     }
     
     @Override
@@ -59,9 +59,8 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
         RenameTableStatement renameTableStatement = (RenameTableStatement) sqlStatementContext.getSqlStatement();
         for (RenameTableDefinitionSegment each : renameTableStatement.getRenameTables()) {
             String primaryTable = each.getTable().getTableName().getIdentifier().getValue();
-            if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-                throw new ShardingDDLRouteException("RENAME", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
-            }
+            ShardingSpherePreconditions.checkState(!isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable),
+                    () -> new ShardingDDLRouteException("RENAME", "TABLE", ((RenameTableStatementContext) sqlStatementContext).getTablesContext().getTableNames()));
         }
     }
 }

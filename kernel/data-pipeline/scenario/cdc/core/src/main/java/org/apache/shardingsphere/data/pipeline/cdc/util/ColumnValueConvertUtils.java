@@ -135,11 +135,11 @@ public final class ColumnValueConvertUtils {
         }
         if (object instanceof Clob) {
             Clob clob = (Clob) object;
-            return StringValue.of(clob.getSubString(1, (int) clob.length()));
+            return StringValue.of(clob.getSubString(1L, (int) clob.length()));
         }
         if (object instanceof Blob) {
             Blob blob = (Blob) object;
-            return BytesValue.of(ByteString.copyFrom(blob.getBytes(1, (int) blob.length())));
+            return BytesValue.of(ByteString.copyFrom(blob.getBytes(1L, (int) blob.length())));
         }
         return StringValue.newBuilder().setValue(object.toString()).build();
     }
@@ -147,9 +147,9 @@ public final class ColumnValueConvertUtils {
     private static com.google.protobuf.Timestamp converToProtobufTimestamp(final Date timestamp) {
         if (timestamp instanceof Timestamp) {
             Timestamp value = (Timestamp) timestamp;
-            return com.google.protobuf.Timestamp.newBuilder().setSeconds(value.getTime() / 1000).setNanos(value.getNanos()).build();
+            return com.google.protobuf.Timestamp.newBuilder().setSeconds(value.getTime() / 1000L).setNanos(value.getNanos()).build();
         }
         long millis = timestamp.getTime();
-        return com.google.protobuf.Timestamp.newBuilder().setSeconds(millis / 1000).setNanos((int) ((millis % 1000) * 1000000)).build();
+        return com.google.protobuf.Timestamp.newBuilder().setSeconds(millis / 1000L).setNanos((int) ((millis % 1000L) * 1000000L)).build();
     }
 }

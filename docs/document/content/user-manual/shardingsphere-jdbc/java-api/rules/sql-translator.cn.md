@@ -9,7 +9,7 @@ weight = 9
 
 ## 参数解释
 
-类名称：org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration
+类名称：org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration
 
 可配置属性：
 

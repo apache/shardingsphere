@@ -76,12 +76,12 @@ public final class SSLUtils {
     @SneakyThrows({OperatorCreationException.class, CertificateException.class})
     public static X509Certificate generateSelfSignedX509Certificate(final KeyPair keyPair) {
         long now = System.currentTimeMillis();
-        Date startDate = Date.from(LocalDateTime.ofInstant(Instant.ofEpochMilli(now - TimeUnit.DAYS.toMillis(1)), ZoneId.systemDefault()).atZone(ZoneId.systemDefault()).toInstant());
+        Date startDate = Date.from(LocalDateTime.ofInstant(Instant.ofEpochMilli(now - TimeUnit.DAYS.toMillis(1L)), ZoneId.systemDefault()).atZone(ZoneId.systemDefault()).toInstant());
         X500Name dnName = new X500NameBuilder(BCStyle.INSTANCE)
                 .addRDN(BCStyle.CN, "").addRDN(BCStyle.OU, "").addRDN(BCStyle.O, "").addRDN(BCStyle.L, "").addRDN(BCStyle.ST, "").addRDN(BCStyle.C, "").addRDN(BCStyle.E, "").build();
         BigInteger certSerialNumber = new BigInteger(Long.toString(now));
         Date endDate = Date.from(
-                LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate.getTime() + TimeUnit.DAYS.toMillis(365 * 100L)), ZoneId.systemDefault()).atZone(ZoneId.systemDefault()).toInstant());
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate.getTime() + TimeUnit.DAYS.toMillis(365L * 100L)), ZoneId.systemDefault()).atZone(ZoneId.systemDefault()).toInstant());
         ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(keyPair.getPrivate());
         return new JcaX509CertificateConverter().getCertificate(new JcaX509v3CertificateBuilder(dnName, certSerialNumber, startDate, endDate, dnName, keyPair.getPublic()).build(contentSigner));
     }

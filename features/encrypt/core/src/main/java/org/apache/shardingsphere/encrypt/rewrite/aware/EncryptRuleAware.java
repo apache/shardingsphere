@@ -26,7 +26,7 @@ public interface EncryptRuleAware {
     
     /**
      * Set encrypt rule.
-     * 
+     *
      * @param encryptRule encrypt rule
      */
     void setEncryptRule(EncryptRule encryptRule);

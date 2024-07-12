@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 
 import java.util.Arrays;
@@ -38,7 +38,7 @@ public final class ColumnProjectionConverter {
     
     /**
      * Convert column projection segment to sql node.
-     * 
+     *
      * @param segment column projection segment
      * @return sql node
      */

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.state;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Proxy cluster state.
@@ -27,7 +27,7 @@ public interface ProxyClusterState extends TypedSPI {
     
     /**
      * Check SQL statement.
-     * 
+     *
      * @param sqlStatement SQL statement
      */
     void check(SQLStatement sqlStatement);

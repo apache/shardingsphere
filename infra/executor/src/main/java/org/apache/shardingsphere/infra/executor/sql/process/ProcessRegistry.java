@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionInterruptedException;
 
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Process registry.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProcessRegistry {
     
@@ -53,33 +55,28 @@ public final class ProcessRegistry {
      */
     public void add(final Process process) {
         if (isSameExecutionProcess(process)) {
-            Process oldProcess = processes.get(process.getId());
-            merge(oldProcess, process);
-            return;
+            merge(processes.get(process.getId()), process);
+        } else {
+            processes.put(process.getId(), process);
         }
-        processes.put(process.getId(), process);
     }
     
     private boolean isSameExecutionProcess(final Process process) {
         return !Strings.isNullOrEmpty(process.getSql()) && processes.containsKey(process.getId()) && processes.get(process.getId()).getSql().equalsIgnoreCase(process.getSql());
     }
     
-    private Process merge(final Process oldProcess, final Process newProcess) {
-        if (Strings.isNullOrEmpty(newProcess.getSql()) || !newProcess.getSql().equalsIgnoreCase(oldProcess.getSql())) {
-            return newProcess;
-        }
+    private void merge(final Process oldProcess, final Process newProcess) {
         ShardingSpherePreconditions.checkState(!oldProcess.isInterrupted(), SQLExecutionInterruptedException::new);
         oldProcess.getTotalUnitCount().addAndGet(newProcess.getTotalUnitCount().get());
         oldProcess.getCompletedUnitCount().addAndGet(newProcess.getCompletedUnitCount().get());
         oldProcess.getIdle().set(newProcess.getIdle().get());
         oldProcess.getInterrupted().compareAndSet(false, newProcess.getInterrupted().get());
         oldProcess.getProcessStatements().putAll(newProcess.getProcessStatements());
-        return oldProcess;
     }
     
     /**
      * Get process.
-     * 
+     *
      * @param id process ID
      * @return process
      */
@@ -89,7 +86,7 @@ public final class ProcessRegistry {
     
     /**
      * Remove process.
-     * 
+     *
      * @param id process ID
      */
     public void remove(final String id) {
@@ -98,7 +95,7 @@ public final class ProcessRegistry {
     
     /**
      * List all process.
-     * 
+     *
      * @return all processes
      */
     public Collection<Process> listAll() {

@@ -22,10 +22,9 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
@@ -52,7 +51,7 @@ public final class SQLTranslatorRule implements GlobalRule {
     
     /**
      * Translate SQL.
-     * 
+     *
      * @param sql to be translated SQL
      * @param parameters to be translated parameters
      * @param queryContext query context
@@ -75,10 +74,5 @@ public final class SQLTranslatorRule implements GlobalRule {
             }
             throw ex;
         }
-    }
-    
-    @Override
-    public RuleAttributes getAttributes() {
-        return new RuleAttributes();
     }
 }

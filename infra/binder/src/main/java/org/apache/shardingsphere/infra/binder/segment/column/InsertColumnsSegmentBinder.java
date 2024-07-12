@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.binder.segment.column;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,17 +38,17 @@ import java.util.Map;
 public final class InsertColumnsSegmentBinder {
     
     /**
-     * Bind insert columns segment with metadata.
+     * Bind insert columns segment.
      *
      * @param segment insert columns segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bounded insert columns segment
+     * @return bound insert columns segment
      */
-    public static InsertColumnsSegment bind(final InsertColumnsSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static InsertColumnsSegment bind(final InsertColumnsSegment segment, final SQLStatementBinderContext binderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        Collection<ColumnSegment> boundedColumns = new LinkedList<>();
-        segment.getColumns().forEach(each -> boundedColumns.add(ColumnSegmentBinder.bind(each, SegmentType.INSERT_COLUMNS, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
-        return new InsertColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), boundedColumns);
+        Collection<ColumnSegment> boundColumns = new LinkedList<>();
+        segment.getColumns().forEach(each -> boundColumns.add(ColumnSegmentBinder.bind(each, SegmentType.INSERT_COLUMNS, binderContext, tableBinderContexts, Collections.emptyMap())));
+        return new InsertColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), boundColumns);
     }
 }

@@ -87,7 +87,7 @@ public interface QueryResult extends ExecuteResult, AutoCloseable {
     
     /**
      * Get query result meta data.
-     * 
+     *
      * @return query result meta data
      */
     QueryResultMetaData getMetaData();

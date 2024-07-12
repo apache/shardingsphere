@@ -47,7 +47,7 @@ class SSLUtilsTest {
         KeyPair keyPair = SSLUtils.generateRSAKeyPair();
         X509Certificate actual = SSLUtils.generateSelfSignedX509Certificate(keyPair);
         actual.checkValidity(new Date());
-        actual.checkValidity(Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365 * 99))));
+        actual.checkValidity(Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365L * 99L))));
         actual.verify(keyPair.getPublic());
         assertThrows(SignatureException.class, () -> actual.verify(SSLUtils.generateRSAKeyPair().getPublic()));
     }

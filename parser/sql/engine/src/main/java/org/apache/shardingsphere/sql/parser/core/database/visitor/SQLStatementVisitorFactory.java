@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatementType;
 
 /**
  * SQL statement visitor factory.
@@ -35,7 +35,7 @@ public final class SQLStatementVisitorFactory {
     
     /**
      * Create new instance of SQL visitor.
-     * 
+     *
      * @param databaseType database type
      * @param visitorRule SQL visitor rule
      * @return created instance

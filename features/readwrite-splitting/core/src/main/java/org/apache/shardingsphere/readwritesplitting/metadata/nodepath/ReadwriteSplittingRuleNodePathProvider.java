@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,11 +32,11 @@ public final class ReadwriteSplittingRuleNodePathProvider implements RuleNodePat
     
     public static final String RULE_TYPE = "readwrite_splitting";
     
-    public static final String DATA_SOURCES = "data_sources";
+    public static final String DATA_SOURCE_GROUPS = "data_source_groups";
     
     public static final String LOAD_BALANCERS = "load_balancers";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, LOAD_BALANCERS), Collections.emptyList());
+    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCE_GROUPS, LOAD_BALANCERS), Collections.emptyList());
     
     @Override
     public RuleNodePath getRuleNodePath() {

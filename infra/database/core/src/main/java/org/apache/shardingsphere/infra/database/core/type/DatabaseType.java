@@ -31,14 +31,14 @@ public interface DatabaseType extends TypedSPI {
     
     /**
      * Get JDBC URL prefixes.
-     * 
+     *
      * @return prefixes of JDBC URL
      */
     Collection<String> getJdbcUrlPrefixes();
     
     /**
      * Get trunk database type.
-     * 
+     *
      * @return trunk database type
      */
     default Optional<DatabaseType> getTrunkDatabaseType() {

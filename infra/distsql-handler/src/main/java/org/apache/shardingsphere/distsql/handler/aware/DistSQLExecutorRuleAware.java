@@ -35,7 +35,7 @@ public interface DistSQLExecutorRuleAware<T extends ShardingSphereRule> {
     
     /**
      * Get rule class.
-     * 
+     *
      * @return rule class
      */
     Class<T> getRuleClass();

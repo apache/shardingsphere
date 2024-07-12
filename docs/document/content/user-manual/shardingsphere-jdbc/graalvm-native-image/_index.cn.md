@@ -13,10 +13,29 @@ Image，你需要借助于 GraalVM Native Build Tools。GraalVM Native Build Too
 CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 
 ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 GraalVM Native Image。使用者可通过 SDKMAN! 快速切换 JDK。这同理
-适用于 `Oracle GraalVM`， `Liberica Native Image Kit` 和 `Mandrel` 等 `GraalVM CE` 的下游发行版。
+适用于 `Oracle GraalVM`， `Liberica NIK` 和 `Mandrel` 等 `GraalVM CE` 的下游发行版。
 
-- GraalVM CE 23.1.2 For JDK 21.0.2，对应于 SDKMAN! 的 `21.0.2-graalce`
-- GraalVM CE 24.0.0 For JDK 22，对应于 SDKMAN! 的 `22-graalce`
+- GraalVM CE For JDK 22.0.1，对应于 SDKMAN! 的 `22.0.1-graalce`
+- Oracle GraalVM For JDK 22.0.1，对应于 SDKMAN! 的 `22.0.1-graal`
+- Liberica NIK For JDK 22.0.1，对应于 SDKMAN! 的 `24.0.1.r22-nik`
+- Mandrel For JDK 22.0.1，对应于 SDKMAN! 的 `24.0.1.r22-mandrel`
+
+用户依然可以使用 SDKMAN! 上的 `21.0.2-graalce` 等旧版本的 GraalVM CE 来构建 ShardingSphere 的 GraalVM Native Image 产物。
+但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
+典型的例子来自 HiveServer2 JDBC Driver 相关的 `org.apache.hive:hive-jdbc:4.0.0`，HiveServer2 JDBC Driver 使用了 AWT 相关的类，
+而 GraalVM CE 对 `java.beans.**` package 的支持仅位于 GraalVM CE For JDK22 及更高版本。
+
+```shell
+com.sun.beans.introspect.ClassInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.ClassInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.ClassInfo
+java.beans.Introspector was unintentionally initialized at build time. To see why java.beans.Introspector got initialized use --trace-class-initialization=java.beans.Introspector
+com.sun.beans.util.Cache$Kind$2 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$2 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$2
+com.sun.beans.TypeResolver was unintentionally initialized at build time. To see why com.sun.beans.TypeResolver got initialized use --trace-class-initialization=com.sun.beans.TypeResolver
+java.beans.ThreadGroupContext was unintentionally initialized at build time. To see why java.beans.ThreadGroupContext got initialized use --trace-class-initialization=java.beans.ThreadGroupContext
+com.sun.beans.util.Cache$Kind was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind
+com.sun.beans.introspect.MethodInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.MethodInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.MethodInfo
+com.sun.beans.util.Cache$Kind$1 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$1 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$1
+com.sun.beans.util.Cache$Kind$3 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$3 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$3
+```
 
 ### Maven 生态
 
@@ -38,7 +57,7 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.10.1</version>
+                <version>0.10.2</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -76,12 +95,12 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.10.1'
+   id 'org.graalvm.buildtools.native' version '0.10.2'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.1', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.2', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -227,7 +246,29 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
  [...]
 ```
 
-5. 当使用 Seata 的 BASE 集成时，用户需要使用特定的 `io.seata:seata-all:1.8.0` 版本以避开对 ByteBuddy Java API 的使用，
+5. 讨论在 ShardingSphere JDBC 的 GraalVM Native Image 下使用 XA 分布式事务的所需步骤，则需要引入额外的已知前提，
+   - `org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper#loadXADataSource(String)` 会通过 `java.lang.Class#getDeclaredConstructors` 实例化各数据库驱动的 `javax.sql.XADataSource` 实现类。
+   - 各数据库驱动的 `javax.sql.XADataSource` 实现类的全类名通过实现 `org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition` 的 SPI，来存入 ShardingSphere 的元数据。
+
+在 GraalVM Native Image 内部，这实际上要求定义第三方依赖的 GraalVM Reachability Metadata，而 ShardingSphere 自身仅为 `com.h2database:h2` 提供对应的 GraalVM Reachability Metadata。
+`com.mysql:mysql-connector-j` 等其他数据库驱动的 GraalVM Reachability Metadata 应自行定义，
+或将对应 JSON 提交到 https://github.com/oracle/graalvm-reachability-metadata 一侧。
+
+以 `com.mysql:mysql-connector-j:9.0.0` 的 `com.mysql.cj.jdbc.MysqlXADataSource` 类为例，这是 MySQL JDBC Driver 的 `javax.sql.XADataSource` 的实现。
+用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reflect-config.json`文件内定义如下 JSON，
+以在 GraalVM Native Image 内部定义 `com.mysql.cj.jdbc.MysqlXADataSource` 的构造函数。
+
+```json
+[
+{
+  "condition":{"typeReachable":"com.mysql.cj.jdbc.MysqlXADataSource"},
+  "name":"com.mysql.cj.jdbc.MysqlXADataSource",
+  "allDeclaredConstructors": true
+}
+]
+```
+
+6. 当使用 Seata 的 BASE 集成时，用户需要使用特定的 `io.seata:seata-all:1.8.0` 版本以避开对 ByteBuddy Java API 的使用，
 并排除 `io.seata:seata-all:1.8.0` 中过时的 `org.antlr:antlr4-runtime:4.8` 的 Maven 依赖。可能的配置例子如下，
 
 ```xml
@@ -252,11 +293,49 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
                <groupId>org.antlr</groupId>
                <artifactId>antlr4-runtime</artifactId>
             </exclusion>
+            <exclusion>
+               <groupId>commons-lang</groupId>
+               <artifactId>commons-lang</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-pool2</artifactId>
+            </exclusion>
          </exclusions>
       </dependency>
     </dependencies>
 </project>
 ```
+
+7. 当需要通过 ShardingSphere JDBC 使用 ClickHouse 方言时，
+用户需要手动引入相关的可选模块和 classifier 为 `http` 的 ClickHouse JDBC 驱动。
+原则上，ShardingSphere 的 GraalVM Native Image 集成不希望使用 classifier 为 `all` 的 `com.clickhouse:clickhouse-jdbc`，
+因为 Uber Jar 会导致采集重复的 GraalVM Reachability Metadata。
+可能的配置例子如下，
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>org.apache.shardingsphere</groupId>
+          <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+          <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>com.clickhouse</groupId>
+          <artifactId>clickhouse-jdbc</artifactId>
+          <version>0.6.0-patch5</version>
+          <classifier>http</classifier>
+       </dependency>
+    </dependencies>
+</project>
+```
+
+ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 Seata AT 模式事务，更多讨论位于 https://github.com/ClickHouse/clickhouse-docs/issues/2300 。
 
 ## 贡献 GraalVM Reachability Metadata
 
@@ -279,9 +358,9 @@ ShardingSphere 定义了 `nativeTestInShardingSphere` 的 Maven Profile 用于�
 sudo apt install unzip zip curl sed -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 21.0.2-graalce
-sdk use java 21.0.2-graalce
-sudo apt-get install build-essential libz-dev zlib1g-dev -y
+sdk install java 22.0.1-graalce
+sdk use java 22.0.1-graalce
+sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
@@ -292,25 +371,27 @@ cd ./shardingsphere/
 https://github.com/oracle/graalvm-reachability-metadata 打开新的 issue， 并提交包含依赖的第三方库缺失的 GraalVM Reachability
 Metadata 的 PR。ShardingSphere 在 `shardingsphere-infra-reachability-metadata` 子模块主动托管了部分第三方库的 GraalVM Reachability Metadata。
 
-如果 nativeTest 执行失败， 应为单元测试生成初步的 GraalVM Reachability Metadata，并手动调整以修复 nativeTest。
+如果 nativeTest 执行失败， 应为单元测试生成初步的 GraalVM Reachability Metadata，
+并手动调整 `shardingsphere-infra-reachability-metadata` 子模块的 classpath 的 `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata` 文件夹下的内容以修复 nativeTest。
 如有需要，请使用 `org.junit.jupiter.api.condition.DisabledInNativeImage` 注解或 `org.graalvm.nativeimage.imagecode` 的
 System Property 屏蔽部分单元测试在 GraalVM Native Image 下运行。
 
-ShardingSphere 定义了 `generateMetadata` 的 Maven Profile 用于在 GraalVM JIT Compiler 下携带 GraalVM Tracing Agent 执行单元测试，并在特定目录下生成或合并
-已有的 GraalVM Reachability Metadata 文件。可通过如下 bash 命令简单处理此流程。贡献者仍可能需要手动调整具体的 JSON 条目，并在适当的时候
-调整 Maven Profile 和 GraalVM Tracing Agent 的 Filter 链。
+ShardingSphere 定义了 `generateMetadata` 的 Maven Profile 用于在 GraalVM JIT Compiler 下携带 GraalVM Tracing Agent 执行单元测试，
+并在 `shardingsphere-infra-reachability-metadata` 子模块的 classpath 的 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 文件夹下，
+生成或覆盖已有的 GraalVM Reachability Metadata 文件。可通过如下 bash 命令简单处理此流程。
+贡献者仍可能需要手动调整具体的 JSON 条目，并适时调整 Maven Profile 和 GraalVM Tracing Agent 的 Filter 链。
+针对 `shardingsphere-infra-reachability-metadata` 子模块，
+手动增删改动的 JSON 条目应位于 `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata/` 文件夹下，
+而 `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` 中的条目仅应由 `generateMetadata` 的 Maven Profile 生成。
 
 以下命令仅为 `shardingsphere-test-native` 生成 Conditional 形态的 GraalVM Reachability Metadata 的一个举例。生成的 GraalVM
 Reachability Metadata 位于 `shardingsphere-infra-reachability-metadata` 子模块下。
 
-对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到
-`${user.dir}/test/natived/src/test/resources/META-INF/native-image/shardingsphere-test-native-test-metadata/`
-文件夹下。`${}` 内为相关子模块对应的 POM 4.0 的常规系统变量，自行替换。
+对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到 `shardingsphere-test-native` 子模块的 classpath 的
+`META-INF/native-image/shardingsphere-test-native-test-metadata/` 下。
 
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
 ./mvnw -PgenerateMetadata -DskipNativeTests -e -T1C clean test native:metadata-copy
 ```
-
-请手动删除无任何具体条目的 JSON 文件。

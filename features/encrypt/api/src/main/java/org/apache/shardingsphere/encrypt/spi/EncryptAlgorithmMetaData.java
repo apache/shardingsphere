@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.spi;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +28,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class EncryptAlgorithmMetaData {
     
     private final boolean supportDecrypt;

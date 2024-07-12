@@ -21,10 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 
 /**
  * Truncate statement context.
@@ -34,18 +31,13 @@ public final class TruncateStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    public TruncateStatementContext(final TruncateStatement sqlStatement) {
+    public TruncateStatementContext(final TruncateStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
     public TruncateStatement getSqlStatement() {
         return (TruncateStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return getSqlStatement().getTables();
     }
 }

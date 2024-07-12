@@ -46,7 +46,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
             return sql;
         }
         Collections.sort(sqlTokens);
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder(sql.length());
         result.append(sql, 0, sqlTokens.get(0).getStartIndex());
         for (SQLToken each : sqlTokens) {
             if (each instanceof ComposableSQLToken) {

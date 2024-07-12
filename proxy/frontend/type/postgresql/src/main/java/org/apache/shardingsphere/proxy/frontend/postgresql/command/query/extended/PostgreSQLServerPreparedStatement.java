@@ -64,7 +64,7 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
     
     /**
      * Describe rows of the prepared statement.
-     * 
+     *
      * @return packet of row description
      */
     public Optional<PostgreSQLPacket> describeRows() {

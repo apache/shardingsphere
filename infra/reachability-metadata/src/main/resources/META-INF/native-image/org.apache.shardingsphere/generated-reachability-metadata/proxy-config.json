@@ -1,0 +1,10 @@
+[
+  {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "interfaces":["io.seata.config.Configuration"]
+  },
+  {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
+    "interfaces":["java.sql.Connection"]
+  }
+]

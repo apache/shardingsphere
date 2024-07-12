@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -25,13 +26,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -63,7 +64,7 @@ class ShardingCreateIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         assertDoesNotThrow(() -> new ShardingCreateIndexStatementValidator().preValidate(
-                shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -74,7 +75,7 @@ class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchema("public").containsTable("t_order")).thenReturn(false);
         assertThrows(NoSuchTableException.class,
                 () -> new ShardingCreateIndexStatementValidator().preValidate(
-                        shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                        shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -88,7 +89,7 @@ class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchema("public").containsIndex("t_order", "t_order_index")).thenReturn(true);
         assertThrows(DuplicateIndexException.class,
                 () -> new ShardingCreateIndexStatementValidator().preValidate(
-                        shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                        shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -101,7 +102,7 @@ class ShardingCreateIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         assertDoesNotThrow(() -> new ShardingCreateIndexStatementValidator().preValidate(
-                shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -113,7 +114,7 @@ class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchema("public").containsTable("t_order")).thenReturn(false);
         assertThrows(NoSuchTableException.class,
                 () -> new ShardingCreateIndexStatementValidator().preValidate(
-                        shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                        shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -128,6 +129,6 @@ class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchema("public").containsIndex("t_order", "content_idx")).thenReturn(true);
         assertThrows(DuplicateIndexException.class,
                 () -> new ShardingCreateIndexStatementValidator().preValidate(
-                        shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                        shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
 }

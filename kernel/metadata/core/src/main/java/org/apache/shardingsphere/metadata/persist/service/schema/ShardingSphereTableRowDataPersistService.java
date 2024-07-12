@@ -85,7 +85,7 @@ public final class ShardingSphereTableRowDataPersistService implements TableRowD
         ShardingSphereTableData result = new ShardingSphereTableData(tableName);
         YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getColumnValues()));
         for (String each : repository.getChildrenKeys(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName))) {
-            String yamlRow = repository.getDirectly(ShardingSphereDataNode.getTableRowPath(databaseName, schemaName, tableName, each));
+            String yamlRow = repository.query(ShardingSphereDataNode.getTableRowPath(databaseName, schemaName, tableName, each));
             if (!Strings.isNullOrEmpty(yamlRow)) {
                 result.getRows().add(swapper.swapToObject(YamlEngine.unmarshal(yamlRow, YamlShardingSphereRowData.class)));
             }

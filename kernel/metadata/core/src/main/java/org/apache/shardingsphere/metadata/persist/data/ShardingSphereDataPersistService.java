@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * ShardingSphere data persist service.
  */
 @Getter
-public final class ShardingSphereDataPersistService implements ShardingSphereDataBasedPersistService {
+public final class ShardingSphereDataPersistService {
     
     private final PersistRepository repository;
     
@@ -57,7 +57,6 @@ public final class ShardingSphereDataPersistService implements ShardingSphereDat
      * @param metaData meta data
      * @return ShardingSphere data
      */
-    @Override
     public Optional<ShardingSphereStatistics> load(final ShardingSphereMetaData metaData) {
         Collection<String> databaseNames = repository.getChildrenKeys(ShardingSphereDataNode.getShardingSphereDataNodePath());
         if (databaseNames.isEmpty()) {
@@ -102,7 +101,6 @@ public final class ShardingSphereDataPersistService implements ShardingSphereDat
      * @param schemaData schema data
      * @param databases databases
      */
-    @Override
     public void persist(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData, final Map<String, ShardingSphereDatabase> databases) {
         if (schemaData.getTableData().isEmpty()) {
             persistSchema(databaseName, schemaName);
@@ -124,5 +122,21 @@ public final class ShardingSphereDataPersistService implements ShardingSphereDat
     
     private void persistTableData(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
         tableRowDataPersistService.persist(databaseName, schemaName, tableName, rows);
+    }
+    
+    /**
+     * Update sharding sphere database data.
+     *
+     * @param alteredShardingSphereDatabaseData altered ShardingSphere database data
+     */
+    public void update(final AlteredShardingSphereDatabaseData alteredShardingSphereDatabaseData) {
+        String databaseName = alteredShardingSphereDatabaseData.getDatabaseName();
+        String schemaName = alteredShardingSphereDatabaseData.getSchemaName();
+        tableRowDataPersistService.persist(databaseName, schemaName, alteredShardingSphereDatabaseData.getTableName(),
+                alteredShardingSphereDatabaseData.getAddedRows());
+        tableRowDataPersistService.persist(databaseName, schemaName, alteredShardingSphereDatabaseData.getTableName(),
+                alteredShardingSphereDatabaseData.getUpdatedRows());
+        tableRowDataPersistService.delete(databaseName, schemaName, alteredShardingSphereDatabaseData.getTableName(),
+                alteredShardingSphereDatabaseData.getDeletedRows());
     }
 }

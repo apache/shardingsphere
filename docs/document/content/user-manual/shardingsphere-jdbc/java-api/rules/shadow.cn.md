@@ -10,7 +10,7 @@ weight = 7
 ## 参数解释
 ### 配置入口
 
-类名称：org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration
+类名称：org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration
 
 可配置属性：
 
@@ -23,7 +23,7 @@ weight = 7
 
 ### 影子数据源配置
 
-类名称：org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration
+类名称：org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration
 
 可配置属性：
 
@@ -34,7 +34,7 @@ weight = 7
 
 ### 影子表配置
 
-类名称：org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration
+类名称：org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration
 
 可配置属性：
 
@@ -45,7 +45,7 @@ weight = 7
 
 ### 影子算法配置
 
-类名称：org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
+类名称：org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration
 
 可配置属性：
 

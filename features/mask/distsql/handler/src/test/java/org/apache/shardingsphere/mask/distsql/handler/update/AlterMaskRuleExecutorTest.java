@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
@@ -107,6 +106,6 @@ class AlterMaskRuleExecutorTest {
     private MaskRuleConfiguration createCurrentRuleConfiguration() {
         Collection<MaskTableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
         tableRuleConfigs.add(new MaskTableRuleConfiguration("t_order", Collections.emptyList()));
-        return new MaskRuleConfiguration(tableRuleConfigs, new HashMap<>());
+        return new MaskRuleConfiguration(tableRuleConfigs, Collections.emptyMap());
     }
 }

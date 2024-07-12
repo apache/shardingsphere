@@ -44,7 +44,7 @@ public final class PluginLifecycleServiceManager {
     
     /**
      * Initialize all plugins.
-     * 
+     *
      * @param pluginConfigs plugin configuration map
      * @param pluginJars plugin jars
      * @param pluginClassLoader plugin class loader
@@ -52,8 +52,8 @@ public final class PluginLifecycleServiceManager {
      */
     public static void init(final Map<String, PluginConfiguration> pluginConfigs, final Collection<JarFile> pluginJars, final ClassLoader pluginClassLoader, final boolean isEnhancedForProxy) {
         if (STARTED_FLAG.compareAndSet(false, true)) {
-            PluginLifecycleServiceManager.start(pluginConfigs, pluginClassLoader, isEnhancedForProxy);
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginLifecycleServiceManager.close(pluginJars)));
+            start(pluginConfigs, pluginClassLoader, isEnhancedForProxy);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> close(pluginJars)));
         }
     }
     

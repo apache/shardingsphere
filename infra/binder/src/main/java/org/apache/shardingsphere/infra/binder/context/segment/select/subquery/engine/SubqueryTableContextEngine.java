@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.subquery.SubqueryTableContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -43,7 +43,7 @@ public final class SubqueryTableContextEngine {
      * @return subquery table context map
      */
     public Map<String, SubqueryTableContext> createSubqueryTableContexts(final SelectStatementContext subqueryContext, final String aliasName) {
-        Map<String, SubqueryTableContext> result = new LinkedHashMap<>();
+        Map<String, SubqueryTableContext> result = new LinkedHashMap<>(subqueryContext.getProjectionsContext().getExpandProjections().size(), 1F);
         TableSegment tableSegment = subqueryContext.getSqlStatement().getFrom().orElse(null);
         for (Projection each : subqueryContext.getProjectionsContext().getExpandProjections()) {
             if (!(each instanceof ColumnProjection)) {
@@ -55,7 +55,7 @@ public final class SubqueryTableContextEngine {
                 result.computeIfAbsent(tableName.toLowerCase(), unused -> new SubqueryTableContext(tableName, aliasName)).getColumnNames().add(columnName);
             }
             if (tableSegment instanceof JoinTableSegment && ((ColumnProjection) each).getOwner().isPresent()) {
-                Optional<String> tableName = getTableNameByOwner(subqueryContext.getTablesContext().getSimpleTableSegments(), ((ColumnProjection) each).getOwner().get().getValue());
+                Optional<String> tableName = getTableNameByOwner(subqueryContext.getTablesContext().getSimpleTables(), ((ColumnProjection) each).getOwner().get().getValue());
                 tableName.ifPresent(optional -> result.computeIfAbsent(optional.toLowerCase(), unused -> new SubqueryTableContext(optional, aliasName)).getColumnNames().add(columnName));
             }
         }

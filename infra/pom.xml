@@ -35,6 +35,7 @@
         <module>common</module>
         <module>context</module>
         <module>url</module>
+        <module>algorithm</module>
         <module>distsql-handler</module>
         <module>parser</module>
         <module>binder</module>
@@ -46,6 +47,5 @@
         <module>expr</module>
         <module>util</module>
         <module>reachability-metadata</module>
-        <module>algorithm</module>
     </modules>
 </project>

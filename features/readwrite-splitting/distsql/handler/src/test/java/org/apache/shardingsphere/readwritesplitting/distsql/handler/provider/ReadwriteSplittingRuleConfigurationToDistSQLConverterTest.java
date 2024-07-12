@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -52,11 +52,5 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
                 is("CREATE READWRITE_SPLITTING RULE readwrite_ds (" + System.lineSeparator() + "WRITE_STORAGE_UNIT=ds_primary," + System.lineSeparator() + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),"
                         + System.lineSeparator() + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC'," + System.lineSeparator() + "TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))"
                         + System.lineSeparator() + ");"));
-    }
-    
-    @Test
-    void assertGetType() {
-        ReadwriteSplittingRuleConfigurationToDistSQLConverter readwriteSplittingRuleConfigurationToDistSQLConverter = new ReadwriteSplittingRuleConfigurationToDistSQLConverter();
-        assertThat(readwriteSplittingRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration"));
     }
 }

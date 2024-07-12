@@ -24,9 +24,9 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.handler.converter.MaskRuleStatementConverter;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
@@ -76,7 +76,7 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
                 .flatMap(each -> each.getColumns().stream()).collect(Collectors.toList());
         columns.addAll(toBeAlteredRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).collect(Collectors.toList()));
         Collection<String> inUsedAlgorithmNames = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toSet());
-        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new HashMap<>();
+        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new HashMap<>(rule.getConfiguration().getMaskAlgorithms().size(), 1F);
         for (String each : rule.getConfiguration().getMaskAlgorithms().keySet()) {
             if (!inUsedAlgorithmNames.contains(each)) {
                 toBeDroppedAlgorithms.put(each, rule.getConfiguration().getMaskAlgorithms().get(each));

@@ -44,7 +44,7 @@ class PipelineDistributedBarrierTest {
     void assertRegisterAndRemove() throws ReflectiveOperationException {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
         PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
-        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getPersistServiceFacade().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String parentPath = "/barrier";
@@ -60,16 +60,16 @@ class PipelineDistributedBarrierTest {
     void assertAwait() {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
         PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
-        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getPersistServiceFacade().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);
         instance.persistEphemeralChildrenNode(barrierEnablePath, 1);
-        boolean actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
+        boolean actual = instance.await(barrierEnablePath, 1L, TimeUnit.SECONDS);
         assertFalse(actual);
         instance.notifyChildrenNodeCountCheck(barrierEnablePath + "/0");
-        actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
+        actual = instance.await(barrierEnablePath, 1L, TimeUnit.SECONDS);
         assertTrue(actual);
     }
 }

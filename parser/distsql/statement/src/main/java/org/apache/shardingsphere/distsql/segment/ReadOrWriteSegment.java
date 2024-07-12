@@ -38,7 +38,7 @@ public final class ReadOrWriteSegment implements DistSQLSegment {
     public ReadOrWriteSegment(final Integer workerThread, final Integer batchSize, final AlgorithmSegment rateLimiter) {
         this.workerThread = workerThread;
         this.batchSize = batchSize;
-        this.shardingSize = 1000_0000;
+        shardingSize = 10000000;
         this.rateLimiter = rateLimiter;
     }
 }

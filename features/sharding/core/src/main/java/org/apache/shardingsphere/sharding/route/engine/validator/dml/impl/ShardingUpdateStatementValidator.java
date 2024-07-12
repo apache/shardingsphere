@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -29,8 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.UpdateStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,15 +49,16 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
-        UpdateStatement updateStatement = (UpdateStatement) sqlStatementContext.getSqlStatement();
+        UpdateStatementContext updateStatementContext = (UpdateStatementContext) sqlStatementContext;
+        String tableName = updateStatementContext.getTablesContext().getTableNames().iterator().next();
+        UpdateStatement updateStatement = updateStatementContext.getSqlStatement();
         Optional<ShardingConditions> shardingConditions = createShardingConditions(sqlStatementContext, shardingRule, updateStatement.getSetAssignment().getAssignments(), params);
         Optional<RouteContext> setAssignmentRouteContext = shardingConditions.map(optional -> new ShardingStandardRoutingEngine(tableName, optional, sqlStatementContext,
                 hintValueContext, props).route(shardingRule));
         if (setAssignmentRouteContext.isPresent() && !isSameRouteContext(routeContext, setAssignmentRouteContext.get())) {
             throw new UnsupportedUpdatingShardingValueException(tableName);
         }
-        ShardingSpherePreconditions.checkState(!UpdateStatementHandler.getLimitSegment(updateStatement).isPresent()
+        ShardingSpherePreconditions.checkState(!updateStatement.getLimit().isPresent()
                 || routeContext.getRouteUnits().size() <= 1, () -> new DMLMultipleDataNodesWithLimitException("UPDATE"));
     }
 }

@@ -71,64 +71,73 @@ advisors:
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
-        params:
-          - index: 0
-            type: java.lang.String
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteErrorsCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
-        params:
-          - index: 0
-            type: java.lang.String
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteLatencyHistogramAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
-        params:
-          - index: 0
-            type: java.lang.String
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteErrorsCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteLatencyHistogramAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.CommitTransactionsCountAdvice
     pointcuts:
@@ -139,3 +148,11 @@ advisors:
     pointcuts:
       - name: rollback
         type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.ShardingSphereDataSourceAdvice
+    pointcuts:
+      - name: createContextManager
+        type: method
+      - name: close
+        type: method
+        paramLength: 0

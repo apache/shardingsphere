@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -46,21 +45,33 @@ public final class DataNodes {
     
     /**
      * Get data nodes.
-     * 
+     *
      * @param tableName table name
      * @return data nodes
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<DataNode> getDataNodes(final String tableName) {
-        Collection<DataNode> result = new LinkedList<>(
-                rules.stream().map(each -> getDataNodes(each, tableName)).filter(dataNodes -> !dataNodes.isEmpty()).findFirst().orElse(Collections.emptyList()));
+        Collection<DataNode> result = getDataNodesByTableName(tableName);
+        if (result.isEmpty()) {
+            return result;
+        }
         for (Entry<ShardingSphereRule, DataNodeBuilder> entry : dataNodeBuilders.entrySet()) {
             result = entry.getValue().build(result, entry.getKey());
         }
         return result;
     }
     
-    private Collection<DataNode> getDataNodes(final ShardingSphereRule rule, final String tableName) {
+    private Collection<DataNode> getDataNodesByTableName(final String tableName) {
+        for (ShardingSphereRule each : rules) {
+            Collection<DataNode> dataNodes = getDataNodesByTableName(each, tableName);
+            if (!dataNodes.isEmpty()) {
+                return Collections.unmodifiableCollection(dataNodes);
+            }
+        }
+        return Collections.emptyList();
+    }
+    
+    private Collection<DataNode> getDataNodesByTableName(final ShardingSphereRule rule, final String tableName) {
         return rule.getAttributes().findAttribute(DataNodeRuleAttribute.class).map(optional -> optional.getDataNodesByTableName(tableName)).orElse(Collections.emptyList());
     }
 }

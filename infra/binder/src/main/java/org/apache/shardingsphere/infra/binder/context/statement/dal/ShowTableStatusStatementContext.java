@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,19 +30,19 @@ import java.util.LinkedList;
  */
 public final class ShowTableStatusStatementContext extends CommonSQLStatementContext implements RemoveAvailable {
     
-    public ShowTableStatusStatementContext(final MySQLShowTableStatusStatement sqlStatement) {
+    public ShowTableStatusStatementContext(final ShowTableStatusStatement sqlStatement) {
         super(sqlStatement);
     }
     
     @Override
-    public MySQLShowTableStatusStatement getSqlStatement() {
-        return (MySQLShowTableStatusStatement) super.getSqlStatement();
+    public ShowTableStatusStatement getSqlStatement() {
+        return (ShowTableStatusStatement) super.getSqlStatement();
     }
     
     @Override
     public Collection<SQLSegment> getRemoveSegments() {
         Collection<SQLSegment> result = new LinkedList<>();
-        getSqlStatement().getFromSchema().ifPresent(result::add);
+        getSqlStatement().getFromDatabase().ifPresent(result::add);
         return result;
     }
 }

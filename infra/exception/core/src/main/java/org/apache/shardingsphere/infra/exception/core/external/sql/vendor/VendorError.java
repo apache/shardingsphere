@@ -26,7 +26,7 @@ public interface VendorError {
     
     /**
      * Get SQL state.
-     * 
+     *
      * @return SQL state
      */
     SQLState getSqlState();

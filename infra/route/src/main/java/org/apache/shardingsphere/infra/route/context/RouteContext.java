@@ -173,7 +173,7 @@ public final class RouteContext {
     
     /**
      * Judge whether route context contains table sharding or not.
-     * 
+     *
      * @return whether route context contains table sharding or not
      */
     public boolean containsTableSharding() {

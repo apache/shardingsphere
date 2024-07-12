@@ -49,7 +49,7 @@ public final class SchemaMetaDataReviseEngine {
     
     /**
      * Revise schema meta data.
-     * 
+     *
      * @param originalMetaData original schema meta data
      * @return revised schema meta data
      */

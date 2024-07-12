@@ -23,16 +23,9 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmExecute
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture.FixedTimeService;
-import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture.WorkerIdGeneratorFixture;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContextAware;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.awaitility.Awaitility;
@@ -65,12 +58,12 @@ class SnowflakeKeyGenerateAlgorithmTest {
     
     private static final int DEFAULT_KEY_AMOUNT = 10;
     
-    private static final InstanceContext INSTANCE;
+    private static final ComputeNodeInstanceContext INSTANCE;
     
     static {
-        InstanceContext instanceContext = mock(InstanceContext.class);
-        when(instanceContext.getWorkerId()).thenReturn(0);
-        INSTANCE = instanceContext;
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+        when(computeNodeInstanceContext.getWorkerId()).thenReturn(0);
+        INSTANCE = computeNodeInstanceContext;
     }
     
     @Test
@@ -79,8 +72,8 @@ class SnowflakeKeyGenerateAlgorithmTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber * 4;
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
-        if (algorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof ComputeNodeInstanceContextAware) {
+            ((ComputeNodeInstanceContextAware) algorithm).setComputeNodeInstanceContext(INSTANCE);
         }
         Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1F);
         for (int i = 0; i < taskNumber; i++) {
@@ -93,8 +86,8 @@ class SnowflakeKeyGenerateAlgorithmTest {
     void assertGenerateKeyWithSingleThread() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(1));
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
-        if (algorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof ComputeNodeInstanceContextAware) {
+            ((ComputeNodeInstanceContextAware) algorithm).setComputeNodeInstanceContext(INSTANCE);
         }
         List<Comparable<?>> expected = Arrays.asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
@@ -106,8 +99,8 @@ class SnowflakeKeyGenerateAlgorithmTest {
     void assertLastDigitalOfGenerateKeySameMillisecond() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(5));
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3")));
-        if (algorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof ComputeNodeInstanceContextAware) {
+            ((ComputeNodeInstanceContextAware) algorithm).setComputeNodeInstanceContext(INSTANCE);
         }
         Collection<? extends Comparable<?>> actual = algorithm.generateKeys(mock(AlgorithmSQLContext.class), 5);
         assertThat(actual.size(), is(5));
@@ -123,8 +116,8 @@ class SnowflakeKeyGenerateAlgorithmTest {
     void assertLastDigitalOfGenerateKeyDifferentMillisecond() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3")));
-        if (algorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof ComputeNodeInstanceContextAware) {
+            ((ComputeNodeInstanceContextAware) algorithm).setComputeNodeInstanceContext(INSTANCE);
         }
         String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey0.substring(actualGenerateKey0.length() - 3), 2), is(0));
@@ -147,10 +140,10 @@ class SnowflakeKeyGenerateAlgorithmTest {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
-        if (algorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof ComputeNodeInstanceContextAware) {
+            ((ComputeNodeInstanceContextAware) algorithm).setComputeNodeInstanceContext(INSTANCE);
         }
-        setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
+        setLastMillis(algorithm, timeService.getCurrentMillis() + 2L);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         actual.addAll(algorithm.generateKeys(mock(AlgorithmSQLContext.class), DEFAULT_KEY_AMOUNT));
@@ -162,10 +155,10 @@ class SnowflakeKeyGenerateAlgorithmTest {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "0")));
-        if (algorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof ComputeNodeInstanceContextAware) {
+            ((ComputeNodeInstanceContextAware) algorithm).setComputeNodeInstanceContext(INSTANCE);
         }
-        setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
+        setLastMillis(algorithm, timeService.getCurrentMillis() + 2L);
         assertThrows(AlgorithmExecuteException.class, () -> batchGenerate(algorithm));
     }
     
@@ -178,11 +171,11 @@ class SnowflakeKeyGenerateAlgorithmTest {
         TimeService timeService = new FixedTimeService(2);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
-        if (algorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof ComputeNodeInstanceContextAware) {
+            ((ComputeNodeInstanceContextAware) algorithm).setComputeNodeInstanceContext(INSTANCE);
         }
         setLastMillis(algorithm, timeService.getCurrentMillis());
-        setSequence(algorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1L);
+        setSequence(algorithm, (1L << DEFAULT_SEQUENCE_BITS) - 1L);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         actual.addAll(algorithm.generateKeys(mock(AlgorithmSQLContext.class), DEFAULT_KEY_AMOUNT));
@@ -200,26 +193,10 @@ class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    void assertSetWorkerIdFailureWhenNegative() {
-        SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1),
-                new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        assertThrows(IllegalArgumentException.class, () -> algorithm.setInstanceContext(instanceContext));
-    }
-    
-    @Test
     void assertSetMaxVibrationOffsetFailureWhenNegative() {
         assertThrows(AlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1")))
                         .generateKeys(mock(AlgorithmSQLContext.class), 1));
-    }
-    
-    @Test
-    void assertSetWorkerIdFailureWhenOutOfRange() {
-        SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE),
-                new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        assertThrows(IllegalArgumentException.class, () -> algorithm.setInstanceContext(instanceContext));
     }
     
     @Test

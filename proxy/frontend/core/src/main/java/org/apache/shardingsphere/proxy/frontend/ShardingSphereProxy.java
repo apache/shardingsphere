@@ -104,7 +104,7 @@ public final class ShardingSphereProxy {
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap);
-        List<ChannelFuture> result = new ArrayList<>();
+        List<ChannelFuture> result = new ArrayList<>(addresses.size());
         for (String each : addresses) {
             result.add(bootstrap.bind(each, port).sync());
         }
@@ -118,7 +118,7 @@ public final class ShardingSphereProxy {
     }
     
     private void accept(final List<ChannelFuture> futures) throws InterruptedException {
-        log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
+        log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
         for (ChannelFuture each : futures) {
             each.channel().closeFuture().sync();
         }

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;
 import org.apache.shardingsphere.sqlfederation.optimizer.statement.SQLStatementCompiler;
@@ -68,7 +68,7 @@ class SQLStatementCompilerIT {
     
     @BeforeEach
     void init() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>();
+        Map<String, ShardingSphereTable> tables = new HashMap<>(12, 1F);
         tables.put("t_order_federate", createOrderFederationTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
         tables.put("t_order", createTOrderTableMetaData());

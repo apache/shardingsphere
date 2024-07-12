@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContextAware;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -55,12 +55,12 @@ import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableNamesRuleA
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -116,9 +116,9 @@ public final class ShardingRule implements DatabaseRule {
     
     private final ShardingRuleChecker shardingRuleChecker = new ShardingRuleChecker(this);
     
-    public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final InstanceContext instanceContext) {
+    public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         configuration = ruleConfig;
-        this.dataSourceNames = getDataSourceNames(ruleConfig.getTables(), ruleConfig.getAutoTables(), dataSources.keySet());
+        dataSourceNames = getDataSourceNames(ruleConfig.getTables(), ruleConfig.getAutoTables(), dataSources.keySet());
         ruleConfig.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, TypedSPILoader.getService(ShardingAlgorithm.class, value.getType(), value.getProps())));
         ruleConfig.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, TypedSPILoader.getService(KeyGenerateAlgorithm.class, value.getType(), value.getProps())));
         ruleConfig.getAuditors().forEach((key, value) -> auditors.put(key, TypedSPILoader.getService(ShardingAuditAlgorithm.class, value.getType(), value.getProps())));
@@ -132,9 +132,10 @@ public final class ShardingRule implements DatabaseRule {
                 ? TypedSPILoader.getService(KeyGenerateAlgorithm.class, null)
                 : keyGenerators.get(ruleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = ruleConfig.getDefaultShardingColumn();
-        keyGenerators.values().stream().filter(InstanceContextAware.class::isInstance).forEach(each -> ((InstanceContextAware) each).setInstanceContext(instanceContext));
-        if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware && -1 == instanceContext.getWorkerId()) {
-            ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
+        keyGenerators.values().stream().filter(ComputeNodeInstanceContextAware.class::isInstance)
+                .forEach(each -> ((ComputeNodeInstanceContextAware) each).setComputeNodeInstanceContext(computeNodeInstanceContext));
+        if (defaultKeyGenerateAlgorithm instanceof ComputeNodeInstanceContextAware && -1 == computeNodeInstanceContext.getWorkerId()) {
+            ((ComputeNodeInstanceContextAware) defaultKeyGenerateAlgorithm).setComputeNodeInstanceContext(computeNodeInstanceContext);
         }
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
         attributes = new RuleAttributes(new ShardingDataNodeRuleAttribute(shardingTables), new ShardingTableNamesRuleAttribute(shardingTables.values()));
@@ -308,9 +309,7 @@ public final class ShardingRule implements DatabaseRule {
      * @throws ShardingTableRuleNotFoundException sharding table rule not found exception
      */
     public ShardingTable getShardingTable(final String logicTableName) {
-        Optional<ShardingTable> shardingTable = findShardingTable(logicTableName);
-        ShardingSpherePreconditions.checkState(shardingTable.isPresent(), () -> new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName)));
-        return shardingTable.get();
+        return findShardingTable(logicTableName).orElseThrow(() -> new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName)));
     }
     
     /**
@@ -348,8 +347,8 @@ public final class ShardingRule implements DatabaseRule {
             return false;
         }
         String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
+        ShardingSphereSchema schema = select.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, select.getWhereSegments());
     }
     
@@ -466,11 +465,11 @@ public final class ShardingRule implements DatabaseRule {
     }
     
     /**
-     * Judge whether given logic table column is generate key column or not.
+     * Judge whether given logic table column is key generated column or not.
      *
      * @param columnName column name
      * @param tableName table name
-     * @return whether given logic table column is generate key column or not
+     * @return whether given logic table column is key generated column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
         return Optional.ofNullable(shardingTables.get(tableName)).filter(each -> isGenerateKeyColumn(each, columnName)).isPresent();
@@ -504,7 +503,7 @@ public final class ShardingRule implements DatabaseRule {
     
     /**
      * Judge whether support auto increment or not.
-     * 
+     *
      * @param logicTableName logic table name
      * @return whether support auto increment or not
      */
@@ -609,7 +608,7 @@ public final class ShardingRule implements DatabaseRule {
             }
             ColumnSegment leftColumn = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
             ColumnSegment rightColumn = (ColumnSegment) ((BinaryOperationExpression) each).getRight();
-            Map<String, String> columnExpressionTableNames = select.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftColumn, rightColumn), schema);
+            Map<String, String> columnExpressionTableNames = select.getTablesContext().findTableNames(Arrays.asList(leftColumn, rightColumn), schema);
             Optional<ShardingTable> leftShardingTable = findShardingTable(columnExpressionTableNames.get(leftColumn.getExpression()));
             Optional<ShardingTable> rightShardingTable = findShardingTable(columnExpressionTableNames.get(rightColumn.getExpression()));
             if (!leftShardingTable.isPresent() || !rightShardingTable.isPresent()) {

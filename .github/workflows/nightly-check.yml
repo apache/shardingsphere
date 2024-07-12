@@ -120,7 +120,7 @@ jobs:
       - run: sudo npm install -g markdown-link-check@3.10.0
       - name: Check dead link
         run: |
-          IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by" "./docs/blog/content/material" "./docs/blog/themes")
+          IGNORED_PATH_LIST=("./docs/document/themes" "./docs/community/content/powered-by" "./docs/blog/content/material" "./docs/blog/themes" "./docs/community/themes")
           ignore_current_file=false
           
           for file in $(find . -name "*.md"); do
@@ -189,6 +189,7 @@ jobs:
           days-before-pr-stale: -1
           days-before-close: -1
           stale-issue-label: "stale"
+          any-of-issue-labels: "status: need more info,type: question"
           operations-per-run: 100
           remove-stale-when-updated: true
           stale-issue-message: >

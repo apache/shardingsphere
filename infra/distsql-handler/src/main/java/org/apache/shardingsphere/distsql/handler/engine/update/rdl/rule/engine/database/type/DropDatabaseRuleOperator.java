@@ -24,11 +24,12 @@ import org.apache.shardingsphere.distsql.statement.rdl.rule.aware.StaticDataSour
 import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -60,15 +61,19 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
             }
             // TODO refactor to new metadata refresh way
         }
-        ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
+        MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
-        modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
+        metaDataManagerPersistService.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         if (null != toBeAlteredRuleConfig && ((DatabaseRuleConfiguration) toBeAlteredRuleConfig).isEmpty()) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
-            modeContextManager.removeRuleConfiguration(database.getName(), Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
+            metaDataManagerPersistService.removeRuleConfiguration(database.getName(), Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
+            metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts, true);
             return Collections.emptyList();
         }
-        return modeContextManager.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
+        Collection<MetaDataVersion> result = metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
+        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts, false);
+        return result;
     }
 }

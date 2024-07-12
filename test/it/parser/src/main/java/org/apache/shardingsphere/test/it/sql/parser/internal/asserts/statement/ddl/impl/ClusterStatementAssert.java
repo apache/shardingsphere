@@ -19,10 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ClusterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.ClusterStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ClusterStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
@@ -52,7 +51,7 @@ public final class ClusterStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final ClusterStatement actual, final ClusterStatementTestCase expected) {
-        Optional<SimpleTableSegment> tableSegment = ClusterStatementHandler.getSimpleTableSegment(actual);
+        Optional<SimpleTableSegment> tableSegment = actual.getSimpleTable();
         if (null == expected.getTable()) {
             assertFalse(tableSegment.isPresent(), assertContext.getText("Actual table segment should not exist."));
         } else {
@@ -62,7 +61,7 @@ public final class ClusterStatementAssert {
     }
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final ClusterStatement actual, final ClusterStatementTestCase expected) {
-        Optional<IndexSegment> indexSegment = ClusterStatementHandler.getIndexSegment(actual);
+        Optional<IndexSegment> indexSegment = actual.getIndex();
         if (null == expected.getIndex()) {
             assertFalse(indexSegment.isPresent(), assertContext.getText("Actual index segment should not exist."));
         } else {

@@ -38,7 +38,7 @@ class ReadwriteSplittingConfigurationRepositoryTupleSwapperEngineIT extends Repo
         assertThat(actualRepositoryTuples.size(), is(4));
         assertRepositoryTuple(actualRepositoryTuples.get(0), "load_balancers/random", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getLoadBalancers().get("random"));
         assertRepositoryTuple(actualRepositoryTuples.get(1), "load_balancers/roundRobin", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getLoadBalancers().get("roundRobin"));
-        assertRepositoryTuple(actualRepositoryTuples.get(2), "data_sources/ds_0", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups().get("ds_0"));
-        assertRepositoryTuple(actualRepositoryTuples.get(3), "data_sources/ds_1", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups().get("ds_1"));
+        assertRepositoryTuple(actualRepositoryTuples.get(2), "data_source_groups/ds_0", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups().get("ds_0"));
+        assertRepositoryTuple(actualRepositoryTuples.get(3), "data_source_groups/ds_1", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups().get("ds_1"));
     }
 }

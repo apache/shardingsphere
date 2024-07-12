@@ -34,7 +34,7 @@ public @interface StaticMockSettings {
     
     /**
      * Mock classes.
-     * 
+     *
      * @return mock classes
      */
     Class<?>[] value();

@@ -39,9 +39,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Classpath resource directory reader.
@@ -77,13 +81,9 @@ public final class ClasspathResourceDirectoryReader {
         }
         if (JAR_URL_PROTOCOLS.contains(resourceUrl.getProtocol())) {
             JarFile jarFile = getJarFile(resourceUrl);
-            if (null == jarFile) {
-                return false;
-            }
-            return jarFile.getJarEntry(name).isDirectory();
-        } else {
-            return Files.isDirectory(Paths.get(resourceUrl.toURI()));
+            return null != jarFile && jarFile.getJarEntry(name).isDirectory();
         }
+        return Paths.get(resourceUrl.toURI()).toFile().isDirectory();
     }
     
     /**
@@ -133,13 +133,30 @@ public final class ClasspathResourceDirectoryReader {
         if (null == jar) {
             return Stream.empty();
         }
-        try {
-            return jar.stream().filter(each -> each.getName().startsWith(directory) && !each.isDirectory()).map(JarEntry::getName);
-        } catch (final IllegalStateException ex) {
-            // todo Refactor to use JDK API to filter out closed JAR files used by application.
-            log.warn("Access jar file error: {}.", directoryUrl.getPath(), ex);
-            return Stream.empty();
-        }
+        return getJarEntryStream(jar).filter(each -> each.getName().startsWith(directory) && !each.isDirectory()).map(JarEntry::getName);
+    }
+    
+    /**
+     * Prior to Spring Boot 2.3, the `JarFile` class in Spring Boot did not override the `stream()` method, see <a href="https://github.com/spring-projects/spring-boot/issues/23821">issue</a>.
+     *
+     * @param jar jar
+     * @return Stream of JarEntry
+     */
+    private static Stream<JarEntry> getJarEntryStream(final JarFile jar) {
+        Enumeration<JarEntry> entries = jar.entries();
+        return StreamSupport.stream(Spliterators.spliterator(
+                new Iterator<JarEntry>() {
+                    
+                    @Override
+                    public boolean hasNext() {
+                        return entries.hasMoreElements();
+                    }
+                    
+                    @Override
+                    public JarEntry next() {
+                        return entries.nextElement();
+                    }
+                }, jar.size(), Spliterator.ORDERED | Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL), false);
     }
     
     @SneakyThrows(IOException.class)
@@ -184,9 +201,9 @@ public final class ClasspathResourceDirectoryReader {
         }
     }
     
+    @SuppressWarnings("resource")
     private static Stream<String> loadFromDirectory(final String directory, final URL directoryUrl) throws URISyntaxException, IOException {
         Path directoryPath = Paths.get(directoryUrl.toURI());
-        // noinspection resource
         Stream<Path> walkStream = Files.find(directoryPath, Integer.MAX_VALUE, (path, basicFileAttributes) -> !basicFileAttributes.isDirectory(), FileVisitOption.FOLLOW_LINKS);
         return walkStream.map(path -> {
             StringBuilder stringBuilder = new StringBuilder();

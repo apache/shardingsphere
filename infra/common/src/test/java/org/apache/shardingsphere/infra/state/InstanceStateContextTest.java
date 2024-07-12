@@ -29,24 +29,16 @@ class InstanceStateContextTest {
     private final InstanceStateContext instanceStateContext = new InstanceStateContext();
     
     @Test
-    void assertSwitchStateWithCircuitBreakOn() {
-        instanceStateContext.switchToValidState(InstanceState.CIRCUIT_BREAK);
+    void assertSwitchState() {
+        instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK);
         assertThat(instanceStateContext.getCurrentState(), is(InstanceState.CIRCUIT_BREAK));
-        instanceStateContext.switchToInvalidState(InstanceState.CIRCUIT_BREAK);
     }
     
     @Test
-    void assertSwitchStateWithCircuitBreakOff() {
-        instanceStateContext.switchToInvalidState(InstanceState.CIRCUIT_BREAK);
+    void assertRecoverState() {
+        instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK);
+        assertThat(instanceStateContext.getCurrentState(), is(InstanceState.CIRCUIT_BREAK));
+        instanceStateContext.recoverState(InstanceState.CIRCUIT_BREAK);
         assertThat(instanceStateContext.getCurrentState(), is(InstanceState.OK));
-    }
-    
-    @Test
-    void assertSwitchStateWithMultiState() {
-        instanceStateContext.switchToValidState(InstanceState.CIRCUIT_BREAK);
-        instanceStateContext.switchToValidState(InstanceState.LOCK);
-        assertThat(instanceStateContext.getCurrentState(), is(InstanceState.LOCK));
-        instanceStateContext.switchToInvalidState(InstanceState.LOCK);
-        assertThat(instanceStateContext.getCurrentState(), is(InstanceState.CIRCUIT_BREAK));
     }
 }

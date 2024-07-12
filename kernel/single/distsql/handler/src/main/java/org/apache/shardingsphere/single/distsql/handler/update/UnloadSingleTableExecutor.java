@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -76,7 +76,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     }
     
     private void checkTableExist(final Collection<String> allTables, final String tableName) {
-        ShardingSpherePreconditions.checkState(allTables.contains(tableName), () -> new NoSuchTableException(tableName));
+        ShardingSpherePreconditions.checkContains(allTables, tableName, () -> new NoSuchTableException(tableName));
     }
     
     private void checkIsSingleTable(final Collection<String> singleTables, final String tableName) {
@@ -93,7 +93,6 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     @Override
     public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final UnloadSingleTableStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        rule.getConfiguration().getDefaultDataSource().ifPresent(result::setDefaultDataSource);
         if (!sqlStatement.isUnloadAllTables()) {
             result.getTables().addAll(rule.getConfiguration().getTables());
             result.getTables().removeIf(each -> sqlStatement.getTables().contains(extractTableName(each)));
@@ -103,6 +102,11 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     
     @Override
     public SingleRuleConfiguration buildToBeDroppedRuleConfiguration(final SingleRuleConfiguration toBeAlteredRuleConfig) {
+        if (toBeAlteredRuleConfig.getTables().isEmpty()) {
+            SingleRuleConfiguration result = new SingleRuleConfiguration();
+            result.getTables().addAll(rule.getConfiguration().getTables());
+            return result;
+        }
         return null;
     }
     

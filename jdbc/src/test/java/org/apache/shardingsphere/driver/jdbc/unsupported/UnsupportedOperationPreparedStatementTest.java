@@ -28,8 +28,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,13 +51,12 @@ class UnsupportedOperationPreparedStatementTest {
     @BeforeEach
     void setUp() throws SQLException {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        when(connection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(connection.getCurrentDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()),
-                new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
                 new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap()))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(
-                connection.getDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+                connection.getCurrentDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
     }
@@ -86,7 +83,7 @@ class UnsupportedOperationPreparedStatementTest {
     
     @Test
     void assertSetNClobForReaderAndLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNClob(1, new StringReader(""), 1));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNClob(1, new StringReader(""), 1L));
     }
     
     @Test
@@ -96,7 +93,7 @@ class UnsupportedOperationPreparedStatementTest {
     
     @Test
     void assertSetNCharacterStreamWithLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNCharacterStream(1, new StringReader(""), 1));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNCharacterStream(1, new StringReader(""), 1L));
     }
     
     @Test

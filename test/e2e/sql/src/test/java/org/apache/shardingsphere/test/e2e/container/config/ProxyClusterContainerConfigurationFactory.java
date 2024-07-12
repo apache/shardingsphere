@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -36,14 +37,14 @@ public final class ProxyClusterContainerConfigurationFactory {
     
     /**
      * Create instance of adaptor container configuration.
-     * 
+     *
      * @param scenario scenario
      * @param databaseType database type
      * @param adapterContainerImage adapter container image
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType, final String adapterContainerImage) {
-        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType), adapterContainerImage, "");
+        return new AdaptorContainerConfiguration(scenario, new LinkedList<>(), getMountedResources(scenario, databaseType), adapterContainerImage, "");
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {

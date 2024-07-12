@@ -29,7 +29,7 @@ public interface DataSourcePoolPropertiesContentValidator extends TypedSPI {
     
     /**
      * Validate data source properties.
-     * 
+     *
      * @param props data source pool properties
      */
     void validate(DataSourcePoolProperties props);

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
@@ -37,17 +37,17 @@ public final class ShowIndexStatementAssert {
     
     /**
      * Assert show index statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show index statement
      * @param expected expected show index statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
-        assertSchema(assertContext, actual, expected);
+        assertDatabase(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null == expected.getTable()) {
             assertNull(actual.getTable(), assertContext.getText("Actual table segment should not exist."));
         } else {
@@ -55,12 +55,12 @@ public final class ShowIndexStatementAssert {
         }
     }
     
-    private static void assertSchema(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
-        if (null == expected.getSchema()) {
-            assertFalse(actual.getFromSchema().isPresent(), assertContext.getText("Actual database segment should not exist."));
+    private static void assertDatabase(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+        if (null == expected.getDatabase()) {
+            assertFalse(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database segment should not exist."));
         } else {
-            assertTrue(actual.getFromSchema().isPresent(), assertContext.getText("Actual database segment should exist."));
-            SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getSchema());
+            assertTrue(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database segment should exist."));
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getDatabase());
         }
     }
 }

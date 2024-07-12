@@ -89,8 +89,8 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
         return isNullOrEmpty(pluginConfig.getHost()) ? new InetSocketAddress(pluginConfig.getPort()) : new InetSocketAddress(pluginConfig.getHost(), pluginConfig.getPort());
     }
     
-    private boolean isNullOrEmpty(final String string) {
-        return null == string || string.isEmpty();
+    private boolean isNullOrEmpty(final String value) {
+        return null == value || value.isEmpty();
     }
     
     @Override

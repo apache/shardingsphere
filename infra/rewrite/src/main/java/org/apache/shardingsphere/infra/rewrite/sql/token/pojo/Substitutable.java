@@ -24,14 +24,14 @@ public interface Substitutable {
     
     /**
      * Get start index.
-     * 
+     *
      * @return start index
      */
     int getStartIndex();
     
     /**
      * Get stop index.
-     * 
+     *
      * @return stop index
      */
     int getStopIndex();

@@ -47,7 +47,7 @@ public final class ScenarioDataPath {
     
     /**
      * Get databases file.
-     * 
+     *
      * @param type data type
      * @return databases file
      */

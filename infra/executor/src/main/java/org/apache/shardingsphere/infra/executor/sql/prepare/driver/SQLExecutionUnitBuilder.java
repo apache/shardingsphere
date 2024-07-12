@@ -39,7 +39,7 @@ public interface SQLExecutionUnitBuilder<T extends DriverExecutionUnit<?>, M ext
     
     /**
      * Build SQL execution unit.
-     * 
+     *
      * @param executionUnit execution unit
      * @param executorManager executor manager 
      * @param connection connection

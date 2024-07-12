@@ -198,6 +198,10 @@ GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`
 
 更新 `README.md` 和 `README_ZH.md` 里的 `${RELEASE.VERSION}` 和 `${NEXT.RELEASE.VERSION}`。
 
+### 6. 修改 ShardingSphereDriver
+
+更新 `ShardingSphereDriver.java` 里的 `MAJOR_DRIVER_VERSION` 和 `MINOR_DRIVER_VERSION`。
+
 ## 发布 Apache Maven 中央仓库
 
 ### 1. 设置 settings-security.xml 和 settings.xml 文件

@@ -28,7 +28,7 @@ public interface PreviousSQLTokensAware {
     
     /**
      * Set previous SQL tokens.
-     * 
+     *
      * @param previousSQLTokens previous SQL tokens
      */
     void setPreviousSQLTokens(List<SQLToken> previousSQLTokens);

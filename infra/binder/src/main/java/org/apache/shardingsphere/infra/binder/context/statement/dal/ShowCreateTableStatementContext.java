@@ -18,14 +18,10 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 
 /**
  * Show create table statement context.
@@ -35,18 +31,13 @@ public final class ShowCreateTableStatementContext extends CommonSQLStatementCon
     
     private final TablesContext tablesContext;
     
-    public ShowCreateTableStatementContext(final MySQLShowCreateTableStatement sqlStatement) {
+    public ShowCreateTableStatementContext(final ShowCreateTableStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
-    public MySQLShowCreateTableStatement getSqlStatement() {
-        return (MySQLShowCreateTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
+    public ShowCreateTableStatement getSqlStatement() {
+        return (ShowCreateTableStatement) super.getSqlStatement();
     }
 }

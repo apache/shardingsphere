@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResult
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.ResultSet;
@@ -40,55 +40,40 @@ import java.util.List;
  */
 public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperationResultSet {
     
-    @Getter
     private final List<ResultSet> resultSets;
     
     @Getter
     private final Statement statement;
     
-    private final boolean selectContainsEnhancedTable;
+    private final SQLStatementContext sqlStatementContext;
+    
+    private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate;
     
     private boolean closed;
     
-    private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
-    
-    @Getter
-    private final ExecutionContext executionContext;
-    
-    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final boolean selectContainsEnhancedTable, final ExecutionContext executionContext) {
+    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final SQLStatementContext sqlStatementContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
-        this.selectContainsEnhancedTable = selectContainsEnhancedTable;
-        this.executionContext = executionContext;
+        this.sqlStatementContext = sqlStatementContext;
+        forceExecuteTemplate = new ForceExecuteTemplate<>();
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), selectContainsEnhancedTable, executionContext.getSqlStatementContext());
+        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), sqlStatementContext);
     }
     
     private ShardingSphereDatabase getDatabase() {
         ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
                 ? ((ShardingSpherePreparedStatement) statement).getConnection()
                 : ((ShardingSphereStatement) statement).getConnection();
-        return connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName());
+        return connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName());
     }
     
     @Override
     public final int findColumn(final String columnLabel) throws SQLException {
         return resultSets.get(0).findColumn(columnLabel);
-    }
-    
-    @Override
-    public final void close() throws SQLException {
-        closed = true;
-        forceExecuteTemplate.execute(resultSets, ResultSet::close);
-    }
-    
-    @Override
-    public final boolean isClosed() {
-        return closed;
     }
     
     @Override
@@ -129,5 +114,16 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Override
     public final void clearWarnings() throws SQLException {
         forceExecuteTemplate.execute(resultSets, ResultSet::clearWarnings);
+    }
+    
+    @Override
+    public final boolean isClosed() {
+        return closed;
+    }
+    
+    @Override
+    public final void close() throws SQLException {
+        closed = true;
+        forceExecuteTemplate.execute(resultSets, ResultSet::close);
     }
 }

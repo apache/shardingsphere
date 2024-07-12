@@ -20,17 +20,19 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleLockStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleRollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetTransactionStatement;
 
 /**
  * TCL statement visitor for Oracle.
@@ -66,5 +68,10 @@ public final class OracleTCLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
         return new OracleSetConstraintsStatement();
+    }
+    
+    @Override
+    public ASTNode visitLock(final LockContext ctx) {
+        return new OracleLockStatement();
     }
 }

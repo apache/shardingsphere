@@ -47,8 +47,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     
     @Override
     public void handleException(final ConnectionSession connectionSession, final Exception exception) {
-        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getTransactionStatus().isExceptionOccur() && !(exception instanceof InTransactionException)) {
-            connectionSession.getTransactionStatus().setExceptionOccur(true);
+        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()
+                && !(exception instanceof InTransactionException)) {
+            connectionSession.getConnectionContext().getTransactionContext().setExceptionOccur(true);
         }
     }
     

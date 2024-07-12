@@ -9,21 +9,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":".*sql/.+\\.xml$"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\Q\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.H2OptimizerBuilder"},
-    "pattern":"\\Qsaffron.properties\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader"},
-    "pattern":"\\Qschema\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
-    "pattern":"\\Qsql\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
-    "pattern":"\\Qtransactions.properties\\E"
   }]},
   "bundles":[]
 }

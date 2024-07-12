@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.encrypt.metadata.reviser;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Optional;
-
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.metadata.reviser.column.EncryptColumnExistedReviser;
 import org.apache.shardingsphere.encrypt.metadata.reviser.column.EncryptColumnNameReviser;
 import org.apache.shardingsphere.encrypt.metadata.reviser.index.EncryptIndexReviser;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptMetaDataReviseEntryTest {
     
@@ -59,8 +58,7 @@ class EncryptMetaDataReviseEntryTest {
     }
     
     private EncryptRule createEncryptRule() {
-        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(
-                new EncryptTableRuleConfiguration(TABLE_NAME, Collections.emptyList())), new HashMap<>());
+        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration(TABLE_NAME, Collections.emptyList())), Collections.emptyMap());
         return new EncryptRule("foo_db", ruleConfig);
     }
 }

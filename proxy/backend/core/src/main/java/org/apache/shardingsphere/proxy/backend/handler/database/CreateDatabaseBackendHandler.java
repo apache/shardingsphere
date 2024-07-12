@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.databa
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
 
 import java.sql.SQLException;
 
@@ -38,7 +38,7 @@ public final class CreateDatabaseBackendHandler implements ProxyBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         check(sqlStatement);
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().createDatabase(sqlStatement.getDatabaseName());
+        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService().createDatabase(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
     

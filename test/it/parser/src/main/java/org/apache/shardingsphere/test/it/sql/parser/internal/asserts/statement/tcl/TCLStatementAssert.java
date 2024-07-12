@@ -19,17 +19,17 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.PrepareTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.UnlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.PrepareTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.UnlockStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.impl.BeginTransactionStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.impl.CommitStatementAssert;
@@ -61,7 +61,7 @@ public final class TCLStatementAssert {
     
     /**
      * Assert TCL statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual TCL statement
      * @param expected expected TCL statement test case

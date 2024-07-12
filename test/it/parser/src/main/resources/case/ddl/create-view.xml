@@ -206,7 +206,7 @@
                                     </column>
                                 </left>
                                 <right>
-                                    <outer-join-expression>
+                                    <outer-join-expression start-index="130" stop-index="145" text="m.planet_name(+)">
                                         <column name="planet_name" start-index="130" stop-index="142">
                                             <owner name="m" start-index="130" stop-index="130" />
                                         </column>
@@ -219,7 +219,7 @@
                         <right>
                             <binary-operation-expression start-index="151" stop-index="174">
                                 <left>
-                                    <outer-join-expression>
+                                    <outer-join-expression start-index="151" stop-index="159" text="m.name(+)">
                                         <column name="name" start-index="151" stop-index="156">
                                             <owner name="m" start-index="151" stop-index="151" />
                                         </column>
@@ -583,7 +583,7 @@
                             </column>
                         </left>
                         <right>
-                            <outer-join-expression>
+                            <outer-join-expression start-index="91" stop-index="102" text="d.deptno (+)">
                                 <column name="deptno" start-index="91" stop-index="98">
                                     <owner name="d" start-index="91" stop-index="91" />
                                 </column>
@@ -708,7 +708,7 @@
                 <expr>
                     <binary-operation-expression start-index="103" stop-index="125">
                         <left>
-                            <outer-join-expression>
+                            <outer-join-expression start-index="103" stop-index="114" text="e.deptno (+)">
                                 <column name="deptno" start-index="103" stop-index="110">
                                     <owner name="e" start-index="103" stop-index="103" />
                                 </column>

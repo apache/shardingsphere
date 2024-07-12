@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.container.compose.mode;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -50,18 +50,15 @@ public final class ClusterContainerComposer implements ContainerComposer {
     
     private final AdapterContainer adapterContainer;
     
-    public ClusterContainerComposer(final E2ETestParameter testParam) {
-        String scenario = testParam.getScenario();
+    public ClusterContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
         containers = new ITContainers(scenario);
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
         // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "",
-                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType(), scenario)));
-        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(
-                scenario, testParam.getDatabaseType(), AdapterContainerUtils.getAdapterContainerImage());
-        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getMode().toUpperCase()),
-                AdapterType.valueOf(testParam.getAdapter().toUpperCase()), testParam.getDatabaseType(), storageContainer, scenario, containerConfig);
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, "",
+                StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
+        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, databaseType, AdapterContainerUtils.getAdapterContainerImage());
+        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, storageContainer, scenario, containerConfig);
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }

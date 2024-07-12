@@ -51,9 +51,9 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,6 +110,7 @@ class MySQLComStmtPrepareExecutorTest {
         when(packet.getSQL()).thenReturn(sql);
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getConnectionId()).thenReturn(1);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         MySQLStatementIdGenerator.getInstance().registerConnection(1);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -134,7 +135,7 @@ class MySQLComStmtPrepareExecutorTest {
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         int connectionId = 2;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -173,7 +174,7 @@ class MySQLComStmtPrepareExecutorTest {
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         int connectionId = 2;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -194,7 +195,7 @@ class MySQLComStmtPrepareExecutorTest {
         when(packet.getSQL()).thenReturn(sql);
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getConnectionId()).thenReturn(1);
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         MySQLStatementIdGenerator.getInstance().registerConnection(1);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -223,10 +224,10 @@ class MySQLComStmtPrepareExecutorTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(mock(RuleMetaData.class));
-        CacheOption cacheOption = new CacheOption(1024, 1024);
+        CacheOption cacheOption = new CacheOption(1024, 1024L);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(cacheOption, cacheOption)));
-        when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getUsedDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());

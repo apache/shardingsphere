@@ -32,9 +32,4 @@ public final class OKDriverState implements DriverState {
     public Connection getConnection(final String databaseName, final ContextManager contextManager) {
         return new ShardingSphereConnection(databaseName, contextManager);
     }
-    
-    @Override
-    public String getType() {
-        return "OK";
-    }
 }

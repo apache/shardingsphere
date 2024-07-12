@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.driver.state.circuit.statement;
 
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Statement;
 
 /**
  * Circuit breaker statement.
  */
-public final class CircuitBreakerStatement extends AbstractUnsupportedOperationStatement {
+public final class CircuitBreakerStatement extends WrapperAdapter implements Statement {
     
     @Override
     public void close() {
@@ -76,6 +77,10 @@ public final class CircuitBreakerStatement extends AbstractUnsupportedOperationS
     
     @Override
     public void clearWarnings() {
+    }
+    
+    @Override
+    public void setCursorName(final String name) {
     }
     
     @Override
@@ -210,6 +215,15 @@ public final class CircuitBreakerStatement extends AbstractUnsupportedOperationS
     
     @Override
     public boolean isPoolable() {
+        return false;
+    }
+    
+    @Override
+    public void closeOnCompletion() {
+    }
+    
+    @Override
+    public boolean isCloseOnCompletion() {
         return false;
     }
 }

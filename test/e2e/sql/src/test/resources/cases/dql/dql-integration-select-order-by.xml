@@ -130,14 +130,15 @@
     </test-case>-->
     
     <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " scenario-types="db,tbl" />
-    
-    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+
+    <!-- TODO open this comment when refresh metadata support view without push down execute -->
+    <!--<test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />

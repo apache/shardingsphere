@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.di
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.database.ExpectedDatabase;
@@ -38,7 +38,7 @@ public final class DatabaseAssert {
      * @param expected expected database test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedDatabase expected) {
-        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "schema");
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "database");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

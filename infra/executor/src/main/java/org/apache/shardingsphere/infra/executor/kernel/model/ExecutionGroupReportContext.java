@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
+import java.util.Optional;
+
 /**
  * Execution group report context.
  */
@@ -34,4 +36,17 @@ public final class ExecutionGroupReportContext {
     private final String databaseName;
     
     private final Grantee grantee;
+    
+    public ExecutionGroupReportContext(final String processId, final String databaseName) {
+        this(processId, databaseName, null);
+    }
+    
+    /**
+     * Get grantee.
+     *
+     * @return grantee
+     */
+    public Optional<Grantee> getGrantee() {
+        return Optional.ofNullable(grantee);
+    }
 }

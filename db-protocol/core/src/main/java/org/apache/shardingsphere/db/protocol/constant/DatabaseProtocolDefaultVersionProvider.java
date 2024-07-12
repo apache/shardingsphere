@@ -28,7 +28,7 @@ public interface DatabaseProtocolDefaultVersionProvider extends DatabaseTypedSPI
     
     /**
      * Provide default database version.
-     * 
+     *
      * @return default database version
      */
     String provide();

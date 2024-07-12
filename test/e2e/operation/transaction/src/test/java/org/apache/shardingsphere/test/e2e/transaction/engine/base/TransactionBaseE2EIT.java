@@ -109,11 +109,11 @@ public abstract class TransactionBaseE2EIT {
     private void callTestCases(final TransactionTestParameter testParam, final TransactionContainerComposer containerComposer) throws SQLException {
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             for (TransactionType each : testParam.getTransactionTypes()) {
-                if (TransactionType.LOCAL.equals(each)) {
+                if (TransactionType.LOCAL == each) {
                     log.info("Call transaction IT {}, alter transaction rule {}.", testParam, "");
                     alterTransactionRule(each, "", containerComposer);
                     doCallTestCases(testParam, each, "", containerComposer);
-                } else if (TransactionType.XA.equals(each)) {
+                } else if (TransactionType.XA == each) {
                     for (String eachProvider : testParam.getProviders()) {
                         log.info("Call transaction IT {}, alter transaction rule {}.", testParam, eachProvider);
                         alterTransactionRule(each, eachProvider, containerComposer);
@@ -135,9 +135,9 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private void alterTransactionRule(final TransactionType transactionType, final String providerType, final TransactionContainerComposer containerComposer) throws SQLException {
-        if (Objects.equals(transactionType, TransactionType.LOCAL)) {
+        if (transactionType == TransactionType.LOCAL) {
             alterLocalTransactionRule(containerComposer);
-        } else if (Objects.equals(transactionType, TransactionType.XA)) {
+        } else if (transactionType == TransactionType.XA) {
             alterXaTransactionRule(providerType, containerComposer);
         }
     }
@@ -179,8 +179,8 @@ public abstract class TransactionBaseE2EIT {
     
     /**
      * Create account table.
-     * 
-     * @param connection connection 
+     *
+     * @param connection connection
      * @throws SQLException SQL exception
      */
     public void createAccountTable(final Connection connection) throws SQLException {
@@ -190,7 +190,7 @@ public abstract class TransactionBaseE2EIT {
     /**
      * Drop account table.
      *
-     * @param connection connection 
+     * @param connection connection
      * @throws SQLException SQL exception
      */
     public void dropAccountTable(final Connection connection) throws SQLException {
@@ -286,7 +286,7 @@ public abstract class TransactionBaseE2EIT {
      * Create the account table rule with one data source.
      *
      * @param connection connection
-     * @param containerComposer container composer 
+     * @param containerComposer container composer
      * @throws SQLException SQL exception
      */
     public void createOriginalAccountTableRule(final Connection connection, final TransactionContainerComposer containerComposer) throws SQLException {
@@ -415,11 +415,11 @@ public abstract class TransactionBaseE2EIT {
         
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final TransactionType transactionType, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
-            if (TransactionType.LOCAL.equals(transactionType)) {
+            if (TransactionType.LOCAL == transactionType) {
                 setTestParameters(testParams, registry, databaseVersion, Collections.singletonList(transactionType), Collections.singletonList(""), scenario, caseClass);
                 return;
             }
-            if (TransactionType.XA.equals(transactionType)) {
+            if (TransactionType.XA == transactionType) {
                 for (String each : ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders()) {
                     setTestParameters(testParams, registry, databaseVersion, Collections.singletonList(transactionType), Collections.singletonList(each), scenario, caseClass);
                 }
@@ -429,7 +429,7 @@ public abstract class TransactionBaseE2EIT {
         private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
                                        final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
             String key = getUniqueKey(registry.getDbType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
-            testParams.putIfAbsent(key, new TransactionTestParameter(getDatabaseType(registry.getDbType()), registry.getRunningAdaptor(), transactionTypes, providers,
+            testParams.putIfAbsent(key, new TransactionTestParameter(getDatabaseType(registry.getDbType()), registry.getRunningAdaptor(), ENV.getPortBindings(), transactionTypes, providers,
                     getStorageContainerImageName(registry.getDbType(), databaseVersion), scenario, new LinkedList<>()));
             testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
         }

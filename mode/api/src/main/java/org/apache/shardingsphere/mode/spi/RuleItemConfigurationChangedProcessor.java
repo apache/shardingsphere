@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.spi;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -35,7 +35,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     
     /**
      * Swap rule item configuration.
-     * 
+     *
      * @param event alter rule item event
      * @param yamlContent YAML content
      * @return rule item configuration
@@ -44,7 +44,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     
     /**
      * Find rule configuration.
-     * 
+     *
      * @param database database
      * @return found rule configuration
      */
@@ -52,7 +52,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     
     /**
      * Change rule item configuration.
-     * 
+     *
      * @param event alter rule item event
      * @param currentRuleConfig current rule configuration
      * @param toBeChangedItemConfig to be changed item configuration
@@ -61,7 +61,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     
     /**
      * Drop rule item configuration.
-     * 
+     *
      * @param event drop rule item event
      * @param currentRuleConfig current rule configuration
      */

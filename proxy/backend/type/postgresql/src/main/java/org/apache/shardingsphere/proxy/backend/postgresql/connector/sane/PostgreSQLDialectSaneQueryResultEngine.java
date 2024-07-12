@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.postgresql.connector.sane;
 
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Optional;

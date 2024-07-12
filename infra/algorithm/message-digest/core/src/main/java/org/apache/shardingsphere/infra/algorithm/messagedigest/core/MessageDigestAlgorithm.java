@@ -26,7 +26,7 @@ public interface MessageDigestAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Digest.
-     * 
+     *
      * @param plainValue plain value
      * @return digest value
      */

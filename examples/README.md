@@ -6,7 +6,7 @@ Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shar
 
 **Notices**
 
-- *The `shardingsphere-jdbc-example-generator` module is a brand-new sample experience module. *
+- *The `shardingsphere-jdbc-example-generator` module is a brand-new sample experience module.*
 
 - *Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise, readwrite-splitting example will query empty data from the replica.*
 
@@ -15,7 +15,7 @@ Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shar
 Please make sure some dependencies from [Apache ShardingSphere](https://github.com/apache/shardingsphere) has been installed since examples depend on that.
 if you are a newbie for Apache ShardingSphere, you could prepare the dependencies as following: 
 
-1. download and install [Apache ShardingSphere](https://github.com/apache/shardingsphere):
+download and install [Apache ShardingSphere](https://github.com/apache/shardingsphere):
 
 ```bash
 ## download source code

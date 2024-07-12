@@ -30,11 +30,10 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,8 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MultiplexPipelineChannelTest {
     
     private static final int CHANNEL_NUMBER = 2;
-    
-    private final Random random = new SecureRandom();
     
     @Test
     void assertAckCallbackResultSortable() {
@@ -64,7 +61,7 @@ class MultiplexPipelineChannelTest {
     private Record[] mockRecords() {
         Record[] result = new Record[100];
         for (int i = 1; i <= result.length; i++) {
-            result[i - 1] = random.nextBoolean() ? new DataRecord(PipelineSQLOperationType.INSERT, "t1", new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
+            result[i - 1] = ThreadLocalRandom.current().nextBoolean() ? new DataRecord(PipelineSQLOperationType.INSERT, "t1", new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
         }
         return result;
     }
@@ -84,7 +81,7 @@ class MultiplexPipelineChannelTest {
         MultiplexPipelineChannel channel = new MultiplexPipelineChannel(CHANNEL_NUMBER, TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY"), 10000, ackCallback);
         fetchWithMultiThreads(channel, countDownLatch);
         channel.push(Arrays.asList(records));
-        boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
+        boolean awaitResult = countDownLatch.await(10L, TimeUnit.SECONDS);
         assertTrue(awaitResult, "await failed");
     }
     

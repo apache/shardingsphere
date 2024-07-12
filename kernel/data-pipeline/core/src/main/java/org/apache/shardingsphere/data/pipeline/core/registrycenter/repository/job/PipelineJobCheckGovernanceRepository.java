@@ -50,7 +50,7 @@ public final class PipelineJobCheckGovernanceRepository {
      * @return check job id
      */
     public Optional<String> findLatestCheckJobId(final String parentJobId) {
-        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
+        return Optional.ofNullable(repository.query(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
     }
     
     /**
@@ -91,7 +91,7 @@ public final class PipelineJobCheckGovernanceRepository {
      */
     @SuppressWarnings("unchecked")
     public Map<String, TableDataConsistencyCheckResult> getCheckJobResult(final String parentJobId, final String checkJobId) {
-        String yamlCheckResultMapText = repository.getDirectly(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId));
+        String yamlCheckResultMapText = repository.query(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId));
         if (Strings.isNullOrEmpty(yamlCheckResultMapText)) {
             return Collections.emptyMap();
         }
@@ -125,7 +125,7 @@ public final class PipelineJobCheckGovernanceRepository {
         if (null == checkResultMap) {
             return;
         }
-        Map<String, String> yamlCheckResultMap = new LinkedHashMap<>();
+        Map<String, String> yamlCheckResultMap = new LinkedHashMap<>(checkResultMap.size(), 1F);
         for (Entry<String, TableDataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
             YamlTableDataConsistencyCheckResult yamlCheckResult = new YamlTableDataConsistencyCheckResultSwapper().swapToYamlConfiguration(entry.getValue());
             yamlCheckResultMap.put(entry.getKey(), YamlEngine.marshal(yamlCheckResult));

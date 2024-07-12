@@ -30,7 +30,7 @@ public interface OptimizerSQLDialectBuilder extends DatabaseTypedSPI {
     
     /**
      * Build optimizer SQL dialect properties.
-     * 
+     *
      * @return built properties
      */
     Properties build();

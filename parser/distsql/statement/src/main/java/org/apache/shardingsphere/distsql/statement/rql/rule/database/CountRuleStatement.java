@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 
 /**
  * Count rule statement.

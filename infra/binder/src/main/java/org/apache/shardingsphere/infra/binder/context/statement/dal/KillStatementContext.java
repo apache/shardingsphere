@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
 
 /**
  * Kill process statement.
  */
 public final class KillStatementContext extends CommonSQLStatementContext {
     
-    public KillStatementContext(final MySQLKillStatement sqlStatement) {
+    public KillStatementContext(final KillStatement sqlStatement) {
         super(sqlStatement);
     }
     
     @Override
-    public MySQLKillStatement getSqlStatement() {
-        return (MySQLKillStatement) super.getSqlStatement();
+    public KillStatement getSqlStatement() {
+        return (KillStatement) super.getSqlStatement();
     }
 }

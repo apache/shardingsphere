@@ -54,7 +54,7 @@ public final class ProxyJDBCExecutor {
     
     /**
      * Execute.
-     * 
+     *
      * @param queryContext query context
      * @param executionGroupContext execution group context
      * @param isReturnGeneratedKeys is return generated keys
@@ -66,7 +66,7 @@ public final class ProxyJDBCExecutor {
                                        final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         try {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
+            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName());
             DatabaseType protocolType = database.getProtocolType();
             processEngine.executeSQL(executionGroupContext, queryContext);
             SQLStatementContext context = queryContext.getSqlStatementContext();

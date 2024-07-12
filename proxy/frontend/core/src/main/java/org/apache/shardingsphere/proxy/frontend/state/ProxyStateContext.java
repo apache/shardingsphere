@@ -25,7 +25,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyState;
-import org.apache.shardingsphere.proxy.frontend.state.impl.LockProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 
 import java.util.Map;
@@ -37,17 +36,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyStateContext {
     
-    private static final Map<InstanceState, ProxyState> STATES = new ConcurrentHashMap<>(3, 1F);
+    private static final Map<InstanceState, ProxyState> STATES = new ConcurrentHashMap<>(2, 1F);
     
     static {
         STATES.put(InstanceState.OK, new OKProxyState());
-        STATES.put(InstanceState.LOCK, new LockProxyState());
         STATES.put(InstanceState.CIRCUIT_BREAK, new CircuitBreakProxyState());
     }
     
     /**
      * Execute command.
-     * 
+     *
      * @param context channel handler context
      * @param message message
      * @param databaseProtocolFrontendEngine database protocol frontend engine

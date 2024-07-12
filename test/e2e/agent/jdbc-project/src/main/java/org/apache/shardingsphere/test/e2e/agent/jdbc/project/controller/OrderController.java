@@ -50,10 +50,10 @@ public final class OrderController {
      * Insert order.
      */
     public void insert() {
-        long index = 0;
-        while (index++ <= 100) {
+        long index = 0L;
+        while (index++ <= 100L) {
             OrderEntity order = new OrderEntity(index, index, "OK");
-            orderService.insert(order, 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED, 0 == index % 5);
+            orderService.insert(order, 0L == (index & 1L) ? StatementType.STATEMENT : StatementType.PREPARED, 0L == index % 5L);
         }
     }
     
@@ -61,10 +61,10 @@ public final class OrderController {
      * Create error request.
      */
     public void createErrorRequest() {
-        long index = 0;
-        while (index++ <= 10) {
+        long index = 0L;
+        while (index++ <= 10L) {
             OrderEntity order = new OrderEntity(index, index, "Fail");
-            orderService.insert(order, 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED, false);
+            orderService.insert(order, 0L == (index & 1L) ? StatementType.STATEMENT : StatementType.PREPARED, false);
         }
     }
     

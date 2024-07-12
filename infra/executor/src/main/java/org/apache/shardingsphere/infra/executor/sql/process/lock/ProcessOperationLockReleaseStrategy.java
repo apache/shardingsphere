@@ -25,7 +25,7 @@ public interface ProcessOperationLockReleaseStrategy {
     
     /**
      * Judge lock is ready to release.
-     * 
+     *
      * @return lock is ready to release or not
      */
     boolean isReadyToRelease();

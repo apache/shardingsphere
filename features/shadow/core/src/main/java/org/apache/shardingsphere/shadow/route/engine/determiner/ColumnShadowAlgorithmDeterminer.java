@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shadow.route.engine.determiner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.column.PreciseColumnShadowValue;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 

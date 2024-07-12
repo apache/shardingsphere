@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
@@ -37,21 +38,22 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Se
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StartTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TransactionModeItemContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLLockStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackPreparedStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCheckpointStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLLockStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackPreparedStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -192,5 +194,10 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitPrepareTransaction(final PrepareTransactionContext ctx) {
         return new PostgreSQLPrepareTransactionStatement();
+    }
+    
+    @Override
+    public ASTNode visitCheckpoint(final CheckpointContext ctx) {
+        return new PostgreSQLCheckpointStatement();
     }
 }

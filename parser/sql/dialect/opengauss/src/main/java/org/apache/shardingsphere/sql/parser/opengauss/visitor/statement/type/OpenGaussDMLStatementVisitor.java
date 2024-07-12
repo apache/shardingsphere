@@ -20,18 +20,16 @@ package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CallContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CopyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ReturningClauseContext;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCheckpointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCopyStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussDoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCallStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDoStatement;
 
 /**
  * DML statement visitor for openGauss.
@@ -55,11 +53,6 @@ public final class OpenGaussDMLStatementVisitor extends OpenGaussStatementVisito
             result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
         }
         return result;
-    }
-    
-    @Override
-    public ASTNode visitCheckpoint(final CheckpointContext ctx) {
-        return new OpenGaussCheckpointStatement();
     }
     
     @Override

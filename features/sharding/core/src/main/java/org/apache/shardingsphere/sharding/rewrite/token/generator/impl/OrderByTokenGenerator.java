@@ -23,11 +23,10 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.OrderByToken;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 /**
  * Order by token generator.
@@ -61,8 +60,8 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
     private int getGenerateOrderByStartIndex(final SelectStatementContext selectStatementContext) {
         SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
         int stopIndex;
-        if (SelectStatementHandler.getWindowSegment(sqlStatement).isPresent()) {
-            stopIndex = SelectStatementHandler.getWindowSegment(sqlStatement).get().getStopIndex();
+        if (sqlStatement.getWindow().isPresent()) {
+            stopIndex = sqlStatement.getWindow().get().getStopIndex();
         } else if (sqlStatement.getHaving().isPresent()) {
             stopIndex = sqlStatement.getHaving().get().getStopIndex();
         } else if (sqlStatement.getGroupBy().isPresent()) {
@@ -70,7 +69,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
         } else if (sqlStatement.getWhere().isPresent()) {
             stopIndex = sqlStatement.getWhere().get().getStopIndex();
         } else {
-            stopIndex = selectStatementContext.getAllTables().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
+            stopIndex = selectStatementContext.getTablesContext().getSimpleTables().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
         }
         return stopIndex + 1;
     }

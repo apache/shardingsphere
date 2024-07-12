@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.provider;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +61,7 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
     @Test
     void assertGetType() {
         EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
-        assertThat(encryptRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration"));
+        assertThat(encryptRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration"));
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {

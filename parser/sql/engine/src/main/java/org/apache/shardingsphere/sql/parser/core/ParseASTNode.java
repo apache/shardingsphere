@@ -38,7 +38,7 @@ public final class ParseASTNode implements ASTNode {
     
     /**
      * Get root node.
-     * 
+     *
      * @return root node
      */
     public ParseTree getRootNode() {
@@ -47,7 +47,7 @@ public final class ParseASTNode implements ASTNode {
     
     /**
      * Get hidden tokens.
-     * 
+     *
      * @return hidden tokens
      */
     public Collection<Token> getHiddenTokens() {

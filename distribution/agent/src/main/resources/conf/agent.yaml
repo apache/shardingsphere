@@ -20,7 +20,7 @@ plugins:
 #    File:
 #  metrics:
 #    Prometheus:
-#      host:  "localhost"
+#      host: "localhost"
 #      port: 9090
 #      props:
 #        jvm-information-collector-enabled: "true"

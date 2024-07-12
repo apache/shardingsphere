@@ -47,7 +47,7 @@ class JDBCExecutorTest {
         ExecutionGroup<JDBCExecutionUnit> group = new ExecutionGroup<>(Collections.singletonList(mock(JDBCExecutionUnit.class)));
         ExecutionGroupContext<JDBCExecutionUnit> context = new ExecutionGroupContext<>(Collections.singletonList(group), mock(ExecutionGroupReportContext.class));
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList("test"));
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext());
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext(Collections::emptySet));
         List<?> actual1 = jdbcExecutor.execute(context, null);
         assertThat(actual1, is(Collections.singletonList("test")));
         List<?> actual2 = jdbcExecutor.execute(context, null, null);
@@ -60,7 +60,7 @@ class JDBCExecutorTest {
             ExecutorEngine executorEngine = mock(ExecutorEngine.class);
             ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
             when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), reportContext), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
-            JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext());
+            JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext(Collections::emptySet));
             jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList(), reportContext), null);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("TestSQLException"));
@@ -72,7 +72,7 @@ class JDBCExecutorTest {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
         when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), reportContext), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext());
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext(Collections::emptySet));
         SQLExecutorExceptionHandler.setExceptionThrown(false);
         List<?> actual = jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList(), reportContext), null);
         assertThat(actual, is(Collections.emptyList()));

@@ -56,7 +56,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         init(testParam, containerComposer);
         if (null != testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds()) {
-            Awaitility.await().atMost(Duration.ofMinutes(5)).pollDelay(testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds(), TimeUnit.SECONDS).until(() -> true);
+            Awaitility.await().atMost(Duration.ofMinutes(5L)).pollDelay(testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds(), TimeUnit.SECONDS).until(() -> true);
         }
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteQueryWithXmlExpected(testParam, containerComposer);
@@ -130,7 +130,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         init(testParam, containerComposer);
         if (null != testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds()) {
-            Awaitility.await().atMost(Duration.ofMinutes(5)).pollDelay(testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds(), TimeUnit.SECONDS).until(() -> true);
+            Awaitility.await().atMost(Duration.ofMinutes(5L)).pollDelay(testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds(), TimeUnit.SECONDS).until(() -> true);
         }
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteWithXmlExpected(testParam, containerComposer);

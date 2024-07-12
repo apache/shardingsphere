@@ -36,7 +36,7 @@ public final class ReflectionUtils {
     
     /**
      * Get field value.
-     * 
+     *
      * @param target target
      * @param fieldName field name
      * @param <T> type of field value
@@ -97,7 +97,7 @@ public final class ReflectionUtils {
     
     /**
      * Set static field value.
-     * 
+     *
      * @param target target
      * @param fieldName field name
      * @param value value

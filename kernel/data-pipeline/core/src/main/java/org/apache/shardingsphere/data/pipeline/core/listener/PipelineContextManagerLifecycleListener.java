@@ -34,7 +34,6 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationA
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
@@ -48,17 +47,18 @@ import java.util.stream.Collectors;
 public final class PipelineContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
-    public void onInitialized(final String databaseName, final ContextManager contextManager) {
-        ModeConfiguration modeConfig = contextManager.getInstanceContext().getModeConfiguration();
-        if (!contextManager.getInstanceContext().isCluster()) {
+    public void onInitialized(final ContextManager contextManager) {
+        ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
+        if (!contextManager.getComputeNodeInstanceContext().isCluster()) {
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }
+        String preSelectedDatabaseName = contextManager.getPreSelectedDatabaseName();
         // TODO When StandalonePersistRepository is equivalent with ClusterPersistRepository, use STANDALONE mode in pipeline IT and remove this check.
-        if (DefaultDatabase.LOGIC_NAME.equals(databaseName)) {
+        if (DefaultDatabase.LOGIC_NAME.equals(preSelectedDatabaseName)) {
             return;
         }
-        PipelineContextKey contextKey = new PipelineContextKey(databaseName, contextManager.getInstanceContext().getInstance().getMetaData().getType());
+        PipelineContextKey contextKey = new PipelineContextKey(preSelectedDatabaseName, contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType());
         PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
         PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
@@ -103,7 +103,8 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
     }
     
     @Override
-    public void onDestroyed(final String databaseName, final InstanceType instanceType) {
-        PipelineContextManager.removeContext(new PipelineContextKey(databaseName, instanceType));
+    public void onDestroyed(final ContextManager contextManager) {
+        PipelineContextManager.removeContext(
+                new PipelineContextKey(contextManager.getPreSelectedDatabaseName(), contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()));
     }
 }

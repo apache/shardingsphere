@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatem
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -35,9 +37,10 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLEmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLEmptyStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -49,6 +52,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -68,11 +72,16 @@ class PostgreSQLComBindExecutorTest {
     @Mock
     private PostgreSQLComBindPacket bindPacket;
     
-    @Mock(answer = Answers.CALLS_REAL_METHODS)
+    @Mock
     private ConnectionSession connectionSession;
     
     @InjectMocks
     private PostgreSQLComBindExecutor executor;
+    
+    @BeforeEach
+    void setup() {
+        connectionSession.setGrantee(mock(Grantee.class));
+    }
     
     @Test
     void assertExecuteBind() throws SQLException {
@@ -82,7 +91,9 @@ class PostgreSQLComBindExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        when(connectionSession.getDefaultDatabaseName()).thenReturn(databaseName);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn(databaseName);
+        ConnectionContext connectionContext = mockConnectionContext();
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         String statementId = "S_1";
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
@@ -109,7 +120,9 @@ class PostgreSQLComBindExecutorTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        when(connectionSession.getDefaultDatabaseName()).thenReturn(databaseName);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn(databaseName);
+        ConnectionContext connectionContext = mockConnectionContext();
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         String statementId = "S_1";
         List<Object> parameters = Arrays.asList(1, "updated_name");
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("update test set name = $2 where id = $1",
@@ -124,7 +137,14 @@ class PostgreSQLComBindExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
         when(contextManager.getDatabase(databaseName)).thenReturn(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.execute();
-        assertThat(connectionSession.getQueryContext().getParameters(), is(Arrays.asList(parameters.get(1), parameters.get(0))));
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
+    }
+    
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("postgres"));
+        return result;
     }
 }

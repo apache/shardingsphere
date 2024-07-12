@@ -62,7 +62,7 @@ public final class IntegrationTestCasesLoader {
     
     /**
      * Get integration test case contexts.
-     * 
+     *
      * @param sqlCommandType SQL command type
      * @return integration test case contexts
      */

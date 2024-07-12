@@ -83,8 +83,8 @@ class TransmissionJobItemProgressTest {
     
     @Test
     void assertGetProgressesCorrectly() {
-        Map<String, InventoryTaskProgress> progresses = new HashMap<>();
-        progresses.put("ds.order_item#0", new InventoryTaskProgress(new IntegerPrimaryKeyIngestPosition(1, 100)));
+        Map<String, InventoryTaskProgress> progresses = new HashMap<>(4, 1F);
+        progresses.put("ds.order_item#0", new InventoryTaskProgress(new IntegerPrimaryKeyIngestPosition(1L, 100L)));
         progresses.put("ds.order_item#1", new InventoryTaskProgress(new UnsupportedKeyIngestPosition()));
         progresses.put("ds.order#0", new InventoryTaskProgress(new IngestFinishedPosition()));
         progresses.put("ds.test_order#0", new InventoryTaskProgress(new StringPrimaryKeyIngestPosition("1", "100")));

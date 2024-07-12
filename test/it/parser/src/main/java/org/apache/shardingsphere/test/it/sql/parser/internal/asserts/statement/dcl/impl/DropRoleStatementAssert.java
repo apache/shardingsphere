@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DropRoleStatementTestCase;
 
@@ -31,7 +31,7 @@ public final class DropRoleStatementAssert {
     
     /**
      * Assert drop role statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual drop role statement
      * @param expected expected drop role statement test case

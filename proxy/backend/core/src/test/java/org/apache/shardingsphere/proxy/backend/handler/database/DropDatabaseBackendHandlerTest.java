@@ -29,12 +29,13 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DropDatabaseBackendHandlerTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @Mock
@@ -72,6 +73,7 @@ class DropDatabaseBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         when(ProxyContext.getInstance().databaseExists("bar_db")).thenReturn(true);
+        when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
     }
     
@@ -108,23 +110,23 @@ class DropDatabaseBackendHandlerTest {
     void assertExecuteDropWithoutCurrentDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession, times(0)).setCurrentDatabase(null);
+        verify(connectionSession, times(0)).setCurrentDatabaseName(null);
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropCurrentDatabaseWithMySQL() {
-        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession).setCurrentDatabase(null);
+        verify(connectionSession).setCurrentDatabaseName(null);
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropCurrentDatabaseWithPostgreSQL() {
-        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         assertThrows(UnsupportedOperationException.class, () -> handler.execute());
@@ -132,10 +134,10 @@ class DropDatabaseBackendHandlerTest {
     
     @Test
     void assertExecuteDropOtherDatabase() {
-        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(sqlStatement.getDatabaseName()).thenReturn("bar_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession, times(0)).setCurrentDatabase(null);
+        verify(connectionSession, times(0)).setCurrentDatabaseName(null);
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
 }

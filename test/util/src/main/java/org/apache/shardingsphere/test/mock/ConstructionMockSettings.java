@@ -34,7 +34,7 @@ public @interface ConstructionMockSettings {
     
     /**
      * Mock classes.
-     * 
+     *
      * @return mock classes
      */
     Class<?>[] value();

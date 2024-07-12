@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal.ExplainStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,15 +37,15 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     
     private final TablesContext tablesContext;
     
-    public ExplainStatementContext(final ExplainStatement sqlStatement) {
+    public ExplainStatementContext(final ExplainStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement), getDatabaseType());
+        tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement), getDatabaseType(), currentDatabaseName);
     }
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
-        ExplainStatementHandler.getSimpleTableSegment(sqlStatement).ifPresent(result::add);
-        SQLStatement explainableStatement = sqlStatement.getStatement().orElse(null);
+        sqlStatement.getSimpleTable().ifPresent(result::add);
+        SQLStatement explainableStatement = sqlStatement.getSqlStatement().orElse(null);
         TableExtractor extractor = new TableExtractor();
         // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
         extractor.extractTablesFromSQLStatement(explainableStatement);
@@ -57,10 +56,5 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     @Override
     public ExplainStatement getSqlStatement() {
         return (ExplainStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return extractTablesFromExplain(getSqlStatement());
     }
 }

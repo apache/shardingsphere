@@ -124,6 +124,7 @@ We found that in the `MEMORY_STRICTLY` mode, the operation would become I/O-inte
 
 ## ShardingSphere Benefits
 **1. Performance improvement**
+
 Through architecture rebuilding, it can effectively control the amount of single table data, and greatly reduce the slow SQL, down nearly 50%.
 
 **2. Save R&D resources and lower cost**

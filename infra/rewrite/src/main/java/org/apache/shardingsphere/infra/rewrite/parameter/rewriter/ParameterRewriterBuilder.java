@@ -26,7 +26,7 @@ public interface ParameterRewriterBuilder {
     
     /**
      * Get parameter rewriters.
-     * 
+     *
      * @return parameter rewriters
      */
     Collection<ParameterRewriter> getParameterRewriters();

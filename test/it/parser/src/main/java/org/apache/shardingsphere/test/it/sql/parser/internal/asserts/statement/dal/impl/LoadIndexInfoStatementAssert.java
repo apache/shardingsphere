@@ -19,15 +19,15 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLLoadIndexInfoStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.LoadTableIndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadIndexInfoStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedLoadTableIndex;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.LoadIndexInfoStatementTestCase;
 
@@ -47,7 +47,7 @@ public final class LoadIndexInfoStatementAssert {
      * @param actual actual load index info statement
      * @param expected expected load index info statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLLoadIndexInfoStatement actual, final LoadIndexInfoStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final LoadIndexInfoStatement actual, final LoadIndexInfoStatementTestCase expected) {
         assertThat("Load index info statement table index size assertion error: ", actual.getTableIndexes().size(), is(expected.getTableIndexes().size()));
         int count = 0;
         for (LoadTableIndexSegment each : actual.getTableIndexes()) {

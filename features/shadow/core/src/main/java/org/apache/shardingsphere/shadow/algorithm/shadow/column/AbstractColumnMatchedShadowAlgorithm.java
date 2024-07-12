@@ -21,9 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.column.PreciseColumnShadowValue;
 
 import java.util.Optional;
 import java.util.Properties;

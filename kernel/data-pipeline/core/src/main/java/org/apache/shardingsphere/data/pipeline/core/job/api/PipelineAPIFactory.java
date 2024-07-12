@@ -36,6 +36,7 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.Job
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.statistics.JobStatisticsAPIImpl;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -63,7 +64,7 @@ public final class PipelineAPIFactory {
             @Override
             protected PipelineGovernanceFacade initialize() {
                 ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
-                return new PipelineGovernanceFacade((ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository());
+                return new PipelineGovernanceFacade((ClusterPersistRepository) contextManager.getPersistServiceFacade().getMetaDataPersistService().getRepository());
             }
         }).get();
     }
@@ -146,11 +147,8 @@ public final class PipelineAPIFactory {
             ModeConfiguration modeConfig = pipelineContext.getModeConfig();
             String elasticJobNamespace = PipelineMetaDataNode.getElasticJobNamespace();
             String clusterType = modeConfig.getRepository().getType();
-            if ("ZooKeeper".equals(clusterType)) {
-                return registryCenterInitializer.createZookeeperRegistryCenter(modeConfig, elasticJobNamespace);
-            } else {
-                throw new IllegalArgumentException("Unsupported cluster type: " + clusterType);
-            }
+            ShardingSpherePreconditions.checkState("ZooKeeper".equals(clusterType), () -> new IllegalArgumentException("Unsupported cluster type: " + clusterType));
+            return registryCenterInitializer.createZookeeperRegistryCenter(modeConfig, elasticJobNamespace);
         }
         
         public static RegistryCenterHolder getInstance(final PipelineContextKey contextKey) {

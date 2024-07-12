@@ -19,12 +19,14 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -51,6 +53,9 @@ class LocalTransactionManagerTest {
     @Mock
     private TransactionStatus transactionStatus;
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ConnectionContext connectionContext;
+    
     @Mock
     private Connection connection;
     
@@ -58,6 +63,7 @@ class LocalTransactionManagerTest {
     
     @BeforeEach
     void setUp() {
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(databaseConnectionManager.getCachedConnections()).thenReturn(setCachedConnections());
@@ -82,7 +88,7 @@ class LocalTransactionManagerTest {
     @Test
     void assertCommit() throws SQLException {
         localTransactionManager.commit();
-        verify(transactionStatus).isExceptionOccur();
+        verify(connectionContext.getTransactionContext()).isExceptionOccur();
         verify(connection).commit();
     }
     

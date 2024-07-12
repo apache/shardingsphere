@@ -19,15 +19,15 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterLoginStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterLoginStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Alter login statement assert.
@@ -37,12 +37,12 @@ public final class AlterLoginStatementAssert {
     
     /**
      * Assert alter login statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual alter login statement
      * @param expected expected alter login statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerAlterLoginStatement actual, final AlterLoginStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterLoginStatement actual, final AlterLoginStatementTestCase expected) {
         if (null == expected.getLogin()) {
             assertNull(actual.getLoginSegment(), assertContext.getText("Actual login should not exist."));
         } else {

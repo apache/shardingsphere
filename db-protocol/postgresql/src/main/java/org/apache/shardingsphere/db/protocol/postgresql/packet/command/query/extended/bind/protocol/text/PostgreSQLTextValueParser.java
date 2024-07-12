@@ -26,7 +26,7 @@ public interface PostgreSQLTextValueParser<T> {
     
     /**
      * Parse text value to current type.
-     * 
+     *
      * @param value text value
      * @return parsed value
      */

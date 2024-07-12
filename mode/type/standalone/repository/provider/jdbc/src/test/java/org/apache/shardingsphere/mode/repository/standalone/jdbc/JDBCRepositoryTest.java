@@ -104,7 +104,7 @@ class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString("value")).thenReturn(value);
-        String actual = repository.getDirectly(key);
+        String actual = repository.query(key);
         verify(mockPreparedStatement).setString(1, key);
         assertThat(actual, is(value));
     }
@@ -114,7 +114,7 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
-        String actual = repository.getDirectly("key");
+        String actual = repository.query("key");
         assertThat(actual, is(""));
     }
     
@@ -147,7 +147,6 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getString("value")).thenReturn("oldValue");
         repository.persist(key, value);
         verify(mockPreparedStatement).setString(1, key);
         verify(mockPreparedStatementForPersist).setString(eq(1), anyString());
@@ -164,7 +163,7 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         repository.persist(key, value);
-        int depthOfDirectory = (int) key.chars().filter(ch -> ch == '/').count();
+        int depthOfDirectory = (int) key.chars().filter(each -> each == '/').count();
         int beginIndex = 0;
         String parentDirectory = "/";
         for (int i = 0; i < depthOfDirectory; i++) {
@@ -199,7 +198,6 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getString("value")).thenReturn("oldValue");
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatement);
         repository.persist(key, "value");
         verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
@@ -237,7 +235,7 @@ class JDBCRepositoryTest {
         String key = "key";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenReturn(mockPreparedStatement);
         repository.delete(key);
-        verify(mockPreparedStatement).setString(1, key);
+        verify(mockPreparedStatement).setString(1, key + "%");
         verify(mockPreparedStatement).executeUpdate();
     }
     

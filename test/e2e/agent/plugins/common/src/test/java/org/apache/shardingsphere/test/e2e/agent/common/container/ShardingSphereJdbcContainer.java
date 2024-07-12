@@ -57,7 +57,7 @@ public final class ShardingSphereJdbcContainer extends DockerITContainer {
     }
     
     private Map<String, String> createResourceMappingForProxy() {
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("/env/jdbc/conf/config.yaml", CONFIG_PATH_IN_CONTAINER + "conf/config.yaml");
         if (!Strings.isNullOrEmpty(plugin)) {
             result.put(String.format("/env/agent/conf/%s/agent.yaml", plugin), CONFIG_PATH_IN_CONTAINER + "agent/conf/agent.yaml");

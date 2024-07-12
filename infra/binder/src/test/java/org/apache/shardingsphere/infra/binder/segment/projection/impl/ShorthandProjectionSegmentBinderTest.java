@@ -19,25 +19,24 @@ package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -51,10 +50,10 @@ class ShorthandProjectionSegmentBinderTest {
     void assertBindWithOwner() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
-        tableBinderContexts.put("o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
+        Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
+                "o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
         ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, mock(TableSegment.class), tableBinderContexts);
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
@@ -64,13 +63,13 @@ class ShorthandProjectionSegmentBinderTest {
     
     @Test
     void assertBindWithoutOwnerForSimpleTableSegment() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
-        tableBinderContexts.put("o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
-        SimpleTableSegment boundedTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        boundedTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
-        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundedTableSegment, tableBinderContexts);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
+                "o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
+        SimpleTableSegment boundTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        boundTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundTableSegment, tableBinderContexts);
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
         assertThat(visibleColumn.getColumnLabel(), is("order_id"));
@@ -79,13 +78,13 @@ class ShorthandProjectionSegmentBinderTest {
     
     @Test
     void assertBindWithoutOwnerForSubqueryTableSegment() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
-        tableBinderContexts.put("o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
-        SubqueryTableSegment boundedTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, mock(MySQLSelectStatement.class), ""));
-        boundedTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
-        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundedTableSegment, tableBinderContexts);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
+                "o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
+        SubqueryTableSegment boundTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, mock(MySQLSelectStatement.class), ""));
+        boundTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundTableSegment, tableBinderContexts);
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
         assertThat(visibleColumn.getColumnLabel(), is("order_id"));
@@ -95,9 +94,9 @@ class ShorthandProjectionSegmentBinderTest {
     @Test
     void assertBindWithoutOwnerForJoinTableSegment() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        JoinTableSegment boundedTableSegment = new JoinTableSegment();
-        boundedTableSegment.getDerivedJoinTableProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
-        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, boundedTableSegment, Collections.emptyMap());
+        JoinTableSegment boundTableSegment = new JoinTableSegment();
+        boundTableSegment.getDerivedJoinTableProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, boundTableSegment, Collections.emptyMap());
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
         assertThat(visibleColumn.getColumnLabel(), is("order_id"));

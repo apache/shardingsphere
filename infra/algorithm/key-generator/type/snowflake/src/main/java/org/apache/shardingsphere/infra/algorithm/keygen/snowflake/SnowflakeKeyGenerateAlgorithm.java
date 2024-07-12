@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmExecute
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContextAware;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *     12 bits auto increment offset in one mills
  * </pre>
  */
-public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, InstanceContextAware {
+public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ComputeNodeInstanceContextAware {
     
     public static final long EPOCH;
     
@@ -60,7 +60,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final long WORKER_ID_BITS = 10L;
     
-    private static final long SEQUENCE_MASK = (1 << SEQUENCE_BITS) - 1L;
+    private static final long SEQUENCE_MASK = (1L << SEQUENCE_BITS) - 1L;
     
     private static final long WORKER_ID_LEFT_SHIFT_BITS = SEQUENCE_BITS;
     
@@ -75,7 +75,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @Setter
     private static TimeService timeService = new TimeService();
     
-    private final AtomicReference<InstanceContext> instanceContext = new AtomicReference<>();
+    private final AtomicReference<ComputeNodeInstanceContext> computeNodeInstanceContext = new AtomicReference<>();
     
     private final AtomicInteger sequenceOffset = new AtomicInteger(-1);
     
@@ -113,10 +113,10 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        this.instanceContext.set(instanceContext);
-        if (null != instanceContext) {
-            instanceContext.generateWorkerId(props);
+    public void setComputeNodeInstanceContext(final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        this.computeNodeInstanceContext.set(computeNodeInstanceContext);
+        if (null != computeNodeInstanceContext) {
+            computeNodeInstanceContext.generateWorkerId(props);
         }
     }
     
@@ -174,7 +174,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     private int getWorkerId() {
-        return null == instanceContext.get() ? DEFAULT_WORKER_ID : instanceContext.get().getWorkerId();
+        return null == computeNodeInstanceContext.get() ? DEFAULT_WORKER_ID : computeNodeInstanceContext.get().getWorkerId();
     }
     
     @Override

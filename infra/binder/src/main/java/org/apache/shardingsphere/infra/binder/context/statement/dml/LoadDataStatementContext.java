@@ -21,10 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
 
 /**
  * Load data statement context.
@@ -34,18 +31,13 @@ public final class LoadDataStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    public LoadDataStatementContext(final MySQLLoadDataStatement sqlStatement) {
+    public LoadDataStatementContext(final LoadDataStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
-    public MySQLLoadDataStatement getSqlStatement() {
-        return (MySQLLoadDataStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getSimpleTableSegments();
+    public LoadDataStatement getSqlStatement() {
+        return (LoadDataStatement) super.getSqlStatement();
     }
 }

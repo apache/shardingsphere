@@ -31,7 +31,7 @@ public interface DataSourcePoolActiveDetector extends TypedSPI {
     
     /**
      * Whether contains active connection.
-     * 
+     *
      * @param dataSource data source pool to be detected
      * @return contains active connection or not
      * @throws SQLException SQL exception

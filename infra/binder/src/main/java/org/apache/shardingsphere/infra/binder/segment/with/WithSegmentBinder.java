@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,23 +36,23 @@ import java.util.Map;
 public final class WithSegmentBinder {
     
     /**
-     * Bind with segment with metadata.
+     * Bind with segment.
      *
      * @param segment with segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param externalTableBinderContexts external table binder contexts
-     * @return bounded with segment
+     * @return bound with segment
      */
-    public static WithSegment bind(final WithSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+    public static WithSegment bind(final WithSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                    final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        Collection<CommonTableExpressionSegment> boundedCommonTableExpressions = new LinkedList<>();
+        Collection<CommonTableExpressionSegment> boundCommonTableExpressions = new LinkedList<>();
         for (CommonTableExpressionSegment each : segment.getCommonTableExpressions()) {
-            CommonTableExpressionSegment boundedCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, statementBinderContext, tableBinderContexts);
-            boundedCommonTableExpressions.add(boundedCommonTableExpression);
-            externalTableBinderContexts.put(each.getIdentifier().getValue(),
-                    new SimpleTableSegmentBinderContext(boundedCommonTableExpression.getSubquery().getSelect().getProjections().getProjections()));
+            CommonTableExpressionSegment boundCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, tableBinderContexts);
+            boundCommonTableExpressions.add(boundCommonTableExpression);
+            each.getAliasName().ifPresent(aliasName -> externalTableBinderContexts.put(aliasName,
+                    new SimpleTableSegmentBinderContext(boundCommonTableExpression.getSubquery().getSelect().getProjections().getProjections())));
         }
-        return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundedCommonTableExpressions);
+        return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundCommonTableExpressions);
     }
 }

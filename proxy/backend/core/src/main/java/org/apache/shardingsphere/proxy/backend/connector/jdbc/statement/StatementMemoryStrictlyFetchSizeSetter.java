@@ -31,7 +31,7 @@ public interface StatementMemoryStrictlyFetchSizeSetter extends DatabaseTypedSPI
     
     /**
      * Set fetch size.
-     * 
+     *
      * @param statement statement to be set
      * @throws SQLException SQL exception
      */

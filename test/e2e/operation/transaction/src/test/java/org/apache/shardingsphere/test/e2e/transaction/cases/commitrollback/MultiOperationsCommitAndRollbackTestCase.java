@@ -52,7 +52,7 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
         }
         try (Connection connection = getDataSource().getConnection()) {
             assertAccountRowCount(connection, 0);
-            assertAccountBalances(connection, 1, 2);
+            assertAccountBalances(connection);
         }
     }
     

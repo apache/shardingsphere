@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.wher
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Optional;
@@ -33,7 +33,7 @@ public final class WhereConverter {
     
     /**
      * Convert where segment to sql node.
-     * 
+     *
      * @param segment where segment
      * @return sql node
      */

@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLExplainStatement;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLExplainStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -47,11 +48,11 @@ class ExplainStatementContextTest {
     
     private void assertNewInstance(final ExplainStatement explainStatement) {
         SQLStatement statement = () -> 0;
-        when(explainStatement.getStatement()).thenReturn(Optional.of(statement));
-        ExplainStatementContext actual = new ExplainStatementContext(explainStatement);
+        when(explainStatement.getSqlStatement()).thenReturn(Optional.of(statement));
+        ExplainStatementContext actual = new ExplainStatementContext(explainStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(explainStatement));
-        assertThat(actual.getSqlStatement().getStatement().orElse(null), is(statement));
-        assertThat(actual.getAllTables(), is(Collections.emptyList()));
+        assertThat(actual.getSqlStatement().getSqlStatement().orElse(null), is(statement));
+        assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
     }
 }

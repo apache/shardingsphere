@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,7 +90,7 @@ public final class ProjectionsContext {
     
     /**
      * Judge is unqualified shorthand projection or not.
-     * 
+     *
      * @return is unqualified shorthand projection or not
      */
     public boolean isUnqualifiedShorthandProjection() {
@@ -103,7 +103,7 @@ public final class ProjectionsContext {
     
     /**
      * Find alias.
-     * 
+     *
      * @param projectionName projection name
      * @return projection alias
      */
@@ -129,7 +129,7 @@ public final class ProjectionsContext {
     
     /**
      * Find projection index.
-     * 
+     *
      * @param projectionName projection name
      * @return projection index
      */
@@ -146,7 +146,7 @@ public final class ProjectionsContext {
     
     /**
      * Get aggregation projections.
-     * 
+     *
      * @return aggregation projections
      */
     public List<AggregationProjection> getAggregationProjections() {
@@ -172,7 +172,7 @@ public final class ProjectionsContext {
     
     /**
      * Find column projection.
-     * 
+     *
      * @param columnIndex column index
      * @return found column projection
      */

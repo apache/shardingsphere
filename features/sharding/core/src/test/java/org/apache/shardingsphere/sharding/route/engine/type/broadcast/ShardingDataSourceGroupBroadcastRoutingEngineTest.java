@@ -50,7 +50,7 @@ class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     private ShardingRule shardingRule;
     
     private Map<String, ShardingTable> mockShardingTables(final List<List<String>> shards) {
-        Map<String, ShardingTable> result = new LinkedHashMap<>();
+        Map<String, ShardingTable> result = new LinkedHashMap<>(shards.size(), 1F);
         int index = 0;
         for (List<String> each : shards) {
             result.put("table_" + index++, mockShardingTable(each));

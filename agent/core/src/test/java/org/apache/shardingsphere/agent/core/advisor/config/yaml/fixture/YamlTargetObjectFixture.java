@@ -35,8 +35,10 @@ public final class YamlTargetObjectFixture {
      * Call instance method.
      *
      * @param value value
+     * @return value
      */
-    public void call(final String value) {
+    public static String call(final String value) {
+        return value;
     }
     
     /**

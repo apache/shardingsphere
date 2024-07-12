@@ -10,7 +10,7 @@ weight = 1
 
 SQL 是使用者与数据库交流的标准语言。 SQL 解析引擎负责将 SQL 字符串解析为抽象语法树，供 Apache ShardingSphere 理解并实现其增量功能。
 
-ShardingSphere 目前支持 MySQL, PostgreSQL, SQLServer, Oracle, openGauss 以及符合 SQL92 规范的 SQL 方言。 由于 SQL 语法的复杂性，目前仍然存在少量不支持的 SQL。
+ShardingSphere 目前支持 MySQL, PostgreSQL, SQLServer, Oracle, openGauss, ClickHouse, Doris, Hive, Presto 以及符合 SQL92 规范的 SQL 方言。 由于 SQL 语法的复杂性，目前仍然存在少量不支持的 SQL。
 
 - 数据库协议兼容
 

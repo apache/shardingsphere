@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core.internal;
 
-import org.apache.shardingsphere.infra.exception.core.internal.fixture.ShardingSphereInternalExceptionFixture;
+import org.apache.shardingsphere.infra.exception.core.internal.fixture.ShardingSphereFixtureInternalException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,23 +28,23 @@ class ShardingSphereInternalExceptionTest {
     
     @Test
     void assertGetMessageWithNoArgsConstructor() {
-        assertNull(new ShardingSphereInternalExceptionFixture().getMessage());
+        assertNull(new ShardingSphereFixtureInternalException().getMessage());
     }
     
     @Test
     void assertGetMessage() {
-        assertThat(new ShardingSphereInternalExceptionFixture("Test").getMessage(), is("Fixture error message: Test"));
+        assertThat(new ShardingSphereFixtureInternalException("Test").getMessage(), is("Fixture error message: Test"));
     }
     
     @Test
     void assertGetCause() {
         RuntimeException cause = new RuntimeException("Test");
-        assertThat(new ShardingSphereInternalExceptionFixture(cause).getCause(), is(cause));
+        assertThat(new ShardingSphereFixtureInternalException(cause).getCause(), is(cause));
     }
     
     @Test
     void assertGetCauseWithMessage() {
         RuntimeException cause = new RuntimeException("Test");
-        assertThat(new ShardingSphereInternalExceptionFixture("Test", cause).getCause(), is(cause));
+        assertThat(new ShardingSphereFixtureInternalException("Test", cause).getCause(), is(cause));
     }
 }

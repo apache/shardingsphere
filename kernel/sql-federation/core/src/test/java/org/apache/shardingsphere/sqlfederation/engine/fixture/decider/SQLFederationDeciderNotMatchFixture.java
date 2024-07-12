@@ -37,7 +37,7 @@ public final class SQLFederationDeciderNotMatchFixture implements SQLFederationD
     
     @Override
     public int getOrder() {
-        return 10;
+        return 11;
     }
     
     @Override

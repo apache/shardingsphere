@@ -105,8 +105,10 @@ public final class RepositoryTupleSwapperEngine {
             }
             return result;
         }
-        if (fieldValue instanceof Collection && !((Collection) fieldValue).isEmpty()) {
-            return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
+        if (fieldValue instanceof Collection) {
+            return ((Collection) fieldValue).isEmpty()
+                    ? Collections.emptyList()
+                    : Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
         }
         if (fieldValue instanceof String && !((String) fieldValue).isEmpty()) {
             return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
@@ -127,8 +129,7 @@ public final class RepositoryTupleSwapperEngine {
     }
     
     private String getTupleName(final Field field) {
-        RepositoryTupleField tupleField = field.getAnnotation(RepositoryTupleField.class);
-        return "".equals(tupleField.value()) ? CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()) : tupleField.value();
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
     }
     
     /**

@@ -19,15 +19,14 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.limit.LimitClauseAssert;
@@ -55,7 +54,7 @@ public final class DeleteStatementAssert {
     
     /**
      * Assert delete statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual delete statement
      * @param expected expected delete statement test case
@@ -70,7 +69,7 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<WithSegment> withSegment = DeleteStatementHandler.getWithSegment(actual);
+        Optional<WithSegment> withSegment = actual.getWithSegment();
         if (null == expected.getWithClause()) {
             assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
         } else {
@@ -99,7 +98,7 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertOutput(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<OutputSegment> outputSegment = DeleteStatementHandler.getOutputSegment(actual);
+        Optional<OutputSegment> outputSegment = actual.getOutputSegment();
         if (null == expected.getOutputClause()) {
             assertFalse(outputSegment.isPresent(), assertContext.getText("Actual output segment should not exist."));
         } else {
@@ -118,7 +117,7 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<OrderBySegment> orderBySegment = DeleteStatementHandler.getOrderBySegment(actual);
+        Optional<OrderBySegment> orderBySegment = actual.getOrderBy();
         if (null == expected.getOrderByClause()) {
             assertFalse(orderBySegment.isPresent(), assertContext.getText("Actual order by segment should not exist."));
         } else {
@@ -128,7 +127,7 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<LimitSegment> limitSegment = DeleteStatementHandler.getLimitSegment(actual);
+        Optional<LimitSegment> limitSegment = actual.getLimit();
         if (null == expected.getLimitClause()) {
             assertFalse(limitSegment.isPresent(), assertContext.getText("Actual limit segment should not exist."));
         } else {

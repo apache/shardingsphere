@@ -27,7 +27,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
@@ -43,19 +43,19 @@ class ShardingSphereDataSourceFactoryTest {
     
     @Test
     void assertCreateDataSourceWithDatabaseNameAndModeConfiguration() throws SQLException {
-        assertDataSource(ShardingSphereDataSourceFactory.createDataSource("test_db", new ModeConfiguration("Standalone", null), new HashMap<>(), null, null), "test_db");
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource("test_db", new ModeConfiguration("Standalone", null), Collections.emptyMap(), null, null), "test_db");
     }
     
     @Test
     void assertCreateDataSourceWithAllParametersForMultipleDataSourcesWithDefaultDatabaseName() throws SQLException {
         assertDataSource(ShardingSphereDataSourceFactory.createDataSource(
-                new ModeConfiguration("Standalone", null), new HashMap<>(), new LinkedList<>(), new Properties()), DefaultDatabase.LOGIC_NAME);
+                new ModeConfiguration("Standalone", null), Collections.emptyMap(), new LinkedList<>(), new Properties()), DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
     void assertCreateDataSourceWithAllParametersForMultipleDataSources() throws SQLException {
         assertDataSource(ShardingSphereDataSourceFactory.createDataSource(
-                "test_db", new ModeConfiguration("Standalone", null), new HashMap<>(), new LinkedList<>(), new Properties()), "test_db");
+                "test_db", new ModeConfiguration("Standalone", null), Collections.emptyMap(), new LinkedList<>(), new Properties()), "test_db");
     }
     
     @Test

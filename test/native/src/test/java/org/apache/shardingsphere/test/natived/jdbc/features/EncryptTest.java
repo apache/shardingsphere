@@ -55,15 +55,15 @@ class EncryptTest {
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
-        this.initEnvironment();
-        this.processSuccess();
-        this.cleanEnvironment();
+        initEnvironment();
+        processSuccess();
+        cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExistsInMySQL();
         orderItemRepository.createTableIfNotExistsInMySQL();
-        addressRepository.createTableIfNotExists();
+        addressRepository.createTableIfNotExistsInMySQL();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
         addressRepository.truncateTable();
@@ -72,11 +72,11 @@ class EncryptTest {
     private void processSuccess() throws SQLException {
         final Collection<Long> orderIds = insertData();
         assertThat(orderRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> new Order(i, i % 2, i, i, "INSERT_TEST")).collect(Collectors.toList())));
+                equalTo(IntStream.range(1, 11).mapToObj(each -> new Order(each, each % 2, each, each, "INSERT_TEST")).collect(Collectors.toList())));
         assertThat(orderItemRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> new OrderItem(i, i, i, "13800000001", "INSERT_TEST")).collect(Collectors.toList())));
+                equalTo(IntStream.range(1, 11).mapToObj(each -> new OrderItem(each, each, each, "13800000001", "INSERT_TEST")).collect(Collectors.toList())));
         assertThat(addressRepository.selectAll(),
-                equalTo(LongStream.range(1, 11).mapToObj(i -> new Address(i, "address_test_" + i)).collect(Collectors.toList())));
+                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
         deleteData(orderIds);
         assertThat(orderRepository.selectAll(), equalTo(new ArrayList<>()));
         assertThat(orderItemRepository.selectAll(), equalTo(new ArrayList<>()));
@@ -106,7 +106,7 @@ class EncryptTest {
     }
     
     private void deleteData(final Collection<Long> orderIds) throws SQLException {
-        long count = 1;
+        long count = 1L;
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);

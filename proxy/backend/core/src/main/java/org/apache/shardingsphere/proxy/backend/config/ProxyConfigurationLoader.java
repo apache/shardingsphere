@@ -58,7 +58,7 @@ public final class ProxyConfigurationLoader {
     // TODO remove COMPATIBLE_GLOBAL_CONFIG_FILE in next major version
     /**
      * to be removed.
-     * 
+     *
      * @deprecated to be removed
      */
     @Deprecated
@@ -122,9 +122,6 @@ public final class ProxyConfigurationLoader {
         if (null != serverConfig.getSqlTranslator()) {
             serverConfig.getRules().add(serverConfig.getSqlTranslator());
         }
-        if (null != serverConfig.getTraffic()) {
-            serverConfig.getRules().add(serverConfig.getTraffic());
-        }
         if (null != serverConfig.getLogging()) {
             serverConfig.getRules().add(serverConfig.getLogging());
         }
@@ -135,9 +132,10 @@ public final class ProxyConfigurationLoader {
     }
     
     private static Collection<YamlProxyDatabaseConfiguration> loadDatabaseConfigurations(final File configPath) throws IOException {
-        Collection<String> loadedDatabaseNames = new HashSet<>();
+        File[] ruleConfigFiles = findRuleConfigurationFiles(configPath);
+        Collection<String> loadedDatabaseNames = new HashSet<>(ruleConfigFiles.length);
         Collection<YamlProxyDatabaseConfiguration> result = new LinkedList<>();
-        for (File each : findRuleConfigurationFiles(configPath)) {
+        for (File each : ruleConfigFiles) {
             loadDatabaseConfiguration(each).ifPresent(optional -> {
                 Preconditions.checkState(loadedDatabaseNames.add(optional.getDatabaseName()), "Database name `%s` must unique at all database configurations.", optional.getDatabaseName());
                 result.add(optional);
@@ -162,7 +160,7 @@ public final class ProxyConfigurationLoader {
         }
         Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigs.stream()
                 .collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
-        Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfig = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1).findFirst();
+        Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfig = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1L).findFirst();
         if (duplicateRuleConfig.isPresent()) {
             throw new IllegalStateException(String.format("Duplicate rule tag `!%s` in file `%s`", getDuplicateRuleTagName(duplicateRuleConfig.get().getKey()), yamlFile.getName()));
         }

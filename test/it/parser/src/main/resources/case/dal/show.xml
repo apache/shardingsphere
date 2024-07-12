@@ -23,7 +23,7 @@
 
     <show-index sql-case-id="show_index_with_indexes_with_table_and_database">
         <table name="t_order" start-index="18" stop-index="24" />
-        <schema name="sharding_db" start-index="26" stop-index="41" />
+        <database name="sharding_db" start-index="26" stop-index="41" />
     </show-index>
 
     <show-index sql-case-id="show_index_with_keys_with_database_and_table">
@@ -34,12 +34,12 @@
 
     <show-index sql-case-id="show_index_with_table_back_quotes">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26" />
-        <schema name="sharding_db" start-index="28" stop-index="43" />
+        <database name="sharding_db" start-index="28" stop-index="43" />
     </show-index>
 
     <show-index sql-case-id="show_index_with_database_back_quotes">
         <table name="t_order" start-index="18" stop-index="24" />
-        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="26" stop-index="43" />
+        <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="26" stop-index="43" />
     </show-index>
 
     <show-index sql-case-id="show_index_with_back_quotes">
@@ -60,7 +60,7 @@
 
     <show-columns sql-case-id="show_columns_with_schema">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26" />
-        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="45" />
+        <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="45" />
     </show-columns>
 
     <show-columns sql-case-id="show_columns_with_like_pattern">
@@ -102,7 +102,7 @@
 
     <show-columns sql-case-id="show_columns_by_fields_with_schema">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="25" />
-        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="32" stop-index="44" />
+        <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="32" stop-index="44" />
     </show-columns>
 
     <show-columns sql-case-id="show_columns_by_fields_with_like_pattern">
@@ -306,19 +306,19 @@
 
     <show-open-tables sql-case-id="show_open_tables_from_schema">
         <from start-index="17" stop-index="34">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="22" stop-index="34" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="22" stop-index="34" />
         </from>
     </show-open-tables>
 
     <show-open-tables sql-case-id="show_open_tables_in_schema">
         <from start-index="17" stop-index="32">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="20" stop-index="32" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="20" stop-index="32" />
         </from>
     </show-open-tables>
 
     <show-open-tables sql-case-id="show_open_tables_with_like_pattern">
         <from start-index="17" stop-index="34">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="22" stop-index="34" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="22" stop-index="34" />
         </from>
         <filter start-index="36" stop-index="51">
             <like pattern="t_order_%" start-delimiter="'" end-delimiter="'" start-index="36" stop-index="51" />
@@ -327,7 +327,7 @@
 
     <show-open-tables sql-case-id="show_open_tables_with_where_expr" parameters="'t_order'">
         <from start-index="17" stop-index="34">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="22" stop-index="34" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="22" stop-index="34" />
         </from>
         <filter start-index="36" stop-index="52" literal-start-index="36" literal-stop-index="60">
             <where start-index="36" stop-index="52" literal-start-index="36" literal-stop-index="60">
@@ -349,7 +349,7 @@
 
     <show-open-tables sql-case-id="show_open_tables_with_where_expr_no_parameter">
         <from start-index="17" stop-index="34">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="22" stop-index="34" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="22" stop-index="34" />
         </from>
         <filter start-index="36" stop-index="60">
             <where start-index="36" stop-index="60">
@@ -372,13 +372,13 @@
 
     <show-triggers sql-case-id="show_triggers_from_schema">
         <from start-index="14" stop-index="31">
-            <schema name="sharding_db" start-index="19" stop-index="31" start-delimiter="`" end-delimiter="`" />
+            <database name="sharding_db" start-index="19" stop-index="31" start-delimiter="`" end-delimiter="`" />
         </from>
     </show-triggers>
 
     <show-triggers sql-case-id="show_triggers_in_schema">
         <from start-index="14" stop-index="29">
-            <schema name="sharding_db" start-index="17" stop-index="29" start-delimiter="`" end-delimiter="`" />
+            <database name="sharding_db" start-index="17" stop-index="29" start-delimiter="`" end-delimiter="`" />
         </from>
     </show-triggers>
 
@@ -390,7 +390,7 @@
 
     <show-triggers sql-case-id="show_triggers_with_like_pattern">
         <from start-index="14" stop-index="31">
-            <schema name="sharding_db" start-index="19" stop-index="31" start-delimiter="`" end-delimiter="`" />
+            <database name="sharding_db" start-index="19" stop-index="31" start-delimiter="`" end-delimiter="`" />
         </from>
         <filter start-index="33" stop-index="43">
             <like pattern="sys%" start-index="33" stop-index="43" start-delimiter="'" end-delimiter="'" />
@@ -399,7 +399,7 @@
 
     <show-triggers sql-case-id="show_triggers_with_where_expr" parameters="'t_order'">
         <from start-index="14" stop-index="31">
-            <schema name="sharding_db" start-index="19" stop-index="31" start-delimiter="`" end-delimiter="`" />
+            <database name="sharding_db" start-index="19" stop-index="31" start-delimiter="`" end-delimiter="`" />
         </from>
         <filter start-index="33" stop-index="49" literal-start-index="33" literal-stop-index="57">
             <where start-index="33" stop-index="49" literal-start-index="33" literal-stop-index="57">
@@ -421,7 +421,7 @@
 
     <show-triggers sql-case-id="show_triggers_with_where_expr_no_parameter">
         <from start-index="14" stop-index="31">
-            <schema name="sharding_db" start-index="19" stop-index="31" start-delimiter="`" end-delimiter="`" />
+            <database name="sharding_db" start-index="19" stop-index="31" start-delimiter="`" end-delimiter="`" />
         </from>
         <filter start-index="33" stop-index="57">
             <where start-index="33" stop-index="57">
@@ -444,19 +444,19 @@
 
     <show-table-status sql-case-id="show_table_status_from_schema">
         <from start-index="18" stop-index="35">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="35" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="35" />
         </from>
     </show-table-status>
 
     <show-table-status sql-case-id="show_table_status_in_schema">
         <from start-index="18" stop-index="33">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="33" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="33" />
         </from>
     </show-table-status>
 
     <show-table-status sql-case-id="show_table_status_with_like_pattern">
         <from start-index="18" stop-index="35">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="35" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="35" />
         </from>
         <filter start-index="37" stop-index="52">
             <like pattern="t_order_%" start-delimiter="'" end-delimiter="'" start-index="37" stop-index="52" />
@@ -465,7 +465,7 @@
 
     <show-table-status sql-case-id="show_table_status_with_where_expr" parameters="'t_order'">
         <from start-index="18" stop-index="35">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="35" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="35" />
         </from>
         <filter start-index="37" stop-index="52" literal-start-index="37" literal-stop-index="60">
             <where start-index="37" stop-index="52" literal-start-index="37" literal-stop-index="60">
@@ -487,7 +487,7 @@
 
     <show-table-status sql-case-id="show_table_status_with_where_expr_no_parameter">
         <from start-index="18" stop-index="35">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="35" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="35" />
         </from>
         <filter start-index="37" stop-index="60">
             <where start-index="37" stop-index="60">
@@ -558,13 +558,13 @@
 
     <show-events sql-case-id="show_events_from_schema">
         <from start-index="12" stop-index="29">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
         </from>
     </show-events>
 
     <show-events sql-case-id="show_events_in_schema">
         <from start-index="12" stop-index="27">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27" />
         </from>
     </show-events>
 
@@ -576,7 +576,7 @@
 
     <show-events sql-case-id="show_events_with_like_pattern">
         <from start-index="12" stop-index="29">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
         </from>
         <filter start-index="31" stop-index="47">
             <like pattern="sharding_%" start-delimiter="'" end-delimiter="'" start-index="31" stop-index="47" />
@@ -585,7 +585,7 @@
 
     <show-events sql-case-id="show_events_with_where_expr" parameters="'sharding_db'">
         <from start-index="12" stop-index="29">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
         </from>
         <filter start-index="31" stop-index="42" literal-start-index="31" literal-stop-index="54">
             <where start-index="31" stop-index="42" literal-start-index="31" literal-stop-index="54">
@@ -607,7 +607,7 @@
 
     <show-events sql-case-id="show_events_with_where_expr_no_parameter">
         <from start-index="12" stop-index="29">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
         </from>
         <filter start-index="31" stop-index="54">
             <where start-index="31" stop-index="54">
@@ -632,20 +632,20 @@
 
     <show-tables sql-case-id="show_tables_from_schema">
         <from start-index="12" stop-index="29">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
         </from>
     </show-tables>
 
     <show-tables sql-case-id="show_tables_in_schema">
         <from start-index="12" stop-index="27">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27" />
         </from>
     </show-tables>
 
 
     <show-tables sql-case-id="show_tables_with_like_pattern">
         <from start-index="12" stop-index="29">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
         </from>
         <filter start-index="31" stop-index="46">
             <like pattern="t_order_%" start-delimiter="'" end-delimiter="'" start-index="31" stop-index="46" />
@@ -654,7 +654,7 @@
 
     <show-tables sql-case-id="show_tables_with_where_expr" parameters="'BASE TABLE'">
         <from start-index="26" stop-index="43">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="31" stop-index="43" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="31" stop-index="43" />
         </from>
         <filter start-index="45" stop-index="66" literal-start-index="45" literal-stop-index="77">
             <where start-index="45" stop-index="66" literal-start-index="45" literal-stop-index="77">
@@ -676,7 +676,7 @@
 
     <show-tables sql-case-id="show_tables_with_where_expr_no_parameter">
         <from start-index="26" stop-index="43">
-            <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="31" stop-index="43" />
+            <database name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="31" stop-index="43" />
         </from>
         <filter start-index="45" stop-index="77">
             <where start-index="45" stop-index="77">

@@ -40,8 +40,8 @@ public final class ShowComputeNodeModeExecutor implements DistSQLQueryExecutor<S
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodeModeStatement sqlStatement, final ContextManager contextManager) {
-        PersistRepositoryConfiguration repositoryConfig = contextManager.getInstanceContext().getModeConfiguration().getRepository();
-        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
+        PersistRepositoryConfiguration repositoryConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration().getRepository();
+        String modeType = contextManager.getComputeNodeInstanceContext().getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? null : repositoryConfig.getType();
         Properties props = null == repositoryConfig ? null : repositoryConfig.getProps();
         return Collections.singleton(new LocalDataQueryResultRow(modeType, repositoryType, props));

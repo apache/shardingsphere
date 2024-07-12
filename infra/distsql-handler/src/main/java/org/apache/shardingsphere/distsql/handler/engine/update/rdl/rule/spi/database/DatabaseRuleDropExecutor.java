@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.dat
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Database rule drop executor.
@@ -53,7 +53,7 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
     
     /**
      * Whether there is dropped data.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @return dropped data exists or does not exist
      */

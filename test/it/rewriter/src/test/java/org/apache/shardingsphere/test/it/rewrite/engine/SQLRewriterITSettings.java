@@ -30,7 +30,7 @@ public @interface SQLRewriterITSettings {
     
     /**
      * Get scenario case path.
-     * 
+     *
      * @return scenario case path
      */
     String value();

@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Persist repository.
  */
-public interface PersistRepository extends TypedSPI {
+public interface PersistRepository extends TypedSPI, AutoCloseable {
     
     /**
      * Path separator.
@@ -32,12 +32,12 @@ public interface PersistRepository extends TypedSPI {
     String PATH_SEPARATOR = "/";
     
     /**
-     * Get value from registry center directly.
+     * Query data.
      *
-     * @param key key
-     * @return value
+     * @param key key to be queried
+     * @return queryed data
      */
-    String getDirectly(String key);
+    String query(String key);
     
     /**
      * Get names of sub-node.
@@ -48,10 +48,10 @@ public interface PersistRepository extends TypedSPI {
     List<String> getChildrenKeys(String key);
     
     /**
-     * Judge node is exist or not.
+     * Judge node is existed or not.
      *
      * @param key key
-     * @return node is exist or not
+     * @return node is existed or not
      */
     boolean isExisted(String key);
     
@@ -62,6 +62,15 @@ public interface PersistRepository extends TypedSPI {
      * @param value value of data
      */
     void persist(String key, String value);
+    
+    /**
+     * Persist ephemeral data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    default void persistEphemeral(String key, String value) {
+    }
     
     /**
      * Update data.
@@ -78,8 +87,6 @@ public interface PersistRepository extends TypedSPI {
      */
     void delete(String key);
     
-    /**
-     * Close.
-     */
+    @Override
     void close();
 }

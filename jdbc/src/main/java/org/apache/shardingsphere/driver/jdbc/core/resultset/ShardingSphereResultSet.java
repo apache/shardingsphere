@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -62,18 +63,18 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private final MergedResult mergeResultSet;
     
+    @Getter
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean selectContainsEnhancedTable,
-                                   final ExecutionContext executionContext) throws SQLException {
-        super(resultSets, statement, selectContainsEnhancedTable, executionContext);
+    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final SQLStatementContext sqlStatementContext) throws SQLException {
+        super(resultSets, statement, sqlStatementContext);
         this.mergeResultSet = mergeResultSet;
-        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(executionContext.getSqlStatementContext(), selectContainsEnhancedTable, resultSets.get(0).getMetaData());
+        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
     }
     
-    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean selectContainsEnhancedTable,
-                                   final ExecutionContext executionContext, final Map<String, Integer> columnLabelAndIndexMap) {
-        super(resultSets, statement, selectContainsEnhancedTable, executionContext);
+    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement,
+                                   final SQLStatementContext sqlStatementContext, final Map<String, Integer> columnLabelAndIndexMap) {
+        super(resultSets, statement, sqlStatementContext);
         this.mergeResultSet = mergeResultSet;
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
     }

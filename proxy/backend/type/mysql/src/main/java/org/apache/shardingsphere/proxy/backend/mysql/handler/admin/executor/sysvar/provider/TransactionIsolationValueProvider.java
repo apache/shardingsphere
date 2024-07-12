@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider;
 
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableValueProvider;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
 /**
  * Transaction isolation value provider.
@@ -32,7 +30,6 @@ public final class TransactionIsolationValueProvider implements MySQLSystemVaria
     
     @Override
     public String get(final Scope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
-        return Scope.GLOBAL == scope ? variable.getDefaultValue()
-                : Optional.ofNullable(connectionSession.getIsolationLevel()).map(TransactionIsolationLevel::getIsolationLevel).orElseGet(TransactionIsolationLevel.REPEATABLE_READ::getIsolationLevel);
+        return Scope.GLOBAL == scope ? variable.getDefaultValue() : connectionSession.getIsolationLevel().orElse(TransactionIsolationLevel.REPEATABLE_READ).getIsolationLevel();
     }
 }

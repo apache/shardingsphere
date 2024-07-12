@@ -18,15 +18,12 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -35,22 +32,38 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Process engine.
  */
+@HighFrequencyInvocation
 public final class ProcessEngine {
     
     /**
      * Connect.
      *
-     * @param grantee grantee
      * @param databaseName database name
      * @return process ID
      */
-    public String connect(final Grantee grantee, final String databaseName) {
-        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
-                new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(processId, databaseName, grantee));
-        Process process = new Process(executionGroupContext);
-        ProcessRegistry.getInstance().add(process);
+    public String connect(final String databaseName) {
+        return connect(new ExecutionGroupReportContext(getProcessId(), databaseName));
+    }
+    
+    /**
+     * Connect.
+     *
+     * @param databaseName database name
+     * @param grantee grantee
+     * @return process ID
+     */
+    public String connect(final String databaseName, final Grantee grantee) {
+        return connect(new ExecutionGroupReportContext(getProcessId(), databaseName, grantee));
+    }
+    
+    private String connect(final ExecutionGroupReportContext reportContext) {
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
+        ProcessRegistry.getInstance().add(new Process(executionGroupContext));
         return executionGroupContext.getReportContext().getProcessId();
+    }
+    
+    private String getProcessId() {
+        return new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
     }
     
     /**
@@ -69,14 +82,12 @@ public final class ProcessEngine {
      * @param queryContext query context
      */
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
-        if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext));
-        }
+        ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext));
     }
     
     /**
      * Complete SQL unit execution.
-     * 
+     *
      * @param executionUnit execution unit
      * @param processId process ID
      */
@@ -94,7 +105,7 @@ public final class ProcessEngine {
     
     /**
      * Complete SQL execution.
-     * 
+     *
      * @param processId process ID
      */
     public void completeSQLExecution(final String processId) {
@@ -108,9 +119,5 @@ public final class ProcessEngine {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
                 Collections.emptyList(), new ExecutionGroupReportContext(processId, process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
         ProcessRegistry.getInstance().add(new Process(executionGroupContext));
-    }
-    
-    private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof MySQLStatement && (sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement);
     }
 }

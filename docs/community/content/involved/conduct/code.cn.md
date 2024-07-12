@@ -23,7 +23,8 @@ chapter = true
  - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 确保覆盖率不低于 master 分支。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
- - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
+ - 如果您使用 IDEA，可导入 `src/resources/idea/code-style.xml`，用于保持代码风格一致性。
+ - 如果您使用 IDEA，可导入 `src/resources/idea/inspections.xml`，用于检测代码潜在问题。
 
 ## 编码规范
 
@@ -109,7 +110,30 @@ chapter = true
    - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
 
-## G4 规范
+## SQL 解析规范
+
+### 维护规范
+
+ - SQL 解析模块涉及的 `G4` 语法文件以及 `SQLVisitor` 实现类，需要根据如下的数据库关系进行差异代码标记。当数据库 A 不提供对应的数据库驱动和协议，而是直接使用数据库 B 的驱动和协议时，可以认为数据库 A 是数据库 B 的分支数据库。
+通常分支数据库会直接使用主干数据库的 SQL 解析逻辑，但是为了适配分支数据库的特有语法，部分分支数据库会从主干数据库复制并维护自己的 SQL 解析逻辑，此时对于分支数据库的特有语法，需要使用注释进行标记，其他部分需要和主干数据库的实现保持一致；
+
+    | 主干数据库      | 分支数据库         |
+    |------------|---------------|
+    | MySQL      | MariaDB、Doris |
+    | PostgreSQL | -             |
+    | openGauss  | -             |
+    | Oracle     | -             |
+    | SQLServer  | -             |
+    | ClickHouse | -             |
+    | Hive       | -             |
+    | Presto     | -             |
+    | SQL92      | -             |
+
+ - 差异代码标记语法，增加时将 `{DatabaseType}` 替换为数据库类型大写名，例如：`DORIS`。
+   - 新增语法：`// {DatabaseType} ADDED BEGIN` 和 `// {DatabaseType} ADDED END`；
+   - 修改语法：`// {DatabaseType} CHANGED BEGIN` 和 `// {DatabaseType} CHANGED END`。
+
+### G4 规范
 
  - 公共规范
    - 每行长度不超过 `200` 个字符，保证每一行语义完整以便于理解。

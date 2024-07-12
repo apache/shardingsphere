@@ -46,7 +46,7 @@ public final class ExportUtils {
     
     /**
      * Export configuration data to specified file.
-     * 
+     *
      * @param filePath file path
      * @param exportedData exported configuration data
      * @throws FileIOException file IO exception

@@ -39,12 +39,12 @@ public enum PostgreSQLColumnType {
     
     /**
      * Get value of column type.
-     * 
+     *
      * @param elemoid elemoid
      * @return value of column type
      */
     public static PostgreSQLColumnType valueOf(final Long elemoid) {
-        if (0 == elemoid) {
+        if (0L == elemoid) {
             return UNKNOWN;
         }
         for (PostgreSQLColumnType each : values()) {

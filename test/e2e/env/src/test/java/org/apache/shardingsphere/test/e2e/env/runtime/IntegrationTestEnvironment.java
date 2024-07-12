@@ -44,12 +44,15 @@ public final class IntegrationTestEnvironment {
     
     private final ClusterEnvironment clusterEnvironment;
     
+    private final boolean smoke;
+    
     private IntegrationTestEnvironment() {
         Properties props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
         runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
         TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
         scenarios = getScenarios(props);
+        smoke = Boolean.parseBoolean(props.getProperty("it.run.smoke"));
         clusterEnvironment = new ClusterEnvironment(props);
     }
     

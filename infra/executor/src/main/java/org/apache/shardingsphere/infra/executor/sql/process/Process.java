@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Process.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 @Getter
 public final class Process {
@@ -75,9 +78,9 @@ public final class Process {
         startMillis = System.currentTimeMillis();
         this.sql = sql;
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
-        Grantee grantee = executionGroupContext.getReportContext().getGrantee();
-        username = null == grantee ? "" : grantee.getUsername();
-        hostname = null == grantee ? "" : grantee.getHostname();
+        Optional<Grantee> grantee = executionGroupContext.getReportContext().getGrantee();
+        username = grantee.map(Grantee::getUsername).orElse("");
+        hostname = grantee.map(Grantee::getHostname).orElse("");
         totalUnitCount = new AtomicInteger(getTotalUnitCount(executionGroupContext));
         processStatements.putAll(createProcessStatements(executionGroupContext));
         completedUnitCount = new AtomicInteger(0);
@@ -138,26 +141,6 @@ public final class Process {
      */
     public boolean isIdle() {
         return idle.get();
-    }
-    
-    /**
-     * Put process statement.
-     *
-     * @param executionUnit execution unit
-     * @param statement statement
-     */
-    public void putProcessStatement(final ExecutionUnit executionUnit, final Statement statement) {
-        putProcessStatement(System.identityHashCode(executionUnit), statement);
-    }
-    
-    /**
-     * Put process statement.
-     *
-     * @param executionUnitIdentityHashCode execution unit identity hash code
-     * @param statement statement
-     */
-    public void putProcessStatement(final Integer executionUnitIdentityHashCode, final Statement statement) {
-        processStatements.put(executionUnitIdentityHashCode, statement);
     }
     
     /**

@@ -59,7 +59,7 @@ public final class PluginMetaDataQueryResultRow {
     
     /**
      * To local data query result row.
-     * 
+     *
      * @return local data query result row
      */
     public LocalDataQueryResultRow toLocalDataQueryResultRow() {

@@ -26,6 +26,6 @@ class BinlogPositionTest {
     
     @Test
     void assertToString() {
-        assertThat(new BinlogPosition("mysql-bin.000001", 4, 0L).toString(), is("mysql-bin.000001#4"));
+        assertThat(new BinlogPosition("mysql-bin.000001", 4L, 0L).toString(), is("mysql-bin.000001#4"));
     }
 }

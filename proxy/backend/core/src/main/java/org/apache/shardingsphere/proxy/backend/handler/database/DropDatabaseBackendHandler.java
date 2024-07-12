@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
 
 /**
  * Drop database backend handler.
@@ -46,13 +46,13 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     
     @Override
     public ResponseHeader execute() {
-        check(sqlStatement, connectionSession.getGrantee());
+        check(sqlStatement, connectionSession.getConnectionContext().getGrantee());
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             checkSupportedDropCurrentDatabase(connectionSession);
-            connectionSession.setCurrentDatabase(null);
+            connectionSession.setCurrentDatabaseName(null);
         }
         if (ProxyContext.getInstance().databaseExists(sqlStatement.getDatabaseName())) {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(sqlStatement.getDatabaseName());
+            ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(sqlStatement.getDatabaseName());
         }
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -66,7 +66,7 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     }
     
     private boolean isDropCurrentDatabase(final String databaseName) {
-        return !Strings.isNullOrEmpty(connectionSession.getDatabaseName()) && connectionSession.getDatabaseName().equals(databaseName);
+        return !Strings.isNullOrEmpty(connectionSession.getUsedDatabaseName()) && connectionSession.getUsedDatabaseName().equals(databaseName);
     }
     
     private void checkSupportedDropCurrentDatabase(final ConnectionSession connectionSession) {

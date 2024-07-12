@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.metadata.reviser.column.ShardingColumnGeneratedReviser;
@@ -82,9 +82,9 @@ class ShardingMetaDataReviseEntryTest {
     
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = createShardingRuleConfiguration();
-        InstanceContext instanceContext = mock(InstanceContext.class);
-        when(instanceContext.getWorkerId()).thenReturn(0);
-        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), instanceContext);
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+        when(computeNodeInstanceContext.getWorkerId()).thenReturn(0);
+        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), computeNodeInstanceContext);
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

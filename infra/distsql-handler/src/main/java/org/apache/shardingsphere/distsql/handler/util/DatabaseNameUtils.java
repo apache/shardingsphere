@@ -19,9 +19,9 @@ package org.apache.shardingsphere.distsql.handler.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
 
 import java.util.Optional;
 
@@ -33,7 +33,7 @@ public final class DatabaseNameUtils {
     
     /**
      * Get database name.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param currentDatabaseName current database name
      * @return database name

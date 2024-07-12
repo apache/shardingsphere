@@ -11,7 +11,7 @@ In the distributed application architecture based on microservices, businesses r
 
 ### Root Configuration
 
-Class name: org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration
+Class name: org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration
 
 Attributes:
 
@@ -24,7 +24,7 @@ Attributes:
 
 ### Shadow Data Source Configuration
 
-Class name: org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration
+Class name: org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration
 
 Attributes:
 
@@ -35,7 +35,7 @@ Attributes:
 
 ### Shadow Table Configuration
 
-Class name: org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration
+Class name: org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration
 
 Attributes:
 
@@ -46,7 +46,7 @@ Attributes:
 
 ### Shadow Algorithm Configuration
 
-Class name：org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
+Class name：org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration
 
 Attributes:
 

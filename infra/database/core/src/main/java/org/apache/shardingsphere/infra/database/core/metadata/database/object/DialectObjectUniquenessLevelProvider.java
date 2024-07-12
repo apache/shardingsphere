@@ -28,7 +28,7 @@ public interface DialectObjectUniquenessLevelProvider extends DatabaseTypedSPI {
     
     /**
      * Get index uniqueness level.
-     * 
+     *
      * @return index uniqueness level
      */
     UniquenessLevel getIndexUniquenessLevel();

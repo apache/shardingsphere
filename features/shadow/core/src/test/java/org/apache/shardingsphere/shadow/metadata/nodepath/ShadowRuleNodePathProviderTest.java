@@ -32,11 +32,11 @@ class ShadowRuleNodePathProviderTest {
         RuleNodePathProvider ruleNodePathProvider = new ShadowRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
         assertThat(actualRuleNodePath.getNamedItems().size(), is(3));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.ALGORITHMS));
+        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.SHADOW_ALGORITHMS));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.TABLES));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.DATA_SOURCES));
         assertThat(actualRuleNodePath.getUniqueItems().size(), is(1));
-        assertTrue(actualRuleNodePath.getUniqueItems().containsKey(ShadowRuleNodePathProvider.DEFAULT_ALGORITHM));
+        assertTrue(actualRuleNodePath.getUniqueItems().containsKey(ShadowRuleNodePathProvider.DEFAULT_SHADOW_ALGORITHM_NAME));
         assertThat(actualRuleNodePath.getRoot().getRuleType(), is(ShadowRuleNodePathProvider.RULE_TYPE));
     }
 }

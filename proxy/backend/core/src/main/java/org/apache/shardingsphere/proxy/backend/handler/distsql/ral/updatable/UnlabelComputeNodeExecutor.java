@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,14 +38,14 @@ public final class UnlabelComputeNodeExecutor implements DistSQLUpdateExecutor<U
     @Override
     public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement, final ContextManager contextManager) {
         String instanceId = sqlStatement.getInstanceId();
-        Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
+        Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
             Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());
             if (sqlStatement.getLabels().isEmpty()) {
-                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, Collections.emptyList()));
+                contextManager.getPersistServiceFacade().getComputeNodePersistService().persistInstanceLabels(instanceId, Collections.emptyList());
             } else {
                 labels.removeAll(sqlStatement.getLabels());
-                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new ArrayList<>(labels)));
+                contextManager.getPersistServiceFacade().getComputeNodePersistService().persistInstanceLabels(instanceId, new ArrayList<>(labels));
             }
         }
     }

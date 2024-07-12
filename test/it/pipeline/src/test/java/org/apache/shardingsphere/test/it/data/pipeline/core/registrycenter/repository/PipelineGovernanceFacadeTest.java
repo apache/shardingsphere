@@ -89,7 +89,7 @@ class PipelineGovernanceFacadeTest {
     void assertWatch() throws InterruptedException {
         String key = PipelineNodePath.DATA_PIPELINE_ROOT + "/1";
         getClusterPersistRepository().persist(key, "");
-        boolean awaitResult = COUNT_DOWN_LATCH.await(10, TimeUnit.SECONDS);
+        boolean awaitResult = COUNT_DOWN_LATCH.await(10L, TimeUnit.SECONDS);
         assertTrue(awaitResult);
         DataChangedEvent event = EVENT_ATOMIC_REFERENCE.get();
         assertNotNull(event);
@@ -191,7 +191,7 @@ class PipelineGovernanceFacadeTest {
     
     private ClusterPersistRepository getClusterPersistRepository() {
         ContextManager contextManager = PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getContextManager();
-        return (ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository();
+        return (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
     }
     
     private MigrationJobItemContext mockJobItemContext() {

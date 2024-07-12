@@ -18,21 +18,26 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.information;
 
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -83,28 +88,14 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     @Override
     protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
-        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee())).collect(Collectors.toList());
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetaDataExecutor.hasDataSource(each)).collect(Collectors.toSet()));
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream()
+                .filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee())).collect(Collectors.toList());
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !hasDataSource(each)).collect(Collectors.toSet()));
         Collection<String> result = databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             fillSchemasWithoutDataSource();
         }
         return result;
-    }
-    
-    @Override
-    protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) {
-        ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-        Collection<String> catalogs = resourceMetaData.getStorageUnits().keySet()
-                .stream().map(each -> resourceMetaData.getStorageUnits().get(each).getCatalog()).collect(Collectors.toSet());
-        schemaNameAlias = alias.getOrDefault(SCHEMA_NAME, "");
-        String rowValue = rows.getOrDefault(schemaNameAlias, "").toString();
-        queryDatabase = !rowValue.isEmpty();
-        if (catalogs.contains(rowValue)) {
-            rows.replace(schemaNameAlias, databaseName);
-        } else {
-            rows.clear();
-        }
     }
     
     private void fillSchemasWithoutDataSource() {
@@ -128,6 +119,30 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         } else {
             result = projections.stream().map(each -> ((ColumnProjectionSegment) each).getColumn().getIdentifier())
                     .map(each -> each.getValue().toUpperCase()).collect(Collectors.toMap(each -> each, each -> ""));
+        }
+        return result;
+    }
+    
+    @Override
+    protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) throws SQLException {
+        ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
+        Collection<String> catalogs = getCatalogs(resourceMetaData);
+        schemaNameAlias = alias.getOrDefault(SCHEMA_NAME, "");
+        String rowValue = rows.getOrDefault(schemaNameAlias, "").toString();
+        queryDatabase = !rowValue.isEmpty();
+        if (catalogs.contains(rowValue)) {
+            rows.replace(schemaNameAlias, databaseName);
+        } else {
+            rows.clear();
+        }
+    }
+    
+    private Collection<String> getCatalogs(final ResourceMetaData resourceMetaData) throws SQLException {
+        Collection<String> result = new HashSet<>(resourceMetaData.getStorageUnits().size(), 1F);
+        for (Entry<String, StorageUnit> entry : resourceMetaData.getStorageUnits().entrySet()) {
+            try (Connection connection = entry.getValue().getDataSource().getConnection()) {
+                result.add(connection.getCatalog());
+            }
         }
         return result;
     }

@@ -34,14 +34,14 @@ public @interface PipelineE2ESettings {
     
     /**
      * Whether fetch single.
-     * 
+     *
      * @return fetch single
      */
     boolean fetchSingle() default false;
     
     /**
      * Get database settings.
-     * 
+     *
      * @return database settings
      */
     PipelineE2EDatabaseSettings[] database();

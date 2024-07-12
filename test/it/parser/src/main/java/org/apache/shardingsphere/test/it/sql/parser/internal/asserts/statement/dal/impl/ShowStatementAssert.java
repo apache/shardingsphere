@@ -19,12 +19,14 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Show statement assert.
@@ -34,12 +36,17 @@ public final class ShowStatementAssert {
     
     /**
      * Assert show statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show statement
      * @param expected expected show statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowStatement actual, final ShowStatementTestCase expected) {
-        assertThat(assertContext.getText("Name assertion error: "), actual.getName(), is(expected.getName()));
+        if (null == expected.getName()) {
+            assertFalse(actual.getName().isPresent(), assertContext.getText("Name should not exist."));
+        } else {
+            assertTrue(actual.getName().isPresent(), assertContext.getText("Name should exist."));
+            assertThat(assertContext.getText("Name assertion error: "), actual.getName().get(), is(expected.getName()));
+        }
     }
 }

@@ -67,7 +67,7 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     
     /**
      * To SQL exception.
-     * 
+     *
      * @return SQL exception
      */
     public final SQLException toSQLException() {

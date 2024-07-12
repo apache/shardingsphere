@@ -19,19 +19,18 @@ package org.apache.shardingsphere.infra.rule.builder.fixture;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 public final class FixtureDatabaseRuleBuilder implements DatabaseRuleBuilder<FixtureDatabaseRuleConfiguration> {
     
     @Override
     public FixtureRule build(final FixtureDatabaseRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
-                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+                             final ResourceMetaData resourceMetaData, final Collection<ShardingSphereRule> builtRules, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         return new FixtureRule();
     }
     

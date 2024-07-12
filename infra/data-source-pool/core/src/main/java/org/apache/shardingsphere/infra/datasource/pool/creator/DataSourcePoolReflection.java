@@ -32,6 +32,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,7 +63,7 @@ public final class DataSourcePoolReflection {
     static {
         GENERAL_CLASS_TYPES = new HashSet<>(
                 Arrays.asList(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class, Properties.class));
-        SKIPPED_PROPERTY_KEYS = new HashSet<>(Arrays.asList("loginTimeout", "driverClassName"));
+        SKIPPED_PROPERTY_KEYS = new HashSet<>(Collections.singletonList("loginTimeout"));
     }
     
     public DataSourcePoolReflection(final DataSource dataSource) {
@@ -72,7 +73,7 @@ public final class DataSourcePoolReflection {
     
     /**
      * Convert to properties.
-     * 
+     *
      * @return properties converted from data source
      */
     public Map<String, Object> convertToProperties() {
@@ -116,7 +117,7 @@ public final class DataSourcePoolReflection {
     
     /**
      * Set data source field.
-     * 
+     *
      * @param fieldName field name
      * @param fieldValue field value
      */

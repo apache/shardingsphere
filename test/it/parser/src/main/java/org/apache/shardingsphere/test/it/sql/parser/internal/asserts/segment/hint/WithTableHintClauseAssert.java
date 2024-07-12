@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.TableHintLimitedSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.TableHintLimitedSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hint.ExpectedTableHint;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hint.ExpectedWithTableHintClause;
-import org.hamcrest.CoreMatchers;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,7 +46,7 @@ public final class WithTableHintClauseAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WithTableHintSegment actual, final ExpectedWithTableHintClause expected) {
         if (null == expected.getTableHint()) {
-            assertThat(assertContext.getText("with table hint clause  assertion error: "), actual.getTableHintLimitedSegments().size(), CoreMatchers.is(expected.getTableHint().size()));
+            assertThat(assertContext.getText("with table hint clause  assertion error: "), actual.getTableHintLimitedSegments().size(), is(expected.getTableHint().size()));
         } else {
             int count = 0;
             for (TableHintLimitedSegment each : actual.getTableHintLimitedSegments()) {

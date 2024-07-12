@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.statement;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.DropRuleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 
 import java.util.Collection;
 

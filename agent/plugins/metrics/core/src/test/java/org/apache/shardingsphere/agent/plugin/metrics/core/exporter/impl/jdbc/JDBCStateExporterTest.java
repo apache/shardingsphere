@@ -38,7 +38,7 @@ class JDBCStateExporterTest {
     
     @AfterEach
     void reset() {
-        MetricConfiguration config = new MetricConfiguration("jdbc_state", MetricCollectorType.GAUGE_METRIC_FAMILY, "State of ShardingSphere-JDBC. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK");
+        MetricConfiguration config = new MetricConfiguration("jdbc_state", MetricCollectorType.GAUGE_METRIC_FAMILY, "State of ShardingSphere-JDBC. 0 is OK; 1 is CIRCUIT BREAK");
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     

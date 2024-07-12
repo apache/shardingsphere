@@ -26,11 +26,11 @@ import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+@EnabledInNativeImage
 class PostgresTest {
     
     private TestShardingService testShardingService;
     
-    @EnabledInNativeImage
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
@@ -38,7 +38,7 @@ class PostgresTest {
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/postgresql.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
-        this.initEnvironment();
+        initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }
@@ -46,7 +46,7 @@ class PostgresTest {
     private void initEnvironment() throws SQLException {
         testShardingService.getOrderRepository().createTableIfNotExistsInPostgres();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInPostgres();
-        testShardingService.getAddressRepository().createTableIfNotExists();
+        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();

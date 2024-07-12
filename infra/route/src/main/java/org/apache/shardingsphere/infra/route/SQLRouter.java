@@ -17,12 +17,6 @@
 
 package org.apache.shardingsphere.infra.route;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
@@ -34,30 +28,4 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
  */
 @SingletonSPI
 public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
-    
-    /**
-     * Create route context.
-     *
-     * @param queryContext query context
-     * @param globalRuleMetaData global rule meta data
-     * @param database database
-     * @param rule rule
-     * @param props configuration properties
-     * @param connectionContext connection context
-     * @return route context
-     */
-    RouteContext createRouteContext(QueryContext queryContext,
-                                    RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
-    
-    /**
-     * Decorate route context.
-     * 
-     * @param routeContext route context
-     * @param queryContext query context
-     * @param database database
-     * @param rule rule
-     * @param props configuration properties
-     * @param connectionContext connection context
-     */
-    void decorateRouteContext(RouteContext routeContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
 }

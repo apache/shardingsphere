@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.session;
 
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -59,23 +60,24 @@ class ConnectionSessionTest {
     @BeforeEach
     void setup() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), null);
+        connectionSession.setGrantee(mock(Grantee.class));
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test
     void assertSetCurrentSchema() {
-        connectionSession.setCurrentDatabase("currentDatabase");
-        assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
+        connectionSession.setCurrentDatabaseName("currentDatabase");
+        assertThat(connectionSession.getUsedDatabaseName(), is("currentDatabase"));
     }
     
     @Test
     void assertSwitchSchemaWhileBegin() {
-        connectionSession.setCurrentDatabase("db");
+        connectionSession.setCurrentDatabaseName("db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         new BackendTransactionManager(databaseConnectionManager).begin();
-        connectionSession.setCurrentDatabase("newDB");
-        assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
+        connectionSession.setCurrentDatabaseName("newDB");
+        assertThat(connectionSession.getCurrentDatabaseName(), is("newDB"));
     }
     
     private ContextManager mockContextManager() {

@@ -43,7 +43,7 @@ public interface ContainerComposer extends Startable {
     
     /**
      * Get expected data source map.
-     * 
+     *
      * @return expected data source map
      */
     Map<String, DataSource> getExpectedDataSourceMap();

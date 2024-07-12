@@ -21,10 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 
 /**
  * Analyze table statement context.
@@ -34,18 +31,13 @@ public final class AnalyzeTableStatementContext extends CommonSQLStatementContex
     
     private final TablesContext tablesContext;
     
-    public AnalyzeTableStatementContext(final AnalyzeTableStatement sqlStatement) {
+    public AnalyzeTableStatementContext(final AnalyzeTableStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
     public AnalyzeTableStatement getSqlStatement() {
         return (AnalyzeTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return getSqlStatement().getTables();
     }
 }

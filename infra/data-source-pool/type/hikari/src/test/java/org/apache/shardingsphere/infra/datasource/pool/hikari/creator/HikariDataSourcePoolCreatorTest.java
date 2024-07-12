@@ -37,13 +37,14 @@ class HikariDataSourcePoolCreatorTest {
     void assertCreateDataSource() {
         HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(HikariDataSource.class.getName(), createDataSourcePoolProperties()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getDataSourceProperties(), is(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))));
     }
     
     private Map<String, Object> createDataSourcePoolProperties() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(5, 1F);
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");

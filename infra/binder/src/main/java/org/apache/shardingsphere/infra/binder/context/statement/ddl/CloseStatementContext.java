@@ -22,13 +22,13 @@ import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAwar
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,15 +38,15 @@ import java.util.Optional;
  * Close statement context.
  */
 @Getter
-public final class CloseStatementContext extends CommonSQLStatementContext implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
+public final class CloseStatementContext extends CommonSQLStatementContext implements CursorAvailable, TableAvailable, WhereAvailable, CursorDefinitionAware {
     
     private CursorStatementContext cursorStatementContext;
     
     private TablesContext tablesContext;
     
-    public CloseStatementContext(final CloseStatement sqlStatement) {
+    public CloseStatementContext(final CloseStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
+        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
@@ -62,9 +62,7 @@ public final class CloseStatementContext extends CommonSQLStatementContext imple
     @Override
     public void setUpCursorDefinition(final CursorStatementContext cursorStatementContext) {
         this.cursorStatementContext = cursorStatementContext;
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromSelect(cursorStatementContext.getSqlStatement().getSelect());
-        tablesContext = new TablesContext(tableExtractor.getRewriteTables(), getDatabaseType());
+        tablesContext = cursorStatementContext.getTablesContext();
     }
     
     @Override

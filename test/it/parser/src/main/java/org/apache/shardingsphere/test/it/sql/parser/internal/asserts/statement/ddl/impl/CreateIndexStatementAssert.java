@@ -19,9 +19,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
@@ -30,10 +29,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Create index statement assert.
@@ -43,7 +42,7 @@ public final class CreateIndexStatementAssert {
     
     /**
      * Assert create index statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual create index statement
      * @param expected expected create index statement test case
@@ -82,21 +81,21 @@ public final class CreateIndexStatementAssert {
     
     private static void assertLockTable(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
         if (null == expected.getLockOption()) {
-            assertFalse(CreateIndexStatementHandler.getLockTableSegment(actual).isPresent(), assertContext.getText("Actual lock table segments should not exist."));
+            assertFalse(actual.getLockTable().isPresent(), assertContext.getText("Actual lock table segments should not exist."));
         } else {
-            assertTrue(CreateIndexStatementHandler.getLockTableSegment(actual).isPresent(), assertContext.getText("Actual lock table segments should exist."));
+            assertTrue(actual.getLockTable().isPresent(), assertContext.getText("Actual lock table segments should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s lock table assertion error: ", actual.getClass().getSimpleName())),
-                    CreateIndexStatementHandler.getLockTableSegment(actual).get().getLockTableOption().name(), is(expected.getLockOption().getType()));
+                    actual.getLockTable().get().getLockTableOption().name(), is(expected.getLockOption().getType()));
         }
     }
     
     private static void assertAlgorithm(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
         if (null == expected.getAlgorithmOption()) {
-            assertFalse(CreateIndexStatementHandler.getAlgorithmTypeSegment(actual).isPresent(), assertContext.getText("Actual algorithm segments should not exist."));
+            assertFalse(actual.getAlgorithmType().isPresent(), assertContext.getText("Actual algorithm segments should not exist."));
         } else {
-            assertTrue(CreateIndexStatementHandler.getAlgorithmTypeSegment(actual).isPresent(), assertContext.getText("Actual algorithm segments should exist."));
+            assertTrue(actual.getAlgorithmType().isPresent(), assertContext.getText("Actual algorithm segments should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s algorithm assertion error: ", actual.getClass().getSimpleName())),
-                    CreateIndexStatementHandler.getAlgorithmTypeSegment(actual).get().getAlgorithmOption().name(), is(expected.getAlgorithmOption().getType()));
+                    actual.getAlgorithmType().get().getAlgorithmOption().name(), is(expected.getAlgorithmOption().getType()));
         }
     }
 }

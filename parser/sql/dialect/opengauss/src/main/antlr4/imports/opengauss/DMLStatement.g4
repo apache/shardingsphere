@@ -435,25 +435,6 @@ dostmtOptItem
     : STRING_ | LANGUAGE nonReservedWordOrSconst
     ;
 
-lock
-    : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
-    ;
-
-lockType
-    : ACCESS SHARE
-    | ROW SHARE
-    | ROW EXCLUSIVE
-    | SHARE UPDATE EXCLUSIVE
-    | SHARE
-    | SHARE ROW EXCLUSIVE
-    | EXCLUSIVE
-    | ACCESS EXCLUSIVE
-    ;
-
-checkpoint
-    : CHECKPOINT
-    ;
-
 copy
     : COPY (BINARY)? qualifiedName (LP_ columnList RP_)? (FROM | TO) PROGRAM?
       (STRING_ | STDIN | STDOUT) copyDelimiter? (WITH)? copyOptions whereClause?

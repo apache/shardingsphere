@@ -18,26 +18,18 @@
 package org.apache.shardingsphere.infra.database.clickhouse.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Database type of ClickHouse.
- * ClickHouse currently uses MySQL dialect parsing.
  */
 public final class ClickHouseDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Arrays.asList("jdbc:ch:", "jdbc:clickhouse:");
-    }
-    
-    @Override
-    public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
     
     @Override

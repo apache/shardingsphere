@@ -25,7 +25,7 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlTrimFunction.Flag;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -55,7 +55,7 @@ public final class LiteralExpressionConverter {
     
     /**
      * Convert literal expression segment to sql node.
-     * 
+     *
      * @param segment literal expression segment
      * @return sql node
      */

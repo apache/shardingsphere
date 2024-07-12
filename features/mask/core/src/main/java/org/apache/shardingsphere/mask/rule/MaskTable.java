@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mask.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Map;
@@ -44,6 +45,7 @@ public final class MaskTable {
      * @param columnName column name
      * @return found mask algorithm
      */
+    @HighFrequencyInvocation
     @SuppressWarnings("rawtypes")
     public Optional<MaskAlgorithm> findAlgorithm(final String columnName) {
         return columns.containsKey(columnName) ? Optional.of(columns.get(columnName).getMaskAlgorithm()) : Optional.empty();

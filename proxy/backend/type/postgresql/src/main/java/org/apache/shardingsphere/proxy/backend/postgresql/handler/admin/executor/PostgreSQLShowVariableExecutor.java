@@ -28,7 +28,8 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedRe
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class PostgreSQLShowVariableExecutor implements DatabaseAdminQueryExecutor {
     
-    private static final Map<String, VariableRowDataGenerator> VARIABLE_ROW_DATA_GENERATORS = new LinkedHashMap<>(7, 1);
+    private static final Map<String, VariableRowDataGenerator> VARIABLE_ROW_DATA_GENERATORS = new LinkedHashMap<>(7, 1F);
     
     static {
         VARIABLE_ROW_DATA_GENERATORS.put("application_name", connectionSession -> new String[]{"application_name", "PostgreSQL", "Sets the application name to be reported in statistics and logs."});
@@ -52,7 +53,7 @@ public final class PostgreSQLShowVariableExecutor implements DatabaseAdminQueryE
         VARIABLE_ROW_DATA_GENERATORS.put("integer_datetimes", connectionSession -> new String[]{"integer_datetimes", "on", "Shows whether datetimes are integer based."});
         VARIABLE_ROW_DATA_GENERATORS.put("timezone", connectionSession -> new String[]{"TimeZone", "Etc/UTC", "Sets the time zone for displaying and interpreting time stamps."});
         VARIABLE_ROW_DATA_GENERATORS.put("transaction_isolation", connectionSession -> {
-            String result = null == connectionSession.getIsolationLevel() ? "read committed" : connectionSession.getIsolationLevel().getIsolationLevel().replace("-", " ").toLowerCase(Locale.ROOT);
+            String result = connectionSession.getIsolationLevel().orElse(TransactionIsolationLevel.READ_COMMITTED).getIsolationLevel().replace("-", " ").toLowerCase(Locale.ROOT);
             return new String[]{"transaction_isolation", result, "Sets the current transaction's isolation level"};
         });
         VARIABLE_ROW_DATA_GENERATORS.put("transaction_read_only",
@@ -70,7 +71,7 @@ public final class PostgreSQLShowVariableExecutor implements DatabaseAdminQueryE
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String name = showStatement.getName().toLowerCase(Locale.ROOT);
+        String name = showStatement.getName().orElse("").toLowerCase(Locale.ROOT);
         if ("ALL".equalsIgnoreCase(name)) {
             executeShowAll(connectionSession);
             return;

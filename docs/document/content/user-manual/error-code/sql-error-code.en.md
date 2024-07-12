@@ -103,9 +103,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | Vendor Code | SQL State | Reason                                                        |
 |-------------|-----------|---------------------------------------------------------------|
 | 17000       | 44000     | Mode must be 'cluster'.                                       |
-| 17001       | HY000     | Work ID assigned failed, which can not exceed 1024.           |
+| 17001       | HY000     | Worker ID assigned failed, which should be in [0, %s).        |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
+| 17030       | HY000     | Cluster is already locked.                                    |
+| 17031       | HY000     | Cluster is not locked.                                        |
+| 17100       | 42S02     | Cluster persist repository configuration is required.         |
 
 ### Data Pipeline
 
@@ -185,10 +188,11 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### SQL Federation
 
-| Vendor Code | SQL State | Reason                                                  |
-|-------------|-----------|---------------------------------------------------------|
+| Vendor Code | SQL State | Reason                                                 |
+|-------------|-----------|--------------------------------------------------------|
 | 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'. |
-| 20101       | 42000     | SQL federation does not support SQL '%s'.               |
+| 20101       | 42000     | SQL federation does not support SQL '%s'.              |
+| 20102       | 42S02     | SQL federation schema not found SQL '%s'.              |
 
 ### Readwrite-splitting
 

@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.mask.rule.builder;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Mask rule builder.
@@ -36,7 +35,7 @@ public final class MaskRuleBuilder implements DatabaseRuleBuilder<MaskRuleConfig
     
     @Override
     public MaskRule build(final MaskRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
-                          final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+                          final ResourceMetaData resourceMetaData, final Collection<ShardingSphereRule> builtRules, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         return new MaskRule(ruleConfig);
     }
     

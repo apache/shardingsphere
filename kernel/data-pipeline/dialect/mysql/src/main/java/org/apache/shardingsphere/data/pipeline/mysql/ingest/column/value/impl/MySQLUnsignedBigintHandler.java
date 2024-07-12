@@ -35,7 +35,7 @@ public final class MySQLUnsignedBigintHandler implements MySQLDataTypeHandler {
             return null;
         }
         long longValue = (long) value;
-        return 0 > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
+        return 0L > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
     }
     
     @Override

@@ -119,7 +119,7 @@ public final class MySQLBinaryProtocolValueFactory {
     
     /**
      * Get binary protocol value.
-     * 
+     *
      * @param binaryColumnType binary column type
      * @return binary protocol value
      */

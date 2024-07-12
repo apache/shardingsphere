@@ -23,8 +23,7 @@ import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorith
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -55,9 +54,7 @@ public final class CoreHintShardingAlgorithmFixture implements HintShardingAlgor
     }
     
     private String doSharding(final Comparable<?> shardingValue) {
-        Map<String, Comparable<?>> map = new LinkedHashMap<>();
-        map.put(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue);
-        return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(map);
+        return InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateWithArgs(Collections.singletonMap(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue));
     }
     
     @Override

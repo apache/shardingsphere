@@ -64,10 +64,10 @@ public class ShardingRuleChecker {
     }
     
     private void checkUniqueActualDataNodesInTableRules() {
-        Set<DataNode> uniqueActualDataNodes = new HashSet<>(shardingRule.getShardingTables().size(), 1L);
+        Set<DataNode> uniqueActualDataNodes = new HashSet<>(shardingRule.getShardingTables().size(), 1F);
         shardingRule.getShardingTables().forEach((key, value) -> {
             DataNode sampleActualDataNode = value.getActualDataNodes().iterator().next();
-            ShardingSpherePreconditions.checkState(!uniqueActualDataNodes.contains(sampleActualDataNode),
+            ShardingSpherePreconditions.checkNotContains(uniqueActualDataNodes, sampleActualDataNode,
                     () -> new DuplicateSharingActualDataNodeException(key, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
             uniqueActualDataNodes.add(sampleActualDataNode);
         });
@@ -75,9 +75,9 @@ public class ShardingRuleChecker {
     
     private void checkBindingTableConfiguration(final ShardingRuleConfiguration ruleConfig) {
         ShardingSpherePreconditions.checkState(
-                isValidBindingTableConfiguration(shardingRule.getShardingTables(), new BindingTableCheckedConfiguration(shardingRule.getDataSourceNames(), shardingRule.getShardingAlgorithms(),
-                        ruleConfig.getBindingTableGroups(), shardingRule.getDefaultDatabaseShardingStrategyConfig(), shardingRule.getDefaultTableShardingStrategyConfig(),
-                        shardingRule.getDefaultShardingColumn())),
+                isValidBindingTableConfiguration(shardingRule.getShardingTables(),
+                        new BindingTableCheckedConfiguration(shardingRule.getDataSourceNames(), shardingRule.getShardingAlgorithms(), ruleConfig.getBindingTableGroups(),
+                                shardingRule.getDefaultDatabaseShardingStrategyConfig(), shardingRule.getDefaultTableShardingStrategyConfig(), shardingRule.getDefaultShardingColumn())),
                 InvalidBindingTablesException::new);
     }
     
@@ -104,10 +104,8 @@ public class ShardingRuleChecker {
     
     private ShardingTable getShardingTable(final String logicTableName, final Map<String, ShardingTable> shardingTables) {
         ShardingTable result = shardingTables.get(logicTableName);
-        if (null != result) {
-            return result;
-        }
-        throw new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new ShardingTableRuleNotFoundException(Collections.singleton(logicTableName)));
+        return result;
     }
     
     private boolean isValidActualDataSourceName(final ShardingTable sampleShardingTable, final ShardingTable shardingTable) {
@@ -116,9 +114,8 @@ public class ShardingRuleChecker {
     
     private boolean isValidActualTableName(final ShardingTable sampleShardingTable, final ShardingTable shardingTable) {
         for (String each : sampleShardingTable.getActualDataSourceNames()) {
-            Collection<String> sampleActualTableNames =
-                    sampleShardingTable.getActualTableNames(each).stream().map(actualTableName -> actualTableName.replace(sampleShardingTable.getTableDataNode().getPrefix(), ""))
-                            .collect(Collectors.toSet());
+            Collection<String> sampleActualTableNames = sampleShardingTable.getActualTableNames(each).stream()
+                    .map(actualTableName -> actualTableName.replace(sampleShardingTable.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
             Collection<String> actualTableNames =
                     shardingTable.getActualTableNames(each).stream().map(optional -> optional.replace(shardingTable.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
             if (!sampleActualTableNames.equals(actualTableNames)) {

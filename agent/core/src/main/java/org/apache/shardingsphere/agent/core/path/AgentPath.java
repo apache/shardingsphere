@@ -35,7 +35,7 @@ public final class AgentPath {
     
     /**
      * Get agent root path.
-     * 
+     *
      * @return agent root path
      */
     public static File getRootPath() {

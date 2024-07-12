@@ -32,6 +32,7 @@ public interface DatabaseConnectionManager<C> {
     /**
      * Get database connections.
      *
+     * @param databaseName database name
      * @param dataSourceName data source name
      * @param connectionOffset connection offset
      * @param connectionSize connection size
@@ -39,5 +40,5 @@ public interface DatabaseConnectionManager<C> {
      * @return database connections
      * @throws SQLException SQL exception
      */
-    List<C> getConnections(String dataSourceName, int connectionOffset, int connectionSize, ConnectionMode connectionMode) throws SQLException;
+    List<C> getConnections(String databaseName, String dataSourceName, int connectionOffset, int connectionSize, ConnectionMode connectionMode) throws SQLException;
 }

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 
 import java.util.Collections;
 import java.util.Map;
@@ -34,20 +34,20 @@ import java.util.Map;
 public final class DeleteMultiTableSegmentBinder {
     
     /**
-     * Bind delete multi table segment with metadata.
+     * Bind delete multi table segment.
      *
      * @param segment delete multi table segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bounded join table segment
+     * @return bound join table segment
      */
-    public static DeleteMultiTableSegment bind(final DeleteMultiTableSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static DeleteMultiTableSegment bind(final DeleteMultiTableSegment segment, final SQLStatementBinderContext binderContext,
                                                final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());
         result.getActualDeleteTables().addAll(segment.getActualDeleteTables());
-        result.setRelationTable(TableSegmentBinder.bind(segment.getRelationTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap()));
+        result.setRelationTable(TableSegmentBinder.bind(segment.getRelationTable(), binderContext, tableBinderContexts, Collections.emptyMap()));
         return result;
     }
 }

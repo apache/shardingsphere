@@ -56,15 +56,15 @@ class ShadowTest {
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
-        this.initEnvironment();
-        this.processSuccess();
-        this.cleanEnvironment();
+        initEnvironment();
+        processSuccess();
+        cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExistsInMySQL();
         orderItemRepository.createTableIfNotExistsInMySQL();
-        addressRepository.createTableIfNotExists();
+        addressRepository.createTableIfNotExistsInMySQL();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
         addressRepository.truncateTable();
@@ -74,34 +74,34 @@ class ShadowTest {
     
     private void processSuccess() throws SQLException {
         final Collection<Long> orderIds = insertData();
-        assertThat(this.selectAll(), equalTo(Arrays.asList(
-                new Order(1, 0, 2, 2, "INSERT_TEST"),
-                new Order(2, 0, 4, 4, "INSERT_TEST"),
-                new Order(3, 0, 6, 6, "INSERT_TEST"),
-                new Order(4, 0, 8, 8, "INSERT_TEST"),
-                new Order(5, 0, 10, 10, "INSERT_TEST"),
-                new Order(1, 1, 1, 1, "INSERT_TEST"),
-                new Order(2, 1, 3, 3, "INSERT_TEST"),
-                new Order(3, 1, 5, 5, "INSERT_TEST"),
-                new Order(4, 1, 7, 7, "INSERT_TEST"),
-                new Order(5, 1, 9, 9, "INSERT_TEST"))));
+        assertThat(selectAll(), equalTo(Arrays.asList(
+                new Order(1L, 0, 2, 2L, "INSERT_TEST"),
+                new Order(2L, 0, 4, 4L, "INSERT_TEST"),
+                new Order(3L, 0, 6, 6L, "INSERT_TEST"),
+                new Order(4L, 0, 8, 8L, "INSERT_TEST"),
+                new Order(5L, 0, 10, 10L, "INSERT_TEST"),
+                new Order(1L, 1, 1, 1L, "INSERT_TEST"),
+                new Order(2L, 1, 3, 3L, "INSERT_TEST"),
+                new Order(3L, 1, 5, 5L, "INSERT_TEST"),
+                new Order(4L, 1, 7, 7L, "INSERT_TEST"),
+                new Order(5L, 1, 9, 9L, "INSERT_TEST"))));
         assertThat(orderItemRepository.selectAll(), equalTo(Arrays.asList(
-                new OrderItem(1, 1, 1, "13800000001", "INSERT_TEST"),
-                new OrderItem(2, 1, 2, "13800000001", "INSERT_TEST"),
-                new OrderItem(3, 2, 3, "13800000001", "INSERT_TEST"),
-                new OrderItem(4, 2, 4, "13800000001", "INSERT_TEST"),
-                new OrderItem(5, 3, 5, "13800000001", "INSERT_TEST"),
-                new OrderItem(6, 3, 6, "13800000001", "INSERT_TEST"),
-                new OrderItem(7, 4, 7, "13800000001", "INSERT_TEST"),
-                new OrderItem(8, 4, 8, "13800000001", "INSERT_TEST"),
-                new OrderItem(9, 5, 9, "13800000001", "INSERT_TEST"),
-                new OrderItem(10, 5, 10, "13800000001", "INSERT_TEST"))));
+                new OrderItem(1L, 1L, 1, "13800000001", "INSERT_TEST"),
+                new OrderItem(2L, 1L, 2, "13800000001", "INSERT_TEST"),
+                new OrderItem(3L, 2L, 3, "13800000001", "INSERT_TEST"),
+                new OrderItem(4L, 2L, 4, "13800000001", "INSERT_TEST"),
+                new OrderItem(5L, 3L, 5, "13800000001", "INSERT_TEST"),
+                new OrderItem(6L, 3L, 6, "13800000001", "INSERT_TEST"),
+                new OrderItem(7L, 4L, 7, "13800000001", "INSERT_TEST"),
+                new OrderItem(8L, 4L, 8, "13800000001", "INSERT_TEST"),
+                new OrderItem(9L, 5L, 9, "13800000001", "INSERT_TEST"),
+                new OrderItem(10L, 5L, 10, "13800000001", "INSERT_TEST"))));
         assertThat(addressRepository.selectAll(),
-                equalTo(LongStream.range(1, 11).mapToObj(i -> new Address(i, "address_test_" + i)).collect(Collectors.toList())));
+                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
         deleteData(orderIds);
-        assertThat(this.selectAll(), equalTo(Collections.singletonList(new Order(1, 0, 2, 2, "INSERT_TEST"))));
-        assertThat(orderItemRepository.selectAll(), equalTo(new ArrayList<>()));
-        assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
+        assertThat(selectAll(), equalTo(Collections.singletonList(new Order(1L, 0, 2, 2L, "INSERT_TEST"))));
+        assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
     }
     
     private Collection<Long> insertData() throws SQLException {
@@ -127,7 +127,7 @@ class ShadowTest {
     }
     
     private void deleteData(final Collection<Long> orderIds) throws SQLException {
-        long count = 1;
+        long count = 1L;
         for (Long each : orderIds) {
             orderRepository.deleteShadow(each);
             orderRepository.delete(each);

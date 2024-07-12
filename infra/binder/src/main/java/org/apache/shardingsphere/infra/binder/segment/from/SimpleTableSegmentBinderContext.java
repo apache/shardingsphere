@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.binder.segment.from;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 
 import java.util.Collection;
 import java.util.Map;

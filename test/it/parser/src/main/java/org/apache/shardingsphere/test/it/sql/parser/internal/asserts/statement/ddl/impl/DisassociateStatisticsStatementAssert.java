@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DisassociateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
@@ -44,12 +44,12 @@ public final class DisassociateStatisticsStatementAssert {
     
     /**
      * Assert disassociate statistics statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual disassociate statistics statement
      * @param expected expected disassociate statistics statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
         assertColumns(assertContext, actual, expected);
         assertIndexes(assertContext, actual, expected);
@@ -59,13 +59,13 @@ public final class DisassociateStatisticsStatementAssert {
         assertIndexTypes(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final DisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
         if (null != expected.getTables()) {
             TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
         }
     }
     
-    private static void assertColumns(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final DisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
         if (null != expected.getColumns()) {
             int count = 0;
             for (ColumnSegment each : actual.getColumns()) {
@@ -75,7 +75,7 @@ public final class DisassociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertIndexes(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+    private static void assertIndexes(final SQLCaseAssertContext assertContext, final DisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
         if (null != expected.getIndexes()) {
             int count = 0;
             for (IndexSegment each : actual.getIndexes()) {
@@ -85,7 +85,7 @@ public final class DisassociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertFunctions(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+    private static void assertFunctions(final SQLCaseAssertContext assertContext, final DisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
         if (null != expected.getFunctions()) {
             int count = 0;
             for (FunctionSegment each : actual.getFunctions()) {
@@ -95,7 +95,7 @@ public final class DisassociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertPackages(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+    private static void assertPackages(final SQLCaseAssertContext assertContext, final DisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
         if (null != expected.getPackages()) {
             int count = 0;
             for (PackageSegment each : actual.getPackages()) {
@@ -105,7 +105,7 @@ public final class DisassociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertTypes(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+    private static void assertTypes(final SQLCaseAssertContext assertContext, final DisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
         if (null != expected.getTypes()) {
             int count = 0;
             for (TypeSegment each : actual.getTypes()) {
@@ -115,7 +115,7 @@ public final class DisassociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertIndexTypes(final SQLCaseAssertContext assertContext, final OracleDisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
+    private static void assertIndexTypes(final SQLCaseAssertContext assertContext, final DisassociateStatisticsStatement actual, final DisassociateStatisticsStatementTestCase expected) {
         if (null != expected.getIndexTypes()) {
             int count = 0;
             for (IndexTypeSegment each : actual.getIndexTypes()) {

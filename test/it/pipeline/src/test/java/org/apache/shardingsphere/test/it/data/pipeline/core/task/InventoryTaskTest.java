@@ -101,8 +101,9 @@ class InventoryTaskTest {
         result.setLogicTableName(logicTableName);
         result.setActualTableName(actualTableName);
         result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
-        result.getCommonContext().setPosition(
-                null == taskConfig.getDumperContext().getCommonContext().getPosition() ? new IntegerPrimaryKeyIngestPosition(0, 1000) : taskConfig.getDumperContext().getCommonContext().getPosition());
+        result.getCommonContext().setPosition(null == taskConfig.getDumperContext().getCommonContext().getPosition()
+                ? new IntegerPrimaryKeyIngestPosition(0L, 1000L)
+                : taskConfig.getDumperContext().getCommonContext().getPosition());
         return result;
     }
 }

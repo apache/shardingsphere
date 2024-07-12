@@ -173,7 +173,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final ShardingSphereDatabase targetDatabase) {
-        Map<String, Map<String, Object>> targetPoolProps = new HashMap<>();
+        Map<String, Map<String, Object>> targetPoolProps = new HashMap<>(targetDatabase.getResourceMetaData().getStorageUnits().size(), 1F);
         YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
         for (Entry<String, StorageUnit> entry : targetDatabase.getResourceMetaData().getStorageUnits().entrySet()) {
             targetPoolProps.put(entry.getKey(), dataSourceConfigSwapper.swapToMap(entry.getValue().getDataSourcePoolProperties()));
@@ -192,7 +192,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private Map<String, String> buildTargetTableSchemaMap(final Map<String, List<DataNode>> sourceDataNodes) {
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, String> result = new LinkedHashMap<>(sourceDataNodes.size(), 1F);
         sourceDataNodes.forEach((tableName, dataNodes) -> result.put(tableName, dataNodes.get(0).getSchemaName()));
         return result;
     }
@@ -285,7 +285,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private void refreshTableMetadata(final String jobId, final String databaseName) {
-        // TODO use origin database name now, wait reloadDatabaseMetaData fix case-sensitive probelm
+        // TODO use origin database name now, wait reloadDatabaseMetaData fix case-sensitive problem
         ContextManager contextManager = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager();
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         contextManager.refreshTableMetaData(database);

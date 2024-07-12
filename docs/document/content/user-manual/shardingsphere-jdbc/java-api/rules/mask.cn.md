@@ -11,7 +11,7 @@ weight = 6
 
 ### 配置入口
 
-类名称：org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration
+类名称：org.apache.shardingsphere.mask.config.MaskRuleConfiguration
 
 可配置属性：
 
@@ -22,7 +22,7 @@ weight = 6
 
 ### 脱敏表规则配置
 
-类名称：org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration
+类名称：org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration
 
 可配置属性：
 
@@ -33,7 +33,7 @@ weight = 6
 
 ### 脱敏列规则配置
 
-类名称：org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration
+类名称：org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration
 
 可配置属性：
 
@@ -44,7 +44,7 @@ weight = 6
 
 ### 加解密算法配置
 
-类名称：org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
+类名称：org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration
 
 可配置属性：
 

@@ -23,39 +23,33 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.binder.segment.where.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Update statement binder.
+ * Delete statement binder.
  */
 public final class DeleteStatementBinder implements SQLStatementBinder<DeleteStatement> {
     
     @Override
-    public DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    public DeleteStatement bind(final DeleteStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        DeleteStatement result = copy(sqlStatement);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        result.setTable(TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, Collections.emptyMap()));
+        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, Collections.emptyMap())));
+        return result;
     }
     
-    @SneakyThrows
-    private DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                 final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+    @SneakyThrows(ReflectiveOperationException.class)
+    private DeleteStatement copy(final DeleteStatement sqlStatement) {
         DeleteStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
-        statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
-        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
-        result.setTable(boundedTableSegment);
-        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
-        DeleteStatementHandler.getOrderBySegment(sqlStatement).ifPresent(optional -> DeleteStatementHandler.setOrderBySegment(result, optional));
-        DeleteStatementHandler.getLimitSegment(sqlStatement).ifPresent(optional -> DeleteStatementHandler.setLimitSegment(result, optional));
-        DeleteStatementHandler.getWithSegment(sqlStatement).ifPresent(optional -> DeleteStatementHandler.setWithSegment(result, optional));
-        DeleteStatementHandler.getOutputSegment(sqlStatement).ifPresent(optional -> DeleteStatementHandler.setOutputSegment(result, optional));
+        sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
+        sqlStatement.getLimit().ifPresent(result::setLimit);
+        sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
+        sqlStatement.getOutputSegment().ifPresent(result::setOutputSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;

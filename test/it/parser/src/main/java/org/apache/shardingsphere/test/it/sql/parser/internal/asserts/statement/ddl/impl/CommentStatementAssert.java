@@ -19,9 +19,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CommentStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexTypeAssert;
@@ -42,7 +41,7 @@ public final class CommentStatementAssert {
     
     /**
      * Assert comment statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual comment statement
      * @param expected expected comment statement test case
@@ -70,7 +69,7 @@ public final class CommentStatementAssert {
     }
     
     private static void assertIndexType(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
-        Optional<IndexTypeSegment> indexTypeSegment = CommentStatementHandler.getIndexType(actual);
+        Optional<IndexTypeSegment> indexTypeSegment = actual.getIndexType();
         if (null == expected.getIndexType()) {
             assertFalse(indexTypeSegment.isPresent(), assertContext.getText("Actual index type should not exist."));
         } else {

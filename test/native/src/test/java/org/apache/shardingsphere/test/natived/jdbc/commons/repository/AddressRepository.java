@@ -38,11 +38,11 @@ public final class AddressRepository {
     }
     
     /**
-     * create table t_address if not exists.
+     * create table t_address if not exists in MySQL.
      *
      * @throws SQLException SQL exception
      */
-    public void createTableIfNotExists() throws SQLException {
+    public void createTableIfNotExistsInMySQL() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id))";
         try (
                 Connection connection = dataSource.getConnection();
@@ -62,7 +62,7 @@ public final class AddressRepository {
                 + "    address_id bigint NOT NULL,\n"
                 + "    address_name varchar(100) NOT NULL,\n"
                 + "    PRIMARY KEY (address_id)\n"
-                + ");";
+                + ")";
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -125,6 +125,22 @@ public final class AddressRepository {
      */
     public void delete(final Long id) throws SQLException {
         String sql = "DELETE FROM t_address WHERE address_id=?";
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+    
+    /**
+     * delete by id in ClickHouse.
+     *
+     * @param id id
+     * @throws SQLException SQL exception
+     */
+    public void deleteInClickHouse(final Long id) throws SQLException {
+        String sql = "alter table t_address delete where address_id=?";
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

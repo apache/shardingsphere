@@ -109,8 +109,8 @@ public final class CommandExecutorTask implements Runnable {
     }
     
     private void fillLogMDC() {
-        MDC.put(LogMDCConstants.DATABASE_KEY, connectionSession.getDatabaseName());
-        MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString());
+        MDC.put(LogMDCConstants.DATABASE_KEY, connectionSession.getUsedDatabaseName());
+        MDC.put(LogMDCConstants.USER_KEY, connectionSession.getConnectionContext().getGrantee().toString());
     }
     
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload) throws SQLException {

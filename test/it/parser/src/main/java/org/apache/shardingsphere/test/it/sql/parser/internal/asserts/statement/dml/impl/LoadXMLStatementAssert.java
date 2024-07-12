@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.LoadXMLStatementTestCase;
@@ -39,11 +39,11 @@ public final class LoadXMLStatementAssert {
      * @param actual actual load xml statement
      * @param expected expected load xml statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLLoadXMLStatement actual, final LoadXMLStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final LoadXMLStatement actual, final LoadXMLStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final MySQLLoadXMLStatement actual, final LoadXMLStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final LoadXMLStatement actual, final LoadXMLStatementTestCase expected) {
         if (null == expected.getTable()) {
             assertNull(actual.getTableSegment(), assertContext.getText("Actual table should not exist."));
         } else {

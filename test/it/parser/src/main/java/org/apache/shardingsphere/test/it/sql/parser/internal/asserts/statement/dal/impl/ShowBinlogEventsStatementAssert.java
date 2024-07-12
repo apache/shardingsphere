@@ -19,15 +19,15 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinlogEventsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowBinlogEventsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBinlogEventsStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Show binlog events statement assert.
@@ -42,7 +42,7 @@ public final class ShowBinlogEventsStatementAssert {
      * @param actual actual show binlog events statement
      * @param expected expected show binlog events statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowBinlogEventsStatement actual, final ShowBinlogEventsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowBinlogEventsStatement actual, final ShowBinlogEventsStatementTestCase expected) {
         if (null == expected.getLogName()) {
             assertNull(actual.getLogName(), assertContext.getText("Actual logName should not exist."));
         } else {

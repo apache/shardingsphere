@@ -46,7 +46,7 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
     
     /**
      * Revise column meta data.
-     * 
+     *
      * @param tableName table name
      * @param originalMetaDataList original column meta data list
      * @return revised column meta data

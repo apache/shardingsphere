@@ -63,11 +63,11 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
+            return Collections.singleton(new LocalDataQueryResultRow(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), LocalDateTime.now(),
                     String.format("Successfully exported to：'%s'", filePath)));
         }
         return Collections.singleton(new LocalDataQueryResultRow(
-                contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), Base64.encodeBase64String(exportedData.getBytes())));
+                contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), LocalDateTime.now(), Base64.encodeBase64String(exportedData.getBytes())));
     }
     
     private String generateExportData(final ShardingSphereMetaData metaData) {
@@ -83,8 +83,9 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
     }
     
     private Map<String, String> getDatabases(final ProxyContext proxyContext) {
-        Map<String, String> result = new LinkedHashMap<>();
-        proxyContext.getAllDatabaseNames().forEach(each -> {
+        Collection<String> databaseNames = proxyContext.getAllDatabaseNames();
+        Map<String, String> result = new LinkedHashMap<>(databaseNames.size(), 1F);
+        databaseNames.forEach(each -> {
             ShardingSphereDatabase database = proxyContext.getContextManager().getDatabase(each);
             if (database.getResourceMetaData().getAllInstanceDataSourceNames().isEmpty()) {
                 return;
@@ -100,7 +101,11 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
         }
         StringBuilder result = new StringBuilder();
         result.append("props:").append(System.lineSeparator());
-        props.forEach((key, value) -> result.append("  ").append(key).append(": ").append(value).append(System.lineSeparator()));
+        props.forEach((key, value) -> {
+            if (null != value && !"".equals(value)) {
+                result.append("  ").append(key).append(": ").append(value).append(System.lineSeparator());
+            }
+        });
         return result.toString();
     }
     

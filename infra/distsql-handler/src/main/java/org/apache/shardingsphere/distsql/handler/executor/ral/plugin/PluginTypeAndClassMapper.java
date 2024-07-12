@@ -28,7 +28,7 @@ public interface PluginTypeAndClassMapper extends TypedSPI {
     
     /**
      * Get plugin class.
-     * 
+     *
      * @return plugin class
      */
     Class<? extends TypedSPI> getPluginClass();

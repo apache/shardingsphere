@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Projection utility class.
@@ -35,7 +35,7 @@ public final class ProjectionUtils {
     
     /**
      * Get column label from alias.
-     * 
+     *
      * @param alias alias
      * @param databaseType database type
      * @return column label
@@ -70,7 +70,7 @@ public final class ProjectionUtils {
     
     /**
      * Get column name from function.
-     * 
+     *
      * @param functionName function name
      * @param functionExpression function expression
      * @param databaseType database type
@@ -88,7 +88,7 @@ public final class ProjectionUtils {
     
     /**
      * Get column name from expression.
-     * 
+     *
      * @param expression expression
      * @param databaseType database type
      * @return column name
@@ -105,7 +105,7 @@ public final class ProjectionUtils {
     
     /**
      * Get column name from subquery segment.
-     * 
+     *
      * @param subquerySegment subquery segment
      * @param databaseType database type
      * @return column name

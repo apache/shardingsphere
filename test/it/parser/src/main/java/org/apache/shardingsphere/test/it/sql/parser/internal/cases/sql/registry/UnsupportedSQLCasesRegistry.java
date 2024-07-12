@@ -38,7 +38,7 @@ public final class UnsupportedSQLCasesRegistry {
     
     /**
      * Get singleton instance.
-     * 
+     *
      * @return singleton instance
      */
     public static UnsupportedSQLCasesRegistry getInstance() {

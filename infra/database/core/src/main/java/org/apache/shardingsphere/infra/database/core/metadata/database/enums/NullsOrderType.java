@@ -34,7 +34,7 @@ public enum NullsOrderType {
     
     /**
      * Get reversed order type.
-     * 
+     *
      * @return reversed order type
      */
     public NullsOrderType getReversedOrderType() {

@@ -62,7 +62,7 @@ public final class StorageContainerUtils {
         result.setPassword(password);
         result.setMaximumPoolSize(maximumPoolSize);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        result.setLeakDetectionThreshold(10000);
+        result.setLeakDetectionThreshold(10000L);
         return result;
     }
 }

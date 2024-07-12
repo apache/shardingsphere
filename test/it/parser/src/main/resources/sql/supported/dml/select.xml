@@ -277,4 +277,7 @@
     <sql-case id="select_hour_from_table" value="select hour from table1" db-types="SQLServer"/>
     <sql-case id="select_minute_from_table" value="select minute from table1" db-types="SQLServer"/>
     <sql-case id="select_with_collation_keyword" value="SELECT pg_get_expr  AS CONSTRAINT ,indcollation AS COLLATION FROM pg_index" db-types="PostgreSQL"/>
+    <sql-case id="select_with_index_hints1" value="SELECT * FROM t1 USE INDEX (i1) IGNORE INDEX (i2) USE INDEX (i2);" db-types="MySQL,Doris"/>
+    <sql-case id="select_with_index_hints2" value="SELECT * FROM t1 USE INDEX () IGNORE INDEX (i2) USE INDEX (i1) USE INDEX (i2);" db-types="MySQL,Doris"/>
+    <sql-case id="select_with_index_hints3" value="SELECT * FROM t1 USE INDEX (i1,i2) IGNORE INDEX (i2);" db-types="MySQL,Doris"/>
 </sql-cases>

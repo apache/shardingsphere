@@ -27,7 +27,7 @@ public interface PipelineJob extends SimpleJob {
     
     /**
      * Get pipeline job runner manager.
-     * 
+     *
      * @return pipeline job runner manager
      */
     PipelineJobRunnerManager getJobRunnerManager();

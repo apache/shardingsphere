@@ -38,8 +38,8 @@ class DataConsistencyCheckUtilsTest {
     
     @Test
     void assertIsBigDecimalEquals() {
-        BigDecimal one = BigDecimal.valueOf(3322, 1);
-        BigDecimal another = BigDecimal.valueOf(33220, 2);
+        BigDecimal one = BigDecimal.valueOf(3322L, 1);
+        BigDecimal another = BigDecimal.valueOf(33220L, 2);
         assertTrue(DataConsistencyCheckUtils.isBigDecimalEquals(one, another));
     }
 }

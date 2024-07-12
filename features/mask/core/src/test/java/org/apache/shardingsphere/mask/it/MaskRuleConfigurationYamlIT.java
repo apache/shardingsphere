@@ -55,7 +55,7 @@ class MaskRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     private void assertMaskAlgorithm(final Map<String, YamlAlgorithmConfiguration> actual) {
         assertThat(actual.size(), is(2));
         assertThat(actual.get("keep_first_n_last_m_mask").getType(), is("KEEP_FIRST_N_LAST_M"));
-        assertThat(actual.get("keep_first_n_last_m_mask").getProps().get("replace-char"), is("*"));
+        assertThat(actual.get("keep_first_n_last_m_mask").getProps().getProperty("replace-char"), is("*"));
         assertThat(actual.get("md5_mask").getType(), is("MD5"));
         assertTrue(actual.get("md5_mask").getProps().isEmpty());
     }

@@ -19,16 +19,17 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingCopyStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCopyStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -56,7 +57,7 @@ class ShardingCopyStatementValidatorTest {
         PostgreSQLCopyStatement sqlStatement = new PostgreSQLCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(
-                shardingRule, new CopyStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                shardingRule, new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -64,7 +65,7 @@ class ShardingCopyStatementValidatorTest {
         OpenGaussCopyStatement sqlStatement = new OpenGaussCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(
-                shardingRule, new CopyStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                shardingRule, new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -79,7 +80,7 @@ class ShardingCopyStatementValidatorTest {
     
     private void assertPreValidateCopyTable(final CopyStatement sqlStatement) {
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement);
+        CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         String tableName = "t_order";
         when(shardingRule.isShardingTable(tableName)).thenReturn(true);
         new ShardingCopyStatementValidator().preValidate(

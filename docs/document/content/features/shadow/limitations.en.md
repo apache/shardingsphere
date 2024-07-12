@@ -8,10 +8,10 @@ weight = 2
 No
 
 ## Column based shadow algorithm
+SQL does not support lists：
+- Does not support DDL.
 
-Does not support DDL.
-
-Does not support scope, group, subqueries such as BETWEEN, GROUP BY ... HAVING, etc.
+- Does not support scope, group, subqueries such as BETWEEN, GROUP BY ... HAVING, etc.
 
 SQL support list
 

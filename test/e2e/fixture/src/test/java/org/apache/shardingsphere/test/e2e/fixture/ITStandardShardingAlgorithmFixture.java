@@ -44,7 +44,7 @@ public final class ITStandardShardingAlgorithmFixture implements StandardShardin
         int maxValue = shardingValue.getValueRange().hasUpperBound() ? shardingValue.getValueRange().upperEndpoint() : Integer.MAX_VALUE;
         long range = BigInteger.valueOf(maxValue).subtract(BigInteger.valueOf(minValue)).longValue();
         int begin = Math.abs(minValue) % 10;
-        if (range > 9) {
+        if (range > 9L) {
             return availableTargetNames;
         }
         for (int i = begin; i <= range; i += 1) {

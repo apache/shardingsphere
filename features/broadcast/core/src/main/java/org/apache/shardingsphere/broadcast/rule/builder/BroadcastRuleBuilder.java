@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.broadcast.rule.builder;
 
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Broadcast rule builder.
@@ -36,8 +35,8 @@ public final class BroadcastRuleBuilder implements DatabaseRuleBuilder<Broadcast
     
     @Override
     public BroadcastRule build(final BroadcastRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
-                               final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new BroadcastRule(ruleConfig, databaseName, dataSources, builtRules);
+                               final ResourceMetaData resourceMetaData, final Collection<ShardingSphereRule> builtRules, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        return new BroadcastRule(ruleConfig, databaseName, resourceMetaData.getDataSourceMap(), builtRules);
     }
     
     @Override

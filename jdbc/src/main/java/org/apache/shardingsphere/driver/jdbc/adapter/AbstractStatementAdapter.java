@@ -19,22 +19,17 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collection;
@@ -43,7 +38,7 @@ import java.util.Collection;
  * Adapter for {@code Statement}.
  */
 @Getter
-public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {
+public abstract class AbstractStatementAdapter extends WrapperAdapter implements Statement {
     
     @Getter(AccessLevel.NONE)
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
@@ -54,27 +49,13 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private int fetchDirection;
     
+    private boolean closeOnCompletion;
+    
     private boolean closed;
     
-    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
-        if (!connection.getAutoCommit()) {
-            return false;
-        }
-        TransactionType transactionType = connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType();
-        boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction();
-        if (!TransactionType.isDistributedTransaction(transactionType) || isInTransaction) {
-            return false;
-        }
-        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
-    }
-    
-    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
-    }
-    
-    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
-        if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
-            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
+    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData) {
+        if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
+            DatabaseType databaseType = metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
                 connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().setExceptionOccur(true);
@@ -85,8 +66,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     protected abstract boolean isAccumulate();
     
     protected abstract Collection<? extends Statement> getRoutedStatements();
-    
-    protected abstract DriverExecutor getExecutor();
     
     protected abstract StatementManager getStatementManager();
     
@@ -171,7 +150,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     private int accumulate() throws SQLException {
-        long result = 0;
+        long result = 0L;
         boolean hasResult = false;
         for (Statement each : getRoutedStatements()) {
             int updateCount = each.getUpdateCount();
@@ -201,6 +180,28 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
+    public final boolean isCloseOnCompletion() {
+        return closeOnCompletion;
+    }
+    
+    @Override
+    public final void closeOnCompletion() {
+        closeOnCompletion = true;
+    }
+    
+    @Override
+    public final void setCursorName(final String name) throws SQLException {
+        ShardingSpherePreconditions.checkState(1 == getRoutedStatements().size(), () -> new SQLFeatureNotSupportedException("setCursorName"));
+        getRoutedStatements().iterator().next().setCursorName(name);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public final void cancel() throws SQLException {
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::cancel);
+    }
+    
+    @Override
     public final SQLWarning getWarnings() {
         return null;
     }
@@ -211,19 +212,11 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public final void cancel() throws SQLException {
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::cancel);
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
     public final void close() throws SQLException {
         closed = true;
         try {
             forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
-            if (null != getExecutor()) {
-                getExecutor().close();
-            }
+            closeExecutor();
             if (null != getStatementManager()) {
                 getStatementManager().close();
             }
@@ -231,4 +224,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             getRoutedStatements().clear();
         }
     }
+    
+    protected abstract void closeExecutor() throws SQLException;
 }

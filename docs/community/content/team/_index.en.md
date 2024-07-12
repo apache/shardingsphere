@@ -531,6 +531,16 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/16010265?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+         <td>
+            <a href="https://github.com/iamhucong" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/20391901?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+         <td>
+            <a href="https://github.com/TherChenYang" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/124348939?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -541,6 +551,12 @@ chapter = true
         </td>
         <td>
             <b>Maolin Jiang</b>
+        </td>
+        <td>
+            <b>Cong Hu</b>
+        </td>
+        <td>
+            <b>Chenyang Ma</b>
         </td>
     </tr>
 </table>
@@ -555,13 +571,14 @@ You can find all of the ShardingSphere contributors directly in GitHub's contrib
 ## Becoming a Committer
 
 The ShardingSphere community follows the [Apache Community’s process](http://community.apache.org/newcommitter.html) on accepting a new committer.
-Contributors that actively participate in ShardingSphere's community will be invited by the project's (P)PMC and Committers to join them by becoming a committer.
+Contributors who actively participate in the ShardingSphere community may be invited to become a committer by the project's PMC and existing committers.
 
 You can read the [Contributor Guide](/en/involved/contribute/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/involved/committer/) for more details on how to become a committer.
 
-### How Can I Become a Contributor
+### How Can I become a Contributor
 
-A contributor simply means that you take an interest in the project and contribute in some way, ranging from asking questions to providing new features as code patches. Contributions can be made in many ways, such as: 
+A contributor simply means that you take an interest in the project and contribute in some way, ranging from asking questions to providing new features as code patches.
+Contributions can be made in many ways, such as: 
 1. Help others in the issues
   - Help solve problems with the issues
   - Remind the authors to provide a demo if they are reporting a bug
@@ -573,11 +590,12 @@ A contributor simply means that you take an interest in the project and contribu
 6. Spread the word! Tweet or engage with @ShardingSphere on Twitter
 7. Bit of a writer? Consider submitting a piece for publication on the ShardingSphere Medium page and official blog and we will feature you on all our media channels as well
 
-The first step is to get involved. Dive into the Apache ShardingSphere concept & code, and say hi to the community; offer help, improve docs, complete a newbie ticket or answer a user. You may just be surprised how welcoming and open folks are here. The more visible and engaged you are in the project, the more fun you will have and the more access you will have to advice and feedback. Contributing is fun and beneficial. 
+The first step towards becoming a contributor is to get involved. Dive into the Apache ShardingSphere concept & code, and say hi to the community; offer help, improve docs, complete a newbie ticket or answer a user. You may just be surprised how welcoming and open folks are here. The more visible and engaged you are in the project, the more fun you will have and the more access you will have to advice and feedback. Contributing is fun and beneficial. 
 
-### Anyone can become a committer 
+### Anyone can become a Committer 
 
-Anyone who contributes to a project in any way is a contributor. If you become a valuable contributor to the project, the Project Management Committee (PMC) may invite you to become a committer. 
+Anyone who contributes to a project in any way is a contributor.
+If you become a valuable contributor to the project, the Project Management Committee (PMC) may invite you to become a committer. 
 
 It brings with it the privilege of write access to the project repository and resources, not just read source code files. A committer has the privilege to write and commit code and create pull requests to the default branch of the repository and in most cases, reviewers are also committers as you need to understand the code to review a PR.  
 In short, the committer is authorized to merge user contributions into the project.
@@ -590,10 +608,11 @@ Apart from many visible contributions of value in Apache projects (documentation
 - Providing mentorship 
 
 ### Why should I become a Committer?
+
 Committer activity is a good and useful endeavor: 
 - Being assigned to a Committer role is extremely motivating. A good open source community like Apache ShardingSphere appreciates your values and contributions, and you clearly see the results of your work in action.
 - Grow both professionally and personally very fast. 
 - Have an opportunity to connect with top professionals and also pull some cool ideas.
 - Being a Committer is good for CV building and even a greater plus for junior programmers.
 
-For more information, please read Guide for new project committers published by the Apache Software Foundation. 
+For more information, please read Guide for new project committers published by the Apache Software Foundation.

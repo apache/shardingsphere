@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sharding.algorithm.audit;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.audit.DMLWithoutShardingKeyException;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 
 import java.util.List;
 
@@ -36,13 +36,12 @@ import java.util.List;
 public final class DMLShardingConditionsShardingAuditAlgorithm implements ShardingAuditAlgorithm {
     
     @Override
-    public void check(final SQLStatementContext sqlStatementContext, final List<Object> params,
-                      final Grantee grantee, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public void check(final SQLStatementContext sqlStatementContext, final List<Object> params, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
-            if (sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {
-                ShardingSpherePreconditions.checkNotEmpty(new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, params),
-                        DMLWithoutShardingKeyException::new);
+            if (((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {
+                ShardingSpherePreconditions.checkNotEmpty(
+                        new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, params), DMLWithoutShardingKeyException::new);
             }
         }
     }

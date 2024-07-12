@@ -43,7 +43,7 @@ public enum QuoteCharacter {
     
     NONE("", "");
     
-    private static final Map<Character, QuoteCharacter> BY_FIRST_CHAR = new HashMap<>(QuoteCharacter.values().length - 1, 1L);
+    private static final Map<Character, QuoteCharacter> BY_FIRST_CHAR = new HashMap<>(values().length - 1, 1F);
     
     static {
         for (QuoteCharacter each : values()) {
@@ -60,7 +60,7 @@ public enum QuoteCharacter {
     
     /**
      * Get quote character.
-     * 
+     *
      * @param value value to be get quote character
      * @return value of quote character
      */
@@ -73,7 +73,7 @@ public enum QuoteCharacter {
     
     /**
      * Wrap value with quote character.
-     * 
+     *
      * @param value value to be wrapped
      * @return wrapped value
      */
@@ -93,7 +93,7 @@ public enum QuoteCharacter {
     
     /**
      * Is wrapped by quote character.
-     * 
+     *
      * @param value value to be judged
      * @return is wrapped or not
      */

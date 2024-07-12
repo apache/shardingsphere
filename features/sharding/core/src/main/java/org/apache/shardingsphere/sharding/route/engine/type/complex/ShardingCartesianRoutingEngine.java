@@ -111,7 +111,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     }
     
     private Collection<RouteUnit> getRouteUnits(final String dataSource, final Set<List<RouteMapper>> cartesianRoutingTableGroups) {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
+        Collection<RouteUnit> result = new LinkedHashSet<>(cartesianRoutingTableGroups.size(), 1F);
         for (List<RouteMapper> each : cartesianRoutingTableGroups) {
             result.add(new RouteUnit(new RouteMapper(dataSource, dataSource), new LinkedList<>(each)));
         }

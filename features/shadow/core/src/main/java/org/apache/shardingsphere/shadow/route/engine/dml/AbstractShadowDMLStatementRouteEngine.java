@@ -23,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
@@ -33,10 +33,10 @@ import org.apache.shardingsphere.shadow.route.engine.determiner.ColumnShadowAlgo
 import org.apache.shardingsphere.shadow.route.engine.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,12 +60,12 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     
     @Override
     public final void route(final RouteContext routeContext, final ShadowRule rule) {
-        tableAliasNameMappings.putAll(getTableAliasNameMappings(((TableAvailable) sqlStatementContext).getAllTables()));
+        tableAliasNameMappings.putAll(getTableAliasNameMappings(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()));
         decorateRouteContext(routeContext, rule, findShadowDataSourceMappings(rule));
     }
     
     private Map<String, String> getTableAliasNameMappings(final Collection<SimpleTableSegment> tableSegments) {
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, String> result = new LinkedHashMap<>(tableSegments.size(), 1F);
         for (SimpleTableSegment each : tableSegments) {
             String tableName = each.getTableName().getIdentifier().getValue();
             String alias = each.getAliasName().isPresent() ? each.getAliasName().get() : tableName;

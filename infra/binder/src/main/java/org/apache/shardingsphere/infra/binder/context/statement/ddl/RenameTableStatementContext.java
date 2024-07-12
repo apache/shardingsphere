@@ -21,13 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
  * Rename table statement context.
@@ -37,23 +36,22 @@ public final class RenameTableStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public RenameTableStatementContext(final RenameTableStatement sqlStatement) {
+    public RenameTableStatementContext(final RenameTableStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList()), getDatabaseType());
+        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType(), currentDatabaseName);
+    }
+    
+    private Collection<SimpleTableSegment> getTables(final RenameTableStatement sqlStatement) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
+            result.add(each.getTable());
+            result.add(each.getRenameTable());
+        }
+        return result;
     }
     
     @Override
     public RenameTableStatement getSqlStatement() {
         return (RenameTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (RenameTableDefinitionSegment each : getSqlStatement().getRenameTables()) {
-            result.add(each.getTable());
-            result.add(each.getRenameTable());
-        }
-        return result;
     }
 }

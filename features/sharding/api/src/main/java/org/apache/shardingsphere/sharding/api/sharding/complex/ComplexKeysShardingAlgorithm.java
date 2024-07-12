@@ -30,7 +30,7 @@ public interface ComplexKeysShardingAlgorithm<T extends Comparable<?>> extends S
     
     /**
      * Sharding.
-     * 
+     *
      * @param availableTargetNames available data sources or table names
      * @param shardingValue sharding value
      * @return sharding results for data sources or table names

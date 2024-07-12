@@ -26,7 +26,7 @@ public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
     
     /**
      * Convert column value.
-     * 
+     *
      * @param columnValue column value
      * @return converted column value
      */
@@ -36,7 +36,7 @@ public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
     
     /**
      * Convert column type.
-     * 
+     *
      * @param columnType column type
      * @return converted column type
      */

@@ -45,7 +45,7 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
     
     @Override
     public void init(final Properties props) {
-        userDatabaseMappings = props.getProperty(DatabasePermittedPrivilegeProvider.USER_DATABASE_MAPPINGS_KEY, "");
+        userDatabaseMappings = props.getProperty(USER_DATABASE_MAPPINGS_KEY, "");
         checkUserDatabaseMappings();
     }
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.di
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.ExpectedSQLSegment;
 
@@ -34,7 +34,7 @@ public final class SQLSegmentAssert {
     
     /**
      * Assert generic attributes of actual SQL segment are same with expected SQL segment.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual SQL segment
      * @param expected expected SQL segment

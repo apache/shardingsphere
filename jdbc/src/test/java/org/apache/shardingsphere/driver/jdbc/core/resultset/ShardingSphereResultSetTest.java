@@ -21,8 +21,8 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class ShardingSphereResultSetTest {
     
@@ -70,16 +71,14 @@ class ShardingSphereResultSetTest {
     @BeforeEach
     void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
-        shardingSphereResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), true, createExecutionContext());
+        shardingSphereResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), createSQLStatementContext());
     }
     
-    private ExecutionContext createExecutionContext() {
-        ExecutionContext result = mock(ExecutionContext.class);
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+    private SQLStatementContext createSQLStatementContext() {
+        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(((TableAvailable) result).getTablesContext()).thenReturn(tablesContext);
         return result;
     }
     

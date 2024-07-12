@@ -23,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,7 +40,7 @@ public final class SQLStatementBinderContext {
     
     private final ShardingSphereMetaData metaData;
     
-    private final String defaultDatabaseName;
+    private final String currentDatabaseName;
     
     private final DatabaseType databaseType;
     
@@ -52,4 +53,11 @@ public final class SQLStatementBinderContext {
     private final Map<String, TableSegmentBinderContext> externalTableBinderContexts = new CaseInsensitiveMap<>();
     
     private final Collection<String> pivotColumnNames = new HashSet<>();
+    
+    public SQLStatementBinderContext(final SQLStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        this.metaData = metaData;
+        this.currentDatabaseName = currentDatabaseName;
+        databaseType = sqlStatement.getDatabaseType();
+        variableNames = sqlStatement.getVariableNames();
+    }
 }

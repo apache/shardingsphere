@@ -401,7 +401,7 @@ sqlStatementInPlsql
     // TODO collection_method_call
     | delete
     | insert
-    | lockTable
+    | lock
     | merge
     | rollback
     | savepoint

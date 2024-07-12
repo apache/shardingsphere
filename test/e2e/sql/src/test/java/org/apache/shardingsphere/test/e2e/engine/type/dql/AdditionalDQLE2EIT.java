@@ -53,7 +53,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
         SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         init(testParam, containerComposer);
-        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
+        // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
             return;
         }
@@ -74,7 +74,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
         SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         init(testParam, containerComposer);
-        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
+        // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
             return;
         }
@@ -95,7 +95,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
         SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         init(testParam, containerComposer);
-        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
+        // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
             return;
         }
@@ -116,7 +116,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
         SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         init(testParam, containerComposer);
-        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
+        // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
             return;
         }

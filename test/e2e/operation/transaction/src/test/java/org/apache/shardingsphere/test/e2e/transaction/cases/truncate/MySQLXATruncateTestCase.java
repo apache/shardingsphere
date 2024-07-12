@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * MySQL truncate XA transaction integration test.
  */
-@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, adapters = TransactionTestConstants.PROXY, transactionTypes = TransactionType.XA)
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, transactionTypes = TransactionType.XA)
 @Slf4j
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     
@@ -60,12 +60,11 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     }
     
     private void assertTruncateInMySQLXATransaction() throws SQLException {
-        // TODO This test case may cause bad effects to other test cases in JDBC adapter
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 8);
             try {
-                connection.createStatement().execute("truncate account;");
+                connection.createStatement().execute("TRUNCATE account");
                 fail("Expect exception, but no exception report.");
             } catch (final TableModifyInTransactionException ex) {
                 log.info("Exception for expected in Proxy: {}", ex.getMessage());

@@ -32,15 +32,8 @@ import java.lang.annotation.Target;
 public @interface RepositoryTupleField {
     
     /**
-     * Get persist path name.
-     * 
-     * @return persist path name
-     */
-    String value() default "";
-    
-    /**
      * Get type.
-     * 
+     *
      * @return type
      */
     Type type();

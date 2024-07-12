@@ -28,7 +28,7 @@ public interface DatabaseAdminExecutor {
     
     /**
      * Execute.
-     * 
+     *
      * @param connectionSession connection session
      * @throws SQLException SQLException
      */

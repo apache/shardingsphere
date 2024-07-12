@@ -27,15 +27,17 @@ public interface ShardingSphereRule {
     
     /**
      * Get rule configuration.
-     * 
+     *
      * @return rule configuration
      */
     RuleConfiguration getConfiguration();
     
     /**
      * Get rule attributes.
-     * 
+     *
      * @return rule attributes
      */
-    RuleAttributes getAttributes();
+    default RuleAttributes getAttributes() {
+        return new RuleAttributes();
+    }
 }

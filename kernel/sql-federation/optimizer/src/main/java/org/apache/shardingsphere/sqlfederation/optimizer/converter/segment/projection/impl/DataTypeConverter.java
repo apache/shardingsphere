@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public final class DataTypeConverter {
     
     /**
      * Convert data type segment to sql node.
-     * 
+     *
      * @param segment data type segment
      * @return sql node
      */

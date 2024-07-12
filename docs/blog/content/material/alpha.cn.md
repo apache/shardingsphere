@@ -11,7 +11,7 @@ ElasticJob（ https://github.com/apache/shardingsphere-elasticjob ）是面向�
 
 ElasticJob 在技术选型时，选择站在了巨人的肩膀上而不是重复制造轮子的理念，将定时任务事实标准的 QuartZ 与 分布式协调的利器 ZooKeeper 完美结合，快速而稳定的搭建了全新概念的分布式调度框架。
 
-### ElasticJob调度模型
+### ElasticJob 调度模型
 ElasticJob 的调度模型划分为支持线程级别调度的进程内调度 ElasticJob-Lite，和进程级别调度的 ElasticJob-Cloud。
 
 **进程内调度**
@@ -100,7 +100,7 @@ ElasticJob 中任务分片项的概念，使得任务可以在分布式的环境
 
 5. 全新的控制台界面
 
-### 3.x版本设计解读
+### 3.x 版本设计解读
 
 通过 Release Notes 能够看出，ElasticJob 3.x 并非 2.x 的修补版本，而是通过革新的设计理念践行的一套新产品。
 

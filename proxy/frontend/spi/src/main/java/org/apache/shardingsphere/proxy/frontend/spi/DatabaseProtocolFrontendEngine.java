@@ -31,7 +31,7 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypedSPI {
     
     /**
      * Initialize channel.
-     * 
+     *
      * @param channel channel
      */
     default void initChannel(final Channel channel) {
@@ -39,28 +39,28 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypedSPI {
     
     /**
      * Get database packet codec engine.
-     * 
+     *
      * @return database packet codec engine
      */
     DatabasePacketCodecEngine getCodecEngine();
     
     /**
      * Get authentication engine.
-     * 
+     *
      * @return authentication engine
      */
     AuthenticationEngine getAuthenticationEngine();
     
     /**
      * Get command execute engine.
-     * 
+     *
      * @return command execute engine
      */
     CommandExecuteEngine getCommandExecuteEngine();
     
     /**
      * Release resource.
-     * 
+     *
      * @param connectionSession connection session
      */
     void release(ConnectionSession connectionSession);

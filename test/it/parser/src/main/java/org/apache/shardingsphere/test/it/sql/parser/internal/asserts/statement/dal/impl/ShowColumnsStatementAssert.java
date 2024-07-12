@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
@@ -34,17 +34,17 @@ public final class ShowColumnsStatementAssert {
     
     /**
      * Assert show columns statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show columns statement
      * @param expected expected show columns statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowColumnsStatement actual, final ShowColumnsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowColumnsStatement actual, final ShowColumnsStatementTestCase expected) {
         if (null != actual.getTable()) {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
-        if (actual.getFromSchema().isPresent()) {
-            DatabaseAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getSchema());
+        if (actual.getFromDatabase().isPresent()) {
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getDatabase());
         }
         if (actual.getFilter().isPresent()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());

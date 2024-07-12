@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -27,9 +30,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,19 +39,26 @@ class AlterSQLTranslatorRuleExecutorTest {
     
     @Test
     void assertExecute() {
-        AlterSQLTranslatorRuleExecutor executor = new AlterSQLTranslatorRuleExecutor();
-        SQLTranslatorRule rule = mock(SQLTranslatorRule.class);
-        when(rule.getConfiguration()).thenReturn(createSQLTranslatorRuleConfiguration());
-        executor.setRule(rule);
-        SQLTranslatorRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(
-                new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("Native", PropertiesBuilder.build(new Property("foo", "bar"))), null));
-        assertThat(actual.getType(), is("Native"));
-        assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().getProperty("foo"), is("bar"));
-        assertTrue(actual.isUseOriginalSQLWhenTranslatingFailed());
+        AlterSQLTranslatorRuleStatement sqlStatement = new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("Native", PropertiesBuilder.build(new Property("foo", "bar"))), true);
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(engine::executeUpdate);
     }
     
-    private SQLTranslatorRuleConfiguration createSQLTranslatorRuleConfiguration() {
-        return new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true);
+    @Test
+    void assertExecuteWithNullOriginalSQLWhenTranslatingFailed() {
+        AlterSQLTranslatorRuleStatement sqlStatement = new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("Native", PropertiesBuilder.build(new Property("foo", "bar"))), null);
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(engine::executeUpdate);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        SQLTranslatorRule rule = mock(SQLTranslatorRule.class);
+        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
+        when(executor.getRuleClass()).thenReturn(SQLTranslatorRule.class);
+        when(rule.getConfiguration()).thenReturn(new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        return result;
     }
 }

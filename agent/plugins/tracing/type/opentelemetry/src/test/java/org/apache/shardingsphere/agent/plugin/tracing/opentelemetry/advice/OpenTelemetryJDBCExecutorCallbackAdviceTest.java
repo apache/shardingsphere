@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -125,7 +125,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     void assertExceptionHandle() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
-        advice.onThrowing(targetObject, null, new Object[]{executionUnit, false}, new IOException(), "OpenTelemetry");
+        advice.onThrowing(targetObject, null, new Object[]{executionUnit, false}, new IOException(""), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems);
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));

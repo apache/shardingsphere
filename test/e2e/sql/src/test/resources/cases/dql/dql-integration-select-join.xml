@@ -105,7 +105,7 @@
     </test-case>
     
     <!-- TODO add encrypt,encrypt_and_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt scenario when use standard table -->
-    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="sharding_and_encrypt">
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id" db-types="MySQL,Oracle,SQLServer" scenario-types="sharding_and_encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     

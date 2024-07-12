@@ -32,7 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -59,15 +59,10 @@ class MySQLBinlogRowsEventPacketTest {
     
     @BeforeEach
     void setUp() {
-        mockColumnDefs();
+        columnDefs = Collections.singletonList(new MySQLBinlogColumnDef(MySQLBinaryColumnType.LONGLONG));
         when(payload.readInt6()).thenReturn(1L);
         when(payload.readInt2()).thenReturn(2);
         when(payload.readIntLenenc()).thenReturn(1L);
-    }
-    
-    private void mockColumnDefs() {
-        columnDefs = new ArrayList<>();
-        columnDefs.add(new MySQLBinlogColumnDef(MySQLBinaryColumnType.LONGLONG));
     }
     
     @Test

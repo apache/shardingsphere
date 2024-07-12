@@ -11,7 +11,7 @@ The data masking Java API rule configuration allows users to directly create Sha
 
 ### Root Configuration
 
-Class name: org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration
+Class name: org.apache.shardingsphere.mask.config.MaskRuleConfiguration
 
 Attributes:
 
@@ -22,7 +22,7 @@ Attributes:
 
 ### Mask Table Rule Configuration
 
-Class name: org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration
+Class name: org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration
 
 Attributes:
 
@@ -33,7 +33,7 @@ Attributes:
 
 ### Mask Column Rule Configuration
 
-Class name: org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration
+Class name: org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration
 
 Attributes:
 
@@ -44,7 +44,7 @@ Attributes:
 
 ### Mask Algorithm Configuration
 
-Class name: org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
+Class name: org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration
 
 Attributes:
 

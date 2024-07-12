@@ -54,7 +54,7 @@ class EncryptTokenGenerateBuilderTest {
     @Test
     void assertGetSQLTokenGenerators() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getAllTables().isEmpty()).thenReturn(false);
+        when(selectStatementContext.getTablesContext().getSimpleTables().isEmpty()).thenReturn(false);
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("table"));
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(Collections.singleton(mock(OrderByItem.class)));
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.container.compose.mode;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.config.ProxyStandaloneContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -44,15 +44,12 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     private final AdapterContainer adapterContainer;
     
-    public StandaloneContainerComposer(final E2ETestParameter testParam) {
-        String scenario = testParam.getScenario();
+    public StandaloneContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
         containers = new ITContainers(scenario);
         // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "",
-                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType(), scenario)));
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getMode().toUpperCase()),
-                AdapterType.valueOf(testParam.getAdapter().toUpperCase()),
-                testParam.getDatabaseType(), storageContainer, scenario, ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, testParam.getDatabaseType())));
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, "", StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, storageContainer, scenario,
+                ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, databaseType)));
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(storageContainer);
         }

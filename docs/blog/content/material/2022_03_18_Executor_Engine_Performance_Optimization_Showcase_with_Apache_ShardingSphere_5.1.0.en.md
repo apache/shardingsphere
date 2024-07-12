@@ -431,7 +431,7 @@ rules:
         worker-id: 123
 ```
 
-We use the JMH test program to test different CASEs:
+We use the JMH test program to test different cases:
 
 ```
 @State(Scope.Thread)
@@ -483,10 +483,11 @@ This blog only covers the SQL Executor Engine and its optimizations. In the futu
 - https://shardingsphere.apache.org/document/current/en/reference/sharding/execute/
 - https://github.com/apache/shardingsphere/issues/13942
 - **MySQL UNION：** https://dev.mysql.com/doc/refman/8.0/en/union.html
-- **PostgreSQL UNION：**https://www.postgresql.org/docs/14/sql-select.html
+- **PostgreSQL UNION：** https://www.postgresql.org/docs/14/sql-select.html
 - **Oracle UNION：** https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/The-UNION-ALL-INTERSECT-MINUS-Operators.html
 - **SQL Server UNION：** https://docs.microsoft.com/en-us/sql/t-sql/language-elements/set-operators-union-transact-sql?view=sql-server-ver15
-- 
+
+
 ## Author
 **Duan Zhengqiang**
 

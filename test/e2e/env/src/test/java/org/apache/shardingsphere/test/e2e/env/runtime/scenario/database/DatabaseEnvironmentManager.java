@@ -54,7 +54,7 @@ public final class DatabaseEnvironmentManager {
     }
     
     private static Map<String, DatabaseType> crateDatabaseTypes(final Collection<String> datasourceNames, final DatabaseType defaultDatabaseType) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>();
+        Map<String, DatabaseType> result = new LinkedHashMap<>(datasourceNames.size(), 1F);
         for (String each : datasourceNames) {
             List<String> items = Splitter.on(":").splitToList(each);
             DatabaseType databaseType = items.size() > 1 ? TypedSPILoader.getService(DatabaseType.class, items.get(1)) : defaultDatabaseType;

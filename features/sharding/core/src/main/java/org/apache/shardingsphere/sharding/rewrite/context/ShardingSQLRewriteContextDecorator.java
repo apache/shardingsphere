@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.token.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 
@@ -67,9 +67,10 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     }
     
     private boolean containsShardingTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
-        Collection<SimpleTableSegment> tableSegments =
-                sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getAllTables() : sqlStatementContext.getTablesContext().getSimpleTableSegments();
-        for (SimpleTableSegment each : tableSegments) {
+        if (!(sqlStatementContext instanceof TableAvailable)) {
+            return false;
+        }
+        for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
             if (shardingRule.isShardingTable(each.getTableName().getIdentifier().getValue())) {
                 return true;
             }

@@ -1,0 +1,7 @@
+[
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.RuntimeInfo"},
+  "name":"com.github.dockerjava.api.model.RuntimeInfo",
+  "allPublicConstructors": true
+}
+]

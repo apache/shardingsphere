@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -52,7 +52,7 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     @Override
     public void execute(final ConnectionSession connectionSession) {
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(
-                DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getDatabaseName(), TypedSPILoader.getService(DatabaseType.class, "MySQL")))));
+                DatabaseProtocolServerInfo.getProtocolVersion(connectionSession.getUsedDatabaseName(), TypedSPILoader.getService(DatabaseType.class, "MySQL")))));
     }
     
     @Override

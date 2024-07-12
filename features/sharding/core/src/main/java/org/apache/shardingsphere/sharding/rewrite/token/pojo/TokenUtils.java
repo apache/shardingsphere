@@ -21,11 +21,13 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -36,14 +38,17 @@ public final class TokenUtils {
     
     /**
      * Get logic and actual table map.
-     * 
+     *
      * @param routeUnit route unit
      * @param sqlStatementContext SQL statement context
      * @param shardingRule sharding rule
      * @return key is logic table name, values is actual table belong to this data source
      */
     public static Map<String, String> getLogicAndActualTableMap(final RouteUnit routeUnit, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        if (!(sqlStatementContext instanceof TableAvailable)) {
+            return Collections.emptyMap();
+        }
+        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
         Map<String, String> result = new CaseInsensitiveMap<>(tableNames.size(), 1F);
         for (RouteMapper each : routeUnit.getTableMappers()) {
             result.put(each.getLogicName(), each.getActualName());

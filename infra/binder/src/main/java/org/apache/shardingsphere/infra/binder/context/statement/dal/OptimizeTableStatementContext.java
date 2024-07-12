@@ -18,13 +18,10 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 
 /**
  * Optimize table statement context.
@@ -34,18 +31,13 @@ public final class OptimizeTableStatementContext extends CommonSQLStatementConte
     
     private final TablesContext tablesContext;
     
-    public OptimizeTableStatementContext(final MySQLOptimizeTableStatement sqlStatement) {
+    public OptimizeTableStatementContext(final OptimizeTableStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
-    public MySQLOptimizeTableStatement getSqlStatement() {
-        return (MySQLOptimizeTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return getSqlStatement().getTables();
+    public OptimizeTableStatement getSqlStatement() {
+        return (OptimizeTableStatement) super.getSqlStatement();
     }
 }

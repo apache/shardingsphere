@@ -21,7 +21,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
@@ -30,14 +30,14 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContex
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -53,36 +53,36 @@ import java.util.Map;
 public final class JoinTableSegmentBinder {
     
     /**
-     * Bind join table segment with metadata.
+     * Bind join table segment.
      *
      * @param segment join table segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded join table segment
+     * @return bound join table segment
      */
-    public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+    public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                         final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());
         segment.getAliasSegment().ifPresent(result::setAlias);
-        result.setLeft(TableSegmentBinder.bind(segment.getLeft(), statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+        result.setLeft(TableSegmentBinder.bind(segment.getLeft(), binderContext, tableBinderContexts, outerTableBinderContexts));
         result.setNatural(segment.isNatural());
         result.setJoinType(segment.getJoinType());
-        result.setRight(TableSegmentBinder.bind(segment.getRight(), statementBinderContext, tableBinderContexts, outerTableBinderContexts));
-        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap()));
+        result.setRight(TableSegmentBinder.bind(segment.getRight(), binderContext, tableBinderContexts, outerTableBinderContexts));
+        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, binderContext, tableBinderContexts, Collections.emptyMap()));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
-        result.getUsing().forEach(each -> statementBinderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
+        result.getUsing().forEach(each -> binderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
         Map<String, ProjectionSegment> usingColumnsByNaturalJoin = Collections.emptyMap();
         if (result.isNatural()) {
             usingColumnsByNaturalJoin = getUsingColumnsByNaturalJoin(result, tableBinderContexts);
             Collection<ColumnSegment> derivedUsingColumns = getDerivedUsingColumns(usingColumnsByNaturalJoin);
             result.setDerivedUsing(bindUsingColumns(derivedUsingColumns, tableBinderContexts));
-            result.getDerivedUsing().forEach(each -> statementBinderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
+            result.getDerivedUsing().forEach(each -> binderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
         }
-        result.getDerivedJoinTableProjectionSegments().addAll(getDerivedJoinTableProjectionSegments(result, statementBinderContext.getDatabaseType(), usingColumnsByNaturalJoin, tableBinderContexts));
-        statementBinderContext.getJoinTableProjectionSegments().addAll(result.getDerivedJoinTableProjectionSegments());
+        result.getDerivedJoinTableProjectionSegments().addAll(getDerivedJoinTableProjectionSegments(result, binderContext.getDatabaseType(), usingColumnsByNaturalJoin, tableBinderContexts));
+        binderContext.getJoinTableProjectionSegments().addAll(result.getDerivedJoinTableProjectionSegments());
         return result;
     }
     

@@ -29,7 +29,7 @@ public interface OptionalSQLTokenGenerator<T extends SQLStatementContext> extend
     
     /**
      * Generate SQL token.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
      * @return SQL token
      */

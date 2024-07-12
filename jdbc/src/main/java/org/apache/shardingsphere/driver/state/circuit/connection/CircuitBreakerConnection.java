@@ -23,7 +23,7 @@ import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerPr
 import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerStatement;
 
 import java.sql.Array;
-import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -156,23 +156,13 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     }
     
     @Override
-    public CallableStatement prepareCall(final String sql) throws SQLException {
-        throw new SQLFeatureNotSupportedException("prepareCall");
-    }
-    
-    @Override
-    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency) throws SQLException {
-        throw new SQLFeatureNotSupportedException("prepareCall");
-    }
-    
-    @Override
-    public CallableStatement prepareCall(final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        throw new SQLFeatureNotSupportedException("prepareCall");
-    }
-    
-    @Override
     public boolean isValid(final int timeout) {
         return true;
+    }
+    
+    @Override
+    public Clob createClob() {
+        return null;
     }
     
     @Override

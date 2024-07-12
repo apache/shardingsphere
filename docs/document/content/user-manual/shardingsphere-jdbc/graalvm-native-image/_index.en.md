@@ -13,11 +13,30 @@ Image, you need to resort to GraalVM Native Build Tools. GraalVM Native Build To
 to simplify long list of shell commands for GraalVM CE's `native-image` command line tool.
 
 ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as follows or higher. Users can quickly switch 
-JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as `Oracle GraalVM`, `Liberica Native Image Kit` 
+JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as `Oracle GraalVM`, `Liberica NIK` 
 and `Mandrel`.
 
-- GraalVM CE 23.1.2 For JDK 21.0.2, corresponding to `21.0.2-graalce` of SDKMAN!
-- GraalVM CE 24.0.0 For JDK 22, corresponding to `22-graalce` of SDKMAN!
+- GraalVM CE For JDK 22.0.1, corresponding to `21.0.2-graalce` of SDKMAN!
+- Oracle GraalVM For JDK 22.0.1, corresponding to `22.0.1-graal` of SDKMAN!
+- Liberica NIK For JDK 22.0.1, corresponding to `24.0.1.r22-nik` of SDKMAN!
+- Mandrel For JDK 22.0.1, corresponding to `24.0.1.r22-mandrel` of SDKMAN!
+
+Users can still use the old versions of GraalVM CE such as `21.0.2-graalce` on SDKMAN! to build the GraalVM Native Image product of ShardingSphere. 
+However, this will cause the failure of building the GraalVM Native Image when integrating some third-party dependencies. 
+A typical example is related to the `org.apache.hive:hive-jdbc:4.0.0` HiveServer2 JDBC Driver, which uses AWT-related classes. 
+GraalVM CE only supports AWT for GraalVM CE For JDK22 and higher versions.
+
+```shell
+com.sun.beans.introspect.ClassInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.ClassInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.ClassInfo
+java.beans.Introspector was unintentionally initialized at build time. To see why java.beans.Introspector got initialized use --trace-class-initialization=java.beans.Introspector
+com.sun.beans.util.Cache$Kind$2 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$2 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$2
+com.sun.beans.TypeResolver was unintentionally initialized at build time. To see why com.sun.beans.TypeResolver got initialized use --trace-class-initialization=com.sun.beans.TypeResolver
+java.beans.ThreadGroupContext was unintentionally initialized at build time. To see why java.beans.ThreadGroupContext got initialized use --trace-class-initialization=java.beans.ThreadGroupContext
+com.sun.beans.util.Cache$Kind was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind
+com.sun.beans.introspect.MethodInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.MethodInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.MethodInfo
+com.sun.beans.util.Cache$Kind$1 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$1 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$1
+com.sun.beans.util.Cache$Kind$3 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$3 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$3
+```
 
 ### Maven Ecology
 
@@ -40,7 +59,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
              <plugin>
                  <groupId>org.graalvm.buildtools</groupId>
                  <artifactId>native-maven-plugin</artifactId>
-                 <version>0.10.1</version>
+                 <version>0.10.2</version>
                  <extensions>true</extensions>
                  <configuration>
                     <buildArgs>
@@ -80,12 +99,12 @@ Reference https://github.com/graalvm/native-build-tools/issues/572 .
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.10.1'
+   id 'org.graalvm.buildtools.native' version '0.10.2'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.1', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.2', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -236,7 +255,33 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
  [...]
 ```
 
-5. When using Seata's BASE integration, 
+5. To discuss the steps required to use XA distributed transactions under the GraalVM Native Image of ShardingSphere JDBC, 
+additional known prerequisites need to be introduced,
+   - `org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper#loadXADataSource(String)` will instantiate the `javax.sql.XADataSource` implementation class of each database driver through `java.lang.Class#getDeclaredConstructors`.
+   - The full class name of the `javax.sql.XADataSource` implementation class of each database driver is stored in the metadata of ShardingSphere by implementing the SPI of `org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition`.
+
+In the GraalVM Native Image, this actually requires the definition of the GraalVM Reachability Metadata of the third-party dependencies,
+while ShardingSphere itself only provides the corresponding GraalVM Reachability Metadata for `com.h2database:h2`.
+
+GraalVM Reachability Metadata of other database drivers such as `com.mysql:mysql-connector-j` should be defined by themselves,
+or the corresponding JSON should be submitted to https://github.com/oracle/graalvm-reachability-metadata .
+
+Take the `com.mysql.cj.jdbc.MysqlXADataSource` class of `com.mysql:mysql-connector-j:9.0.0` as an example,
+which is the implementation of `javax.sql.XADataSource` of MySQL JDBC Driver.
+Users need to define the following JSON in the `reflect-config.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` folder of their own project's claapath,
+to define the constructor of `com.mysql.cj.jdbc.MysqlXADataSource` inside the GraalVM Native Image.
+
+```json
+[
+{
+"condition":{"typeReachable":"com.mysql.cj.jdbc.MysqlXADataSource"},
+"name":"com.mysql.cj.jdbc.MysqlXADataSource",
+"allDeclaredConstructors": true
+}
+]
+```
+
+6. When using Seata's BASE integration, 
 users need to use a specific `io.seata:seata-all:1.8.0` version to avoid using the ByteBuddy Java API,
 and exclude the outdated Maven dependency of `org.antlr:antlr4-runtime:4.8` in `io.seata:seata-all:1.8.0`.
 Possible configuration examples are as follows,
@@ -263,11 +308,49 @@ Possible configuration examples are as follows,
                <groupId>org.antlr</groupId>
                <artifactId>antlr4-runtime</artifactId>
             </exclusion>
+            <exclusion>
+               <groupId>commons-lang</groupId>
+               <artifactId>commons-lang</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-pool2</artifactId>
+            </exclusion>
          </exclusions>
       </dependency>
     </dependencies>
 </project>
 ```
+
+7. When using the ClickHouse dialect through ShardingSphere JDBC, 
+users need to manually introduce the relevant optional modules and the ClickHouse JDBC driver with the classifier `http`.
+In principle, ShardingSphere's GraalVM Native Image integration does not want to use `com.clickhouse:clickhouse-jdbc` with classifier `all`, 
+because Uber Jar will cause the collection of duplicate GraalVM Reachability Metadata.
+Possible configuration examples are as follows,
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>org.apache.shardingsphere</groupId>
+          <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+          <version>${shardingsphere.version}</version>
+      </dependency>
+       <dependency>
+          <groupId>com.clickhouse</groupId>
+          <artifactId>clickhouse-jdbc</artifactId>
+          <version>0.6.0-patch5</version>
+          <classifier>http</classifier>
+       </dependency>
+    </dependencies>
+</project>
+```
+ClickHouse does not support local transactions, XA transactions, and Seata AT mode transactions at the ShardingSphere integration level. 
+More discussion is at https://github.com/ClickHouse/clickhouse-docs/issues/2300 .
 
 ## Contribute GraalVM Reachability Metadata
 
@@ -293,7 +376,7 @@ curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install java 21.0.2-graalce
 sdk use java 21.0.2-graalce
-sudo apt-get install build-essential libz-dev zlib1g-dev -y
+sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
@@ -305,27 +388,27 @@ they should open a new issue and submit PR containing the missing third-party li
 on https://github.com/oracle/graalvm-reachability-metadata . ShardingSphere actively hosts the GraalVM Reachability Metadata of 
 some third-party libraries in the `shardingsphere-infra-reachability-metadata` submodule.
 
-If nativeTest execution fails, preliminary GraalVM Reachability Metadata should be generated for unit tests and manually 
-adjusted to fix nativeTest. If necessary, use the `org.junit.jupiter.api.condition.DisabledInNativeImage` annotation or the 
-`org.graalvm.nativeimage.imagecode` System Property blocks some unit tests from running under GraalVM Native Image.
+If nativeTest execution fails, preliminary GraalVM Reachability Metadata should be generated for unit tests,
+and manually adjust the contents of the `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata` folder on the classpath of the `shardingsphere-infra-reachability-metadata` submodule to fix nativeTest.
+If necessary, 
+use the `org.junit.jupiter.api.condition.DisabledInNativeImage` annotation or the `org.graalvm.nativeimage.imagecode` System Property blocks some unit tests from running under GraalVM Native Image.
 
-ShardingSphere defines the Maven Profile of `generateMetadata`, which is used to carry GraalVM Reachability Metadata. Bring 
-GraalVM Tracing Agent under GraalVM JIT Compiler to perform unit testing, and generate or merge existing GraalVM Reachability 
-Metadata files in a specific directory.
-This process can be easily handled with the following bash command. Contributors may still need to manually adjust specific 
-JSON entries and GraalVM Tracing Agent Filter chain of Maven Profile.
+ShardingSphere defines the Maven Profile of `generateMetadata` to carry the GraalVM Tracing Agent under the GraalVM JIT Compiler to perform unit testing,
+and generate or overwrite existing GraalVM Reachability Metadata files  in the `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` folder of the classpath of the `shardingsphere-infra-reachability-metadata` submodule. 
+This process can be easily handled with the following bash command.
+Contributors may still need to manually adjust specific JSON entries and adjust the Filter chain of Maven Profile and GraalVM Tracing Agent as appropriate.
+For the `shardingsphere-infra-reachability-metadata` submodule,
+manually added, deleted, and changed JSON entries should be located in the `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata/` folder,
+entries in `META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/` should only be generated by the Maven Profile of `generateMetadata`.
 
-The following command is only an example of using `shardingsphere-test-native` to generate GraalVM Reachability Metadata 
-in Conditional form. Generated GraalVM Reachability Metadata is located under the `shardingsphere-infra-reachability-metadata` submodule.
+The following command is only an example of using `shardingsphere-test-native` to generate GraalVM Reachability Metadata in Conditional form. 
+Generated GraalVM Reachability Metadata is located under the `shardingsphere-infra-reachability-metadata` submodule.
 
-For GraalVM Reachability Metadata used independently by test classes and test files, contributors should place
-`${user.dir}/infra/nativetest/src/test/resources/META-INF/native-image/shardingsphere-test-native-test-metadata/`
-folder. `${}` contains the regular system variables of POM 4.0 corresponding to the relevant submodules, which can be replaced by yourself.
+For GraalVM Reachability Metadata to be used independently by test classes and test files, 
+contributors should place it on the classpath of the `shardingsphere-test-native` submodule `META-INF/native-image/shardingsphere-test-native-test-metadata/`.
 
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
 ./mvnw -PgenerateMetadata -DskipNativeTests -e -T1C clean test native:metadata-copy
 ```
-
-Please manually delete JSON files without any specific entries.

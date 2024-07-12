@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -48,7 +48,7 @@ class PostgreSQLShowVariableExecutorTest {
         assertThat(actualMetaData.getColumnLabel(2), is("setting"));
         assertThat(actualMetaData.getColumnLabel(3), is("description"));
         MergedResult actualResult = executor.getMergedResult();
-        Map<String, String> expected = new LinkedHashMap<>();
+        Map<String, String> expected = new LinkedHashMap<>(7, 1F);
         expected.put("application_name", "PostgreSQL");
         expected.put("client_encoding", "UTF8");
         expected.put("integer_datetimes", "on");

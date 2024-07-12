@@ -28,33 +28,33 @@ import java.lang.annotation.Target;
  * It represents a class to be tested for transaction integration.
  */
 @Target(ElementType.TYPE)
-@Retention(value = RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface TransactionTestCase {
     
     /**
      * Specifies which databases do the case run on.
-     * 
+     *
      * @return database types
      */
     String[] dbTypes() default {"MySQL", "PostgreSQL", "OpenGauss"};
     
     /**
      * Specifies which adapters do the case run on.
-     * 
+     *
      * @return run adapters
      */
     String[] adapters() default {"jdbc", "proxy"};
     
     /**
      * Specifies which transaction types do the case run on.
-     * 
+     *
      * @return transaction types
      */
     TransactionType[] transactionTypes() default {TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE};
     
     /**
      * Specifies which scenario the test case belongs to.
-     * 
+     *
      * @return test group
      */
     String scenario() default "default";

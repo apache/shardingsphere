@@ -58,3 +58,12 @@ ShardingSphere 从开源至今，已经在业内产生了相当的影响力，�
 过去几年在开源社区上，国内用户大多是扮演程序下载和代码引用的角色，在社区建设方面却少有涉及。最近几年随着开源理念在国内的推广，开始涌现出越来越多抱有很强技术情怀的同学，正是有这些同学的加入，才能让 ShardingSphere 的社区越来越活跃。**因为对于一个好的开源项目而言，评判标准并非只是其理念超前、技术先进等，更多是在技术影响力、开源影响力、生态建设、开发者群体等多方面所积攒的深厚基础。**
 
 这也是为什么 ShardingSphere 作为一款 Apache 顶级开源项目，依然在积极号召大家参与到开源社区中来。毕竟大家每天接触到的只是身边这群人，所做的工作也只是办公室里的这些事，每天被『局限』在这个圈子中。而通过开源，则可以让自己的工作连接到世界，让自己能够抛开书本真正投入到项目中来，打开视野，逐渐培养开放、合作的精神，重新发现自己当下所产生的价值。
+
+**项目链接:**
+
+ShardingSphere Github: [https://github.com/apache/shardingsphere]()
+
+ShardingSphere Twitter: [https://twitter.com/ShardingSphere
+]()
+
+ShardingSphere Slack Channel: [https://bit.ly/3qB2GGc]()

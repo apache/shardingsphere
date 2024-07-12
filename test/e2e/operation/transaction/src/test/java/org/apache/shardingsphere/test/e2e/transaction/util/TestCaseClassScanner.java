@@ -108,8 +108,8 @@ public final class TestCaseClassScanner {
     
     private static void scanClassFiles(final File file) {
         if (file.isDirectory()) {
-            for (File f : Objects.requireNonNull(file.listFiles())) {
-                scanClassFiles(f);
+            for (File each : Objects.requireNonNull(file.listFiles())) {
+                scanClassFiles(each);
             }
         } else {
             if (file.getName().endsWith(CLASS_SUFFIX)) {

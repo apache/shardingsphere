@@ -123,9 +123,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     private void login(final String databaseName, final String username, final byte[] md5Salt, final String digest, final AuthorityRule rule) {
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
         Grantee grantee = new Grantee(username, "%");
-        Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(user.get()).authenticate(user.get(), new Object[]{digest, md5Salt}),
+        ShardingSphereUser user = rule.findUser(grantee).orElseThrow(() -> new UnknownUsernameException(username));
+        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(user).authenticate(user, new Object[]{digest, md5Salt}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
     }

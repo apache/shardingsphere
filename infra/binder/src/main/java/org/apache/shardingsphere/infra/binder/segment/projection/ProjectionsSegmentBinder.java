@@ -19,20 +19,20 @@ package org.apache.shardingsphere.infra.binder.segment.projection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.projection.impl.ColumnProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.projection.impl.ShorthandProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.projection.impl.SubqueryProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,42 +44,42 @@ import java.util.Map;
 public final class ProjectionsSegmentBinder {
     
     /**
-     * Bind projections segment with metadata.
+     * Bind projections segment.
      *
      * @param segment table segment
-     * @param statementBinderContext statement binder context
-     * @param boundedTableSegment bounded table segment
+     * @param binderContext statement binder context
+     * @param boundTableSegment bound table segment
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded projections segment
+     * @return bound projections segment
      */
-    public static ProjectionsSegment bind(final ProjectionsSegment segment, final SQLStatementBinderContext statementBinderContext, final TableSegment boundedTableSegment,
+    public static ProjectionsSegment bind(final ProjectionsSegment segment, final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment,
                                           final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
-        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, statementBinderContext, boundedTableSegment, tableBinderContexts, outerTableBinderContexts)));
+        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
     
-    private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final SQLStatementBinderContext statementBinderContext,
-                                          final TableSegment boundedTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+    private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final SQLStatementBinderContext binderContext,
+                                          final TableSegment boundTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                           final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (projectionSegment instanceof ColumnProjectionSegment) {
-            return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, statementBinderContext, tableBinderContexts);
+            return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, binderContext, tableBinderContexts);
         }
         if (projectionSegment instanceof ShorthandProjectionSegment) {
-            return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundedTableSegment, tableBinderContexts);
+            return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundTableSegment, tableBinderContexts);
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
-            Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>();
+            Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>(outerTableBinderContexts.size() + tableBinderContexts.size(), 1F);
             newOuterTableBinderContexts.putAll(outerTableBinderContexts);
             newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, statementBinderContext, newOuterTableBinderContexts);
+            return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, binderContext, newOuterTableBinderContexts);
         }
         if (projectionSegment instanceof ExpressionProjectionSegment) {
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(projectionSegment.getStartIndex(), projectionSegment.getStopIndex(),
                     ((ExpressionProjectionSegment) projectionSegment).getText(), ExpressionSegmentBinder.bind(((ExpressionProjectionSegment) projectionSegment).getExpr(), SegmentType.PROJECTION,
-                            statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+                            binderContext, tableBinderContexts, outerTableBinderContexts));
             result.setAlias(((ExpressionProjectionSegment) projectionSegment).getAliasSegment());
             return result;
         }

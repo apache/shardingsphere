@@ -9,7 +9,7 @@ weight = 1
 - SQL compatibility
 
 SQL is the standard language for users to communicate with databases. The SQL parsing engine is responsible for parsing SQL strings into abstract syntax trees so that Apache ShardingSphere can understand and implement its incremental function.
-ShardingSphere currently supports MySQL, PostgreSQL, SQLServer, Oracle, openGauss, and SQL dialects conforming to the SQL92 standard. Due to the complexity of SQL syntax, a few SQL are not supported for now.
+ShardingSphere currently supports MySQL, PostgreSQL, SQLServer, Oracle, openGauss, ClickHouse, Doris, Hive, Presto and SQL dialects conforming to the SQL92 standard. Due to the complexity of SQL syntax, a few SQL are not supported for now.
 
 - Database protocol compatibility
 

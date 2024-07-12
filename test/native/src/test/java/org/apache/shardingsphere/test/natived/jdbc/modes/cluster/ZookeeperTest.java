@@ -25,6 +25,8 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingServer;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -41,6 +43,16 @@ class ZookeeperTest {
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.zookeeper.";
     
     private TestShardingService testShardingService;
+    
+    @BeforeAll
+    static void beforeAll() {
+        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists"), is(nullValue()));
+    }
+    
+    @AfterAll
+    static void afterAll() {
+        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
+    }
     
     /**
      * TODO On low-performance devices in Github Actions, `INSERT` related SQLs may throw a table not found error under nativeTest.
@@ -68,7 +80,7 @@ class ZookeeperTest {
     private void initEnvironment() throws SQLException {
         testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
-        testShardingService.getAddressRepository().createTableIfNotExists();
+        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();
@@ -84,12 +96,7 @@ class ZookeeperTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/modes/cluster/zookeeper.yaml?placeholder-type=system_props");
-        try {
-            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists"), is(nullValue()));
-            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", connectString);
-            return new HikariDataSource(config);
-        } finally {
-            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
-        }
+        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", connectString);
+        return new HikariDataSource(config);
     }
 }

@@ -244,7 +244,7 @@ withClause
     ;
 
 cteClause
-    : identifier (LP_ columnNames RP_)? AS subquery
+    : alias (LP_ columnNames RP_)? AS subquery
     ;
 
 selectSpecification
@@ -300,11 +300,20 @@ partitionNames
     ;
 
 indexHintList
-    : indexHint (COMMA_ indexHint)*
+    : indexHint (indexHint)*
     ;
 
 indexHint
-    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))? LP_ indexName (COMMA_ indexName)* RP_
+    : USE (INDEX | KEY) indexHintClause LP_ (indexNameList)? RP_
+    | (IGNORE | FORCE) (INDEX | KEY) indexHintClause LP_ indexNameList RP_
+    ;
+
+indexHintClause
+    : (FOR (JOIN | ORDER BY | GROUP BY))?
+    ;
+
+indexNameList
+    : indexName (COMMA_ indexName)*
     ;
 
 joinedTable

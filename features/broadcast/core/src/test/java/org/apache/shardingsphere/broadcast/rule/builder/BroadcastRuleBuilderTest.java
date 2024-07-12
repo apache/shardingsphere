@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.broadcast.rule.builder;
 
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.test.fixture.database.MockedDatabaseType;
@@ -38,6 +39,7 @@ class BroadcastRuleBuilderTest {
     void assertBuild() {
         BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", new MockedDatabaseType(), Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(BroadcastRule.class));
+        assertThat(builder.build(ruleConfig, "", new MockedDatabaseType(), mock(ResourceMetaData.class), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)),
+                instanceOf(BroadcastRule.class));
     }
 }

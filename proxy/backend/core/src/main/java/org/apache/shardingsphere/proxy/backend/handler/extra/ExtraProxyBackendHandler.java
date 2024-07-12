@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.extra;
 
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Extra proxy backend handler.
@@ -29,7 +29,7 @@ public interface ExtraProxyBackendHandler extends ProxyBackendHandler {
     
     /**
      * Whether accept to process SQL statement.
-     * 
+     *
      * @param sqlStatement SQL statement to be judged
      * @return accept or not
      */

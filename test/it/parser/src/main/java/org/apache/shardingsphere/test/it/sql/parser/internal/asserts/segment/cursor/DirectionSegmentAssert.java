@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.cu
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.cursor.ExpectedDirectionSegment;
@@ -37,7 +37,7 @@ public final class DirectionSegmentAssert {
     
     /**
      * Assert actual direction segment is correct with expected direction segment.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual direction segment
      * @param expected expected direction segment

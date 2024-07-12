@@ -50,8 +50,8 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
     @Override
     public void execute(final ConnectionSession connectionSession) {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        Optional<Grantee> grantee = authorityRule.findUser(connectionSession.getGrantee()).map(ShardingSphereUser::getGrantee);
-        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(grantee.isPresent() ? grantee.get().toString() : "")));
+        Optional<Grantee> grantee = authorityRule.findUser(connectionSession.getConnectionContext().getGrantee()).map(ShardingSphereUser::getGrantee);
+        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(grantee.map(Grantee::toString).orElse(""))));
     }
     
     @Override

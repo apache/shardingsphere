@@ -19,11 +19,13 @@ package org.apache.shardingsphere.single.route;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
+import org.apache.shardingsphere.infra.route.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -33,16 +35,17 @@ import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngineFactory;
 import org.apache.shardingsphere.single.route.validator.SingleMetaDataValidatorFactory;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * Single SQL router.
  */
 @HighFrequencyInvocation
-public final class SingleSQLRouter implements SQLRouter<SingleRule> {
+public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, DecorateSQLRouter<SingleRule> {
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule,
@@ -75,7 +78,10 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         String logicDataSource = rule.getDataSourceNames().iterator().next();
         String actualDataSource = database.getResourceMetaData().getStorageUnits().keySet().iterator().next();
         RouteContext result = new RouteContext();
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(queryContext.getSqlStatementContext().getTablesContext().getTableNames())));
+        Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableAvailable
+                ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
+                : Collections.emptyList();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(tableNames)));
         return result;
     }
     

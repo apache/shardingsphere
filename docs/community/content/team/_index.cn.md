@@ -531,6 +531,16 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/16010265?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+         <td>
+            <a href="https://github.com/iamhucong" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/20391901?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+         <td>
+            <a href="https://github.com/TherChenYang" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/124348939?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -541,6 +551,12 @@ chapter = true
         </td>
         <td>
             <b>姜茂林</b>
+        </td>
+        <td>
+            <b>胡聪</b>
+        </td>
+        <td>
+            <b>马晨阳</b>
         </td>
     </tr>
 </table>
@@ -554,7 +570,7 @@ chapter = true
 
 ## 成为提交者
 
-ShardingSphere 社区遵循 [Apache 社区流程](http://community.apache.org/newcommitter.html)来接收新的提交者。
-当您积极参地与 ShardingSphere 社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
+ShardingSphere 社区遵循 [Apache 社区流程](http://community.apache.org/newcommitter.html)来接纳新的提交者。
+如果您在 ShardingSphere 社区中积极参与，项目管理委员会将根据您的表现启动流程，邀请您成为提交者和项目管理委员会成员。
 
 您可以阅读[贡献者指南](/cn/involved/contribute/)来参与社区，并通过[提交者指南](/cn/involved/committer/)获取更多信息。

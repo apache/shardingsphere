@@ -42,7 +42,7 @@ public final class Bootstrap {
     
     /**
      * Main entrance.
-     * 
+     *
      * @param args startup arguments
      * @throws IOException IO exception
      * @throws SQLException SQL exception
@@ -54,7 +54,7 @@ public final class Bootstrap {
         List<String> addresses = bootstrapArgs.getAddresses();
         new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.isForce());
         Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
-                .ifPresent(optional -> new CDCServer(addresses, optional).start());
+                .ifPresent(optional -> new Thread(new CDCServer(addresses, optional)).start());
         ProxySSLContext.init();
         ShardingSphereProxy proxy = new ShardingSphereProxy();
         bootstrapArgs.getSocketPath().ifPresent(proxy::start);

@@ -19,14 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.MergeStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.merge.MergeWhenAndThenSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleInsertStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
@@ -74,7 +73,7 @@ public final class MergeStatementAssert {
     }
     
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        Optional<WithSegment> withSegment = MergeStatementHandler.getWithSegment(actual);
+        Optional<WithSegment> withSegment = actual.getWithSegment();
         if (null == expected.getWithClause()) {
             assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
         } else {
@@ -84,7 +83,7 @@ public final class MergeStatementAssert {
     }
     
     private static void assertWithTableHintClause(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        Optional<WithTableHintSegment> withTableHintSegment = MergeStatementHandler.getWithTableHintSegment(actual);
+        Optional<WithTableHintSegment> withTableHintSegment = actual.getWithTableHintSegment();
         if (null == expected.getExpectedWithTableHintClause()) {
             assertFalse(withTableHintSegment.isPresent(), assertContext.getText("Actual with table hint should not exist."));
         } else {
@@ -94,7 +93,7 @@ public final class MergeStatementAssert {
     }
     
     private static void assertOutputClause(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        Optional<OutputSegment> outputSegment = MergeStatementHandler.getOutputSegment(actual);
+        Optional<OutputSegment> outputSegment = actual.getOutputSegment();
         if (null == expected.getOutputClause()) {
             assertFalse(outputSegment.isPresent(), assertContext.getText("Actual output segment should not exist."));
         } else {
@@ -104,7 +103,7 @@ public final class MergeStatementAssert {
     }
     
     private static void assertWhenAndThenSegments(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        Collection<MergeWhenAndThenSegment> mergeWhenAndThenSegments = MergeStatementHandler.getWhenAndThenSegments(actual);
+        Collection<MergeWhenAndThenSegment> mergeWhenAndThenSegments = actual.getWhenAndThenSegments();
         assertThat(assertContext.getText("merge when and then segment assertion error: "), mergeWhenAndThenSegments.size(), CoreMatchers.is(expected.getMergeWhenAndThenSegments().size()));
         int count = 0;
         for (MergeWhenAndThenSegment each : mergeWhenAndThenSegments) {
@@ -132,7 +131,7 @@ public final class MergeStatementAssert {
     }
     
     private static void assertIndexes(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        Collection<IndexSegment> indexes = MergeStatementHandler.getIndexes(actual);
+        Collection<IndexSegment> indexes = actual.getIndexes();
         assertThat(assertContext.getText("index segment assertion error: "), indexes.size(), CoreMatchers.is(expected.getIndexs().size()));
         int count = 0;
         for (IndexSegment each : indexes) {

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -46,8 +46,8 @@ public final class ShadowTableRule {
     public ShadowTableRule(final String tableName, final Collection<String> shadowDataSources, final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         this.tableName = tableName;
         this.shadowDataSources = shadowDataSources;
-        this.hintShadowAlgorithmNames = getHintShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
-        this.columnShadowAlgorithmNames = getColumnShadowAlgorithmRules(shadowAlgorithmNames, shadowAlgorithms);
+        hintShadowAlgorithmNames = getHintShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
+        columnShadowAlgorithmNames = getColumnShadowAlgorithmRules(shadowAlgorithmNames, shadowAlgorithms);
     }
     
     private Collection<String> getHintShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {

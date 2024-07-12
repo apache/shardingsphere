@@ -24,10 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -47,11 +44,11 @@ public final class ShardingSphereProxyVersion {
     
     /**
      * Set version.
-     * 
+     *
      * @param contextManager context manager
      */
     public static void setVersion(final ContextManager contextManager) {
-        CommonConstants.PROXY_VERSION.set(ShardingSphereProxyVersion.getProxyVersion());
+        CommonConstants.PROXY_VERSION.set(getProxyVersion());
         contextManager.getMetaDataContexts().getMetaData().getDatabases().values().forEach(ShardingSphereProxyVersion::setDatabaseVersion);
     }
     
@@ -66,7 +63,7 @@ public final class ShardingSphereProxyVersion {
     }
     
     private static void setDatabaseVersion(final ShardingSphereDatabase database) {
-        Optional<DataSource> dataSource = findDataSourceByProtocolType(database.getName(), database.getResourceMetaData(), database.getProtocolType());
+        Optional<DataSource> dataSource = findDataSourceByProtocolType(database);
         if (!dataSource.isPresent()) {
             return;
         }
@@ -75,11 +72,11 @@ public final class ShardingSphereProxyVersion {
         DatabaseProtocolServerInfo.setProtocolVersion(database.getName(), databaseServerInfo.getDatabaseVersion());
     }
     
-    private static Optional<DataSource> findDataSourceByProtocolType(final String databaseName, final ResourceMetaData resourceMetaData, final DatabaseType protocolType) {
-        Optional<String> dataSourceName = resourceMetaData.getStorageUnits().entrySet()
-                .stream().filter(entry -> entry.getValue().getStorageType().equals(protocolType)).map(Entry::getKey).findFirst();
-        Map<String, DataSource> dataSources = resourceMetaData.getStorageUnits().entrySet().stream()
+    private static Optional<DataSource> findDataSourceByProtocolType(final ShardingSphereDatabase database) {
+        Optional<String> dataSourceName = database.getResourceMetaData().getStorageUnits().entrySet()
+                .stream().filter(entry -> entry.getValue().getStorageType().equals(database.getProtocolType())).map(Entry::getKey).findFirst();
+        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return dataSourceName.flatMap(optional -> Optional.ofNullable(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources).get(optional)));
+        return dataSourceName.flatMap(optional -> Optional.ofNullable(dataSources.get(optional)));
     }
 }

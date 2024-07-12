@@ -55,18 +55,8 @@ public final class ContextManagerBuilderParameter {
     private final boolean force;
     
     /**
-     * Whether parameter is empty.
-     * 
-     * @return parameter is empty or not
-     */
-    public boolean isEmpty() {
-        return globalRuleConfigs.isEmpty() && props.isEmpty()
-                && databaseConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getStorageUnits().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
-    }
-    
-    /**
      * Get mode configuration.
-     * 
+     *
      * @return mode configuration
      */
     public ModeConfiguration getModeConfiguration() {

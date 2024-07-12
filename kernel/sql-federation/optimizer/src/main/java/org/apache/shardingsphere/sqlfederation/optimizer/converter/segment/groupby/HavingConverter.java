@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.grou
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Optional;
@@ -33,7 +33,7 @@ public final class HavingConverter {
     
     /**
      * Convert having segment to sql node.
-     * 
+     *
      * @param segment having segment
      * @return sql node
      */

@@ -31,19 +31,19 @@ public final class InstanceStateContext {
     
     /**
      * Switch state.
-     * 
-     * @param state state
+     *
+     * @param state state to be switched
      */
-    public void switchToValidState(final InstanceState state) {
+    public void switchState(final InstanceState state) {
         currentState.push(state);
     }
     
     /**
-     * Switch state.
+     * Recover state.
      *
-     * @param state state
+     * @param state state before being recovered
      */
-    public void switchToInvalidState(final InstanceState state) {
+    public void recoverState(final InstanceState state) {
         if (getCurrentState() == state) {
             recoverState();
         }
@@ -55,7 +55,7 @@ public final class InstanceStateContext {
     
     /**
      * Get current state.
-     * 
+     *
      * @return current state
      */
     public InstanceState getCurrentState() {

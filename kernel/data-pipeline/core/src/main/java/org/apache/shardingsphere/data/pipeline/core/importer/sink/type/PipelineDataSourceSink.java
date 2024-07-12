@@ -101,7 +101,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
                 if (i == importerConfig.getRetryTimes()) {
                     throw new PipelineImporterJobWriteException(ex);
                 }
-                Thread.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
+                Thread.sleep(Math.min(5L * 60L * 1000L, 1000L << i));
             }
         }
     }

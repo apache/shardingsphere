@@ -19,14 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateTableOptionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ColumnDefinitionAssert;
@@ -40,8 +39,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -52,7 +51,7 @@ public final class CreateTableStatementAssert {
     
     /**
      * Assert create table statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual create table statement
      * @param expected expected create table statement test case
@@ -90,7 +89,7 @@ public final class CreateTableStatementAssert {
     }
     
     private static void assertCreateTableAsSelectStatement(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
-        Optional<SelectStatement> selectStatement = CreateTableStatementHandler.getSelectStatement(actual);
+        Optional<SelectStatement> selectStatement = actual.getSelectStatement();
         if (null == expected.getCreateTableAsSelectStatement()) {
             assertFalse(selectStatement.isPresent(), "actual select statement should not exist");
         } else {
@@ -100,7 +99,7 @@ public final class CreateTableStatementAssert {
     }
     
     private static void assertCreateTableAsSelectStatementColumns(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
-        List<ColumnSegment> columns = CreateTableStatementHandler.getColumns(actual);
+        List<ColumnSegment> columns = actual.getColumns();
         assertThat(assertContext.getText("Columns size assertion error: "), columns.size(), is(expected.getColumns().size()));
         int count = 0;
         for (ColumnSegment each : columns) {
@@ -110,7 +109,7 @@ public final class CreateTableStatementAssert {
     }
     
     private static void assertLikeTableStatement(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
-        Optional<SimpleTableSegment> likeTableSegment = CreateTableStatementHandler.getLikeTable(actual);
+        Optional<SimpleTableSegment> likeTableSegment = actual.getLikeTable();
         if (null == expected.getLikeTable()) {
             assertFalse(likeTableSegment.isPresent(), "actual like table statement should not exist");
         } else {
@@ -120,7 +119,7 @@ public final class CreateTableStatementAssert {
     }
     
     private static void assertCreateTableOptionStatement(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
-        Optional<CreateTableOptionSegment> createTableOption = CreateTableStatementHandler.getCreateTableOption(actual);
+        Optional<CreateTableOptionSegment> createTableOption = actual.getCreateTableOption();
         if (null == expected.getCreateTableOption()) {
             assertFalse(createTableOption.isPresent(), assertContext.getText("Actual create table option should not exist."));
         } else {

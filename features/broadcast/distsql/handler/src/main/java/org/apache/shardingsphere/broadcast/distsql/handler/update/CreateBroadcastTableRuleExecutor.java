@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;

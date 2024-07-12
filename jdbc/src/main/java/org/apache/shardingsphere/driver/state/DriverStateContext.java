@@ -19,16 +19,27 @@ package org.apache.shardingsphere.driver.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.driver.state.circuit.CircuitBreakDriverState;
+import org.apache.shardingsphere.driver.state.ok.OKDriverState;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Driver state context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DriverStateContext {
+    
+    private static final Map<InstanceState, DriverState> STATES = new ConcurrentHashMap<>(2, 1F);
+    
+    static {
+        STATES.put(InstanceState.OK, new OKDriverState());
+        STATES.put(InstanceState.CIRCUIT_BREAK, new CircuitBreakDriverState());
+    }
     
     /**
      * Get connection.
@@ -38,7 +49,6 @@ public final class DriverStateContext {
      * @return connection
      */
     public static Connection getConnection(final String databaseName, final ContextManager contextManager) {
-        return TypedSPILoader.getService(
-                DriverState.class, contextManager.getInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(databaseName, contextManager);
+        return STATES.get(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState()).getConnection(databaseName, contextManager);
     }
 }

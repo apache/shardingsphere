@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -40,7 +38,6 @@ class EncryptSQLRewriteContextDecoratorTest {
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
         CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         encryptSQLRewriteContextDecorator.decorate(mock(EncryptRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }

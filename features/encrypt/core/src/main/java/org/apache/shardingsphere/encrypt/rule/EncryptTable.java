@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -121,7 +121,7 @@ public final class EncryptTable {
     
     /**
      * Get logic column by cipher column.
-     * 
+     *
      * @param cipherColumnName cipher column name
      * @return logic column name
      * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception

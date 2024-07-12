@@ -31,20 +31,20 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -81,7 +81,7 @@ class SelectStatementBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         selectStatement.setFrom(simpleTableSegment);
         selectStatement.setWhere(mockWhereSegment());
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(selectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(selectStatement));
         assertTrue(actual.getFrom().isPresent());
         assertThat(actual.getFrom().get(), not(simpleTableSegment));
@@ -108,7 +108,7 @@ class SelectStatementBinderTest {
         assertThat(((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft(), instanceOf(FunctionSegment.class));
         assertThat(((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next(), instanceOf(ColumnSegment.class));
         assertThat(((ColumnSegment) ((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next())
-                .getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+                .getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
     
     private static WhereSegment mockWhereSegment() {
@@ -149,11 +149,11 @@ class SelectStatementBinderTest {
         ShardingSphereMetaData metaData =
                 new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), resourceMetaData, ruleMetaData, new ConfigurationProperties(new Properties()));
         SelectStatement selectStatement = (SelectStatement) parserEngine.parse(sql, false);
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, metaData, DefaultDatabase.LOGIC_NAME);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(selectStatement, metaData, DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(selectStatement));
         assertThat(actual, instanceOf(OracleSelectStatement.class));
-        assertTrue(((OracleSelectStatement) actual).getWithSegment().isPresent());
-        assertThat(((OracleSelectStatement) actual).getWithSegment().get().getCommonTableExpressions().size(), is(5));
+        assertTrue(actual.getWithSegment().isPresent());
+        assertThat(actual.getWithSegment().get().getCommonTableExpressions().size(), is(5));
     }
     
     @Test
@@ -179,11 +179,11 @@ class SelectStatementBinderTest {
         ShardingSphereMetaData metaData =
                 new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), resourceMetaData, ruleMetaData, new ConfigurationProperties(new Properties()));
         SelectStatement selectStatement = (SelectStatement) parserEngine.parse(sql, false);
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, metaData, DefaultDatabase.LOGIC_NAME);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(selectStatement, metaData, DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(selectStatement));
         assertThat(actual, instanceOf(OracleSelectStatement.class));
-        assertTrue(((OracleSelectStatement) actual).getWithSegment().isPresent());
-        assertThat(((OracleSelectStatement) actual).getWithSegment().get().getCommonTableExpressions().size(), is(1));
+        assertTrue(actual.getWithSegment().isPresent());
+        assertThat(actual.getWithSegment().get().getCommonTableExpressions().size(), is(1));
     }
     
     private Map<String, ShardingSphereSchema> buildSchemas() {

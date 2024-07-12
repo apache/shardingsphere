@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 
 import java.util.Map;
 
@@ -34,17 +34,17 @@ import java.util.Map;
 public final class SubqueryProjectionSegmentBinder {
     
     /**
-     * Bind subquery projection segment with metadata.
+     * Bind subquery projection segment.
      *
      * @param segment subquery projection segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bounded subquery projection segment
+     * @return bound subquery projection segment
      */
-    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final SQLStatementBinderContext binderContext,
                                                  final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts);
-        SubqueryProjectionSegment result = new SubqueryProjectionSegment(boundedSubquerySegment, segment.getText());
+        SubquerySegment boundSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
+        SubqueryProjectionSegment result = new SubqueryProjectionSegment(boundSubquerySegment, segment.getText());
         segment.getAliasSegment().ifPresent(result::setAlias);
         return result;
     }

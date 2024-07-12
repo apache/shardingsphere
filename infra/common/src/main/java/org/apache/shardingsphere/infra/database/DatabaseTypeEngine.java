@@ -24,18 +24,23 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.hikari.metadata.HikariDataSourcePoolFieldMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.hikari.metadata.HikariDataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Database type engine.
@@ -47,19 +52,18 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get protocol type.
-     * 
-     * @param databaseName database name
+     *
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @return protocol type
      */
-    public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
+    public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Collection<DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig).values();
-        return enabledDataSources.isEmpty() ? getDefaultStorageType() : getStorageType(enabledDataSources.iterator().next());
+        Collection<DataSource> dataSources = getDataSources(databaseConfig).values();
+        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.iterator().next());
     }
     
     /**
@@ -74,8 +78,8 @@ public final class DatabaseTypeEngine {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Map<String, DataSource> enabledDataSources = getEnabledDataSources(databaseConfigs);
-        return enabledDataSources.isEmpty() ? getDefaultStorageType() : getStorageType(enabledDataSources.values().iterator().next());
+        Map<String, DataSource> dataSources = getDataSources(databaseConfigs);
+        return dataSources.isEmpty() ? getDefaultStorageType() : getStorageType(dataSources.values().iterator().next());
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
@@ -83,25 +87,29 @@ public final class DatabaseTypeEngine {
         return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
     }
     
-    private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    private static Map<String, DataSource> getDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            result.putAll(DataSourceStateManager.getInstance().getEnabledDataSources(entry.getKey(), entry.getValue()));
+            result.putAll(getDataSources(entry.getValue()));
         }
         return result;
+    }
+    
+    private static Map<String, DataSource> getDataSources(final DatabaseConfiguration databaseConfig) {
+        return databaseConfig.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
      * Get storage types.
      *
-     * @param databaseName database name
      * @param databaseConfig database configuration
      * @return storage types
      */
-    public static Map<String, DatabaseType> getStorageTypes(final String databaseName, final DatabaseConfiguration databaseConfig) {
+    public static Map<String, DatabaseType> getStorageTypes(final DatabaseConfiguration databaseConfig) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getStorageUnits().size(), 1F);
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig);
-        for (Entry<String, DataSource> entry : enabledDataSources.entrySet()) {
+        Map<String, DataSource> dataSources = getDataSources(databaseConfig);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             result.put(entry.getKey(), getStorageType(entry.getValue()));
         }
         return result;
@@ -109,6 +117,8 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get storage type.
+     * Similar to apache/hive 4.0.0's `org.apache.hive.jdbc.HiveDatabaseMetaData`, it does not implement {@link java.sql.DatabaseMetaData#getURL()}.
+     * So use {@link CatalogSwitchableDataSource#getUrl()} and {@link ReflectionUtils#getFieldValue(Object, String)} to try fuzzy matching.
      *
      * @param dataSource data source
      * @return storage type
@@ -117,6 +127,17 @@ public final class DatabaseTypeEngine {
     public static DatabaseType getStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeFactory.get(connection.getMetaData().getURL());
+        } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
+            if (dataSource instanceof CatalogSwitchableDataSource) {
+                return DatabaseTypeFactory.get(((CatalogSwitchableDataSource) dataSource).getUrl());
+            }
+            if (dataSource.getClass().getName().equals(new HikariDataSourcePoolMetaData().getType())) {
+                HikariDataSourcePoolFieldMetaData dataSourcePoolFieldMetaData = new HikariDataSourcePoolFieldMetaData();
+                String jdbcUrlFieldName = ReflectionUtils.<String>getFieldValue(dataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName())
+                        .orElseThrow(() -> new SQLWrapperException(sqlFeatureNotSupportedException));
+                return DatabaseTypeFactory.get(jdbcUrlFieldName);
+            }
+            throw new SQLWrapperException(sqlFeatureNotSupportedException);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }

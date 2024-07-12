@@ -69,7 +69,7 @@ public final class PipelineJobDataSourcePreparer {
         }
         String defaultSchema = dialectDatabaseMetaData.getDefaultSchema().orElse(null);
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(targetDatabaseType);
-        Collection<String> createdSchemaNames = new HashSet<>();
+        Collection<String> createdSchemaNames = new HashSet<>(param.getCreateTableConfigurations().size(), 1F);
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             String targetSchemaName = each.getTargetName().getSchemaName().toString();
             if (null == targetSchemaName || targetSchemaName.equalsIgnoreCase(defaultSchema) || createdSchemaNames.contains(targetSchemaName)) {

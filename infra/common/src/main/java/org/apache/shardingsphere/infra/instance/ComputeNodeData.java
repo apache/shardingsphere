@@ -18,20 +18,16 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-@NoArgsConstructor
+/**
+ * Compute node data.
+ */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class ComputeNodeData {
     
-    private String attribute;
+    private final String attribute;
     
-    private String version;
-    
-    public ComputeNodeData(final String attribute, final String version) {
-        this.attribute = attribute;
-        this.version = version;
-    }
+    private final String version;
 }

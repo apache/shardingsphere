@@ -21,11 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.groovy.util.Maps;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -39,12 +39,12 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.apache.shardingsphere.timeservice.api.config.TimestampServiceRuleConfiguration;
+import org.apache.shardingsphere.timeservice.config.TimestampServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import javax.sql.DataSource;
@@ -70,7 +70,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create based sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createBasedShardingRule() {
@@ -79,12 +79,12 @@ public final class ShardingRoutingEngineFixtureBuilder {
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put(
                 "t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
-        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class));
     }
     
     /**
      * Create error sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createErrorShardingRule() {
@@ -93,12 +93,12 @@ public final class ShardingRoutingEngineFixtureBuilder {
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put(
                 "t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 3}"))));
-        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class));
     }
     
     /**
      * Create binding sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createBindingShardingRule() {
@@ -111,12 +111,12 @@ public final class ShardingRoutingEngineFixtureBuilder {
                 "t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put(
                 "t_order_item_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_item_${order_id % 2}"))));
-        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class));
     }
     
     /**
      * Create broadcast sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createBroadcastShardingRule() {
@@ -128,24 +128,24 @@ public final class ShardingRoutingEngineFixtureBuilder {
                 "t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put(
                 "t_order_item_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_item_${order_id % 2}"))));
-        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class));
     }
     
     /**
      * Create hint sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createHintShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleWithHintConfiguration());
         shardingRuleConfig.getShardingAlgorithms().put("core_hint_fixture", new AlgorithmConfiguration("CORE.HINT.FIXTURE", new Properties()));
-        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class));
     }
     
     /**
      * Create mixed sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createMixedShardingRule() {
@@ -158,12 +158,12 @@ public final class ShardingRoutingEngineFixtureBuilder {
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put(
                 "t_hint_ds_test_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_hint_ds_test_${order_id % 2}"))));
-        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class));
     }
     
     /**
      * Create all sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createAllShardingRule() {
@@ -181,12 +181,12 @@ public final class ShardingRoutingEngineFixtureBuilder {
                 "t_order_item_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_item_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put("t_user_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_user_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put("core_hint_fixture", new AlgorithmConfiguration("CORE.HINT.FIXTURE", new Properties()));
-        return new ShardingRule(shardingRuleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "main", new MockedDataSource()), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "main", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
     }
     
     /**
      * Create interval table sharding rule.
-     * 
+     *
      * @return created sharding rule
      */
     public static ShardingRule createIntervalTableShardingRule() {
@@ -201,7 +201,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
                 new Property("datetime-interval-amount", "1"),
                 new Property("datetime-interval-unit", "MONTHS"));
         shardingRuleConfig.getShardingAlgorithms().put("interval_test", new AlgorithmConfiguration("INTERVAL", props));
-        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class));
     }
     
     private static ShardingTableRuleConfiguration createInlineTableRuleConfiguration(final String tableName,
@@ -234,7 +234,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     /**
      * Create sharding conditions.
-     * 
+     *
      * @param tableName table name
      * @return created sharding conditions
      */

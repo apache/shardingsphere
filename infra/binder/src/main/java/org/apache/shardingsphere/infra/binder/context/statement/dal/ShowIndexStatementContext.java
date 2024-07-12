@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -38,25 +36,20 @@ public final class ShowIndexStatementContext extends CommonSQLStatementContext i
     
     private final TablesContext tablesContext;
     
-    public ShowIndexStatementContext(final MySQLShowIndexStatement sqlStatement) {
+    public ShowIndexStatementContext(final ShowIndexStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
-    public MySQLShowIndexStatement getSqlStatement() {
-        return (MySQLShowIndexStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
+    public ShowIndexStatement getSqlStatement() {
+        return (ShowIndexStatement) super.getSqlStatement();
     }
     
     @Override
     public Collection<SQLSegment> getRemoveSegments() {
         Collection<SQLSegment> result = new LinkedList<>();
-        getSqlStatement().getFromSchema().ifPresent(result::add);
+        getSqlStatement().getFromDatabase().ifPresent(result::add);
         return result;
     }
 }

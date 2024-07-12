@@ -53,16 +53,16 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        String originalDatabaseName = connectionSession.getDefaultDatabaseName();
+        String originalDatabaseName = connectionSession.getCurrentDatabaseName();
         String unicastDatabaseName = null == originalDatabaseName ? getFirstDatabaseName() : originalDatabaseName;
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(unicastDatabaseName).containsDataSource(),
                 () -> new EmptyStorageUnitException(unicastDatabaseName));
         try {
-            connectionSession.setCurrentDatabase(unicastDatabaseName);
+            connectionSession.setCurrentDatabaseName(unicastDatabaseName);
             databaseConnector = databaseConnectorFactory.newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
             return databaseConnector.execute();
         } finally {
-            connectionSession.setCurrentDatabase(originalDatabaseName);
+            connectionSession.setCurrentDatabaseName(originalDatabaseName);
         }
     }
     
@@ -72,7 +72,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
             throw new NoDatabaseSelectedException();
         }
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getGrantee());
+        Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getConnectionContext().getGrantee());
         Stream<String> databaseStream = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource());
         Optional<String> result = privileges.map(optional -> databaseStream.filter(optional::hasPrivileges).findFirst()).orElseGet(databaseStream::findFirst);
         ShardingSpherePreconditions.checkState(result.isPresent(), EmptyStorageUnitException::new);

@@ -24,7 +24,7 @@ public interface ColumnExistedReviser {
     
     /**
      * Judge whether column existed.
-     * 
+     *
      * @param originalName original column name
      * @return column existed or not
      */

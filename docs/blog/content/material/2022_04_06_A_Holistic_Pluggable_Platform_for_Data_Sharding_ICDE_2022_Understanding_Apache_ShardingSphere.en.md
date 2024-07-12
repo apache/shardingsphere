@@ -55,7 +55,7 @@ Currently, more than 170 companies are using ShardingSphere. This article is bas
 ## System Architecture and Data Flow
 As shown in Figure 2, ShardingSphere can be divided into five modules:
 
-1. **dData source:** It enables storage by integrating various databases and currently supports data sources such as MySQL, PostgreSQL, SQL Server, Oracle, MariaDB and openGuass.
+1. **dData source:** It enables storage by integrating various databases and currently supports data sources such as MySQL, PostgreSQL, SQL Server, Oracle, MariaDB and openGauss.
 2. **Function:** It provides many out-of-the-box features that can be freely added, combined, or deleted as needed.
 3. **Governor** is mainly used for configuration management and health monitoring.
 4. **SQL engine.** With the complete data sharding SQL engine, all functions are pluggable, and any function can be implemented through a SQL statement.

@@ -19,15 +19,14 @@ package org.apache.shardingsphere.infra.rule.builder.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Database rule builder.
@@ -43,10 +42,11 @@ public interface DatabaseRuleBuilder<T extends RuleConfiguration> extends RuleBu
      * @param ruleConfig rule configuration
      * @param databaseName database name
      * @param protocolType protocol type
-     * @param dataSources data sources
+     * @param resourceMetaData resource meta data
      * @param builtRules built rules
-     * @param instanceContext instance context
+     * @param computeNodeInstanceContext compute node instance context
      * @return built database rule
      */
-    DatabaseRule build(T ruleConfig, String databaseName, DatabaseType protocolType, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, InstanceContext instanceContext);
+    DatabaseRule build(T ruleConfig, String databaseName, DatabaseType protocolType,
+                       ResourceMetaData resourceMetaData, Collection<ShardingSphereRule> builtRules, ComputeNodeInstanceContext computeNodeInstanceContext);
 }

@@ -148,7 +148,7 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
                 }
             }
         }
-        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableToIndex.size(), 1);
+        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableToIndex.size(), 1F);
         for (Entry<String, Map<String, IndexMetaData>> each : tableToIndex.entrySet()) {
             result.put(each.getKey(), each.getValue().values());
         }

@@ -37,7 +37,7 @@ public interface DialectShardingStatisticsTableCollector extends DatabaseTypedSP
     
     /**
      * Append dialect content into row.
-     * 
+     *
      * @param connection connection
      * @param dataNode data node
      * @param row row to be appended

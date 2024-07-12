@@ -39,13 +39,13 @@ class ShadowRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTu
         assertThat(actualRepositoryTuples.size(), is(9));
         List<RepositoryTuple> actual = new ArrayList<>(actualRepositoryTuples);
         assertRepositoryTuple(actual.get(0),
-                "algorithms/user-id-insert-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-insert-match-algorithm"));
+                "shadow_algorithms/user-id-insert-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-insert-match-algorithm"));
         assertRepositoryTuple(actual.get(1),
-                "algorithms/user-id-update-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-update-match-algorithm"));
+                "shadow_algorithms/user-id-update-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-update-match-algorithm"));
         assertRepositoryTuple(actual.get(2),
-                "algorithms/user-id-select-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-select-match-algorithm"));
-        assertRepositoryTuple(actual.get(3), "algorithms/sql-hint-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("sql-hint-algorithm"));
-        assertRepositoryTuple(actual.get(4), "default_algorithm_name", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDefaultShadowAlgorithmName());
+                "shadow_algorithms/user-id-select-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-select-match-algorithm"));
+        assertRepositoryTuple(actual.get(3), "shadow_algorithms/sql-hint-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("sql-hint-algorithm"));
+        assertRepositoryTuple(actual.get(4), "default_shadow_algorithm_name", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDefaultShadowAlgorithmName());
         assertRepositoryTuple(actual.get(5), "data_sources/shadowDataSource", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDataSources().get("shadowDataSource"));
         assertRepositoryTuple(actual.get(6), "tables/t_order", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order"));
         assertRepositoryTuple(actual.get(7), "tables/t_order_item", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order_item"));

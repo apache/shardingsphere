@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateUserStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Show create user statement assert.
@@ -35,13 +35,13 @@ public final class ShowCreateUserStatementAssert {
     
     /**
      * Assert show create user statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show create user statement
      * @param expected expected show create user statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateUserStatement actual, final ShowCreateUserStatementTestCase expected) {
-        assertNotNull(expected.getUser(), "expected show create user should be not null");
-        assertThat(actual.getName(), is(expected.getUser().getName()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowCreateUserStatement actual, final ShowCreateUserStatementTestCase expected) {
+        assertNotNull(expected.getUser(), assertContext.getText("expected show create user should be not null"));
+        assertThat(assertContext.getText("user name does not match: "), actual.getName(), is(expected.getUser().getName()));
     }
 }

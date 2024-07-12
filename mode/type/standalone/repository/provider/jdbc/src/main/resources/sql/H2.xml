@@ -22,5 +22,5 @@
     <select-by-parent>SELECT DISTINCT(`key`) FROM `repository` WHERE parent = ?</select-by-parent>
     <insert>INSERT INTO `repository` VALUES(?, ?, ?, ?)</insert>
     <update>UPDATE `repository` SET `value` = ? WHERE `key` = ?</update>
-    <delete>DELETE FROM `repository` WHERE `key` = ?</delete>
+    <delete>DELETE FROM `repository` WHERE `key` LIKE ?</delete>
 </sql>

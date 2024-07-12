@@ -38,7 +38,7 @@ public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
     
     /**
      * Create new instance of authenticator.
-     * 
+     *
      * @param user user
      * @return new instance of authenticator
      */

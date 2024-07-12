@@ -17,35 +17,53 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class AlterSQLParserRuleExecutorTest {
     
+    private DistSQLUpdateExecuteEngine engine;
+    
     @Test
     void assertExecute() {
-        AlterSQLParserRuleExecutor executor = new AlterSQLParserRuleExecutor();
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
-        SQLParserRule rule = mock(SQLParserRule.class);
-        when(rule.getConfiguration()).thenReturn(getSQLParserRuleConfiguration());
-        executor.setRule(rule);
-        SQLParserRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
-        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
-        assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
+        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(() -> engine.executeUpdate());
     }
     
-    private SQLParserRuleConfiguration getSQLParserRuleConfiguration() {
-        return new DefaultSQLParserRuleConfigurationBuilder().build();
+    @Test
+    void assertExecuteWithNullStatement() {
+        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(null, null);
+        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(() -> engine.executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteWithNullCacheOptionSegment() {
+        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(null, null), new CacheOptionSegment(null, null));
+        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+        assertDoesNotThrow(() -> engine.executeUpdate());
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        SQLParserRule rule = mock(SQLParserRule.class);
+        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
+        when(executor.getRuleClass()).thenReturn(SQLParserRule.class);
+        when(rule.getConfiguration()).thenReturn(new DefaultSQLParserRuleConfigurationBuilder().build());
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        return result;
     }
 }

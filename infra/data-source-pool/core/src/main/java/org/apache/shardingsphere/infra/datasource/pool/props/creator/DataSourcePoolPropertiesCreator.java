@@ -85,9 +85,10 @@ public final class DataSourcePoolPropertiesCreator {
     }
     
     private static Map<String, Object> createProperties(final DataSource dataSource) {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> props = new DataSourcePoolReflection(dataSource).convertToProperties();
+        Map<String, Object> result = new LinkedHashMap<>(props.size(), 1F);
         Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName());
-        for (Entry<String, Object> entry : new DataSourcePoolReflection(dataSource).convertToProperties().entrySet()) {
+        for (Entry<String, Object> entry : props.entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
             if (!metaData.isPresent() || isValidProperty(propertyName, propertyValue, metaData.get()) && !metaData.get().getTransientFieldNames().contains(propertyName)) {

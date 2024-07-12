@@ -23,9 +23,8 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.limit.PaginationValueSQLConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orderby.OrderByConverter;
@@ -43,8 +42,8 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
     @Override
     public SqlNode convert(final DeleteStatement deleteStatement) {
         SqlNode sqlDelete = convertDelete(deleteStatement);
-        SqlNodeList orderBy = DeleteStatementHandler.getOrderBySegment(deleteStatement).flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
-        Optional<LimitSegment> limit = DeleteStatementHandler.getLimitSegment(deleteStatement);
+        SqlNodeList orderBy = deleteStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
+        Optional<LimitSegment> limit = deleteStatement.getLimit();
         if (limit.isPresent()) {
             SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
             SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);
@@ -58,6 +57,6 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
         SqlNode condition = deleteStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlIdentifier alias = deleteStatement.getTable().getAliasName().map(optional -> new SqlIdentifier(optional, SqlParserPos.ZERO)).orElse(null);
         SqlDelete sqlDelete = new SqlDelete(SqlParserPos.ZERO, deleteTable, condition, null, alias);
-        return DeleteStatementHandler.getWithSegment(deleteStatement).flatMap(optional -> WithConverter.convert(optional, sqlDelete)).orElse(sqlDelete);
+        return deleteStatement.getWithSegment().flatMap(optional -> WithConverter.convert(optional, sqlDelete)).orElse(sqlDelete);
     }
 }

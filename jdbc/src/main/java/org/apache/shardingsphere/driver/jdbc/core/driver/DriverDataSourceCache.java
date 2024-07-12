@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import lombok.Getter;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
 import org.apache.shardingsphere.infra.url.core.ShardingSphereURLLoadEngine;
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Driver data source cache.
  */
+@Getter
 public final class DriverDataSourceCache {
     
     private final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.BeginTransactionStatementTestCase;
 
@@ -31,7 +31,7 @@ public final class BeginTransactionStatementAssert {
     
     /**
      * Assert begin transaction statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual begin transaction statement
      * @param expected expected begin transaction statement test case

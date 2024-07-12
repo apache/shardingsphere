@@ -25,9 +25,12 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -44,8 +47,8 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBack
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -68,6 +71,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -90,15 +94,24 @@ class ProxyBackendHandlerFactoryTest {
     
     @BeforeEach
     void setUp() {
-        when(connectionSession.getGrantee()).thenReturn(new Grantee(DefaultUser.USERNAME, "%"));
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
-        when(connectionSession.getDatabaseName()).thenReturn("db");
+        ConnectionContext connectionContext = mockConnectionContext();
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("db");
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         ContextManager contextManager = mockContextManager();
-        when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);
+        when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+    }
+    
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        when(result.getGrantee()).thenReturn(new Grantee(DefaultUser.USERNAME, "%"));
+        when(result.getTransactionContext()).thenReturn(mock(TransactionConnectionContext.class));
+        return result;
     }
     
     private ContextManager mockContextManager() {
@@ -112,7 +125,9 @@ class ProxyBackendHandlerFactoryTest {
                 new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()),
                 new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build(), Collections.emptyMap())));
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaDataContexts.getMetaData()).thenReturn(metaData);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         return result;
     }
     

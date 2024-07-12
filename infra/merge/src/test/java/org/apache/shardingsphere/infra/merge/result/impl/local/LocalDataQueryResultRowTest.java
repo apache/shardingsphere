@@ -65,7 +65,7 @@ class LocalDataQueryResultRowTest {
     @SuppressWarnings("UnnecessaryBoxing")
     @Test
     void assertGetCellWithLongValue() {
-        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(1L, Long.valueOf(2));
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(1L, Long.valueOf(2L));
         assertThat(actual.getCell(1), is("1"));
         assertThat(actual.getCell(2), is("2"));
     }

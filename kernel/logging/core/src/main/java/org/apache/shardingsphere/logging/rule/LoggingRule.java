@@ -19,23 +19,17 @@ package org.apache.shardingsphere.logging.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 
 /**
  * Logging rule.
  */
+@Getter
 public final class LoggingRule implements GlobalRule {
     
-    @Getter
     private final LoggingRuleConfiguration configuration;
     
     public LoggingRule(final LoggingRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-    }
-    
-    @Override
-    public RuleAttributes getAttributes() {
-        return new RuleAttributes();
     }
 }

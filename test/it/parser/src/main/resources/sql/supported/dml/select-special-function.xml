@@ -26,7 +26,7 @@
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from 4)" db-types="MySQL" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
-    <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL" />
+    <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL,Presto" />
     <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
     <sql-case id="select_chr_using_nchar_cs" value="SELECT CHR (196 USING NCHAR_CS) FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL" />
@@ -58,6 +58,56 @@
     <sql-case id="select_first_last_value_function" value="SELECT BusinessEntityID, DATEPART(QUARTER, QuotaDate) AS Quarter, YEAR(QuotaDate) AS SalesYear, SalesQuota AS QuotaThisQuarter, SalesQuota - FIRST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate)) AS DifferenceFromFirstQuarter, SalesQuota - LAST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate) RANGE BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) AS DifferenceFromLastQuarter FROM Sales.SalesPersonQuotaHistory WHERE YEAR(QuotaDate) > 2005 AND BusinessEntityID BETWEEN 274 AND 275 ORDER BY BusinessEntityID, SalesYear, Quarter" db-types="SQLServer" />
     <sql-case id="select_approx_percentile_cont_function" value="SELECT DeptId,APPROX_PERCENTILE_CONT(0.10) WITHIN GROUP(ORDER BY Salary) AS 'P10',APPROX_PERCENTILE_CONT(0.90) WITHIN GROUP(ORDER BY Salary) AS 'P90' FROM tblEmployee GROUP BY DeptId" db-types="SQLServer" />
     <sql-case id="select_wm_concat_function_with_schema" value="SELECT TO_CHAR(WMSYS.WM_CONCAT(DISTINCT o.status)) FROM t_order o GROUP BY o.order_id" db-types="Oracle" />
+    <sql-case id="select_add_date" value="SELECT ADDDATE('2008-01-02', 31)" db-types="MySQL" />
+    <sql-case id="select_add_time" value="SELECT ADDTIME('2007-12-31 23:59:59.999999', '1 1:1:1.000002')" db-types="MySQL" />
+    <sql-case id="select_aes_decrypt" value="SELECT AES_DECRYPT('encrypt_text','key_str')" db-types="MySQL" />
+    <sql-case id="select_any_value" value="SELECT ANY_VALUE(age) FROM t" db-types="MySQL" />
+    <sql-case id="select_ascii" value="SELECT ASCII('2')" db-types="MySQL" />
+    <sql-case id="select_bin" value="SELECT BIN(12)" db-types="MySQL" />
+    <sql-case id="select_bin_uuid" value="SELECT BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))" db-types="MySQL" />
+    <sql-case id="select_bit_length" value="SELECT BIT_LENGTH(1)" db-types="MySQL" />
+    <sql-case id="select_bit_count" value="SELECT BIT_COUNT(1)" db-types="MySQL" />
+    <sql-case id="select_ceil" value="SELECT CEIL(1.1)" db-types="MySQL" />
+    <sql-case id="select_ceiling" value="SELECT CEILING(1.1)" db-types="MySQL" />
+    <sql-case id="select_with_uuid_function" value="SELECT UUID();" db-types="MySQL"/>
+    <sql-case id="select_with_uuid_short_function" value="SELECT UUID_SHORT();" db-types="MySQL"/>
+    <sql-case id="select_with_uuid_to_bin_function" value="SELECT UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db', 0);" db-types="MySQL"/>
+    <sql-case id="select_with_validate_password_strength_function" value="SELECT VALIDATE_PASSWORD_STRENGTH('N0Tweak$_@123!');" db-types="MySQL"/>
+    <sql-case id="select_with_var_pop_function" value="SELECT VAR_POP(s.year) FROM sales_view s;" db-types="MySQL"/>
+    <sql-case id="select_with_var_samp_function" value="SELECT VAR_SAMP(s.year) FROM sales_view s;" db-types="MySQL"/>
+    <sql-case id="select_with_variance_function" value="SELECT VARIANCE(s.year) FROM sales_view s;" db-types="MySQL"/>
+    <sql-case id="select_with_version_function" value="SELECT VERSION();" db-types="MySQL"/>
+    <sql-case id="select_with_wait_for_executed_gtid_set_function" value="SELECT WAIT_FOR_EXECUTED_GTID_SET('3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5');" db-types="MySQL"/>
+    <sql-case id="select_with_wait_until_sql_thread_after_gtids_function" value="SELECT WAIT_UNTIL_SQL_THREAD_AFTER_GTIDS('3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5');" db-types="MySQL"/>
+    <sql-case id="select_with_week_function" value="SELECT WEEK('2018-02-20',1);" db-types="MySQL"/>
+    <sql-case id="select_with_weekday_function" value="SELECT WEEKDAY('2017-02-03 22:23:00');" db-types="MySQL"/>
+    <sql-case id="select_with_weekofyear_function" value="SELECT WEEKOFYEAR('2019-02-20');" db-types="MySQL"/>
+    <sql-case id="select_with_xor_function" value="SELECT 1 XOR NULL;" db-types="MySQL"/>
+    <sql-case id="select_with_year_function" value="SELECT YEAR('1999-09-09');" db-types="MySQL"/>
+    <sql-case id="select_with_yearweek_function" value="SELECT YEARWEEK('1988-08-08');" db-types="MySQL"/>
+    <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL"/>
+    <sql-case id="select_row_number" value="SELECT ROW_NUMBER() OVER w FROM t_order" db-types="MySQL" />
+    <sql-case id="select_rpad" value="SELECT RPAD('Hello', 10, '*')" db-types="MySQL" />
+    <sql-case id="select_rtrim" value="SELECT RTRIM('  Hello  ')" db-types="MySQL" />
+    <sql-case id="select_schema" value="SELECT SCHEMA()" db-types="MySQL" />
+    <sql-case id="select_sec_to_time" value="SELECT SEC_TO_TIME(3600)" db-types="MySQL" />
+    <sql-case id="select_second" value="SELECT SECOND('2020-06-10 12:34:56')" db-types="MySQL" />
+    <sql-case id="select_session_user" value="SELECT SESSION_USER()" db-types="MySQL" />
+    <sql-case id="select_sha" value="SELECT SHA('test_string')" db-types="MySQL" />
+    <sql-case id="select_sign" value="SELECT SIGN(-5)" db-types="MySQL" />
+    <sql-case id="select_sin" value="SELECT SIN(0.5)" db-types="MySQL" />
+    <sql-case id="select_sleep" value="SELECT SLEEP(5)" db-types="MySQL" />
+    <sql-case id="select_char_length" value="SELECT CHAR_LENGTH('str')" db-types="MySQL" />
+    <sql-case id="select_character_length" value="SELECT CHARACTER_LENGTH('str')" db-types="MySQL" />
+    <sql-case id="select_charset" value="SELECT CHARSET('str')" db-types="MySQL" />
+    <sql-case id="select_coalesce" value="SELECT COALESCE(null, 1)" db-types="MySQL" />
+    <sql-case id="select_coercibility" value="SELECT COERCIBILITY('str')" db-types="MySQL" />
+    <sql-case id="select_collation" value="SELECT COLLATION('str')" db-types="MySQL" />
+    <sql-case id="select_compress" value="SELECT COMPRESS('str')" db-types="MySQL" />
+    <sql-case id="select_concat" value="SELECT CONCAT('My', 'S', 'QL')" db-types="MySQL" />
+    <sql-case id="select_concat_ws" value="SELECT CONCAT_WS(',', 'First name', 'Second name', 'Last Name')" db-types="MySQL" />
+    <sql-case id="select_connection_id" value="SELECT CONNECTION_ID()" db-types="MySQL" />
+    <sql-case id="select_conv" value="SELECT CONV('a',16,2)" db-types="MySQL" />
     <sql-case id="select_convert_function_using_character_set" value="SELECT CONVERT('abc' USING utf8mb4)" db-types="MySQL" />
     <sql-case id="select_convert_tz_function" value="SELECT CONVERT_TZ('2004-01-01 12:00:00','GMT','MET')" db-types="MySQL" />
     <sql-case id="select_cos_function" value="SELECT COS(PI())" db-types="MySQL" />

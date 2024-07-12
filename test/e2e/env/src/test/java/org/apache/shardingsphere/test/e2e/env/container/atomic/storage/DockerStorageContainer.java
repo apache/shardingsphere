@@ -48,15 +48,13 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private final DatabaseType databaseType;
     
-    private final Map<String, DataSource> actualDataSourceMap;
+    private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
     
-    private final Map<String, DataSource> expectedDataSourceMap;
+    private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
     
     protected DockerStorageContainer(final DatabaseType databaseType, final String containerImage) {
         super(databaseType.getType().toLowerCase(), containerImage);
         this.databaseType = databaseType;
-        actualDataSourceMap = new LinkedHashMap<>();
-        expectedDataSourceMap = new LinkedHashMap<>();
     }
     
     @Override
@@ -154,7 +152,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     /**
      * Get database container mapped port.
-     * 
+     *
      * @return mapped database container port
      */
     public abstract int getMappedPort();

@@ -42,11 +42,17 @@ public final class OrderItemRepository {
     
     /**
      * create table if not exists in MySQL.
+     *
      * @throws SQLException SQL exception
      */
     public void createTableIfNotExistsInMySQL() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_order_item "
-                + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id))";
+        String sql = "CREATE TABLE IF NOT EXISTS t_order_item \n"
+                + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT,\n"
+                + "order_id BIGINT NOT NULL,\n"
+                + "user_id INT NOT NULL,\n"
+                + "phone VARCHAR(50),\n"
+                + "status VARCHAR(50),\n"
+                + "PRIMARY KEY (order_item_id))";
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -56,6 +62,7 @@ public final class OrderItemRepository {
     
     /**
      * create table if not exists in Postgres.
+     *
      * @throws SQLException SQL exception
      */
     public void createTableIfNotExistsInPostgres() throws SQLException {
@@ -65,7 +72,7 @@ public final class OrderItemRepository {
                 + "    user_id INTEGER NOT NULL,\n"
                 + "    phone VARCHAR(50),\n"
                 + "    status VARCHAR(50)\n"
-                + ");";
+                + ")";
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -76,6 +83,7 @@ public final class OrderItemRepository {
     /**
      * create table in MS SQL Server. `order_item_id` is not set to `IDENTITY(1,1)` to simplify the unit test.
      * This also ignored the default schema of the `dbo`.
+     *
      * @throws SQLException SQL exception
      */
     public void createTableInSQLServer() throws SQLException {
@@ -86,7 +94,30 @@ public final class OrderItemRepository {
                 + "    phone varchar(50),\n"
                 + "    status varchar(50),\n"
                 + "    PRIMARY KEY (order_item_id)\n"
-                + ");";
+                + ")";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
+     * create table if not exists in ClickHouse.
+     * ClickHouse does not support `AUTO_INCREMENT`, refer to <a href="https://github.com/ClickHouse/ClickHouse/issues/56228">ClickHouse/ClickHouse#56228</a> .
+     *
+     * @throws SQLException SQL exception
+     */
+    public void createTableIfNotExistsInClickHouse() throws SQLException {
+        String sql = "create table IF NOT EXISTS t_order_item( \n"
+                + "order_item_id Int64 NOT NULL DEFAULT rand(), \n"
+                + "order_id Int64 NOT NULL, \n"
+                + "user_id Int32 NOT NULL, \n"
+                + "phone String,\n"
+                + "status String\n"
+                + ") engine = MergeTree \n"
+                + "primary key (order_item_id)\n"
+                + "order by(order_item_id); ";
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -96,6 +127,7 @@ public final class OrderItemRepository {
     
     /**
      * drop table.
+     *
      * @throws SQLException SQL exception
      */
     public void dropTable() throws SQLException {
@@ -109,6 +141,7 @@ public final class OrderItemRepository {
     
     /**
      * truncate table.
+     *
      * @throws SQLException SQL exception
      */
     public void truncateTable() throws SQLException {
@@ -122,6 +155,7 @@ public final class OrderItemRepository {
     
     /**
      * create shadow table if not exists.
+     *
      * @throws SQLException SQL exception
      */
     public void createTableIfNotExistsShadow() throws SQLException {
@@ -137,6 +171,7 @@ public final class OrderItemRepository {
     
     /**
      * drop shadow table.
+     *
      * @throws SQLException SQL exception
      */
     public void dropTableShadow() throws SQLException {
@@ -150,6 +185,7 @@ public final class OrderItemRepository {
     
     /**
      * truncate shadow table.
+     *
      * @throws SQLException SQL exception
      */
     public void truncateTableShadow() throws SQLException {
@@ -162,16 +198,33 @@ public final class OrderItemRepository {
     }
     
     /**
-     * insert something to table.
+     * insert OrderItem to table.
+     *
      * @param orderItem orderItem
+     * @return orderItemId of the insert statement
+     * @throws SQLException SQL Exception
+     */
+    public Long insert(final OrderItem orderItem) throws SQLException {
+        return insert(orderItem, Statement.RETURN_GENERATED_KEYS);
+    }
+    
+    /**
+     * insert OrderItem to table. Databases like ClickHouse do not support returning auto generated keys after executing SQL,
+     * see <a href="https://github.com/ClickHouse/ClickHouse/issues/56228">ClickHouse/ClickHouse#56228</a> .
+     *
+     * @param orderItem         orderItem
+     * @param autoGeneratedKeys a flag indicating whether auto-generated keys
+     *                          should be returned; one of
+     *                          {@code Statement.RETURN_GENERATED_KEYS} or
+     *                          {@code Statement.NO_GENERATED_KEYS}
      * @return orderItemId of the insert statement
      * @throws SQLException SQL exception
      */
-    public Long insert(final OrderItem orderItem) throws SQLException {
+    public Long insert(final OrderItem orderItem, final int autoGeneratedKeys) throws SQLException {
         String sql = "INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (?, ?, ?, ?)";
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, autoGeneratedKeys)) {
             preparedStatement.setLong(1, orderItem.getOrderId());
             preparedStatement.setInt(2, orderItem.getUserId());
             preparedStatement.setString(3, orderItem.getPhone());
@@ -188,6 +241,7 @@ public final class OrderItemRepository {
     
     /**
      * delete by orderItemId.
+     *
      * @param orderItemId orderItemId
      * @throws SQLException SQL exception
      */
@@ -202,7 +256,24 @@ public final class OrderItemRepository {
     }
     
     /**
+     * delete by orderItemId in ClickHouse.
+     *
+     * @param orderItemId orderItemId
+     * @throws SQLException SQL exception
+     */
+    public void deleteInClickHouse(final Long orderItemId) throws SQLException {
+        String sql = "alter table t_order_item delete where order_id=?";
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, orderItemId);
+            preparedStatement.executeUpdate();
+        }
+    }
+    
+    /**
      * select all.
+     *
      * @return list of OrderItem
      * @throws SQLException SQL exception
      */

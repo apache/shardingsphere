@@ -11,7 +11,7 @@ The data encryption Java API rule configuration allows users to directly create 
 
 ### Root Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration
 
 Attributes:
 
@@ -22,7 +22,7 @@ Attributes:
 
 ### Encrypt Table Rule Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration
 
 Attributes:
 
@@ -33,31 +33,31 @@ Attributes:
 
 ### Encrypt Column Rule Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration
 
 Attributes:
 
-| *Name*        | *DataType*                         | *Description*                |
-|---------------|------------------------------------|------------------------------|
-| name          | String                             | Logic column name            |
-| cipher        | EncryptColumnItemRuleConfiguration | Cipher column config         |
+| *Name*            | *DataType*                         | *Description*                |
+|-------------------|------------------------------------|------------------------------|
+| name              | String                             | Logic column name            |
+| cipher            | EncryptColumnItemRuleConfiguration | Cipher column config         |
 | assistedQuery (?) | EncryptColumnItemRuleConfiguration | Assisted query column config |
-| likeQuery (?) | EncryptColumnItemRuleConfiguration | Like query column config     |
+| likeQuery (?)     | EncryptColumnItemRuleConfiguration | Like query column config     |
 
 ### Encrypt Column Item Rule Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration
 
 Attributes:
 
-| *Name*        | *DataType*                         | *Description*            |
-|-----------------|------------------------------------|--------------------------|
-| name            | String                             | encrypt column item name |
-| encryptorName   | String                             | encryptor name           |
+| *Name*        | *DataType* | *Description*            |
+|---------------|------------|--------------------------|
+| name          | String     | encrypt column item name |
+| encryptorName | String     | encryptor name           |
 
 ### Encrypt Algorithm Configuration
 
-Class name: org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
+Class name: org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration
 
 Attributes:
 

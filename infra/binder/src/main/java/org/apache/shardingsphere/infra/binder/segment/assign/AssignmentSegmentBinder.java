@@ -19,20 +19,20 @@ package org.apache.shardingsphere.infra.binder.segment.assign;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *  Assignment segment binder.
@@ -44,32 +44,33 @@ public final class AssignmentSegmentBinder {
      * Bind assignment segment.
      *
      * @param segment assignment segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound assignment segment
      */
-    public static SetAssignmentSegment bind(final SetAssignmentSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static SetAssignmentSegment bind(final SetAssignmentSegment segment, final SQLStatementBinderContext binderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
-        for (ColumnAssignmentSegment each : segment.getAssignments()) {
-            assignments.add(new ColumnAssignmentSegment(each.getStartIndex(), each.getStopIndex(), bindColumns(each.getColumns(), statementBinderContext, tableBinderContexts,
-                    outerTableBinderContexts), bindValue(each.getValue(), statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
-        }
+        Collection<ColumnAssignmentSegment> assignments = segment.getAssignments().stream()
+                .map(each -> createColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
         return new SetAssignmentSegment(segment.getStartIndex(), segment.getStopIndex(), assignments);
     }
     
-    private static List<ColumnSegment> bindColumns(final List<ColumnSegment> columns, final SQLStatementBinderContext statementBinderContext,
-                                                   final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        List<ColumnSegment> result = new LinkedList<>();
-        for (ColumnSegment each : columns) {
-            result.add(ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT, statementBinderContext, tableBinderContexts, outerTableBinderContexts));
-        }
-        return result;
+    private static ColumnAssignmentSegment createColumnAssignmentSegment(final ColumnAssignmentSegment columnAssignmentSegment, final SQLStatementBinderContext binderContext,
+                                                                         final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                                                         final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        return new ColumnAssignmentSegment(columnAssignmentSegment.getStartIndex(), columnAssignmentSegment.getStopIndex(),
+                bindColumns(columnAssignmentSegment.getColumns(), binderContext, tableBinderContexts, outerTableBinderContexts),
+                bindValue(columnAssignmentSegment.getValue(), binderContext, tableBinderContexts, outerTableBinderContexts));
     }
     
-    private static ExpressionSegment bindValue(final ExpressionSegment value, final SQLStatementBinderContext statementBinderContext,
+    private static List<ColumnSegment> bindColumns(final List<ColumnSegment> columns, final SQLStatementBinderContext binderContext,
+                                                   final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        return columns.stream().map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
+    }
+    
+    private static ExpressionSegment bindValue(final ExpressionSegment value, final SQLStatementBinderContext binderContext,
                                                final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        return ExpressionSegmentBinder.bind(value, SegmentType.SET_ASSIGNMENT, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+        return ExpressionSegmentBinder.bind(value, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);
     }
 }

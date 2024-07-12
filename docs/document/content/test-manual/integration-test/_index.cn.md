@@ -25,7 +25,7 @@ weight = 1
   - Embed 环境由测试框架自动搭建嵌入式 MySQL，适用于 ShardingSphere-JDBC 的本地环境测试。
 
 当前默认采用 Docker 环境，使用 Testcontainer 创建运行时环境并执行测试用例。
-未来将采用 Embed 环境的 ShardingSphere-JDBC + MySQL，替换 Native 执行测试用例的默认环境类型。 
+未来将采用 Embed 环境的 ShardingSphere-JDBC + MySQL，替换 Native 执行测试用例的默认环境类型。
 
 数据库类型目前支持 MySQL、PostgreSQL、SQLServer 和 Oracle，并且可以支持使用 ShardingSphere-JDBC 或是使用 ShardingSphere-Proxy 执行测试用例。
 
@@ -64,7 +64,7 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
         <!-- ... more assertions -->
         <assertion parameters="${value_3}:${type_3}, ${value_4}:${type_4}" expected-data-file="${dataset_file_2}.xml" />
      </test-case>
-    
+
     <!-- ... more test cases -->
 </integration-test-cases>
 ```
@@ -181,7 +181,7 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 ```
 
 ##### 远程调试通过镜像启动的 Proxy
-E2E 测试的 Proxy 镜像默认开启了 3308 端口用于远程调试容器中的实例。  
+E2E 测试的 Proxy 镜像默认开启了 3308 端口用于远程调试容器中的实例。
 使用 IDEA 等 IDE 工具可以通过如下方式连接并 debug 容器中的 Proxy 代码：
 
 IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
@@ -197,8 +197,8 @@ IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 ##### 远程调试通过 Testcontainer 启动的 Proxy
 > 注意：如果通过 Testcontainer 启动 Proxy 容器，由于 Testcontainer 启动前 3308 端口还没有暴露出来，无法通过 `远程调试通过镜像启动的 Proxy` 方式进行 debug。
 可以通过如下方式 debug Testcontainer 启动的 Proxy 容器：
-  - 在 Testcontainer 的相关启动类后打一个断点，例如 sql 测试中 E2EIT#setUp() -> `containerComposer.start();` 后面的一行打断点，此时相关容器一定已经启动。
-  - 通过快捷键 Alt + F8，进入断点调试模式，查看 containerComposer 下的 Proxy 对象 3308 映射的端口（Testcontainer 对外映射端口是随机的）。例如本次通过该表达式：`((ShardingSphereProxyClusterContainer)((java.util.LinkedList)((ITContainers)((ClusterContainerComposer)containerComposer).containers).dockerContainers).getLast()).getMappedPort(3308)` 获取到映射的对外随机端口为 51837。（或者通过命令 `docker ps` 查看）
+  - 在 Testcontainer 的相关启动类后打一个断点，例如 sql 测试中 E2EContainerComposer -> `containerComposer.start();` 后面的一行打断点，此时相关容器一定已经启动。
+  - 通过快捷键 Alt + F8，进入断点调试模式，通过命令 `docker ps` 查看 containerComposer 下的 Proxy 对象 3308 映射的端口（Testcontainer 对外映射端口是随机的）。
   - 参考 `远程调试通过镜像启动的 Proxy` 中的方式，将 Remote JVM Debug 配置中的 Port 设置为上一步中获取到的端口，例如 51837。
 
 编辑好上面的信息后，在 IDEA 中 Run -> Run -> e2e-debug -> debug 即可启动 IDEA 的远程 debug。

@@ -61,7 +61,7 @@ public final class GenericSchemaBuilderMaterial {
     
     /**
      * Judge whether same protocol and storage database types.
-     * 
+     *
      * @return is same or not
      */
     public boolean isSameProtocolAndStorageTypes() {

@@ -44,7 +44,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
     public OpenGaussCursorTestCase(final TransactionTestCaseParameter testCaseParam) {
         super(testCaseParam);
-        this.cursorSQLCommand = loadCursorSQLCommand();
+        cursorSQLCommand = loadCursorSQLCommand();
     }
     
     private CursorSQLCommand loadCursorSQLCommand() {

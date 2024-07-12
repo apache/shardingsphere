@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
@@ -56,6 +56,8 @@ public final class E2ETestParameterGenerator {
     
     private final Collection<DatabaseType> envDatabaseTypes;
     
+    private final boolean smoke;
+    
     /**
      * Get assertion test parameter.
      *
@@ -65,7 +67,11 @@ public final class E2ETestParameterGenerator {
     public Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
-            result.addAll(getAssertionTestParameter(each, sqlCommandType));
+            if (smoke) {
+                result.addAll(getAssertionTestParameterFilterBySmoke(each, sqlCommandType));
+            } else {
+                result.addAll(getAssertionTestParameter(each, sqlCommandType));
+            }
         }
         return result;
     }
@@ -118,6 +124,14 @@ public final class E2ETestParameterGenerator {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
                 .map(each -> new AssertionTestParameter(testCaseContext, assertion, adapter, each, envMode, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
+    }
+    
+    private Collection<AssertionTestParameter> getAssertionTestParameterFilterBySmoke(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
+        Collection<AssertionTestParameter> result = new LinkedList<>();
+        if (testCaseContext.getTestCase().isSmoke()) {
+            result.addAll(getAssertionTestParameter(testCaseContext, sqlCommandType));
+        }
+        return result;
     }
     
     private Collection<String> getEnvAdapters(final String envAdapters) {

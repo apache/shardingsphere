@@ -26,14 +26,14 @@ public interface AggregationUnit {
     
     /**
      * Merge aggregation values.
-     * 
+     *
      * @param values aggregation values
      */
     void merge(List<Comparable<?>> values);
     
     /**
      * Get aggregation result.
-     * 
+     *
      * @return aggregation result
      */
     Comparable<?> getResult();

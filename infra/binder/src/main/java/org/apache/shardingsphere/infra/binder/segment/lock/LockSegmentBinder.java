@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.binder.segment.lock;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,21 +37,21 @@ import java.util.Map;
 public final class LockSegmentBinder {
     
     /**
-     * Bind lock segment with metadata.
+     * Bind lock segment.
      *
      * @param segment lock segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded lock segment
+     * @return bound lock segment
      */
-    public static LockSegment bind(final LockSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static LockSegment bind(final LockSegment segment, final SQLStatementBinderContext binderContext,
                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        Collection<ColumnSegment> boundedColumns = new LinkedList<>();
-        segment.getColumns().forEach(each -> boundedColumns.add(ColumnSegmentBinder.bind(each, SegmentType.LOCK, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
+        Collection<ColumnSegment> boundColumns = new LinkedList<>();
+        segment.getColumns().forEach(each -> boundColumns.add(ColumnSegmentBinder.bind(each, SegmentType.LOCK, binderContext, tableBinderContexts, outerTableBinderContexts)));
         LockSegment result = new LockSegment(segment.getStartIndex(), segment.getStopIndex());
         result.getTables().addAll(segment.getTables());
-        result.getColumns().addAll(boundedColumns);
+        result.getColumns().addAll(boundColumns);
         return result;
     }
 }

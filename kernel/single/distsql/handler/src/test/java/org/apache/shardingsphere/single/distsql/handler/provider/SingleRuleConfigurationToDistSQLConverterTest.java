@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.provider;
 
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -52,6 +52,6 @@ class SingleRuleConfigurationToDistSQLConverterTest {
     @Test
     void assertGetType() {
         SingleRuleConfigurationToDistSQLConverter singleRuleConfigurationToDistSQLConverter = new SingleRuleConfigurationToDistSQLConverter();
-        assertThat(singleRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.single.api.config.SingleRuleConfiguration"));
+        assertThat(singleRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.single.config.SingleRuleConfiguration"));
     }
 }

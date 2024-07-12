@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.dml;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 
 /**
  * Merge statement context.
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
 @Getter
 public final class MergeStatementContext extends CommonSQLStatementContext {
     
-    public MergeStatementContext(final OracleMergeStatement sqlStatement) {
+    public MergeStatementContext(final MergeStatement sqlStatement) {
         super(sqlStatement);
     }
 }

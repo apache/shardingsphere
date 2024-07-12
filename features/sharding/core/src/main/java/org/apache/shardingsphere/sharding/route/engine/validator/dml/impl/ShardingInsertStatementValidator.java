@@ -35,12 +35,11 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -68,7 +67,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
                 && !isContainsKeyGenerateColumn(shardingRule, insertStatement.getColumns(), tableName)) {
             throw new MissingGenerateKeyColumnWithInsertSelectException();
         }
-        TablesContext tablesContext = sqlStatementContext.getTablesContext();
+        TablesContext tablesContext = ((InsertStatementContext) sqlStatementContext).getTablesContext();
         if (insertSelectSegment.isPresent() && shardingRule.containsShardingTable(tablesContext.getTableNames())
                 && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
             throw new InsertSelectTableViolationException();
@@ -84,7 +83,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     }
     
     private boolean isAllSameTables(final Collection<String> tableNames) {
-        return 1 == tableNames.stream().distinct().count();
+        return 1L == tableNames.stream().distinct().count();
     }
     
     @Override
@@ -97,7 +96,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
             ShardingSpherePreconditions.checkState(singleRoutingOrSameShardingCondition, () -> new UnsupportedShardingOperationException("INSERT ... SELECT ...", tableName));
         }
-        Collection<ColumnAssignmentSegment> assignments = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement)
+        Collection<ColumnAssignmentSegment> assignments = insertStatement.getOnDuplicateKeyColumns()
                 .map(OnDuplicateKeyColumnsSegment::getColumns).orElse(Collections.emptyList());
         Optional<ShardingConditions> onDuplicateKeyShardingConditions = createShardingConditions(sqlStatementContext, shardingRule, assignments, params);
         Optional<RouteContext> onDuplicateKeyRouteContext = onDuplicateKeyShardingConditions.map(optional -> new ShardingStandardRoutingEngine(tableName, optional,

@@ -17,24 +17,22 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Table pg_class data collector.
@@ -43,46 +41,34 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     
     private static final String PG_CLASS = "pg_class";
     
-    private static final String COLUMN_NAMES = "relname, relnamespace, relkind, reloptions";
+    private static final String PUBLIC_SCHEMA = "public";
     
-    private static final String SELECT_SQL = "SELECT " + COLUMN_NAMES + " FROM pg_catalog.pg_class WHERE relkind IN ('r','v','m','S','L','f','e','o','') "
-            + "AND relname NOT LIKE 'matviewmap\\_%' AND relname NOT LIKE 'mlog\\_%' AND pg_catalog.pg_table_is_visible(oid);";
+    private static final Long PUBLIC_SCHEMA_OID = 0L;
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
                                                      final RuleMetaData globalRuleMetaData) throws SQLException {
-        Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtils.collectRowData(databases.get(databaseName),
-                table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()), SELECT_SQL);
-        Collection<ShardingSphereRowData> rowData = decorateTableName(rows, table, databases.get(databaseName).getRuleMetaData());
         ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS);
-        result.getRows().addAll(rowData);
+        long oid = 0L;
+        for (Entry<String, ShardingSphereSchema> entry : databases.get(databaseName).getSchemas().entrySet()) {
+            if (PUBLIC_SCHEMA.equalsIgnoreCase(entry.getKey())) {
+                result.getRows().addAll(collectForSchema(oid++, PUBLIC_SCHEMA_OID, entry.getValue(), table));
+            }
+        }
         return Optional.of(result);
     }
     
-    private Collection<ShardingSphereRowData> decorateTableName(final Collection<ShardingSphereRowData> rows, final ShardingSphereTable table, final RuleMetaData ruleMetaData) {
-        Collection<DataNodeRuleAttribute> ruleAttributes = ruleMetaData.getAttributes(DataNodeRuleAttribute.class);
-        if (ruleAttributes.isEmpty()) {
-            return rows;
-        }
-        int tableNameIndex = table.getColumnNames().indexOf("relname");
+    private Collection<ShardingSphereRowData> collectForSchema(final Long oid, final Long relNamespace, final ShardingSphereSchema schema, final ShardingSphereTable table) {
         Collection<ShardingSphereRowData> result = new LinkedList<>();
-        for (ShardingSphereRowData each : rows) {
-            String tableName = (String) each.getRows().get(tableNameIndex);
-            String logicTableName = decorateTableName(ruleAttributes, tableName);
-            List<Object> decoratedRow = new ArrayList<>(each.getRows());
-            decoratedRow.set(tableNameIndex, logicTableName);
-            result.add(new ShardingSphereRowData(decoratedRow));
+        for (Entry<String, ShardingSphereTable> entry : schema.getTables().entrySet()) {
+            Map<String, Object> columnValues = new CaseInsensitiveMap<>(4, 1F);
+            columnValues.put("oid", oid);
+            columnValues.put("relnamespace", relNamespace);
+            columnValues.put("relname", entry.getKey());
+            columnValues.put("relkind", "r");
+            result.add(new ShardingSphereRowData(ShardingSphereTableDataCollectorUtils.createRowValue(columnValues, table)));
         }
         return result;
-    }
-    
-    private String decorateTableName(final Collection<DataNodeRuleAttribute> ruleAttributes, final String actualTableName) {
-        for (DataNodeRuleAttribute each : ruleAttributes) {
-            if (each.findLogicTableByActualTable(actualTableName).isPresent()) {
-                return each.findLogicTableByActualTable(actualTableName).get();
-            }
-        }
-        return actualTableName;
     }
     
     @Override

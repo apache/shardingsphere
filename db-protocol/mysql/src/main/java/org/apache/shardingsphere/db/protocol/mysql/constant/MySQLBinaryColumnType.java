@@ -148,7 +148,7 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
     
     /**
      * Value of.
-     * 
+     *
      * @param value value
      * @return column type
      */

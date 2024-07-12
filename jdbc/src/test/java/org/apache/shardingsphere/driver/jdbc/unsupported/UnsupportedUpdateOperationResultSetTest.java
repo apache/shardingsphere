@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ class UnsupportedUpdateOperationResultSetTest {
     @BeforeEach
     void init() throws SQLException {
         shardingSphereResultSet = new ShardingSphereResultSet(
-                Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), true, mock(ExecutionContext.class));
+                Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), mock(SQLStatementContext.class));
     }
     
     @Test
@@ -303,12 +303,12 @@ class UnsupportedUpdateOperationResultSetTest {
     
     @Test
     void assertUpdateNCharacterStreamForColumnIndexWithLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNCharacterStream(1, new StringReader(""), 1));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNCharacterStream(1, new StringReader(""), 1L));
     }
     
     @Test
     void assertUpdateNCharacterStreamForColumnLabelWithLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNCharacterStream("label", new StringReader(""), 1));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNCharacterStream("label", new StringReader(""), 1L));
     }
     
     @Test
@@ -363,12 +363,12 @@ class UnsupportedUpdateOperationResultSetTest {
     
     @Test
     void assertUpdateBlobForColumnIndexWithInputStreamAndLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob(1, System.in, 100));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob(1, System.in, 100L));
     }
     
     @Test
     void assertUpdateBlobForColumnLabelWithInputStreamAndLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob("label", System.in, 100));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob("label", System.in, 100L));
     }
     
     @Test
@@ -393,12 +393,12 @@ class UnsupportedUpdateOperationResultSetTest {
     
     @Test
     void assertUpdateClobForColumnIndexWithInputStreamAndLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob(1, new StringReader(""), 100));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob(1, new StringReader(""), 100L));
     }
     
     @Test
     void assertUpdateClobForColumnLabelWithInputStreamAndLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob("label", new StringReader(""), 100));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob("label", new StringReader(""), 100L));
     }
     
     @Test
@@ -423,12 +423,12 @@ class UnsupportedUpdateOperationResultSetTest {
     
     @Test
     void assertUpdateNClobForColumnIndexWithInputStreamAndLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob(1, new StringReader(""), 100));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob(1, new StringReader(""), 100L));
     }
     
     @Test
     void assertUpdateNClobForColumnLabelWithInputStreamAndLength() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob("label", new StringReader(""), 100));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob("label", new StringReader(""), 100L));
     }
     
     @Test

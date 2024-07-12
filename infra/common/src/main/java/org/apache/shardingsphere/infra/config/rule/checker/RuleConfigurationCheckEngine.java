@@ -42,13 +42,17 @@ public final class RuleConfigurationCheckEngine {
     
     /**
      * Check rule configuration.
-     * 
+     *
      * @param ruleConfig rule configuration to be checked
      * @param database database
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void check(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        if (null == checker) {
+            // TODO Remove after implementing the checker of BroadcastRuleConfiguration and SingleRuleConfiguration
+            return;
+        }
         Collection<String> requiredDataSourceNames = checker.getRequiredDataSourceNames(ruleConfig);
         if (!requiredDataSourceNames.isEmpty()) {
             checkDataSourcesExisted(database, requiredDataSourceNames);
@@ -71,7 +75,7 @@ public final class RuleConfigurationCheckEngine {
     
     private static void checkTablesNotDuplicated(final RuleConfiguration ruleConfig, final String databaseName, final Collection<String> tableNames) {
         Collection<String> duplicatedTables = tableNames.stream()
-                .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+                .collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream().filter(each -> each.getValue() > 1L).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkMustEmpty(duplicatedTables, () -> new DuplicateRuleException(getRuleType(ruleConfig), databaseName, duplicatedTables));
     }
     

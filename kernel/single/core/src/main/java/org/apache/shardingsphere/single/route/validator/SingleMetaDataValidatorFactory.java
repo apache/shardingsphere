@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.single.route.validator.ddl.SingleDropSchemaMetaDataValidator;
 import org.apache.shardingsphere.single.route.validator.ddl.SingleDropTableValidator;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ public final class SingleMetaDataValidatorFactory {
     
     /**
      * New instance of single meta data validator.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @return created instance
      */

@@ -24,7 +24,7 @@ public interface BinaryColumnType {
     
     /**
      * Get database protocol binary column type value.
-     * 
+     *
      * @return database protocol binary column type value
      */
     int getValue();

@@ -40,7 +40,7 @@ public final class PostgreSQLContainerConfigurationFactory {
     
     /**
      * Create new instance of PostgreSQL container configuration.
-     * 
+     *
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {

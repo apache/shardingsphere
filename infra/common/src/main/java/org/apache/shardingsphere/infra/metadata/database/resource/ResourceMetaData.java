@@ -77,11 +77,20 @@ public final class ResourceMetaData {
     
     /**
      * Get not existed resource name.
-     * 
+     *
      * @param resourceNames resource names to be judged
      * @return not existed resource names
      */
     public Collection<String> getNotExistedDataSources(final Collection<String> resourceNames) {
         return resourceNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toSet());
+    }
+    
+    /**
+     * Get data source map.
+     *
+     * @return data source map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        return storageUnits.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

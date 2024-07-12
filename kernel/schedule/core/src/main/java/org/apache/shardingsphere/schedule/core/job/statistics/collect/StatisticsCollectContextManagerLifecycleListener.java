@@ -27,13 +27,9 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 public final class StatisticsCollectContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
-    public void onInitialized(final String databaseName, final ContextManager contextManager) {
-        if (contextManager.getInstanceContext().isCluster() && InstanceType.PROXY == contextManager.getInstanceContext().getInstance().getMetaData().getType()) {
+    public void onInitialized(final ContextManager contextManager) {
+        if (contextManager.getComputeNodeInstanceContext().isCluster() && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
             StatisticsCollectJobWorker.initialize(contextManager);
         }
-    }
-    
-    @Override
-    public void onDestroyed(final String databaseName, final InstanceType instanceType) {
     }
 }

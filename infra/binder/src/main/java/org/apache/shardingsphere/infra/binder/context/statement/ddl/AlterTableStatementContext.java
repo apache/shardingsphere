@@ -23,19 +23,19 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.RenameIndexDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,35 +48,34 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext 
     
     private final TablesContext tablesContext;
     
-    public AlterTableStatementContext(final AlterTableStatement sqlStatement) {
+    public AlterTableStatementContext(final AlterTableStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType(), currentDatabaseName);
+    }
+    
+    private Collection<SimpleTableSegment> getTables(final AlterTableStatement sqlStatement) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        result.add(sqlStatement.getTable());
+        if (sqlStatement.getRenameTable().isPresent()) {
+            result.add(sqlStatement.getRenameTable().get());
+        }
+        for (AddColumnDefinitionSegment each : sqlStatement.getAddColumnDefinitions()) {
+            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
+                result.addAll(columnDefinition.getReferencedTables());
+            }
+        }
+        for (ModifyColumnDefinitionSegment each : sqlStatement.getModifyColumnDefinitions()) {
+            result.addAll(each.getColumnDefinition().getReferencedTables());
+        }
+        for (AddConstraintDefinitionSegment each : sqlStatement.getAddConstraintDefinitions()) {
+            each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
+        }
+        return result;
     }
     
     @Override
     public AlterTableStatement getSqlStatement() {
         return (AlterTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        result.add(getSqlStatement().getTable());
-        if (getSqlStatement().getRenameTable().isPresent()) {
-            result.add(getSqlStatement().getRenameTable().get());
-        }
-        for (AddColumnDefinitionSegment each : getSqlStatement().getAddColumnDefinitions()) {
-            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
-                result.addAll(columnDefinition.getReferencedTables());
-            }
-        }
-        for (ModifyColumnDefinitionSegment each : getSqlStatement().getModifyColumnDefinitions()) {
-            result.addAll(each.getColumnDefinition().getReferencedTables());
-        }
-        for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
-            each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
-        }
-        return result;
     }
     
     @Override

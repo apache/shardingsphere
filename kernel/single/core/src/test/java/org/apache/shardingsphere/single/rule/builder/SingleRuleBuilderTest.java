@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.single.rule.builder;
 
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ class SingleRuleBuilderTest {
     void assertBuild() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "",
-                new MySQLDatabaseType(), Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), mock(InstanceContext.class));
+                new MySQLDatabaseType(), mock(ResourceMetaData.class), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), mock(ComputeNodeInstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
     
@@ -49,8 +50,8 @@ class SingleRuleBuilderTest {
     @Test
     void assertBuildWithDefaultDataSource() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
-        DatabaseRule actual = builder.build(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", new MySQLDatabaseType(), Collections.emptyMap(),
-                Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), mock(InstanceContext.class));
+        DatabaseRule actual = builder.build(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", new MySQLDatabaseType(), mock(ResourceMetaData.class),
+                Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), mock(ComputeNodeInstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
 }

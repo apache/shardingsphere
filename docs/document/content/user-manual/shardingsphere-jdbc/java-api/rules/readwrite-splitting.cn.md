@@ -11,7 +11,7 @@ Java API 形式配置的读写分离可以方便的适用于各种场景，不�
 
 ### 配置入口
 
-类名称：org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration
+类名称：org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration
 
 可配置属性：
 
@@ -22,7 +22,7 @@ Java API 形式配置的读写分离可以方便的适用于各种场景，不�
 
 ## 主从数据源配置
 
-类名称：org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration
+类名称：org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration
 
 可配置属性：
 

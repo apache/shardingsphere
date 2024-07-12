@@ -79,6 +79,11 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public boolean isInstanceConnectionAvailable() {
+        return true;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "Oracle";
     }
@@ -93,6 +98,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
         result.put("ROWID", Types.ROWID);
         result.put("BINARY_DOUBLE", Types.DOUBLE);
         result.put("BINARY_FLOAT", Types.FLOAT);
+        result.put("NUMBER", Types.NUMERIC);
         return result;
     }
 }

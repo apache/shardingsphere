@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.single.route.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.single.exception.DropNotEmptySchemaException;
 import org.apache.shardingsphere.single.route.validator.SingleMetaDataValidator;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropSchemaStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Single drop schema meta data validator.
@@ -37,7 +36,7 @@ public final class SingleDropSchemaMetaDataValidator implements SingleMetaDataVa
     @Override
     public void validate(final SingleRule rule, final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
         DropSchemaStatement dropSchemaStatement = (DropSchemaStatement) sqlStatementContext.getSqlStatement();
-        boolean containsCascade = DropSchemaStatementHandler.containsCascade(dropSchemaStatement);
+        boolean containsCascade = dropSchemaStatement.isContainsCascade();
         for (IdentifierValue each : dropSchemaStatement.getSchemaNames()) {
             String schemaName = each.getValue();
             ShardingSphereSchema schema = database.getSchema(schemaName);

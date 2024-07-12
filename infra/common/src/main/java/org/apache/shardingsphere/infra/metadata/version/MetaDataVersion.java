@@ -20,9 +20,6 @@ package org.apache.shardingsphere.infra.metadata.version;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
  * Meta data version.
  */
@@ -30,7 +27,11 @@ import java.util.Collection;
 @Getter
 public final class MetaDataVersion {
     
+    public static final String DEFAULT_VERSION = "0";
+    
     private static final String ACTIVE_VERSION = "active_version";
+    
+    private static final String VERSIONS = "versions";
     
     private final String key;
     
@@ -39,17 +40,24 @@ public final class MetaDataVersion {
     private final String nextActiveVersion;
     
     public MetaDataVersion(final String key) {
-        this.key = key;
-        currentActiveVersion = "";
-        nextActiveVersion = "";
+        this(key, "", "");
     }
     
     /**
-     * Get active version keys.
+     * Get active version node path.
      *
-     * @return active version keys
+     * @return path of active version node
      */
-    public Collection<String> getActiveVersionKeys() {
-        return Arrays.asList(String.join("/", key, ACTIVE_VERSION), String.join("/", key, ACTIVE_VERSION, currentActiveVersion));
+    public String getActiveVersionNodePath() {
+        return String.join("/", key, ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get versions node path.
+     *
+     * @return path of versions node
+     */
+    public String getVersionsNodePath() {
+        return String.join("/", key, VERSIONS, currentActiveVersion);
     }
 }

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -50,9 +50,9 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
     }
     
     private void checkExist(final DropDefaultShardingStrategyStatement sqlStatement) {
-        Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(sqlStatement.getDefaultType());
-        ShardingSpherePreconditions.checkState(strategyConfig.isPresent(), () -> new MissingRequiredRuleException(
-                String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), database.getName()));
+        Optional<ShardingStrategyConfiguration> shardingStrategyConfig = getStrategyConfiguration(sqlStatement.getDefaultType());
+        ShardingSpherePreconditions.checkState(shardingStrategyConfig.isPresent(),
+                () -> new MissingRequiredRuleException(String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), database.getName()));
     }
     
     private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final String type) {

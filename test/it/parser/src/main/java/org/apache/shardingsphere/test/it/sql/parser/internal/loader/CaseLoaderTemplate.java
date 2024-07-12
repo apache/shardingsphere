@@ -34,7 +34,7 @@ public final class CaseLoaderTemplate {
     
     /**
      * Load test cases.
-     * 
+     *
      * @param rootDirectory root directory
      * @param callback callback of cases loader
      * @param <T> type of test case

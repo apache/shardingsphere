@@ -56,9 +56,6 @@ public final class TableDataConsistencyCheckResult {
      * @return matched or not
      */
     public boolean isMatched() {
-        if (null != ignoredType) {
-            return false;
-        }
-        return matched;
+        return null == ignoredType && matched;
     }
 }

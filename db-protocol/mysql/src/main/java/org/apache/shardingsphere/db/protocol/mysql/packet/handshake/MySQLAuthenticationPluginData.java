@@ -43,7 +43,7 @@ public final class MySQLAuthenticationPluginData {
     
     /**
      * Get authentication plugin data.
-     * 
+     *
      * @return authentication plugin data
      */
     public byte[] getAuthenticationPluginData() {

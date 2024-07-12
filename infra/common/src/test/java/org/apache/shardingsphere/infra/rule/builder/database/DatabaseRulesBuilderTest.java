@@ -21,7 +21,8 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +39,8 @@ class DatabaseRulesBuilderTest {
     @Test
     void assertBuild() {
         Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build("foo_db", new MySQLDatabaseType(),
-                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration())), mock(InstanceContext.class)).iterator();
+                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration())), mock(ComputeNodeInstanceContext.class),
+                mock(ResourceMetaData.class)).iterator();
         assertThat(actual.next(), instanceOf(FixtureRule.class));
         assertFalse(actual.hasNext());
     }

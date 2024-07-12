@@ -85,7 +85,7 @@ public final class SQLCases {
     
     /**
      * Get SQL.
-     * 
+     *
      * @param caseId SQL case ID
      * @param caseType SQL case type
      * @param params parameters

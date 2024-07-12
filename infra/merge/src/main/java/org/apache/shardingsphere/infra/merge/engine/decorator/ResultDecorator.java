@@ -44,7 +44,7 @@ public interface ResultDecorator<T extends ShardingSphereRule> {
     
     /**
      * Decorate merged result.
-     * 
+     *
      * @param mergedResult merged result
      * @param sqlStatementContext SQL statement context
      * @param rule ShardingSphere rule

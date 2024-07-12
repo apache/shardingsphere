@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,7 +48,7 @@ public final class LocalTransactionManager {
      */
     public void commit() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        if (databaseConnectionManager.getConnectionSession().getTransactionStatus().isExceptionOccur()) {
+        if (databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().isExceptionOccur()) {
             exceptions.addAll(rollbackConnections());
         } else {
             exceptions.addAll(commitConnections());
@@ -64,8 +63,6 @@ public final class LocalTransactionManager {
                 each.commit();
             } catch (final SQLException ex) {
                 result.add(ex);
-            } finally {
-                ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
         }
         return result;
@@ -90,8 +87,6 @@ public final class LocalTransactionManager {
                 each.rollback();
             } catch (final SQLException ex) {
                 result.add(ex);
-            } finally {
-                ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
         }
         return result;

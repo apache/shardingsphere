@@ -43,7 +43,7 @@ public final class TotalSuitesCountCalculator {
     
     /**
      * Calculate total test suites count.
-     * 
+     *
      * @return total test suites count
      */
     public static int calculate() {

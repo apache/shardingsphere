@@ -17,22 +17,25 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
     }
     
     @Override
-    public String getDirectly(final String key) {
+    public String query(final String key) {
         return "";
     }
     
@@ -55,16 +58,13 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public void persistEphemeral(final String key, final String value) {
-    }
-    
-    @Override
-    public void persistExclusiveEphemeral(final String key, final String value) {
+    public boolean persistExclusiveEphemeral(final String key, final String value) {
+        return true;
     }
     
     @Override
     public DistributedLockHolder getDistributedLockHolder() {
-        return null;
+        return new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties()));
     }
     
     @Override
@@ -73,6 +73,10 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
+    }
+    
+    @Override
+    public void removeDataListener(final String key) {
     }
     
     @Override

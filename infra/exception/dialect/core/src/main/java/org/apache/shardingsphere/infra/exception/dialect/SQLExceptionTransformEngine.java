@@ -41,7 +41,7 @@ public final class SQLExceptionTransformEngine {
     
     /**
      * To SQL exception.
-     * 
+     *
      * @param cause cause
      * @param databaseType database type
      * @return SQL exception

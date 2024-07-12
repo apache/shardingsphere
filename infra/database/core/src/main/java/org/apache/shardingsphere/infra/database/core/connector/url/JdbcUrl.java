@@ -39,7 +39,7 @@ public final class JdbcUrl {
     
     /**
      * Get port.
-     * 
+     *
      * @param defaultPort default port if absent
      * @return port
      */

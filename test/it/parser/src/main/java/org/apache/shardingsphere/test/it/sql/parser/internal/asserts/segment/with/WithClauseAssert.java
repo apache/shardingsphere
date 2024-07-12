@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.wi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
@@ -62,7 +62,7 @@ public final class WithClauseAssert {
         if (!expected.getColumns().isEmpty()) {
             assertThat(assertContext.getText("Common table expression column size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
         }
-        assertThat(assertContext.getText("Common table expression name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
+        assertThat(assertContext.getText("Common table expression name assertion error: "), actual.getAliasName().orElse(null), is(expected.getName()));
         int count = 0;
         for (ColumnSegment each : actual.getColumns()) {
             ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));

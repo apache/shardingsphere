@@ -39,7 +39,7 @@ class NarayanaTest {
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/transactions/xa/narayana.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
-        this.initEnvironment();
+        initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }
@@ -47,7 +47,7 @@ class NarayanaTest {
     private void initEnvironment() throws SQLException {
         testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
-        testShardingService.getAddressRepository().createTableIfNotExists();
+        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();

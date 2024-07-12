@@ -38,7 +38,7 @@ public final class PluginServiceLoader<T> {
     
     private PluginServiceLoader(final Class<T> service) {
         PluginPreconditions.checkArgument(service.isInterface(), String.format("SPI class `%s` is not interface.", service));
-        this.services = load(service);
+        services = load(service);
     }
     
     private Collection<T> load(final Class<T> service) {
@@ -63,7 +63,7 @@ public final class PluginServiceLoader<T> {
     
     /**
      * Get service.
-     * 
+     *
      * @param pluginType plugin type
      * @return service
      */

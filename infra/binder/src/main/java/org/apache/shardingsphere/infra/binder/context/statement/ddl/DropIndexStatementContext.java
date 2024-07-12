@@ -22,15 +22,13 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Drop index statement context.
@@ -40,21 +38,15 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext i
     
     private final TablesContext tablesContext;
     
-    public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
+    public DropIndexStatementContext(final DropIndexStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        SimpleTableSegment simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement).orElse(null);
-        tablesContext = new TablesContext(simpleTableSegment, getDatabaseType());
+        SimpleTableSegment simpleTableSegment = sqlStatement.getSimpleTable().orElse(null);
+        tablesContext = new TablesContext(simpleTableSegment, getDatabaseType(), currentDatabaseName);
     }
     
     @Override
     public DropIndexStatement getSqlStatement() {
         return (DropIndexStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(getSqlStatement());
-        return simpleTableSegment.map(Collections::singletonList).orElseGet(Collections::emptyList);
     }
     
     @Override

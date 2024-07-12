@@ -118,12 +118,13 @@ public abstract class BaseTransactionTestCase {
     }
     
     protected void assertAccountBalances(final Connection connection, final int... expectedBalances) throws SQLException {
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT * FROM account")) {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT * FROM account ORDER BY id")) {
+            int index = 0;
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
                 int actualBalance = resultSet.getInt("balance");
-                assertBalance(actualBalance, expectedBalances[id - 1]);
+                assertBalance(actualBalance, expectedBalances[index++]);
             }
+            assertThat(String.format("Balance size is %s, should be %s.", index, expectedBalances.length), index, is(expectedBalances.length));
         }
     }
     

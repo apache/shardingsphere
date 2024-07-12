@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTriggerStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateTriggerStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Show create trigger statement assert.
@@ -35,13 +35,13 @@ public final class ShowCreateTriggerStatementAssert {
     
     /**
      * Assert show create trigger statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual show create trigger statement
      * @param expected expected show create trigger statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateTriggerStatement actual, final ShowCreateTriggerStatementTestCase expected) {
-        assertNotNull(expected.getTrigger(), "expected show create trigger should be not null");
-        assertThat(actual.getName(), is(expected.getTrigger().getName()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowCreateTriggerStatement actual, final ShowCreateTriggerStatementTestCase expected) {
+        assertNotNull(expected.getTrigger(), assertContext.getText("expected show create trigger should be not null"));
+        assertThat(assertContext.getText("trigger name does not match: "), actual.getName(), is(expected.getTrigger().getName()));
     }
 }

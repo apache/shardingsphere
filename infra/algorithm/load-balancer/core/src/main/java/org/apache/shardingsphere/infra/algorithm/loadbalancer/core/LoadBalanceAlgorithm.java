@@ -29,7 +29,7 @@ public interface LoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Check load balance algorithm.
-     * 
+     *
      * @param databaseName database name
      * @param configuredTargetNames configured target names
      */
@@ -38,7 +38,7 @@ public interface LoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get target name.
-     * 
+     *
      * @param groupName group name which uniquely identifies available target names
      * @param availableTargetNames available target names
      * @return available target names

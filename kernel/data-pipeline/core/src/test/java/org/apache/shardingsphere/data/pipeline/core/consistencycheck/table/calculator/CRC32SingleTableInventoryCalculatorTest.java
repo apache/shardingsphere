@@ -93,7 +93,7 @@ class CRC32SingleTableInventoryCalculatorTest {
     
     @Test
     void assertCalculateFailed() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(connection.prepareStatement(anyString())).thenThrow(new SQLException(""));
         assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32SingleTableInventoryCalculator().calculate(parameter));
     }
 }

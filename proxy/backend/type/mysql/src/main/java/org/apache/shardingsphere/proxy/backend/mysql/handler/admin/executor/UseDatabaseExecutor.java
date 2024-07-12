@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.databa
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 
 /**
  * Use database executor.
@@ -38,11 +38,11 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String databaseName = SQLUtils.getExactlyValue(useStatement.getSchema());
+        String databaseName = SQLUtils.getExactlyValue(useStatement.getDatabase());
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getGrantee());
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName) && authorityChecker.isAuthorized(databaseName),
                 () -> new UnknownDatabaseException(databaseName));
-        connectionSession.setCurrentDatabase(databaseName);
+        connectionSession.setCurrentDatabaseName(databaseName);
     }
 }

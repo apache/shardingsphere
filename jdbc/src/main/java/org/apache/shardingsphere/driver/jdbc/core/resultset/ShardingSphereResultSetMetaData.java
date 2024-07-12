@@ -42,19 +42,13 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final ShardingSphereDatabase database;
     
-    private final boolean selectContainsEnhancedTable;
-    
     private final SQLStatementContext sqlStatementContext;
     
     @Override
     public int getColumnCount() throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            if (selectContainsEnhancedTable && hasSelectExpandProjections()) {
-                return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size();
-            }
-            return resultSetMetaData.getColumnCount();
-        }
-        return resultSetMetaData.getColumnCount();
+        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
+                ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
+                : resultSetMetaData.getColumnCount();
     }
     
     @Override
@@ -94,7 +88,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        if (selectContainsEnhancedTable && hasSelectExpandProjections()) {
+        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
             checkColumnIndex(column);
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnLabel();
         }
@@ -103,15 +97,11 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        if (selectContainsEnhancedTable && hasSelectExpandProjections()) {
+        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
             checkColumnIndex(column);
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnName();
         }
         return resultSetMetaData.getColumnName(column);
-    }
-    
-    private boolean hasSelectExpandProjections() {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     private void checkColumnIndex(final int column) throws SQLException {

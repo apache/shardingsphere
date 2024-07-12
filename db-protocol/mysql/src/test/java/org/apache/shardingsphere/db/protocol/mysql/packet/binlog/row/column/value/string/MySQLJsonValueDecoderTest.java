@@ -181,9 +181,9 @@ class MySQLJsonValueDecoderTest {
     void assertDecodeSmallJsonObjectWithString() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         String value1 = "";
-        String value2 = Strings.repeat("1", (int) (Math.pow(2, 7) - 1));
-        String value3 = Strings.repeat("1", (int) (Math.pow(2, 7) - 1 + 1));
-        String value4 = Strings.repeat("1", (int) (Math.pow(2, 14) - 1));
+        String value2 = Strings.repeat("1", (int) (Math.pow(2D, 7D) - 1D));
+        String value3 = Strings.repeat("1", (int) (Math.pow(2D, 7D) - 1D + 1D));
+        String value4 = Strings.repeat("1", (int) (Math.pow(2D, 14D) - 1D));
         jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key1", value1));
         jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key2", value2));
         jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key3", value3));
@@ -370,10 +370,11 @@ class MySQLJsonValueDecoderTest {
         }
         // compress
         int index = lengthData.length - 1;
-        for (; index > 0; index--) {
+        while (index > 0) {
             if (0 != lengthData[index]) {
                 break;
             }
+            index--;
         }
         for (int i = 0; i < index; i++) {
             lengthData[i] |= 0x80;

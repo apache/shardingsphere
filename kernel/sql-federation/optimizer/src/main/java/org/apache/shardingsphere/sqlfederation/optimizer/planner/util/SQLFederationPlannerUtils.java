@@ -234,7 +234,7 @@ public final class SQLFederationPlannerUtils {
     
     /**
      * Create sql to rel converter.
-     * 
+     *
      * @param catalogReader catalog reader
      * @param validator validator
      * @param cluster cluster
@@ -254,11 +254,11 @@ public final class SQLFederationPlannerUtils {
     
     /**
      * Create rel opt cluster.
-     * 
+     *
      * @param relDataTypeFactory rel data type factory
      * @return rel opt cluster
      */
     public static RelOptCluster createRelOptCluster(final RelDataTypeFactory relDataTypeFactory) {
-        return RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
+        return RelOptCluster.create(createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
     }
 }

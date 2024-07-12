@@ -23,8 +23,8 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
 
 import java.util.Collection;
@@ -40,7 +40,7 @@ public final class DeleteMultiTableConverter {
     
     /**
      * Convert delete multi table segment to sql node.
-     * 
+     *
      * @param segment delete multi table segment
      * @return sql node
      */

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSynonymStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSynonymStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class AlterSynonymStatementAssert {
      * @param actual actual alter synonym statement
      * @param expected expected alter synonym statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleAlterSynonymStatement actual, final AlterSynonymStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterSynonymStatement actual, final AlterSynonymStatementTestCase expected) {
     }
 }

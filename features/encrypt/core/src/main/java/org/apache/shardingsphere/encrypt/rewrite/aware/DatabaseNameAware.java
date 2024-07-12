@@ -24,7 +24,7 @@ public interface DatabaseNameAware {
     
     /**
      * Set database name.
-     * 
+     *
      * @param databaseName database name
      */
     void setDatabaseName(String databaseName);

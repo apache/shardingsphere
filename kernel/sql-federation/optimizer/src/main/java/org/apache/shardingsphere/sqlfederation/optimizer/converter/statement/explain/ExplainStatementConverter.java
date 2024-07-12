@@ -22,12 +22,12 @@ import org.apache.calcite.sql.SqlExplainFormat;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.SQLStatementConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.delete.DeleteStatementConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.insert.InsertStatementConverter;
@@ -48,7 +48,7 @@ public final class ExplainStatementConverter implements SQLStatementConverter<Ex
     }
     
     private SqlNode convertSQLStatement(final ExplainStatement explainStatement) {
-        return explainStatement.getStatement().flatMap(this::convertSqlNode).orElseThrow(IllegalStateException::new);
+        return explainStatement.getSqlStatement().flatMap(this::convertSqlNode).orElseThrow(IllegalStateException::new);
     }
     
     private Optional<SqlNode> convertSqlNode(final SQLStatement sqlStatement) {

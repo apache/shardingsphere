@@ -33,12 +33,12 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -48,6 +48,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -97,26 +98,26 @@ class EncryptDALResultDecoratorTest {
     }
     
     private SQLStatementContext getDescribeStatementContext() {
-        ExplainStatementContext result = mock(ExplainStatementContext.class);
+        ExplainStatementContext result = mock(ExplainStatementContext.class, RETURNS_DEEP_STUBS);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
-        when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(result.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
         return result;
     }
     
     private SQLStatementContext getShowColumnsStatementContext() {
-        ShowColumnsStatementContext result = mock(ShowColumnsStatementContext.class);
+        ShowColumnsStatementContext result = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
-        when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(result.getSqlStatement()).thenReturn(mock(MySQLShowColumnsStatement.class));
         return result;
     }
     
     private SQLStatementContext getShowCreateTableStatementContext() {
-        ShowCreateTableStatementContext result = mock(ShowCreateTableStatementContext.class);
+        ShowCreateTableStatementContext result = mock(ShowCreateTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseType()).thenReturn(databaseType);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
-        when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
+        when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(result.getSqlStatement()).thenReturn(new MySQLShowCreateTableStatement());
         return result;
     }

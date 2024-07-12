@@ -55,15 +55,14 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
     
     TERMINATE('X');
     
-    private static final Set<PostgreSQLCommandPacketType> EXTENDED_PROTOCOL_PACKET_TYPES = EnumSet.of(PostgreSQLCommandPacketType.PARSE_COMMAND,
-            PostgreSQLCommandPacketType.BIND_COMMAND, PostgreSQLCommandPacketType.DESCRIBE_COMMAND, PostgreSQLCommandPacketType.EXECUTE_COMMAND,
-            PostgreSQLCommandPacketType.SYNC_COMMAND, PostgreSQLCommandPacketType.CLOSE_COMMAND, PostgreSQLCommandPacketType.FLUSH_COMMAND);
+    private static final Set<PostgreSQLCommandPacketType> EXTENDED_PROTOCOL_PACKET_TYPES = EnumSet.of(
+            PARSE_COMMAND, BIND_COMMAND, DESCRIBE_COMMAND, EXECUTE_COMMAND, SYNC_COMMAND, CLOSE_COMMAND, FLUSH_COMMAND);
     
     private final char value;
     
     /**
      * Value of integer.
-     * 
+     *
      * @param value integer value
      * @return command packet type enum
      * @throws PostgreSQLProtocolException PostgreSQL protocol exception

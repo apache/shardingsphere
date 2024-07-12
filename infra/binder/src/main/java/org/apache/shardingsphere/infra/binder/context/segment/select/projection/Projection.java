@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection;
 
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -28,7 +28,7 @@ public interface Projection {
     
     /**
      * Get column name.
-     * 
+     *
      * @return column name
      */
     String getColumnName();

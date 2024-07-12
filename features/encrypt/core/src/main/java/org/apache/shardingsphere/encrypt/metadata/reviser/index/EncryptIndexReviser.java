@@ -40,7 +40,7 @@ public final class EncryptIndexReviser implements IndexReviser<EncryptRule> {
         if (originalMetaData.getColumns().isEmpty()) {
             return Optional.empty();
         }
-        Collection<String> columns = new LinkedHashSet<>();
+        Collection<String> columns = new LinkedHashSet<>(originalMetaData.getColumns().size(), 1F);
         for (String each : originalMetaData.getColumns()) {
             if (encryptTable.isCipherColumn(each)) {
                 columns.add(encryptTable.getLogicColumnByCipherColumn(each));

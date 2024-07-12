@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Optional;
 
@@ -50,7 +50,7 @@ public final class DistSQLExecutorRequiredChecker {
     }
     
     private void checkClusterMode(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), NotClusterModeException::new);
+        ShardingSpherePreconditions.checkState(contextManager.getComputeNodeInstanceContext().isCluster(), NotClusterModeException::new);
     }
     
     private void checkCurrentRule(final SQLStatement sqlStatement, final ContextManager contextManager, final ShardingSphereDatabase database,

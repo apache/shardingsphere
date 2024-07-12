@@ -34,7 +34,7 @@ public final class MaskAlgorithmAssertions {
     
     /**
      * Assert init failed with invalid properties.
-     * 
+     *
      * @param type mask algorithm type
      * @param props mask algorithm props
      */

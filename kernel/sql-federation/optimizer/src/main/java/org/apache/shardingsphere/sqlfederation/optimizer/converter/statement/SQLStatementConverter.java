@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.statement;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * SQL Statement converter.
@@ -30,7 +30,7 @@ public interface SQLStatementConverter<S extends SQLStatement, T extends SqlNode
     
     /**
      * Convert.
-     * 
+     *
      * @param sqlStatement SQL statement be to converted
      * @return converted SQL node
      */

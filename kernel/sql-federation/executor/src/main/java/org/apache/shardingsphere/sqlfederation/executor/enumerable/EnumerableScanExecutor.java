@@ -23,7 +23,7 @@ import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.binder.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -52,11 +52,10 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConstants;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExecutorContext;
@@ -113,13 +112,12 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             return createMemoryEnumerable(databaseName, schemaName, table, databaseType);
         }
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), scanContext, databaseType, federationContext.getQueryContext().isUseCache());
-        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, globalRuleMetaData, executorContext.getProps(), new ConnectionContext(Collections::emptySet));
         if (federationContext.isPreview()) {
             federationContext.getPreviewExecutionUnits().addAll(executionContext.getExecutionUnits());
             return createEmptyEnumerable();
         }
-        return createJDBCEnumerable(queryContext, database, executionContext);
+        return createJDBCEnumerable(queryContext, federationContext.getMetaData().getDatabase(databaseName), executionContext);
     }
     
     private AbstractEnumerable<Object> createJDBCEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
@@ -130,14 +128,14 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             public Enumerator<Object> enumerator() {
                 computeConnectionOffsets(context);
                 // TODO pass grantee from proxy and jdbc adapter
-                ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(),
-                        new ExecutionGroupReportContext(federationContext.getProcessId(), database.getName(), new Grantee("", "")));
+                ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(
+                        database.getName(), context.getRouteContext(), executorContext.getConnectionOffsets(),
+                        context.getExecutionUnits(), new ExecutionGroupReportContext(federationContext.getProcessId(), database.getName()));
                 setParameters(executionGroupContext.getInputGroups());
-                ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(federationContext.getProcessId()).isInterrupted(),
-                        SQLExecutionInterruptedException::new);
+                ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(federationContext.getProcessId()).isInterrupted(), SQLExecutionInterruptedException::new);
                 processEngine.executeSQL(executionGroupContext, federationContext.getQueryContext());
                 List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
-                MergeEngine mergeEngine = new MergeEngine(federationContext.getMetaData().getGlobalRuleMetaData(), database, executorContext.getProps(), new ConnectionContext());
+                MergeEngine mergeEngine = new MergeEngine(federationContext.getMetaData().getGlobalRuleMetaData(), database, executorContext.getProps(), new ConnectionContext(Collections::emptySet));
                 MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
                 Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
                 return new JDBCRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
@@ -210,14 +208,14 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         List<Object> params = getParameters(sqlString.getParamIndexes());
         HintValueContext hintValueContext = new HintValueContext();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getDatabaseName(), hintValueContext).bind(sqlStatement, params);
-        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, useCache);
+        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, new ConnectionContext(Collections::emptySet), metaData, useCache);
     }
     
     private List<Object> getParameters(final int[] paramIndexes) {
         if (null == paramIndexes) {
             return Collections.emptyList();
         }
-        List<Object> result = new ArrayList<>();
+        List<Object> result = new ArrayList<>(paramIndexes.length);
         for (int each : paramIndexes) {
             result.add(federationContext.getQueryContext().getParameters().get(each));
         }

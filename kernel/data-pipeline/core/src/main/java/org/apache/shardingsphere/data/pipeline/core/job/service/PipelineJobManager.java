@@ -149,7 +149,7 @@ public final class PipelineJobManager {
     
     /**
      * Drop job.
-     * 
+     *
      * @param jobId to be drooped job id
      */
     public void drop(final String jobId) {

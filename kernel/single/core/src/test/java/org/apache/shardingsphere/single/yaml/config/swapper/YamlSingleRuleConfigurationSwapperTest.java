@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 

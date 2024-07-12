@@ -27,7 +27,7 @@ public interface TestParameterLoadTemplate {
     
     /**
      * Load test parameters.
-     * 
+     *
      * @param sqlCaseFileName SQL case file name
      * @param sqlCaseFileContent SQL case file content
      * @param resultFileContent result file content

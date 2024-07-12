@@ -44,7 +44,7 @@ class SQLParserExecutorTest {
         SQLParserEngine sqlParserEngine = new SQLParserEngine("FIXTURE", cacheOption);
         Plugins.getMemberAccessor().set(sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor"), sqlParserEngine, sqlParserExecutor);
         LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues().initialCapacity(128)
-                .maximumSize(1024).build(new CacheLoader<String, ParseASTNode>() {
+                .maximumSize(1024L).build(new CacheLoader<String, ParseASTNode>() {
                     
                     @ParametersAreNonnullByDefault
                     @Override

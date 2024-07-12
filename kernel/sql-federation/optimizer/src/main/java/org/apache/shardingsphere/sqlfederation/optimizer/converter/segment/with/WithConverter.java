@@ -25,9 +25,9 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlWith;
 import org.apache.calcite.sql.SqlWithItem;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 
@@ -55,7 +55,7 @@ public final class WithConverter {
     private static SqlNodeList convertWithItem(final Collection<CommonTableExpressionSegment> commonTableExpressionSegments) {
         SqlNodeList result = new SqlNodeList(SqlParserPos.ZERO);
         for (CommonTableExpressionSegment each : commonTableExpressionSegments) {
-            SqlIdentifier name = new SqlIdentifier(each.getIdentifier().getValue(), SqlParserPos.ZERO);
+            SqlIdentifier name = new SqlIdentifier(each.getAliasName().orElse(""), SqlParserPos.ZERO);
             SqlNodeList columns = each.getColumns().isEmpty() ? null : convertColumns(each.getColumns());
             result.add(new SqlWithItem(SqlParserPos.ZERO, name, columns, new SelectStatementConverter().convert(each.getSubquery().getSelect())));
         }

@@ -235,7 +235,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
                 while (resultSet.next()) {
                     String columnName = resultSet.getString("COLUMN_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
-                    result.computeIfAbsent(tableName, k -> new LinkedList<>()).add(columnName);
+                    result.computeIfAbsent(tableName, key -> new LinkedList<>()).add(columnName);
                 }
             }
         }

@@ -191,7 +191,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> getDataSourceNames(final Collection<String> actualDataNodes) {
-        Collection<String> result = new LinkedHashSet<>();
+        Collection<String> result = new LinkedHashSet<>(actualDataNodes.size(), 1F);
         for (String each : actualDataNodes) {
             result.add(isValidDataNode(each) ? new DataNode(each).getDataSourceName() : each);
         }
@@ -362,7 +362,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static Collection<String> getDuplicatedRuleNames(final Collection<String> collection) {
         Collection<String> duplicatedNames = collection.stream().collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toCollection(CaseInsensitiveSet::new));
+                .filter(each -> each.getValue() > 1L).map(Entry::getKey).collect(Collectors.toCollection(CaseInsensitiveSet::new));
         return collection.stream().filter(duplicatedNames::contains).collect(Collectors.toSet());
     }
     
@@ -469,7 +469,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> getTableNames(final Collection<String> actualDataNodes) {
-        Collection<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>(actualDataNodes.size(), 1F);
         for (String each : actualDataNodes) {
             result.add(isValidDataNode(each) ? new DataNode(each).getTableName() : each);
         }

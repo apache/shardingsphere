@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
@@ -42,8 +41,6 @@ public final class StorageUnit {
     
     private final DatabaseType storageType;
     
-    private final String catalog;
-    
     private final DataSource dataSource;
     
     private final DataSourcePoolProperties dataSourcePoolProperties;
@@ -54,15 +51,17 @@ public final class StorageUnit {
         this.storageNode = storageNode;
         Map<String, Object> standardProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
+        Object originUsername = standardProps.get("username");
+        String username = null != originUsername ? originUsername.toString() : "";
         storageType = DatabaseTypeFactory.get(url);
-        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-        catalog = isInstanceConnectionAvailable ? new StandardJdbcUrlParser().parse(url).getDatabase() : null;
-        this.dataSource = new CatalogSwitchableDataSource(dataSource, catalog, url);
-        this.dataSourcePoolProperties = dataSourcePoolProps;
-        connectionProperties = createConnectionProperties(standardProps);
+        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(storageType).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+        String catalog = isInstanceConnectionAvailable ? DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType).parse(url, username, null).getCatalog() : null;
+        this.dataSource = isInstanceConnectionAvailable ? new CatalogSwitchableDataSource(dataSource, catalog, url) : dataSource;
+        dataSourcePoolProperties = dataSourcePoolProps;
+        connectionProperties = createConnectionProperties(catalog, standardProps);
     }
     
-    private ConnectionProperties createConnectionProperties(final Map<String, Object> standardProps) {
+    private ConnectionProperties createConnectionProperties(final String catalog, final Map<String, Object> standardProps) {
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
         return parser.parse(standardProps.get("url").toString(), standardProps.getOrDefault("username", "").toString(), catalog);
     }

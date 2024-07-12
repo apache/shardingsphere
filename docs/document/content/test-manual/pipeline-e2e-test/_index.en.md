@@ -14,7 +14,7 @@ Currently, NATIVE and DOCKER are available.
 1. NATIVE : Run on developer local machine. Need to start ShardingSphere-Proxy instance and database instance by developer. It could be used for local debugging.
 2. DOCKER : Run on docker started by Maven plugin. It could be used for GitHub Actions, and it could be used for local debugging too.
 
-Supported databases: MySQL, PostgreSQL and openGuass.
+Supported databases: MySQL, PostgreSQL and openGauss.
 
 ## User guide
 

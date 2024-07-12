@@ -27,7 +27,7 @@ public abstract class BaseContainerComposer implements Startable {
     private final ITContainers containers;
     
     protected BaseContainerComposer(final String scenario) {
-        this.containers = new ITContainers(scenario);
+        containers = new ITContainers(scenario);
     }
     
     @Override

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
 
@@ -34,7 +34,7 @@ public final class SetAutoCommitStatementAssert {
     
     /**
      * Assert set auto commit statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual set auto commit statement
      * @param expected expected set auto commit statement test case

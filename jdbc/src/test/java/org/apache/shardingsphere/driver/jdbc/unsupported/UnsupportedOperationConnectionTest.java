@@ -22,12 +22,13 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.ResultSet;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,13 +38,22 @@ import static org.mockito.Mockito.when;
 
 class UnsupportedOperationConnectionTest {
     
-    private final ShardingSphereConnection shardingSphereConnection;
+    private ShardingSphereConnection shardingSphereConnection;
     
-    UnsupportedOperationConnectionTest() {
+    @BeforeEach
+    void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
-                new RuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class))));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
         shardingSphereConnection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager);
+    }
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertPrepareCall() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("foo_call"));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("foo_call", ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("foo_call",
+                ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT));
     }
     
     @Test
@@ -77,13 +87,18 @@ class UnsupportedOperationConnectionTest {
     }
     
     @Test
-    void assertCreateClob() {
-        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createClob);
+    void assertCreateArrayOf() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.createArrayOf("", null));
     }
     
     @Test
     void assertCreateBlob() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createBlob);
+    }
+    
+    @Test
+    void assertCreateClob() {
+        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createClob);
     }
     
     @Test

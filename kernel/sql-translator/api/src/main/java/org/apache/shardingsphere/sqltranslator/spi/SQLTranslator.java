@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sqltranslator.spi;
 
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  * SQL translator.
  */
 @SingletonSPI
-public interface SQLTranslator extends TypedSPI {
+public interface SQLTranslator extends ShardingSphereAlgorithm {
     
     /**
      * Translate SQL.
@@ -42,7 +42,7 @@ public interface SQLTranslator extends TypedSPI {
      * @param storageType storage type
      * @param database database
      * @param globalRuleMetaData global rule meta data
-     * @return sql translator context
+     * @return SQL translator context
      */
     SQLTranslatorContext translate(String sql, List<Object> parameters, QueryContext queryContext, DatabaseType storageType, ShardingSphereDatabase database, RuleMetaData globalRuleMetaData);
 }

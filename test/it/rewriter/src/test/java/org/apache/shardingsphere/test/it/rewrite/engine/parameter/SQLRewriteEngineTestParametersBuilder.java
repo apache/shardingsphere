@@ -49,7 +49,7 @@ public final class SQLRewriteEngineTestParametersBuilder {
     
     /**
      * Load test parameters.
-     * 
+     *
      * @param type type
      * @param path path
      * @param targetClass target class

@@ -64,7 +64,7 @@ public final class SQLFederationDataTypeUtils {
     
     /**
      * Get SQL type class.
-     * 
+     *
      * @param protocolType protocol type
      * @param column ShardingSphere column
      * @return SQL type class

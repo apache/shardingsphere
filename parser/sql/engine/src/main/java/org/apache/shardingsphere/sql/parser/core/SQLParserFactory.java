@@ -42,7 +42,7 @@ public final class SQLParserFactory {
     
     /**
      * Create new instance of SQL parser.
-     * 
+     *
      * @param sql SQL
      * @param lexerClass lexer class
      * @param parserClass parser class

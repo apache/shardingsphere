@@ -51,7 +51,7 @@ class ShowSQLParserRuleExecutorTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         SQLParserRule rule = mock(SQLParserRule.class);
-        when(rule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(2000, 65535)));
+        when(rule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L)));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(rule));
         return result;
     }

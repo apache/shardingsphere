@@ -57,11 +57,11 @@ public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<Ex
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
+            return Collections.singleton(new LocalDataQueryResultRow(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), LocalDateTime.now(),
                     String.format("Successfully exported to：'%s'", filePath)));
         }
         return Collections.singleton(
-                new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), exportedData));
+                new LocalDataQueryResultRow(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), LocalDateTime.now(), exportedData));
     }
     
     private void checkSQLStatement(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
@@ -89,7 +89,7 @@ public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<Ex
     }
     
     private Map<String, Collection<ExportedStorageNode>> generateDatabaseExportStorageNodesData(final ShardingSphereDatabase database) {
-        Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
+        Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
         for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
             ConnectionProperties connectionProps = database.getResourceMetaData().getStorageUnits().get(entry.getKey()).getConnectionProperties();
             String databaseInstanceIp = getDatabaseInstanceIp(connectionProps);

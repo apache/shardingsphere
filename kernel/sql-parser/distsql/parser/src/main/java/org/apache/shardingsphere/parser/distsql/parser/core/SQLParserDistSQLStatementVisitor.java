@@ -28,7 +28,7 @@ import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParse
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * SQL statement visitor for SQL parser DistSQL.
@@ -42,7 +42,7 @@ public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStat
     
     @Override
     public ASTNode visitAlterSQLParserRule(final AlterSQLParserRuleContext ctx) {
-        return super.visit(ctx.sqlParserRuleDefinition());
+        return visit(ctx.sqlParserRuleDefinition());
     }
     
     @Override

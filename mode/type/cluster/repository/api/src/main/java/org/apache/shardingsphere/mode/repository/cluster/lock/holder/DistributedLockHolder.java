@@ -36,19 +36,18 @@ public final class DistributedLockHolder {
     
     private final TypedProperties<?> props;
     
-    private final Map<String, DistributedLock> locks;
+    private final Map<String, DistributedLock> locks = new ConcurrentHashMap<>();
     
     @SuppressWarnings("unchecked")
     public DistributedLockHolder(final String type, final Object client, final TypedProperties<?> props) {
         creator = TypedSPILoader.getService(DistributedLockCreator.class, type);
         this.client = client;
         this.props = props;
-        locks = new ConcurrentHashMap<>();
     }
     
     /**
      * Get distributed lock.
-     * 
+     *
      * @param lockKey lock key
      * @return distributed lock
      */

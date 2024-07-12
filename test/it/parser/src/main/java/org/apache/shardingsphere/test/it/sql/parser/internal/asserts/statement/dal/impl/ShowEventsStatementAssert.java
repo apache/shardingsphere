@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEventsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowEventsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
@@ -39,10 +39,10 @@ public final class ShowEventsStatementAssert {
      * @param actual actual show events statement
      * @param expected expected show events statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowEventsStatement actual, final ShowEventsStatementTestCase expected) {
-        if (actual.getFromSchema().isPresent()) {
-            DatabaseAssert.assertIs(assertContext, actual.getFromSchema().get().getSchema(), expected.getFromSchema().getSchema());
-            SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getFromSchema());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowEventsStatement actual, final ShowEventsStatementTestCase expected) {
+        if (actual.getFromDatabase().isPresent()) {
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());
         }
         if (actual.getFilter().isPresent()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());

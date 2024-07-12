@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * Alter transmission rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AlterTransmissionRuleStatementAssert {
+public final class AlterTransmissionRuleStatementAssert {
     
     /**
      * Assert statement is correct with expected parser result.

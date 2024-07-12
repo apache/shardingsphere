@@ -34,7 +34,7 @@ public interface CountResultRowBuilder<T extends ShardingSphereRule> extends Typ
     
     /**
      * Generate rows.
-     * 
+     *
      * @param rule rule
      * @param databaseName database name
      * @return generated rows
@@ -43,7 +43,7 @@ public interface CountResultRowBuilder<T extends ShardingSphereRule> extends Typ
     
     /**
      * Get rule class.
-     * 
+     *
      * @return rule class
      */
     Class<T> getRuleClass();

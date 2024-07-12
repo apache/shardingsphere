@@ -23,11 +23,12 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -49,10 +50,13 @@ public final class AlterDatabaseRuleOperator implements DatabaseRuleOperator {
     @SuppressWarnings("unchecked")
     public Collection<MetaDataVersion> operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
-        modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
-        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
+        MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
+        metaDataManagerPersistService.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
+        Collection<MetaDataVersion> result = metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
+        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts, false);
+        return result;
     }
     
     @SuppressWarnings("unchecked")

@@ -23,10 +23,9 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.groupby.GroupByConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.groupby.HavingConverter;
@@ -54,7 +53,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlNode sqlWith = convertWith(sqlSelect, selectStatement);
         SqlNode sqlCombine = convertCombine(null != sqlWith ? sqlWith : sqlSelect, selectStatement);
         SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
-        Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
+        Optional<LimitSegment> limit = selectStatement.getLimit();
         if (limit.isPresent()) {
             SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
             SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);
@@ -64,7 +63,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     }
     
     private SqlNode convertWith(final SqlNode sqlSelect, final SelectStatement selectStatement) {
-        return SelectStatementHandler.getWithSegment(selectStatement).flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
+        return selectStatement.getWithSegment().flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
     }
     
     private SqlSelect convertSelect(final SelectStatement selectStatement) {
@@ -74,7 +73,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlNode where = selectStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(GroupByConverter::convert).orElse(null);
         SqlNode having = selectStatement.getHaving().flatMap(HavingConverter::convert).orElse(null);
-        SqlNodeList window = SelectStatementHandler.getWindowSegment(selectStatement).flatMap(WindowConverter::convert).orElse(SqlNodeList.EMPTY);
+        SqlNodeList window = selectStatement.getWindow().flatMap(WindowConverter::convert).orElse(SqlNodeList.EMPTY);
         return new SqlSelect(SqlParserPos.ZERO, distinct, projection, from, where, groupBy, having, window, null, null, null, null, SqlNodeList.EMPTY);
     }
     

@@ -44,7 +44,7 @@ public final class ExpectedOrderByClause extends AbstractExpectedSQLSegment {
     
     /**
      * Get item size.
-     * 
+     *
      * @return item size
      */
     public int getItemSize() {

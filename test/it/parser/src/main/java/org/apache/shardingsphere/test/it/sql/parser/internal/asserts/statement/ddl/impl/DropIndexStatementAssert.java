@@ -19,11 +19,10 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
@@ -44,7 +43,7 @@ public final class DropIndexStatementAssert {
     
     /**
      * Assert drop index statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual drop index statement
      * @param expected expected drop index statement test case
@@ -57,7 +56,7 @@ public final class DropIndexStatementAssert {
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
-        Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(actual);
+        Optional<SimpleTableSegment> simpleTableSegment = actual.getSimpleTable();
         if (null == expected.getTable()) {
             assertFalse(simpleTableSegment.isPresent(), assertContext.getText("Actual table segment should not exist."));
         } else {
@@ -79,21 +78,21 @@ public final class DropIndexStatementAssert {
     
     private static void assertLockTable(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         if (null == expected.getLockOption()) {
-            assertFalse(DropIndexStatementHandler.getLockTableSegment(actual).isPresent(), assertContext.getText("Actual lock table segments should not exist."));
+            assertFalse(actual.getLockTable().isPresent(), assertContext.getText("Actual lock table segments should not exist."));
         } else {
-            assertTrue(DropIndexStatementHandler.getLockTableSegment(actual).isPresent(), assertContext.getText("Actual lock table segments should exist."));
+            assertTrue(actual.getLockTable().isPresent(), assertContext.getText("Actual lock table segments should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s lock table assertion error: ", actual.getClass().getSimpleName())),
-                    DropIndexStatementHandler.getLockTableSegment(actual).get().getLockTableOption().name(), is(expected.getLockOption().getType()));
+                    actual.getLockTable().get().getLockTableOption().name(), is(expected.getLockOption().getType()));
         }
     }
     
     private static void assertAlgorithm(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         if (null == expected.getAlgorithmOption()) {
-            assertFalse(DropIndexStatementHandler.getAlgorithmTypeSegment(actual).isPresent(), assertContext.getText("Actual algorithm segments should not exist."));
+            assertFalse(actual.getAlgorithmType().isPresent(), assertContext.getText("Actual algorithm segments should not exist."));
         } else {
-            assertTrue(DropIndexStatementHandler.getAlgorithmTypeSegment(actual).isPresent(), assertContext.getText("Actual algorithm segments should exist."));
+            assertTrue(actual.getAlgorithmType().isPresent(), assertContext.getText("Actual algorithm segments should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s algorithm assertion error: ", actual.getClass().getSimpleName())),
-                    DropIndexStatementHandler.getAlgorithmTypeSegment(actual).get().getAlgorithmOption().name(), is(expected.getAlgorithmOption().getType()));
+                    actual.getAlgorithmType().get().getAlgorithmOption().name(), is(expected.getAlgorithmOption().getType()));
         }
     }
 }

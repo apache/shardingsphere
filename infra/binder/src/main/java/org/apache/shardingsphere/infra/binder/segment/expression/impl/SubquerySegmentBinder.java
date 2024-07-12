@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 import java.util.Map;
 
@@ -34,17 +34,18 @@ import java.util.Map;
 public final class SubquerySegmentBinder {
     
     /**
-     * Bind subquery segment with metadata.
+     * Bind subquery segment.
      *
      * @param segment subquery segment
-     * @param statementBinderContext statement binder context
+     * @param binderContext SQL statement binder context
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded subquery segment
+     * @return bound subquery segment
      */
-    public static SubquerySegment bind(final SubquerySegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        SelectStatement boundedSelectStatement = new SelectStatementBinder().bindCorrelateSubquery(segment.getSelect(), statementBinderContext.getMetaData(),
-                statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts, statementBinderContext.getExternalTableBinderContexts());
-        SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundedSelectStatement, segment.getText());
+    public static SubquerySegment bind(final SubquerySegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        SQLStatementBinderContext selectBinderContext = new SQLStatementBinderContext(segment.getSelect(), binderContext.getMetaData(), binderContext.getCurrentDatabaseName());
+        selectBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
+        SelectStatement boundSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);
+        SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundSelectStatement, segment.getText());
         result.setSubqueryType(segment.getSubqueryType());
         return result;
     }

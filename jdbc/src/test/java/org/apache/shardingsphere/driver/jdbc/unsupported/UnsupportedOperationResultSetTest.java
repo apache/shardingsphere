@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class UnsupportedOperationResultSetTest {
     @BeforeEach
     void init() throws SQLException {
         shardingSphereResultSet = new ShardingSphereResultSet(
-                Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), true, mock(ExecutionContext.class));
+                Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), mock(SQLStatementContext.class));
     }
     
     @Test
@@ -161,16 +161,6 @@ class UnsupportedOperationResultSetTest {
     @Test
     void assertGetHoldability() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getHoldability());
-    }
-    
-    @Test
-    void assertGetNClobForColumnIndex() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNClob(1));
-    }
-    
-    @Test
-    void assertGetNClobForColumnLabel() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNClob("label"));
     }
     
     @Test

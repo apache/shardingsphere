@@ -19,11 +19,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CursorStatementTestCase;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,17 +42,17 @@ public final class CursorStatementAssert {
      * @param actual actual cursor statement
      * @param expected expected cursor statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OpenGaussCursorStatement actual, final CursorStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CursorStatement actual, final CursorStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
         assertSelect(assertContext, actual, expected);
     }
     
-    private static void assertCursorName(final SQLCaseAssertContext assertContext, final OpenGaussCursorStatement actual, final CursorStatementTestCase expected) {
+    private static void assertCursorName(final SQLCaseAssertContext assertContext, final CursorStatement actual, final CursorStatementTestCase expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Cursor");
         SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
     }
     
-    private static void assertSelect(final SQLCaseAssertContext assertContext, final OpenGaussCursorStatement actual, final CursorStatementTestCase expected) {
+    private static void assertSelect(final SQLCaseAssertContext assertContext, final CursorStatement actual, final CursorStatementTestCase expected) {
         if (null == expected.getSelectTestCase()) {
             assertNull(actual.getSelect(), assertContext.getText("Actual select statement should not exist."));
         } else {

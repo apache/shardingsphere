@@ -28,9 +28,8 @@ import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteE
 import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +45,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) sqlStatementContext.getSqlStatement();
-        if (DropIndexStatementHandler.ifExists(dropIndexStatement)) {
+        if (dropIndexStatement.isIfExists()) {
             return;
         }
         String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
@@ -64,7 +63,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) sqlStatementContext.getSqlStatement();
         Collection<IndexSegment> indexSegments = dropIndexStatement.getIndexes();
-        Optional<String> logicTableName = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement).map(optional -> optional.getTableName().getIdentifier().getValue());
+        Optional<String> logicTableName = dropIndexStatement.getSimpleTable().map(optional -> optional.getTableName().getIdentifier().getValue());
         if (logicTableName.isPresent()) {
             validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, logicTableName.get());
         } else {

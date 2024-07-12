@@ -48,12 +48,12 @@ public final class LogicalScan extends TableScan {
     }
     
     private void resetRowType(final RelNode relNode) {
-        this.rowType = relNode.getRowType();
+        rowType = relNode.getRowType();
     }
     
     /**
      * Push down logical filter.
-     * 
+     *
      * @param logicalFilter logical filter
      */
     public void pushDown(final LogicalFilter logicalFilter) {
@@ -63,7 +63,7 @@ public final class LogicalScan extends TableScan {
     
     /**
      * Push down logical project.
-     *  
+     *
      * @param logicalProject logical project
      */
     public void pushDown(final LogicalProject logicalProject) {

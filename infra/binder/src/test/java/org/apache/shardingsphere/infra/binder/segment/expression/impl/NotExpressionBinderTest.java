@@ -17,17 +17,13 @@
 
 package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
-import org.apache.shardingsphere.infra.binder.enums.SegmentType;
-import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,9 +34,8 @@ class NotExpressionBinderTest {
     @Test
     void assertBind() {
         NotExpression notExpression = new NotExpression(0, 10, new LiteralExpressionSegment(0, 0, "test"), true);
-        SQLStatementBinderContext statementBinderContext = mock(SQLStatementBinderContext.class);
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new HashMap<>();
-        NotExpression actual = NotExpressionBinder.bind(notExpression, SegmentType.PROJECTION, statementBinderContext, tableBinderContexts);
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        NotExpression actual = NotExpressionBinder.bind(notExpression, SegmentType.PROJECTION, binderContext, Collections.emptyMap());
         assertThat(actual.getNotSign(), is(notExpression.getNotSign()));
         assertThat(actual.getStartIndex(), is(notExpression.getStartIndex()));
         assertThat(actual.getStopIndex(), is(notExpression.getStopIndex()));

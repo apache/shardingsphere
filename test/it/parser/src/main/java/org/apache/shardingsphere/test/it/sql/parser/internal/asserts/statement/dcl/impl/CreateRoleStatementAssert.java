@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.CreateRoleStatementTestCase;
 
@@ -31,7 +31,7 @@ public final class CreateRoleStatementAssert {
     
     /**
      * Assert create role statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual create role statement
      * @param expected expected create role statement test case

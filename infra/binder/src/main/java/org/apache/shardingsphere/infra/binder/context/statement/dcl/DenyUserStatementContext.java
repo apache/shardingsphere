@@ -21,11 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
 
 /**
  * Deny user statement context.
@@ -35,18 +31,13 @@ public final class DenyUserStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    public DenyUserStatementContext(final SQLServerDenyUserStatement sqlStatement) {
+    public DenyUserStatementContext(final DenyUserStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType(), currentDatabaseName);
     }
     
     @Override
-    public SQLServerDenyUserStatement getSqlStatement() {
-        return (SQLServerDenyUserStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
+    public DenyUserStatement getSqlStatement() {
+        return (DenyUserStatement) super.getSqlStatement();
     }
 }

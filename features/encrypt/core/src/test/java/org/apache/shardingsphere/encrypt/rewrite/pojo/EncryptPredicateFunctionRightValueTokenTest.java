@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.pojo;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateFunctionRightValueToken;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ class EncryptPredicateFunctionRightValueTokenTest {
     
     @Test
     void assertToStringWithoutPlaceholderWithoutTableOwnerWithFunction() {
-        Map<Integer, Object> indexValues = new LinkedHashMap<>();
+        Map<Integer, Object> indexValues = new LinkedHashMap<>(3, 1F);
         indexValues.put(0, "%");
         indexValues.put(1, "abc");
         indexValues.put(2, "%");

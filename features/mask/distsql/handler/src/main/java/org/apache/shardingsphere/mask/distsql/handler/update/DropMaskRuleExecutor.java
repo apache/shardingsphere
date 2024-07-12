@@ -24,9 +24,9 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 
@@ -70,11 +70,11 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     @Override
     public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final DropMaskRuleStatement sqlStatement) {
         Collection<MaskTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
-        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new LinkedHashMap<>();
         for (String each : sqlStatement.getTables()) {
             toBeDroppedTables.add(new MaskTableRuleConfiguration(each, Collections.emptyList()));
             dropRule(each);
         }
+        Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new LinkedHashMap<>();
         findUnusedAlgorithms(rule.getConfiguration()).forEach(each -> toBeDroppedAlgorithms.put(each, rule.getConfiguration().getMaskAlgorithms().get(each)));
         return new MaskRuleConfiguration(toBeDroppedTables, toBeDroppedAlgorithms);
     }
