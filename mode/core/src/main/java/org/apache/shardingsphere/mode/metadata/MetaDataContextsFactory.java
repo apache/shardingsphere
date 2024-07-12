@@ -234,10 +234,10 @@ public final class MetaDataContextsFactory {
      * @throws SQLException SQL exception
      */
     public static Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final boolean internalLoadMetaData,
-                                                                                   final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
-                                                                                   final MetaDataContexts originalMetaDataContext,
-                                                                                   final MetaDataPersistService metaDataPersistService,
-                                                                                   final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                                             final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
+                                                                             final MetaDataContexts originalMetaDataContext,
+                                                                             final MetaDataPersistService metaDataPersistService,
+                                                                             final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(originalMetaDataContext.getMetaData().getDatabase(databaseName), switchingResource);
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
                 ? originalMetaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
@@ -277,9 +277,8 @@ public final class MetaDataContextsFactory {
     }
     
     private static DatabaseConfiguration getDatabaseConfiguration(final ResourceMetaData resourceMetaData, final SwitchingResource switchingResource,
-                                                           final Collection<RuleConfiguration> toBeCreatedRuleConfigs) {
-        Map<String, DataSourcePoolProperties> propsMap = null == switchingResource
-                ? resourceMetaData.getStorageUnits().entrySet().stream()
+                                                                  final Collection<RuleConfiguration> toBeCreatedRuleConfigs) {
+        Map<String, DataSourcePoolProperties> propsMap = null == switchingResource ? resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
         return new DataSourceProvidedDatabaseConfiguration(getMergedStorageNodeDataSources(resourceMetaData, switchingResource), toBeCreatedRuleConfigs, propsMap);
@@ -294,8 +293,8 @@ public final class MetaDataContextsFactory {
     }
     
     private static ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataPersistService persistService,
-                                                         final DatabaseConfiguration databaseConfig, final ConfigurationProperties props,
-                                                         final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                                final DatabaseConfiguration databaseConfig, final ConfigurationProperties props,
+                                                                final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         return internalLoadMetaData
                 ? InternalMetaDataFactory.create(databaseName, persistService, databaseConfig, props, computeNodeInstanceContext)
                 : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, computeNodeInstanceContext);
