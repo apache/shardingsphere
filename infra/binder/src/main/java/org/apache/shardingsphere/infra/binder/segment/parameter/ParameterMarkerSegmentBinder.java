@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.parameter.impl.ParameterMarkerExpressionSegmentBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,20 +38,20 @@ public final class ParameterMarkerSegmentBinder {
      * Bind parameter marker segment.
      *
      * @param parameterMarkerSegments parameter marker segments
-     * @param parameterMarkerSegmentBoundedInfos parameter marker segment bounded infos
-     * @return bounded parameter marker segment
+     * @param parameterMarkerSegmentBoundInfos parameter marker segment bound infos
+     * @return bound parameter marker segment
      */
     public static Collection<ParameterMarkerSegment> bind(final Collection<ParameterMarkerSegment> parameterMarkerSegments,
-                                                          final Map<ParameterMarkerSegment, ColumnSegmentBoundedInfo> parameterMarkerSegmentBoundedInfos) {
+                                                          final Map<ParameterMarkerSegment, ColumnSegmentBoundInfo> parameterMarkerSegmentBoundInfos) {
         Collection<ParameterMarkerSegment> result = new LinkedList<>();
-        parameterMarkerSegments.forEach(each -> result.add(bind(each, parameterMarkerSegmentBoundedInfos)));
+        parameterMarkerSegments.forEach(each -> result.add(bind(each, parameterMarkerSegmentBoundInfos)));
         return result;
     }
     
     private static ParameterMarkerSegment bind(final ParameterMarkerSegment parameterMarkerSegment,
-                                               final Map<ParameterMarkerSegment, ColumnSegmentBoundedInfo> parameterMarkerSegmentBoundedInfos) {
+                                               final Map<ParameterMarkerSegment, ColumnSegmentBoundInfo> parameterMarkerSegmentBoundInfos) {
         if (parameterMarkerSegment instanceof ParameterMarkerExpressionSegment) {
-            return ParameterMarkerExpressionSegmentBinder.bind((ParameterMarkerExpressionSegment) parameterMarkerSegment, parameterMarkerSegmentBoundedInfos);
+            return ParameterMarkerExpressionSegmentBinder.bind((ParameterMarkerExpressionSegment) parameterMarkerSegment, parameterMarkerSegmentBoundInfos);
         }
         // TODO support more ParameterMarkerSegment bind
         return parameterMarkerSegment;

@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Binary prepared statement for MySQL.
- * This class may be accessed serially in different threads due to MySQL Proxy using a shared unbounded thread pool.
+ * This class may be accessed serially in different threads due to MySQL Proxy using a shared unbound thread pool.
  */
 @RequiredArgsConstructor
 @Getter

@@ -59,7 +59,7 @@ public final class JoinTableSegmentBinder {
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded join table segment
+     * @return bound join table segment
      */
     public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                         final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {

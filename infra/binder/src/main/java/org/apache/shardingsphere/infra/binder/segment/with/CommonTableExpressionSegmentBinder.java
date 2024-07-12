@@ -39,12 +39,12 @@ public final class CommonTableExpressionSegmentBinder {
      * @param segment common table expression segment
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bounded common table expression segment
+     * @return bound common table expression segment
      */
     public static CommonTableExpressionSegment bind(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
-        CommonTableExpressionSegment result = new CommonTableExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getAliasSegment(), boundedSubquerySegment);
+        SubquerySegment boundSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
+        CommonTableExpressionSegment result = new CommonTableExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getAliasSegment(), boundSubquerySegment);
         // TODO bind with columns
         result.getColumns().addAll(segment.getColumns());
         return result;

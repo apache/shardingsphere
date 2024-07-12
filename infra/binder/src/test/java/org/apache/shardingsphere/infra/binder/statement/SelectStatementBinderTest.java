@@ -108,7 +108,7 @@ class SelectStatementBinderTest {
         assertThat(((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft(), instanceOf(FunctionSegment.class));
         assertThat(((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next(), instanceOf(ColumnSegment.class));
         assertThat(((ColumnSegment) ((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next())
-                .getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+                .getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
     
     private static WhereSegment mockWhereSegment() {

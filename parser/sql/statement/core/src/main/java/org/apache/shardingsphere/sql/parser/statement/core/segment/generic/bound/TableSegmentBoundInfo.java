@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
- * Table name bounded info.
+ * Table name bound info.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableSegmentBoundedInfo {
+public final class TableSegmentBoundInfo {
     
     private final IdentifierValue originalDatabase;
     

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.LinkedList;
@@ -48,9 +48,9 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private OwnerSegment owner;
     
-    private ColumnSegmentBoundedInfo columnBoundedInfo;
+    private ColumnSegmentBoundInfo columnBoundInfo;
     
-    private ColumnSegmentBoundedInfo otherUsingColumnBoundedInfo;
+    private ColumnSegmentBoundInfo otherUsingColumnBoundInfo;
     
     private boolean isVariable;
     
@@ -60,7 +60,7 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.identifier = identifier;
-        columnBoundedInfo = new ColumnSegmentBoundedInfo(identifier);
+        columnBoundInfo = new ColumnSegmentBoundInfo(identifier);
     }
     
     /**

@@ -47,7 +47,7 @@ public final class TableSegmentBinder {
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded table segment
+     * @return bound table segment
      */
     public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                     final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {

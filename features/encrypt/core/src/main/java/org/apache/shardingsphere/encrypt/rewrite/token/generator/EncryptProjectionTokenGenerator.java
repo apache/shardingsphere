@@ -120,8 +120,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
         IdentifierValue owner = segment.getColumn().getOwner().map(OwnerSegment::getIdentifier).orElse(null);
         ColumnProjection result = new ColumnProjection(owner, segment.getColumn().getIdentifier(), segment.getAliasName().isPresent() ? segment.getAlias().orElse(null) : null, databaseType);
-        result.setOriginalColumn(segment.getColumn().getColumnBoundedInfo().getOriginalColumn());
-        result.setOriginalTable(segment.getColumn().getColumnBoundedInfo().getOriginalTable());
+        result.setOriginalColumn(segment.getColumn().getColumnBoundInfo().getOriginalColumn());
+        result.setOriginalTable(segment.getColumn().getColumnBoundInfo().getOriginalTable());
         return result;
     }
     

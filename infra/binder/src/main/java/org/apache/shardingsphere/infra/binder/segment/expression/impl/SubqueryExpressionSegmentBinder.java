@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 
 import java.util.Map;
 
@@ -38,11 +37,10 @@ public final class SubqueryExpressionSegmentBinder {
      * @param segment subquery expression segment
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bounded subquery expression segment
+     * @return bound subquery expression segment
      */
     public static SubqueryExpressionSegment bind(final SubqueryExpressionSegment segment, final SQLStatementBinderContext binderContext,
                                                  final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
-        return new SubqueryExpressionSegment(boundedSubquery);
+        return new SubqueryExpressionSegment(SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts));
     }
 }

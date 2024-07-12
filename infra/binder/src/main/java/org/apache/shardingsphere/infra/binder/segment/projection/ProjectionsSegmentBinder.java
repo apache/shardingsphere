@@ -48,27 +48,27 @@ public final class ProjectionsSegmentBinder {
      *
      * @param segment table segment
      * @param binderContext statement binder context
-     * @param boundedTableSegment bounded table segment
+     * @param boundTableSegment bound table segment
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bounded projections segment
+     * @return bound projections segment
      */
-    public static ProjectionsSegment bind(final ProjectionsSegment segment, final SQLStatementBinderContext binderContext, final TableSegment boundedTableSegment,
+    public static ProjectionsSegment bind(final ProjectionsSegment segment, final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment,
                                           final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
-        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, binderContext, boundedTableSegment, tableBinderContexts, outerTableBinderContexts)));
+        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
     
     private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final SQLStatementBinderContext binderContext,
-                                          final TableSegment boundedTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                          final TableSegment boundTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                           final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, binderContext, tableBinderContexts);
         }
         if (projectionSegment instanceof ShorthandProjectionSegment) {
-            return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundedTableSegment, tableBinderContexts);
+            return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundTableSegment, tableBinderContexts);
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
             Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>(outerTableBinderContexts.size() + tableBinderContexts.size(), 1F);

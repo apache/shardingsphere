@@ -65,7 +65,7 @@ class UpdateStatementBinderTest {
         assertThat(actual.getWhere().get().getExpr(), not(updateStatement.getWhere().get().getExpr()));
         assertThat(actual.getWhere().get().getExpr(), instanceOf(BinaryOperationExpression.class));
         assertThat(((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft(), instanceOf(ColumnSegment.class));
-        assertThat(((ColumnSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
     
     private ShardingSphereMetaData createMetaData() {

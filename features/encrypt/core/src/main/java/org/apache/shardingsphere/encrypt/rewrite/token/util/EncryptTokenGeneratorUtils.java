@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
@@ -57,8 +57,8 @@ public final class EncryptTokenGeneratorUtils {
             if (!(each.getLeft() instanceof ColumnSegment) || !(each.getRight() instanceof ColumnSegment)) {
                 continue;
             }
-            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getLeft()).getColumnBoundedInfo(), encryptRule);
-            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getRight()).getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getLeft()).getColumnBoundInfo(), encryptRule);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getRight()).getColumnBoundInfo(), encryptRule);
             if (isDifferentEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
                 return false;
             }
@@ -76,9 +76,9 @@ public final class EncryptTokenGeneratorUtils {
         return null != leftColumnEncryptor || null != rightColumnEncryptor;
     }
     
-    private static EncryptAlgorithm getColumnEncryptor(final ColumnSegmentBoundedInfo columnBoundedInfo, final EncryptRule encryptRule) {
-        String tableName = columnBoundedInfo.getOriginalTable().getValue();
-        String columnName = columnBoundedInfo.getOriginalColumn().getValue();
+    private static EncryptAlgorithm getColumnEncryptor(final ColumnSegmentBoundInfo columnBoundInfo, final EncryptRule encryptRule) {
+        String tableName = columnBoundInfo.getOriginalTable().getValue();
+        String columnName = columnBoundInfo.getOriginalColumn().getValue();
         if (!encryptRule.findEncryptTable(tableName).isPresent() || !encryptRule.getEncryptTable(tableName).isEncryptColumn(columnName)) {
             return null;
         }
@@ -103,12 +103,12 @@ public final class EncryptTokenGeneratorUtils {
         Iterator<Projection> projectionIterator = projections.iterator();
         while (insertColumnsIterator.hasNext()) {
             ColumnSegment columnSegment = insertColumnsIterator.next();
-            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(columnSegment.getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(columnSegment.getColumnBoundInfo(), encryptRule);
             Projection projection = projectionIterator.next();
-            ColumnSegmentBoundedInfo columnBoundedInfo = projection instanceof ColumnProjection
-                    ? new ColumnSegmentBoundedInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
-                    : new ColumnSegmentBoundedInfo(new IdentifierValue(projection.getColumnLabel()));
-            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(columnBoundedInfo, encryptRule);
+            ColumnSegmentBoundInfo columnBoundInfo = projection instanceof ColumnProjection
+                    ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
+                    : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(columnBoundInfo, encryptRule);
             if (isDifferentEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
                 return false;
             }
@@ -134,14 +134,14 @@ public final class EncryptTokenGeneratorUtils {
         for (int i = 0; i < leftProjections.size(); i++) {
             Projection leftProjection = leftProjections.get(i);
             Projection rightProjection = rightProjections.get(i);
-            ColumnSegmentBoundedInfo leftColumnBoundedInfo = leftProjection instanceof ColumnProjection
-                    ? new ColumnSegmentBoundedInfo(null, null, ((ColumnProjection) leftProjection).getOriginalTable(), ((ColumnProjection) leftProjection).getOriginalColumn())
-                    : new ColumnSegmentBoundedInfo(new IdentifierValue(leftProjection.getColumnLabel()));
-            ColumnSegmentBoundedInfo rightColumnBoundedInfo = rightProjection instanceof ColumnProjection
-                    ? new ColumnSegmentBoundedInfo(null, null, ((ColumnProjection) rightProjection).getOriginalTable(), ((ColumnProjection) rightProjection).getOriginalColumn())
-                    : new ColumnSegmentBoundedInfo(new IdentifierValue(rightProjection.getColumnLabel()));
-            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(leftColumnBoundedInfo, encryptRule);
-            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(rightColumnBoundedInfo, encryptRule);
+            ColumnSegmentBoundInfo leftColumnBoundInfo = leftProjection instanceof ColumnProjection
+                    ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) leftProjection).getOriginalTable(), ((ColumnProjection) leftProjection).getOriginalColumn())
+                    : new ColumnSegmentBoundInfo(new IdentifierValue(leftProjection.getColumnLabel()));
+            ColumnSegmentBoundInfo rightColumnBoundInfo = rightProjection instanceof ColumnProjection
+                    ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) rightProjection).getOriginalTable(), ((ColumnProjection) rightProjection).getOriginalColumn())
+                    : new ColumnSegmentBoundInfo(new IdentifierValue(rightProjection.getColumnLabel()));
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(leftColumnBoundInfo, encryptRule);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(rightColumnBoundInfo, encryptRule);
             if (null != leftColumnEncryptor || null != rightColumnEncryptor) {
                 return true;
             }
