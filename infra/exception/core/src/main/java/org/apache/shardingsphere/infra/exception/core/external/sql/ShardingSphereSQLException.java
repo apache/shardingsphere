@@ -43,11 +43,11 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     private final Exception cause;
     
     protected ShardingSphereSQLException(final SQLState sqlState, final int typeOffset, final int errorCode, final String reason, final Object... messageArgs) {
-        this(sqlState.getValue(), typeOffset, errorCode, null == reason ? null : String.format(reason, formatMessageArguments(messageArgs)), null);
+        this(sqlState.getValue(), typeOffset, errorCode, formatMessage(reason, messageArgs), null);
     }
     
     protected ShardingSphereSQLException(final SQLState sqlState, final int typeOffset, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
-        this(sqlState.getValue(), typeOffset, errorCode, null == reason ? null : String.format(reason, formatMessageArguments(messageArgs)), cause);
+        this(sqlState.getValue(), typeOffset, errorCode, formatMessage(reason, messageArgs), cause);
     }
     
     protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Exception cause) {
@@ -58,6 +58,16 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
         vendorCode = typeOffset * 10000 + errorCode;
         this.reason = null == cause || Strings.isNullOrEmpty(cause.getMessage()) ? reason : String.format("%s%sMore details: %s", reason, System.lineSeparator(), cause.getMessage());
         this.cause = cause;
+    }
+    
+    private static String formatMessage(final String reason, final Object[] messageArgs) {
+        if (null == reason) {
+            return null;
+        }
+        if (0 == messageArgs.length) {
+            return reason;
+        }
+        return String.format(reason, formatMessageArguments(messageArgs));
     }
     
     private static Object[] formatMessageArguments(final Object... messageArgs) {
