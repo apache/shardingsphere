@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,26 +50,16 @@ public final class AssignmentSegmentBinder {
      */
     public static SetAssignmentSegment bind(final SetAssignmentSegment segment, final SQLStatementBinderContext binderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        Collection<ColumnAssignmentSegment> assignments = segment.getAssignments().stream()
-                .map(each -> createColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
-        return new SetAssignmentSegment(segment.getStartIndex(), segment.getStopIndex(), assignments);
+        return new SetAssignmentSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getAssignments().stream()
+                .map(each -> bindColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
     }
     
-    private static ColumnAssignmentSegment createColumnAssignmentSegment(final ColumnAssignmentSegment columnAssignmentSegment, final SQLStatementBinderContext binderContext,
-                                                                         final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                                                         final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        return new ColumnAssignmentSegment(columnAssignmentSegment.getStartIndex(), columnAssignmentSegment.getStopIndex(),
-                bindColumns(columnAssignmentSegment.getColumns(), binderContext, tableBinderContexts, outerTableBinderContexts),
-                bindValue(columnAssignmentSegment.getValue(), binderContext, tableBinderContexts, outerTableBinderContexts));
-    }
-    
-    private static List<ColumnSegment> bindColumns(final List<ColumnSegment> columns, final SQLStatementBinderContext binderContext,
-                                                   final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        return columns.stream().map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
-    }
-    
-    private static ExpressionSegment bindValue(final ExpressionSegment value, final SQLStatementBinderContext binderContext,
-                                               final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        return ExpressionSegmentBinder.bind(value, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);
+    private static ColumnAssignmentSegment bindColumnAssignmentSegment(final ColumnAssignmentSegment columnAssignmentSegment, final SQLStatementBinderContext binderContext,
+                                                                       final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                                                       final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        List<ColumnSegment> boundColumns = columnAssignmentSegment.getColumns().stream()
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
+        ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);
+        return new ColumnAssignmentSegment(columnAssignmentSegment.getStartIndex(), columnAssignmentSegment.getStopIndex(), boundColumns, boundValue);
     }
 }
