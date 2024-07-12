@@ -43,7 +43,7 @@ public final class GlobalRuleConfigurationEventSubscriber implements EventSubscr
             return;
         }
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(event.getRuleSimpleName())
-                .ifPresent(optional -> contextManager.getMetaDataContextManager().getConfigurationManager().alterGlobalRuleConfiguration(optional));
+                .ifPresent(optional -> contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(optional));
         
     }
 }

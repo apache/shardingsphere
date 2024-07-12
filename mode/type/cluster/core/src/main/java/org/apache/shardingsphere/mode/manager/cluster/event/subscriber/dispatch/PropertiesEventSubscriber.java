@@ -42,6 +42,6 @@ public final class PropertiesEventSubscriber implements EventSubscriber {
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
         }
-        contextManager.getMetaDataContextManager().getConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
+        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }
