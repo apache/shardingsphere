@@ -321,14 +321,14 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void alterGlobalRuleConfiguration(final RuleConfiguration toBeAlteredRuleConfig) {
-        metaDataContextManager.getConfigurationManager().alterGlobalRuleConfiguration(toBeAlteredRuleConfig);
+        metaDataContextManager.getGlobalConfigurationManager().alterGlobalRuleConfiguration(toBeAlteredRuleConfig);
         metaDataPersistService.getGlobalRuleService().persist(Collections.singleton(toBeAlteredRuleConfig));
         clearServiceCache();
     }
     
     @Override
     public void alterProperties(final Properties props) {
-        metaDataContextManager.getConfigurationManager().alterProperties(props);
+        metaDataContextManager.getGlobalConfigurationManager().alterProperties(props);
         metaDataPersistService.getPropsService().persist(props);
         clearServiceCache();
     }

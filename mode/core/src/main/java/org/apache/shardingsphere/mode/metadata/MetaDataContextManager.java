@@ -24,9 +24,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
-import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
+import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -57,6 +58,8 @@ public class MetaDataContextManager {
     
     private final DatabaseRuleConfigurationManager databaseRuleConfigurationManager;
     
+    private final GlobalConfigurationManager globalConfigurationManager;
+    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                   final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
@@ -67,6 +70,7 @@ public class MetaDataContextManager {
         configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository);
         schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, repository);
         ruleItemManager = new RuleItemManager(metaDataContexts, repository, databaseRuleConfigurationManager);
+        globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, repository);
         metaDataPersistService = new MetaDataPersistService(repository);
     }
     
