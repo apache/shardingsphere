@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
@@ -42,9 +41,9 @@ public class MetaDataContextManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
-    private final ShardingSphereDatabaseDataManager databaseManager;
+    private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
-    private final ConfigurationManager configurationManager;
+    private final ShardingSphereDatabaseDataManager databaseManager;
     
     private final SchemaMetaDataManager schemaMetaDataManager;
     
@@ -63,11 +62,11 @@ public class MetaDataContextManager {
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                   final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
+        this.computeNodeInstanceContext = computeNodeInstanceContext;
         resourceSwitchManager = new ResourceSwitchManager();
         databaseManager = new ShardingSphereDatabaseDataManager(metaDataContexts);
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, repository, resourceSwitchManager);
         databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository);
-        configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository);
         schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, repository);
         ruleItemManager = new RuleItemManager(metaDataContexts, repository, databaseRuleConfigurationManager);
         globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, repository);
