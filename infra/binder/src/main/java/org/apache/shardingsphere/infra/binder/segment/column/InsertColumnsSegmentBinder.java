@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.In
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Insert columns segment binder.
@@ -45,10 +45,9 @@ public final class InsertColumnsSegmentBinder {
      * @param tableBinderContexts table binder contexts
      * @return bound insert columns segment
      */
-    public static InsertColumnsSegment bind(final InsertColumnsSegment segment, final SQLStatementBinderContext binderContext,
-                                            final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        Collection<ColumnSegment> boundColumns = new LinkedList<>();
-        segment.getColumns().forEach(each -> boundColumns.add(ColumnSegmentBinder.bind(each, SegmentType.INSERT_COLUMNS, binderContext, tableBinderContexts, Collections.emptyMap())));
+    public static InsertColumnsSegment bind(final InsertColumnsSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        Collection<ColumnSegment> boundColumns = segment.getColumns().stream()
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.INSERT_COLUMNS, binderContext, tableBinderContexts, Collections.emptyMap())).collect(Collectors.toList());
         return new InsertColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), boundColumns);
     }
 }
