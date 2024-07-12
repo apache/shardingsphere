@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.parameter.impl;
+package org.apache.shardingsphere.infra.binder.segment.parameter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
