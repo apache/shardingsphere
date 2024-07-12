@@ -35,13 +35,13 @@ public class RuleItemManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
-    private final ConfigurationManager configurationManager;
+    private final DatabaseRuleConfigurationManager ruleConfigurationManager;
     
     private final MetaDataPersistService metaDataPersistService;
     
-    public RuleItemManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository, final ConfigurationManager configurationManager) {
+    public RuleItemManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository, final DatabaseRuleConfigurationManager ruleConfigurationManager) {
         this.metaDataContexts = metaDataContexts;
-        this.configurationManager = configurationManager;
+        this.ruleConfigurationManager = ruleConfigurationManager;
         metaDataPersistService = new MetaDataPersistService(repository);
     }
     
@@ -63,7 +63,7 @@ public class RuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
-            configurationManager.alterRuleConfiguration(databaseName, currentRuleConfig);
+            ruleConfigurationManager.alterRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
     
@@ -82,7 +82,7 @@ public class RuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);
-            configurationManager.dropRuleConfiguration(databaseName, currentRuleConfig);
+            ruleConfigurationManager.dropRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
 }

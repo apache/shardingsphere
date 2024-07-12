@@ -273,7 +273,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
                 .persistConfigurations(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
-        metaDataContextManager.getConfigurationManager().alterRuleConfiguration(databaseName, ruleConfigs.iterator().next());
+        metaDataContextManager.getDatabaseRuleConfigurationManager().alterRuleConfiguration(databaseName, ruleConfigs.iterator().next());
         clearServiceCache();
     }
     

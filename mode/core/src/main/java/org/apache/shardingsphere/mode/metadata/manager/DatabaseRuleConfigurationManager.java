@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -30,21 +30,16 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -53,17 +48,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
- * Configuration context manager.
+ * Database rule configuration manager.
  */
 @Slf4j
-public final class ConfigurationManager {
+public final class DatabaseRuleConfigurationManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
@@ -71,40 +64,80 @@ public final class ConfigurationManager {
     
     private final MetaDataPersistService metaDataPersistService;
     
-    public ConfigurationManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                final PersistRepository repository) {
+    public DatabaseRuleConfigurationManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
+                                            final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataPersistService = new MetaDataPersistService(repository);
     }
     
     /**
-     * Alter schema meta data.
+     * Alter rule configuration.
      *
      * @param databaseName database name
-     * @param reloadDatabase reload database
-     * @param currentDatabase current database
-     * @param isDropConfig is drop configuration
+     * @param ruleConfig rule configurations
      */
-    public void alterSchemaMetaData(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase, final boolean isDropConfig) {
-        Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        if (isDropConfig) {
-            toBeAddedSchemas.forEach((key, value) -> metaDataPersistService.getDatabaseMetaDataService().persistByDropConfiguration(databaseName, key, value));
-        } else {
-            toBeAddedSchemas.forEach((key, value) -> metaDataPersistService.getDatabaseMetaDataService().persistByAlterConfiguration(databaseName, key, value));
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public synchronized void alterRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
+        Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
+        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported && ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig)) {
+            ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
+            return;
         }
-        toBeAlterSchemas.forEach((key, value) -> metaDataPersistService.getDatabaseMetaDataService().delete(databaseName, key, value));
+        try {
+            rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
+                    ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
+            refreshMetadata(databaseName, database, rules);
+        } catch (final SQLException ex) {
+            log.error("Alter database: {} rule configurations failed", databaseName, ex);
+        }
     }
     
     /**
-     * Get effective resource meta data.
+     * Drop rule configuration.
      *
-     * @param database database
-     * @param resource resource
-     * @return effective resource meta data
+     * @param databaseName database name
+     * @param ruleConfig rule configurations
      */
-    public ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public synchronized void dropRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
+        Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
+        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported && ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig)) {
+            ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
+            return;
+        }
+        try {
+            rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+            if (!((DatabaseRuleConfiguration) ruleConfig).isEmpty()) {
+                rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
+                        ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
+            }
+            refreshMetadata(databaseName, database, rules);
+        } catch (final SQLException ex) {
+            log.error("Drop database: {} rule configurations failed", databaseName, ex);
+        }
+    }
+    
+    private void refreshMetadata(final String databaseName, final ShardingSphereDatabase database, final Collection<ShardingSphereRule> rules) throws SQLException {
+        database.getRuleMetaData().getRules().clear();
+        database.getRuleMetaData().getRules().addAll(rules);
+        MetaDataContexts reloadMetaDataContexts = createMetaDataContextsByAlterRule(databaseName, database.getRuleMetaData().getConfigurations());
+        metaDataContexts.set(reloadMetaDataContexts);
+        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(buildShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
+    }
+    
+    private MetaDataContexts createMetaDataContextsByAlterRule(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, false, null, ruleConfigs);
+        return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
+                metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), metaDataContexts.get().getMetaData().getProps()));
+    }
+    
+    private ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {
         Map<StorageNode, DataSource> storageNodes = getStorageNodes(database.getResourceMetaData().getDataSources(), resource);
         Map<String, StorageUnit> storageUnits = getStorageUnits(database.getResourceMetaData().getStorageUnits(), resource);
         return new ResourceMetaData(storageNodes, storageUnits);
@@ -130,37 +163,8 @@ public final class ConfigurationManager {
         return result;
     }
     
-    /**
-     * Create meta data contexts.
-     *
-     * @param databaseName database name
-     * @param internalLoadMetaData internal load meta data
-     * @param switchingResource switching resource
-     * @param ruleConfigs rule configs
-     * @return MetaDataContexts meta data contexts
-     * @throws SQLException SQL exception
-     */
-    public MetaDataContexts createMetaDataContexts(final String databaseName, final boolean internalLoadMetaData,
-                                                   final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, ruleConfigs);
-        ConfigurationProperties props = metaDataContexts.get().getMetaData().getProps();
-        RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
-        return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
-    }
-    
-    /**
-     * Create changed databases.
-     *
-     * @param databaseName database name
-     * @param internalLoadMetaData internal load meta data
-     * @param switchingResource switching resource
-     * @param ruleConfigs rule configs
-     * @return ShardingSphere databases
-     * @throws SQLException SQL exception
-     */
-    public synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final boolean internalLoadMetaData,
-                                                                                   final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+    private synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final boolean internalLoadMetaData,
+                                                                                    final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(metaDataContexts.get().getMetaData().getDatabase(databaseName), switchingResource);
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
                 ? metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
@@ -198,48 +202,10 @@ public final class ConfigurationManager {
                 : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, computeNodeInstanceContext);
     }
     
-    /**
-     * Alter global rule configuration.
-     *
-     * @param ruleConfig global rule configuration
-     */
-    public synchronized void alterGlobalRuleConfiguration(final RuleConfiguration ruleConfig) {
-        if (null == ruleConfig) {
-            return;
-        }
-        closeStaleTransactionRule(ruleConfig);
-        Collection<ShardingSphereRule> rules = new LinkedList<>(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules());
-        rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-        rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getProps()));
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
-                metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), metaDataContexts.get().getMetaData().getProps());
-        metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
-    }
-    
-    // Optimize string comparison rule type.
-    @SneakyThrows(Exception.class)
-    private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
-        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(ruleConfig);
-        if (!"transaction".equals(Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value())) {
-            return;
-        }
-        Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        if (transactionRule.isPresent()) {
-            ((AutoCloseable) transactionRule.get()).close();
-        }
-    }
-    
-    /**
-     * Alter properties.
-     *
-     * @param props properties to be altered
-     */
-    public synchronized void alterProperties(final Properties props) {
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
-                metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props));
-        metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
+    private Map<String, ShardingSphereSchema> buildShardingSphereSchemas(final ShardingSphereDatabase database) {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(database.getSchemas().size(), 1F);
+        database.getSchemas().forEach((key, value) -> result.put(key, new ShardingSphereSchema(value.getTables(), value.getViews())));
+        return result;
     }
     
     private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {

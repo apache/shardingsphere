@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.ConfigurationManager;
+import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
@@ -54,15 +55,18 @@ public class MetaDataContextManager {
     
     private final StorageUnitManager storageUnitManager;
     
+    private final DatabaseRuleConfigurationManager databaseRuleConfigurationManager;
+    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                   final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         resourceSwitchManager = new ResourceSwitchManager();
         databaseManager = new ShardingSphereDatabaseDataManager(metaDataContexts);
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, repository, resourceSwitchManager);
+        databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository);
         configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository);
         schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, repository);
-        ruleItemManager = new RuleItemManager(metaDataContexts, repository, configurationManager);
+        ruleItemManager = new RuleItemManager(metaDataContexts, repository, databaseRuleConfigurationManager);
         metaDataPersistService = new MetaDataPersistService(repository);
     }
     
