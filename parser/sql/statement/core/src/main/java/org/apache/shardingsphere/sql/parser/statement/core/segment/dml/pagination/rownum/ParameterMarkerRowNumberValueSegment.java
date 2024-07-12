@@ -19,32 +19,19 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginati
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-
-import java.util.Optional;
 
 /**
  * Row number value segment for parameter marker.
  */
 @Getter
-@EqualsAndHashCode(exclude = "boundInfo", callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public final class ParameterMarkerRowNumberValueSegment extends RowNumberValueSegment implements ParameterMarkerPaginationValueSegment {
     
     private final int parameterIndex;
     
-    @Setter
-    private ColumnSegmentBoundInfo boundInfo;
-    
     public ParameterMarkerRowNumberValueSegment(final int startIndex, final int stopIndex, final int paramIndex, final boolean boundOpened) {
         super(startIndex, stopIndex, boundOpened);
         parameterIndex = paramIndex;
-    }
-    
-    @Override
-    public ColumnSegmentBoundInfo getBoundInfo() {
-        return Optional.ofNullable(boundInfo).orElseGet(() -> new ColumnSegmentBoundInfo(new IdentifierValue("")));
     }
 }

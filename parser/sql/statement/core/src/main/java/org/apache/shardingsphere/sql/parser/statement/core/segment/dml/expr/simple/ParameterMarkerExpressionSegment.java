@@ -81,11 +81,6 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     }
     
     @Override
-    public ColumnSegmentBoundInfo getBoundInfo() {
-        return Optional.ofNullable(boundInfo).orElseGet(() -> new ColumnSegmentBoundInfo(new IdentifierValue("")));
-    }
-    
-    @Override
     public int getStopIndex() {
         return null == alias ? stopIndex : alias.getStopIndex();
     }
