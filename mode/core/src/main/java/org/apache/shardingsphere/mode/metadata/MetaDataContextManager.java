@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
 import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -51,12 +52,15 @@ public class MetaDataContextManager {
     
     private final MetaDataPersistService metaDataPersistService;
     
+    private final StorageUnitManager storageUnitManager;
+    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                   final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         resourceSwitchManager = new ResourceSwitchManager();
         databaseManager = new ShardingSphereDatabaseDataManager(metaDataContexts);
-        configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository, resourceSwitchManager);
+        storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, repository, resourceSwitchManager);
+        configurationManager = new ConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository);
         schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, repository);
         ruleItemManager = new RuleItemManager(metaDataContexts, repository, configurationManager);
         metaDataPersistService = new MetaDataPersistService(repository);
