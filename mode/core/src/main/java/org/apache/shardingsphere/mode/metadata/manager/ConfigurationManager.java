@@ -30,8 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
@@ -66,25 +64,6 @@ public final class ConfigurationManager {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataPersistService = new MetaDataPersistService(repository);
-    }
-    
-    /**
-     * Alter schema meta data.
-     *
-     * @param databaseName database name
-     * @param reloadDatabase reload database
-     * @param currentDatabase current database
-     * @param isDropConfig is drop configuration
-     */
-    public void alterSchemaMetaData(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase, final boolean isDropConfig) {
-        Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        if (isDropConfig) {
-            toBeAddedSchemas.forEach((key, value) -> metaDataPersistService.getDatabaseMetaDataService().persistByDropConfiguration(databaseName, key, value));
-        } else {
-            toBeAddedSchemas.forEach((key, value) -> metaDataPersistService.getDatabaseMetaDataService().persistByAlterConfiguration(databaseName, key, value));
-        }
-        toBeAlterSchemas.forEach((key, value) -> metaDataPersistService.getDatabaseMetaDataService().delete(databaseName, key, value));
     }
     
     /**

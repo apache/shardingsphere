@@ -179,14 +179,14 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
                         .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
-        metaDataContextManager.getConfigurationManager().alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+        metaDataPersistService.persistMetaDataByReloadDatabase(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName), isDropConfig);
     }
     
     @Override
     public void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final boolean isDropConfig) {
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        metaDataContextManager.getConfigurationManager().alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+        metaDataPersistService.persistMetaDataByReloadDatabase(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName), isDropConfig);
     }
     
