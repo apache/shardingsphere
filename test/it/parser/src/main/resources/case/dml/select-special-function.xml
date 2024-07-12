@@ -1910,4 +1910,151 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_convert_function_using_character_set">
+        <projections start-index="7" stop-index="34">
+            <expression-projection text="CONVERT('abc' USING utf8mb4)" start-index="7" stop-index="34">
+                <expr>
+                    <function function-name="CONVERT" start-index="7" stop-index="34" text="CONVERT('abc' USING utf8mb4)">
+                        <parameter>
+                            <literal-expression value="abc" start-index="15" stop-index="19" />
+                            <using-character-set text="USING utf8mb4" start-index="20" stop-index="34" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_convert_tz_function">
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="CONVERT_TZ('2004-01-01 12:00:00','GMT','MET')" start-index="7" stop-index="51">
+                <expr>
+                    <function function-name="CONVERT_TZ" start-index="7" stop-index="51" text="CONVERT_TZ('2004-01-01 12:00:00','GMT','MET')">
+                        <parameter>
+                            <literal-expression value="2004-01-01 12:00:00" start-index="18" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="GMT" start-index="40" stop-index="44" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="MET" start-index="46" stop-index="50" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cos_function">
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="COS(PI())" start-index="7" stop-index="15">
+                <expr>
+                    <function function-name="COS" start-index="7" stop-index="15" text="COS(PI())">
+                        <parameter>
+                            <function function-name="PI" start-index="11" stop-index="14" text="PI()">
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cot_function">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="COT(12)" start-index="7" stop-index="13">
+                <expr>
+                    <function function-name="COT" start-index="7" stop-index="13" text="COT(12)">
+                        <parameter>
+                            <literal-expression value="12" start-index="11" stop-index="12" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_crc32_function">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="CRC32('MySQL')" start-index="7" stop-index="20">
+                <expr>
+                    <function function-name="CRC32" start-index="7" stop-index="20" text="CRC32('MySQL')">
+                        <parameter>
+                            <literal-expression value="MySQL" start-index="13" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_window_with_cume_dist_function">
+        <from>
+            <simple-table name="numbers" start-index="36" stop-index="42" />
+        </from>
+        <projections start-index="7" stop-index="29">
+            <column-projection name="val" start-index="7" stop-index="9" />
+            <expression-projection text="CUME_DIST() OVER()" start-index="12" stop-index="29">
+                <expr>
+                    <function function-name="CUME_DIST" start-index="12" stop-index="29" text="CUME_DIST() OVER()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_curdate_function">
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="CURDATE()" start-index="7" stop-index="15">
+                <expr>
+                    <function function-name="CURDATE" start-index="7" stop-index="15" text="CURDATE()">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_current_date_function">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="CURRENT_DATE()" start-index="7" stop-index="20">
+                <expr>
+                    <function function-name="CURRENT_DATE" start-index="7" stop-index="20" text="CURRENT_DATE()">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_current_time_function">
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="CURRENT_TIME()" start-index="7" stop-index="20">
+                <expr>
+                    <function function-name="CURRENT_TIME" start-index="7" stop-index="20" text="CURRENT_TIME()">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_current_timestamp_function">
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="CURRENT_TIMESTAMP()" start-index="7" stop-index="25">
+                <expr>
+                    <function function-name="CURRENT_TIMESTAMP" start-index="7" stop-index="25" text="CURRENT_TIMESTAMP()">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_curtime_function">
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="CURTIME()" start-index="7" stop-index="15">
+                <expr>
+                    <function function-name="CURTIME" start-index="7" stop-index="15" text="CURTIME()">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>  
 </sql-parser-test-cases>

@@ -108,4 +108,15 @@
     <sql-case id="select_concat_ws" value="SELECT CONCAT_WS(',', 'First name', 'Second name', 'Last Name')" db-types="MySQL" />
     <sql-case id="select_connection_id" value="SELECT CONNECTION_ID()" db-types="MySQL" />
     <sql-case id="select_conv" value="SELECT CONV('a',16,2)" db-types="MySQL" />
+    <sql-case id="select_convert_function_using_character_set" value="SELECT CONVERT('abc' USING utf8mb4)" db-types="MySQL" />
+    <sql-case id="select_convert_tz_function" value="SELECT CONVERT_TZ('2004-01-01 12:00:00','GMT','MET')" db-types="MySQL" />
+    <sql-case id="select_cos_function" value="SELECT COS(PI())" db-types="MySQL" />
+    <sql-case id="select_cot_function" value="SELECT COT(12)" db-types="MySQL" />
+    <sql-case id="select_crc32_function" value="SELECT CRC32('MySQL')" db-types="MySQL" />
+    <sql-case id="select_window_with_cume_dist_function" value="SELECT val, CUME_DIST() OVER() FROM numbers" db-types="MySQL" />
+    <sql-case id="select_curdate_function" value="SELECT CURDATE()" db-types="MySQL" />
+    <sql-case id="select_current_date_function" value="SELECT CURRENT_DATE()" db-types="MySQL" />
+    <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL" />
+    <sql-case id="select_current_timestamp_function" value="SELECT CURRENT_TIMESTAMP()" db-types="MySQL" />
+    <sql-case id="select_curtime_function" value="SELECT CURTIME()" db-types="MySQL" />
 </sql-cases>
