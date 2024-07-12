@@ -243,7 +243,7 @@ class ContextManagerTest {
     
     @Test
     void assertAlterProperties() {
-        contextManager.getMetaDataContextManager().getConfigurationManager().alterProperties(PropertiesBuilder.build(new Property("foo", "foo_value")));
+        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(PropertiesBuilder.build(new Property("foo", "foo_value")));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty("foo"), is("foo_value"));
     }
     
