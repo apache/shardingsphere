@@ -87,7 +87,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     @Override
     public boolean isInTransaction() {
         checkSeataATEnabled();
-        return null != RootContext.getXID();
+        return null != SeataTransactionHolder.get();
     }
     
     @Override
