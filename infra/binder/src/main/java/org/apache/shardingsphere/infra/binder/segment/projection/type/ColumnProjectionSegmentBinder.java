@@ -15,37 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.projection.impl;
+package org.apache.shardingsphere.infra.binder.segment.projection.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubquerySegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
- * Subquery projection segment binder.
+ * Column projection segment binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SubqueryProjectionSegmentBinder {
+public final class ColumnProjectionSegmentBinder {
     
     /**
-     * Bind subquery projection segment.
+     * Bind column projection segment.
      *
-     * @param segment subquery projection segment
+     * @param segment table segment
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bound subquery projection segment
+     * @return bound column projection segment
      */
-    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final SQLStatementBinderContext binderContext,
-                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SubquerySegment boundSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
-        SubqueryProjectionSegment result = new SubqueryProjectionSegment(boundSubquerySegment, segment.getText());
+    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment,
+                                               final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment boundColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, binderContext, tableBinderContexts, Collections.emptyMap());
+        ColumnProjectionSegment result = new ColumnProjectionSegment(boundColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
+        result.setVisible(segment.isVisible());
         return result;
     }
 }

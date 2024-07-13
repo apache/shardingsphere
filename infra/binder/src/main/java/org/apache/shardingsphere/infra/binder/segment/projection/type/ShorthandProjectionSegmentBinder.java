@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.projection.impl;
+package org.apache.shardingsphere.infra.binder.segment.projection.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,29 +32,34 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Column projection segment binder.
+ * Shorthand projection segment binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShorthandProjectionSegmentBinder {
     
     /**
-     * Bind column projection segment.
+     * Bind shorthand projection segment.
      *
      * @param segment table segment
      * @param boundTableSegment bound table segment
      * @param tableBinderContexts table binder contexts
-     * @return bound column projection segment
+     * @return bound shorthand projection segment
      */
     public static ShorthandProjectionSegment bind(final ShorthandProjectionSegment segment, final TableSegment boundTableSegment,
                                                   final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        ShorthandProjectionSegment result = copy(segment);
+        if (segment.getOwner().isPresent()) {
+            expandVisibleColumns(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, segment.getOwner().get().getIdentifier().getValue()), result);
+        } else {
+            expandNoOwnerProjections(boundTableSegment, tableBinderContexts, result);
+        }
+        return result;
+    }
+    
+    private static ShorthandProjectionSegment copy(final ShorthandProjectionSegment segment) {
         ShorthandProjectionSegment result = new ShorthandProjectionSegment(segment.getStartIndex(), segment.getStopIndex());
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
-        if (segment.getOwner().isPresent()) {
-            expandVisibleColumn(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, segment.getOwner().get().getIdentifier().getValue()), result);
-        } else {
-            bindNoOwnerProjections(boundTableSegment, tableBinderContexts, result);
-        }
         return result;
     }
     
@@ -64,7 +69,7 @@ public final class ShorthandProjectionSegmentBinder {
         return tableBinderContexts.get(tableAliasOrName.toLowerCase()).getProjectionSegments();
     }
     
-    private static void expandVisibleColumn(final Collection<ProjectionSegment> projectionSegments, final ShorthandProjectionSegment segment) {
+    private static void expandVisibleColumns(final Collection<ProjectionSegment> projectionSegments, final ShorthandProjectionSegment segment) {
         for (ProjectionSegment each : projectionSegments) {
             if (each.isVisible()) {
                 segment.getActualProjectionSegments().add(each);
@@ -72,15 +77,15 @@ public final class ShorthandProjectionSegmentBinder {
         }
     }
     
-    private static void bindNoOwnerProjections(final TableSegment boundTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                               final ShorthandProjectionSegment segment) {
+    private static void expandNoOwnerProjections(final TableSegment boundTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                                 final ShorthandProjectionSegment segment) {
         if (boundTableSegment instanceof SimpleTableSegment) {
             String tableAliasOrName = boundTableSegment.getAliasName().orElseGet(() -> ((SimpleTableSegment) boundTableSegment).getTableName().getIdentifier().getValue());
-            expandVisibleColumn(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, tableAliasOrName), segment);
+            expandVisibleColumns(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, tableAliasOrName), segment);
         } else if (boundTableSegment instanceof JoinTableSegment) {
-            expandVisibleColumn(((JoinTableSegment) boundTableSegment).getDerivedJoinTableProjectionSegments(), segment);
+            expandVisibleColumns(((JoinTableSegment) boundTableSegment).getDerivedJoinTableProjectionSegments(), segment);
         } else if (boundTableSegment instanceof SubqueryTableSegment) {
-            expandVisibleColumn(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, boundTableSegment.getAliasName().orElse("")), segment);
+            expandVisibleColumns(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, boundTableSegment.getAliasName().orElse("")), segment);
         }
     }
 }

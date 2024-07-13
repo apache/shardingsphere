@@ -22,10 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
-import org.apache.shardingsphere.infra.binder.segment.projection.impl.ColumnProjectionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.projection.impl.ShorthandProjectionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.projection.impl.SubqueryProjectionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.projection.type.ColumnProjectionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.projection.type.ShorthandProjectionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.projection.type.SubqueryProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Projections segment binder.
@@ -57,13 +59,13 @@ public final class ProjectionsSegmentBinder {
                                           final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
-        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts)));
+        result.getProjections().addAll(segment.getProjections().stream()
+                .map(each -> bind(each, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
         return result;
     }
     
-    private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final SQLStatementBinderContext binderContext,
-                                          final TableSegment boundTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                          final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+    private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment,
+                                          final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, binderContext, tableBinderContexts);
         }
@@ -77,13 +79,14 @@ public final class ProjectionsSegmentBinder {
             return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, binderContext, newOuterTableBinderContexts);
         }
         if (projectionSegment instanceof ExpressionProjectionSegment) {
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(projectionSegment.getStartIndex(), projectionSegment.getStopIndex(),
-                    ((ExpressionProjectionSegment) projectionSegment).getText(), ExpressionSegmentBinder.bind(((ExpressionProjectionSegment) projectionSegment).getExpr(), SegmentType.PROJECTION,
-                            binderContext, tableBinderContexts, outerTableBinderContexts));
+            ExpressionSegment boundExpressionSegment = ExpressionSegmentBinder.bind(
+                    ((ExpressionProjectionSegment) projectionSegment).getExpr(), SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(
+                    projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), ((ExpressionProjectionSegment) projectionSegment).getText(), boundExpressionSegment);
             result.setAlias(((ExpressionProjectionSegment) projectionSegment).getAliasSegment());
             return result;
         }
-        // TODO support more ProjectionSegment bind
+        // TODO support more ProjectionSegment bound
         return projectionSegment;
     }
 }

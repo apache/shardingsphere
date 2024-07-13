@@ -39,14 +39,13 @@ public final class ParameterMarkerExpressionSegmentBinder {
      * @return bound parameter marker expression segment
      */
     public static ParameterMarkerExpressionSegment bind(final ParameterMarkerExpressionSegment segment, final Map<ParameterMarkerSegment, ColumnSegmentBoundInfo> boundInfos) {
-        ColumnSegmentBoundInfo boundInfo = boundInfos.get(segment);
-        if (null == boundInfo) {
+        if (!boundInfos.containsKey(segment)) {
             return segment;
         }
-        ParameterMarkerExpressionSegment result =
-                new ParameterMarkerExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getParameterMarkerIndex(), segment.getParameterMarkerType());
+        ParameterMarkerExpressionSegment result = new ParameterMarkerExpressionSegment(
+                segment.getStartIndex(), segment.getStopIndex(), segment.getParameterMarkerIndex(), segment.getParameterMarkerType());
         segment.getAliasSegment().ifPresent(result::setAlias);
-        result.setBoundInfo(boundInfo);
+        result.setBoundInfo(boundInfos.get(segment));
         return result;
     }
 }
