@@ -20,10 +20,11 @@ package org.apache.shardingsphere.infra.binder.segment.from.type;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundEx
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -78,15 +78,16 @@ public final class SimpleTableSegmentBinder {
      */
     public static SimpleTableSegment bind(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         fillPivotColumnNamesInBinderContext(segment, binderContext);
-        IdentifierValue originalDatabase = getDatabaseName(segment, binderContext);
-        IdentifierValue originalSchema = getSchemaName(segment, binderContext);
-        ShardingSpherePreconditions.checkNotNull(originalDatabase.getValue(), NoDatabaseSelectedException::new);
-        checkTableExists(segment.getTableName().getIdentifier().getValue(), binderContext, originalDatabase.getValue(), originalSchema.getValue());
-        ShardingSphereSchema schema = binderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
-        tableBinderContexts.putIfAbsent((segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue())).toLowerCase(),
-                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, binderContext));
-        TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), segment.getTableName().getIdentifier());
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(originalDatabase, originalSchema));
+        IdentifierValue databaseName = getDatabaseName(segment, binderContext);
+        ShardingSpherePreconditions.checkNotNull(databaseName.getValue(), NoDatabaseSelectedException::new);
+        IdentifierValue schemaName = getSchemaName(segment, binderContext);
+        IdentifierValue tableName = segment.getTableName().getIdentifier();
+        checkTableExists(binderContext, databaseName.getValue(), schemaName.getValue(), tableName.getValue());
+        ShardingSphereSchema schema = binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue());
+        tableBinderContexts.putIfAbsent(
+                (segment.getAliasName().orElseGet(tableName::getValue)).toLowerCase(), createSimpleTableBinderContext(segment, schema, databaseName, schemaName, binderContext));
+        TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
@@ -97,9 +98,9 @@ public final class SimpleTableSegmentBinder {
         segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> binderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase())));
     }
     
-    private static IdentifierValue getDatabaseName(final SimpleTableSegment tableSegment, final SQLStatementBinderContext binderContext) {
+    private static IdentifierValue getDatabaseName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getDatabaseType()).getDialectDatabaseMetaData();
-        Optional<OwnerSegment> owner = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
+        Optional<OwnerSegment> owner = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? segment.getOwner().flatMap(OwnerSegment::getOwner) : segment.getOwner();
         return new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(binderContext.getCurrentDatabaseName()));
     }
     
@@ -109,32 +110,13 @@ public final class SimpleTableSegmentBinder {
         }
         // TODO getSchemaName according to search path
         DatabaseType databaseType = binderContext.getDatabaseType();
-        if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
-                && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue())) {
+        if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue())) {
             return new IdentifierValue(PG_CATALOG);
         }
         return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(binderContext.getCurrentDatabaseName()));
     }
     
-    private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue originalDatabase,
-                                                                                  final IdentifierValue originalSchema, final SQLStatementBinderContext binderContext) {
-        Collection<ShardingSphereColumn> columnNames = Optional.ofNullable(
-                schema.getTable(segment.getTableName().getIdentifier().getValue())).map(ShardingSphereTable::getColumnValues).orElseGet(Collections::emptyList);
-        Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getDatabaseType()).getDialectDatabaseMetaData();
-        for (ShardingSphereColumn each : columnNames) {
-            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName(), dialectDatabaseMetaData.getQuoteCharacter()));
-            columnSegment.setOwner(new OwnerSegment(0, 0, segment.getAlias().orElse(segment.getTableName().getIdentifier())));
-            columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(originalDatabase, originalSchema, segment.getTableName().getIdentifier(),
-                    new IdentifierValue(each.getName(), dialectDatabaseMetaData.getQuoteCharacter())));
-            ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
-            columnProjectionSegment.setVisible(each.isVisible());
-            projectionSegments.add(columnProjectionSegment);
-        }
-        return new SimpleTableSegmentBinderContext(projectionSegments);
-    }
-    
-    private static void checkTableExists(final String tableName, final SQLStatementBinderContext binderContext, final String databaseName, final String schemaName) {
+    private static void checkTableExists(final SQLStatementBinderContext binderContext, final String databaseName, final String schemaName, final String tableName) {
         if ("dual".equalsIgnoreCase(tableName)) {
             return;
         }
@@ -148,5 +130,29 @@ public final class SimpleTableSegmentBinder {
                 && binderContext.getMetaData().getDatabase(databaseName).containsSchema(schemaName)
                 && binderContext.getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName),
                 () -> new TableNotFoundException(tableName));
+    }
+    
+    private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
+                                                                                  final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
+        IdentifierValue tableName = segment.getTableName().getIdentifier();
+        if (!binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue()).containsTable(tableName.getValue())) {
+            return new SimpleTableSegmentBinderContext(Collections.emptyList());
+        }
+        Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(binderContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        for (ShardingSphereColumn each : schema.getTable(tableName.getValue()).getColumnValues()) {
+            ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(createColumnSegment(segment, databaseName, schemaName, each, quoteCharacter, tableName));
+            columnProjectionSegment.setVisible(each.isVisible());
+            projectionSegments.add(columnProjectionSegment);
+        }
+        return new SimpleTableSegmentBinderContext(projectionSegments);
+    }
+    
+    private static ColumnSegment createColumnSegment(final SimpleTableSegment segment, final IdentifierValue databaseName, final IdentifierValue schemaName,
+                                                     final ShardingSphereColumn column, final QuoteCharacter quoteCharacter, final IdentifierValue tableName) {
+        ColumnSegment result = new ColumnSegment(0, 0, new IdentifierValue(column.getName(), quoteCharacter));
+        result.setOwner(new OwnerSegment(0, 0, segment.getAlias().orElse(tableName)));
+        result.setColumnBoundInfo(new ColumnSegmentBoundInfo(databaseName, schemaName, tableName, new IdentifierValue(column.getName(), quoteCharacter)));
+        return result;
     }
 }
