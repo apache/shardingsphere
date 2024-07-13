@@ -109,8 +109,7 @@ public final class SimpleTableSegmentBinder {
         }
         // TODO getSchemaName according to search path
         DatabaseType databaseType = binderContext.getDatabaseType();
-        if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
-                && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue())) {
+        if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue())) {
             return new IdentifierValue(PG_CATALOG);
         }
         return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(binderContext.getCurrentDatabaseName()));
