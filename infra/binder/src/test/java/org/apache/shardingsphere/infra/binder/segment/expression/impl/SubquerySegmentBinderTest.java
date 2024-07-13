@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
-import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
-import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.type.SimpleTableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -130,10 +130,10 @@ class SubquerySegmentBinderTest {
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
         assertNotNull(actual.getSelect());
         assertInstanceOf(OracleSelectStatement.class, actual.getSelect());
-        assertTrue(((OracleSelectStatement) actual.getSelect()).getWithSegment().isPresent());
-        assertNotNull(((OracleSelectStatement) actual.getSelect()).getWithSegment().get().getCommonTableExpressions());
-        assertThat(((OracleSelectStatement) actual.getSelect()).getWithSegment().get().getCommonTableExpressions().size(), is(1));
-        CommonTableExpressionSegment expressionSegment = ((OracleSelectStatement) actual.getSelect()).getWithSegment().get().getCommonTableExpressions().iterator().next();
+        assertTrue(actual.getSelect().getWithSegment().isPresent());
+        assertNotNull(actual.getSelect().getWithSegment().get().getCommonTableExpressions());
+        assertThat(actual.getSelect().getWithSegment().get().getCommonTableExpressions().size(), is(1));
+        CommonTableExpressionSegment expressionSegment = actual.getSelect().getWithSegment().get().getCommonTableExpressions().iterator().next();
         assertNotNull(expressionSegment.getSubquery().getSelect());
         assertInstanceOf(OracleSelectStatement.class, expressionSegment.getSubquery().getSelect());
         assertTrue(expressionSegment.getSubquery().getSelect().getFrom().isPresent());
