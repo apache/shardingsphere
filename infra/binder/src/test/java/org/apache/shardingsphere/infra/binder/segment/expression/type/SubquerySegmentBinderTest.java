@@ -84,9 +84,6 @@ class SubquerySegmentBinderTest {
         assertTrue(actual.getSelect().getFrom().isPresent());
         assertInstanceOf(SimpleTableSegment.class, actual.getSelect().getFrom().get());
         assertThat(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getIdentifier().getValue(), is("t_order"));
-        assertNotNull(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundInfo());
-        assertThat(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getSelect().getFrom().get()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(actual.getSelect().getWhere().isPresent());
         assertInstanceOf(ColumnSegment.class, actual.getSelect().getWhere().get().getExpr());
         assertThat(((ColumnSegment) actual.getSelect().getWhere().get().getExpr()).getIdentifier().getValue(), is("status"));
@@ -139,11 +136,6 @@ class SubquerySegmentBinderTest {
         assertTrue(expressionSegment.getSubquery().getSelect().getFrom().isPresent());
         assertInstanceOf(SimpleTableSegment.class, expressionSegment.getSubquery().getSelect().getFrom().get());
         assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getIdentifier().getValue(), is("t_order"));
-        assertNotNull(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundInfo());
-        assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(),
-                is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(),
-                is(DefaultDatabase.LOGIC_NAME));
         assertNotNull(expressionSegment.getSubquery().getSelect().getProjections());
         assertNotNull(expressionSegment.getSubquery().getSelect().getProjections().getProjections());
         assertThat(expressionSegment.getSubquery().getSelect().getProjections().getProjections().size(), is(1));

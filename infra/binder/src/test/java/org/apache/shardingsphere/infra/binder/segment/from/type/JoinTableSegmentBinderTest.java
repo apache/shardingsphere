@@ -71,11 +71,7 @@ class JoinTableSegmentBinderTest {
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
                 new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, Collections.emptyMap());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("i"));
@@ -113,11 +109,7 @@ class JoinTableSegmentBinderTest {
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
                 tableBinderContexts, Collections.emptyMap());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey("t_order"));
         assertTrue(tableBinderContexts.containsKey("t_order_item"));
@@ -139,11 +131,7 @@ class JoinTableSegmentBinderTest {
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
                 tableBinderContexts, Collections.emptyMap());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertJoinTableProjectionSegmentsWithNaturalJoin(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("i"));
@@ -179,11 +167,7 @@ class JoinTableSegmentBinderTest {
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
                 tableBinderContexts, Collections.emptyMap());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertJoinTableProjectionSegmentsWithUsing(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("i"));
@@ -215,18 +199,12 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(
-                joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, Collections.emptyMap());
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
+                new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, Collections.emptyMap());
         assertThat(actual.getLeft(), instanceOf(JoinTableSegment.class));
         assertThat(((JoinTableSegment) actual.getLeft()).getLeft(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getLeft()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getLeft()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((JoinTableSegment) actual.getLeft()).getRight(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getRight()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getRight()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getDerivedJoinTableProjectionSegments().size(), is(10));
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("o2"));
