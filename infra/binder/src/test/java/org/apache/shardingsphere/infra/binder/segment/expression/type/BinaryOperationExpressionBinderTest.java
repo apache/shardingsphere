@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression.impl;
+package org.apache.shardingsphere.infra.binder.segment.expression.type;
 
 import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
@@ -27,20 +27,21 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class InExpressionBinderTest {
+class BinaryOperationExpressionBinderTest {
     
     @Test
-    void assertInExpressionBinder() {
-        InExpression inExpression = new InExpression(0, 10,
-                new LiteralExpressionSegment(0, 0, "left"),
-                new LiteralExpressionSegment(0, 0, "right"), true);
+    void assertBinaryOperationExpression() {
+        BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(0, 0,
+                new LiteralExpressionSegment(0, 0, "test"),
+                new LiteralExpressionSegment(0, 0, "test"), "=", "test");
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
-        InExpression actual = InExpressionBinder.bind(inExpression, SegmentType.PROJECTION,
+        BinaryOperationExpression actual = BinaryOperationExpressionBinder.bind(binaryOperationExpression, SegmentType.PROJECTION,
                 binderContext, Collections.emptyMap(), Collections.emptyMap());
-        assertThat(actual.getText(), is("leftright"));
-        assertTrue(actual.isNot());
+        assertThat(actual.getLeft().getText(), is("test"));
+        assertThat(actual.getRight().getText(), is("test"));
+        assertThat(actual.getOperator(), is("="));
+        assertThat(actual.getText(), is("test"));
     }
 }

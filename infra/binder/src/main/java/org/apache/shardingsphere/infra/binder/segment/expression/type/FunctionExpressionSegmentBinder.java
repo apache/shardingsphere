@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression.impl;
+package org.apache.shardingsphere.infra.binder.segment.expression.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,29 +24,33 @@ import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegme
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
- * Not expression binder.
+ * Function expression binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NotExpressionBinder {
+public final class FunctionExpressionSegmentBinder {
     
     /**
-     * Bind not expression segment.
+     * Bind function expression with metadata.
      *
-     * @param segment not expression
+     * @param segment function expression segment
      * @param parentSegmentType parent segment type
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bound not expression
+     * @param outerTableBinderContexts outer table binder contexts
+     * @return function segment
      */
-    public static NotExpression bind(final NotExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
-                                     final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ExpressionSegment boundExpression = ExpressionSegmentBinder.bind(segment.getExpression(), parentSegmentType, binderContext, tableBinderContexts, Collections.emptyMap());
-        return new NotExpression(segment.getStartIndex(), segment.getStopIndex(), boundExpression, segment.getNotSign());
+    public static FunctionSegment bind(final FunctionSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
+                                       final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        FunctionSegment result = new FunctionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getFunctionName(), segment.getText());
+        result.setOwner(segment.getOwner());
+        for (ExpressionSegment each : segment.getParameters()) {
+            result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
+        }
+        return result;
     }
 }

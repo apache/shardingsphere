@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.projection.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubquerySegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
