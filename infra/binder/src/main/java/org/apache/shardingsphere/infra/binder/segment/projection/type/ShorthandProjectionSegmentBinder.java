@@ -32,29 +32,34 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Column projection segment binder.
+ * Shorthand projection segment binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShorthandProjectionSegmentBinder {
     
     /**
-     * Bind column projection segment.
+     * Bind shorthand projection segment.
      *
      * @param segment table segment
      * @param boundTableSegment bound table segment
      * @param tableBinderContexts table binder contexts
-     * @return bound column projection segment
+     * @return bound shorthand projection segment
      */
     public static ShorthandProjectionSegment bind(final ShorthandProjectionSegment segment, final TableSegment boundTableSegment,
                                                   final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ShorthandProjectionSegment result = new ShorthandProjectionSegment(segment.getStartIndex(), segment.getStopIndex());
-        segment.getOwner().ifPresent(result::setOwner);
-        segment.getAliasSegment().ifPresent(result::setAlias);
+        ShorthandProjectionSegment result = copy(segment);
         if (segment.getOwner().isPresent()) {
             expandVisibleColumn(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, segment.getOwner().get().getIdentifier().getValue()), result);
         } else {
             bindNoOwnerProjections(boundTableSegment, tableBinderContexts, result);
         }
+        return result;
+    }
+    
+    private static ShorthandProjectionSegment copy(final ShorthandProjectionSegment segment) {
+        ShorthandProjectionSegment result = new ShorthandProjectionSegment(segment.getStartIndex(), segment.getStopIndex());
+        segment.getOwner().ifPresent(result::setOwner);
+        segment.getAliasSegment().ifPresent(result::setAlias);
         return result;
     }
     
