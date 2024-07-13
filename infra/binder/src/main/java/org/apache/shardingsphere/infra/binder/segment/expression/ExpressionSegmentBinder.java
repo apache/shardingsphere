@@ -83,7 +83,7 @@ public final class ExpressionSegmentBinder {
         if (segment instanceof FunctionSegment) {
             return FunctionExpressionSegmentBinder.bind((FunctionSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
-        // TODO support more ExpressionSegment bind
+        // TODO support more ExpressionSegment bound
         return segment;
     }
 }
