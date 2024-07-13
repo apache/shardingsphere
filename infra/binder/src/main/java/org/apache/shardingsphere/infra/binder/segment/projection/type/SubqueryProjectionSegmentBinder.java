@@ -41,8 +41,8 @@ public final class SubqueryProjectionSegmentBinder {
      * @param tableBinderContexts table binder contexts
      * @return bound subquery projection segment
      */
-    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final SQLStatementBinderContext binderContext,
-                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment,
+                                                 final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         SubquerySegment boundSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
         SubqueryProjectionSegment result = new SubqueryProjectionSegment(boundSubquerySegment, segment.getText());
         segment.getAliasSegment().ifPresent(result::setAlias);
