@@ -68,18 +68,22 @@ public final class SubqueryTableSegmentBinder {
     public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final SQLStatementBinderContext binderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         fillPivotColumnNamesInBinderContext(segment, binderContext);
-        SQLStatementBinderContext subQueryBinderContext = new SQLStatementBinderContext(segment.getSubquery().getSelect(), binderContext.getMetaData(), binderContext.getCurrentDatabaseName());
-        subQueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
-        SelectStatement boundSelect = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSubquery().getSelect(), subQueryBinderContext);
-        SubquerySegment boundSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundSelect, segment.getSubquery().getText());
+        SQLStatementBinderContext subqueryBinderContext = new SQLStatementBinderContext(segment.getSubquery().getSelect(), binderContext.getMetaData(), binderContext.getCurrentDatabaseName());
+        subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
+        SelectStatement boundSubSelect = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSubquery().getSelect(), subqueryBinderContext);
+        SubquerySegment boundSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundSubSelect, segment.getSubquery().getText());
         boundSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
         bindParameterMarkerProjection(boundSubquerySegment, subqueryTableName);
         SubqueryTableSegment result = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         tableBinderContexts.put(subqueryTableName.getValue().toLowerCase(),
-                new SimpleTableSegmentBinderContext(createSubqueryProjections(boundSelect.getProjections().getProjections(), subqueryTableName, binderContext.getDatabaseType())));
+                new SimpleTableSegmentBinderContext(createSubqueryProjections(boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getDatabaseType())));
         return result;
+    }
+    
+    private static void fillPivotColumnNamesInBinderContext(final SubqueryTableSegment segment, final SQLStatementBinderContext binderContext) {
+        segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> binderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase())));
     }
     
     private static void bindParameterMarkerProjection(final SubquerySegment boundSubquerySegment, final IdentifierValue subqueryTableName) {
@@ -96,10 +100,6 @@ public final class SubqueryTableSegmentBinder {
             boundSelect.getProjections().getProjections().add(ParameterMarkerExpressionSegmentBinder.bind(parameterMarkerProjection, Collections.singletonMap(parameterMarkerProjection,
                     new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), subqueryTableName, parameterMarkerProjection.getAlias().orElseGet(() -> new IdentifierValue(""))))));
         }
-    }
-    
-    private static void fillPivotColumnNamesInBinderContext(final SubqueryTableSegment segment, final SQLStatementBinderContext binderContext) {
-        segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> binderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase())));
     }
     
     private static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName, final DatabaseType databaseType) {
