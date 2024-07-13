@@ -33,7 +33,7 @@ import java.util.Map;
 public final class ExistsSubqueryExpressionBinder {
     
     /**
-     * Bind exists subquery expression with metadata.
+     * Bind exists subquery expression.
      *
      * @param segment exists subquery expression segment
      * @param binderContext SQL statement binder context

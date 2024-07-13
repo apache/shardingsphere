@@ -44,8 +44,8 @@ public final class NotExpressionBinder {
      * @param tableBinderContexts table binder contexts
      * @return bound not expression
      */
-    public static NotExpression bind(final NotExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
-                                     final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static NotExpression bind(final NotExpression segment, final SegmentType parentSegmentType,
+                                     final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         ExpressionSegment boundExpression = ExpressionSegmentBinder.bind(segment.getExpression(), parentSegmentType, binderContext, tableBinderContexts, Collections.emptyMap());
         return new NotExpression(segment.getStartIndex(), segment.getStopIndex(), boundExpression, segment.getNotSign());
     }

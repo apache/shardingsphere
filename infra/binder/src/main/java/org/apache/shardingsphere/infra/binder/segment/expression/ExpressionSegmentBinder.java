@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.expression.type.ExistsSubq
 import org.apache.shardingsphere.infra.binder.segment.expression.type.FunctionExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.type.InExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.type.NotExpressionBinder;
-import org.apache.shardingsphere.infra.binder.segment.expression.type.SubqueryExpressionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -69,7 +69,7 @@ public final class ExpressionSegmentBinder {
             Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>();
             newOuterTableBinderContexts.putAll(outerTableBinderContexts);
             newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, binderContext, newOuterTableBinderContexts);
+            return new SubqueryExpressionSegment(SubquerySegmentBinder.bind(((SubqueryExpressionSegment) segment).getSubquery(), binderContext, newOuterTableBinderContexts));
         }
         if (segment instanceof InExpression) {
             return InExpressionBinder.bind((InExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);

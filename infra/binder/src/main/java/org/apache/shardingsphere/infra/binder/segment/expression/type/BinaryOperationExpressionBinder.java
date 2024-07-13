@@ -35,7 +35,7 @@ import java.util.Map;
 public final class BinaryOperationExpressionBinder {
     
     /**
-     * Bind binary operation expression with metadata.
+     * Bind binary operation expression.
      *
      * @param segment binary operation expression segment
      * @param parentSegmentType parent segment type
