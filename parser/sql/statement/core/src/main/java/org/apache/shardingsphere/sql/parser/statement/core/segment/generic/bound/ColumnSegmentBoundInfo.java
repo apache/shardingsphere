@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 public final class ColumnSegmentBoundInfo {
     
     private final IdentifierValue originalDatabase;
-    
+     
     private final IdentifierValue originalSchema;
     
     private final IdentifierValue originalTable;
