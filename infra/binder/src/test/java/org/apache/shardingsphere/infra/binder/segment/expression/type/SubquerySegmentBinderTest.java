@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression.impl;
+package org.apache.shardingsphere.infra.binder.segment.expression.type;
 
 import org.apache.shardingsphere.infra.binder.segment.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
@@ -72,11 +72,11 @@ class SubquerySegmentBinderTest {
         ExpressionSegment whereExpressionSegment = new ColumnSegment(86, 91, new IdentifierValue("status"));
         mysqlSelectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
         SubquerySegment subquerySegment = new SubquerySegment(39, 103, mysqlSelectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
-        SQLStatementBinderContext sqlStatementBinderContext =
-                new SQLStatementBinderContext(createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(
+                createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
-        boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
-                new IdentifierValue("t_order_item"), new IdentifierValue("user_id")));
+        boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(
+                new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_order_item"), new IdentifierValue("user_id")));
         sqlStatementBinderContext.getExternalTableBinderContexts().put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundNameColumn))));
         Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
@@ -124,8 +124,8 @@ class SubquerySegmentBinderTest {
         oracleSelectStatement.setWithSegment(withSegment);
         oracleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubquerySegment subquerySegment = new SubquerySegment(0, 74, oracleSelectStatement, "WITH submit_order AS (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
-        SQLStatementBinderContext sqlStatementBinderContext =
-                new SQLStatementBinderContext(createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(
+                createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
         assertNotNull(actual.getSelect());

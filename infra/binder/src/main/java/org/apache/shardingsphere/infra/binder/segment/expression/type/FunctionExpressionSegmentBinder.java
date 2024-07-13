@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression.impl;
+package org.apache.shardingsphere.infra.binder.segment.expression.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,31 +23,33 @@ import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Binary operation expression binder.
+ * Function expression binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BinaryOperationExpressionBinder {
+public final class FunctionExpressionSegmentBinder {
     
     /**
-     * Bind binary operation expression with metadata.
+     * Bind function expression.
      *
-     * @param segment binary operation expression segment
+     * @param segment function expression segment
      * @param parentSegmentType parent segment type
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
-     * @return bound binary operation expression segment
+     * @return bound function segment
      */
-    public static BinaryOperationExpression bind(final BinaryOperationExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
-                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        ExpressionSegment boundLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
-        ExpressionSegment boundRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
-        return new BinaryOperationExpression(segment.getStartIndex(), segment.getStopIndex(), boundLeft, boundRight, segment.getOperator(), segment.getText());
+    public static FunctionSegment bind(final FunctionSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
+                                       final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        FunctionSegment result = new FunctionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getFunctionName(), segment.getText());
+        result.setOwner(segment.getOwner());
+        result.getParameters().addAll(segment.getParameters().stream()
+                .map(each -> ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+        return result;
     }
 }

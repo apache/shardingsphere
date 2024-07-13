@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.binder.segment.expression;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.SegmentType;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.BinaryOperationExpressionBinder;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.ExistsSubqueryExpressionBinder;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.FunctionExpressionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.InExpressionBinder;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.NotExpressionBinder;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubqueryExpressionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.BinaryOperationExpressionBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.ColumnSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.ExistsSubqueryExpressionBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.FunctionExpressionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.InExpressionBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.NotExpressionBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -69,7 +69,7 @@ public final class ExpressionSegmentBinder {
             Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>();
             newOuterTableBinderContexts.putAll(outerTableBinderContexts);
             newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, binderContext, newOuterTableBinderContexts);
+            return new SubqueryExpressionSegment(SubquerySegmentBinder.bind(((SubqueryExpressionSegment) segment).getSubquery(), binderContext, newOuterTableBinderContexts));
         }
         if (segment instanceof InExpression) {
             return InExpressionBinder.bind((InExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
@@ -83,7 +83,7 @@ public final class ExpressionSegmentBinder {
         if (segment instanceof FunctionSegment) {
             return FunctionExpressionSegmentBinder.bind((FunctionSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
-        // TODO support more ExpressionSegment bind
+        // TODO support more ExpressionSegment bound
         return segment;
     }
 }

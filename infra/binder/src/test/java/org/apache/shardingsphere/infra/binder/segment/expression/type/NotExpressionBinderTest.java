@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression.impl;
+package org.apache.shardingsphere.infra.binder.segment.expression.type;
 
 import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;

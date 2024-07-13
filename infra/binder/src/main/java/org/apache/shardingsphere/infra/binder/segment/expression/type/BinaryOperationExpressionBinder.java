@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression.impl;
+package org.apache.shardingsphere.infra.binder.segment.expression.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,30 +23,31 @@ import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
- * Not expression binder.
+ * Binary operation expression binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NotExpressionBinder {
+public final class BinaryOperationExpressionBinder {
     
     /**
-     * Bind not expression segment.
+     * Bind binary operation expression.
      *
-     * @param segment not expression
+     * @param segment binary operation expression segment
      * @param parentSegmentType parent segment type
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bound not expression
+     * @param outerTableBinderContexts outer table binder contexts
+     * @return bound binary operation expression segment
      */
-    public static NotExpression bind(final NotExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
-                                     final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ExpressionSegment boundExpression = ExpressionSegmentBinder.bind(segment.getExpression(), parentSegmentType, binderContext, tableBinderContexts, Collections.emptyMap());
-        return new NotExpression(segment.getStartIndex(), segment.getStopIndex(), boundExpression, segment.getNotSign());
+    public static BinaryOperationExpression bind(final BinaryOperationExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
+                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        ExpressionSegment boundLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        ExpressionSegment boundRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        return new BinaryOperationExpression(segment.getStartIndex(), segment.getStopIndex(), boundLeft, boundRight, segment.getOperator(), segment.getText());
     }
 }

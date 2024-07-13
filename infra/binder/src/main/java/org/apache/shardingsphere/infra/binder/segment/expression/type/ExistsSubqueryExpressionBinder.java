@@ -15,32 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression.impl;
+package org.apache.shardingsphere.infra.binder.segment.expression.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 
 import java.util.Map;
 
 /**
- * Subquery expression segment binder.
+ * Exists subquery expression binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SubqueryExpressionSegmentBinder {
+public final class ExistsSubqueryExpressionBinder {
     
     /**
-     * Bind subquery expression segment.
+     * Bind exists subquery expression.
      *
-     * @param segment subquery expression segment
+     * @param segment exists subquery expression segment
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bound subquery expression segment
+     * @return bound exists subquery expression segment
      */
-    public static SubqueryExpressionSegment bind(final SubqueryExpressionSegment segment, final SQLStatementBinderContext binderContext,
-                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        return new SubqueryExpressionSegment(SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts));
+    public static ExistsSubqueryExpression bind(final ExistsSubqueryExpression segment, final SQLStatementBinderContext binderContext,
+                                                final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        SubquerySegment boundSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
+        ExistsSubqueryExpression result = new ExistsSubqueryExpression(segment.getStartIndex(), segment.getStopIndex(), boundSubquery);
+        result.setNot(segment.isNot());
+        return result;
     }
 }
