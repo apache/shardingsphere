@@ -81,7 +81,7 @@ public final class SimpleTableSegmentBinder {
         ShardingSpherePreconditions.checkNotNull(databaseName.getValue(), NoDatabaseSelectedException::new);
         IdentifierValue schemaName = getSchemaName(segment, binderContext);
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-        checkTableExists(binderContext, tableName.getValue(), databaseName.getValue(), schemaName.getValue());
+        checkTableExists(binderContext, databaseName.getValue(), schemaName.getValue(), tableName.getValue());
         ShardingSphereSchema schema = binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue());
         tableBinderContexts.putIfAbsent(
                 (segment.getAliasName().orElseGet(tableName::getValue)).toLowerCase(), createSimpleTableBinderContext(segment, schema, databaseName, schemaName, binderContext));
