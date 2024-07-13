@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.from.impl;
+package org.apache.shardingsphere.infra.binder.segment.from.type;
 
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.util.ProjectionUtils;
-import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
-import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.type.SimpleTableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.parameter.ParameterMarkerExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;

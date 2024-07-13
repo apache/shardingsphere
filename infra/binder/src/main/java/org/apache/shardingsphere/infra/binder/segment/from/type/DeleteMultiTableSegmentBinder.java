@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.from.impl;
+package org.apache.shardingsphere.infra.binder.segment.from.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 
@@ -39,10 +39,10 @@ public final class DeleteMultiTableSegmentBinder {
      * @param segment delete multi table segment
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @return bound join table segment
+     * @return bound delete multi table segment
      */
-    public static DeleteMultiTableSegment bind(final DeleteMultiTableSegment segment, final SQLStatementBinderContext binderContext,
-                                               final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static DeleteMultiTableSegment bind(final DeleteMultiTableSegment segment,
+                                               final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());

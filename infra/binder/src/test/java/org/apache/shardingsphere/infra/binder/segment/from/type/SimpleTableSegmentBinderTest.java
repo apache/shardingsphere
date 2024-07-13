@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.from.impl;
+package org.apache.shardingsphere.infra.binder.segment.from.type;
 
-import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,14 +57,14 @@ class SimpleTableSegmentBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        SimpleTableSegment actual =
-                SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts);
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(
+                simpleTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts);
         assertThat(actual.getTableName().getTableBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getTableName().getTableBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(tableBinderContexts.containsKey("t_order"));
         assertThat(tableBinderContexts.get("t_order").getProjectionSegments().size(), is(3));
         assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").isPresent());
-        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get() instanceof ColumnProjectionSegment);
+        assertThat(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get(), instanceOf(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get()).getColumn().getColumnBoundInfo().getOriginalDatabase()
                 .getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get()).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(),
@@ -73,7 +74,7 @@ class SimpleTableSegmentBinderTest {
         assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get()).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(),
                 is("user_id"));
         assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").isPresent());
-        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get() instanceof ColumnProjectionSegment);
+        assertThat(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get(), instanceOf(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get()).getColumn().getColumnBoundInfo().getOriginalDatabase()
                 .getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get()).getColumn().getColumnBoundInfo().getOriginalSchema()
@@ -83,7 +84,7 @@ class SimpleTableSegmentBinderTest {
         assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get()).getColumn().getColumnBoundInfo().getOriginalColumn()
                 .getValue(), is("order_id"));
         assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").isPresent());
-        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get() instanceof ColumnProjectionSegment);
+        assertThat(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get(), instanceOf(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get()).getColumn().getColumnBoundInfo().getOriginalDatabase()
                 .getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get()).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(),

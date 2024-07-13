@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.projection.type.ColumnProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.projection.type.ShorthandProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.projection.type.SubqueryProjectionSegmentBinder;

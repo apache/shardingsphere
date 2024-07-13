@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.segment.expression.impl.FunctionEx
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.InExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.NotExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubqueryExpressionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
