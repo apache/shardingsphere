@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -134,6 +135,9 @@ public final class SimpleTableSegmentBinder {
     private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
                                                                                   final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
+        if (!binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue()).containsTable(tableName.getValue())) {
+            return new SimpleTableSegmentBinderContext(Collections.emptyList());
+        }
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
         QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(binderContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         for (ShardingSphereColumn each : schema.getTable(tableName.getValue()).getColumnValues()) {
