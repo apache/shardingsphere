@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStateme
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.MoveStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.SQLBindEngine;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
