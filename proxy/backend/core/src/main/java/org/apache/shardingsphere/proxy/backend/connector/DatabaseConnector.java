@@ -267,10 +267,10 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession, final String cursorName) {
         if (statementContext instanceof CursorStatementContext) {
-            connectionSession.getConnectionContext().getCursorContext().getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
+            connectionSession.getConnectionContext().getCursorContext().getCursorStatementContexts().put(cursorName, (CursorStatementContext) statementContext);
         }
         if (statementContext instanceof CursorDefinitionAware) {
-            CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionSession.getConnectionContext().getCursorContext().getCursorDefinitions().get(cursorName);
+            CursorStatementContext cursorStatementContext = connectionSession.getConnectionContext().getCursorContext().getCursorStatementContexts().get(cursorName);
             Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
