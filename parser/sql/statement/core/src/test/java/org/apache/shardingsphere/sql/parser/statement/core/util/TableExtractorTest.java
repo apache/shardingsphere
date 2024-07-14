@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -131,7 +132,7 @@ class TableExtractorTest {
     void assertNotExistTableFromRoutineBody() {
         RoutineBodySegment routineBodySegment = new RoutineBodySegment(0, 3);
         ValidStatementSegment validStatement = new ValidStatementSegment(0, 1);
-        validStatement.setSqlStatement(() -> 0);
+        validStatement.setSqlStatement(mock(SQLStatement.class));
         routineBodySegment.getValidStatements().add(validStatement);
         ValidStatementSegment newValidStatement = new ValidStatementSegment(0, 1);
         validStatement.setSqlStatement(mock(CreateTableStatement.class));
