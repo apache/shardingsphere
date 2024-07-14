@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
+import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
@@ -269,10 +269,10 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         if (statementContext instanceof CursorStatementContext) {
             connectionSession.getConnectionContext().getCursorContext().getCursorStatementContexts().put(cursorName, (CursorStatementContext) statementContext);
         }
-        if (statementContext instanceof CursorDefinitionAware) {
+        if (statementContext instanceof CursorAware) {
             CursorStatementContext cursorStatementContext = connectionSession.getConnectionContext().getCursorContext().getCursorStatementContexts().get(cursorName);
             Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
-            ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
+            ((CursorAware) statementContext).setCursorStatementContext(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
             connectionSession.getConnectionContext().getCursorContext().removeCursor(cursorName);

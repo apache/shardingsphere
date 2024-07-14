@@ -87,7 +87,7 @@ class FetchStreamMergedResultTest {
     
     private static FetchStatementContext createFetchStatementContext(final boolean containsAllDirectionType) {
         FetchStatementContext result = new FetchStatementContext(createFetchStatement(containsAllDirectionType), DefaultDatabase.LOGIC_NAME);
-        result.setUpCursorDefinition(createCursorStatementContext());
+        result.setCursorStatementContext(createCursorStatementContext());
         return result;
     }
     

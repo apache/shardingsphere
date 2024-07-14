@@ -20,14 +20,14 @@ package org.apache.shardingsphere.infra.binder.context.aware;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
 
 /**
- * Cursor definition aware.
+ * Cursor aware.
  */
-public interface CursorDefinitionAware {
+public interface CursorAware {
     
     /**
-     * Set up cursor definition.
+     * Set cursor statement context.
      *
      * @param cursorStatementContext cursor statement context
      */
-    void setUpCursorDefinition(CursorStatementContext cursorStatementContext);
+    void setCursorStatementContext(CursorStatementContext cursorStatementContext);
 }
