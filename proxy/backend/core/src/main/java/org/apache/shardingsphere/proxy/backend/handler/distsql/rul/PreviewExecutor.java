@@ -125,7 +125,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
             return;
         }
         String cursorName = ((CursorAvailable) toBePreviewedStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
-        CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionContext.getConnectionContext().getCursorContext().getCursorDefinitions().get(cursorName);
+        CursorStatementContext cursorStatementContext = connectionContext.getConnectionContext().getCursorContext().getCursorStatementContexts().get(cursorName);
         Preconditions.checkNotNull(cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) toBePreviewedStatementContext).setUpCursorDefinition(cursorStatementContext);
     }

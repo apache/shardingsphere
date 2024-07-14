@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.session.connection.cursor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinition;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,7 @@ public final class CursorConnectionContext implements AutoCloseable {
     
     private final Map<String, Long> minGroupRowCounts = new ConcurrentHashMap<>();
     
-    private final Map<String, CursorDefinition> cursorDefinitions = new ConcurrentHashMap<>();
+    private final Map<String, CursorStatementContext> cursorStatementContexts = new ConcurrentHashMap<>();
     
     private final Map<String, Boolean> executedAllDirections = new ConcurrentHashMap<>();
     
@@ -46,7 +46,7 @@ public final class CursorConnectionContext implements AutoCloseable {
     public void removeCursor(final String cursorName) {
         orderByValueGroups.remove(cursorName);
         minGroupRowCounts.remove(cursorName);
-        cursorDefinitions.remove(cursorName);
+        cursorStatementContexts.remove(cursorName);
         executedAllDirections.remove(cursorName);
     }
     
@@ -54,7 +54,7 @@ public final class CursorConnectionContext implements AutoCloseable {
     public void close() {
         orderByValueGroups.clear();
         minGroupRowCounts.clear();
-        cursorDefinitions.clear();
+        cursorStatementContexts.clear();
         executedAllDirections.clear();
     }
 }
