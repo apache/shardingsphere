@@ -31,19 +31,17 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class DenyUserStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        SQLServerDenyUserStatement sqlServerDenyUserStatement = mock(SQLServerDenyUserStatement.class);
+        SQLServerDenyUserStatement sqlStatement = new SQLServerDenyUserStatement();
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        when(sqlServerDenyUserStatement.getTable()).thenReturn(table);
-        DenyUserStatementContext actual = new DenyUserStatementContext(sqlServerDenyUserStatement, DefaultDatabase.LOGIC_NAME);
+        sqlStatement.setTable(table);
+        DenyUserStatementContext actual = new DenyUserStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(sqlServerDenyUserStatement));
+        assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList("tbl_1")));
     }
