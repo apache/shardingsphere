@@ -28,35 +28,28 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLA
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class AnalyzeTableStatementContextTest {
     
     @Test
     void assertMysqlNewInstance() {
-        assertNewInstance(mock(MySQLAnalyzeTableStatement.class));
+        assertNewInstance(new MySQLAnalyzeTableStatement());
     }
     
     @Test
     void assertPostgreSQLNewInstance() {
-        assertNewInstance(mock(PostgreSQLAnalyzeTableStatement.class));
+        assertNewInstance(new PostgreSQLAnalyzeTableStatement());
     }
     
     private void assertNewInstance(final AnalyzeTableStatement analyzeTableStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
-        List<SimpleTableSegment> tables = new LinkedList<>();
-        tables.add(table1);
-        tables.add(table2);
-        when(analyzeTableStatement.getTables()).thenReturn(tables);
+        analyzeTableStatement.getTables().addAll(Arrays.asList(table1, table2));
         AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(analyzeTableStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));

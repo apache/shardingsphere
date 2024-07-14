@@ -28,29 +28,26 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowColumns
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ShowColumnsStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        MySQLShowColumnsStatement showColumnsStatement = mock(MySQLShowColumnsStatement.class);
+        MySQLShowColumnsStatement sqlStatement = new MySQLShowColumnsStatement();
         String tableName = "tbl_1";
         String databaseName = "sharding_db";
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         FromDatabaseSegment fromDatabase = new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue(databaseName)));
-        when(showColumnsStatement.getTable()).thenReturn(table);
-        when(showColumnsStatement.getFromDatabase()).thenReturn(Optional.of(fromDatabase));
-        ShowColumnsStatementContext actual = new ShowColumnsStatementContext(showColumnsStatement, DefaultDatabase.LOGIC_NAME);
+        sqlStatement.setTable(table);
+        sqlStatement.setFromDatabase(fromDatabase);
+        ShowColumnsStatementContext actual = new ShowColumnsStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(showColumnsStatement));
+        assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList(tableName)));
         assertThat(actual.getRemoveSegments(), is(Collections.singletonList(fromDatabase)));

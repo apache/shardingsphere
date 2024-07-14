@@ -57,43 +57,43 @@ class AlterTableStatementContextTest {
     
     @Test
     void assertMySQLNewInstance() {
-        assertNewInstance(mock(MySQLAlterTableStatement.class));
+        assertNewInstance(new MySQLAlterTableStatement());
     }
     
     @Test
     void assertPostgreSQLNewInstance() {
-        assertNewInstance(mock(PostgreSQLAlterTableStatement.class));
+        assertNewInstance(new PostgreSQLAlterTableStatement());
     }
     
     @Test
     void assertOracleNewInstance() {
-        assertNewInstance(mock(OracleAlterTableStatement.class));
+        assertNewInstance(new OracleAlterTableStatement());
     }
     
     @Test
     void assertSQLServerNewInstance() {
-        assertNewInstance(mock(SQLServerAlterTableStatement.class));
+        assertNewInstance(new SQLServerAlterTableStatement());
     }
     
     @Test
     void assertSQL92NewInstance() {
-        assertNewInstance(mock(SQL92AlterTableStatement.class));
+        assertNewInstance(new SQL92AlterTableStatement());
     }
     
     private void assertNewInstance(final AlterTableStatement alterTableStatement) {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("rename_tbl_1")));
-        when(alterTableStatement.getTable()).thenReturn(table);
-        when(alterTableStatement.getRenameTable()).thenReturn(Optional.of(renameTable));
+        alterTableStatement.setTable(table);
+        alterTableStatement.setRenameTable(renameTable);
         Collection<SimpleTableSegment> referencedTables = Collections.singletonList(table);
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
         when(columnDefinition.getReferencedTables()).thenReturn(referencedTables);
         AddColumnDefinitionSegment addColumnDefinition = mock(AddColumnDefinitionSegment.class);
         when(addColumnDefinition.getColumnDefinitions()).thenReturn(Collections.singletonList(columnDefinition));
-        when(alterTableStatement.getAddColumnDefinitions()).thenReturn(Collections.singletonList(addColumnDefinition));
+        alterTableStatement.getAddColumnDefinitions().add(addColumnDefinition);
         ModifyColumnDefinitionSegment modifyColumnDefinition = mock(ModifyColumnDefinitionSegment.class);
         when(modifyColumnDefinition.getColumnDefinition()).thenReturn(columnDefinition);
-        when(alterTableStatement.getModifyColumnDefinitions()).thenReturn(Collections.singletonList(modifyColumnDefinition));
+        alterTableStatement.getModifyColumnDefinitions().add(modifyColumnDefinition);
         ConstraintDefinitionSegment constraintDefinition = mock(ConstraintDefinitionSegment.class);
         when(constraintDefinition.getReferencedTable()).thenReturn(Optional.of(table));
         when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index")))));
@@ -101,16 +101,16 @@ class AlterTableStatementContextTest {
         when(addConstraintDefinition.getConstraintDefinition()).thenReturn(constraintDefinition);
         ConstraintSegment constraint = new ConstraintSegment(0, 0, new IdentifierValue("constraint"));
         when(addConstraintDefinition.getConstraintDefinition().getConstraintName()).thenReturn(Optional.of(constraint));
-        when(alterTableStatement.getAddConstraintDefinitions()).thenReturn(Collections.singletonList(addConstraintDefinition));
+        alterTableStatement.getAddConstraintDefinitions().add(addConstraintDefinition);
         ValidateConstraintDefinitionSegment validateConstraintDefinition = mock(ValidateConstraintDefinitionSegment.class);
         when(validateConstraintDefinition.getConstraintName()).thenReturn(constraint);
-        when(alterTableStatement.getValidateConstraintDefinitions()).thenReturn(Collections.singletonList(validateConstraintDefinition));
+        alterTableStatement.getValidateConstraintDefinitions().add(validateConstraintDefinition);
         DropConstraintDefinitionSegment dropConstraintDefinition = mock(DropConstraintDefinitionSegment.class);
         when(dropConstraintDefinition.getConstraintName()).thenReturn(constraint);
-        when(alterTableStatement.getDropConstraintDefinitions()).thenReturn(Collections.singletonList(dropConstraintDefinition));
+        alterTableStatement.getDropConstraintDefinitions().add(dropConstraintDefinition);
         DropIndexDefinitionSegment dropIndexDefinitionSegment = mock(DropIndexDefinitionSegment.class);
         when(dropIndexDefinitionSegment.getIndexSegment()).thenReturn(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("drop_index"))));
-        when(alterTableStatement.getDropIndexDefinitions()).thenReturn(Collections.singletonList(dropIndexDefinitionSegment));
+        alterTableStatement.getDropIndexDefinitions().add(dropIndexDefinitionSegment);
         AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterTableStatement));

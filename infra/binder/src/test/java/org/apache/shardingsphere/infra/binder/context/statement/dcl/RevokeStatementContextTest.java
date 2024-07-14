@@ -31,50 +31,43 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerRev
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class RevokeStatementContextTest {
     
     @Test
     void assertMySQLNewInstance() {
-        assertNewInstance(mock(MySQLRevokeStatement.class));
+        assertNewInstance(new MySQLRevokeStatement());
     }
     
     @Test
     void assertPostgreSQLNewInstance() {
-        assertNewInstance(mock(PostgreSQLRevokeStatement.class));
+        assertNewInstance(new PostgreSQLRevokeStatement());
     }
     
     @Test
     void assertOracleNewInstance() {
-        assertNewInstance(mock(OracleRevokeStatement.class));
+        assertNewInstance(new OracleRevokeStatement());
     }
     
     @Test
     void assertSQLServerNewInstance() {
-        assertNewInstance(mock(SQLServerRevokeStatement.class));
+        assertNewInstance(new SQLServerRevokeStatement());
     }
     
     @Test
     void assertSQL92NewInstance() {
-        assertNewInstance(mock(SQL92RevokeStatement.class));
+        assertNewInstance(new SQL92RevokeStatement());
     }
     
     private void assertNewInstance(final RevokeStatement revokeStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
-        List<SimpleTableSegment> tables = new LinkedList<>();
-        tables.add(table1);
-        tables.add(table2);
-        when(revokeStatement.getTables()).thenReturn(tables);
+        revokeStatement.getTables().addAll(Arrays.asList(table1, table2));
         RevokeStatementContext actual = new RevokeStatementContext(revokeStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(revokeStatement));

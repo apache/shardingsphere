@@ -31,19 +31,16 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ShowIndexStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        MySQLShowIndexStatement showIndexStatement = mock(MySQLShowIndexStatement.class);
-        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        when(showIndexStatement.getTable()).thenReturn(table);
-        ShowIndexStatementContext actual = new ShowIndexStatementContext(showIndexStatement, DefaultDatabase.LOGIC_NAME);
+        MySQLShowIndexStatement sqlStatement = new MySQLShowIndexStatement();
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1"))));
+        ShowIndexStatementContext actual = new ShowIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(showIndexStatement));
+        assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList("tbl_1")));
     }

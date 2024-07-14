@@ -51,17 +51,17 @@ class AlterViewStatementContextTest {
     void assertMySQLNewInstance() {
         SelectStatement select = mock(MySQLSelectStatement.class);
         when(select.getFrom()).thenReturn(Optional.of(view));
-        MySQLAlterViewStatement alterViewStatement = mock(MySQLAlterViewStatement.class);
-        when(alterViewStatement.getView()).thenReturn(view);
-        when(alterViewStatement.getSelectStatement()).thenReturn(Optional.of(select));
+        MySQLAlterViewStatement alterViewStatement = new MySQLAlterViewStatement();
+        alterViewStatement.setView(view);
+        alterViewStatement.setSelect(select);
         assertNewInstance(alterViewStatement);
     }
     
     @Test
     void assertPostgreSQLNewInstance() {
-        PostgreSQLAlterViewStatement alterViewStatement = mock(PostgreSQLAlterViewStatement.class);
-        when(alterViewStatement.getView()).thenReturn(view);
-        when(alterViewStatement.getRenameView()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")))));
+        PostgreSQLAlterViewStatement alterViewStatement = new PostgreSQLAlterViewStatement();
+        alterViewStatement.setView(view);
+        alterViewStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view"))));
         assertNewInstance(alterViewStatement);
     }
     

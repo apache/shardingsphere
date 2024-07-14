@@ -25,26 +25,22 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class OptimizeTableStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        MySQLOptimizeTableStatement optimizeTableStatement = mock(MySQLOptimizeTableStatement.class);
-        Collection<SimpleTableSegment> tables = Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1"))));
-        when(optimizeTableStatement.getTables()).thenReturn(tables);
-        OptimizeTableStatementContext actual = new OptimizeTableStatementContext(optimizeTableStatement, DefaultDatabase.LOGIC_NAME);
+        MySQLOptimizeTableStatement sqlStatement = new MySQLOptimizeTableStatement();
+        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1"))));
+        OptimizeTableStatementContext actual = new OptimizeTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(optimizeTableStatement));
+        assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList("tbl_1")));
     }
