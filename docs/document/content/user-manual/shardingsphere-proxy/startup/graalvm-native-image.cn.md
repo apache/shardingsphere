@@ -121,7 +121,7 @@ services:
 ## 可观察性
 
 针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
-https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
+[可观察性](/cn/user-manual/shardingsphere-proxy/observability) 并不一致。
 
 你可以使用 https://www.graalvm.org/jdk22/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
 并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注

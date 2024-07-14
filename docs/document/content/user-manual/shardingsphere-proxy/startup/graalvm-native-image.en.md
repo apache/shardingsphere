@@ -129,8 +129,7 @@ services:
 ## Observability
 
 ShardingSphere for GraalVM Native Image form Proxy, which provides observability capabilities
-with https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/
-not consistent.
+with [Observability](/en/user-manual/shardingsphere-proxy/observability) not consistent.
 
 You can observe GraalVM Native Image using a series of command line tools or visualization tools available
 at https://www.graalvm.org/jdk22/tools/, and use VSCode to debug it according to its requirements.
