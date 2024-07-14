@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
+import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
@@ -38,7 +38,7 @@ import java.util.Optional;
  * Close statement context.
  */
 @Getter
-public final class CloseStatementContext extends CommonSQLStatementContext implements CursorAvailable, TableAvailable, WhereAvailable, CursorDefinitionAware {
+public final class CloseStatementContext extends CommonSQLStatementContext implements CursorAvailable, TableAvailable, WhereAvailable, CursorAware {
     
     private CursorStatementContext cursorStatementContext;
     
@@ -60,7 +60,7 @@ public final class CloseStatementContext extends CommonSQLStatementContext imple
     }
     
     @Override
-    public void setUpCursorDefinition(final CursorStatementContext cursorStatementContext) {
+    public void setCursorStatementContext(final CursorStatementContext cursorStatementContext) {
         this.cursorStatementContext = cursorStatementContext;
         tablesContext = cursorStatementContext.getTablesContext();
     }
