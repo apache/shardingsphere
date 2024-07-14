@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
-import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -45,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,12 +58,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Insert SQL statement context.
  */
-@Getter
 public final class InsertStatementContext extends CommonSQLStatementContext implements TableAvailable, ParameterAware {
-    
-    private final TablesContext tablesContext;
-    
-    private final List<String> columnNames;
     
     private final ShardingSphereMetaData metaData;
     
@@ -73,10 +68,19 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     private final List<List<ExpressionSegment>> valueExpressions;
     
+    @Getter
+    private final TablesContext tablesContext;
+    
+    @Getter
+    private final List<String> columnNames;
+    
+    @Getter
     private List<InsertValueContext> insertValueContexts;
     
+    @Getter
     private InsertSelectContext insertSelectContext;
     
+    @Getter
     private OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
     
     private GeneratedKeyContext generatedKeyContext;
@@ -216,8 +220,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      * @return column names collection
      */
     public List<String> getInsertColumnNames() {
-        InsertStatement insertStatement = getSqlStatement();
-        return insertStatement.getSetAssignment().map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
+        return getSqlStatement().getSetAssignment().map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(getSqlStatement().getColumns()));
     }
     
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
