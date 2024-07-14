@@ -22,13 +22,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.FunctionTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.SimpleTableSegmentBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -39,12 +39,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Column segment binder.
@@ -246,26 +246,19 @@ public final class ColumnSegmentBinder {
      * @return bound using column segment
      */
     public static ColumnSegment bindUsingColumn(final ColumnSegment segment, final SegmentType parentSegmentType, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
-        segment.getOwner().ifPresent(result::setOwner);
-        Collection<TableSegmentBinderContext> tableBinderContextValues = tableBinderContexts.values();
-        Collection<ColumnSegment> usingInputColumnSegments = findUsingInputColumnSegments(segment.getIdentifier().getValue(), tableBinderContextValues);
+        ColumnSegment result = copy(segment);
+        List<ColumnSegment> usingInputColumnSegments = findUsingInputColumnSegments(segment.getIdentifier().getValue(), tableBinderContexts.values());
         ShardingSpherePreconditions.checkState(usingInputColumnSegments.size() >= 2,
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
-        Iterator<ColumnSegment> iterator = usingInputColumnSegments.iterator();
-        result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, iterator.next()));
-        result.setOtherUsingColumnBoundInfo(createColumnSegmentBoundInfo(segment, iterator.next()));
+        result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, usingInputColumnSegments.get(0)));
+        result.setOtherUsingColumnBoundInfo(createColumnSegmentBoundInfo(segment, usingInputColumnSegments.get(1)));
         return result;
     }
     
-    private static Collection<ColumnSegment> findUsingInputColumnSegments(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        for (TableSegmentBinderContext each : tableBinderContexts) {
-            Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(columnName);
-            if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
-                result.add(((ColumnProjectionSegment) projectionSegment.get()).getColumn());
-            }
-        }
-        return result;
+    private static List<ColumnSegment> findUsingInputColumnSegments(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+        return tableBinderContexts.stream()
+                .map(each -> each.findProjectionSegmentByColumnLabel(columnName))
+                .filter(optional -> optional.isPresent() && optional.get() instanceof ColumnProjectionSegment)
+                .map(each -> ((ColumnProjectionSegment) each.get()).getColumn()).collect(Collectors.toList());
     }
 }
