@@ -22,31 +22,48 @@ Main application scenarios for Hint:
 
 ### Hint Configuration
 
-Hint algorithms require users to implement the interface of `org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm`. 
+Hint algorithms require users to implement the interface of `org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm`.
+`org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm` has two built-in implementations,
+
+- `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
+- `org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithm`
+
 Apache ShardingSphere will acquire sharding values from HintManager to route.
 
 Take the following configurations for reference:
 
 ```yaml
 rules:
-- !SHARDING
-  tables:
-    t_order:
-      actualDataNodes: demo_ds_${0..1}.t_order_${0..1}
-      databaseStrategy:
-        hint:
+  - !SHARDING
+    tables:
+      t_order:
+        actualDataNodes: demo_ds_${0..1}.t_order_${0..1}
+        databaseStrategy:
+          hint:
+            shardingColumn: order_id
+            shardingAlgorithmName: hint_class_based
+        tableStrategy:
+          hint:
+            shardingColumn: order_id
+            shardingAlgorithmName: hint_inline
+    shardingAlgorithms:
+      hint_class_based:
+        type: CLASS_BASED
+        props:
+          strategy: STANDARD
           algorithmClassName: xxx.xxx.xxx.HintXXXAlgorithm
-      tableStrategy:
-        hint:
-          algorithmClassName: xxx.xxx.xxx.HintXXXAlgorithm
-  defaultTableStrategy:
-    none:
-  defaultKeyGenerateStrategy:
-    type: SNOWFLAKE
-    column: order_id
+      hint_inline:
+        type: HINT_INLINE
+        props:
+          algorithm-expression: t_order_$->{value % 4}
+    defaultTableStrategy:
+      none:
+    defaultKeyGenerateStrategy:
+      type: SNOWFLAKE
+      column: order_id
 
 props:
-    sql-show: true
+  sql-show: true
 ```
 
 ### Get HintManager
