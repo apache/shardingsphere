@@ -59,7 +59,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.DoStatementC
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadXMLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.MergeStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -176,7 +175,7 @@ public final class SQLStatementContextFactory {
             return new LoadXMLStatementContext((LoadXMLStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof MergeStatement) {
-            return new MergeStatementContext((MergeStatement) sqlStatement);
+            return new UnknownSQLStatementContext(sqlStatement);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
