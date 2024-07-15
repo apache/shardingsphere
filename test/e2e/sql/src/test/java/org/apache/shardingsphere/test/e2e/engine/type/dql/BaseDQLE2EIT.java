@@ -60,25 +60,12 @@ public abstract class BaseDQLE2EIT {
     
     private boolean useXMLAsExpectedDataset;
     
-    /**
-     * Init.
-     *
-     * @param testParam test parameter
-     * @param containerComposer container composer
-     * @throws SQLException SQL exception
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
-     */
-    public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
+    protected final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
         fillDataOnlyOnce(testParam, containerComposer);
         expectedDataSource = null == containerComposer.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getExpectedDataSourceMap().size()
                 ? getFirstExpectedDataSource(containerComposer.getExpectedDataSourceMap().values())
                 : containerComposer.getExpectedDataSourceMap().get(containerComposer.getAssertion().getExpectedDataSourceName());
         useXMLAsExpectedDataset = null != containerComposer.getAssertion().getExpectedDataFile();
-    }
-    
-    private DataSource getFirstExpectedDataSource(final Collection<DataSource> dataSources) {
-        return dataSources.isEmpty() ? null : dataSources.iterator().next();
     }
     
     private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws IOException, JAXBException {
@@ -94,6 +81,10 @@ public abstract class BaseDQLE2EIT {
                 }
             }
         }
+    }
+    
+    private DataSource getFirstExpectedDataSource(final Collection<DataSource> dataSources) {
+        return dataSources.isEmpty() ? null : dataSources.iterator().next();
     }
     
     protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet expectedResultSet, final AssertionTestParameter testParam) throws SQLException {
