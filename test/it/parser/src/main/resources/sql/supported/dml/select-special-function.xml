@@ -119,4 +119,17 @@
     <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL" />
     <sql-case id="select_current_timestamp_function" value="SELECT CURRENT_TIMESTAMP()" db-types="MySQL" />
     <sql-case id="select_curtime_function" value="SELECT CURTIME()" db-types="MySQL" />
+    <sql-case id="select_date_function" value="SELECT DATE('2003-12-31 01:02:03')" db-types="MySQL" />
+    <sql-case id="select_date_add_function" value="SELECT DATE_ADD('2018-05-01',INTERVAL 1 DAY)" db-types="MySQL" />
+    <sql-case id="select_date_format_function" value="SELECT DATE_FORMAT('2009-10-04 22:23:00', '%W %M %Y')" db-types="MySQL" />
+    <sql-case id="select_date_sub_function" value="SELECT DATE_SUB('2018-05-01',INTERVAL 1 DAY)" db-types="MySQL" />
+    <sql-case id="select_datediff_function" value="SELECT DATEDIFF('2007-12-31 23:59:59','2007-12-30')" db-types="MySQL" />
+    <sql-case id="select_day_function" value="SELECT DAY('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_dayname_function" value="SELECT DAYNAME('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_dayofmonth_function" value="SELECT DAYOFMONTH('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_dayofweek_function" value="SELECT DAYOFWEEK('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_dayofyear_function" value="SELECT DAYOFYEAR('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_default_function" value="SELECT DEFAULT(val) FROM numbers" db-types="MySQL" />
+    <sql-case id="select_degrees_function" value="SELECT DEGREES(PI())" db-types="MySQL" />
+    <sql-case id="select_window_with_dense_rank_function" value="SELECT val, DENSE_RANK() OVER() FROM numbers" db-types="MySQL" />
 </sql-cases>
