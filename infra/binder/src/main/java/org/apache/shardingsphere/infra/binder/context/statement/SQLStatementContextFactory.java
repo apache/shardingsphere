@@ -51,7 +51,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.MoveStatemen
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.TruncateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.CallStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DoStatementContext;
@@ -157,9 +156,6 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(metaData, params, (InsertStatement) sqlStatement, currentDatabaseName);
         }
-        if (sqlStatement instanceof CallStatement) {
-            return new CallStatementContext((CallStatement) sqlStatement);
-        }
         if (sqlStatement instanceof CopyStatement) {
             return new CopyStatementContext((CopyStatement) sqlStatement, currentDatabaseName);
         }
@@ -172,7 +168,7 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof LoadXMLStatement) {
             return new LoadXMLStatementContext((LoadXMLStatement) sqlStatement, currentDatabaseName);
         }
-        if (sqlStatement instanceof MergeStatement) {
+        if (sqlStatement instanceof CallStatement || sqlStatement instanceof MergeStatement) {
             return new UnknownSQLStatementContext(sqlStatement);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
