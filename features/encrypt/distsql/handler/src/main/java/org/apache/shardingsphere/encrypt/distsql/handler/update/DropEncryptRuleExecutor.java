@@ -79,7 +79,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     
     private void dropRule(final String ruleName) {
         Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = rule.getConfiguration().getTables().stream()
-                .filter(each -> each.getName().equals(ruleName)).findAny();
+                .filter(each -> each.getName().equalsIgnoreCase(ruleName)).findAny();
         encryptTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(encryptTableRuleConfig.get()));
     }
     
