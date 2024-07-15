@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateDatabaseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.DistinctProjectionPrefixTokenGenerator;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -39,7 +39,7 @@ class DistinctProjectionPrefixTokenGeneratorTest {
     @Test
     void assertIsGenerateSQLToken() {
         DistinctProjectionPrefixTokenGenerator generator = new DistinctProjectionPrefixTokenGenerator();
-        assertFalse(generator.isGenerateSQLToken(mock(CreateDatabaseStatementContext.class)));
+        assertFalse(generator.isGenerateSQLToken(mock(UnknownSQLStatementContext.class)));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         List<AggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
         when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections()).thenReturn(aggregationDistinctProjections);
