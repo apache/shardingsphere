@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.FlushStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.KillStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.OptimizeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
@@ -68,7 +67,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.Analyze
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
@@ -284,9 +282,6 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof OptimizeTableStatement) {
             return new OptimizeTableStatementContext((OptimizeTableStatement) sqlStatement, currentDatabaseName);
-        }
-        if (sqlStatement instanceof KillStatement) {
-            return new KillStatementContext((KillStatement) sqlStatement);
         }
         return new UnknownSQLStatementContext(sqlStatement);
     }
