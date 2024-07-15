@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator;
 
+import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateDatabaseStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -47,9 +47,9 @@ class IndexTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
+        UnknownSQLStatementContext sqlStatementContext = mock(UnknownSQLStatementContext.class);
         IndexTokenGenerator generator = new IndexTokenGenerator();
-        assertFalse(generator.isGenerateSQLToken(createDatabaseStatementContext));
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
         AlterIndexStatementContext alterIndexStatementContext = mock(AlterIndexStatementContext.class);
         Collection<IndexSegment> indexSegments = new LinkedList<>();
         when(alterIndexStatementContext.getIndexes()).thenReturn(indexSegments);

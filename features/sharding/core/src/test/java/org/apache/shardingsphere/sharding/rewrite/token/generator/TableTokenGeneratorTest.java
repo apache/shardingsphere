@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateDatabaseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -88,7 +88,7 @@ class TableTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokenWhenSQLStatementIsNotTableAvailable() {
         ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
-        SQLStatementContext sqlStatementContext = mock(CreateDatabaseStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(UnknownSQLStatementContext.class);
         assertThat(generator.generateSQLTokens(sqlStatementContext), is(Collections.emptyList()));
     }
 }
