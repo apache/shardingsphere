@@ -46,53 +46,53 @@ public enum SQLCommandType {
      *
      * <p>Such as {@code SELECT}.</p>
      */
-    DQL(SelectStatement.class, "dql-integration", false, Arrays.asList("jdbc", "proxy")),
+    DQL(SelectStatement.class, "e2e-dql", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Data Manipulation Language.
      *
      * <p>Such as {@code INSERT}, {@code UPDATE}, {@code DELETE}.</p>
      */
-    DML(DMLStatement.class, "dml-integration", false, Arrays.asList("jdbc", "proxy")),
+    DML(DMLStatement.class, "e2e-dml", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Data Definition Language.
      *
      * <p>Such as {@code CREATE}, {@code ALTER}, {@code DROP}, {@code TRUNCATE}.</p>
      */
-    DDL(DDLStatement.class, "ddl-integration", false, Arrays.asList("jdbc", "proxy")),
+    DDL(DDLStatement.class, "e2e-ddl", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Transaction Control Language.
      *
      * <p>Such as {@code SET}, {@code COMMIT}, {@code ROLLBACK}, {@code SAVEPOIINT}, {@code BEGIN}.</p>
      */
-    TCL(TCLStatement.class, "tcl-integration", true, Arrays.asList("jdbc", "proxy")),
+    TCL(TCLStatement.class, "e2e-tcl", true, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Database administrator Language.
      */
-    DAL(DALStatement.class, "dal-integration", true, Arrays.asList("jdbc", "proxy")),
+    DAL(DALStatement.class, "e2e-dal", true, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Database control Language.
      */
-    DCL(DCLStatement.class, "dcl-integration", false, Arrays.asList("jdbc", "proxy")),
+    DCL(DCLStatement.class, "e2e-dcl", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Resource & Rule Administration Language.
      */
-    RAL(RALStatement.class, "ral-integration", true, Collections.singletonList("proxy")),
+    RAL(RALStatement.class, "e2e-ral", true, Collections.singletonList("proxy")),
     
     /**
      * Resource & Rule Definition Language.
      */
-    RDL(RDLStatement.class, "rdl-integration", true, Collections.singletonList("proxy")),
+    RDL(RDLStatement.class, "e2e-rdl", true, Collections.singletonList("proxy")),
     
     /**
      * Resource & Rule Query Language.
      */
-    RQL(RQLStatement.class, "rql-integration", true, Collections.singletonList("proxy"));
+    RQL(RQLStatement.class, "e2e-rql", true, Collections.singletonList("proxy"));
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     
