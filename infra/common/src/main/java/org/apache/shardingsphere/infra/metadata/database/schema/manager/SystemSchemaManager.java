@@ -85,8 +85,14 @@ public final class SystemSchemaManager {
      * @return whether current table is system table or not
      */
     public static boolean isSystemTable(final String databaseType, final String schema, final String tableName) {
-        return Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false)
-                || Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON)).map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false);
+        Optional<Map<String, Collection<String>>> schemaTableMap = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType));
+        Optional<Map<String, Collection<String>>> commonTableMap = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON));
+        if (null == schema) {
+            return schemaTableMap.map(schemas -> schemas.values().stream().flatMap(Collection::stream).anyMatch(tables -> tables.contains(tableName))).orElse(false)
+                    || commonTableMap.map(schemas -> schemas.values().stream().flatMap(Collection::stream).anyMatch(tables -> tables.contains(tableName))).orElse(false);
+        }
+        return schemaTableMap.map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false)
+                || commonTableMap.map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false);
     }
     
     /**
