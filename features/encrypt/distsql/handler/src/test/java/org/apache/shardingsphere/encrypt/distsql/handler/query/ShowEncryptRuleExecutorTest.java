@@ -75,7 +75,7 @@ class ShowEncryptRuleExecutorTest {
         assertThat(row.getCell(10), is(""));
         assertThat(row.getCell(11), is(""));
     }
-
+    
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
