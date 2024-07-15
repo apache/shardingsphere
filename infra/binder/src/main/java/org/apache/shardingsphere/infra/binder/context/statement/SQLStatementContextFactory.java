@@ -53,7 +53,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableS
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.TruncateStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.DoStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadXMLStatementContext;
@@ -159,16 +158,13 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof CopyStatement) {
             return new CopyStatementContext((CopyStatement) sqlStatement, currentDatabaseName);
         }
-        if (sqlStatement instanceof DoStatement) {
-            return new DoStatementContext((DoStatement) sqlStatement);
-        }
         if (sqlStatement instanceof LoadDataStatement) {
             return new LoadDataStatementContext((LoadDataStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof LoadXMLStatement) {
             return new LoadXMLStatementContext((LoadXMLStatement) sqlStatement, currentDatabaseName);
         }
-        if (sqlStatement instanceof CallStatement || sqlStatement instanceof MergeStatement) {
+        if (sqlStatement instanceof CallStatement || sqlStatement instanceof DoStatement || sqlStatement instanceof MergeStatement) {
             return new UnknownSQLStatementContext(sqlStatement);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
