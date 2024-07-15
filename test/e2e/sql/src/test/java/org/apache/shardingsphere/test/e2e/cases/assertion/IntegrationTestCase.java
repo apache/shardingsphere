@@ -30,9 +30,9 @@ import java.util.LinkedList;
 /**
  * JAXB definition of integration test case.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class IntegrationTestCase {
     
     @XmlAttribute(name = "sql")
@@ -51,7 +51,7 @@ public final class IntegrationTestCase {
     private String adapters;
     
     @XmlAttribute(name = "delay-assertion-seconds")
-    private Integer delayAssertionSeconds;
+    private int delayAssertionSeconds;
     
     @XmlAttribute(name = "smoke")
     private boolean smoke;
