@@ -2056,5 +2056,219 @@
                 </expr>
             </expression-projection>
         </projections>
-    </select>  
+    </select>
+
+    <select sql-case-id="select_date_function">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="DATE('2003-12-31 01:02:03')" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="DATE" start-index="7" stop-index="33" text="DATE('2003-12-31 01:02:03')">
+                        <parameter>
+                            <literal-expression value="2003-12-31 01:02:03" start-index="12" stop-index="32" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_date_add_function">
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="DATE_ADD('2018-05-01',INTERVAL 1 DAY)" start-index="7" stop-index="43">
+                <expr>
+                    <function function-name="DATE_ADD" start-index="7" stop-index="43" text="DATE_ADD('2018-05-01',INTERVAL 1 DAY)">
+                        <parameter>
+                            <literal-expression value="2018-05-01" start-index="16" stop-index="27" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="INTERVAL" text="INTERVAL" start-index="29" stop-index="36" >
+                                <parameter>
+                                    <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
+                                    <literal-expression value="1" start-index="38" stop-index="38" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="DAY" start-index="40" stop-index="42" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_date_format_function">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="DATE_FORMAT('2009-10-04 22:23:00', '%W %M %Y')" start-index="7" stop-index="52">
+                <expr>
+                    <function function-name="DATE_FORMAT" start-index="7" stop-index="52" text="DATE_FORMAT('2009-10-04 22:23:00', '%W %M %Y')">
+                        <parameter>
+                            <literal-expression value="2009-10-04 22:23:00" start-index="19" stop-index="39" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="%W %M %Y" start-index="42" stop-index="51" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_date_sub_function">
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="DATE_SUB('2018-05-01',INTERVAL 1 DAY)" start-index="7" stop-index="43">
+                <expr>
+                    <function function-name="DATE_SUB" start-index="7" stop-index="43" text="DATE_SUB('2018-05-01',INTERVAL 1 DAY)">
+                        <parameter>
+                            <literal-expression value="2018-05-01" start-index="16" stop-index="27" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="INTERVAL" text="INTERVAL" start-index="29" stop-index="36" >
+                                <parameter>
+                                    <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
+                                    <literal-expression value="1" start-index="38" stop-index="38" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="DAY" start-index="40" stop-index="42" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_datediff_function">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="DATEDIFF('2007-12-31 23:59:59','2007-12-30')" start-index="7" stop-index="50">
+                <expr>
+                    <function function-name="DATEDIFF" start-index="7" stop-index="50" text="DATEDIFF('2007-12-31 23:59:59','2007-12-30')">
+                        <parameter>
+                            <literal-expression value="2007-12-31 23:59:59" start-index="16" stop-index="36" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2007-12-30" start-index="38" stop-index="49" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_day_function">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="DAY('2007-02-03')" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="DAY" start-index="7" stop-index="23" text="DAY('2007-02-03')">
+                        <parameter>
+                            <literal-expression value="2007-02-03" start-index="11" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_dayname_function">
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="DAYNAME('2007-02-03')" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="DAYNAME" start-index="7" stop-index="27" text="DAYNAME('2007-02-03')">
+                        <parameter>
+                            <literal-expression value="2007-02-03" start-index="15" stop-index="26" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_dayofmonth_function">
+        <projections start-index="7" stop-index="30">
+            <expression-projection text="DAYOFMONTH('2007-02-03')" start-index="7" stop-index="30">
+                <expr>
+                    <function function-name="DAYOFMONTH" start-index="7" stop-index="30" text="DAYOFMONTH('2007-02-03')">
+                        <parameter>
+                            <literal-expression value="2007-02-03" start-index="18" stop-index="29" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_dayofweek_function">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="DAYOFWEEK('2007-02-03')" start-index="7" stop-index="29">
+                <expr>
+                    <function function-name="DAYOFWEEK" start-index="7" stop-index="29" text="DAYOFWEEK('2007-02-03')">
+                        <parameter>
+                            <literal-expression value="2007-02-03" start-index="17" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_dayofyear_function">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="DAYOFYEAR('2007-02-03')" start-index="7" stop-index="29">
+                <expr>
+                    <function function-name="DAYOFYEAR" start-index="7" stop-index="29" text="DAYOFYEAR('2007-02-03')">
+                        <parameter>
+                            <literal-expression value="2007-02-03" start-index="17" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_default_function">
+        <projections start-index="7" stop-index="18">
+            <expression-projection text="DEFAULT(val)" start-index="7" stop-index="18">
+                <expr>
+                    <function function-name="DEFAULT" start-index="7" stop-index="18" text="DEFAULT(val)">
+                        <parameter>
+                            <column name="val" start-index="15" stop-index="17" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="numbers" start-index="25" stop-index="31" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_degrees_function">
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="DEGREES(PI())" start-index="7" stop-index="19">
+                <expr>
+                    <function function-name="DEGREES" start-index="7" stop-index="19" text="DEGREES(PI())">
+                        <parameter>
+                            <function function-name="PI" start-index="15" stop-index="18" text="PI()">
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_window_with_dense_rank_function">
+        <from>
+            <simple-table name="numbers" start-index="37" stop-index="43" />
+        </from>
+        <projections start-index="7" stop-index="30">
+            <column-projection name="val" start-index="7" stop-index="9" />
+            <expression-projection text="DENSE_RANK() OVER()" start-index="12" stop-index="30">
+                <expr>
+                    <function function-name="DENSE_RANK" start-index="12" stop-index="30" text="DENSE_RANK() OVER()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
