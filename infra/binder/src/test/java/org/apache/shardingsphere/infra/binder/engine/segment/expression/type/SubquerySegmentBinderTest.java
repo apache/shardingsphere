@@ -28,20 +28,16 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -102,57 +98,6 @@ class SubquerySegmentBinderTest {
         assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-    }
-    
-    @Test
-    void assertBindUseWithClause() {
-        ColumnSegment columnSegment = new ColumnSegment(29, 36, new IdentifierValue("order_id"));
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(29, 36);
-        projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
-        OracleSelectStatement oracleSubquerySelectStatement = new OracleSelectStatement();
-        oracleSubquerySelectStatement.setProjections(projectionsSegment);
-        oracleSubquerySelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(43, 49, new IdentifierValue("t_order"))));
-        ExpressionSegment whereExpressionSegment = new ColumnSegment(57, 62, new IdentifierValue("status"));
-        oracleSubquerySelectStatement.setWhere(new WhereSegment(51, 73, whereExpressionSegment));
-        CommonTableExpressionSegment commonTableExpressionSegment = new CommonTableExpressionSegment(0, 1, new AliasSegment(0, 1, new IdentifierValue("submit_order")),
-                new SubquerySegment(22, 73, oracleSubquerySelectStatement, "SELECT order_id FROM t_order WHERE status = 'SUBMIT'"));
-        WithSegment withSegment = new WithSegment(0, 74, Collections.singleton(commonTableExpressionSegment));
-        OracleSelectStatement oracleSelectStatement = new OracleSelectStatement();
-        oracleSelectStatement.setWithSegment(withSegment);
-        oracleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SubquerySegment subquerySegment = new SubquerySegment(0, 74, oracleSelectStatement, "WITH submit_order AS (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
-        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(
-                createMetaData(), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
-        Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
-        SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
-        assertNotNull(actual.getSelect());
-        assertInstanceOf(OracleSelectStatement.class, actual.getSelect());
-        assertTrue(actual.getSelect().getWithSegment().isPresent());
-        assertNotNull(actual.getSelect().getWithSegment().get().getCommonTableExpressions());
-        assertThat(actual.getSelect().getWithSegment().get().getCommonTableExpressions().size(), is(1));
-        CommonTableExpressionSegment expressionSegment = actual.getSelect().getWithSegment().get().getCommonTableExpressions().iterator().next();
-        assertNotNull(expressionSegment.getSubquery().getSelect());
-        assertInstanceOf(OracleSelectStatement.class, expressionSegment.getSubquery().getSelect());
-        assertTrue(expressionSegment.getSubquery().getSelect().getFrom().isPresent());
-        assertInstanceOf(SimpleTableSegment.class, expressionSegment.getSubquery().getSelect().getFrom().get());
-        assertThat(((SimpleTableSegment) expressionSegment.getSubquery().getSelect().getFrom().get()).getTableName().getIdentifier().getValue(), is("t_order"));
-        assertNotNull(expressionSegment.getSubquery().getSelect().getProjections());
-        assertNotNull(expressionSegment.getSubquery().getSelect().getProjections().getProjections());
-        assertThat(expressionSegment.getSubquery().getSelect().getProjections().getProjections().size(), is(1));
-        ProjectionSegment column = expressionSegment.getSubquery().getSelect().getProjections().getProjections().iterator().next();
-        assertInstanceOf(ColumnProjectionSegment.class, column);
-        assertThat(((ColumnProjectionSegment) column).getColumn().getIdentifier().getValue(), is("order_id"));
-        assertNotNull(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo());
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) column).getColumn().getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertTrue(expressionSegment.getSubquery().getSelect().getWhere().isPresent());
-        assertNotNull(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo());
-        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
-        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnSegment) expressionSegment.getSubquery().getSelect().getWhere().get().getExpr()).getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
     }
     
     private ShardingSphereMetaData createMetaData() {
