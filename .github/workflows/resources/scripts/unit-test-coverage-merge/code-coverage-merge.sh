@@ -104,4 +104,4 @@ java -jar $jacococli report $execMergePath --classfiles $classOutPutDir --source
 # Use jacococli to generate XML
 java -jar $jacococli report $execMergePath --classfiles $classOutPutDir --sourcefiles $project --xml $mergeReportDir/jacoco.xml
 
-echo "Build success, report is at: $mergeReportDir“
+echo "Build success, report is at: $mergeReportDir"
