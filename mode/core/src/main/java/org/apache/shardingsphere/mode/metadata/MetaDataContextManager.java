@@ -107,35 +107,27 @@ public class MetaDataContextManager {
     }
     
     /**
-     * Reload database meta data.
+     * Force refresh database meta data.
      *
      * @param database to be reloaded database
-     * @param force whether to force refresh table metadata
      */
-    public void refreshDatabaseMetaData(final ShardingSphereDatabase database, final boolean force) {
+    public void forceRefreshDatabaseMetaData(final ShardingSphereDatabase database) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
-            if (force) {
-                metaDataContexts.set(reloadedMetaDataContexts);
-                metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
-                        .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().persistByAlterConfiguration(database.getName(), schemaName, schema));
-            } else {
-                deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
-                metaDataContexts.set(reloadedMetaDataContexts);
-                metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
-                        .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
-            }
+            metaDataContexts.set(reloadedMetaDataContexts);
+            metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().persistByAlterConfiguration(database.getName(), schemaName, schema));
         } catch (final SQLException ex) {
             log.error("Refresh database meta data: {} failed", database.getName(), ex);
         }
     }
     
     /**
-     * Reload table meta data.
+     * Refresh database meta data.
      *
      * @param database to be reloaded database
      */
-    public void refreshTableMetaData(final ShardingSphereDatabase database) {
+    public void refreshDatabaseMetaData(final ShardingSphereDatabase database) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
             deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
