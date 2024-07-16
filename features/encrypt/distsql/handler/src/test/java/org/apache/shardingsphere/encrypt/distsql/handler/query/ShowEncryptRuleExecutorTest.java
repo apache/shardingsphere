@@ -51,17 +51,9 @@ class ShowEncryptRuleExecutorTest {
     
     @BeforeEach
     void setUp() {
-        engine = new DistSQLQueryExecuteEngine(mock(ShowEncryptRulesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
-        when(database.getRuleMetaData().findSingleRule(EncryptRule.class)).thenReturn(Optional.of(rule));
-        return result;
+        ShowEncryptRulesStatement showEncryptRulesStatement = mock(ShowEncryptRulesStatement.class);
+        when(showEncryptRulesStatement.getTableName()).thenReturn("T_ENCRYPT");
+        engine = new DistSQLQueryExecuteEngine(showEncryptRulesStatement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
     @Test
@@ -82,6 +74,16 @@ class ShowEncryptRuleExecutorTest {
         assertThat(row.getCell(9), is(""));
         assertThat(row.getCell(10), is(""));
         assertThat(row.getCell(11), is(""));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
+        when(database.getRuleMetaData().findSingleRule(EncryptRule.class)).thenReturn(Optional.of(rule));
+        return result;
     }
     
     private EncryptRuleConfiguration getRuleConfiguration() {
