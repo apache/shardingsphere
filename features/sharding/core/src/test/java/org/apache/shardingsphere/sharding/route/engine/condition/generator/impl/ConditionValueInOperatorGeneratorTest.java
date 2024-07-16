@@ -117,4 +117,14 @@ class ConditionValueInOperatorGeneratorTest {
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timestampServiceRule);
         assertFalse(actual.isPresent());
     }
+    
+    @Test
+    void assertNotInExpression() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        ListExpression right = new ListExpression(0, 0);
+        right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
+        InExpression inExpression = new InExpression(0, 0, left, right, true);
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, Collections.singletonList(1), timestampServiceRule);
+        assertFalse(shardingConditionValue.isPresent());
+    }
 }
