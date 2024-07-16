@@ -56,7 +56,7 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
         if (sqlStatement.getTableName().isPresent()) {
             contextManager.reloadTable(database, schemaName, sqlStatement.getTableName().get());
         } else {
-            contextManager.refreshTableMetaData(database);
+            contextManager.getMetaDataContextManager().refreshTableMetaData(database);
         }
     }
     

@@ -18,9 +18,16 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
@@ -29,14 +36,19 @@ import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
 import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
+import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Meta data context manager..
  */
 @Getter
+@Slf4j
 public class MetaDataContextManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
@@ -92,5 +104,61 @@ public class MetaDataContextManager {
      */
     public void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
         this.metaDataContexts.set(metaDataContexts);
+    }
+    
+    /**
+     * Reload database meta data.
+     *
+     * @param database to be reloaded database
+     * @param force whether to force refresh table metadata
+     */
+    public void refreshDatabaseMetaData(final ShardingSphereDatabase database, final boolean force) {
+        try {
+            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
+            if (force) {
+                metaDataContexts.set(reloadedMetaDataContexts);
+                metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                        .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().persistByAlterConfiguration(database.getName(), schemaName, schema));
+            } else {
+                deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
+                metaDataContexts.set(reloadedMetaDataContexts);
+                metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                        .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+            }
+        } catch (final SQLException ex) {
+            log.error("Refresh database meta data: {} failed", database.getName(), ex);
+        }
+    }
+    
+    /**
+     * Reload table meta data.
+     *
+     * @param database to be reloaded database
+     */
+    public void refreshTableMetaData(final ShardingSphereDatabase database) {
+        try {
+            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
+            deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
+            metaDataContexts.set(reloadedMetaDataContexts);
+            metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
+                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+        } catch (final SQLException ex) {
+            log.error("Refresh table meta data: {} failed", database.getName(), ex);
+        }
+    }
+    
+    private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
+        SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
+        Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
+        Map<String, ShardingSphereDatabase> changedDatabases = MetaDataContextsFactory
+                .createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
+        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
+        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
+        RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, changedDatabases, props));
+        MetaDataContexts result = MetaDataContextsFactory.create(metaDataPersistService,
+                new ShardingSphereMetaData(changedDatabases, metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+        switchingResource.closeStaleDataSources();
+        return result;
     }
 }
