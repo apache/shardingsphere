@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableS
 import org.apache.shardingsphere.infra.binder.engine.segment.lock.LockSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.where.WhereSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
@@ -52,8 +51,6 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     public SelectStatement bind(final SelectStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         SelectStatement result = copy(sqlStatement);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        sqlStatement.getWithSegment()
-                .ifPresent(optional -> result.setWithSegment(WithSegmentBinder.bind(optional, binderContext, tableBinderContexts, binderContext.getExternalTableBinderContexts())));
         Optional<TableSegment> boundTableSegment = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts));
         boundTableSegment.ifPresent(result::setFrom);
         result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), binderContext, boundTableSegment.orElse(null), tableBinderContexts, outerTableBinderContexts));
@@ -73,6 +70,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         sqlStatement.getLimit().ifPresent(result::setLimit);
         sqlStatement.getWindow().ifPresent(result::setWindow);
         sqlStatement.getModelSegment().ifPresent(result::setModelSegment);
+        sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
