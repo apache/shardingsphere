@@ -68,7 +68,7 @@ class DropEncryptRuleExecutorTest {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("t_encrypt"));
+        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("T_ENCRYPT"));
         assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
         assertThat(toBeDroppedRuleConfig.getEncryptors().size(), is(3));
     }
@@ -79,7 +79,7 @@ class DropEncryptRuleExecutorTest {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("t_encrypt"));
+        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("T_ENCRYPT"));
         assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
         assertTrue(toBeDroppedRuleConfig.getEncryptors().isEmpty());
     }
