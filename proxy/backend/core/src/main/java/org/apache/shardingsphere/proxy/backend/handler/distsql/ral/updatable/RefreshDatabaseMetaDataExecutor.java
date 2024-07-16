@@ -41,7 +41,7 @@ public final class RefreshDatabaseMetaDataExecutor implements DistSQLUpdateExecu
                 if (sqlStatement.isForce()) {
                     contextManager.getMetaDataContextManager().forceRefreshDatabaseMetaData(each);
                 } else {
-                    contextManager.getMetaDataContextManager().refreshDatabaseMetaData(each);
+                    contextManager.getMetaDataContextManager().refreshTableMetaData(each);
                 }
             }
         }
