@@ -146,7 +146,7 @@ class RALE2EIT {
     private Collection<String> getNotAssertionColumns(final SingleE2EContainerComposer containerComposer) {
         Collection<String> result = new LinkedList<>();
         for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
-            result.addAll(each.getColumns().stream().filter(column -> "false".equals(column.getAssertion())).map(DataSetColumn::getName).collect(Collectors.toList()));
+            result.addAll(each.getColumns().stream().filter(column -> !column.isAssertion()).map(DataSetColumn::getName).collect(Collectors.toList()));
         }
         return result;
     }
