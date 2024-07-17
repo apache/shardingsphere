@@ -100,7 +100,7 @@
         <netty.version>4.1.106.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
         
-        <curator.version>5.6.0</curator.version>
+        <curator.version>5.7.0</curator.version>
         <zookeeper.version>3.9.2</zookeeper.version>
         <audience-annotations.version>0.12.0</audience-annotations.version>
         <jetcd.version>0.7.7</jetcd.version>
