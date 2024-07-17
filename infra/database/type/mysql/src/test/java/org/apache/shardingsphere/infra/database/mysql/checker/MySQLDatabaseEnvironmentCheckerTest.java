@@ -55,11 +55,11 @@ class MySQLDatabaseEnvironmentCheckerTest {
     @BeforeEach
     void setUp() throws SQLException {
         when(dataSource.getConnection().prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
     }
     
     @Test
     void assertCheckPrivilegeWithParticularSuccess() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(1)).thenReturn("GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO '%'@'%'");
         new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE);
@@ -68,6 +68,7 @@ class MySQLDatabaseEnvironmentCheckerTest {
     
     @Test
     void assertCheckPrivilegeWithAllSuccess() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES CLIENT ON *.* TO '%'@'%'");
         new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE);
@@ -75,18 +76,21 @@ class MySQLDatabaseEnvironmentCheckerTest {
     }
     
     @Test
-    void assertCheckPrivilegeLackPrivileges() {
+    void assertCheckPrivilegeLackPrivileges() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
         assertThrows(MissingRequiredPrivilegeException.class, () -> new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE));
     }
     
     @Test
     void assertCheckPrivilegeFailure() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenThrow(new SQLException(""));
         assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE));
     }
     
     @Test
     void assertCheckVariableSuccess() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, false);
         when(resultSet.getString(1)).thenReturn("LOG_BIN", "BINLOG_FORMAT", "BINLOG_ROW_IMAGE");
         when(resultSet.getString(2)).thenReturn("ON", "ROW", "FULL");
@@ -96,6 +100,7 @@ class MySQLDatabaseEnvironmentCheckerTest {
     
     @Test
     void assertCheckVariableWithWrongVariable() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getString(1)).thenReturn("BINLOG_FORMAT", "LOG_BIN");
         when(resultSet.getString(2)).thenReturn("ROW", "OFF");
@@ -104,7 +109,50 @@ class MySQLDatabaseEnvironmentCheckerTest {
     
     @Test
     void assertCheckVariableFailure() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenThrow(new SQLException(""));
         assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> new MySQLDatabaseEnvironmentChecker().checkVariable(dataSource));
+    }
+    
+    @Test
+    void assertCheckXAPrivilegeWithParticularSuccessInMySQL8() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT XA_RECOVER_ADMIN ON *.* TO '%'@'%'");
+        new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.XA);
+        verify(preparedStatement).executeQuery();
+    }
+    
+    @Test
+    void assertUnCheckXAPrivilegeInMySQL5() throws SQLException {
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(5);
+        new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.XA);
+        verify(preparedStatement, times(0)).executeQuery();
+    }
+    
+    @Test
+    void assertCheckXAPrivilegeWithAllSuccessInMySQL8() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES ON *.* TO '%'@'%'");
+        new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.XA);
+        verify(preparedStatement).executeQuery();
+    }
+    
+    @Test
+    void assertCheckXAPrivilegeLackPrivilegesInMySQL8() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
+        assertThrows(MissingRequiredPrivilegeException.class, () -> new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.XA));
+    }
+    
+    @Test
+    void assertCheckXAPrivilegeFailureInMySQL8() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
+        when(resultSet.next()).thenThrow(new SQLException(""));
+        assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.XA));
     }
 }
