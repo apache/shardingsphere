@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM performance_schema.accounts" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_performance_schema_accounts.xml" />
     </test-case>
@@ -472,4 +472,4 @@
     <test-case sql="SELECT * FROM performance_schema.variables_info" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_performance_schema_variables_info.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="ALTER USER ALL RESET client_min_messages" db-types="PostgreSQL" />
     <test-case sql="ALTER USER ALL SET client_min_messages = DEBUG" db-types="PostgreSQL" />
     <test-case sql="ALTER USER 'user_dev'@'localhost'" db-types="MySQL" />
@@ -50,4 +50,4 @@
     <test-case sql="ALTER USER default_user WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
     <test-case sql="ALTER USER user_dev QUOTA 1M ON tablespace1" db-types="Oracle" />
     <test-case sql="ALTER USER user_dev DEFAULT TABLESPACE tablespace1" db-types="Oracle" />
-</integration-test-cases>
+</e2e-test-cases>

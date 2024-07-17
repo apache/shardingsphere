@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="REASSIGN OWNED BY regress_dep_user0 TO regress_dep_user1" db-types="PostgreSQL"/>
-</integration-test-cases>
+</e2e-test-cases>

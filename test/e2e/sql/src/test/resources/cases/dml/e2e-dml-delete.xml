@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
     </test-case>
@@ -72,4 +72,4 @@
             scenario-types="db" sql-case-types="LITERAL" adapters="proxy">
         <assertion expected-data-file="delete_with_multiple.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

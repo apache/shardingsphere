@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <!-- TODO open this comment when refresh metadata support view without push down execute -->
     <!--<test-case sql="SELECT * FROM t_order_item_join_view LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
@@ -40,4 +40,4 @@
     <!--<test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ? LIMIT ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1000:int, 100000:int, 3:int" expected-data-source-name="read_dataset" />
     </test-case>-->
-</integration-test-cases>
+</e2e-test-cases>

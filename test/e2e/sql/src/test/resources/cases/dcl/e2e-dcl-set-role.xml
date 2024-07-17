@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SET ROLE ALL EXCEPT role_dev" db-types="MySQL" />
     <test-case sql="SET ROLE ALL EXCEPT role_dev, role2" db-types="MySQL" />
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM t_order WHERE user_id = ? FOR UPDATE" lock-clause="true" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int" expected-data-source-name="write_dataset" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

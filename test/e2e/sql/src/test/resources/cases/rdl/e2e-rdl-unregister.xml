@@ -14,11 +14,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
+<e2e-test-cases>
     <!-- TODO FIX HOST CANNOT CONNECT -->
     <!--    <test-case sql="UNREGISTER STORAGE UNIT ds_2;" db-types="MySQL, PostgreSQL">-->
     <!--        <assertion expected-data-file="unregister_storage_unit.xml">-->
     <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
     <!--        </assertion>-->
     <!--    </test-case>-->
-</integration-test-cases>
+</e2e-test-cases>

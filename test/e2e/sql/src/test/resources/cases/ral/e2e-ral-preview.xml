@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="PREVIEW SELECT * FROM t_user_item">
         <assertion expected-data-file="preview_sql.xml" />
     </test-case>
@@ -28,4 +28,4 @@
     <test-case sql="PREVIEW /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME = write_ds_0, SKIP_SQL_REWRITE = true */ SELECT * FROM t_user_item">
         <assertion expected-data-file="preview_sql_hint.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

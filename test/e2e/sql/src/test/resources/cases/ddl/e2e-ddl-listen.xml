@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="LISTEN notify_async2" db-types="PostgreSQL" />
-</integration-test-cases>
+</e2e-test-cases>

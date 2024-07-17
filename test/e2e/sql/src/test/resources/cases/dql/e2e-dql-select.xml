@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT 1 FROM dual" db-types="MySQL,SQLServer,Oracle,H2" smoke="true" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,empty_rules,encrypt,encrypt_and_readwrite_splitting,encrypt_shadow,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding,passthrough,rdl_empty_rules,readwrite_splitting,readwrite_splitting_and_shadow,shadow,sharding_and_encrypt,sharding_and_shadow,sharding_encrypt_shadow,tbl" >
         <assertion />
     </test-case>
@@ -347,4 +347,4 @@
                     INNER JOIN (SELECT item_id, order_id FROM t_order_item limit 10) res2 ON res1.order_id = res2.order_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

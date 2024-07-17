@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="CREATE TABLE t_order_details(id int, description varchar(10))" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="create_table.xml">
             <initial-sql affected-table="t_order_details" />
@@ -37,4 +37,4 @@
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="PREPARE TRANSACTION 'foo1" db-types="PostgreSQL" />
-</integration-test-cases>
+</e2e-test-cases>

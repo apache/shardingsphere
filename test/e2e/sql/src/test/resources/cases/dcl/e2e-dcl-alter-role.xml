@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="ALTER ROLE ALL RESET client_min_messages" db-types="PostgreSQL" />
     <test-case sql="ALTER ROLE ALL SET client_min_messages = DEBUG" db-types="PostgreSQL" />
     <test-case sql="ALTER ROLE role_dev_bak DROP MEMBER member1" db-types="SQLServer" />
@@ -33,4 +33,4 @@
     <test-case sql="ALTER ROLE default_role WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
     <test-case sql="ALTER ROLE role_dev IDENTIFIED BY password" db-types="Oracle" />
     <test-case sql="ALTER ROLE default_role WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
-</integration-test-cases>
+</e2e-test-cases>

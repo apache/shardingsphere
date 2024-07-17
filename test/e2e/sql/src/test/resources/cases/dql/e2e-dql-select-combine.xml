@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <!-- TODO Replace with standard table structure -->
     <!--<test-case sql="SELECT order_id_sharding, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,tbl">
         <assertion parameters="1010:int, 10:int" expected-data-source-name="read_dataset" />
@@ -241,4 +241,4 @@
     <!--<test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? MINUS SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="openGauss" scenario-types="db">
         <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>-->
-</integration-test-cases>
+</e2e-test-cases>
