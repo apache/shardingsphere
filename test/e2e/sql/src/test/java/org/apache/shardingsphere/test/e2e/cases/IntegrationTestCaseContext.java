@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.cases;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCase;
 
 /**
  * Integration test case context.

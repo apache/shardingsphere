@@ -35,9 +35,9 @@ import java.util.List;
 /**
  * JAXB definition of integration test case assertion.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class IntegrationTestCaseAssertion {
     
     @XmlAttribute(name = "expected-data-source-name")
