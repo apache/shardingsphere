@@ -17,13 +17,13 @@
 
 <dataset>
     <metadata>
-        <column name="id" assertion="false" />
+        <column name="id" ignore-assert-data="true" />
         <column name="logic_database_name" />
         <column name="logic_table_name" />
         <column name="actual_database_name" />
         <column name="actual_table_name" />
-        <column name="row_count" assertion="false" />
-        <column name="size" assertion="false" />
+        <column name="row_count" ignore-assert-data="true" />
+        <column name="size" ignore-assert-data="true" />
     </metadata>
     <row values=" | db |         t_order |         ds_0 |         t_order | |     " />
     <row values=" | db |         t_order |         ds_1 |         t_order | |     " />
