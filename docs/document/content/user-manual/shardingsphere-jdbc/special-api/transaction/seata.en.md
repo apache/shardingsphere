@@ -7,7 +7,6 @@ weight = 7
 
 Apache ShardingSphere provides BASE transactions that integrate the Seata implementation.
 All references to Seata integration in this article refer to Seata AT mode.
-Integration of Seata TCC mode is blocked by https://github.com/apache/shardingsphere/discussions/32023 .
 
 ## Prerequisites
 
@@ -120,7 +119,7 @@ client {
 ```
 
 A minimally configured `seata.conf` is as follows.
-Please note that in `seata.conf` managed by ShardingSphere, the default value of `client.transaction.service.group` is set to `default` for historical reasons.
+In `seata.conf` managed by ShardingSphere, the default value of `client.transaction.service.group` is set to `default` for historical reasons.
 Assuming that in the `registry.conf` of Seata Server and Seata Client used by the user, `registry.type` and `config.type` are both `file`,
 then for the `.conf` file configured by `config.file.name` of `registry.conf`, 
 the default value of the transaction group name is `default_tx_group` after `apache/incubator-seata:v1.5.1`, otherwise it is `my_test_tx_group`.
@@ -137,8 +136,8 @@ ShardingSphere's Seata integration does not support isolation levels.
 
 ShardingSphere's Seata integration places the obtained Seata global transaction into the thread's local variables.
 And `org.apache.seata.spring.annotation.GlobalTransactionScanner` uses Dynamic Proxy to enhance the method.
-This means that users should never use the `io.seata:seata-all` Java annotation for ShardingSphere's DataSource.
-That is, when using ShardingSphere's Seata integration, users should avoid using the Java API of `io.seata:seata-all`.
+This means that when using ShardingSphere's Seata integration, users should avoid using the Java API of `io.seata:seata-all`, 
+unless the user is mixing ShardingSphere's Seata integration with the TCC mode feature of Seata Client.
 
 For ShardingSphere data source, discuss 6 situations,
 
@@ -199,6 +198,17 @@ seata:
    enable-auto-data-source-proxy: false
 ```
 
+### Mixed use with Seata TCC mode features
+
+For the case of setting up ShardingSphere's Seata integration,
+In business functions unrelated to ShardingSphere JDBC DataSource, if you need to use Seata Client's Seata TCC mode-related features in business functions,
+you can instantiate a non-proxy ordinary TCC interface implementation class, and then use `io.seata.integration.tx.api.util.ProxyUtil` to create a proxy TCC interface class,
+and call the functions corresponding to the three stages of the TCC interface implementation class `Try`, `Confirm`, and `Cancel`.
+
+For the `io.seata.spring.annotation.GlobalTransactional` annotation introduced by the Seata TCC mode or the business functions involved in the Seata TCC mode that need to interact with the database instance, 
+ShardingSphere JDBC DataSource should not be used in the business functions marked by this annotation. Instead, 
+a `javax.sql.DataSource` instance should be created manually or obtained from a custom Spring Bean.
+
 ### Transactional propagation across service calls
 
 Transactional propagationn in cross-service call scenarios is not as out-of-the-box as transaction operations within a single microservice.
@@ -224,7 +234,7 @@ whose Seata Application Id is `service-a`, whose Seata transaction group is `def
 and the Seata Transaction Coordinator cluster group pointed to by its `Virtual Group Mapping` is `default`.
 This microservice instance `a-service` exposes a single Restful API GET endpoint as `/hello`,
 and the business function `aMethod` of this Restful API endpoint uses a common local transaction annotation.
-If this microservice is based on Spring Boot,
+If this microservice is based on Spring Boot 2,
 
 ```java
 import org.springframework.transaction.annotation.Transactional;
@@ -248,7 +258,7 @@ whose Seata Application Id is `service-b`, whose Seata transaction group is `def
 and whose `Virtual Group Mapping` points to the Seata Transaction Coordinator cluster group as `default`.
 The business function `bMethod` of this microservice instance `b-service` uses a normal local transaction annotation, 
 and calls the `/hello` Restful API endpoint of the microservice instance `a-service` through the HTTP Client in `bMethod`.
-If this microservice is based on Spring Boot,
+If this microservice is based on Spring Boot 2,
 
 ```java
 import org.springframework.boot.web.client.RestTemplateBuilder;

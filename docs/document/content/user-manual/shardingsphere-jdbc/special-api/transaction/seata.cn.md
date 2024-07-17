@@ -6,7 +6,6 @@ weight = 7
 ## 背景信息
 
 Apache ShardingSphere 提供 BASE 事务，集成了 Seata 的实现。本文所指 Seata 集成均指向 Seata AT 模式。
-对于 Seata TCC 模式的集成，被 https://github.com/apache/shardingsphere/discussions/32023 阻塞。
 
 ## 前提条件
 
@@ -115,7 +114,7 @@ client {
 ```
 
 一个最小配置的 `seata.conf` 如下。
-请注意，由 ShardingSphere 管理的 `seata.conf` 中， `client.transaction.service.group` 的默认值设置为 `default` 是出于历史原因。
+由 ShardingSphere 管理的 `seata.conf` 中， `client.transaction.service.group` 的默认值设置为 `default` 是出于历史原因。
 假设用户使用的 Seata Server 和 Seata Client 的 `registry.conf` 中，`registry.type` 和 `config.type` 均为 `file`，
 则对于 `registry.conf` 的 `config.file.name` 配置的 `.conf` 文件中，事务分组名在 `apache/incubator-seata:v1.5.1` 之后默认值为 `default_tx_group`，
 反之则为 `my_test_tx_group`。
@@ -132,8 +131,8 @@ ShardingSphere 的 Seata 集成不支持隔离级别。
 
 ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的局部变量。
 而 `org.apache.seata.spring.annotation.GlobalTransactionScanner` 则是采用 Dynamic Proxy 的方式对方法进行增强。
-这意味着用户始终不应该针对 ShardingSphere 的 DataSource 使用 `io.seata:seata-all` 的 Java 注解。
-即在使用 ShardingSphere 的 Seata 集成时，用户应避免使用 `io.seata:seata-all` 的 Java API。
+这意味着用户在使用 ShardingSphere 的 Seata 集成时，用户应避免使用 `io.seata:seata-all` 的 Java API，
+除非用户正在混合使用 ShardingSphere 的 Seata 集成与 Seata Client 的 TCC 模式特性。
 
 针对 ShardingSphere 数据源，讨论 6 种情况，
 
@@ -192,6 +191,17 @@ seata:
   enable-auto-data-source-proxy: false
 ```
 
+### 与 Seata TCC 模式特性混合使用
+
+对于设置开启 ShardingSphere 的 Seata 集成的情况下，
+在与 ShardingSphere JDBC DataSource 无关的业务函数中，如需在业务函数使用 Seata Client 的 Seata TCC 模式相关的特性，
+可实例化一个未代理的普通 TCC 接口实现类， 然后使用 `io.seata.integration.tx.api.util.ProxyUtil` 创建一个代理的TCC接口类，
+并调用 TCC 接口实现类 `Try`，`Confirm`，`Cancel` 三个阶段对应的函数。
+
+对于由 Seata TCC 模式而引入的 `io.seata.spring.annotation.GlobalTransactional` 注解或 Seata TCC 模式涉及的业务函数中需要与数据库实例交互，
+此注解标记的业务函数内不应使用 ShardingSphere JDBC DataSource，
+而是应该手动创建`javax.sql.DataSource` 实例，或从自定义的 Spring Bean 中获取 `javax.sql.DataSource` 实例。
+
 ### 跨服务调用的事务传播
 
 跨服务调用场景下的事务传播，并不像单个微服务内的事务操作一样开箱即用。
@@ -214,7 +224,7 @@ seata:
 此 ShardingSphere JDBC DataSource 配置使用连接到 Seata Server 实例 `a-seata-server` 的 Seata AT 集成，其 Seata Application Id 为 `service-a`，
 其 Seata 事务分组为 `default_tx_group`，其 `Virtual Group Mapping` 指向的 Seata Transaction Coordinator 集群分组为 `default`。
 此微服务实例 `a-service` 暴露单个 Restful API 的 GET 端点为 `/hello`，此 Restful API 端点的业务函数 `aMethod` 使用了普通的本地事务注解。
-若此微服务基于 Spring Boot，
+若此微服务基于 Spring Boot 2，
 
 ```java
 import org.springframework.transaction.annotation.Transactional;
@@ -236,7 +246,7 @@ public class DemoController {
 此 ShardingSphere JDBC DataSource 配置使用连接到 Seata Server 实例 `a-seata-server` 的 Seata AT 集成，其 Seata Application Id 为 `service-b`，
 其 Seata 事务分组为 `default_tx_group`，其 `Virtual Group Mapping` 指向的 Seata Transaction Coordinator 集群分组为 `default`。
 此微服务实例 `b-service` 的业务函数 `bMethod` 使用普通的本地事务注解，并在 `bMethod` 通过 HTTP Client 调用微服务实例 `a-service` 的 `/hello` Restful API 端点。
-若此微服务基于 Spring Boot，
+若此微服务基于 Spring Boot 2，
 
 ```java
 import org.springframework.boot.web.client.RestTemplateBuilder;
