@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.cases.loader;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.IntegrationTestCases;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.E2ETestCases;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 
 import javax.xml.bind.JAXBContext;
@@ -107,9 +107,9 @@ public final class IntegrationTestCasesLoader {
         return unmarshal(file.getPath()).getTestCases().stream().map(each -> new IntegrationTestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
-    private IntegrationTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
+    private E2ETestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(integrateCasesFile)) {
-            return (IntegrationTestCases) JAXBContext.newInstance(IntegrationTestCases.class).createUnmarshaller().unmarshal(reader);
+            return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
 }

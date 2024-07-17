@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.loader.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.IntegrationTestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.E2ETestCaseAssertion;
 
 /**
  * Assertion test parameter.
@@ -34,7 +34,7 @@ public final class AssertionTestParameter implements E2ETestParameter {
     
     private final IntegrationTestCaseContext testCaseContext;
     
-    private final IntegrationTestCaseAssertion assertion;
+    private final E2ETestCaseAssertion assertion;
     
     private final String adapter;
     

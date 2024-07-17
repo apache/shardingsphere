@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.composer;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.IntegrationTestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.E2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.loader.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.jaxb.value.SQLValue;
@@ -39,7 +39,7 @@ public final class SingleE2EContainerComposer extends E2EContainerComposer {
     
     private final SQLExecuteType sqlExecuteType;
     
-    private final IntegrationTestCaseAssertion assertion;
+    private final E2ETestCaseAssertion assertion;
     
     private final DataSet dataSet;
     
