@@ -28,6 +28,6 @@ public final class UnexpectedVariableValueException extends MetaDataSQLException
     private static final long serialVersionUID = -8481467708967951766L;
     
     public UnexpectedVariableValueException(final String variableName, final String expectedValue, final String actualValue) {
-        super(XOpenSQLState.GENERAL_ERROR, 7, "Unexpected variable value of '%s', required '%s', now is '%s'.", variableName, expectedValue, actualValue);
+        super(XOpenSQLState.GENERAL_ERROR, 8, "Unexpected variable value of '%s', required '%s', now is '%s'.", variableName, expectedValue, actualValue);
     }
 }

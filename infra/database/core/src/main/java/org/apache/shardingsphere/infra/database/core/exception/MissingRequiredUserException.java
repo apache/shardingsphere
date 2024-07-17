@@ -20,16 +20,14 @@ package org.apache.shardingsphere.infra.database.core.exception;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
-import java.sql.SQLException;
-
 /**
- * Check database environment failed exception.
+ * Missing required user exception.
  */
-public final class CheckDatabaseEnvironmentFailedException extends MetaDataSQLException {
+public final class MissingRequiredUserException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 3913140870320566898L;
+    private static final long serialVersionUID = -656859547059598488L;
     
-    public CheckDatabaseEnvironmentFailedException(final SQLException cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 5, "Check database environment failed.", cause);
+    public MissingRequiredUserException(final String username) {
+        super(XOpenSQLState.NOT_FOUND, 7, "User '%s' does exist.", username);
     }
 }

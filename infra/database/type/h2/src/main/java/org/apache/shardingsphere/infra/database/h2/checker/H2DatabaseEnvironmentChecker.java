@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.exception;
+package org.apache.shardingsphere.infra.database.h2.checker;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
 /**
- * Check database environment failed exception.
+ * Database environment checker for H2.
  */
-public final class CheckDatabaseEnvironmentFailedException extends MetaDataSQLException {
+public final class H2DatabaseEnvironmentChecker implements DialectDatabaseEnvironmentChecker {
     
-    private static final long serialVersionUID = 3913140870320566898L;
+    @Override
+    public void checkPrivilege(final DataSource dataSource, final PrivilegeCheckType privilegeCheckType) {
+    }
     
-    public CheckDatabaseEnvironmentFailedException(final SQLException cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 5, "Check database environment failed.", cause);
+    @Override
+    public void checkVariable(final DataSource dataSource) {
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "H2";
     }
 }
