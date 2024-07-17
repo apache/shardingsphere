@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.dataset.row;
+package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.row;
 
 import com.google.common.base.Splitter;
 import lombok.EqualsAndHashCode;

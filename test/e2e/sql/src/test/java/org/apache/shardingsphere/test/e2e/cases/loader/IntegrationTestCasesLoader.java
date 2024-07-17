@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases;
+package org.apache.shardingsphere.test.e2e.cases.loader;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.IntegrationTestCases;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 
 import javax.xml.bind.JAXBContext;

@@ -15,32 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.dataset.metadata;
+package org.apache.shardingsphere.test.e2e.cases.jaxb.value;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetMetaData;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Group of SQL value.
+ */
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetMetaData {
+public final class SQLValueGroup {
     
-    @XmlAttribute(name = "data-nodes")
-    private String dataNodes;
+    private final Collection<SQLValue> values;
     
-    @XmlAttribute(name = "table-name")
-    private String tableName;
+    public SQLValueGroup(final DataSetMetaData metaData, final List<String> values) {
+        this.values = createSQLValues(metaData, values);
+    }
     
-    @XmlElement(name = "column")
-    private final List<DataSetColumn> columns = new LinkedList<>();
-    
-    @XmlElement(name = "index")
-    private final List<DataSetIndex> indexes = new LinkedList<>();
+    private Collection<SQLValue> createSQLValues(final DataSetMetaData metaData, final List<String> values) {
+        Collection<SQLValue> result = new LinkedList<>();
+        int count = 0;
+        for (String each : values) {
+            result.add(new SQLValue(each, metaData.getColumns().get(count).getType(), count + 1));
+            count++;
+        }
+        return result;
+    }
 }

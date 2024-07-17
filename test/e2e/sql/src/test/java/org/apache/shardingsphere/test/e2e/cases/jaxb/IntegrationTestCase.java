@@ -15,28 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.dataset.metadata;
+package org.apache.shardingsphere.test.e2e.cases.jaxb;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.IntegrationTestCaseAssertion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
+/**
+ * JAXB definition of integration test case.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@EqualsAndHashCode
-public final class DataSetColumn {
-    
-    @XmlAttribute(required = true)
-    private String name;
+public final class IntegrationTestCase {
     
     @XmlAttribute
-    private String type;
+    private String sql;
     
-    @XmlAttribute(name = "ignore-assert-data")
-    private boolean ignoreAssertData;
+    @XmlAttribute(name = "db-types")
+    private String dbTypes;
+    
+    @XmlAttribute(name = "scenario-types")
+    private String scenarioTypes;
+    
+    @XmlAttribute(name = "scenario-comments")
+    private String scenarioComments;
+    
+    @XmlAttribute(name = "adapters")
+    private String adapters;
+    
+    @XmlAttribute(name = "delay-assertion-seconds")
+    private int delayAssertionSeconds;
+    
+    @XmlAttribute
+    private boolean smoke;
+    
+    @XmlElement(name = "assertion")
+    private Collection<IntegrationTestCaseAssertion> assertions = new LinkedList<>();
 }
