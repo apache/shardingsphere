@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.checker;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -38,12 +40,12 @@ import java.util.Collection;
  */
 public final class DataSourceCheckEngine {
     
-    private final DialectDataSourceChecker checker;
+    private final DialectDatabaseEnvironmentChecker checker;
     
     private final PipelinePrepareSQLBuilder sqlBuilder;
     
     public DataSourceCheckEngine(final DatabaseType databaseType) {
-        checker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
+        checker = DatabaseTypedSPILoader.findService(DialectDatabaseEnvironmentChecker.class, databaseType).orElse(null);
         sqlBuilder = new PipelinePrepareSQLBuilder(databaseType);
     }
     
@@ -73,7 +75,7 @@ public final class DataSourceCheckEngine {
         if (null == checker) {
             return;
         }
-        dataSources.forEach(checker::checkPrivilege);
+        dataSources.forEach(each -> checker.checkPrivilege(each, PrivilegeCheckType.PIPELINE));
         dataSources.forEach(checker::checkVariable);
     }
     
