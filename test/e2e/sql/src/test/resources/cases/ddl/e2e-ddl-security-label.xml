@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SECURITY LABEL ON TABLE t_user_details IS 'classified'" db-types="PostgreSQL" />
-</integration-test-cases>
+</e2e-test-cases>

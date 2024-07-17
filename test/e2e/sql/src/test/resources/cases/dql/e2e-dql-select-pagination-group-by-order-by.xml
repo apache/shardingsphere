@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -102,4 +102,4 @@
                scenario-comments="Test select ... from union view fetch statement when use sharding feature and federation executor engine.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="CREATE LOGIN login_dev_new WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
     <test-case sql="CREATE LOGIN login1 WITH PASSWORD = 'password', CREDENTIAL = credential" db-types="SQLServer" />
     <test-case sql="CREATE LOGIN login1 FROM ASYMMETRIC KEY asym_key" db-types="SQLServer" />
@@ -25,4 +25,4 @@
     <test-case sql="CREATE LOGIN login1 WITH PASSWORD = 'password' MUST_CHANGE, CHECK_EXPIRATION = ON" db-types="SQLServer" />
     <test-case sql="CREATE LOGIN login1 WITH PASSWORD = 0x01000CF35567C60BFB41EBDE4CF700A985A13D773D6B45B90900 HASHED" db-types="SQLServer" />
     <test-case sql="CREATE LOGIN login1 WITH PASSWORD = 'password'" db-types="SQLServer" />
-</integration-test-cases>
+</e2e-test-cases>

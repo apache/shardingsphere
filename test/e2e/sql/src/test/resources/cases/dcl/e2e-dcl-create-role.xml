@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="CREATE ROLE role_dev" db-types="MySQL,Oracle,PostgreSQL,SQLServer" />
     <test-case sql="CREATE ROLE role_dev_new identified by dev_passwd" db-types="Oracle" />
     <test-case sql="CREATE ROLE role_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
@@ -31,4 +31,4 @@
     <test-case sql="CREATE ROLE role_dev WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
     <test-case sql="CREATE ROLE role_dev IDENTIFIED BY password" db-types="Oracle" />
     <test-case sql="CREATE ROLE role_dev WITH ROLE role2" db-types="PostgreSQL" />
-</integration-test-cases>
+</e2e-test-cases>

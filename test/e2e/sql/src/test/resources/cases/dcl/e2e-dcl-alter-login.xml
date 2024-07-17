@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="ALTER LOGIN login_dev WITH NAME = login_dev_new" db-types="SQLServer" />
     <test-case sql="ALTER LOGIN login_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
     <test-case sql="ALTER LOGIN login1 ADD CREDENTIAL credential" db-types="SQLServer" />
@@ -27,4 +27,4 @@
     <test-case sql="ALTER LOGIN login1 WITH PASSWORD = 'password'" db-types="SQLServer" />
     <test-case sql="ALTER LOGIN login1 WITH PASSWORD = 'password' OLD_PASSWORD = 'password'" db-types="SQLServer" />
     <test-case sql="ALTER LOGIN login1 WITH PASSWORD = 'password' UNLOCK" db-types="SQLServer" />
-</integration-test-cases>
+</e2e-test-cases>

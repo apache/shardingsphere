@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="show dist variable where name = cached_connections">
         <assertion expected-data-file="cached_connections.xml" />
     </test-case>
@@ -56,4 +56,4 @@
     <test-case sql="SHOW COMPUTE NODE MODE">
         <assertion expected-data-file="show_compute_node_mode.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

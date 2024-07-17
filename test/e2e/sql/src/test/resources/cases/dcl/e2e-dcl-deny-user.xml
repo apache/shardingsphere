@@ -16,11 +16,11 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="DENY UPDATE ON t_order TO user_dev CASCADEK" db-types="SQLServer" />
     <test-case sql="DENY ALL PRIVILEGES ON t_order TO user_dev" db-types="SQLServer" />
     <test-case sql="DENY INSERT, SELECT, UPDATE, DELETE ON t_order TO user_dev" db-types="SQLServer" />
     <test-case sql="DENY SELECT ON t_order TO user_dev" db-types="SQLServer" />
     <test-case sql="DENY SELECT (order_id) ON t_order TO user_dev" db-types="SQLServer" />
     <test-case sql="DENY SELECT (order_id) ON t_order TO user_dev, user2" db-types="SQLServer" />
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM information_schema.administrable_role_authorizations" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_information_schema_administrable_role_authorizations.xml" />
     </test-case>
@@ -392,4 +392,4 @@
     <test-case sql="SELECT * FROM information_schema.views" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_information_schema_views.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM pg_catalog.pg_aggregate" db-types="PostgreSQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_aggregate.xml" />
     </test-case>
@@ -548,4 +548,4 @@
     <test-case sql="SELECT * FROM pg_catalog.pg_views" db-types="PostgreSQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_postgresql_pg_catalog_pg_views.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

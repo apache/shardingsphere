@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM information_schema._pg_foreign_data_wrappers" db-types="PostgreSQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_postgresql_information_schema__pg_foreign_data_wrappers.xml" />
     </test-case>
@@ -292,4 +292,4 @@
     <test-case sql="SELECT * FROM information_schema.views" db-types="PostgreSQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_postgresql_information_schema_views.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

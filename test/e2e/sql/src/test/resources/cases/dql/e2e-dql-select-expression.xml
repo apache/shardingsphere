@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM t_order o WHERE o.status REGEXP ? AND o.order_id IN (?, ?)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="init:String, 1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -121,4 +121,4 @@
     <!--    <test-case sql="VALUES ROW(1,-2,3), ROW(5,7,9), ROW(4,6,8) ORDER BY column_1 desc, column_0 desc limit ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--        <assertion parameters="10:int" />-->
     <!--    </test-case>-->
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -140,4 +140,4 @@
     <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE CONCAT('%', ?, '%')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="abc:String" expected-data-source-name="read_dataset" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="MOVE BACKWARD ALL FROM t_user_details" db-types="PostgreSQL" />
-</integration-test-cases>
+</e2e-test-cases>

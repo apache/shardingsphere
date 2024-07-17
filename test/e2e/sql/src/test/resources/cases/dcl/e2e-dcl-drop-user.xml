@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="DROP USER default_user" db-types="Oracle,PostgreSQL,SQLServer" />
     <test-case sql="DROP USER user_dev@localhost" db-types="MySQL,Oracle" />
     <test-case sql="DROP USER user_dev CASCADE" db-types="Oracle" />
-</integration-test-cases>
+</e2e-test-cases>
