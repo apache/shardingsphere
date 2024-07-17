@@ -33,12 +33,11 @@ import java.util.UUID;
 /**
  * SQL value.
  */
+@Getter
 public final class SQLValue {
     
-    @Getter
     private final Object value;
     
-    @Getter
     private final int index;
     
     public SQLValue(final String value, final String type, final int index) {

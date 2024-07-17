@@ -35,7 +35,7 @@ import java.util.LinkedList;
 @Setter
 public final class IntegrationTestCase {
     
-    @XmlAttribute(name = "sql")
+    @XmlAttribute
     private String sql;
     
     @XmlAttribute(name = "db-types")
@@ -53,7 +53,7 @@ public final class IntegrationTestCase {
     @XmlAttribute(name = "delay-assertion-seconds")
     private int delayAssertionSeconds;
     
-    @XmlAttribute(name = "smoke")
+    @XmlAttribute
     private boolean smoke;
     
     @XmlElement(name = "assertion")
