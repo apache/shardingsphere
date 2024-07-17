@@ -66,7 +66,7 @@ public final class DistSQLUpdateExecuteEngine {
     }
     
     @SuppressWarnings("rawtypes")
-    private void executeRuleDefinitionUpdate() {
+    private void executeRuleDefinitionUpdate() throws SQLException {
         Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
         if (databaseExecutor.isPresent()) {
             new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager,
