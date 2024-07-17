@@ -25,9 +25,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 @EqualsAndHashCode
 public final class DataSetColumn {
     
@@ -35,7 +35,7 @@ public final class DataSetColumn {
     private String name;
     
     @XmlAttribute
-    private String assertion;
+    private boolean assertion = true;
     
     @XmlAttribute
     private String type;
