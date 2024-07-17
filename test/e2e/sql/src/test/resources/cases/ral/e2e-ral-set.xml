@@ -16,11 +16,11 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SET DIST VARIABLE sql_show = true;">
         <assertion expected-data-file="set_dist_variable_sql_show_equal_true.xml">
             <assertion-sql sql="SHOW DIST VARIABLE WHERE name = sql_show;" />
             <destroy-sql sql="SET DIST VARIABLE sql_show = false;" />
         </assertion>
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

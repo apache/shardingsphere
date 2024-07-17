@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="REVOKE select, update on t_order from default_user" db-types="Oracle,PostgreSQL,SQLServer" />
     <test-case sql="REVOKE default_role from default_user" db-types="Oracle,PostgreSQL,SQLServer" />
     <test-case sql="REVOKE ADVISOR, ALTER DATABASE from user_dev" db-types="Oracle" />
@@ -54,4 +54,4 @@
     <test-case sql="REVOKE CREATE ANY MATERIALIZED VIEW, ALTER ANY MATERIALIZED VIEW, DROP ANY MATERIALIZED VIEW FROM user_dev" db-types="Oracle" />
     <test-case sql="REVOKE SELECT ON TABLE t_order FROM default_role" db-types="PostgreSQL" />
     <test-case sql="REVOKE SELECT ON t_order FROM user_dev" db-types="SQLServer" />
-</integration-test-cases>
+</e2e-test-cases>

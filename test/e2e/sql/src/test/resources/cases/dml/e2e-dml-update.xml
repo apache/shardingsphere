@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </test-case>
@@ -106,4 +106,4 @@
     <test-case sql="UPDATE t_data_type_date SET creation_date = ?, update_date = ? where id = ?" db-types="MySQL" scenario-types="passthrough">
         <assertion parameters="2018-08-08:Date, 2018-08-08:datetime, 1:int" expected-data-file="update_date_values.xml"/>
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

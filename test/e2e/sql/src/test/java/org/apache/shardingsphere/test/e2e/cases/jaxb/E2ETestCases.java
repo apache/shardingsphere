@@ -27,7 +27,7 @@ import java.util.LinkedList;
 /**
  * JAXB definition of E2E test cases.
  */
-@XmlRootElement(name = "integration-test-cases")
+@XmlRootElement(name = "e2e-test-cases")
 @Getter
 public final class E2ETestCases {
     

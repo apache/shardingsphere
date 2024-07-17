@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR order_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -42,4 +42,4 @@
     <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333') OR user_id = 10" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

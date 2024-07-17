@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM sys.host_summary" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_sys_host_summary.xml" />
     </test-case>
@@ -228,4 +228,4 @@
     <test-case sql="SELECT * FROM sys.waits_global_by_latency" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_sys_waits_global_by_latency.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

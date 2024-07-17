@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="ALTER TABLE t_order_details ADD name varchar(10)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="alter_add.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
@@ -93,4 +93,4 @@
     <!--        </assertion>-->
     <!--    </test-case>-->
     
-</integration-test-cases>
+</e2e-test-cases>

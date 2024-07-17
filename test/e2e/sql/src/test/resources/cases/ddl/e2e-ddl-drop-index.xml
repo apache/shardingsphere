@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="DROP INDEX t_user_details_index ON t_user_details" db-types="MySQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10));CREATE INDEX t_user_details_index ON t_user_details(description)" affected-table="t_user_details" />
@@ -66,4 +66,4 @@
             <destroy-sql sql="CREATE INDEX order_index ON t_order(order_id)" />
         </assertion>
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="DROP LOGIN login1" db-types="SQLServer" />
-</integration-test-cases>
+</e2e-test-cases>

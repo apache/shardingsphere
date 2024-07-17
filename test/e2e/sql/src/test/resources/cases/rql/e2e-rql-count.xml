@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <!-- TODO add db,tbl,dbtbl_with_readwrite_splitting,encrypt,encrypt_and_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt scenario when use standard table -->
     <test-case sql="COUNT SINGLE TABLE" scenario-types="sharding_and_encrypt">
         <assertion expected-data-file="count_single_table.xml" />
@@ -41,4 +41,4 @@
     <test-case sql="COUNT MASK RULE;" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding">
         <assertion expected-data-file="count_mask_rule.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

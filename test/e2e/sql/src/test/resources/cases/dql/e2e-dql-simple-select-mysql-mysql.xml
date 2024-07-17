@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM mysql.columns_priv" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_mysql_columns_priv.xml" />
     </test-case>
@@ -176,4 +176,4 @@
     <test-case sql="SELECT * FROM mysql.user" db-types="MySQL" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_mysql_mysql_user.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

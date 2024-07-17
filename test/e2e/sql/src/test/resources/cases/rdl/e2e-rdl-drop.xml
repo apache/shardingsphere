@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="DROP SHARDING TABLE REFERENCE RULE reference_0;" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="drop_binding_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));
@@ -60,4 +60,4 @@
             <assertion-sql sql="SHOW MASK RULES;" />
         </assertion>
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

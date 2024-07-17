@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SHOW STORAGE UNITS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="show_storage_units.xml" />
     </test-case>
@@ -120,5 +120,4 @@
     <test-case sql="SHOW MASK RULES" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding">
         <assertion expected-data-file="show_mask_rule.xml" />
     </test-case>
-
-</integration-test-cases>
+</e2e-test-cases>

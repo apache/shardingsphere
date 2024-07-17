@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case sql="SELECT * FROM pg_catalog.get_global_prepared_xacts" db-types="openGauss" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_opengauss_pg_catalog_get_global_prepared_xacts.xml" />
     </test-case>
@@ -977,4 +977,4 @@
     <test-case sql="SELECT * FROM pg_catalog.sys_dummy" db-types="openGauss" scenario-types="empty_storage_units">
         <assertion expected-data-file="select_opengauss_pg_catalog_sys_dummy.xml" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>
