@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.engine.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.engine.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;

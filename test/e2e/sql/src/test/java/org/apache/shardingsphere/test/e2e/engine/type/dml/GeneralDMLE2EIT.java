@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type.dml;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.engine.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
