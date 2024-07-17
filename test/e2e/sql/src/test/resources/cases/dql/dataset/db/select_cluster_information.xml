@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="version" assertion="false" />
+        <column name="version" ignore-assert-data="true" />
     </metadata>
     <row values="" />
 </dataset>
