@@ -33,12 +33,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * JAXB definition of integration test case assertion.
+ * JAXB definition of E2E test case assertion.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class IntegrationTestCaseAssertion {
+public final class E2ETestCaseAssertion {
     
     @XmlAttribute(name = "expected-data-source-name")
     private String expectedDataSourceName;
@@ -53,13 +53,13 @@ public final class IntegrationTestCaseAssertion {
     private String parameters;
     
     @XmlElement(name = "initial-sql")
-    private IntegrationTestCaseAssertionSQL initialSQL;
+    private E2ETestCaseAssertionSQL initialSQL;
     
     @XmlElement(name = "assertion-sql")
-    private IntegrationTestCaseAssertionSQL assertionSQL;
+    private E2ETestCaseAssertionSQL assertionSQL;
     
     @XmlElement(name = "destroy-sql")
-    private IntegrationTestCaseAssertionSQL destroySQL;
+    private E2ETestCaseAssertionSQL destroySQL;
     
     /**
      * Get SQL values.

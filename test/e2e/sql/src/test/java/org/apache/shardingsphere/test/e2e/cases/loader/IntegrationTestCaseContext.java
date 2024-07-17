@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.cases.loader;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.IntegrationTestCase;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.E2ETestCase;
 
 /**
  * Integration test case context.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.e2e.cases.jaxb.IntegrationTestCase;
 @Getter
 public final class IntegrationTestCaseContext {
     
-    private final IntegrationTestCase testCase;
+    private final E2ETestCase testCase;
     
     private final String parentPath;
 }
