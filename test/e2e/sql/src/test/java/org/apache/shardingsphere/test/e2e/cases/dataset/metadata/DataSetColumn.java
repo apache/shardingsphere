@@ -35,8 +35,8 @@ public final class DataSetColumn {
     private String name;
     
     @XmlAttribute
-    private boolean assertion = true;
-    
-    @XmlAttribute
     private String type;
+    
+    @XmlAttribute(name = "ignore-assert-data")
+    private boolean ignoreAssertData;
 }

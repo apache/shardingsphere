@@ -100,7 +100,7 @@ public abstract class BaseDQLE2EIT {
     
     protected final void assertResultSet(final SingleE2EContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
-        assertRows(resultSet, getNotAssertionColumns(containerComposer), containerComposer.getDataSet().getRows());
+        assertRows(resultSet, getIgnoreAssertColumns(containerComposer), containerComposer.getDataSet().getRows());
     }
     
     private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContainerComposer containerComposer) {
@@ -111,10 +111,10 @@ public abstract class BaseDQLE2EIT {
         return result;
     }
     
-    private Collection<String> getNotAssertionColumns(final SingleE2EContainerComposer containerComposer) {
+    private Collection<String> getIgnoreAssertColumns(final SingleE2EContainerComposer containerComposer) {
         Collection<String> result = new LinkedList<>();
         for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
-            result.addAll(each.getColumns().stream().filter(column -> !column.isAssertion()).map(DataSetColumn::getName).collect(Collectors.toList()));
+            result.addAll(each.getColumns().stream().filter(DataSetColumn::isIgnoreAssertData).map(DataSetColumn::getName).collect(Collectors.toList()));
         }
         return result;
     }
