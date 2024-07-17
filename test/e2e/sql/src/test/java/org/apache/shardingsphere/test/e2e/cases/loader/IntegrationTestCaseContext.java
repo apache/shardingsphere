@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.arg;
+package org.apache.shardingsphere.test.e2e.cases.loader;
 
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.framework.E2EExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.IntegrationTestCase;
 
 /**
- * E2E test case settings.
+ * Integration test case context.
  */
-@ExtendWith(E2EExtension.class)
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-public @interface E2ETestCaseSettings {
+@RequiredArgsConstructor
+@Getter
+public final class IntegrationTestCaseContext {
     
-    /**
-     * Get SQL command type.
-     *
-     * @return SQL command type
-     */
-    SQLCommandType value();
+    private final IntegrationTestCase testCase;
     
-    /**
-     * Is batch execute.
-     *
-     * @return batch execute or not
-     */
-    boolean batch() default false;
+    private final String parentPath;
 }

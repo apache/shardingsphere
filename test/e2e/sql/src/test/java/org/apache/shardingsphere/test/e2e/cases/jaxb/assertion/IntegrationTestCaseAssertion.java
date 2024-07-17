@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.assertion;
+package org.apache.shardingsphere.test.e2e.cases.jaxb.assertion;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.value.SQLValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -35,9 +35,9 @@ import java.util.List;
 /**
  * JAXB definition of integration test case assertion.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class IntegrationTestCaseAssertion {
     
     @XmlAttribute(name = "expected-data-source-name")

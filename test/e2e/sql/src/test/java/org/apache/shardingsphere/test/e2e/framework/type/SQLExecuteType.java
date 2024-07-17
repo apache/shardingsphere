@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.dataset.metadata;
+package org.apache.shardingsphere.test.e2e.framework.type;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-@EqualsAndHashCode
-public final class DataSetColumn {
+/**
+ * SQL execute type.
+ */
+public enum SQLExecuteType {
     
-    @XmlAttribute(required = true)
-    private String name;
-    
-    @XmlAttribute
-    private String type;
-    
-    @XmlAttribute(name = "ignore-assert-data")
-    private boolean ignoreAssertData;
+    Literal, Placeholder
 }

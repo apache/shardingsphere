@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.value;
+package org.apache.shardingsphere.test.e2e.cases.jaxb.value;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
@@ -33,12 +33,11 @@ import java.util.UUID;
 /**
  * SQL value.
  */
+@Getter
 public final class SQLValue {
     
-    @Getter
     private final Object value;
     
-    @Getter
     private final int index;
     
     public SQLValue(final String value, final String type, final int index) {

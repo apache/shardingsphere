@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.dataset.metadata;
+package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata;
 
 import lombok.Getter;
 import lombok.Setter;
