@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type.dml;
 
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.IntegrationTestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.E2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.jaxb.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
@@ -60,14 +60,14 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     
     private int[] executeBatchForPreparedStatement(final CaseTestParameter testParam, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
-            for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+            for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
         }
     }
     
-    private void addBatch(final PreparedStatement preparedStatement, final IntegrationTestCaseAssertion assertion) throws SQLException {
+    private void addBatch(final PreparedStatement preparedStatement, final E2ETestCaseAssertion assertion) throws SQLException {
         for (SQLValue each : assertion.getSQLValues()) {
             preparedStatement.setObject(each.getIndex(), each.getValue());
         }
@@ -86,7 +86,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
             try (
                     Connection connection = containerComposer.getTargetDataSource().getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
-                for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+                for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
                     addBatch(preparedStatement, each);
                 }
                 preparedStatement.clearBatch();

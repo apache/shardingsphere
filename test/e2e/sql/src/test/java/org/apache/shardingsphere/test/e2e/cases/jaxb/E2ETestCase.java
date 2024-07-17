@@ -18,19 +18,45 @@
 package org.apache.shardingsphere.test.e2e.cases.jaxb;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.E2ETestCaseAssertion;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * JAXB definition of integration test cases.
+ * JAXB definition of E2E test case.
  */
-@XmlRootElement(name = "integration-test-cases")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class IntegrationTestCases {
+@Setter
+public final class E2ETestCase {
     
-    @XmlElement(name = "test-case")
-    private final Collection<IntegrationTestCase> testCases = new LinkedList<>();
+    @XmlAttribute
+    private String sql;
+    
+    @XmlAttribute(name = "db-types")
+    private String dbTypes;
+    
+    @XmlAttribute(name = "scenario-types")
+    private String scenarioTypes;
+    
+    @XmlAttribute(name = "scenario-comments")
+    private String scenarioComments;
+    
+    @XmlAttribute(name = "adapters")
+    private String adapters;
+    
+    @XmlAttribute(name = "delay-assertion-seconds")
+    private int delayAssertionSeconds;
+    
+    @XmlAttribute
+    private boolean smoke;
+    
+    @XmlElement(name = "assertion")
+    private Collection<E2ETestCaseAssertion> assertions = new LinkedList<>();
 }

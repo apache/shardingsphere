@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.composer;
 
-import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.IntegrationTestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.E2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.loader.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.row.DataSetRow;
@@ -49,7 +49,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
     
     public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException {
         super(testParam);
-        for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+        for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap(), testParam.getDatabaseType());
