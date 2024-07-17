@@ -15,26 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.assertion;
+package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.row;
 
+import com.google.common.base.Splitter;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * JAXB definition of integration test case assertion initial SQL.
+ * Data set row.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class IntegrationTestCaseAssertionSQL {
+@EqualsAndHashCode
+public final class DataSetRow {
     
-    @XmlAttribute
-    private String sql;
+    private static final String E2E_DATA_DELIMITER = "{E2E_DATA_DELIMITER}";
     
-    @XmlAttribute(name = "affected-table")
-    private String affectedTable;
+    @XmlAttribute(name = "data-node")
+    private String dataNode;
+    
+    @XmlAttribute(required = true)
+    private String values;
+    
+    /**
+     * Split values with vertical bar.
+     *
+     * @param delimiter delimiter of splitter
+     * @return split values
+     */
+    public List<String> splitValues(final String delimiter) {
+        return Splitter.on(delimiter).trimResults().splitToList(values).stream().map(each -> each.replace(E2E_DATA_DELIMITER, delimiter)).collect(Collectors.toList());
+    }
 }

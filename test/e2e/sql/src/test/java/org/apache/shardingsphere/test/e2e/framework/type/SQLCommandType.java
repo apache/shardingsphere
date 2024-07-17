@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases;
+package org.apache.shardingsphere.test.e2e.framework.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

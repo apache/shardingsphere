@@ -15,23 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases;
+package org.apache.shardingsphere.test.e2e.cases.jaxb.value;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCase;
+import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetMetaData;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
- * JAXB definition of integration test cases.
+ * Group of SQL value.
  */
-@XmlRootElement(name = "integration-test-cases")
 @Getter
-public final class IntegrationTestCases {
+public final class SQLValueGroup {
     
-    @XmlElement(name = "test-case")
-    private final Collection<IntegrationTestCase> testCases = new LinkedList<>();
+    private final Collection<SQLValue> values;
+    
+    public SQLValueGroup(final DataSetMetaData metaData, final List<String> values) {
+        this.values = createSQLValues(metaData, values);
+    }
+    
+    private Collection<SQLValue> createSQLValues(final DataSetMetaData metaData, final List<String> values) {
+        Collection<SQLValue> result = new LinkedList<>();
+        int count = 0;
+        for (String each : values) {
+            result.add(new SQLValue(each, metaData.getColumns().get(count).getType(), count + 1));
+            count++;
+        }
+        return result;
+    }
 }

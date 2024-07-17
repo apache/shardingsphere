@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.arg;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
