@@ -52,3 +52,4 @@ jobs:
         with:
           files: ./target/mergeReport/jacoco.xml
           token: ${{ secrets.CODECOV_TOKEN }}
+          max_report_age: off
