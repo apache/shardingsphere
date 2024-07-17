@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
+package org.apache.shardingsphere.infra.database.postgresql.checker;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
+import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
+import org.apache.shardingsphere.infra.database.core.exception.MissingRequiredPrivilegeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PostgreSQLDataSourceCheckerTest {
+class PostgreSQLDatabaseEnvironmentCheckerTest {
     
     @Mock
     private DataSource dataSource;
@@ -67,28 +68,28 @@ class PostgreSQLDataSourceCheckerTest {
     
     @Test
     void assertCheckRolReplication() throws SQLException {
-        PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
+        PostgreSQLDatabaseEnvironmentChecker dataSourceChecker = new PostgreSQLDatabaseEnvironmentChecker();
         when(resultSet.getString("rolreplication")).thenReturn("t");
         when(resultSet.getString("rolsuper")).thenReturn("f");
-        dataSourceChecker.checkPrivilege(dataSource);
+        dataSourceChecker.checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE);
         verify(resultSet, atLeastOnce()).getString("rolsuper");
     }
     
     @Test
     void assertCheckRolSuper() throws SQLException {
-        PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
+        PostgreSQLDatabaseEnvironmentChecker dataSourceChecker = new PostgreSQLDatabaseEnvironmentChecker();
         when(resultSet.getString("rolsuper")).thenReturn("t");
         when(resultSet.getString("rolreplication")).thenReturn("f");
-        dataSourceChecker.checkPrivilege(dataSource);
+        dataSourceChecker.checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE);
         verify(resultSet, atLeastOnce()).getString("rolreplication");
     }
     
     @Test
     void assertCheckNoPrivilege() throws SQLException {
-        PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
+        PostgreSQLDatabaseEnvironmentChecker dataSourceChecker = new PostgreSQLDatabaseEnvironmentChecker();
         when(resultSet.getString("rolsuper")).thenReturn("f");
         when(resultSet.getString("rolreplication")).thenReturn("f");
-        assertThrows(PrepareJobWithoutEnoughPrivilegeException.class, () -> dataSourceChecker.checkPrivilege(dataSource));
+        assertThrows(MissingRequiredPrivilegeException.class, () -> dataSourceChecker.checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE));
         verify(resultSet, atLeastOnce()).getString("rolreplication");
     }
 }
