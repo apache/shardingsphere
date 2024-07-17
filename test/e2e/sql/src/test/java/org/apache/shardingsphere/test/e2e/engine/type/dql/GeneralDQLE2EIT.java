@@ -52,6 +52,10 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
         SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         init(testParam, containerComposer);
+        assertExecuteQuery(testParam, containerComposer);
+    }
+    
+    private void assertExecuteQuery(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteQueryWithXmlExpected(testParam, containerComposer);
         } else {
@@ -123,6 +127,10 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
         SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
         init(testParam, containerComposer);
+        assertExecute(testParam, containerComposer);
+    }
+    
+    private void assertExecute(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteWithXmlExpected(testParam, containerComposer);
         } else {
