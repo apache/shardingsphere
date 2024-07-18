@@ -132,4 +132,14 @@
     <sql-case id="select_default_function" value="SELECT DEFAULT(val) FROM numbers" db-types="MySQL" />
     <sql-case id="select_degrees_function" value="SELECT DEGREES(PI())" db-types="MySQL" />
     <sql-case id="select_window_with_dense_rank_function" value="SELECT val, DENSE_RANK() OVER() FROM numbers" db-types="MySQL" />
+    <sql-case id="select_elt" value="SELECT ELT(1, 'Aa', 'Bb')" db-types="MySQL" />
+    <sql-case id="select_exp" value="SELECT EXP(2)" db-types="MySQL" />
+    <sql-case id="select_export_set" value="SELECT EXPORT_SET(5,'Y','N',',',4)" db-types="MySQL" />
+    <sql-case id="select_extractvalue" value="SELECT ExtractValue('&lt;a&gt;&lt;b/&gt;&lt;/a&gt;', '/a/b')" db-types="MySQL" />
+    <sql-case id="select_field" value="SELECT FIELD('Bb', 'Aa', 'Bb')" db-types="MySQL" />
+    <sql-case id="select_find_in_set" value="SELECT FIND_IN_SET('b','a,b,c,d')" db-types="MySQL" />
+    <sql-case id="select_first_value" value="SELECT FIRST_VALUE(name) OVER (ORDER BY id) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_floor" value="SELECT FLOOR(1.23)" db-types="MySQL" />
+    <sql-case id="select_format" value="SELECT FORMAT(12332.123456, 4)" db-types="MySQL" />
+    <sql-case id="select_format_bytes" value="SELECT FORMAT_BYTES(512)" db-types="MySQL" />
 </sql-cases>
