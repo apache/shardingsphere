@@ -192,7 +192,7 @@
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
-        <dependency-check-maven.version>9.0.10</dependency-check-maven.version>
+        <dependency-check-maven.version>10.0.3</dependency-check-maven.version>
     </properties>
     
     <dependencyManagement>
