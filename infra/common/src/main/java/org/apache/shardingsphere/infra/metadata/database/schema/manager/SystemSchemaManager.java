@@ -85,14 +85,12 @@ public final class SystemSchemaManager {
      * @return whether current table is system table or not
      */
     public static boolean isSystemTable(final String databaseType, final String schema, final String tableName) {
-        Optional<Map<String, Collection<String>>> schemaTableMap = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType));
-        Optional<Map<String, Collection<String>>> commonTableMap = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON));
+        Map<String, Collection<String>> schemaTableMap = DATABASE_TYPE_SCHEMA_TABLE_MAP.getOrDefault(databaseType, Collections.emptyMap());
+        Map<String, Collection<String>> commonTableMap = DATABASE_TYPE_SCHEMA_TABLE_MAP.getOrDefault(COMMON, Collections.emptyMap());
         if (null == schema) {
-            return schemaTableMap.map(schemas -> schemas.values().stream().flatMap(Collection::stream).anyMatch(tables -> tables.contains(tableName))).orElse(false)
-                    || commonTableMap.map(schemas -> schemas.values().stream().flatMap(Collection::stream).anyMatch(tables -> tables.contains(tableName))).orElse(false);
+            return schemaTableMap.values().stream().anyMatch(each -> each.contains(tableName)) || commonTableMap.values().stream().anyMatch(each -> each.contains(tableName));
         }
-        return schemaTableMap.map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false)
-                || commonTableMap.map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false);
+        return schemaTableMap.getOrDefault(schema, Collections.emptyList()).contains(tableName) || commonTableMap.getOrDefault(schema, Collections.emptyList()).contains(tableName);
     }
     
     /**
