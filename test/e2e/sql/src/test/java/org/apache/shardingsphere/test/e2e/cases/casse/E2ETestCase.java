@@ -15,43 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.row;
+package org.apache.shardingsphere.test.e2e.cases.casse;
 
-import com.google.common.base.Splitter;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Data set row.
+ * JAXB definition of E2E test case.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@EqualsAndHashCode
-public final class DataSetRow {
+public final class E2ETestCase {
     
-    private static final String E2E_DATA_DELIMITER = "{E2E_DATA_DELIMITER}";
+    @XmlAttribute
+    private String sql;
     
-    @XmlAttribute(name = "data-node")
-    private String dataNode;
+    @XmlAttribute(name = "db-types")
+    private String dbTypes;
     
-    @XmlAttribute(required = true)
-    private String values;
+    @XmlAttribute(name = "scenario-types")
+    private String scenarioTypes;
     
-    /**
-     * Split values with vertical bar.
-     *
-     * @param delimiter delimiter of splitter
-     * @return split values
-     */
-    public List<String> splitValues(final String delimiter) {
-        return Splitter.on(delimiter).trimResults().splitToList(values).stream().map(each -> each.replace(E2E_DATA_DELIMITER, delimiter)).collect(Collectors.toList());
-    }
+    @XmlAttribute(name = "scenario-comments")
+    private String scenarioComments;
+    
+    @XmlAttribute
+    private String adapters;
+    
+    @XmlAttribute(name = "delay-assertion-seconds")
+    private int delayAssertionSeconds;
+    
+    @XmlAttribute
+    private boolean smoke;
+    
+    @XmlElement(name = "assertion")
+    private Collection<E2ETestCaseAssertion> assertions = new LinkedList<>();
 }

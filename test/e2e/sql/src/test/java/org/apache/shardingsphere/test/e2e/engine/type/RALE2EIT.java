@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetMetaData;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
+import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
+import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;

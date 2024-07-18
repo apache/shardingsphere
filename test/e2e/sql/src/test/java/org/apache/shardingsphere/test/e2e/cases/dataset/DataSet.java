@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset;
+package org.apache.shardingsphere.test.e2e.cases.dataset;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetMetaData;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
+import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

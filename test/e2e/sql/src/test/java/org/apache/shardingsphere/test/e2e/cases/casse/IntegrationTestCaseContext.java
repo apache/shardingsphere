@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata;
+package org.apache.shardingsphere.test.e2e.cases.casse;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
+/**
+ * Integration test case context.
+ */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetIndex {
+public final class IntegrationTestCaseContext {
     
-    @XmlAttribute
-    private String name;
+    private final E2ETestCase testCase;
     
-    @XmlAttribute
-    private String columns;
-    
-    @XmlAttribute
-    private boolean unique;
+    private final String parentPath;
 }

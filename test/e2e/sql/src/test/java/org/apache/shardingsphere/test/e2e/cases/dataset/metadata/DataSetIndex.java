@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb;
+package org.apache.shardingsphere.test.e2e.cases.dataset.metadata;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * JAXB definition of E2E test cases.
- */
-@XmlRootElement(name = "e2e-test-cases")
 @Getter
-public final class E2ETestCases {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class DataSetIndex {
     
-    @XmlElement(name = "test-case")
-    private final Collection<E2ETestCase> testCases = new LinkedList<>();
+    @XmlAttribute
+    private String name;
+    
+    @XmlAttribute
+    private String columns;
+    
+    @XmlAttribute
+    private boolean unique;
 }

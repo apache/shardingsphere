@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.engine.composer;
 
-import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.E2ETestCaseAssertion;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.DataSet;
-import org.apache.shardingsphere.test.e2e.cases.loader.DataSetLoader;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
+import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
+import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;

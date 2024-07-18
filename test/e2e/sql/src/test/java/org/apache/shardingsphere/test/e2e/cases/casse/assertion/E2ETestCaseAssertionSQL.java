@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata;
+package org.apache.shardingsphere.test.e2e.cases.casse.assertion;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,24 +23,18 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
+/**
+ * JAXB definition of E2E test case assertion initial SQL.
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class DataSetMetaData {
+public final class E2ETestCaseAssertionSQL {
     
-    @XmlAttribute(name = "data-nodes")
-    private String dataNodes;
+    @XmlAttribute
+    private String sql;
     
-    @XmlAttribute(name = "table-name")
-    private String tableName;
-    
-    @XmlElement(name = "column")
-    private final List<DataSetColumn> columns = new LinkedList<>();
-    
-    @XmlElement(name = "index")
-    private final List<DataSetIndex> indexes = new LinkedList<>();
+    @XmlAttribute(name = "affected-table")
+    private String affectedTable;
 }

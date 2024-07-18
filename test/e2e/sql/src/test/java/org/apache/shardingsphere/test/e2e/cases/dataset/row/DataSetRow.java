@@ -15,48 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb;
+package org.apache.shardingsphere.test.e2e.cases.dataset.row;
 
+import com.google.common.base.Splitter;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.assertion.E2ETestCaseAssertion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * JAXB definition of E2E test case.
+ * Data set row.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class E2ETestCase {
+@EqualsAndHashCode
+public final class DataSetRow {
     
-    @XmlAttribute
-    private String sql;
+    private static final String E2E_DATA_DELIMITER = "{E2E_DATA_DELIMITER}";
     
-    @XmlAttribute(name = "db-types")
-    private String dbTypes;
+    @XmlAttribute(name = "data-node")
+    private String dataNode;
     
-    @XmlAttribute(name = "scenario-types")
-    private String scenarioTypes;
+    @XmlAttribute(required = true)
+    private String values;
     
-    @XmlAttribute(name = "scenario-comments")
-    private String scenarioComments;
-    
-    @XmlAttribute(name = "adapters")
-    private String adapters;
-    
-    @XmlAttribute(name = "delay-assertion-seconds")
-    private int delayAssertionSeconds;
-    
-    @XmlAttribute
-    private boolean smoke;
-    
-    @XmlElement(name = "assertion")
-    private Collection<E2ETestCaseAssertion> assertions = new LinkedList<>();
+    /**
+     * Split values with vertical bar.
+     *
+     * @param delimiter delimiter of splitter
+     * @return split values
+     */
+    public List<String> splitValues(final String delimiter) {
+        return Splitter.on(delimiter).trimResults().splitToList(values).stream().map(each -> each.replace(E2E_DATA_DELIMITER, delimiter)).collect(Collectors.toList());
+    }
 }
