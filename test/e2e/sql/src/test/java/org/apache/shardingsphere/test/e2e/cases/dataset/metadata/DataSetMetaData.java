@@ -15,34 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.value;
+package org.apache.shardingsphere.test.e2e.cases.dataset.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetMetaData;
+import lombok.Setter;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Group of SQL value.
- */
 @Getter
-public final class SQLValueGroup {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class DataSetMetaData {
     
-    private final Collection<SQLValue> values;
+    @XmlAttribute(name = "data-nodes")
+    private String dataNodes;
     
-    public SQLValueGroup(final DataSetMetaData metaData, final List<String> values) {
-        this.values = createSQLValues(metaData, values);
-    }
+    @XmlAttribute(name = "table-name")
+    private String tableName;
     
-    private Collection<SQLValue> createSQLValues(final DataSetMetaData metaData, final List<String> values) {
-        Collection<SQLValue> result = new LinkedList<>();
-        int count = 0;
-        for (String each : values) {
-            result.add(new SQLValue(each, metaData.getColumns().get(count).getType(), count + 1));
-            count++;
-        }
-        return result;
-    }
+    @XmlElement(name = "column")
+    private final List<DataSetColumn> columns = new LinkedList<>();
+    
+    @XmlElement(name = "index")
+    private final List<DataSetIndex> indexes = new LinkedList<>();
 }

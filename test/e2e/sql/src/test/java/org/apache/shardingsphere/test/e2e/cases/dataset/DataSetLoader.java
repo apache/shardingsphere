@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.loader;
+package org.apache.shardingsphere.test.e2e.cases.dataset;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.DataSet;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
