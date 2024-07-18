@@ -19,6 +19,11 @@ package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -27,9 +32,11 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source pool properties validator.
@@ -41,14 +48,15 @@ public final class DataSourcePoolPropertiesValidator {
      * Validate data source pool properties map.
      *
      * @param propsMap data source pool properties map
+     * @param expectedPrivileges excepted privileges
      * @return data source name and exception map
      */
-    public static Map<String, Exception> validate(final Map<String, DataSourcePoolProperties> propsMap) {
+    public static Map<String, Exception> validate(final Map<String, DataSourcePoolProperties> propsMap, final Collection<PrivilegeCheckType> expectedPrivileges) {
         Map<String, Exception> result = new LinkedHashMap<>(propsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             try {
                 validateProperties(entry.getKey(), entry.getValue());
-                validateConnection(entry.getKey(), entry.getValue());
+                validateConnection(entry.getKey(), entry.getValue(), expectedPrivileges);
             } catch (final InvalidDataSourcePoolPropertiesException ex) {
                 result.put(entry.getKey(), ex);
             }
@@ -64,11 +72,16 @@ public final class DataSourcePoolPropertiesValidator {
         }
     }
     
-    private static void validateConnection(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
+    private static void validateConnection(final String dataSourceName, final DataSourcePoolProperties props,
+                                           final Collection<PrivilegeCheckType> expectedPrivileges) throws InvalidDataSourcePoolPropertiesException {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(props);
-            checkFailFast(dataSource);
+            if (expectedPrivileges.isEmpty() || expectedPrivileges.contains(PrivilegeCheckType.NONE)) {
+                checkFailFast(dataSource);
+                return;
+            }
+            checkPrivileges(dataSource, props, expectedPrivileges);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -85,6 +98,16 @@ public final class DataSourcePoolPropertiesValidator {
         // CHECKSTYLE:OFF
         try (Connection ignored = dataSource.getConnection()) {
             // CHECKSTYLE:ON
+        }
+    }
+    
+    private static void checkPrivileges(final DataSource dataSource, final DataSourcePoolProperties props, final Collection<PrivilegeCheckType> expectedPrivileges) {
+        DatabaseType databaseType = DatabaseTypeFactory.get((String) props.getConnectionPropertySynonyms().getStandardProperties().get("url"));
+        Optional<DialectDatabaseEnvironmentChecker> checker = DatabaseTypedSPILoader.findService(DialectDatabaseEnvironmentChecker.class, databaseType);
+        if (checker.isPresent()) {
+            for (PrivilegeCheckType each : expectedPrivileges) {
+                checker.get().checkPrivilege(dataSource, each);
+            }
         }
     }
 }

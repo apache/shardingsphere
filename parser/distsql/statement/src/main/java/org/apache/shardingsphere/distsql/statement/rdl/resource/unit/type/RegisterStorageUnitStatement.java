@@ -34,4 +34,6 @@ public final class RegisterStorageUnitStatement extends StorageUnitDefinitionSta
     private final boolean ifNotExists;
     
     private final Collection<DataSourceSegment> storageUnits;
+    
+    private final Collection<String> expectedPrivileges;
 }

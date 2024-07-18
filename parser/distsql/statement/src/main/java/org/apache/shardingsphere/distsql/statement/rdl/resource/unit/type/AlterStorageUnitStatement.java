@@ -32,4 +32,6 @@ import java.util.Collection;
 public final class AlterStorageUnitStatement extends StorageUnitDefinitionStatement {
     
     private final Collection<DataSourceSegment> storageUnits;
+    
+    private final Collection<String> expectedPrivileges;
 }
