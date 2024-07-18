@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
@@ -37,7 +37,7 @@ public final class JdbcStandaloneTestParameterGenerator {
     
     private static final Collection<String> ADAPTERS = Collections.singleton(AdapterType.JDBC.getValue());
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
+    private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
     
     /**
      * Get assertion test parameter.
