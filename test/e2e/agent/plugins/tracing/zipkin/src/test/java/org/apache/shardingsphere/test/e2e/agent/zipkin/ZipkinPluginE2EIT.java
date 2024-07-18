@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.zipkin;
 import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.SpanAssert;
-import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.IntegrationTestCasesLoader;
+import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.E2ETestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.SpanTestCase;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ class ZipkinPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+            return E2ETestCasesLoader.getInstance().loadE2ETestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }

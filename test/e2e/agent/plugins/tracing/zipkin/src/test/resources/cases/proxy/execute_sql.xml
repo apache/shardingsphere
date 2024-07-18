@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case service-name="shardingsphere" span-name="/ShardingSphere/executeSQL/">
         <tag-assertion key="component" value="ShardingSphere"/>
         <tag-assertion key="span.kind" value="client"/>
@@ -28,4 +28,4 @@
         <tag-assertion key="db.bind_vars" need-assert-value="false"/>
         <tag-assertion key="db.statement" need-assert-value="false"/>
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>
