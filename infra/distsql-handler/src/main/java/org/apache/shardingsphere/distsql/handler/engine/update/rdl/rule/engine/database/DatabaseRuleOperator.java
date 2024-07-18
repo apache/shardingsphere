@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -36,6 +37,7 @@ public interface DatabaseRuleOperator {
      * @param database database
      * @param currentRuleConfig current rule configuration
      * @return meta data versions
+     * @throws SQLException SQL Exception
      */
-    Collection<MetaDataVersion> operate(DatabaseRuleDefinitionStatement sqlStatement, ShardingSphereDatabase database, RuleConfiguration currentRuleConfig);
+    Collection<MetaDataVersion> operate(DatabaseRuleDefinitionStatement sqlStatement, ShardingSphereDatabase database, RuleConfiguration currentRuleConfig) throws SQLException;
 }

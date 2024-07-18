@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.sql.SQLException;
+
 /**
  * Rule item changed subscriber.
  */
@@ -36,9 +38,10 @@ public final class RuleItemChangedSubscriber implements EventSubscriber {
      * Renew with alter rule item.
      *
      * @param event alter rule item event
+     * @throws SQLException SQL Exception
      */
     @Subscribe
-    public void renew(final AlterRuleItemEvent event) {
+    public void renew(final AlterRuleItemEvent event) throws SQLException {
         contextManager.getMetaDataContextManager().getRuleItemManager().alterRuleItem(event);
     }
     
@@ -46,9 +49,10 @@ public final class RuleItemChangedSubscriber implements EventSubscriber {
      * Renew with drop rule item.
      *
      * @param event drop rule item event
+     * @throws SQLException SQL Exception
      */
     @Subscribe
-    public void renew(final DropRuleItemEvent event) {
+    public void renew(final DropRuleItemEvent event) throws SQLException {
         contextManager.getMetaDataContextManager().getRuleItemManager().dropRuleItem(event);
     }
 }

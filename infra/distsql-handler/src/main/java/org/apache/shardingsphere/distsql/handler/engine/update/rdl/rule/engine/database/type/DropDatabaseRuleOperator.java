@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -51,7 +52,8 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
     
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<MetaDataVersion> operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
+    public Collection<MetaDataVersion> operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database,
+                                               final RuleConfiguration currentRuleConfig) throws SQLException {
         if (!executor.hasAnyOneToBeDropped(sqlStatement)) {
             return Collections.emptyList();
         }
