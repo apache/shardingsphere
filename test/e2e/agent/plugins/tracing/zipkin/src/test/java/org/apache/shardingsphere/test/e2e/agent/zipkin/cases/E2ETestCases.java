@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Integration test cases.
+ * E2E test cases.
  */
-@XmlRootElement(name = "integration-test-cases")
+@XmlRootElement(name = "e2e-test-cases")
 @Getter
-public final class IntegrationTestCases {
+public final class E2ETestCases {
     
     @XmlElement(name = "test-case")
     private final Collection<SpanTestCase> testCases = new LinkedList<>();

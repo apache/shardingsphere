@@ -41,45 +41,46 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Integration test cases loader.
+ * E2E test cases loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IntegrationTestCasesLoader {
+public final class E2ETestCasesLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
-    private static final IntegrationTestCasesLoader INSTANCE = new IntegrationTestCasesLoader();
+    private static final E2ETestCasesLoader INSTANCE = new E2ETestCasesLoader();
     
-    private Collection<SpanTestCase> integrationTestCases;
+    private Collection<SpanTestCase> e2eTestCases;
     
     /**
      * Get singleton instance.
      *
      * @return singleton instance
      */
-    public static IntegrationTestCasesLoader getInstance() {
+    public static E2ETestCasesLoader getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Load integration test cases.
+     * Load E2E test cases.
+     *
      * @param adapter adapter
-     * @return integration test cases
+     * @return E2E test cases
      */
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    public Collection<SpanTestCase> loadIntegrationTestCases(final String adapter) {
-        if (null != integrationTestCases) {
-            return integrationTestCases;
+    public Collection<SpanTestCase> loadE2ETestCases(final String adapter) {
+        if (null != e2eTestCases) {
+            return e2eTestCases;
         }
-        integrationTestCases = new LinkedList<>();
+        e2eTestCases = new LinkedList<>();
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
         for (File each : getFiles(url)) {
-            integrationTestCases.addAll(loadIntegrationTestCases(each));
+            e2eTestCases.addAll(loadE2ETestCases(each));
         }
-        return integrationTestCases;
+        return e2eTestCases;
     }
     
-    private Collection<SpanTestCase> loadIntegrationTestCases(final File file) throws IOException, JAXBException {
+    private Collection<SpanTestCase> loadE2ETestCases(final File file) throws IOException, JAXBException {
         Collection<SpanTestCase> result = new LinkedList<>();
         for (SpanTestCase each : unmarshal(file.getPath()).getTestCases()) {
             result.addAll(each.getTagCases().stream().map(optional -> createSpanTestCase(each.getServiceName(), each.getSpanName(), optional)).collect(Collectors.toList()));
@@ -102,9 +103,9 @@ public final class IntegrationTestCasesLoader {
         return result;
     }
     
-    private IntegrationTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(integrateCasesFile)) {
-            return (IntegrationTestCases) JAXBContext.newInstance(IntegrationTestCases.class).createUnmarshaller().unmarshal(reader);
+    private E2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(e2eCasesFile)) {
+            return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
