@@ -15,34 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.value;
+package org.apache.shardingsphere.test.e2e.cases;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetMetaData;
+import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCase;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Group of SQL value.
+ * JAXB definition of E2E test cases.
  */
+@XmlRootElement(name = "e2e-test-cases")
 @Getter
-public final class SQLValueGroup {
+public final class E2ETestCases {
     
-    private final Collection<SQLValue> values;
-    
-    public SQLValueGroup(final DataSetMetaData metaData, final List<String> values) {
-        this.values = createSQLValues(metaData, values);
-    }
-    
-    private Collection<SQLValue> createSQLValues(final DataSetMetaData metaData, final List<String> values) {
-        Collection<SQLValue> result = new LinkedList<>();
-        int count = 0;
-        for (String each : values) {
-            result.add(new SQLValue(each, metaData.getColumns().get(count).getType(), count + 1));
-            count++;
-        }
-        return result;
-    }
+    @XmlElement(name = "test-case")
+    private final Collection<E2ETestCase> testCases = new LinkedList<>();
 }

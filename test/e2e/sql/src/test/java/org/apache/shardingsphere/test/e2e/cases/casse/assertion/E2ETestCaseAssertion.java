@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.assertion;
+package org.apache.shardingsphere.test.e2e.cases.casse.assertion;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.value.SQLValue;
+import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

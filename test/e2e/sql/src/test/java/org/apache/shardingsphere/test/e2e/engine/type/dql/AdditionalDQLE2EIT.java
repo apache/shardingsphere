@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.dql;
 
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.value.SQLValue;
+import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;

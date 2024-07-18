@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.loader;
+package org.apache.shardingsphere.test.e2e.cases.dataset.metadata;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.E2ETestCase;
+import lombok.Setter;
 
-/**
- * Integration test case context.
- */
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class IntegrationTestCaseContext {
+@Setter
+@EqualsAndHashCode
+public final class DataSetColumn {
     
-    private final E2ETestCase testCase;
+    @XmlAttribute(required = true)
+    private String name;
     
-    private final String parentPath;
+    @XmlAttribute
+    private String type;
+    
+    @XmlAttribute(name = "ignore-assert-data")
+    private boolean ignoreAssertData;
 }

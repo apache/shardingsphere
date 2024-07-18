@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata;
+package org.apache.shardingsphere.test.e2e.cases.dataset.metadata;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@EqualsAndHashCode
-public final class DataSetColumn {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class DataSetMetaData {
     
-    @XmlAttribute(required = true)
-    private String name;
+    @XmlAttribute(name = "data-nodes")
+    private String dataNodes;
     
-    @XmlAttribute
-    private String type;
+    @XmlAttribute(name = "table-name")
+    private String tableName;
     
-    @XmlAttribute(name = "ignore-assert-data")
-    private boolean ignoreAssertData;
+    @XmlElement(name = "column")
+    private final List<DataSetColumn> columns = new LinkedList<>();
+    
+    @XmlElement(name = "index")
+    private final List<DataSetIndex> indexes = new LinkedList<>();
 }

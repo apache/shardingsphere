@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.framework.param.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.cases.loader.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.e2e.cases.casse.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 
 /**

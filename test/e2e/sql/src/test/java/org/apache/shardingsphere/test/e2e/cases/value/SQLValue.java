@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.jaxb.value;
+package org.apache.shardingsphere.test.e2e.cases.value;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;

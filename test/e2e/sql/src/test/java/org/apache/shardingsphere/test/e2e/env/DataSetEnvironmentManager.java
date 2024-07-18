@@ -29,12 +29,12 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.DataSet;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetMetaData;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.cases.jaxb.value.SQLValueGroup;
+import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
+import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
+import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
+import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
+import org.apache.shardingsphere.test.e2e.cases.value.SQLValueGroup;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
