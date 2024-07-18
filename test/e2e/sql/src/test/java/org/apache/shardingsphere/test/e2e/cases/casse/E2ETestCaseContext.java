@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Integration test case context.
+ * E2E test case context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class IntegrationTestCaseContext {
+public final class E2ETestCaseContext {
     
     private final E2ETestCase testCase;
     
