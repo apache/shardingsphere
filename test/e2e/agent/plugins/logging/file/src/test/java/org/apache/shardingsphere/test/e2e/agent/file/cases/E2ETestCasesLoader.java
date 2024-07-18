@@ -39,44 +39,44 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 /**
- * Integration test cases loader.
+ * E2E test cases loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IntegrationTestCasesLoader {
+public final class E2ETestCasesLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
-    private static final IntegrationTestCasesLoader INSTANCE = new IntegrationTestCasesLoader();
+    private static final E2ETestCasesLoader INSTANCE = new E2ETestCasesLoader();
     
-    private Collection<LogTestCase> integrationTestCases;
+    private Collection<LogTestCase> testCases;
     
     /**
      * Get singleton instance.
      *
      * @return singleton instance
      */
-    public static IntegrationTestCasesLoader getInstance() {
+    public static E2ETestCasesLoader getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Load integration test cases.
+     * Load test cases.
      *
-     * @param adapter adapter proxy or jdbc
-     * @return integration test cases
+     * @param adapter adapter proxy or JDBC
+     * @return test cases
      */
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    public Collection<LogTestCase> loadIntegrationTestCases(final String adapter) {
-        if (null != integrationTestCases) {
-            return integrationTestCases;
+    public Collection<LogTestCase> loadTestCases(final String adapter) {
+        if (null != testCases) {
+            return testCases;
         }
-        integrationTestCases = new LinkedList<>();
+        testCases = new LinkedList<>();
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
         Collection<File> files = getFiles(url);
         for (File each : files) {
-            integrationTestCases.addAll(unmarshal(each.getPath()).getTestCases());
+            testCases.addAll(unmarshal(each.getPath()).getTestCases());
         }
-        return integrationTestCases;
+        return testCases;
     }
     
     private Collection<File> getFiles(final URL url) throws IOException, URISyntaxException {
@@ -94,9 +94,9 @@ public final class IntegrationTestCasesLoader {
         return result;
     }
     
-    private IntegrationTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(integrateCasesFile)) {
-            return (IntegrationTestCases) JAXBContext.newInstance(IntegrationTestCases.class).createUnmarshaller().unmarshal(reader);
+    private E2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(e2eCasesFile)) {
+            return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
 }
