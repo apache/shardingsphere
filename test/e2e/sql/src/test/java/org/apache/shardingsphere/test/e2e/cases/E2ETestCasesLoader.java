@@ -69,21 +69,21 @@ public final class E2ETestCasesLoader {
      * @return E2E test case contexts
      */
     public Collection<E2ETestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
-        return testCaseContexts.computeIfAbsent(sqlCommandType, this::loadIntegrationTestCaseContexts);
+        return testCaseContexts.computeIfAbsent(sqlCommandType, this::loadE2ETestCaseContexts);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    private Collection<E2ETestCaseContext> loadIntegrationTestCaseContexts(final SQLCommandType sqlCommandType) {
+    private Collection<E2ETestCaseContext> loadE2ETestCaseContexts(final SQLCommandType sqlCommandType) {
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/"));
-        return loadIntegrationTestCaseContexts(url, sqlCommandType);
+        return loadE2ETestCaseContexts(url, sqlCommandType);
     }
     
-    private Collection<E2ETestCaseContext> loadIntegrationTestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
+    private Collection<E2ETestCaseContext> loadE2ETestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
         Collection<File> files = getFiles(url, sqlCommandType);
-        Preconditions.checkNotNull(files, "Can not find integration test cases.");
+        Preconditions.checkNotNull(files, "Can not find E2E test cases.");
         Collection<E2ETestCaseContext> result = new LinkedList<>();
         for (File each : files) {
-            result.addAll(getIntegrationTestCaseContexts(each));
+            result.addAll(getE2ETestCaseContexts(each));
         }
         return result;
     }
@@ -103,12 +103,12 @@ public final class E2ETestCasesLoader {
         return result;
     }
     
-    private Collection<E2ETestCaseContext> getIntegrationTestCaseContexts(final File file) throws IOException, JAXBException {
+    private Collection<E2ETestCaseContext> getE2ETestCaseContexts(final File file) throws IOException, JAXBException {
         return unmarshal(file.getPath()).getTestCases().stream().map(each -> new E2ETestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
-    private E2ETestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(integrateCasesFile)) {
+    private E2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(e2eCasesFile)) {
             return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
