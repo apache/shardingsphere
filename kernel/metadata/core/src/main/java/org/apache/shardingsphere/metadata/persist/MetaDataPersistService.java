@@ -154,8 +154,8 @@ public final class MetaDataPersistService {
         toBeAddedSchemas.forEach((schemaName, schema) -> {
             if (schema.isEmpty()) {
                 databaseMetaDataService.addSchema(databaseName, schemaName);
-                databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, schema.getTables());
             }
+            databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, schema.getTables());
         });
         toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
     }
