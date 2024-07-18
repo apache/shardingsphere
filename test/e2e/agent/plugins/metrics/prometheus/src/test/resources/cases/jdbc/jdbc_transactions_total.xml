@@ -16,10 +16,10 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="jdbc_transactions_total" metric-type="counter">
         <query-assertion metric="jdbc_transactions_total" query="jdbc_transactions_total{}" />
         <query-assertion metric="jdbc_transactions_total" query="jdbc_transactions_total{type='commit'}" />
         <query-assertion metric="jdbc_transactions_total" query="jdbc_transactions_total{type='rollback'}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

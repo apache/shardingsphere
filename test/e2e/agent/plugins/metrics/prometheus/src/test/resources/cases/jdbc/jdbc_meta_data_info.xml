@@ -16,9 +16,9 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="jdbc_meta_data_info" metric-type="gauge">
         <query-assertion metric="jdbc_meta_data_info" query="jdbc_meta_data_info{}" />
         <query-assertion metric="jdbc_meta_data_info" query="jdbc_meta_data_info{database='sharding_db', type='storage_unit_count'}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

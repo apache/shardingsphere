@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="proxy_execute_latency_millis" metric-type="histogram">
         <query-assertion metric="proxy_execute_latency_millis_bucket" query="proxy_execute_latency_millis_bucket{}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

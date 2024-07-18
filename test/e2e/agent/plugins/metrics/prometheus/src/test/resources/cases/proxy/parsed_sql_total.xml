@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="parsed_sql_total" metric-type="counter">
         <query-assertion metric="parsed_sql_total" query="parsed_sql_total{type='INSERT'}" />
         <query-assertion metric="parsed_sql_total" query="parsed_sql_total{type='SELECT'}" />
@@ -24,4 +24,4 @@
         <query-assertion metric="parsed_sql_total" query="parsed_sql_total{type='UPDATE'}" />
         <query-assertion metric="parsed_sql_total" query="parsed_sql_total{type='TCL'}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>
