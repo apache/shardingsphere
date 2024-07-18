@@ -116,7 +116,12 @@ public class MetaDataContextManager {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
             metaDataContexts.set(reloadedMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
-                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().persistByAlterConfiguration(database.getName(), schemaName, schema));
+                    .forEach((schemaName, schema) -> {
+                        if (schema.isEmpty()) {
+                            metaDataPersistService.getDatabaseMetaDataService().addSchema(database.getName(), schemaName);
+                        }
+                        metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().persist(database.getName(), schemaName, schema.getTables());
+                    });
         } catch (final SQLException ex) {
             log.error("Refresh database meta data: {} failed", database.getName(), ex);
         }

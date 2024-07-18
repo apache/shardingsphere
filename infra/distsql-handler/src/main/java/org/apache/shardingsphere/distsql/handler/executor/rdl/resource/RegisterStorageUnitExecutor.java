@@ -70,7 +70,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
         try {
             MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().registerStorageUnits(database.getName(), propsMap);
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().afterStorageUnitsAltered(database.getName(), originalMetaDataContexts, false);
+            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().afterStorageUnitsAltered(database.getName(), originalMetaDataContexts);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("register", propsMap.keySet(), ex);
         }
