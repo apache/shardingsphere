@@ -60,7 +60,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         try {
             MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().afterStorageUnitsAltered(database.getName(), originalMetaDataContexts, true);
+            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().afterStorageUnitsDropped(database.getName(), originalMetaDataContexts);
         } catch (final SQLException | ShardingSphereServerException ex) {
             throw new StorageUnitsOperateException("unregister", sqlStatement.getStorageUnitNames(), ex);
         }

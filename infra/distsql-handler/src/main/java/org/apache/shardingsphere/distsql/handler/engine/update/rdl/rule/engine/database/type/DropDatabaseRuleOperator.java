@@ -71,11 +71,11 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         if (null != toBeAlteredRuleConfig && ((DatabaseRuleConfiguration) toBeAlteredRuleConfig).isEmpty()) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
             metaDataManagerPersistService.removeRuleConfiguration(database.getName(), Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
-            metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts, true);
+            metaDataManagerPersistService.afterRuleConfigurationDropped(database.getName(), originalMetaDataContexts);
             return Collections.emptyList();
         }
         Collection<MetaDataVersion> result = metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
-        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts, false);
+        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts);
         return result;
     }
 }

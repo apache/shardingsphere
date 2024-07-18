@@ -57,7 +57,7 @@ public final class AlterDatabaseRuleOperator implements DatabaseRuleOperator {
         MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
         metaDataManagerPersistService.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
         Collection<MetaDataVersion> result = metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
-        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts, false);
+        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts);
         return result;
     }
     

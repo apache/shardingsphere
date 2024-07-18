@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * Listener assisted dispatch event builder.
  */
-public class ListenerAssistedDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
+public final class ListenerAssistedDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
     public Collection<String> getSubscribedKeys() {
