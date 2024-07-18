@@ -45,7 +45,7 @@ jobs:
         id: filter
         with:
           token: ${{ github.token }}
-          filters: .github/workflows/resources/filter/filters.yml
+          filters: .github/workflows/resources/filter/operation-filters.yml
     outputs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
