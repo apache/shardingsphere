@@ -24,14 +24,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Storage units connect exception.
+ * Storage units validate exception.
  */
-public final class StorageUnitsConnectException extends ResourceDefinitionException {
+public final class StorageUnitsValidateException extends ResourceDefinitionException {
     
     private static final long serialVersionUID = 1824912697040264268L;
     
-    public StorageUnitsConnectException(final Map<String, Exception> causes) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 10, "Storage units can not connect, error messages are: %s.", causes.entrySet().stream().map(entry -> String.format(
+    public StorageUnitsValidateException(final Map<String, Exception> causes) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 10, "Storage units validate error, messages are: %s.", causes.entrySet().stream().map(entry -> String.format(
                 "Storage unit name: '%s', error message is: %s", entry.getKey(), entry.getValue().getMessage())).collect(Collectors.joining(System.lineSeparator())));
     }
 }

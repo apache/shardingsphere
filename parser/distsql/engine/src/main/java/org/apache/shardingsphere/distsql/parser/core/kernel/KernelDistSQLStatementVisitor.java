@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterStorageUnitContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CheckPrivilegesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ConvertYamlConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DisableComputeNodeContext;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowStorageUnitsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitsDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlockClusterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnregisterStorageUnitContext;
@@ -83,8 +85,8 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNod
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetComputeNodeStateStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
@@ -100,6 +102,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -111,12 +114,20 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitRegisterStorageUnit(final RegisterStorageUnitContext ctx) {
-        return new RegisterStorageUnitStatement(null != ctx.ifNotExists(), ctx.storageUnitDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
+        return new RegisterStorageUnitStatement(null != ctx.ifNotExists(), getStorageUnits(ctx.storageUnitsDefinition()), getExpectedPrivileges(ctx.checkPrivileges()));
     }
     
     @Override
     public ASTNode visitAlterStorageUnit(final AlterStorageUnitContext ctx) {
-        return new AlterStorageUnitStatement(ctx.storageUnitDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
+        return new AlterStorageUnitStatement(getStorageUnits(ctx.storageUnitsDefinition()), getExpectedPrivileges(ctx.checkPrivileges()));
+    }
+    
+    private Collection<DataSourceSegment> getStorageUnits(final StorageUnitsDefinitionContext ctx) {
+        return ctx.storageUnitDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList());
+    }
+    
+    private Collection<String> getExpectedPrivileges(final CheckPrivilegesContext ctx) {
+        return null == ctx ? Collections.emptySet() : ctx.privilegeType().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
     }
     
     @Override

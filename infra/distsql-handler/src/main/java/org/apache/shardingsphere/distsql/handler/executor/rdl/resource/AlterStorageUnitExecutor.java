@@ -27,6 +27,7 @@ import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceS
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
+import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
@@ -35,8 +36,8 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.AlterStorageUnitConnectionInfoException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.DuplicateStorageUnitException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -64,7 +65,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
     public void executeUpdate(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         checkBefore(sqlStatement);
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
-        validateHandler.validate(propsMap);
+        validateHandler.validate(propsMap, sqlStatement.getExpectedPrivileges().stream().map(each -> PrivilegeCheckType.valueOf(each.toUpperCase())).collect(Collectors.toSet()));
         try {
             MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database.getName(), propsMap);

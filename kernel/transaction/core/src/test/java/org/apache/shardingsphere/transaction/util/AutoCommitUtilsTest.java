@@ -19,18 +19,15 @@ package org.apache.shardingsphere.transaction.util;
 
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class AutoCommitUtilsTest {
     
@@ -38,7 +35,7 @@ class AutoCommitUtilsTest {
     void assertNeedOpenTransactionForSelectStatement() {
         SelectStatement selectStatement = new MySQLSelectStatement();
         assertFalse(AutoCommitUtils.needOpenTransaction(selectStatement));
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo"))));
+        selectStatement.setFrom(mock(SimpleTableSegment.class));
         assertTrue(AutoCommitUtils.needOpenTransaction(selectStatement));
     }
     
@@ -50,6 +47,6 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertNeedOpenTransactionForOtherStatement() {
-        assertFalse(AutoCommitUtils.needOpenTransaction(new RegisterStorageUnitStatement(false, new LinkedList<>())));
+        assertFalse(AutoCommitUtils.needOpenTransaction(mock(RegisterStorageUnitStatement.class)));
     }
 }

@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.database.core.checker;
  */
 public enum PrivilegeCheckType {
     
-    PIPELINE, SELECT, XA
+    NONE, PIPELINE, SELECT, XA
 }

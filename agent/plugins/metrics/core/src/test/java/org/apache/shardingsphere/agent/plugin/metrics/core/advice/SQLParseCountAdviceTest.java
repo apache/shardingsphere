@@ -102,7 +102,7 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseRDL() {
-        assertParse(new RegisterStorageUnitStatement(false, Collections.emptyList()), "RDL=1");
+        assertParse(new RegisterStorageUnitStatement(false, Collections.emptyList(), Collections.emptySet()), "RDL=1");
     }
     
     @Test
