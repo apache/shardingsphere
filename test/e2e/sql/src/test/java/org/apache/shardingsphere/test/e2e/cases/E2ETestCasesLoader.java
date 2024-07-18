@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.cases;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.cases.casse.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCaseContext;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 
 import javax.xml.bind.JAXBContext;
@@ -43,45 +43,45 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Integration test cases loader.
+ * E2E test cases loader.
  */
-public final class IntegrationTestCasesLoader {
+public final class E2ETestCasesLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
-    private static final IntegrationTestCasesLoader INSTANCE = new IntegrationTestCasesLoader();
+    private static final E2ETestCasesLoader INSTANCE = new E2ETestCasesLoader();
     
-    private final Map<SQLCommandType, Collection<IntegrationTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
+    private final Map<SQLCommandType, Collection<E2ETestCaseContext>> testCaseContexts = new LinkedHashMap<>();
     
     /**
      * Get singleton instance.
      *
      * @return singleton instance
      */
-    public static IntegrationTestCasesLoader getInstance() {
+    public static E2ETestCasesLoader getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Get integration test case contexts.
+     * Get E2E test case contexts.
      *
      * @param sqlCommandType SQL command type
-     * @return integration test case contexts
+     * @return E2E test case contexts
      */
-    public Collection<IntegrationTestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
+    public Collection<E2ETestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
         return testCaseContexts.computeIfAbsent(sqlCommandType, this::loadIntegrationTestCaseContexts);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    private Collection<IntegrationTestCaseContext> loadIntegrationTestCaseContexts(final SQLCommandType sqlCommandType) {
+    private Collection<E2ETestCaseContext> loadIntegrationTestCaseContexts(final SQLCommandType sqlCommandType) {
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/"));
         return loadIntegrationTestCaseContexts(url, sqlCommandType);
     }
     
-    private Collection<IntegrationTestCaseContext> loadIntegrationTestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
+    private Collection<E2ETestCaseContext> loadIntegrationTestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
         Collection<File> files = getFiles(url, sqlCommandType);
         Preconditions.checkNotNull(files, "Can not find integration test cases.");
-        Collection<IntegrationTestCaseContext> result = new LinkedList<>();
+        Collection<E2ETestCaseContext> result = new LinkedList<>();
         for (File each : files) {
             result.addAll(getIntegrationTestCaseContexts(each));
         }
@@ -103,8 +103,8 @@ public final class IntegrationTestCasesLoader {
         return result;
     }
     
-    private Collection<IntegrationTestCaseContext> getIntegrationTestCaseContexts(final File file) throws IOException, JAXBException {
-        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new IntegrationTestCaseContext(each, file.getParent())).collect(Collectors.toList());
+    private Collection<E2ETestCaseContext> getIntegrationTestCaseContexts(final File file) throws IOException, JAXBException {
+        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new E2ETestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
     private E2ETestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
