@@ -346,3 +346,7 @@ ALGORITHM
 FORCE
     : F O R C E
     ;
+
+CHECK_PRIVILEGES
+    : C H E C K UL_ P R I V I L E G E S
+    ;
