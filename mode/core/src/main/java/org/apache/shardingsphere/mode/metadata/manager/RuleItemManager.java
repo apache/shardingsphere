@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 
+import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -49,9 +50,10 @@ public class RuleItemManager {
      * Alter with rule item.
      *
      * @param event alter rule item event
+     * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked", "unused"})
-    public void alterRuleItem(final AlterRuleItemEvent event) {
+    public void alterRuleItem(final AlterRuleItemEvent event) throws SQLException {
         if (!event.getActiveVersion().equals(metaDataPersistService.getMetaDataVersionPersistService()
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
@@ -71,9 +73,10 @@ public class RuleItemManager {
      * Drop with rule item.
      *
      * @param event drop rule item event
+     * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked", "unused"})
-    public void dropRuleItem(final DropRuleItemEvent event) {
+    public void dropRuleItem(final DropRuleItemEvent event) throws SQLException {
         String databaseName = event.getDatabaseName();
         if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName)) {
             return;

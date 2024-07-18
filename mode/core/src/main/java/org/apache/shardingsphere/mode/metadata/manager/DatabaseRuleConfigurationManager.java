@@ -76,9 +76,10 @@ public final class DatabaseRuleConfigurationManager {
      *
      * @param databaseName database name
      * @param ruleConfig rule configurations
+     * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public synchronized void alterRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
+    public synchronized void alterRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
@@ -86,14 +87,10 @@ public final class DatabaseRuleConfigurationManager {
             ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
             return;
         }
-        try {
-            rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
-                    ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
-            refreshMetadata(databaseName, database, rules);
-        } catch (final SQLException ex) {
-            log.error("Alter database: {} rule configurations failed", databaseName, ex);
-        }
+        rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+        rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
+                ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
+        refreshMetadata(databaseName, database, rules);
     }
     
     /**
@@ -101,9 +98,10 @@ public final class DatabaseRuleConfigurationManager {
      *
      * @param databaseName database name
      * @param ruleConfig rule configurations
+     * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public synchronized void dropRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) {
+    public synchronized void dropRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
@@ -111,16 +109,12 @@ public final class DatabaseRuleConfigurationManager {
             ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
             return;
         }
-        try {
-            rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-            if (!((DatabaseRuleConfiguration) ruleConfig).isEmpty()) {
-                rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
-                        ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
-            }
-            refreshMetadata(databaseName, database, rules);
-        } catch (final SQLException ex) {
-            log.error("Drop database: {} rule configurations failed", databaseName, ex);
+        rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+        if (!((DatabaseRuleConfiguration) ruleConfig).isEmpty()) {
+            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
+                    ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
         }
+        refreshMetadata(databaseName, database, rules);
     }
     
     private void refreshMetadata(final String databaseName, final ShardingSphereDatabase database, final Collection<ShardingSphereRule> rules) throws SQLException {
