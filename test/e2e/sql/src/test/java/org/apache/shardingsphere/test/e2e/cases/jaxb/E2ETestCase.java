@@ -48,7 +48,7 @@ public final class E2ETestCase {
     @XmlAttribute(name = "scenario-comments")
     private String scenarioComments;
     
-    @XmlAttribute(name = "adapters")
+    @XmlAttribute
     private String adapters;
     
     @XmlAttribute(name = "delay-assertion-seconds")

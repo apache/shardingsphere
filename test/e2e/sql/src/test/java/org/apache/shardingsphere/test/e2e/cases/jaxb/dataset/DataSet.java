@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.cases.jaxb.dataset;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.jaxb.dataset.metadata.DataSetMetaData;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
  */
 @XmlRootElement(name = "dataset")
 @Getter
+@Setter
 public final class DataSet {
     
     @XmlAttribute(name = "update-count")
