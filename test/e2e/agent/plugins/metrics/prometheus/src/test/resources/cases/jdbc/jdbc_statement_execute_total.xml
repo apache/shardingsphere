@@ -16,10 +16,10 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="jdbc_statement_execute_total" metric-type="counter">
         <query-assertion metric="jdbc_statement_execute_total" query="jdbc_statement_execute_total{}" />
         <query-assertion metric="jdbc_statement_execute_total" query="jdbc_statement_execute_total{statement_type='prepared_statement'}" />
         <query-assertion metric="jdbc_statement_execute_total" query="jdbc_statement_execute_total{statement_type='statement'}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>
