@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,9 +53,9 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
     
     private static final String[][] XA_REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"XA_RECOVER_ADMIN", "ON *.*"}};
     
-    private static final Map<PrivilegeCheckType, String[][]> REQUIRED_PRIVILEGES = new HashMap<>(2, 1F);
+    private static final Map<PrivilegeCheckType, String[][]> REQUIRED_PRIVILEGES = new EnumMap<>(PrivilegeCheckType.class);
     
-    private static final Map<PrivilegeCheckType, Collection<String>> REQUIRED_PRIVILEGES_FOR_MESSAGE = new HashMap<>(2, 1F);
+    private static final Map<PrivilegeCheckType, Collection<String>> REQUIRED_PRIVILEGES_FOR_MESSAGE = new EnumMap<>(PrivilegeCheckType.class);
     
     private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1F);
     
