@@ -88,8 +88,8 @@ public final class SystemSchemaManager {
         Optional<Map<String, Collection<String>>> schemaTableMap = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType));
         Optional<Map<String, Collection<String>>> commonTableMap = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON));
         if (null == schema) {
-            return schemaTableMap.map(schemas -> schemas.values().stream().flatMap(Collection::stream).anyMatch(tables -> tables.contains(tableName))).orElse(false)
-                    || commonTableMap.map(schemas -> schemas.values().stream().flatMap(Collection::stream).anyMatch(tables -> tables.contains(tableName))).orElse(false);
+            return schemaTableMap.map(schemas -> schemas.values().stream().anyMatch(tables -> tables.contains(tableName))).orElse(false)
+                    || commonTableMap.map(schemas -> schemas.values().stream().anyMatch(tables -> tables.contains(tableName))).orElse(false);
         }
         return schemaTableMap.map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false)
                 || commonTableMap.map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false);
