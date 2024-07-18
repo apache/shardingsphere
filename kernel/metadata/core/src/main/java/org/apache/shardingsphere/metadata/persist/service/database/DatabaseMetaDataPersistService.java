@@ -116,31 +116,6 @@ public final class DatabaseMetaDataPersistService {
     }
     
     /**
-     * Persist by alter configuration.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
-     */
-    public void persistByAlterConfiguration(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
-            addSchema(databaseName, schemaName);
-        }
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
-    }
-    
-    /**
-     * Persist by drop configuration.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
-     */
-    public void persistByDropConfiguration(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
-    }
-    
-    /**
      * Delete schema metadata.
      *
      * @param databaseName database name

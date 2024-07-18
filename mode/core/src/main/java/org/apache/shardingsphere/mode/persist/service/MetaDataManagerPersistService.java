@@ -159,9 +159,17 @@ public interface MetaDataManagerPersistService {
      *
      * @param databaseName database name
      * @param originalMetaDataContexts original meta data contexts
-     * @param isDropConfig is drop config
      */
-    default void afterStorageUnitsAltered(String databaseName, MetaDataContexts originalMetaDataContexts, boolean isDropConfig) {
+    default void afterStorageUnitsAltered(String databaseName, MetaDataContexts originalMetaDataContexts) {
+    }
+    
+    /**
+     * After storage units dropped.
+     *
+     * @param databaseName database name
+     * @param originalMetaDataContexts original meta data contexts
+     */
+    default void afterStorageUnitsDropped(String databaseName, MetaDataContexts originalMetaDataContexts) {
     }
     
     /**
@@ -169,8 +177,16 @@ public interface MetaDataManagerPersistService {
      *
      * @param databaseName database name
      * @param originalMetaDataContexts original meta data contexts
-     * @param isDropConfig is drop config
      */
-    default void afterRuleConfigurationAltered(String databaseName, MetaDataContexts originalMetaDataContexts, boolean isDropConfig) {
+    default void afterRuleConfigurationAltered(String databaseName, MetaDataContexts originalMetaDataContexts) {
+    }
+    
+    /**
+     * After rule configuration dropped.
+     *
+     * @param databaseName database name
+     * @param originalMetaDataContexts original meta data contexts
+     */
+    default void afterRuleConfigurationDropped(String databaseName, MetaDataContexts originalMetaDataContexts) {
     }
 }

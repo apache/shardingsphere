@@ -197,4 +197,12 @@ public final class ShardingSphereSchema {
     public List<String> getVisibleColumnNames(final String tableName) {
         return containsTable(tableName) ? getTable(tableName).getVisibleColumns() : Collections.emptyList();
     }
+    
+    /**
+     *  Schema is empty or not.
+     * @return true if tables and views are all empty, else false
+     */
+    public boolean isEmpty() {
+        return tables.isEmpty() && views.isEmpty();
+    }
 }

@@ -85,7 +85,10 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         String schemaName = alterSchemaPOJO.getSchemaName();
         ShardingSphereSchema schema = metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getSchema(schemaName);
         DatabaseMetaDataPersistService databaseMetaDataService = metaDataPersistService.getDatabaseMetaDataService();
-        databaseMetaDataService.persistByAlterConfiguration(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema);
+        if (schema.isEmpty()) {
+            databaseMetaDataService.addSchema(databaseName, alterSchemaPOJO.getRenameSchemaName());
+        }
+        databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema.getTables());
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema.getViews());
         databaseMetaDataService.dropSchema(databaseName, schemaName);
     }
@@ -172,31 +175,36 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final boolean isDropConfig) {
+    public void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        // TODO Confirm if it should be persisted twice
-        persistSchemaMetaData(databaseName, reloadMetaDataContexts, isDropConfig);
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
                         .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
-        metaDataPersistService.persistMetaDataByReloadDatabase(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName), isDropConfig);
+        metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     @Override
-    public void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final boolean isDropConfig) {
+    public void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        metaDataPersistService.persistMetaDataByReloadDatabase(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName), isDropConfig);
+        Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
+                .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
+                        .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
+        metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
-    private void persistSchemaMetaData(final String databaseName, final MetaDataContexts reloadMetaDataContexts, final boolean isDropConfig) {
-        if (isDropConfig) {
-            reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService()
-                    .persistByDropConfiguration(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
-        } else {
-            reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService()
-                    .persistByAlterConfiguration(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
-        }
+    @Override
+    public void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+    }
+    
+    @Override
+    public void afterRuleConfigurationDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
 }

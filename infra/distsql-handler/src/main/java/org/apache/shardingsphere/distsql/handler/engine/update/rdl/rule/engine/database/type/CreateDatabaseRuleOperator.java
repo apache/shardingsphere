@@ -55,7 +55,7 @@ public final class CreateDatabaseRuleOperator implements DatabaseRuleOperator {
         MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         Collection<MetaDataVersion> result = metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
-        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts, false);
+        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts);
         return result;
     }
     

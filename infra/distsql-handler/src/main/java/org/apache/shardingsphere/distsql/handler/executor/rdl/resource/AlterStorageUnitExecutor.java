@@ -68,7 +68,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
         try {
             MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database.getName(), propsMap);
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().afterStorageUnitsAltered(database.getName(), originalMetaDataContexts, false);
+            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().afterStorageUnitsAltered(database.getName(), originalMetaDataContexts);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("alter", propsMap.keySet(), ex);
         }

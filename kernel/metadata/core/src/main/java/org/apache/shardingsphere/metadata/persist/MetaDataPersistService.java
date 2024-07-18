@@ -142,21 +142,35 @@ public final class MetaDataPersistService {
     }
     
     /**
-     * Persist meta data by reload sharding sphere database.
+     * Persist reload meta data by alter.
      *
      * @param databaseName database name
      * @param reloadDatabase reload database
      * @param currentDatabase current database
-     * @param isDropConfig is drop config
      */
-    public void persistMetaDataByReloadDatabase(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase, final boolean isDropConfig) {
+    public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        if (isDropConfig) {
-            toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.persistByDropConfiguration(databaseName, key, value));
-        } else {
-            toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.persistByAlterConfiguration(databaseName, key, value));
-        }
+        toBeAddedSchemas.forEach((schemaName, schema) -> {
+            if (schema.isEmpty()) {
+                databaseMetaDataService.addSchema(databaseName, schemaName);
+            }
+            databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, schema.getTables());
+        });
+        toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
+    }
+    
+    /**
+     * Persist reload meta data by drop.
+     *
+     * @param databaseName database name
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
+     */
+    public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
+        Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
+        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, key, value.getTables()));
         toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
     }
 }
