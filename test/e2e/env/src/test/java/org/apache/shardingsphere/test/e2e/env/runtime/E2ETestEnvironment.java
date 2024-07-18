@@ -29,12 +29,12 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 /**
- * Integration test environment.
+ * E2E test environment.
  */
 @Getter
-public final class IntegrationTestEnvironment {
+public final class E2ETestEnvironment {
     
-    private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
+    private static final E2ETestEnvironment INSTANCE = new E2ETestEnvironment();
     
     private final Collection<String> runModes;
     
@@ -46,7 +46,7 @@ public final class IntegrationTestEnvironment {
     
     private final boolean smoke;
     
-    private IntegrationTestEnvironment() {
+    private E2ETestEnvironment() {
         Properties props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
         runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
@@ -83,7 +83,7 @@ public final class IntegrationTestEnvironment {
      *
      * @return singleton instance
      */
-    public static IntegrationTestEnvironment getInstance() {
+    public static E2ETestEnvironment getInstance() {
         return INSTANCE;
     }
 }
