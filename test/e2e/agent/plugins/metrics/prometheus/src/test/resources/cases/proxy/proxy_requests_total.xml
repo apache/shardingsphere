@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="proxy_requests_total" metric-type="counter">
         <query-assertion metric="proxy_requests_total" query="proxy_requests_total{}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

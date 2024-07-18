@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricMetadataAssert;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricQueryAssert;
-import org.apache.shardingsphere.test.e2e.agent.metrics.cases.IntegrationTestCasesLoader;
+import org.apache.shardingsphere.test.e2e.agent.metrics.cases.E2ETestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricQueryAssertion;
 import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricTestCase;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataResult;
@@ -85,7 +85,7 @@ class MetricsPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+            return E2ETestCasesLoader.getInstance().loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }
