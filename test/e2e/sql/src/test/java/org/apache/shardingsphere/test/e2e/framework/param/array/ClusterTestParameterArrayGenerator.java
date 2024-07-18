@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
@@ -33,7 +33,7 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClusterTestParameterArrayGenerator {
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
+    private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
     
     /**
      * Get assertion test parameter.

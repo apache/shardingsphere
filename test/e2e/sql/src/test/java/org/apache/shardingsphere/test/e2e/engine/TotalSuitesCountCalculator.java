@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 
 /**
  * Total test suites count calculator.
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TotalSuitesCountCalculator {
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
+    private static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
     
     private static final int GENERIC_SUITES_COUNT = 4;
     
