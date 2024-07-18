@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.case_.assertion;
+package org.apache.shardingsphere.test.e2e.cases.casse;
 
 import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import lombok.RequiredArgsConstructor;
 
 /**
- * JAXB definition of E2E test case assertion initial SQL.
+ * Integration test case context.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class E2ETestCaseAssertionSQL {
+public final class IntegrationTestCaseContext {
     
-    @XmlAttribute
-    private String sql;
+    private final E2ETestCase testCase;
     
-    @XmlAttribute(name = "affected-table")
-    private String affectedTable;
+    private final String parentPath;
 }

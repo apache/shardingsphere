@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.case_;
+package org.apache.shardingsphere.test.e2e.cases.casse;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.cases.case_.assertion.E2ETestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

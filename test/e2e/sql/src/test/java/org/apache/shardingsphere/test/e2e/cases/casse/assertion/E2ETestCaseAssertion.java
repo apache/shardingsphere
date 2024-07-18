@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.case_.assertion;
+package org.apache.shardingsphere.test.e2e.cases.casse.assertion;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.cases;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.cases.case_.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.e2e.cases.casse.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 
 import javax.xml.bind.JAXBContext;

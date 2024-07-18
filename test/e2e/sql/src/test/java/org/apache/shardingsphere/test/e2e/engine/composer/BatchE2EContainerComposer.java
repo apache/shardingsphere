@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.composer;
 
-import org.apache.shardingsphere.test.e2e.cases.case_.assertion.E2ETestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
