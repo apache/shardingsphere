@@ -63,7 +63,7 @@ public final class E2ETestCasesLoader {
     
     /**
      * Load E2E test cases.
-     * 
+     *
      * @param adapter adapter
      * @return E2E test cases
      */
