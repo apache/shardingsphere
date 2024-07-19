@@ -11,19 +11,58 @@ Apache ShardingSphere provides different metadata persistence methods for differ
 
 ### Database Repository
 
+The optional values of `provider` are H2, MySQL, EmbeddedDerby, DerbyNetworkServer and HSQLDB.
+Since third-party Vulnerability Reports often misreport H2 Database, avoiding the use of H2 Database in ShardingSphere Standalone Mode may be an option.
+Discuss the case where `provider` is not the default value `H2`.
+
+1. If `provider` is set to `MySQL`, a ready MySQL Server is required. The classpath should contain the Maven dependency of `com.mysql:mysql-connector-j:9.0.0`.
+2. If `provider` is set to `EmbeddedDerby`, the Derby database engine will run in the same JVM as the application.
+   The classpath should contain Maven dependencies of `org.apache.derby:derby:10.17.1.0` and `org.apache.derby:derbytools:10.17.1.0`, 
+   and the JDK version required to compile or run the downstream project is greater than or equal to JDK19. Possible configurations are as follows.
+
+```yaml
+mode:
+  type: Standalone
+  repository:
+    type: JDBC
+    props:
+      provider: EmbeddedDerby
+      jdbc_url: jdbc:derby:memory:config;create=true
+      username:
+```
+
+3. If `provider` is set to `DerbyNetworkServer`, a ready Derby Network Server is required.
+   There is no available Docker Image for Derby Network Server, and users may need to start Derby Network Server manually.
+   The classpath should contain Maven dependencies of `org.apache.derby:derbyclient:10.17.1.0` and `org.apache.derby:derbytools:10.17.1.0`, 
+   and the JDK version required to compile or run the downstream project is greater than or equal to JDK19.
+4. If `provider` is set to `HSQLDB`, a ready HyperSQL using Server Modes is required, or a database is created as an in-process database.
+   The classpath should contain the Maven dependency of `org.hsqldb:hsqldb:2.7.3` with `classifier` as `jdk8`.
+   There is no available Docker Image for HyperSQL using Server Modes, and users may need to manually start HyperSQL using Server Modes.
+   If HyperSQL using mem: protocol is used, the possible configuration is as follows,
+
+```yaml
+mode:
+   type: Standalone
+   repository:
+      type: JDBC
+      props:
+         provider: HSQLDB
+         jdbc_url: jdbc:hsqldb:mem:config
+         username: SA
+```
+
 Type: JDBC
 
 Mode: Standalone
 
 Attributes:
 
-| *Name*   | *Type* | *Description*                                              | *Default Value*                                                         |
-|----------|--------|------------------------------------------------------------|-------------------------------------------------------------------------|
-| provider | String | Type for metadata persist, the optional value is H2, MySQL | H2                                                                      |
-| jdbc_url | String | JDBC URL                                                   | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
-| username | String | username                                                   | sa                                                                      |
-| password | String | password                                                   |                                                                         |
-
+| *Name*   | *Type* | *Description*             | *Default Value*                                                         |
+|----------|--------|---------------------------|-------------------------------------------------------------------------|
+| provider | String | Type for metadata persist | H2                                                                      |
+| jdbc_url | String | JDBC URL                  | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
+| username | String | username                  | sa                                                                      |
+| password | String | password                  |                                                                         |
 
 ### ZooKeeper Repository
 
