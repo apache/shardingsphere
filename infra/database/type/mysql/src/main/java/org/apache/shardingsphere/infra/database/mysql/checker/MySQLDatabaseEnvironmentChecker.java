@@ -61,7 +61,7 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
     
     static {
         REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.PIPELINE, Arrays.asList("REPLICATION SLAVE", "REPLICATION CLIENT"));
-        REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.SELECT, Collections.singleton("SELECT"));
+        REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.SELECT, Collections.singleton("SELECT ON DATABASE"));
         REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.XA, Collections.singleton("XA_RECOVER_ADMIN"));
         REQUIRED_VARIABLES.put("LOG_BIN", "ON");
         REQUIRED_VARIABLES.put("BINLOG_FORMAT", "ROW");
