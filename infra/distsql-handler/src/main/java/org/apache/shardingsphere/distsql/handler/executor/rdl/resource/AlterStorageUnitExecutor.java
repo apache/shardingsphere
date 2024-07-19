@@ -65,7 +65,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
     public void executeUpdate(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         checkBefore(sqlStatement);
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
-        validateHandler.validate(propsMap, sqlStatement.getExpectedPrivileges().stream().map(each -> PrivilegeCheckType.valueOf(each.toUpperCase())).collect(Collectors.toSet()));
+        validateHandler.validate(propsMap, getExpectedPrivileges(sqlStatement));
         try {
             MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database.getName(), propsMap);
@@ -114,6 +114,14 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
         }
         ConnectionProperties connectionProps = storageUnit.getConnectionProperties();
         return Objects.equals(hostName, connectionProps.getHostname()) && Objects.equals(port, String.valueOf(connectionProps.getPort())) && Objects.equals(database, connectionProps.getCatalog());
+    }
+    
+    private Collection<PrivilegeCheckType> getExpectedPrivileges(final AlterStorageUnitStatement sqlStatement) {
+        Collection<PrivilegeCheckType> result = sqlStatement.getExpectedPrivileges().stream().map(each -> PrivilegeCheckType.valueOf(each.toUpperCase())).collect(Collectors.toSet());
+        if (result.isEmpty()) {
+            result.add(PrivilegeCheckType.SELECT);
+        }
+        return result;
     }
     
     @Override

@@ -67,7 +67,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
         if (propsMap.isEmpty()) {
             return;
         }
-        validateHandler.validate(propsMap, sqlStatement.getExpectedPrivileges().stream().map(each -> PrivilegeCheckType.valueOf(each.toUpperCase())).collect(Collectors.toSet()));
+        validateHandler.validate(propsMap, getExpectedPrivileges(sqlStatement));
         try {
             MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().registerStorageUnits(database.getName(), propsMap);
@@ -111,6 +111,14 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
     
     private Collection<String> getLogicalDataSourceNames() {
         return database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class).stream().flatMap(each -> each.getDataSourceMapper().keySet().stream()).collect(Collectors.toList());
+    }
+    
+    private Collection<PrivilegeCheckType> getExpectedPrivileges(final RegisterStorageUnitStatement sqlStatement) {
+        Collection<PrivilegeCheckType> result = sqlStatement.getExpectedPrivileges().stream().map(each -> PrivilegeCheckType.valueOf(each.toUpperCase())).collect(Collectors.toSet());
+        if (result.isEmpty()) {
+            result.add(PrivilegeCheckType.SELECT);
+        }
+        return result;
     }
     
     @Override

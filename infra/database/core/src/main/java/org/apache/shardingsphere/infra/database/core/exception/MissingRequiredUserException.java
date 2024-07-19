@@ -28,6 +28,6 @@ public final class MissingRequiredUserException extends MetaDataSQLException {
     private static final long serialVersionUID = -656859547059598488L;
     
     public MissingRequiredUserException(final String username) {
-        super(XOpenSQLState.NOT_FOUND, 7, "User '%s' does exist.", username);
+        super(XOpenSQLState.NOT_FOUND, 7, "User '%s' does exist", username);
     }
 }
