@@ -2448,4 +2448,49 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_json_parse">
+        <projections start-index="7" stop-index="41">
+            <expression-projection start-index="7" stop-index="41" text="JSON_PARSE('{&quot;k1&quot;:&quot;v31&quot;,&quot;k2&quot;:300}')">
+                <expr>
+                    <function function-name="JSON_PARSE" text="JSON_PARSE('{&quot;k1&quot;:&quot;v31&quot;,&quot;k2&quot;:300}')" start-index="7" stop-index="41">
+                        <parameter>
+                            <literal-expression value="{&quot;k1&quot;:&quot;v31&quot;,&quot;k2&quot;:300}" start-index="18" stop-index="40" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_json_parse_error_to_null">
+        <projections start-index="7" stop-index="32">
+            <expression-projection start-index="7" stop-index="32" text="JSON_PARSE('invalid json')">
+                <expr>
+                    <function function-name="JSON_PARSE" text="JSON_PARSE('invalid json')" start-index="7" stop-index="32">
+                        <parameter>
+                            <literal-expression value="invalid json" start-index="18" stop-index="31" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_json_parse_error_to_value">
+        <projections start-index="7" stop-index="38">
+            <expression-projection start-index="7" stop-index="38" text="JSON_PARSE('invalid json', '{}')">
+                <expr>
+                    <function function-name="JSON_PARSE" text="JSON_PARSE('invalid json', '{}')" start-index="7" stop-index="38">
+                        <parameter>
+                            <literal-expression value="invalid json" start-index="18" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="{}" start-index="34" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

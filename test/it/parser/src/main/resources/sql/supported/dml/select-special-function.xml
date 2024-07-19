@@ -142,4 +142,8 @@
     <sql-case id="select_floor" value="SELECT FLOOR(1.23)" db-types="MySQL" />
     <sql-case id="select_format" value="SELECT FORMAT(12332.123456, 4)" db-types="MySQL" />
     <sql-case id="select_format_bytes" value="SELECT FORMAT_BYTES(512)" db-types="MySQL" />
+    <sql-case id="select_json_parse" value="SELECT JSON_PARSE('{&quot;k1&quot;:&quot;v31&quot;,&quot;k2&quot;:300}')" db-types="Doris" />
+    <sql-case id="select_json_parse_error_to_null" value="SELECT JSON_PARSE('invalid json')" db-types="Doris" />
+    <sql-case id="select_json_parse_error_to_value" value="SELECT JSON_PARSE('invalid json', '{}')" db-types="Doris" />
+
 </sql-cases>
