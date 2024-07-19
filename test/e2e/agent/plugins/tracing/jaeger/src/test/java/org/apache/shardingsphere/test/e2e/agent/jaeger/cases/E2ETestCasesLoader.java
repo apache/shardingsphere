@@ -62,7 +62,7 @@ public final class E2ETestCasesLoader {
     }
     
     /**
-     * Load E2E test cases.
+     * Load test cases.
      *
      * @param adapter adapter
      * @return test cases
@@ -103,8 +103,8 @@ public final class E2ETestCasesLoader {
         return result;
     }
     
-    private E2ETestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(integrateCasesFile)) {
+    private E2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(e2eCasesFile)) {
             return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
