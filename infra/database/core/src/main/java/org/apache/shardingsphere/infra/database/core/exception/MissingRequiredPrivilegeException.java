@@ -30,6 +30,6 @@ public final class MissingRequiredPrivilegeException extends MetaDataSQLExceptio
     private static final long serialVersionUID = 3755362278200749857L;
     
     public MissingRequiredPrivilegeException(final Collection<String> privileges) {
-        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 6, "Missing required privilege(s) `%s`.", privileges);
+        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 6, "Missing required privilege(s) `%s`", privileges);
     }
 }

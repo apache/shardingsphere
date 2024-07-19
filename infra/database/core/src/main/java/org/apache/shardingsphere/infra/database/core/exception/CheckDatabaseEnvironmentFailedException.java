@@ -30,6 +30,6 @@ public final class CheckDatabaseEnvironmentFailedException extends MetaDataSQLEx
     private static final long serialVersionUID = 3913140870320566898L;
     
     public CheckDatabaseEnvironmentFailedException(final SQLException cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 5, "Check database environment failed.", cause);
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 5, "Check database environment failed", cause);
     }
 }
