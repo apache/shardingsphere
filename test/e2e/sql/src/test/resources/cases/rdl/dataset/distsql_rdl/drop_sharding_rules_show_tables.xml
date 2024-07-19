@@ -17,16 +17,17 @@
 
 <dataset>
     <metadata>
-        <column name="Tables_in_rdl_empty_rules" />
+        <column name="Tables_in_distsql_rdl" />
     </metadata>
     <row values="t_order_item_2" />
     <row values="t_order_item_3" />
     <row values="t_country" />
     <row values="t_order_item_0" />
     <row values="t_order_item_1" />
-    <row values="t_order" />
     <row values="t_user" />
     <row values="t_order_2" />
     <row values="t_order_3" />
+    <row values="t_order_0" />
+    <row values="t_order_1" />
     <row values="t_product_category" />
 </dataset>

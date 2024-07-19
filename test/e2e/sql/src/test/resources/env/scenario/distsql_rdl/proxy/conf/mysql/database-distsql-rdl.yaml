@@ -15,11 +15,11 @@
 # limitations under the License.
 #
 
-databaseName: rdl_empty_rules
+databaseName: distsql_rdl
 
 dataSources:
   ds_0:
-    url: jdbc:opengauss://opengauss.rdl_empty_rules.host:5432/rdl_ds_0
+    url: jdbc:mysql://mysql.distsql_rdl.host:3306/rdl_ds_0?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_1:
-    url: jdbc:opengauss://opengauss.rdl_empty_rules.host:5432/rdl_ds_1
+    url: jdbc:mysql://mysql.distsql_rdl.host:3306/rdl_ds_1?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -37,7 +37,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_2:
-    url: jdbc:opengauss://opengauss.rdl_empty_rules.host:5432/rdl_ds_2
+    url: jdbc:mysql://mysql.distsql_rdl.host:3306/rdl_ds_2?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -49,4 +49,4 @@ dataSources:
 rules:
 - !SINGLE
   tables:
-    - "*.*.*"
+    - "*.*"
