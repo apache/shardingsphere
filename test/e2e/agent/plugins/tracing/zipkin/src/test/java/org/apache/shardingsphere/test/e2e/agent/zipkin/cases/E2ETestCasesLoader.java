@@ -50,7 +50,7 @@ public final class E2ETestCasesLoader {
     
     private static final E2ETestCasesLoader INSTANCE = new E2ETestCasesLoader();
     
-    private Collection<SpanTestCase> e2eTestCases;
+    private Collection<SpanTestCase> testCases;
     
     /**
      * Get singleton instance.
@@ -62,25 +62,25 @@ public final class E2ETestCasesLoader {
     }
     
     /**
-     * Load E2E test cases.
+     * Load test cases.
      *
      * @param adapter adapter
-     * @return E2E test cases
+     * @return test cases
      */
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    public Collection<SpanTestCase> loadE2ETestCases(final String adapter) {
-        if (null != e2eTestCases) {
-            return e2eTestCases;
+    public Collection<SpanTestCase> loadTestCases(final String adapter) {
+        if (null != testCases) {
+            return testCases;
         }
-        e2eTestCases = new LinkedList<>();
+        testCases = new LinkedList<>();
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
         for (File each : getFiles(url)) {
-            e2eTestCases.addAll(loadE2ETestCases(each));
+            testCases.addAll(loadTestCases(each));
         }
-        return e2eTestCases;
+        return testCases;
     }
     
-    private Collection<SpanTestCase> loadE2ETestCases(final File file) throws IOException, JAXBException {
+    private Collection<SpanTestCase> loadTestCases(final File file) throws IOException, JAXBException {
         Collection<SpanTestCase> result = new LinkedList<>();
         for (SpanTestCase each : unmarshal(file.getPath()).getTestCases()) {
             result.addAll(each.getTagCases().stream().map(optional -> createSpanTestCase(each.getServiceName(), each.getSpanName(), optional)).collect(Collectors.toList()));

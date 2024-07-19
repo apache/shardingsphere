@@ -50,7 +50,7 @@ class ZipkinPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return E2ETestCasesLoader.getInstance().loadE2ETestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+            return E2ETestCasesLoader.getInstance().loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }

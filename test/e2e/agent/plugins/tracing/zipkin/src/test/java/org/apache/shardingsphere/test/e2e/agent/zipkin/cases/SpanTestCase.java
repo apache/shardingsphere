@@ -30,9 +30,9 @@ import java.util.Collection;
 /**
  * Span test case.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class SpanTestCase {
     
     @XmlAttribute(name = "service-name")
