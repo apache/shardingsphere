@@ -53,8 +53,6 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
     
     private static final String[][] XA_REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"XA_RECOVER_ADMIN", "ON *.*"}};
     
-    private static final Map<PrivilegeCheckType, String[][]> REQUIRED_PRIVILEGES = new EnumMap<>(PrivilegeCheckType.class);
-    
     private static final Map<PrivilegeCheckType, Collection<String>> REQUIRED_PRIVILEGES_FOR_MESSAGE = new EnumMap<>(PrivilegeCheckType.class);
     
     private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1F);
@@ -62,9 +60,8 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
     private static final String SHOW_VARIABLES_SQL;
     
     static {
-        REQUIRED_PRIVILEGES.put(PrivilegeCheckType.PIPELINE, PIPELINE_REQUIRED_PRIVILEGES);
         REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.PIPELINE, Arrays.asList("REPLICATION SLAVE", "REPLICATION CLIENT"));
-        REQUIRED_PRIVILEGES.put(PrivilegeCheckType.XA, XA_REQUIRED_PRIVILEGES);
+        REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.SELECT, Collections.singleton("SELECT ON DATABASE"));
         REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.XA, Collections.singleton("XA_RECOVER_ADMIN"));
         REQUIRED_VARIABLES.put("LOG_BIN", "ON");
         REQUIRED_VARIABLES.put("BINLOG_FORMAT", "ROW");
@@ -91,7 +88,7 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 String privilege = resultSet.getString(1).toUpperCase();
-                if (matchPrivileges(privilege, REQUIRED_PRIVILEGES.get(privilegeCheckType))) {
+                if (matchPrivileges(privilege, getRequiredPrivileges(connection, privilegeCheckType))) {
                     return;
                 }
             }
@@ -101,8 +98,25 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
         throw new MissingRequiredPrivilegeException(REQUIRED_PRIVILEGES_FOR_MESSAGE.get(privilegeCheckType));
     }
     
-    private boolean matchPrivileges(final String privilege, final String[][] requiredPrivileges) {
-        return Arrays.stream(requiredPrivileges).anyMatch(each -> Arrays.stream(each).allMatch(privilege::contains));
+    private String[][] getRequiredPrivileges(final Connection connection, final PrivilegeCheckType privilegeCheckType) throws SQLException {
+        switch (privilegeCheckType) {
+            case PIPELINE:
+                return PIPELINE_REQUIRED_PRIVILEGES;
+            case SELECT:
+                return getSelectRequiredPrivilege(connection);
+            case XA:
+                return XA_REQUIRED_PRIVILEGES;
+            default:
+                return new String[0][0];
+        }
+    }
+    
+    private String[][] getSelectRequiredPrivilege(final Connection connection) throws SQLException {
+        return new String[][]{{"ALL PRIVILEGES", "ON *.*"}, {"SELECT", "ON *.*"}, {"SELECT", String.format("ON `%s`.*", connection.getCatalog()).toUpperCase()}};
+    }
+    
+    private boolean matchPrivileges(final String grantedPrivileges, final String[][] requiredPrivileges) {
+        return Arrays.stream(requiredPrivileges).anyMatch(each -> Arrays.stream(each).allMatch(grantedPrivileges::contains));
     }
     
     @Override
