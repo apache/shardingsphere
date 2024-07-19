@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="Tables_in_rdl_empty_rules" />
+        <column name="Tables_in_distsql_rdl" />
     </metadata>
     <row values="t_order_item_2" />
     <row values="t_order_item_3" />
