@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.fixture.request;
+package org.apache.shardingsphere.test.e2e.agent.common.fixture.executor;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.repository.AgentTestJDBCRepository;
