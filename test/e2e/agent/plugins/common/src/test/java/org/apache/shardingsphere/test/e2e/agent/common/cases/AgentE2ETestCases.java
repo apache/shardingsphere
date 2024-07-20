@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.file.cases;
+package org.apache.shardingsphere.test.e2e.agent.common.cases;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCases;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * E2E test cases.
+ * Agent E2E test cases.
+ * 
+ * @param <T> type of agent E2E test case
  */
-@XmlRootElement(name = "e2e-test-cases")
-@Getter
-public final class E2ETestCases implements AgentE2ETestCases<LogTestCase> {
+public interface AgentE2ETestCases<T extends AgentE2ETestCase> {
     
-    @XmlElement(name = "test-case")
-    private final Collection<LogTestCase> testCases = new LinkedList<>();
+    /**
+     * Get test cases.
+     *
+     * @return test cases
+     */
+    Collection<T> getTestCases();
 }
