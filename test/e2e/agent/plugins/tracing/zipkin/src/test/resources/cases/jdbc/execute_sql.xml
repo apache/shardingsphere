@@ -25,7 +25,7 @@
         <tag key="peer.port" value="3306" />
         <tag key="db.instance" value="ds_0" />
         <tag key="db.instance" value="ds_1" />
-        <tag key="db.bind_vars" need-assert-value="false" />
-        <tag key="db.statement" need-assert-value="false" />
+        <tag key="db.bind_vars" />
+        <tag key="db.statement" />
     </test-case>
 </e2e-test-cases>

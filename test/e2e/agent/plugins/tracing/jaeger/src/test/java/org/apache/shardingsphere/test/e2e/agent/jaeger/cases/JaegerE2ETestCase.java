@@ -36,10 +36,10 @@ import java.util.Collection;
 @Setter
 public final class JaegerE2ETestCase implements AgentE2ETestCase {
     
-    @XmlAttribute(name = "service-name")
+    @XmlAttribute(name = "service-name", required = true)
     private String serviceName;
     
-    @XmlAttribute(name = "span-name")
+    @XmlAttribute(name = "span-name", required = true)
     private String spanName;
     
     @XmlElement(name = "tag")

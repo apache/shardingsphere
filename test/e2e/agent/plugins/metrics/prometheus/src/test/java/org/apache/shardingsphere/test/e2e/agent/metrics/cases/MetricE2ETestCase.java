@@ -37,10 +37,10 @@ import java.util.LinkedList;
 @Setter
 public final class MetricE2ETestCase implements AgentE2ETestCase {
     
-    @XmlAttribute(name = "metric-name")
+    @XmlAttribute(name = "metric-name", required = true)
     private String metricName;
     
-    @XmlAttribute(name = "metric-type")
+    @XmlAttribute(name = "metric-type", required = true)
     private String metricType;
     
     @XmlElement(name = "query-assertion")
