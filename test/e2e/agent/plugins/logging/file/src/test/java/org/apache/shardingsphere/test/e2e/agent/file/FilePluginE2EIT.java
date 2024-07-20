@@ -47,7 +47,7 @@ class FilePluginE2EIT {
     
     private static class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
-        public TestCaseArgumentsProvider() {
+        private TestCaseArgumentsProvider() {
             super(LogE2ETestCases.class);
         }
     }

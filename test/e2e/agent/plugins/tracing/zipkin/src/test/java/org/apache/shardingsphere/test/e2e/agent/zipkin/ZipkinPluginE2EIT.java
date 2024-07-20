@@ -44,7 +44,7 @@ class ZipkinPluginE2EIT {
     
     private static class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
-        public TestCaseArgumentsProvider() {
+        private TestCaseArgumentsProvider() {
             super(ZipkinE2ETestCases.class);
         }
     }
