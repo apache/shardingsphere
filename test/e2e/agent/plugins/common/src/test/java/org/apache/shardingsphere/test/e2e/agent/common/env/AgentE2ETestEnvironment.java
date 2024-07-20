@@ -58,7 +58,6 @@ public final class AgentE2ETestEnvironment {
     @Getter
     private final String adapter;
     
-    @Getter
     private final String plugin;
     
     private final long collectDataWaitSeconds;
