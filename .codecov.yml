@@ -16,7 +16,6 @@
 #
 
 coverage:
-  max_report_age: off
   status:
     # pull-requests only
     patch:
@@ -24,3 +23,5 @@ coverage:
         threshold: 0.1%
 ignore:
   - "examples/.*"
+codecov:
+  max_report_age: off
