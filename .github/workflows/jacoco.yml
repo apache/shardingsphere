@@ -44,9 +44,6 @@ jobs:
       - name: Run code coverage merge script
         run: ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh
 
-      - name: Merge coverage report
-        run: ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh
-
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
