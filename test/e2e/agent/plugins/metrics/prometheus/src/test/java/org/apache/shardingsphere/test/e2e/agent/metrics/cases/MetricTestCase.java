@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -34,7 +35,7 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class MetricTestCase {
+public final class MetricTestCase implements AgentE2ETestCase {
     
     @XmlAttribute(name = "metric-name")
     private String metricName;

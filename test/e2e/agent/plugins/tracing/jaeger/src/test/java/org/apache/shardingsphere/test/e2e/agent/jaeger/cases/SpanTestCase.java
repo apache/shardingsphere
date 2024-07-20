@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger.cases;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -33,7 +34,7 @@ import java.util.Collection;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SpanTestCase {
+public final class SpanTestCase implements AgentE2ETestCase {
     
     @XmlAttribute(name = "service-name")
     private String serviceName;
