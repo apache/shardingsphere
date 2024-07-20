@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common;
+package org.apache.shardingsphere.test.e2e.agent.common.framework;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCases;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+
+import java.util.stream.Stream;
 
 /**
- * Agent test action extension.
+ * Agent E2E test case arguments provider.
  */
-public final class AgentTestActionExtension implements BeforeAllCallback, AfterAllCallback {
+@RequiredArgsConstructor
+public abstract class AgentE2ETestCaseArgumentsProvider implements ArgumentsProvider {
+    
+    private final Class<? extends AgentE2ETestCases<?>> agentE2ETestCasesClass;
     
     @Override
-    public void beforeAll(final ExtensionContext extensionContext) {
-        AgentE2ETestEnvironment.getInstance().init();
-    }
-    
-    @Override
-    public void afterAll(final ExtensionContext extensionContext) {
-        AgentE2ETestEnvironment.getInstance().destroy();
+    public final Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        return new AgentE2ETestCasesLoader(agentE2ETestCasesClass).loadTestCases(AgentE2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
     }
 }

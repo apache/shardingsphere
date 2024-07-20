@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
-import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.LogTestCase;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@ExtendWith(AgentTestActionExtension.class)
+@ExtendWith(AgentE2ETestActionExtension.class)
 class FilePluginE2EIT {
     
     @EnabledIf("isEnabled")
@@ -50,11 +45,10 @@ class FilePluginE2EIT {
         return AgentE2ETestEnvironment.getInstance().containsTestParameter();
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return new AgentE2ETestCasesLoader(LogE2ETestCases.class).loadTestCases(AgentE2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+        private TestCaseArgumentsProvider() {
+            super(LogE2ETestCases.class);
         }
     }
 }

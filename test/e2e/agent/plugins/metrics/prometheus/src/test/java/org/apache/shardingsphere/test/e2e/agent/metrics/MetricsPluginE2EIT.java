@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.agent.metrics;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.agent.common.util.HttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricMetadataAssert;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricQueryAssert;
@@ -32,17 +32,13 @@ import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataRe
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResult;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.stream.Stream;
 
-@ExtendWith(AgentTestActionExtension.class)
+@ExtendWith(AgentE2ETestActionExtension.class)
 @Slf4j
 class MetricsPluginE2EIT {
     
@@ -83,11 +79,10 @@ class MetricsPluginE2EIT {
         return AgentE2ETestEnvironment.getInstance().containsTestParameter();
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return new AgentE2ETestCasesLoader(MetricE2ETestCases.class).loadTestCases(AgentE2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+        private TestCaseArgumentsProvider() {
+            super(MetricE2ETestCases.class);
         }
     }
 }
