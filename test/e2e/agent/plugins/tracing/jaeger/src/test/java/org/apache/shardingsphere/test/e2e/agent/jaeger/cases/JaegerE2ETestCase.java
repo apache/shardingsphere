@@ -19,30 +19,34 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger.cases;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
 /**
- * Tag assertion.
+ * Jaeger E2E test case.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class TagAssertion {
+public final class JaegerE2ETestCase implements AgentE2ETestCase {
     
-    @XmlAttribute(name = "key")
-    private String tagKey;
+    @XmlAttribute(name = "service-name")
+    private String serviceName;
     
-    @XmlAttribute(name = "value")
-    private String tagValue;
+    @XmlAttribute(name = "span-name")
+    private String spanName;
     
-    @XmlAttribute(name = "need-assert-value")
-    private boolean needAssertValue = true;
+    @XmlElement(name = "tag")
+    private Collection<JaegerTagAssertion> tags;
     
     @Override
     public String toString() {
-        return String.format("%s -> %s", tagKey, tagValue);
+        return String.format("%s -> %s -> %s", AgentE2ETestEnvironment.getInstance().getAdapter(), spanName, tags.iterator().next().toString());
     }
 }

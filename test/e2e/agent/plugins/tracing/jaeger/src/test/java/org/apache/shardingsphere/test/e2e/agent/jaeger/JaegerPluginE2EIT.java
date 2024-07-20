@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.SpanAssert;
+import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.JaegerSpanAssert;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.JaegerE2ETestCases;
-import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.SpanTestCase;
+import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.JaegerE2ETestCase;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,8 +34,8 @@ class JaegerPluginE2EIT {
     @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertWithAgent(final SpanTestCase spanTestCase) {
-        SpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getJaegerHttpUrl(), spanTestCase);
+    void assertTraceAgent(final JaegerE2ETestCase testCase) {
+        JaegerSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getJaegerHttpUrl(), testCase);
     }
     
     private static boolean isEnabled() {

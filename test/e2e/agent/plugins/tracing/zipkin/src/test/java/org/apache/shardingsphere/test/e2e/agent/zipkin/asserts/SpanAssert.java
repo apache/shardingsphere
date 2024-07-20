@@ -77,7 +77,7 @@ public final class SpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<SpanResult> getSpanResults(final SpanTestCase expected, final String url) {
-        List<List<SpanResult>> result = JsonUtils.fromJsonString(HttpUtils.getInstance().get(url), new TypeReference<List<List<SpanResult>>>() {
+        List<List<SpanResult>> result = JsonUtils.fromJsonString(HttpUtils.getInstance().query(url), new TypeReference<List<List<SpanResult>>>() {
         });
         assertNotNull(result);
         return result.stream().findFirst().orElse(Collections.emptyList()).stream()
