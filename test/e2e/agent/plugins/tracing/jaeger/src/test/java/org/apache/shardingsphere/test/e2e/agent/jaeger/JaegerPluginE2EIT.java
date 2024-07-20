@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.test.e2e.agent.jaeger;
 
 import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.SpanAssert;
-import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.E2ETestCasesLoader;
+import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.E2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.SpanTestCase;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +51,7 @@ class JaegerPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return E2ETestCasesLoader.getInstance().loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+            return new AgentE2ETestCasesLoader(E2ETestCases.class).loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }
