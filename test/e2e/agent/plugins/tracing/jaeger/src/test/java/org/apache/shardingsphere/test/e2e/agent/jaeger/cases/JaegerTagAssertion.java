@@ -25,12 +25,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Tag assertion.
+ * Jaeger tag assertion.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class TagAssertion {
+public final class JaegerTagAssertion {
     
     @XmlAttribute(name = "key")
     private String tagKey;

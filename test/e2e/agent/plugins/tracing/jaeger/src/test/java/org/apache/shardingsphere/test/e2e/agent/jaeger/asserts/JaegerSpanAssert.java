@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.response.JaegerSp
 import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.response.JaegerTraceResponse;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.response.JaegerTraceResponseData;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.JaegerE2ETestCase;
-import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.TagAssertion;
+import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.JaegerTagAssertion;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -51,7 +51,7 @@ public final class JaegerSpanAssert {
      */
     public static void assertIs(final String jaegerUrl, final JaegerE2ETestCase expected) {
         assertTagKey(jaegerUrl, expected);
-        expected.getTagAssertions().stream().filter(TagAssertion::isNeedAssertValue).forEach(each -> assertTagValue(jaegerUrl, expected, each));
+        expected.getTags().stream().filter(JaegerTagAssertion::isNeedAssertValue).forEach(each -> assertTagValue(jaegerUrl, expected, each));
     }
     
     private static void assertTagKey(final String jaegerUrl, final JaegerE2ETestCase expected) {
@@ -60,12 +60,12 @@ public final class JaegerSpanAssert {
                 .filter(each -> expected.getSpanName().equalsIgnoreCase(each.getOperationName())).findFirst();
         assertTrue(spanResponse.isPresent());
         Collection<String> actualTags = spanResponse.get().getTags().stream().map(Tag::getKey).collect(Collectors.toSet());
-        Collection<String> expectedTags = expected.getTagAssertions().stream().map(TagAssertion::getTagKey).collect(Collectors.toSet());
+        Collection<String> expectedTags = expected.getTags().stream().map(JaegerTagAssertion::getTagKey).collect(Collectors.toSet());
         Collection<String> nonExistentTags = expectedTags.stream().filter(each -> !actualTags.contains(each)).collect(Collectors.toSet());
         assertTrue(nonExistentTags.isEmpty(), String.format("The tags `%s` does not exist in `%s` span", nonExistentTags, expected.getSpanName()));
     }
     
-    private static void assertTagValue(final String jaegerUrl, final JaegerE2ETestCase expected, final TagAssertion expectedTagCase) {
+    private static void assertTagValue(final String jaegerUrl, final JaegerE2ETestCase expected, final JaegerTagAssertion expectedTagCase) {
         String queryURL = String.format("%s/api/traces?service=%s&operation=%s&tags=%s&limit=%s", jaegerUrl, encode(expected.getServiceName()),
                 encode(expected.getSpanName()), encode(JsonUtils.toJsonString(ImmutableMap.of(expectedTagCase.getTagKey(), expectedTagCase.getTagValue()))), 1000);
         assertFalse(queryTraceResponses(queryURL).isEmpty(),

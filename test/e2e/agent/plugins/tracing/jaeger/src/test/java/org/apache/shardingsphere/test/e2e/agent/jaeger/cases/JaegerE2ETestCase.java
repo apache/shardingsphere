@@ -42,11 +42,11 @@ public final class JaegerE2ETestCase implements AgentE2ETestCase {
     @XmlAttribute(name = "span-name")
     private String spanName;
     
-    @XmlElement(name = "tag-assertion")
-    private Collection<TagAssertion> tagAssertions;
+    @XmlElement(name = "tag")
+    private Collection<JaegerTagAssertion> tags;
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s", AgentE2ETestEnvironment.getInstance().getAdapter(), spanName, tagAssertions.iterator().next().toString());
+        return String.format("%s -> %s -> %s", AgentE2ETestEnvironment.getInstance().getAdapter(), spanName, tags.iterator().next().toString());
     }
 }
