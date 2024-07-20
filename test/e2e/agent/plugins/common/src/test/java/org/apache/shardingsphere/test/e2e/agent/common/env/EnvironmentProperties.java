@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.common.env;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,15 +36,13 @@ public final class EnvironmentProperties {
      *
      * @param propsFileName properties file name
      * @return properties
-     * @throws RuntimeException runtime exception
      */
+    @SneakyThrows(IOException.class)
     @SuppressWarnings("AccessOfSystemProperties")
     public static Properties loadProperties(final String propsFileName) {
         Properties result = new Properties();
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(propsFileName)) {
             result.load(inputStream);
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
             result.setProperty(each, System.getProperty(each));
