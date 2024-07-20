@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.metrics.result;
+package org.apache.shardingsphere.test.e2e.agent.metrics.asserts.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,31 +25,41 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Metrics meta data result.
+ * Metrics query response.
  */
 @Getter
 @Setter
-public final class MetricsMetaDataResult implements JsonConfiguration {
+public final class MetricsQueryResponse implements JsonConfiguration {
     
     private String status;
     
-    private Map<String, List<Metric>> data;
+    private QueryData data;
     
     private String errorType;
     
     private String error;
     
     /**
-     * Metric.
+     * Query data.
      */
     @Getter
     @Setter
-    public static final class Metric {
+    public static final class QueryData implements JsonConfiguration {
         
-        private String type;
+        private String resultType;
         
-        private String help;
+        private List<QueryDataResult> result;
+    }
+    
+    /**
+     * Query data result.
+     */
+    @Getter
+    @Setter
+    public static final class QueryDataResult implements JsonConfiguration {
         
-        private String unit;
+        private Map<String, String> metric;
+        
+        private List<String> value;
     }
 }

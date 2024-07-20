@@ -18,6 +18,6 @@
 
 <e2e-test-cases>
     <test-case metric-name="proxy_state" metric-type="gauge">
-        <query-assertion metric="proxy_state" query="proxy_state{}" value="0" should-Assert-value="true" />
+        <query-assertion metric="proxy_state" query="proxy_state{}" value="0" />
     </test-case>
 </e2e-test-cases>
