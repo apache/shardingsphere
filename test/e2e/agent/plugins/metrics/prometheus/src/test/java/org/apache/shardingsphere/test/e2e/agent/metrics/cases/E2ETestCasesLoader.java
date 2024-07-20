@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -48,7 +49,7 @@ public final class E2ETestCasesLoader {
     
     private static final E2ETestCasesLoader INSTANCE = new E2ETestCasesLoader();
     
-    private Collection<MetricTestCase> testCases;
+    private Collection<AgentE2ETestCase> testCases;
     
     /**
      * Get singleton instance.
@@ -62,18 +63,17 @@ public final class E2ETestCasesLoader {
     /**
      * Load test cases.
      *
-     * @param adapter adapter proxy or jdbc
+     * @param adapter adapter
      * @return test cases
      */
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    public Collection<MetricTestCase> loadTestCases(final String adapter) {
+    public Collection<AgentE2ETestCase> loadTestCases(final String adapter) {
         if (null != testCases) {
             return testCases;
         }
         testCases = new LinkedList<>();
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
-        Collection<File> files = getFiles(url);
-        for (File each : files) {
+        for (File each : getFiles(url)) {
             testCases.addAll(unmarshal(each.getPath()).getTestCases());
         }
         return testCases;
@@ -94,8 +94,8 @@ public final class E2ETestCasesLoader {
         return result;
     }
     
-    private E2ETestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(integrateCasesFile)) {
+    private E2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(e2eCasesFile)) {
             return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
