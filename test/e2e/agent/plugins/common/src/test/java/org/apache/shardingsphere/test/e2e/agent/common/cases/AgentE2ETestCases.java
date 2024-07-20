@@ -28,7 +28,7 @@ public interface AgentE2ETestCases<T extends AgentE2ETestCase> {
     
     /**
      * Get test cases.
-     * 
+     *
      * @return test cases
      */
     Collection<T> getTestCases();
