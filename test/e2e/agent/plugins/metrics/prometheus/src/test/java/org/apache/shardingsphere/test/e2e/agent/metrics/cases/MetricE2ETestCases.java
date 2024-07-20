@@ -30,8 +30,8 @@ import java.util.LinkedList;
  */
 @XmlRootElement(name = "e2e-test-cases")
 @Getter
-public final class MetricE2ETestCases implements AgentE2ETestCases<MetricTestCase> {
+public final class MetricE2ETestCases implements AgentE2ETestCases<MetricE2ETestCase> {
     
     @XmlElement(name = "test-case")
-    private final Collection<MetricTestCase> testCases = new LinkedList<>();
+    private final Collection<MetricE2ETestCase> testCases = new LinkedList<>();
 }
