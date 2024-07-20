@@ -77,10 +77,10 @@ public final class ProxyRequestExecutor implements Runnable {
         OrderEntity orderEntity = new OrderEntity(1000L, 1000, "ROLL_BACK");
         repository.insertOrderAndRollback(orderEntity);
         repository.updateOrder(orderEntity);
-        repository.selectAllOrders();
+        repository.queryAllOrders();
         for (Long each : results) {
             repository.deleteOrder(each);
         }
-        repository.createExecuteError();
+        repository.queryFailed();
     }
 }
