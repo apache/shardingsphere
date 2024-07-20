@@ -89,7 +89,7 @@ public final class MetricAssert {
     
     private static void assertMetricData(final QueryDataResult actual, final MetricQueryAssertion expected) {
         assertThat(actual.getMetric().get("__name__"), is(expected.getMetric()));
-        if (expected.isNeedAssertValue()) {
+        if (null != expected.getValue()) {
             assertThat(actual.getValue().size(), is(2));
             assertThat(String.format("The value of the `%s` is error", expected.getQuery()), Integer.valueOf(actual.getValue().get(1)), is(expected.getValue()));
         }

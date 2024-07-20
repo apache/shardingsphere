@@ -32,15 +32,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class MetricQueryAssertion {
     
-    @XmlAttribute
+    @XmlAttribute(required = true)
     private String metric;
     
-    @XmlAttribute
+    @XmlAttribute(required = true)
     private String query;
     
     @XmlAttribute
-    private int value;
-    
-    @XmlAttribute(name = "need-assert-value")
-    private boolean needAssertValue;
+    private Integer value;
 }
