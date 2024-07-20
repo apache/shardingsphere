@@ -20,29 +20,21 @@ package org.apache.shardingsphere.test.e2e.agent.file.asserts;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Content assert.
+ * Log content assert.
  */
-public final class ContentAssert {
+public final class LogContentAssert {
     
     /**
      * Assertion specifies regular log content.
      *
-     * @param actualLogLines actual logs
+     * @param actualLogLines actual log lines
      * @param expectedLogRegex expected log regex
      */
     public static void assertIs(final Collection<String> actualLogLines, final String expectedLogRegex) {
         Pattern pattern = Pattern.compile(expectedLogRegex);
-        String actualLog = null;
-        for (String each : actualLogLines) {
-            if (pattern.matcher(each).find()) {
-                actualLog = each;
-                break;
-            }
-        }
-        assertThat(String.format("No logs matching `%s`", expectedLogRegex), actualLog, notNullValue());
+        assertTrue(actualLogLines.stream().anyMatch(each -> pattern.matcher(each).find()));
     }
 }
