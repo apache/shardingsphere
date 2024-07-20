@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common;
 
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -29,11 +29,11 @@ public final class AgentTestActionExtension implements BeforeAllCallback, AfterA
     
     @Override
     public void beforeAll(final ExtensionContext extensionContext) {
-        E2ETestEnvironment.getInstance().init();
+        AgentE2ETestEnvironment.getInstance().init();
     }
     
     @Override
     public void afterAll(final ExtensionContext extensionContext) {
-        E2ETestEnvironment.getInstance().destroy();
+        AgentE2ETestEnvironment.getInstance().destroy();
     }
 }

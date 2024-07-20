@@ -20,6 +20,9 @@ package org.apache.shardingsphere.test.e2e.agent.common.fixture.entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Order entity.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class OrderEntity {

@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.fixture.request;
+package org.apache.shardingsphere.test.e2e.agent.common.fixture.executor;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.repository.AgentTestJDBCRepository;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.entity.OrderEntity;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
@@ -53,11 +54,9 @@ public final class ProxyRequestExecutor implements Runnable {
     /**
      * Stop.
      */
+    @SneakyThrows(SecurityException.class)
     public void stop() {
-        try {
-            executor.shutdownNow();
-        } catch (final SecurityException ignored) {
-        }
+        executor.shutdownNow();
     }
     
     @Override
@@ -78,10 +77,10 @@ public final class ProxyRequestExecutor implements Runnable {
         OrderEntity orderEntity = new OrderEntity(1000L, 1000, "ROLL_BACK");
         repository.insertOrderAndRollback(orderEntity);
         repository.updateOrder(orderEntity);
-        repository.selectAllOrders();
+        repository.queryAllOrders();
         for (Long each : results) {
             repository.deleteOrder(each);
         }
-        repository.createExecuteError();
+        repository.queryFailed();
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.file;
 
 import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.LogTestCase;
@@ -42,19 +42,19 @@ class FilePluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final LogTestCase testCase) {
-        assertFalse(E2ETestEnvironment.getInstance().getActualLogs().isEmpty(), "The actual log is empty");
-        ContentAssert.assertIs(E2ETestEnvironment.getInstance().getActualLogs(), testCase.getLogRegex());
+        assertFalse(AgentE2ETestEnvironment.getInstance().getActualLogs().isEmpty(), "The actual log is empty");
+        ContentAssert.assertIs(AgentE2ETestEnvironment.getInstance().getActualLogs(), testCase.getLogRegex());
     }
     
     private static boolean isEnabled() {
-        return E2ETestEnvironment.getInstance().containsTestParameter();
+        return AgentE2ETestEnvironment.getInstance().containsTestParameter();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return new AgentE2ETestCasesLoader(LogE2ETestCases.class).loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+            return new AgentE2ETestCasesLoader(LogE2ETestCases.class).loadTestCases(AgentE2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }

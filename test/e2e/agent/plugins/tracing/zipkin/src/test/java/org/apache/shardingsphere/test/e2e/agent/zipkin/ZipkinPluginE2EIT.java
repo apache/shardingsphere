@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
 import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.SpanAssert;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.SpanTestCase;
@@ -40,18 +40,18 @@ class ZipkinPluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final SpanTestCase spanTestCase) {
-        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getZipKinHttpUrl(), spanTestCase);
+        SpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getZipKinHttpUrl(), spanTestCase);
     }
     
     private static boolean isEnabled() {
-        return E2ETestEnvironment.getInstance().containsTestParameter();
+        return AgentE2ETestEnvironment.getInstance().containsTestParameter();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return new AgentE2ETestCasesLoader(ZipkinE2ETestCases.class).loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+            return new AgentE2ETestCasesLoader(ZipkinE2ETestCases.class).loadTestCases(AgentE2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }

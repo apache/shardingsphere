@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -48,6 +48,6 @@ public final class MetricTestCase implements AgentE2ETestCase {
     
     @Override
     public String toString() {
-        return String.format("%s -> %s", E2ETestEnvironment.getInstance().getAdapter(), metricName);
+        return String.format("%s -> %s", AgentE2ETestEnvironment.getInstance().getAdapter(), metricName);
     }
 }
