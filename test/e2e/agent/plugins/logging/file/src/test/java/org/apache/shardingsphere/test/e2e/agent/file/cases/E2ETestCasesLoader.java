@@ -72,8 +72,7 @@ public final class E2ETestCasesLoader {
         }
         testCases = new LinkedList<>();
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
-        Collection<File> files = getFiles(url);
-        for (File each : files) {
+        for (File each : getFiles(url)) {
             testCases.addAll(unmarshal(each.getPath()).getTestCases());
         }
         return testCases;

@@ -35,10 +35,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * E2E test cases loader.
@@ -75,17 +73,9 @@ public final class E2ETestCasesLoader {
         testCases = new LinkedList<>();
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
         for (File each : getFiles(url)) {
-            testCases.addAll(loadTestCases(each));
+            testCases.addAll(unmarshal(each.getPath()).getTestCases());
         }
         return testCases;
-    }
-    
-    private Collection<SpanTestCase> loadTestCases(final File file) throws IOException, JAXBException {
-        Collection<SpanTestCase> result = new LinkedList<>();
-        for (SpanTestCase each : unmarshal(file.getPath()).getTestCases()) {
-            result.addAll(each.getTagCases().stream().map(optional -> createSpanTestCase(each.getServiceName(), each.getSpanName(), optional)).collect(Collectors.toList()));
-        }
-        return result;
     }
     
     private Collection<File> getFiles(final URL url) throws IOException, URISyntaxException {
@@ -107,13 +97,5 @@ public final class E2ETestCasesLoader {
         try (FileReader reader = new FileReader(e2eCasesFile)) {
             return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
         }
-    }
-    
-    private SpanTestCase createSpanTestCase(final String serviceName, final String spanName, final TagAssertion assertion) {
-        SpanTestCase result = new SpanTestCase();
-        result.setServiceName(serviceName);
-        result.setSpanName(spanName);
-        result.setTagCases(Collections.singletonList(assertion));
-        return result;
     }
 }
