@@ -49,13 +49,13 @@ public final class HttpUtils {
     }
     
     /**
-     * Get response.
+     * Query response.
      *
-     * @param url URL
+     * @param url query URL
      * @return response
      * @throws IOException IO exception
      */
-    public String get(final String url) throws IOException {
+    public String query(final String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
         try (Response response = client.newCall(request).execute()) {
             assertNotNull(response.body());

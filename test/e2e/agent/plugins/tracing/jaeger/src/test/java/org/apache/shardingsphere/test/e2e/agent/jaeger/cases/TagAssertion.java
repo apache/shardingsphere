@@ -27,9 +27,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 /**
  * Tag assertion.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class TagAssertion {
     
     @XmlAttribute(name = "key")

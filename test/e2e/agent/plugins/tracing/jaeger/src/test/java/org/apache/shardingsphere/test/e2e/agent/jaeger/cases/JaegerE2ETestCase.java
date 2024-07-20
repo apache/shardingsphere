@@ -29,12 +29,12 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 
 /**
- * Span test case.
+ * Jaeger E2E test case.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SpanTestCase implements AgentE2ETestCase {
+public final class JaegerE2ETestCase implements AgentE2ETestCase {
     
     @XmlAttribute(name = "service-name")
     private String serviceName;
@@ -43,10 +43,10 @@ public final class SpanTestCase implements AgentE2ETestCase {
     private String spanName;
     
     @XmlElement(name = "tag-assertion")
-    private Collection<TagAssertion> tagCases;
+    private Collection<TagAssertion> tagAssertions;
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s", AgentE2ETestEnvironment.getInstance().getAdapter(), spanName, tagCases.iterator().next().toString());
+        return String.format("%s -> %s -> %s", AgentE2ETestEnvironment.getInstance().getAdapter(), spanName, tagAssertions.iterator().next().toString());
     }
 }

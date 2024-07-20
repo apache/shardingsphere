@@ -15,20 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jaeger.result;
+package org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 import java.util.Collection;
 
+/**
+ * Jaeger span response.
+ */
 @Getter
 @Setter
-public final class TraceResult {
+public final class JaegerSpanResponse implements JsonConfiguration {
     
     @JsonProperty("traceID")
     private String traceId;
     
-    private Collection<SpanResult> spans;
+    @JsonProperty("spanID")
+    private String spanId;
+    
+    private String operationName;
+    
+    private Collection<Tag> tags;
+    
+    /**
+     * Jaeger tag response.
+     */
+    @Getter
+    @Setter
+    public static final class Tag implements JsonConfiguration {
+        
+        private String key;
+        
+        private String type;
+        
+        private String value;
+    }
 }
