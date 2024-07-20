@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.request;
+package org.apache.shardingsphere.test.e2e.agent.common.fixture.request;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.agent.common.entity.OrderEntity;
-import org.apache.shardingsphere.test.e2e.agent.common.util.JDBCAgentTestUtils;
+import org.apache.shardingsphere.test.e2e.agent.common.fixture.entity.OrderEntity;
+import org.apache.shardingsphere.test.e2e.agent.common.fixture.dao.JDBCAgentTestDAO;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.Connection;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -66,19 +66,19 @@ public final class ProxyRequestExecutor implements Runnable {
     }
     
     private void request() {
-        Collection<Long> results = new ArrayList<>(10);
+        Collection<Long> results = new LinkedList<>();
         for (int i = 1; i <= 10; i++) {
             OrderEntity orderEntity = new OrderEntity(i, i, "INSERT_TEST");
-            JDBCAgentTestUtils.insertOrder(orderEntity, connection);
+            JDBCAgentTestDAO.insertOrder(orderEntity, connection);
             results.add(orderEntity.getOrderId());
         }
         OrderEntity orderEntity = new OrderEntity(1000L, 1000, "ROLL_BACK");
-        JDBCAgentTestUtils.insertOrderRollback(orderEntity, connection);
-        JDBCAgentTestUtils.updateOrderStatus(orderEntity, connection);
-        JDBCAgentTestUtils.selectAllOrders(connection);
+        JDBCAgentTestDAO.insertOrderRollback(orderEntity, connection);
+        JDBCAgentTestDAO.updateOrderStatus(orderEntity, connection);
+        JDBCAgentTestDAO.selectAllOrders(connection);
         for (Long each : results) {
-            JDBCAgentTestUtils.deleteOrderByOrderId(each, connection);
+            JDBCAgentTestDAO.deleteOrderByOrderId(each, connection);
         }
-        JDBCAgentTestUtils.createExecuteError(connection);
+        JDBCAgentTestDAO.createExecuteError(connection);
     }
 }

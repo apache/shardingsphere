@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.util;
+package org.apache.shardingsphere.test.e2e.agent.common.fixture.dao;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.agent.common.entity.OrderEntity;
+import org.apache.shardingsphere.test.e2e.agent.common.fixture.entity.OrderEntity;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * JDBC agent test utils.
+ * JDBC agent test DAO.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCAgentTestUtils {
+public final class JDBCAgentTestDAO {
     
     /**
      * Insert order.

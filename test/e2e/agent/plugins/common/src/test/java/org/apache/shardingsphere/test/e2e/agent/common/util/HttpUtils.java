@@ -20,8 +20,6 @@ package org.apache.shardingsphere.test.e2e.agent.common.util;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -29,20 +27,16 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Ok http utils.
+ * HTTP utils.
  */
-public final class OkHttpUtils {
+public final class HttpUtils {
     
-    private static final OkHttpUtils OK_HTTP_UTILS = new OkHttpUtils();
+    private static final HttpUtils OK_HTTP_UTILS = new HttpUtils();
     
     private final OkHttpClient client;
     
-    private OkHttpUtils() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(10L, TimeUnit.SECONDS);
-        builder.readTimeout(10L, TimeUnit.SECONDS);
-        builder.writeTimeout(10L, TimeUnit.SECONDS);
-        client = builder.build();
+    private HttpUtils() {
+        client = new OkHttpClient.Builder().connectTimeout(10L, TimeUnit.SECONDS).readTimeout(10L, TimeUnit.SECONDS).writeTimeout(10L, TimeUnit.SECONDS).build();
     }
     
     /**
@@ -50,34 +44,22 @@ public final class OkHttpUtils {
      *
      * @return instance
      */
-    public static OkHttpUtils getInstance() {
+    public static HttpUtils getInstance() {
         return OK_HTTP_UTILS;
     }
     
     /**
-     * Get response json and transform to class bean.
+     * Get response.
      *
-     * @param <T> type parameter
-     * @param url url
-     * @param clazz clazz
-     * @return type parameter class bean
-     * @throws IOException IO exception
-     */
-    public <T extends JsonConfiguration> T get(final String url, final Class<T> clazz) throws IOException {
-        return JsonUtils.fromJsonString(get(url), clazz);
-    }
-    
-    /**
-     * Get response json.
-     *
-     * @param url url
-     * @return response json
+     * @param url URL
+     * @return response
      * @throws IOException IO exception
      */
     public String get(final String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
-        Response response = client.newCall(request).execute();
-        assertNotNull(response.body());
-        return response.body().string();
+        try (Response response = client.newCall(request).execute()) {
+            assertNotNull(response.body());
+            return response.body().string();
+        }
     }
 }

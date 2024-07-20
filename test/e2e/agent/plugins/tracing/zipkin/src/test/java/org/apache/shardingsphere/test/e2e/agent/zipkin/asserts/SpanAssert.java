@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.zipkin.asserts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
+import org.apache.shardingsphere.test.e2e.agent.common.util.HttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.SpanTestCase;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.TagAssertion;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.result.SpanResult;
@@ -77,7 +77,7 @@ public final class SpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<SpanResult> getSpanResults(final SpanTestCase expected, final String url) {
-        List<List<SpanResult>> result = JsonUtils.fromJsonString(OkHttpUtils.getInstance().get(url), new TypeReference<List<List<SpanResult>>>() {
+        List<List<SpanResult>> result = JsonUtils.fromJsonString(HttpUtils.getInstance().get(url), new TypeReference<List<List<SpanResult>>>() {
         });
         assertNotNull(result);
         return result.stream().findFirst().orElse(Collections.emptyList()).stream()
