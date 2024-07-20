@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCases;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,7 +30,7 @@ import java.util.LinkedList;
  */
 @XmlRootElement(name = "e2e-test-cases")
 @Getter
-public final class E2ETestCases {
+public final class E2ETestCases implements AgentE2ETestCases<MetricTestCase> {
     
     @XmlElement(name = "test-case")
     private final Collection<MetricTestCase> testCases = new LinkedList<>();
