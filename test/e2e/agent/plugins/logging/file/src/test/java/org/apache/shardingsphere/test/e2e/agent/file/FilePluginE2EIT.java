@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
-import org.apache.shardingsphere.test.e2e.agent.file.cases.E2ETestCases;
+import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.LogTestCase;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +54,7 @@ class FilePluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return new AgentE2ETestCasesLoader(E2ETestCases.class).loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+            return new AgentE2ETestCasesLoader(LogE2ETestCases.class).loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }
