@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.container.ShardingSphereP
 import org.apache.shardingsphere.test.e2e.agent.common.container.ZipkinContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.agent.common.enums.PluginType;
-import org.apache.shardingsphere.test.e2e.agent.common.request.ProxyRequestExecutor;
+import org.apache.shardingsphere.test.e2e.agent.common.fixture.request.ProxyRequestExecutor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;

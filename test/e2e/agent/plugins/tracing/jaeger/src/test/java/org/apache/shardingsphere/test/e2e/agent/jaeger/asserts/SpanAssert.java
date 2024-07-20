@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger.asserts;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
+import org.apache.shardingsphere.test.e2e.agent.common.util.HttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.SpanTestCase;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.TagAssertion;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.result.SpanResult;
@@ -82,7 +82,7 @@ public final class SpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<TraceResult> getTraceResults(final String url) {
-        TraceResults result = JsonUtils.fromJsonString(OkHttpUtils.getInstance().get(url), TraceResults.class);
+        TraceResults result = JsonUtils.fromJsonString(HttpUtils.getInstance().get(url), TraceResults.class);
         assertNotNull(result);
         return result.getData();
     }
