@@ -46,7 +46,7 @@ public final class MetricAssert {
     
     /**
      * Assert metric.
-     * 
+     *
      * @param prometheusURL prometheus URL
      * @param expected expected test case
      */
