@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class LogE2ETestCase implements AgentE2ETestCase {
     
-    @XmlAttribute(name = "log-regex")
+    @XmlAttribute(name = "log-regex", required = true)
     private String logRegex;
     
     @Override

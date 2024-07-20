@@ -49,7 +49,7 @@ public final class ZipkinSpanAssert {
      */
     public static void assertIs(final String zipkinUrl, final ZipkinE2ETestCase expected) {
         assertTagKey(zipkinUrl, expected);
-        expected.getTags().stream().filter(ZipkinTagAssertion::isNeedAssertValue).forEach(each -> assertTagValue(zipkinUrl, expected, each));
+        expected.getTags().stream().filter(each -> null != each.getTagValue()).forEach(each -> assertTagValue(zipkinUrl, expected, each));
     }
     
     private static void assertTagKey(final String zipkinUrl, final ZipkinE2ETestCase expected) {

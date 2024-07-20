@@ -51,7 +51,7 @@ public final class JaegerSpanAssert {
      */
     public static void assertIs(final String jaegerUrl, final JaegerE2ETestCase expected) {
         assertTagKey(jaegerUrl, expected);
-        expected.getTags().stream().filter(JaegerTagAssertion::isNeedAssertValue).forEach(each -> assertTagValue(jaegerUrl, expected, each));
+        expected.getTags().stream().filter(each -> null != each.getTagValue()).forEach(each -> assertTagValue(jaegerUrl, expected, each));
     }
     
     private static void assertTagKey(final String jaegerUrl, final JaegerE2ETestCase expected) {

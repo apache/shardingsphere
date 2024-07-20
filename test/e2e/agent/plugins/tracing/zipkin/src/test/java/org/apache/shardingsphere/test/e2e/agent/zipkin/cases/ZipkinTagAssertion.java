@@ -32,14 +32,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ZipkinTagAssertion {
     
-    @XmlAttribute(name = "key")
+    @XmlAttribute(name = "key", required = true)
     private String tagKey;
     
     @XmlAttribute(name = "value")
     private String tagValue;
-    
-    @XmlAttribute(name = "need-assert-value")
-    private boolean needAssertValue = true;
     
     @Override
     public String toString() {
