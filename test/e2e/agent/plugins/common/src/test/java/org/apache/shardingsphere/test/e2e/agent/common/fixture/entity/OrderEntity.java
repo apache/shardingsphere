@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.entity;
+package org.apache.shardingsphere.test.e2e.agent.common.fixture.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
