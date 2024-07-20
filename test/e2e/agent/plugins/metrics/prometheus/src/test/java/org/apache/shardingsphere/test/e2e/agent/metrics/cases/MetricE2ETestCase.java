@@ -30,12 +30,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Metric test case.
+ * Metric E2E test case.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class MetricTestCase implements AgentE2ETestCase {
+public final class MetricE2ETestCase implements AgentE2ETestCase {
     
     @XmlAttribute(name = "metric-name")
     private String metricName;
