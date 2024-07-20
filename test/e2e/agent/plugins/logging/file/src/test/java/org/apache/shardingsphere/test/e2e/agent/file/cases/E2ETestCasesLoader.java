@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.file.cases;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -48,7 +49,7 @@ public final class E2ETestCasesLoader {
     
     private static final E2ETestCasesLoader INSTANCE = new E2ETestCasesLoader();
     
-    private Collection<LogTestCase> testCases;
+    private Collection<AgentE2ETestCase> testCases;
     
     /**
      * Get singleton instance.
@@ -62,11 +63,11 @@ public final class E2ETestCasesLoader {
     /**
      * Load test cases.
      *
-     * @param adapter adapter proxy or JDBC
+     * @param adapter adapter
      * @return test cases
      */
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    public Collection<LogTestCase> loadTestCases(final String adapter) {
+    public Collection<AgentE2ETestCase> loadTestCases(final String adapter) {
         if (null != testCases) {
             return testCases;
         }

@@ -15,30 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.file.cases;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+package org.apache.shardingsphere.test.e2e.agent.common.cases;
 
 /**
- * Log test case.
+ * Agent E2E test cases.
  */
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class LogTestCase implements AgentE2ETestCase {
-    
-    @XmlAttribute(name = "log-regex")
-    private String logRegex;
-    
-    @Override
-    public String toString() {
-        return String.format("%s -> `%s`", E2ETestEnvironment.getInstance().getAdapter(), logRegex);
-    }
+public interface AgentE2ETestCase {
 }
