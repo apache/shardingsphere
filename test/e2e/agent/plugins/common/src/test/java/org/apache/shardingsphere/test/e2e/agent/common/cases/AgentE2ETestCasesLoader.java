@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jaeger.cases;
+package org.apache.shardingsphere.test.e2e.agent.common.cases;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -42,23 +40,12 @@ import java.util.Objects;
 /**
  * E2E test cases loader.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class E2ETestCasesLoader {
+@RequiredArgsConstructor
+public final class AgentE2ETestCasesLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
-    private static final E2ETestCasesLoader INSTANCE = new E2ETestCasesLoader();
-    
-    private Collection<AgentE2ETestCase> testCases;
-    
-    /**
-     * Get singleton instance.
-     *
-     * @return singleton instance
-     */
-    public static E2ETestCasesLoader getInstance() {
-        return INSTANCE;
-    }
+    private final Class<? extends AgentE2ETestCases<?>> agentE2ETestCasesClass;
     
     /**
      * Load test cases.
@@ -66,20 +53,17 @@ public final class E2ETestCasesLoader {
      * @param adapter adapter
      * @return test cases
      */
-    @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
     public Collection<AgentE2ETestCase> loadTestCases(final String adapter) {
-        if (null != testCases) {
-            return testCases;
-        }
-        testCases = new LinkedList<>();
+        Collection<AgentE2ETestCase> result = new LinkedList<>();
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
         for (File each : getFiles(url)) {
-            testCases.addAll(unmarshal(each.getPath()).getTestCases());
+            result.addAll(unmarshal(each.getPath()).getTestCases());
         }
-        return testCases;
+        return result;
     }
     
-    private Collection<File> getFiles(final URL url) throws IOException, URISyntaxException {
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    private Collection<File> getFiles(final URL url) {
         Collection<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
@@ -94,9 +78,10 @@ public final class E2ETestCasesLoader {
         return result;
     }
     
-    private E2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {
+    @SneakyThrows({IOException.class, JAXBException.class})
+    private AgentE2ETestCases<?> unmarshal(final String e2eCasesFile) {
         try (FileReader reader = new FileReader(e2eCasesFile)) {
-            return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
+            return (AgentE2ETestCases<?>) JAXBContext.newInstance(agentE2ETestCasesClass).createUnmarshaller().unmarshal(reader);
         }
     }
 }
