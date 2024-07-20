@@ -42,7 +42,7 @@ class JaegerPluginE2EIT {
         return AgentE2ETestEnvironment.getInstance().containsTestParameter();
     }
     
-    private static class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
+    private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
         private TestCaseArgumentsProvider() {
             super(JaegerE2ETestCases.class);

@@ -42,7 +42,7 @@ class ZipkinPluginE2EIT {
         return AgentE2ETestEnvironment.getInstance().containsTestParameter();
     }
     
-    private static class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
+    private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
         private TestCaseArgumentsProvider() {
             super(ZipkinE2ETestCases.class);
