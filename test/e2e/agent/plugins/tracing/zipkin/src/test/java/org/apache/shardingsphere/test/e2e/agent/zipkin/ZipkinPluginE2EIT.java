@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.agent.zipkin;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.SpanAssert;
-import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.SpanTestCase;
+import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.ZipkinSpanAssert;
+import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCase;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCases;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,8 +34,8 @@ class ZipkinPluginE2EIT {
     @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertTraceAgent(final SpanTestCase testCase) {
-        SpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getZipKinHttpUrl(), testCase);
+    void assertTraceAgent(final ZipkinE2ETestCase testCase) {
+        ZipkinSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getZipKinHttpUrl(), testCase);
     }
     
     private static boolean isEnabled() {
