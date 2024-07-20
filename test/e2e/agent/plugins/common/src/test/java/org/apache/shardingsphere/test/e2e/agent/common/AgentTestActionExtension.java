@@ -28,12 +28,12 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public final class AgentTestActionExtension implements BeforeAllCallback, AfterAllCallback {
     
     @Override
-    public void beforeAll(final ExtensionContext extensionContext) throws Exception {
+    public void beforeAll(final ExtensionContext extensionContext) {
         E2ETestEnvironment.getInstance().init();
     }
     
     @Override
-    public void afterAll(final ExtensionContext extensionContext) throws Exception {
+    public void afterAll(final ExtensionContext extensionContext) {
         E2ETestEnvironment.getInstance().destroy();
     }
 }
