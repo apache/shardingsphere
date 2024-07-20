@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.fixture.dao;
+package org.apache.shardingsphere.test.e2e.agent.common.fixture.repository;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.entity.OrderEntity;
 
 import java.sql.Connection;
@@ -30,18 +30,20 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * JDBC agent test DAO.
+ * Agent test JDBC repository.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCAgentTestDAO {
+@RequiredArgsConstructor
+public final class AgentTestJDBCRepository {
+    
+    private final Connection connection;
     
     /**
      * Insert order.
      *
      * @param orderEntity order entity
-     * @param connection connection
      */
-    public static void insertOrder(final OrderEntity orderEntity, final Connection connection) {
+    @SneakyThrows(SQLException.class)
+    public void insertOrder(final OrderEntity orderEntity) {
         String sql = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
@@ -50,17 +52,16 @@ public final class JDBCAgentTestDAO {
             preparedStatement.setString(3, orderEntity.getStatus());
             preparedStatement.executeUpdate();
             connection.commit();
-        } catch (final SQLException ignored) {
         }
     }
     
     /**
-     * Insert order rollback.
+     * Insert order and rollback.
      *
      * @param orderEntity order entity
-     * @param connection connection
      */
-    public static void insertOrderRollback(final OrderEntity orderEntity, final Connection connection) {
+    @SneakyThrows(SQLException.class)
+    public void insertOrderAndRollback(final OrderEntity orderEntity) {
         String sql = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
@@ -69,32 +70,30 @@ public final class JDBCAgentTestDAO {
             preparedStatement.setString(3, orderEntity.getStatus());
             preparedStatement.executeUpdate();
             connection.rollback();
-        } catch (final SQLException ignored) {
         }
     }
     
     /**
-     * Delete order by order id.
+     * Delete order.
      *
-     * @param orderId order id
-     * @param connection connection
+     * @param orderId to be deleted order ID
      */
-    public static void deleteOrderByOrderId(final Long orderId, final Connection connection) {
+    @SneakyThrows(SQLException.class)
+    public void deleteOrder(final Long orderId) {
         String sql = "DELETE FROM t_order WHERE order_id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, orderId);
             preparedStatement.executeUpdate();
-        } catch (final SQLException ignored) {
         }
     }
     
     /**
-     * Update order status.
+     * Update order.
      *
-     * @param orderEntity order entity
-     * @param connection connection
+     * @param orderEntity to be updated order entity
      */
-    public static void updateOrderStatus(final OrderEntity orderEntity, final Connection connection) {
+    @SneakyThrows(SQLException.class)
+    public void updateOrder(final OrderEntity orderEntity) {
         String sql = "UPDATE t_order SET status = ? WHERE order_id =?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
@@ -102,44 +101,36 @@ public final class JDBCAgentTestDAO {
             preparedStatement.setLong(2, orderEntity.getOrderId());
             preparedStatement.executeUpdate();
             connection.commit();
-        } catch (final SQLException ignored) {
         }
     }
     
     /**
-     * Select all orders collection.
+     * Select all orders.
      *
-     * @param connection connection
-     * @return collection
+     * @return all orders
      */
-    public static Collection<OrderEntity> selectAllOrders(final Connection connection) {
+    @SneakyThrows(SQLException.class)
+    public Collection<OrderEntity> selectAllOrders() {
         String sql = "SELECT * FROM t_order";
-        return getOrders(sql, connection);
-    }
-    
-    private static Collection<OrderEntity> getOrders(final String sql, final Connection connection) {
         Collection<OrderEntity> result = new LinkedList<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                OrderEntity orderEntity = new OrderEntity(resultSet.getLong(1), resultSet.getInt(2), resultSet.getString(3));
-                result.add(orderEntity);
+                result.add(new OrderEntity(resultSet.getLong(1), resultSet.getInt(2), resultSet.getString(3)));
             }
-        } catch (final SQLException ignored) {
         }
         return result;
     }
     
     /**
      * Create execute error.
-     *
-     * @param connection connection
      */
-    public static void createExecuteError(final Connection connection) {
+    @SneakyThrows(SQLException.class)
+    public void createExecuteError() {
         String sql = "SELECT * FROM non_existent_table";
         try (Statement statement = connection.createStatement()) {
             statement.executeQuery(sql);
-        } catch (final SQLException ignored) {
         }
     }
 }
