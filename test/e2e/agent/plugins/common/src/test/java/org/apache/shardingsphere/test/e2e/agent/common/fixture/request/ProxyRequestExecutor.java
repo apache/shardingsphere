@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common.fixture.request;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.repository.AgentTestJDBCRepository;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.entity.OrderEntity;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
@@ -53,11 +54,9 @@ public final class ProxyRequestExecutor implements Runnable {
     /**
      * Stop.
      */
+    @SneakyThrows(SecurityException.class)
     public void stop() {
-        try {
-            executor.shutdownNow();
-        } catch (final SecurityException ignored) {
-        }
+        executor.shutdownNow();
     }
     
     @Override

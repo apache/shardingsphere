@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.HttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricMetadataAssert;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricQueryAssert;
@@ -50,8 +50,8 @@ class MetricsPluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final MetricTestCase metricTestCase) {
-        String metaDataURL = E2ETestEnvironment.getInstance().getPrometheusHttpUrl() + "/api/v1/metadata";
-        String queryURL = E2ETestEnvironment.getInstance().getPrometheusHttpUrl() + "/api/v1/query";
+        String metaDataURL = AgentE2ETestEnvironment.getInstance().getPrometheusHttpUrl() + "/api/v1/metadata";
+        String queryURL = AgentE2ETestEnvironment.getInstance().getPrometheusHttpUrl() + "/api/v1/query";
         assertMetadata(metaDataURL, metricTestCase);
         assertQuery(queryURL, metricTestCase);
     }
@@ -80,14 +80,14 @@ class MetricsPluginE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestEnvironment.getInstance().containsTestParameter();
+        return AgentE2ETestEnvironment.getInstance().containsTestParameter();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return new AgentE2ETestCasesLoader(MetricE2ETestCases.class).loadTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+            return new AgentE2ETestCasesLoader(MetricE2ETestCases.class).loadTestCases(AgentE2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }
