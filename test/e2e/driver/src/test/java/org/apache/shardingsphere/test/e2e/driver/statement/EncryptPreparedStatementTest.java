@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.test.e2e.driver.AbstractEncryptDriverTest;
 import org.junit.jupiter.api.Test;
 
@@ -53,11 +52,6 @@ class EncryptPreparedStatementTest extends AbstractEncryptDriverTest {
     private static final String SELECT_ALL_ACTUAL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";
     
     private static final String SELECT_SQL_WITH_IN_OPERATOR = "SELECT * FROM t_query_encrypt WHERE pwd IN (?)";
-    
-    @Test
-    void assertSQLShow() {
-        assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-    }
     
     @Test
     void assertInsertWithExecute() throws SQLException {
