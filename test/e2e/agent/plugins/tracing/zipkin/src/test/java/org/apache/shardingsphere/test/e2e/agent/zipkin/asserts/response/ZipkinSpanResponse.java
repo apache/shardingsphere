@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.zipkin.result;
+package org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.response;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 import java.util.Map;
 
 /**
- * Span result.
+ * Zipkin span response.
  */
 @Getter
 @Setter
-public class SpanResult {
+public final class ZipkinSpanResponse implements JsonConfiguration {
     
     private String traceId;
     
@@ -39,7 +40,7 @@ public class SpanResult {
     
     private long duration;
     
-    private LocalEndpoint localEndpoint;
+    private ZipkinLocalEndpoint localEndpoint;
     
     private Map<String, String> tags;
 }

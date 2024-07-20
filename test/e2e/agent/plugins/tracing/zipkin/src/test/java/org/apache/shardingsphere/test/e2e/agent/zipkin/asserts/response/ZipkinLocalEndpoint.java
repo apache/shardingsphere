@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.zipkin.cases;
+package org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.response;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 /**
- * Tag assertion.
+ * Zipkin local endpoint.
  */
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class TagAssertion {
+public final class ZipkinLocalEndpoint implements JsonConfiguration {
     
-    @XmlAttribute(name = "key")
-    private String tagKey;
+    private String serviceName;
     
-    @XmlAttribute(name = "value")
-    private String tagValue;
-    
-    @XmlAttribute(name = "need-assert-value")
-    private boolean needAssertValue = true;
-    
-    @Override
-    public String toString() {
-        return String.format("%s -> %s", tagKey, tagValue);
-    }
+    private String ipv4;
 }

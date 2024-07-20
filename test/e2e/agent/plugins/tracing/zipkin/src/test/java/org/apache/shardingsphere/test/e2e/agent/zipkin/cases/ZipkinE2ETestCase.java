@@ -18,20 +18,35 @@
 package org.apache.shardingsphere.test.e2e.agent.zipkin.cases;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCases;
+import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Zipkin E2E test cases.
+ * Zipkin E2E test case.
  */
-@XmlRootElement(name = "e2e-test-cases")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class ZipkinE2ETestCases implements AgentE2ETestCases<ZipkinE2ETestCase> {
+@Setter
+public final class ZipkinE2ETestCase implements AgentE2ETestCase {
     
-    @XmlElement(name = "test-case")
-    private final Collection<ZipkinE2ETestCase> testCases = new LinkedList<>();
+    @XmlAttribute(name = "service-name")
+    private String serviceName;
+    
+    @XmlAttribute(name = "span-name")
+    private String spanName;
+    
+    @XmlElement(name = "tag")
+    private Collection<ZipkinTagAssertion> tags;
+    
+    @Override
+    public String toString() {
+        return String.format("%s -> %s -> %s", AgentE2ETestEnvironment.getInstance().getAdapter(), spanName, tags.iterator().next().toString());
+    }
 }

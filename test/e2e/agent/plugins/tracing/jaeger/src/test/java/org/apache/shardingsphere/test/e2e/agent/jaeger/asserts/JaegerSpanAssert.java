@@ -56,13 +56,13 @@ public final class JaegerSpanAssert {
     
     private static void assertTagKey(final String jaegerUrl, final JaegerE2ETestCase expected) {
         String queryURL = String.format("%s/api/traces?service=%s&operation=%s&limit=%s", jaegerUrl, encode(expected.getServiceName()), encode(expected.getSpanName()), 1000);
-        Optional<JaegerSpanResponse> spanResponse = queryTraceResponses(queryURL).stream().flatMap(each -> each.getSpans().stream())
+        Optional<JaegerSpanResponse> spanResponses = queryTraceResponses(queryURL).stream().flatMap(each -> each.getSpans().stream())
                 .filter(each -> expected.getSpanName().equalsIgnoreCase(each.getOperationName())).findFirst();
-        assertTrue(spanResponse.isPresent());
-        Collection<String> actualTags = spanResponse.get().getTags().stream().map(Tag::getKey).collect(Collectors.toSet());
+        assertTrue(spanResponses.isPresent());
+        Collection<String> actualTags = spanResponses.get().getTags().stream().map(Tag::getKey).collect(Collectors.toSet());
         Collection<String> expectedTags = expected.getTags().stream().map(JaegerTagAssertion::getTagKey).collect(Collectors.toSet());
-        Collection<String> nonExistentTags = expectedTags.stream().filter(each -> !actualTags.contains(each)).collect(Collectors.toSet());
-        assertTrue(nonExistentTags.isEmpty(), String.format("The tags `%s` does not exist in `%s` span", nonExistentTags, expected.getSpanName()));
+        Collection<String> notExistedTags = expectedTags.stream().filter(each -> !actualTags.contains(each)).collect(Collectors.toSet());
+        assertTrue(notExistedTags.isEmpty(), String.format("The tags `%s` does not exist in `%s` span", notExistedTags, expected.getSpanName()));
     }
     
     private static void assertTagValue(final String jaegerUrl, final JaegerE2ETestCase expected, final JaegerTagAssertion expectedTagCase) {
