@@ -32,7 +32,7 @@ public class SpanResult {
     private String traceId;
     
     private String id;
-    
+     
     private String name;
     
     private long timestamp;
