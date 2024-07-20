@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.agent.file;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
+import org.apache.shardingsphere.test.e2e.agent.file.asserts.LogContentAssert;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCases;
-import org.apache.shardingsphere.test.e2e.agent.file.cases.LogTestCase;
+import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCase;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,9 +36,9 @@ class FilePluginE2EIT {
     @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertWithAgent(final LogTestCase testCase) {
+    void assertWithAgent(final LogE2ETestCase testCase) {
         assertFalse(AgentE2ETestEnvironment.getInstance().getActualLogs().isEmpty(), "The actual log is empty");
-        ContentAssert.assertIs(AgentE2ETestEnvironment.getInstance().getActualLogs(), testCase.getLogRegex());
+        LogContentAssert.assertIs(AgentE2ETestEnvironment.getInstance().getActualLogs(), testCase.getLogRegex());
     }
     
     private static boolean isEnabled() {

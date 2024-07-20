@@ -27,12 +27,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Log test case.
+ * Log E2E test case.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class LogTestCase implements AgentE2ETestCase {
+public final class LogE2ETestCase implements AgentE2ETestCase {
     
     @XmlAttribute(name = "log-regex")
     private String logRegex;
