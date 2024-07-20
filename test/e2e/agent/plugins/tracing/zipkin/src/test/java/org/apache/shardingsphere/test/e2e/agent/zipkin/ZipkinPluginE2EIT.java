@@ -34,8 +34,8 @@ class ZipkinPluginE2EIT {
     @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertWithAgent(final SpanTestCase spanTestCase) {
-        SpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getZipKinHttpUrl(), spanTestCase);
+    void assertTraceAgent(final SpanTestCase testCase) {
+        SpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getZipKinHttpUrl(), testCase);
     }
     
     private static boolean isEnabled() {

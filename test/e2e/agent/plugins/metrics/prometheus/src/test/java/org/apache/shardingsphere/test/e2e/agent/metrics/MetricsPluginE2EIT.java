@@ -58,7 +58,7 @@ class MetricsPluginE2EIT {
                 : metricCase.getMetricName();
         try {
             String metaDataURLWithParam = String.join("", metaDataURL, "?metric=", URLEncoder.encode(metricName, "UTF-8"));
-            MetricMetadataAssert.assertIs(JsonUtils.fromJsonString(HttpUtils.getInstance().get(metaDataURLWithParam), MetricsMetaDataResult.class), metricCase);
+            MetricMetadataAssert.assertIs(JsonUtils.fromJsonString(HttpUtils.getInstance().query(metaDataURLWithParam), MetricsMetaDataResult.class), metricCase);
         } catch (final IOException ex) {
             log.info("Access prometheus HTTP RESTFul API error: ", ex);
         }
@@ -68,7 +68,7 @@ class MetricsPluginE2EIT {
         for (MetricQueryAssertion each : metricCase.getQueryAssertions()) {
             try {
                 String queryURLWithParam = String.join("", queryURL, "?query=", URLEncoder.encode(each.getQuery(), "UTF-8"));
-                MetricQueryAssert.assertIs(JsonUtils.fromJsonString(HttpUtils.getInstance().get(queryURLWithParam), MetricsQueryResult.class), each);
+                MetricQueryAssert.assertIs(JsonUtils.fromJsonString(HttpUtils.getInstance().query(queryURLWithParam), MetricsQueryResult.class), each);
             } catch (final IOException ex) {
                 log.info("Access prometheus HTTP RESTFul API error: ", ex);
             }
