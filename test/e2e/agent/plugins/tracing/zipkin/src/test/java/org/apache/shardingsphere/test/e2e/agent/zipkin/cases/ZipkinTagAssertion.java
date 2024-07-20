@@ -19,34 +19,30 @@ package org.apache.shardingsphere.test.e2e.agent.zipkin.cases;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
 
 /**
- * Span test case.
+ * Zipkin tag assertion.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SpanTestCase implements AgentE2ETestCase {
+public final class ZipkinTagAssertion {
     
-    @XmlAttribute(name = "service-name")
-    private String serviceName;
+    @XmlAttribute(name = "key")
+    private String tagKey;
     
-    @XmlAttribute(name = "span-name")
-    private String spanName;
+    @XmlAttribute(name = "value")
+    private String tagValue;
     
-    @XmlElement(name = "tag-assertion")
-    private Collection<TagAssertion> tagCases;
+    @XmlAttribute(name = "need-assert-value")
+    private boolean needAssertValue = true;
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s", AgentE2ETestEnvironment.getInstance().getAdapter(), spanName, tagCases.iterator().next().toString());
+        return String.format("%s -> %s", tagKey, tagValue);
     }
 }
