@@ -105,12 +105,12 @@ public final class AgentTestJDBCRepository {
     }
     
     /**
-     * Select all orders.
+     * Query all orders.
      *
      * @return all orders
      */
     @SneakyThrows(SQLException.class)
-    public Collection<OrderEntity> selectAllOrders() {
+    public Collection<OrderEntity> queryAllOrders() {
         String sql = "SELECT * FROM t_order";
         Collection<OrderEntity> result = new LinkedList<>();
         try (
@@ -124,10 +124,10 @@ public final class AgentTestJDBCRepository {
     }
     
     /**
-     * Create execute error.
+     * Query failed.
      */
     @SneakyThrows(SQLException.class)
-    public void createExecuteError() {
+    public void queryFailed() {
         String sql = "SELECT * FROM non_existent_table";
         try (Statement statement = connection.createStatement()) {
             statement.executeQuery(sql);

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.container.ShardingSphereP
 import org.apache.shardingsphere.test.e2e.agent.common.container.ZipkinContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.agent.common.enums.PluginType;
-import org.apache.shardingsphere.test.e2e.agent.common.fixture.request.ProxyRequestExecutor;
+import org.apache.shardingsphere.test.e2e.agent.common.fixture.executor.ProxyRequestExecutor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
@@ -45,12 +45,12 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * E2E test environment.
+ * Agent E2E test environment.
  */
 @Slf4j
-public final class E2ETestEnvironment {
+public final class AgentE2ETestEnvironment {
     
-    private static final E2ETestEnvironment INSTANCE = new E2ETestEnvironment();
+    private static final AgentE2ETestEnvironment INSTANCE = new AgentE2ETestEnvironment();
     
     @Getter
     private final Collection<String> actualLogs = new LinkedList<>();
@@ -96,7 +96,7 @@ public final class E2ETestEnvironment {
     
     private String jdbcProjectImage;
     
-    private E2ETestEnvironment() {
+    private AgentE2ETestEnvironment() {
         initContainerImage();
         Properties props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         adapter = props.getProperty("it.env.adapter");
@@ -119,7 +119,7 @@ public final class E2ETestEnvironment {
      *
      * @return singleton instance
      */
-    public static E2ETestEnvironment getInstance() {
+    public static AgentE2ETestEnvironment getInstance() {
         return INSTANCE;
     }
     
