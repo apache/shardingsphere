@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.file.cases;
+package org.apache.shardingsphere.test.e2e.agent.jaeger.cases;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCases;
@@ -26,12 +26,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * E2E test cases.
+ * Jaeger E2E test cases.
  */
 @XmlRootElement(name = "e2e-test-cases")
 @Getter
-public final class E2ETestCases implements AgentE2ETestCases<LogTestCase> {
+public final class JaegerE2ETestCases implements AgentE2ETestCases<SpanTestCase> {
     
     @XmlElement(name = "test-case")
-    private final Collection<LogTestCase> testCases = new LinkedList<>();
+    private final Collection<SpanTestCase> testCases = new LinkedList<>();
 }
