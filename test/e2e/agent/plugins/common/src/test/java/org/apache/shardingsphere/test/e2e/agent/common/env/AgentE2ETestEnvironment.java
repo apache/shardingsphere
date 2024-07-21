@@ -59,7 +59,7 @@ public final class AgentE2ETestEnvironment {
     private final AgentE2ETestImageConfiguration imageConfig = AgentE2ETestImageConfiguration.getInstance();
     
     @Getter
-    private final Collection<String> actualLogs = new LinkedList<>();
+    private final Collection<String> containerLogs = new LinkedList<>();
     
     private ITContainers containers;
     
@@ -138,7 +138,7 @@ public final class AgentE2ETestEnvironment {
     
     private void collectLogs(final OutputFrame outputFrame) {
         if (!initialized) {
-            actualLogs.add(outputFrame.getUtf8StringWithoutLineEnding());
+            containerLogs.add(outputFrame.getUtf8StringWithoutLineEnding());
         }
     }
     
