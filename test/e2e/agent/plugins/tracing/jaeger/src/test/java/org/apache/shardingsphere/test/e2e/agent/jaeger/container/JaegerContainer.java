@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jaeger.container;
 
-import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 

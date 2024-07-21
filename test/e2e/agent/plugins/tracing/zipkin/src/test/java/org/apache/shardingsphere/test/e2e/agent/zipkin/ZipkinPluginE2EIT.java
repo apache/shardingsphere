@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
-import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestConfiguration;
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.ZipkinSpanAssert;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCase;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCases;
