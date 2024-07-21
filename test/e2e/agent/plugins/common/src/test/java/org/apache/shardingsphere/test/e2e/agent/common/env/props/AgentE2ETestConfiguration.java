@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.env;
+package org.apache.shardingsphere.test.e2e.agent.common.env.props;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -43,7 +43,7 @@ public final class AgentE2ETestConfiguration {
     private final long collectDataWaitSeconds;
     
     private AgentE2ETestConfiguration() {
-        Properties envProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        Properties envProps = AgentE2EEnvironmentProperties.loadProperties("env/engine-env.properties");
         adapter = envProps.getProperty("it.env.adapter");
         pluginType = envProps.getProperty("it.env.plugin.type");
         pluginImageName = envProps.getProperty("it.env.plugin.image");

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.zipkin.cases;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCase;
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestConfiguration;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
