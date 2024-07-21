@@ -121,8 +121,8 @@ public final class AgentE2ETestEnvironment {
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
         GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
         ShardingSphereProxyContainer proxyContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPluginType())
-                ? new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginImageName(), this::collectLogs)
-                : new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginImageName());
+                ? new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType(), this::collectLogs)
+                : new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType());
         proxyContainer.dependsOn(storageContainer);
         proxyContainer.dependsOn(governanceContainer);
         Optional<DockerITContainer> pluginContainer = getAgentPluginContainer();
@@ -144,8 +144,8 @@ public final class AgentE2ETestEnvironment {
         Optional<DockerITContainer> pluginContainer = getAgentPluginContainer();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
         ShardingSphereJdbcContainer jdbcContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPluginType())
-                ? new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginImageName(), this::collectLogs)
-                : new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginImageName());
+                ? new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType(), this::collectLogs)
+                : new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType());
         jdbcContainer.dependsOn(storageContainer);
         pluginContainer.ifPresent(jdbcContainer::dependsOn);
         pluginContainer.ifPresent(optional -> containers.registerContainer(optional));

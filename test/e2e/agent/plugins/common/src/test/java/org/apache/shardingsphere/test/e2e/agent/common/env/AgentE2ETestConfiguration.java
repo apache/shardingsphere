@@ -64,6 +64,6 @@ public final class AgentE2ETestConfiguration {
      * @return contains or not
      */
     public boolean containsTestParameter() {
-        return !Strings.isNullOrEmpty(adapter) && !Strings.isNullOrEmpty(pluginImageName);
+        return !Strings.isNullOrEmpty(adapter) && !Strings.isNullOrEmpty(pluginType);
     }
 }
