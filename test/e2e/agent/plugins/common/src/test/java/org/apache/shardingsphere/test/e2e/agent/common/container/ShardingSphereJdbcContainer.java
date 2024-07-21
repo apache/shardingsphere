@@ -40,10 +40,6 @@ public final class ShardingSphereJdbcContainer extends DockerITContainer {
     
     private final Consumer<OutputFrame> consumer;
     
-    public ShardingSphereJdbcContainer(final String image, final String plugin) {
-        this(image, plugin, null);
-    }
-    
     public ShardingSphereJdbcContainer(final String image, final String plugin, final Consumer<OutputFrame> consumer) {
         super("jdbc", image);
         this.consumer = consumer;

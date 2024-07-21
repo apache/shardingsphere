@@ -36,6 +36,8 @@ public final class AgentE2ETestConfiguration {
     
     private final String pluginImageName;
     
+    private final boolean logEnabled;
+    
     private final int defaultExposePort;
     
     private final long collectDataWaitSeconds;
@@ -45,6 +47,7 @@ public final class AgentE2ETestConfiguration {
         adapter = envProps.getProperty("it.env.adapter");
         pluginType = envProps.getProperty("it.env.plugin.type");
         pluginImageName = envProps.getProperty("it.env.plugin.image");
+        logEnabled = Boolean.parseBoolean(envProps.getProperty("it.env.log.enabled", Boolean.FALSE.toString()));
         defaultExposePort = Integer.parseInt(envProps.getProperty("it.env.plugin.default.expose.port", "0"));
         collectDataWaitSeconds = Long.parseLong(envProps.getProperty("it.env.collect.data.wait.seconds", "0"));
     }
