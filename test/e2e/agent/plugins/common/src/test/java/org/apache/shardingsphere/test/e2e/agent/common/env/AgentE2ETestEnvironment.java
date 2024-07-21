@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common.env;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ITContainers;
@@ -52,15 +51,10 @@ public final class AgentE2ETestEnvironment {
     
     private static final AgentE2ETestEnvironment INSTANCE = new AgentE2ETestEnvironment();
     
+    private final AgentE2ETestConfiguration testConfig;
+    
     @Getter
     private final Collection<String> actualLogs = new LinkedList<>();
-    
-    @Getter
-    private final String adapter;
-    
-    private final String plugin;
-    
-    private final long collectDataWaitSeconds;
     
     @Getter
     private String prometheusHttpUrl;
@@ -96,11 +90,8 @@ public final class AgentE2ETestEnvironment {
     private String jdbcProjectImage;
     
     private AgentE2ETestEnvironment() {
+        testConfig = AgentE2ETestConfiguration.getInstance();
         initContainerImage();
-        Properties envProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        adapter = envProps.getProperty("it.env.adapter");
-        plugin = envProps.getProperty("it.env.plugin");
-        collectDataWaitSeconds = Long.parseLong(envProps.getProperty("it.env.collect.data.wait.seconds", "0"));
     }
     
     private void initContainerImage() {
@@ -126,15 +117,16 @@ public final class AgentE2ETestEnvironment {
      * Init environment.
      */
     public void init() {
-        if (!containsTestParameter()) {
+        if (!AgentE2ETestConfiguration.getInstance().containsTestParameter()) {
             return;
         }
-        if (AdapterType.PROXY.getValue().equalsIgnoreCase(adapter)) {
+        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
             createProxyEnvironment();
-        } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(adapter)) {
+        } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
             createJDBCEnvironment();
         }
         log.info("Waiting to collect data ...");
+        long collectDataWaitSeconds = testConfig.getCollectDataWaitSeconds();
         if (collectDataWaitSeconds > 0L) {
             Awaitility.await().ignoreExceptions().atMost(Duration.ofSeconds(collectDataWaitSeconds + 1L)).pollDelay(collectDataWaitSeconds, TimeUnit.SECONDS).until(() -> true);
         }
@@ -145,9 +137,9 @@ public final class AgentE2ETestEnvironment {
         containers = new ITContainers();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
         GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
-        ShardingSphereProxyContainer proxyContainer = PluginType.FILE.getValue().equalsIgnoreCase(plugin)
-                ? new ShardingSphereProxyContainer(proxyImage, plugin, this::collectLogs)
-                : new ShardingSphereProxyContainer(proxyImage, plugin);
+        ShardingSphereProxyContainer proxyContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPlugin())
+                ? new ShardingSphereProxyContainer(proxyImage, testConfig.getPlugin(), this::collectLogs)
+                : new ShardingSphereProxyContainer(proxyImage, testConfig.getPlugin());
         proxyContainer.dependsOn(storageContainer);
         proxyContainer.dependsOn(governanceContainer);
         Optional<DockerITContainer> pluginContainer = getPluginContainer();
@@ -169,9 +161,9 @@ public final class AgentE2ETestEnvironment {
         containers = new ITContainers();
         Optional<DockerITContainer> pluginContainer = getPluginContainer();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
-        ShardingSphereJdbcContainer jdbcContainer = PluginType.FILE.getValue().equalsIgnoreCase(plugin)
-                ? new ShardingSphereJdbcContainer(jdbcProjectImage, plugin, this::collectLogs)
-                : new ShardingSphereJdbcContainer(jdbcProjectImage, plugin);
+        ShardingSphereJdbcContainer jdbcContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPlugin())
+                ? new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPlugin(), this::collectLogs)
+                : new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPlugin());
         jdbcContainer.dependsOn(storageContainer);
         pluginContainer.ifPresent(jdbcContainer::dependsOn);
         pluginContainer.ifPresent(optional -> containers.registerContainer(optional));
@@ -182,13 +174,13 @@ public final class AgentE2ETestEnvironment {
     }
     
     private Optional<DockerITContainer> getPluginContainer() {
-        if (PluginType.PROMETHEUS.getValue().equalsIgnoreCase(plugin)) {
+        if (PluginType.PROMETHEUS.getValue().equalsIgnoreCase(testConfig.getPlugin())) {
             prometheusContainer = new PrometheusContainer(prometheusImage);
             return Optional.of(prometheusContainer);
-        } else if (PluginType.ZIPKIN.getValue().equalsIgnoreCase(plugin)) {
+        } else if (PluginType.ZIPKIN.getValue().equalsIgnoreCase(testConfig.getPlugin())) {
             zipkinContainer = new ZipkinContainer(zipkinImage);
             return Optional.of(zipkinContainer);
-        } else if (PluginType.JAEGER.getValue().equalsIgnoreCase(plugin)) {
+        } else if (PluginType.JAEGER.getValue().equalsIgnoreCase(testConfig.getPlugin())) {
             jaegerContainer = new JaegerContainer(jaegerImage);
             return Optional.of(jaegerContainer);
         }
@@ -211,7 +203,7 @@ public final class AgentE2ETestEnvironment {
      * Destroy environment.
      */
     public void destroy() {
-        if (!containsTestParameter()) {
+        if (!AgentE2ETestConfiguration.getInstance().containsTestParameter()) {
             return;
         }
         if (null != proxyRequestExecutor) {
@@ -220,14 +212,5 @@ public final class AgentE2ETestEnvironment {
         if (null != containers) {
             containers.stop();
         }
-    }
-    
-    /**
-     * Judge whether contains test parameter.
-     *
-     * @return contains or not
-     */
-    public boolean containsTestParameter() {
-        return !Strings.isNullOrEmpty(adapter) && !Strings.isNullOrEmpty(plugin);
     }
 }
