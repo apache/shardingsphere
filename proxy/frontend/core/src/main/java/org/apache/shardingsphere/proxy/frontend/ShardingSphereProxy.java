@@ -150,5 +150,6 @@ public final class ShardingSphereProxy {
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
         BackendExecutorContext.getInstance().getExecutorEngine().close();
+        ProxyContext.getInstance().getContextManager().close();
     }
 }
