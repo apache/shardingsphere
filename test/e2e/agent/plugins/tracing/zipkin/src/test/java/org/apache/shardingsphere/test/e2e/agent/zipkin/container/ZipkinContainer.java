@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.container.plugin;
+package org.apache.shardingsphere.test.e2e.agent.zipkin.container;
 
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 
-/**
- * Prometheus container.
- */
-public final class PrometheusContainer extends DockerITContainer {
+public final class ZipkinContainer extends DockerITContainer {
     
-    public PrometheusContainer(final String image) {
-        super("prometheus", image);
+    public ZipkinContainer(final String image) {
+        super("zipkin", image);
     }
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping("/env/prometheus/prometheus.yml", "/etc/prometheus/prometheus.yml", BindMode.READ_ONLY);
-        setWaitStrategy(new HttpWaitStrategy().forPort(AgentE2ETestConfiguration.getInstance().getDefaultExposePort()).forPath("/-/ready"));
         withExposedPorts(AgentE2ETestConfiguration.getInstance().getDefaultExposePort());
+        setWaitStrategy(new HttpWaitStrategy().forPort(AgentE2ETestConfiguration.getInstance().getDefaultExposePort()));
     }
     
     @Override
     public String getAbbreviation() {
-        return "prometheus";
+        return "zipkin";
     }
 }
