@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.agent.common.container.plugin;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 
 /**
- * Container HTTP endpoint provider.
+ * Agent plugin HTTP endpoint provider.
  */
-public final class ContainerHTTPEndpointProvider {
+public final class AgentPluginHTTPEndpointProvider {
     
     /**
      * Get HTTP URL.

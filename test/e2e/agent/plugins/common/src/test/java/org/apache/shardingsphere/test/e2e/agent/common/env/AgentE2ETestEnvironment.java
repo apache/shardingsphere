@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.common.env;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.ContainerHTTPEndpointProvider;
+import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginHTTPEndpointProvider;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ITContainers;
 import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.JaegerContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.container.MySQLContainer;
@@ -112,7 +112,7 @@ public final class AgentE2ETestEnvironment {
         if (collectDataWaitSeconds > 0L) {
             Awaitility.await().ignoreExceptions().atMost(Duration.ofSeconds(collectDataWaitSeconds + 1L)).pollDelay(collectDataWaitSeconds, TimeUnit.SECONDS).until(() -> true);
         }
-        agentPluginURL = null == agentPluginContainer ? null : new ContainerHTTPEndpointProvider().getHURL(agentPluginContainer, testConfig.getDefaultExposePort());
+        agentPluginURL = null == agentPluginContainer ? null : new AgentPluginHTTPEndpointProvider().getHURL(agentPluginContainer, testConfig.getDefaultExposePort());
         initialized = true;
     }
     
