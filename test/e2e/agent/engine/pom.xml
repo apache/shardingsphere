@@ -110,7 +110,7 @@
                                             </includes>
                                         </resource>
                                         <resource>
-                                            <directory>${project.basedir}/../../../../../distribution/proxy/target/</directory>
+                                            <directory>${project.basedir}/../../../../distribution/proxy/target/</directory>
                                             <includes>
                                                 <include>${docker.proxy.distribution.name}.tar.gz</include>
                                             </includes>
