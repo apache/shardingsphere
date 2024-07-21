@@ -17,35 +17,20 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common.container.plugin;
 
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
-import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
- * Jaeger container.
+ * Agent plugin container factory.
  */
-public final class JaegerContainer extends DockerITContainer {
+@SingletonSPI
+public interface AgentPluginContainerFactory extends TypedSPI {
     
-    public JaegerContainer(final String image) {
-        super("jaeger", image);
-    }
-    
-    @Override
-    protected void configure() {
-        withExposedPorts(4317, AgentE2ETestConfiguration.getInstance().getDefaultExposePort());
-        getContainerEnvironments().forEach(this::addEnv);
-        setWaitStrategy(new HttpWaitStrategy().forPort(AgentE2ETestConfiguration.getInstance().getDefaultExposePort()));
-    }
-    
-    private Map<String, String> getContainerEnvironments() {
-        return Collections.singletonMap("COLLECTOR_OTLP_ENABLED", Boolean.TRUE.toString());
-    }
-    
-    @Override
-    public String getAbbreviation() {
-        return "jaeger";
-    }
+    /**
+     * Create agent plugin container.
+     *
+     * @return created container
+     */
+    DockerITContainer create();
 }

@@ -19,14 +19,13 @@ package org.apache.shardingsphere.test.e2e.agent.common.env;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginHTTPEndpointProvider;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ITContainers;
-import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.JaegerContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.container.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.PrometheusContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ShardingSphereJdbcContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.ZipkinContainer;
+import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginContainerFactory;
+import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginHTTPEndpointProvider;
 import org.apache.shardingsphere.test.e2e.agent.common.enums.PluginType;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.executor.ProxyRequestExecutor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
@@ -155,16 +154,9 @@ public final class AgentE2ETestEnvironment {
     }
     
     private Optional<DockerITContainer> getAgentPluginContainer() {
-        if (PluginType.PROMETHEUS.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
-            agentPluginContainer = new PrometheusContainer(testConfig.getPluginImageName());
-            return Optional.of(agentPluginContainer);
-        }
-        if (PluginType.ZIPKIN.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
-            agentPluginContainer = new ZipkinContainer(testConfig.getPluginImageName());
-            return Optional.of(agentPluginContainer);
-        }
-        if (PluginType.JAEGER.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
-            agentPluginContainer = new JaegerContainer(testConfig.getPluginImageName());
+        Optional<AgentPluginContainerFactory> agentPluginContainerFactory = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType());
+        if (agentPluginContainerFactory.isPresent()) {
+            agentPluginContainer = agentPluginContainerFactory.get().create();
             return Optional.of(agentPluginContainer);
         }
         return Optional.empty();
