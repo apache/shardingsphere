@@ -55,7 +55,11 @@ public final class AgentE2ETestEnvironment {
     @Getter
     private final Collection<String> actualLogs = new LinkedList<>();
     
-    private DockerITContainer agentPluginContainer;
+    private String mysqlImage;
+    
+    private String proxyImage;
+    
+    private String jdbcProjectImage;
     
     private ITContainers containers;
     
@@ -66,12 +70,6 @@ public final class AgentE2ETestEnvironment {
     
     private boolean initialized;
     
-    private String mysqlImage;
-    
-    private String proxyImage;
-    
-    private String jdbcProjectImage;
-    
     private AgentE2ETestEnvironment() {
         testConfig = AgentE2ETestConfiguration.getInstance();
         initContainerImage();
@@ -79,9 +77,9 @@ public final class AgentE2ETestEnvironment {
     
     private void initContainerImage() {
         Properties imageProps = EnvironmentProperties.loadProperties("env/image.properties");
+        mysqlImage = imageProps.getProperty("mysql.image", "mysql:8.0");
         proxyImage = imageProps.getProperty("proxy.image", "apache/shardingsphere-proxy-agent-test:latest");
         jdbcProjectImage = imageProps.getProperty("jdbc.project.image", "apache/shardingsphere-jdbc-agent-test:latest");
-        mysqlImage = imageProps.getProperty("mysql.image", "mysql:8.0");
     }
     
     /**
@@ -100,30 +98,31 @@ public final class AgentE2ETestEnvironment {
         if (!AgentE2ETestConfiguration.getInstance().containsTestParameter()) {
             return;
         }
+        Optional<DockerITContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
-            createProxyEnvironment();
+            createProxyEnvironment(agentPluginContainer);
         } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
-            createJDBCEnvironment();
+            createJDBCEnvironment(agentPluginContainer);
         }
         log.info("Waiting to collect data ...");
         long collectDataWaitSeconds = testConfig.getCollectDataWaitSeconds();
         if (collectDataWaitSeconds > 0L) {
             Awaitility.await().ignoreExceptions().atMost(Duration.ofSeconds(collectDataWaitSeconds + 1L)).pollDelay(collectDataWaitSeconds, TimeUnit.SECONDS).until(() -> true);
         }
-        agentPluginURL = null == agentPluginContainer ? null : new AgentPluginHTTPEndpointProvider().getHURL(agentPluginContainer, testConfig.getDefaultExposePort());
+        agentPluginURL = agentPluginContainer.map(optional -> new AgentPluginHTTPEndpointProvider().getHURL(optional, testConfig.getDefaultExposePort())).orElse(null);
         initialized = true;
     }
     
-    private void createProxyEnvironment() {
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private void createProxyEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
         containers = new ITContainers();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
         GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
         ShardingSphereProxyContainer proxyContainer = new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         proxyContainer.dependsOn(storageContainer);
         proxyContainer.dependsOn(governanceContainer);
-        Optional<DockerITContainer> pluginContainer = getAgentPluginContainer();
-        pluginContainer.ifPresent(proxyContainer::dependsOn);
-        pluginContainer.ifPresent(optional -> containers.registerContainer(optional));
+        agentPluginContainer.ifPresent(proxyContainer::dependsOn);
+        agentPluginContainer.ifPresent(optional -> containers.registerContainer(optional));
         containers.registerContainer(storageContainer);
         containers.registerContainer(governanceContainer);
         containers.registerContainer(proxyContainer);
@@ -135,26 +134,17 @@ public final class AgentE2ETestEnvironment {
         }
     }
     
-    private void createJDBCEnvironment() {
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private void createJDBCEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
         containers = new ITContainers();
-        Optional<DockerITContainer> pluginContainer = getAgentPluginContainer();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
         ShardingSphereJdbcContainer jdbcContainer = new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         jdbcContainer.dependsOn(storageContainer);
-        pluginContainer.ifPresent(jdbcContainer::dependsOn);
-        pluginContainer.ifPresent(optional -> containers.registerContainer(optional));
+        agentPluginContainer.ifPresent(jdbcContainer::dependsOn);
+        agentPluginContainer.ifPresent(optional -> containers.registerContainer(optional));
         containers.registerContainer(storageContainer);
         containers.registerContainer(jdbcContainer);
         containers.start();
-    }
-    
-    private Optional<DockerITContainer> getAgentPluginContainer() {
-        Optional<AgentPluginContainerFactory> agentPluginContainerFactory = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType());
-        if (agentPluginContainerFactory.isPresent()) {
-            agentPluginContainer = agentPluginContainerFactory.get().create();
-            return Optional.of(agentPluginContainer);
-        }
-        return Optional.empty();
     }
     
     private void collectLogs(final OutputFrame outputFrame) {
