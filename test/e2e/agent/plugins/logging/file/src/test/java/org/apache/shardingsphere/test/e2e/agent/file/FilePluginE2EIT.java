@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.LogContentAssert;
-import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCase;
+import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCases;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,7 +43,7 @@ class FilePluginE2EIT {
     }
     
     private static boolean isEnabled() {
-        return AgentE2ETestEnvironment.getInstance().containsTestParameter();
+        return AgentE2ETestConfiguration.getInstance().containsTestParameter();
     }
     
     private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {

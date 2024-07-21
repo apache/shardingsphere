@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.common.framework;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
@@ -37,6 +37,6 @@ public abstract class AgentE2ETestCaseArgumentsProvider implements ArgumentsProv
     
     @Override
     public final Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-        return new AgentE2ETestCasesLoader(agentE2ETestCasesClass).loadTestCases(AgentE2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+        return new AgentE2ETestCasesLoader(agentE2ETestCasesClass).loadTestCases(AgentE2ETestConfiguration.getInstance().getAdapter()).stream().map(Arguments::of);
     }
 }
