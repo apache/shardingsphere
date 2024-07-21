@@ -52,10 +52,6 @@ public final class ShardingSphereProxyContainer extends DockerITContainer {
     
     private final Consumer<OutputFrame> consumer;
     
-    public ShardingSphereProxyContainer(final String image, final String plugin) {
-        this(image, plugin, null);
-    }
-    
     public ShardingSphereProxyContainer(final String image, final String plugin, final Consumer<OutputFrame> consumer) {
         super("proxy", image);
         this.consumer = consumer;
