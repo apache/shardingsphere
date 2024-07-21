@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.zipkin.asserts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.agent.common.util.HttpUtils;
+import org.apache.shardingsphere.test.e2e.agent.engine.util.HttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.response.ZipkinSpanResponse;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCase;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinTagAssertion;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin.container;
 
-import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginContainerFactory;
-import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 
 /**

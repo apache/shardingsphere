@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.agent.common.util.HttpUtils;
+import org.apache.shardingsphere.test.e2e.agent.engine.util.HttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.response.MetricsMetaDataResponse;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.response.MetricsMetaDataResponse.Metric;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.response.MetricsQueryResponse;

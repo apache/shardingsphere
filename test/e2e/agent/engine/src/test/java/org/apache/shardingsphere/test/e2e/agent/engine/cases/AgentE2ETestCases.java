@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jaeger.container;
+package org.apache.shardingsphere.test.e2e.agent.engine.cases;
 
-import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
-import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import java.util.Collection;
 
 /**
- * Jaeger container factory.
+ * Agent E2E test cases.
+ * 
+ * @param <T> type of agent E2E test case
  */
-public final class JaegerContainerFactory implements AgentPluginContainerFactory {
+public interface AgentE2ETestCases<T extends AgentE2ETestCase> {
     
-    @Override
-    public DockerITContainer create() {
-        return new JaegerContainer(AgentE2ETestConfiguration.getInstance().getPluginImageName());
-    }
-    
-    @Override
-    public Object getType() {
-        return "Jaeger";
-    }
+    /**
+     * Get test cases.
+     *
+     * @return test cases
+     */
+    Collection<T> getTestCases();
 }

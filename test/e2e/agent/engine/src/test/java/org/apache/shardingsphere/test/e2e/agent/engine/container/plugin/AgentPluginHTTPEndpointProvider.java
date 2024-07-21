@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jaeger.container;
+package org.apache.shardingsphere.test.e2e.agent.engine.container.plugin;
 
-import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
-import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 
 /**
- * Jaeger container factory.
+ * Agent plugin HTTP endpoint provider.
  */
-public final class JaegerContainerFactory implements AgentPluginContainerFactory {
+public final class AgentPluginHTTPEndpointProvider {
     
-    @Override
-    public DockerITContainer create() {
-        return new JaegerContainer(AgentE2ETestConfiguration.getInstance().getPluginImageName());
-    }
-    
-    @Override
-    public Object getType() {
-        return "Jaeger";
+    /**
+     * Get HTTP URL.
+     *
+     * @param container docker container
+     * @param defaultExposePort default expose port
+     * @return HTTP URL
+     */
+    public String getHURL(final DockerITContainer container, final int defaultExposePort) {
+        return String.format("http://%s:%s", container.getHost(), container.getMappedPort(defaultExposePort));
     }
 }
