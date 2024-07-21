@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics;
 
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricAssert;
-import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricE2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricE2ETestCase;
+import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricE2ETestCases;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,7 +40,7 @@ class MetricsPluginE2EIT {
     }
     
     private static boolean isEnabled() {
-        return AgentE2ETestEnvironment.getInstance().containsTestParameter();
+        return AgentE2ETestConfiguration.getInstance().containsTestParameter();
     }
     
     private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
