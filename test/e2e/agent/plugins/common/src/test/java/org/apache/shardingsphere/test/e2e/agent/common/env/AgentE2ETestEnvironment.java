@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.agent.common.container.ShardingSphereJ
 import org.apache.shardingsphere.test.e2e.agent.common.container.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginContainerFactory;
 import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginHTTPEndpointProvider;
-import org.apache.shardingsphere.test.e2e.agent.common.enums.PluginType;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.executor.ProxyRequestExecutor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
@@ -119,9 +118,7 @@ public final class AgentE2ETestEnvironment {
         containers = new ITContainers();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
         GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
-        ShardingSphereProxyContainer proxyContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPluginType())
-                ? new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType(), this::collectLogs)
-                : new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType());
+        ShardingSphereProxyContainer proxyContainer = new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         proxyContainer.dependsOn(storageContainer);
         proxyContainer.dependsOn(governanceContainer);
         Optional<DockerITContainer> pluginContainer = getAgentPluginContainer();
@@ -142,9 +139,7 @@ public final class AgentE2ETestEnvironment {
         containers = new ITContainers();
         Optional<DockerITContainer> pluginContainer = getAgentPluginContainer();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
-        ShardingSphereJdbcContainer jdbcContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPluginType())
-                ? new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType(), this::collectLogs)
-                : new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType());
+        ShardingSphereJdbcContainer jdbcContainer = new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         jdbcContainer.dependsOn(storageContainer);
         pluginContainer.ifPresent(jdbcContainer::dependsOn);
         pluginContainer.ifPresent(optional -> containers.registerContainer(optional));
