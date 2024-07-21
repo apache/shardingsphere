@@ -20,27 +20,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test-e2e</artifactId>
+        <artifactId>shardingsphere-test-e2e-agent</artifactId>
         <version>5.5.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-e2e-agent</artifactId>
+    <artifactId>shardingsphere-test-e2e-agent-fixture</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>plugins</module>
-        <module>fixture</module>
+        <module>jdbc-project</module>
     </modules>
-    
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-        <docker.proxy.distribution.name>apache-shardingsphere-${project.version}-shardingsphere-proxy-bin</docker.proxy.distribution.name>
-    </properties>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-        </dependency>
-    </dependencies>
 </project>
