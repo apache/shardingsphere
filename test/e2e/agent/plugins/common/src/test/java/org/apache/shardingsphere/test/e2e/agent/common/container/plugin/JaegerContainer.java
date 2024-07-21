@@ -15,31 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.container;
+package org.apache.shardingsphere.test.e2e.agent.common.container.plugin;
 
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 
-public final class ZipkinContainer extends DockerITContainer {
+import java.util.Collections;
+import java.util.Map;
+
+/**
+ * Jaeger container.
+ */
+public final class JaegerContainer extends DockerITContainer {
     
-    private static final int EXPOSED_PORT = 9411;
-    
-    public ZipkinContainer(final String image) {
-        super("zipkin", image);
+    public JaegerContainer(final String image) {
+        super("jaeger", image);
     }
     
     @Override
     protected void configure() {
-        withExposedPorts(EXPOSED_PORT);
-        setWaitStrategy(new HttpWaitStrategy().forPort(EXPOSED_PORT));
+        withExposedPorts(4317, AgentE2ETestConfiguration.getInstance().getDefaultExposePort());
+        getContainerEnvironments().forEach(this::addEnv);
+        setWaitStrategy(new HttpWaitStrategy().forPort(AgentE2ETestConfiguration.getInstance().getDefaultExposePort()));
+    }
+    
+    private Map<String, String> getContainerEnvironments() {
+        return Collections.singletonMap("COLLECTOR_OTLP_ENABLED", Boolean.TRUE.toString());
     }
     
     @Override
     public String getAbbreviation() {
-        return "zipkin";
-    }
-    
-    public String getHttpUrl() {
-        return String.format("http://%s:%s", getHost(), getMappedPort(EXPOSED_PORT));
+        return "jaeger";
     }
 }
