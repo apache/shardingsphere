@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 /**
  * ShardingSphere jdbc container.
  */
+// TODO Merge test container: merge with org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcContainer
 public final class ShardingSphereJdbcContainer extends DockerITContainer {
     
     private static final String CONFIG_PATH_IN_CONTAINER = "/opt/shardingsphere-jdbc-app/";

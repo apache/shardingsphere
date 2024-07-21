@@ -97,20 +97,20 @@ public final class AgentE2ETestEnvironment {
     
     private AgentE2ETestEnvironment() {
         initContainerImage();
-        Properties props = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        adapter = props.getProperty("it.env.adapter");
-        plugin = props.getProperty("it.env.plugin");
-        collectDataWaitSeconds = Long.parseLong(props.getProperty("it.env.collect.data.wait.seconds", "0"));
+        Properties envProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        adapter = envProps.getProperty("it.env.adapter");
+        plugin = envProps.getProperty("it.env.plugin");
+        collectDataWaitSeconds = Long.parseLong(envProps.getProperty("it.env.collect.data.wait.seconds", "0"));
     }
     
     private void initContainerImage() {
-        Properties props = EnvironmentProperties.loadProperties("env/image.properties");
-        proxyImage = props.getProperty("proxy.image", "apache/shardingsphere-proxy-agent-test:latest");
-        jdbcProjectImage = props.getProperty("jdbc.project.image", "apache/shardingsphere-jdbc-agent-test:latest");
-        mysqlImage = props.getProperty("mysql.image", "mysql:8.0");
-        jaegerImage = props.getProperty("jaeger.image", "jaegertracing/all-in-one:1.41");
-        zipkinImage = props.getProperty("zipkin.image", "openzipkin/zipkin:3.2");
-        prometheusImage = props.getProperty("prometheus.image", "prom/prometheus:v2.41.0");
+        Properties imageProps = EnvironmentProperties.loadProperties("env/image.properties");
+        proxyImage = imageProps.getProperty("proxy.image", "apache/shardingsphere-proxy-agent-test:latest");
+        jdbcProjectImage = imageProps.getProperty("jdbc.project.image", "apache/shardingsphere-jdbc-agent-test:latest");
+        mysqlImage = imageProps.getProperty("mysql.image", "mysql:8.0");
+        jaegerImage = imageProps.getProperty("jaeger.image", "jaegertracing/all-in-one:1.41");
+        zipkinImage = imageProps.getProperty("zipkin.image", "openzipkin/zipkin:3.2");
+        prometheusImage = imageProps.getProperty("prometheus.image", "prom/prometheus:v2.41.0");
     }
     
     /**
@@ -135,7 +135,7 @@ public final class AgentE2ETestEnvironment {
             createJDBCEnvironment();
         }
         log.info("Waiting to collect data ...");
-        if (0L < collectDataWaitSeconds) {
+        if (collectDataWaitSeconds > 0L) {
             Awaitility.await().ignoreExceptions().atMost(Duration.ofSeconds(collectDataWaitSeconds + 1L)).pollDelay(collectDataWaitSeconds, TimeUnit.SECONDS).until(() -> true);
         }
         initialized = true;

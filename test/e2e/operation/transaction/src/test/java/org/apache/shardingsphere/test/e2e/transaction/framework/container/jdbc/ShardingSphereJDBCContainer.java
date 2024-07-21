@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * ShardingSphere JDBC container.
  */
+// TODO Merge test container: merge with org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcContainer
 public final class ShardingSphereJDBCContainer implements EmbeddedITContainer {
     
     private final DockerStorageContainer databaseContainer;

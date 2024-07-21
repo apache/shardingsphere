@@ -30,6 +30,7 @@ import java.util.Map;
 /**
  * MySQL container.
  */
+// TODO Merge test container: merge with org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer
 public final class MySQLContainer extends DockerITContainer {
     
     private static final int EXPOSED_PORT = 3306;
