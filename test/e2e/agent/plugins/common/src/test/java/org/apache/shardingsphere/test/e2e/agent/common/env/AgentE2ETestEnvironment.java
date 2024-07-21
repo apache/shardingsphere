@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPlu
 import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginHTTPEndpointProvider;
 import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestImageConfiguration;
-import org.apache.shardingsphere.test.e2e.agent.common.fixture.executor.ProxyRequestExecutor;
+import org.apache.shardingsphere.test.e2e.agent.fixture.proxy.ProxyRequestExecutor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;

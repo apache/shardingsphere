@@ -42,6 +42,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-e2e-agent-proxy-fixture</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-util</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -174,7 +181,7 @@
                                     <outputDirectory>${docker.jdbc.context.directory}/shardingsphere-jdbc-app</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../../fixture/jdbc-project/target/app</directory>
+                                            <directory>${project.basedir}/../../fixture/jdbc-fixture/target/app</directory>
                                         </resource>
                                         <resource>
                                             <directory>${project.basedir}/../../../../../distribution/agent/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
