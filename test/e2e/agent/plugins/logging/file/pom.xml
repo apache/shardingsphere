@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-e2e-agent-plugins-common</artifactId>
+            <artifactId>shardingsphere-test-e2e-agent-engine</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>

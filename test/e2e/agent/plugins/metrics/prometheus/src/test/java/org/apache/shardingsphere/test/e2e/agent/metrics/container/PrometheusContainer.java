@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics.container;
 
-import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;

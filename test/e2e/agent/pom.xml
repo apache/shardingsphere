@@ -28,6 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>engine</module>
         <module>plugins</module>
         <module>fixture</module>
     </modules>

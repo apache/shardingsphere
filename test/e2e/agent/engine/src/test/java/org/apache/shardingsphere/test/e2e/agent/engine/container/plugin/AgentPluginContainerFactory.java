@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jaeger.container;
+package org.apache.shardingsphere.test.e2e.agent.engine.container.plugin;
 
-import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
-import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 
 /**
- * Jaeger container factory.
+ * Agent plugin container factory.
  */
-public final class JaegerContainerFactory implements AgentPluginContainerFactory {
+@SingletonSPI
+public interface AgentPluginContainerFactory extends TypedSPI {
     
-    @Override
-    public DockerITContainer create() {
-        return new JaegerContainer(AgentE2ETestConfiguration.getInstance().getPluginImageName());
-    }
-    
-    @Override
-    public Object getType() {
-        return "Jaeger";
-    }
+    /**
+     * Create agent plugin container.
+     *
+     * @return created container
+     */
+    DockerITContainer create();
 }

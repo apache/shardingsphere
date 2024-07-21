@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jaeger.container;
+package org.apache.shardingsphere.test.e2e.agent.engine.framework;
 
-import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
-import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.AgentE2ETestEnvironment;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * Jaeger container factory.
+ * Agent E2E test action extension.
  */
-public final class JaegerContainerFactory implements AgentPluginContainerFactory {
+public final class AgentE2ETestActionExtension implements BeforeAllCallback, AfterAllCallback {
     
     @Override
-    public DockerITContainer create() {
-        return new JaegerContainer(AgentE2ETestConfiguration.getInstance().getPluginImageName());
+    public void beforeAll(final ExtensionContext extensionContext) {
+        AgentE2ETestEnvironment.getInstance().init();
     }
     
     @Override
-    public Object getType() {
-        return "Jaeger";
+    public void afterAll(final ExtensionContext extensionContext) {
+        AgentE2ETestEnvironment.getInstance().destroy();
     }
 }
