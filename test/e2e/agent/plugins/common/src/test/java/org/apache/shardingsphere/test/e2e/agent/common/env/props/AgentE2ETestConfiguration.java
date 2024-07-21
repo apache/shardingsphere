@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.env;
+package org.apache.shardingsphere.test.e2e.agent.common.env.props;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
