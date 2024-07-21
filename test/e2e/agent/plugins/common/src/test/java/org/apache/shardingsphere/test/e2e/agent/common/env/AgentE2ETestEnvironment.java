@@ -61,7 +61,7 @@ public final class AgentE2ETestEnvironment {
     @Getter
     private final Collection<String> actualLogs = new LinkedList<>();
     
-    private ITContainers containers; 
+    private ITContainers containers;
     
     @Getter
     private String agentPluginURL;
