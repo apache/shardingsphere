@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.env;
+package org.apache.shardingsphere.test.e2e.agent.common.env.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,10 +26,10 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Environment properties.
+ * Agent E2E environment properties.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EnvironmentProperties {
+public final class AgentE2EEnvironmentProperties {
     
     /**
      * Load properties.

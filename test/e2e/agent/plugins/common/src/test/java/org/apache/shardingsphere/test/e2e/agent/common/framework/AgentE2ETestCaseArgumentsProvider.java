@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.common.framework;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCases;
 import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCasesLoader;
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.common.env.props.AgentE2ETestConfiguration;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
