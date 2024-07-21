@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * IT containers.
  */
+// TODO Merge test container: merge with org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers
 @RequiredArgsConstructor
 public final class ITContainers implements Startable {
     
