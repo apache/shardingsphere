@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common.env;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ITContainers;
@@ -39,27 +41,23 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Agent E2E test environment.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class AgentE2ETestEnvironment {
     
     private static final AgentE2ETestEnvironment INSTANCE = new AgentE2ETestEnvironment();
     
-    private final AgentE2ETestConfiguration testConfig;
+    private final AgentE2ETestConfiguration testConfig = AgentE2ETestConfiguration.getInstance();
+    
+    private final AgentE2ETestImageConfiguration imageConfig = AgentE2ETestImageConfiguration.getInstance();
     
     @Getter
     private final Collection<String> actualLogs = new LinkedList<>();
-    
-    private String mysqlImage;
-    
-    private String proxyImage;
-    
-    private String jdbcProjectImage;
     
     private ITContainers containers;
     
@@ -69,18 +67,6 @@ public final class AgentE2ETestEnvironment {
     private ProxyRequestExecutor proxyRequestExecutor;
     
     private boolean initialized;
-    
-    private AgentE2ETestEnvironment() {
-        testConfig = AgentE2ETestConfiguration.getInstance();
-        initContainerImage();
-    }
-    
-    private void initContainerImage() {
-        Properties imageProps = EnvironmentProperties.loadProperties("env/image.properties");
-        mysqlImage = imageProps.getProperty("mysql.image", "mysql:8.0");
-        proxyImage = imageProps.getProperty("proxy.image", "apache/shardingsphere-proxy-agent-test:latest");
-        jdbcProjectImage = imageProps.getProperty("jdbc.project.image", "apache/shardingsphere-jdbc-agent-test:latest");
-    }
     
     /**
      * Get instance.
@@ -116,9 +102,9 @@ public final class AgentE2ETestEnvironment {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private void createProxyEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
         containers = new ITContainers();
-        MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
+        MySQLContainer storageContainer = new MySQLContainer(imageConfig.getMysqlImage());
         GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
-        ShardingSphereProxyContainer proxyContainer = new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
+        ShardingSphereProxyContainer proxyContainer = new ShardingSphereProxyContainer(imageConfig.getProxyImage(), testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         proxyContainer.dependsOn(storageContainer);
         proxyContainer.dependsOn(governanceContainer);
         agentPluginContainer.ifPresent(proxyContainer::dependsOn);
@@ -137,8 +123,9 @@ public final class AgentE2ETestEnvironment {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private void createJDBCEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
         containers = new ITContainers();
-        MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
-        ShardingSphereJdbcContainer jdbcContainer = new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
+        MySQLContainer storageContainer = new MySQLContainer(imageConfig.getMysqlImage());
+        ShardingSphereJdbcContainer jdbcContainer = new ShardingSphereJdbcContainer(
+                imageConfig.getJdbcProjectImage(), testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         jdbcContainer.dependsOn(storageContainer);
         agentPluginContainer.ifPresent(jdbcContainer::dependsOn);
         agentPluginContainer.ifPresent(optional -> containers.registerContainer(optional));
