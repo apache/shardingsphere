@@ -26,7 +26,7 @@ public final class AgentPluginHTTPEndpointProvider {
     
     /**
      * Get HTTP URL.
-     * 
+     *
      * @param container docker container
      * @param defaultExposePort default expose port
      * @return HTTP URL
