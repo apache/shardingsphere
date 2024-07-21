@@ -37,6 +37,7 @@ import java.util.function.Consumer;
 /**
  * ShardingSphere proxy container.
  */
+// TODO Merge test container: merge with ShardingSphereProxyClusterContainer
 public final class ShardingSphereProxyContainer extends DockerITContainer {
     
     private static final int EXPOSED_PORT = 3307;
