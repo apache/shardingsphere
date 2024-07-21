@@ -43,7 +43,7 @@ public final class AgentE2ETestConfiguration {
     private final long collectDataWaitSeconds;
     
     private AgentE2ETestConfiguration() {
-        Properties envProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        Properties envProps = AgentE2EEnvironmentProperties.loadProperties("env/engine-env.properties");
         adapter = envProps.getProperty("it.env.adapter");
         pluginType = envProps.getProperty("it.env.plugin.type");
         pluginImageName = envProps.getProperty("it.env.plugin.image");

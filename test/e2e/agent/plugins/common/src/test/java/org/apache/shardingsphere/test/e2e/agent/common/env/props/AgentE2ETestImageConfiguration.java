@@ -36,7 +36,7 @@ public final class AgentE2ETestImageConfiguration {
     private final String jdbcProjectImage;
     
     private AgentE2ETestImageConfiguration() {
-        Properties imageProps = EnvironmentProperties.loadProperties("env/image.properties");
+        Properties imageProps = AgentE2EEnvironmentProperties.loadProperties("env/image.properties");
         mysqlImage = imageProps.getProperty("mysql.image", "mysql:8.0");
         proxyImage = imageProps.getProperty("proxy.image", "apache/shardingsphere-proxy-agent-test:latest");
         jdbcProjectImage = imageProps.getProperty("jdbc.project.image", "apache/shardingsphere-jdbc-agent-test:latest");
