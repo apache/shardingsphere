@@ -174,7 +174,7 @@
                                     <outputDirectory>${docker.jdbc.context.directory}/shardingsphere-jdbc-app</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../../jdbc-project/target/app</directory>
+                                            <directory>${project.basedir}/../../fixture/jdbc-project/target/app</directory>
                                         </resource>
                                         <resource>
                                             <directory>${project.basedir}/../../../../../distribution/agent/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
