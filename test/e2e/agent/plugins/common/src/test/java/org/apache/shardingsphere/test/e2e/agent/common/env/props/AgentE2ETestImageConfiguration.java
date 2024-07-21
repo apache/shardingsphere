@@ -22,7 +22,7 @@ import lombok.Getter;
 import java.util.Properties;
 
 /**
- * Agent E2E test configuration.
+ * Agent E2E test image configuration.
  */
 @Getter
 public final class AgentE2ETestImageConfiguration {
