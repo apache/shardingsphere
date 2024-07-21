@@ -155,15 +155,15 @@ public final class AgentE2ETestEnvironment {
     }
     
     private Optional<DockerITContainer> getAgentPluginContainer() {
-        if (testConfig.getPluginImageName().contains(PluginType.PROMETHEUS.getValue().toLowerCase())) {
+        if (PluginType.PROMETHEUS.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
             agentPluginContainer = new PrometheusContainer(testConfig.getPluginImageName());
             return Optional.of(agentPluginContainer);
         }
-        if (testConfig.getPluginImageName().contains(PluginType.ZIPKIN.getValue().toLowerCase())) {
+        if (PluginType.ZIPKIN.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
             agentPluginContainer = new ZipkinContainer(testConfig.getPluginImageName());
             return Optional.of(agentPluginContainer);
         }
-        if (testConfig.getPluginImageName().contains(PluginType.JAEGER.getValue().toLowerCase())) {
+        if (PluginType.JAEGER.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
             agentPluginContainer = new JaegerContainer(testConfig.getPluginImageName());
             return Optional.of(agentPluginContainer);
         }
