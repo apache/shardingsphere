@@ -29,7 +29,7 @@ public interface AgentPluginContainerFactory extends TypedSPI {
     
     /**
      * Create agent plugin container.
-     * 
+     *
      * @return created container
      */
     DockerITContainer create();
