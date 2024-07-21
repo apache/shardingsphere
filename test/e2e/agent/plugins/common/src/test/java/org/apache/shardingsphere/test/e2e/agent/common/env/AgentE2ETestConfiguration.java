@@ -32,14 +32,20 @@ public final class AgentE2ETestConfiguration {
     
     private final String adapter;
     
-    private final String plugin;
+    private final String pluginType;
+    
+    private final String pluginImageName;
+    
+    private final int defaultExposePort;
     
     private final long collectDataWaitSeconds;
     
     private AgentE2ETestConfiguration() {
         Properties envProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
         adapter = envProps.getProperty("it.env.adapter");
-        plugin = envProps.getProperty("it.env.plugin");
+        pluginType = envProps.getProperty("it.env.plugin.type");
+        pluginImageName = envProps.getProperty("it.env.plugin.image");
+        defaultExposePort = Integer.parseInt(envProps.getProperty("it.env.plugin.default.expose.port", "0"));
         collectDataWaitSeconds = Long.parseLong(envProps.getProperty("it.env.collect.data.wait.seconds", "0"));
     }
     
@@ -58,6 +64,6 @@ public final class AgentE2ETestConfiguration {
      * @return contains or not
      */
     public boolean containsTestParameter() {
-        return !Strings.isNullOrEmpty(adapter) && !Strings.isNullOrEmpty(plugin);
+        return !Strings.isNullOrEmpty(adapter) && !Strings.isNullOrEmpty(pluginType);
     }
 }

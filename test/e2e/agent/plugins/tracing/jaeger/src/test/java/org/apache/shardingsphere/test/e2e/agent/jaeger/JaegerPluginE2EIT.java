@@ -36,7 +36,7 @@ class JaegerPluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertTraceAgent(final JaegerE2ETestCase testCase) {
-        JaegerSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getJaegerHttpUrl(), testCase);
+        JaegerSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), testCase);
     }
     
     private static boolean isEnabled() {

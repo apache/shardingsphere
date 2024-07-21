@@ -19,13 +19,14 @@ package org.apache.shardingsphere.test.e2e.agent.common.env;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.AgentPluginHTTPEndpointProvider;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ITContainers;
-import org.apache.shardingsphere.test.e2e.agent.common.container.JaegerContainer;
+import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.JaegerContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.container.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.agent.common.container.PrometheusContainer;
+import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.PrometheusContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ShardingSphereJdbcContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.container.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.e2e.agent.common.container.ZipkinContainer;
+import org.apache.shardingsphere.test.e2e.agent.common.container.plugin.ZipkinContainer;
 import org.apache.shardingsphere.test.e2e.agent.common.enums.PluginType;
 import org.apache.shardingsphere.test.e2e.agent.common.fixture.executor.ProxyRequestExecutor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
@@ -56,34 +57,18 @@ public final class AgentE2ETestEnvironment {
     @Getter
     private final Collection<String> actualLogs = new LinkedList<>();
     
-    @Getter
-    private String prometheusHttpUrl;
-    
-    @Getter
-    private String zipKinHttpUrl;
-    
-    @Getter
-    private String jaegerHttpUrl;
-    
-    private PrometheusContainer prometheusContainer;
-    
-    private ZipkinContainer zipkinContainer;
-    
-    private JaegerContainer jaegerContainer;
+    private DockerITContainer agentPluginContainer;
     
     private ITContainers containers;
+    
+    @Getter
+    private String agentPluginURL;
     
     private ProxyRequestExecutor proxyRequestExecutor;
     
     private boolean initialized;
     
-    private String jaegerImage;
-    
-    private String zipkinImage;
-    
     private String mysqlImage;
-    
-    private String prometheusImage;
     
     private String proxyImage;
     
@@ -99,9 +84,6 @@ public final class AgentE2ETestEnvironment {
         proxyImage = imageProps.getProperty("proxy.image", "apache/shardingsphere-proxy-agent-test:latest");
         jdbcProjectImage = imageProps.getProperty("jdbc.project.image", "apache/shardingsphere-jdbc-agent-test:latest");
         mysqlImage = imageProps.getProperty("mysql.image", "mysql:8.0");
-        jaegerImage = imageProps.getProperty("jaeger.image", "jaegertracing/all-in-one:1.41");
-        zipkinImage = imageProps.getProperty("zipkin.image", "openzipkin/zipkin:3.2");
-        prometheusImage = imageProps.getProperty("prometheus.image", "prom/prometheus:v2.41.0");
     }
     
     /**
@@ -130,6 +112,7 @@ public final class AgentE2ETestEnvironment {
         if (collectDataWaitSeconds > 0L) {
             Awaitility.await().ignoreExceptions().atMost(Duration.ofSeconds(collectDataWaitSeconds + 1L)).pollDelay(collectDataWaitSeconds, TimeUnit.SECONDS).until(() -> true);
         }
+        agentPluginURL = null == agentPluginContainer ? null : new AgentPluginHTTPEndpointProvider().getHURL(agentPluginContainer, testConfig.getDefaultExposePort());
         initialized = true;
     }
     
@@ -137,19 +120,18 @@ public final class AgentE2ETestEnvironment {
         containers = new ITContainers();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
         GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
-        ShardingSphereProxyContainer proxyContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPlugin())
-                ? new ShardingSphereProxyContainer(proxyImage, testConfig.getPlugin(), this::collectLogs)
-                : new ShardingSphereProxyContainer(proxyImage, testConfig.getPlugin());
+        ShardingSphereProxyContainer proxyContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPluginType())
+                ? new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType(), this::collectLogs)
+                : new ShardingSphereProxyContainer(proxyImage, testConfig.getPluginType());
         proxyContainer.dependsOn(storageContainer);
         proxyContainer.dependsOn(governanceContainer);
-        Optional<DockerITContainer> pluginContainer = getPluginContainer();
+        Optional<DockerITContainer> pluginContainer = getAgentPluginContainer();
         pluginContainer.ifPresent(proxyContainer::dependsOn);
         pluginContainer.ifPresent(optional -> containers.registerContainer(optional));
         containers.registerContainer(storageContainer);
         containers.registerContainer(governanceContainer);
         containers.registerContainer(proxyContainer);
         containers.start();
-        initHttpUrl();
         try {
             proxyRequestExecutor = new ProxyRequestExecutor(proxyContainer.getConnection());
             proxyRequestExecutor.start();
@@ -159,30 +141,31 @@ public final class AgentE2ETestEnvironment {
     
     private void createJDBCEnvironment() {
         containers = new ITContainers();
-        Optional<DockerITContainer> pluginContainer = getPluginContainer();
+        Optional<DockerITContainer> pluginContainer = getAgentPluginContainer();
         MySQLContainer storageContainer = new MySQLContainer(mysqlImage);
-        ShardingSphereJdbcContainer jdbcContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPlugin())
-                ? new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPlugin(), this::collectLogs)
-                : new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPlugin());
+        ShardingSphereJdbcContainer jdbcContainer = PluginType.FILE.getValue().equalsIgnoreCase(testConfig.getPluginType())
+                ? new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType(), this::collectLogs)
+                : new ShardingSphereJdbcContainer(jdbcProjectImage, testConfig.getPluginType());
         jdbcContainer.dependsOn(storageContainer);
         pluginContainer.ifPresent(jdbcContainer::dependsOn);
         pluginContainer.ifPresent(optional -> containers.registerContainer(optional));
         containers.registerContainer(storageContainer);
         containers.registerContainer(jdbcContainer);
         containers.start();
-        initHttpUrl();
     }
     
-    private Optional<DockerITContainer> getPluginContainer() {
-        if (PluginType.PROMETHEUS.getValue().equalsIgnoreCase(testConfig.getPlugin())) {
-            prometheusContainer = new PrometheusContainer(prometheusImage);
-            return Optional.of(prometheusContainer);
-        } else if (PluginType.ZIPKIN.getValue().equalsIgnoreCase(testConfig.getPlugin())) {
-            zipkinContainer = new ZipkinContainer(zipkinImage);
-            return Optional.of(zipkinContainer);
-        } else if (PluginType.JAEGER.getValue().equalsIgnoreCase(testConfig.getPlugin())) {
-            jaegerContainer = new JaegerContainer(jaegerImage);
-            return Optional.of(jaegerContainer);
+    private Optional<DockerITContainer> getAgentPluginContainer() {
+        if (PluginType.PROMETHEUS.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
+            agentPluginContainer = new PrometheusContainer(testConfig.getPluginImageName());
+            return Optional.of(agentPluginContainer);
+        }
+        if (PluginType.ZIPKIN.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
+            agentPluginContainer = new ZipkinContainer(testConfig.getPluginImageName());
+            return Optional.of(agentPluginContainer);
+        }
+        if (PluginType.JAEGER.getValue().equalsIgnoreCase(testConfig.getPluginType())) {
+            agentPluginContainer = new JaegerContainer(testConfig.getPluginImageName());
+            return Optional.of(agentPluginContainer);
         }
         return Optional.empty();
     }
@@ -191,12 +174,6 @@ public final class AgentE2ETestEnvironment {
         if (!initialized) {
             actualLogs.add(outputFrame.getUtf8StringWithoutLineEnding());
         }
-    }
-    
-    private void initHttpUrl() {
-        prometheusHttpUrl = null != prometheusContainer ? prometheusContainer.getHttpUrl() : null;
-        zipKinHttpUrl = null != zipkinContainer ? zipkinContainer.getHttpUrl() : null;
-        jaegerHttpUrl = null != jaegerContainer ? jaegerContainer.getHttpUrl() : null;
     }
     
     /**

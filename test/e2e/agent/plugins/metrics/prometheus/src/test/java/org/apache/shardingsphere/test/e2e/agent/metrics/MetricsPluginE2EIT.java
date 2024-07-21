@@ -36,7 +36,7 @@ class MetricsPluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final MetricE2ETestCase metricTestCase) {
-        MetricAssert.assertIs(AgentE2ETestEnvironment.getInstance().getPrometheusHttpUrl(), metricTestCase);
+        MetricAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), metricTestCase);
     }
     
     private static boolean isEnabled() {

@@ -15,42 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.container;
+package org.apache.shardingsphere.test.e2e.agent.common.container.plugin;
 
+import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Jaeger container.
+ * Prometheus container.
  */
-public final class JaegerContainer extends DockerITContainer {
+public final class PrometheusContainer extends DockerITContainer {
     
-    public JaegerContainer(final String image) {
-        super("jaeger", image);
+    public PrometheusContainer(final String image) {
+        super("prometheus", image);
     }
     
     @Override
     protected void configure() {
-        withExposedPorts(4317, 16686);
-        getContainerEnvironments().forEach(this::addEnv);
-        setWaitStrategy(new HttpWaitStrategy().forPort(16686));
-    }
-    
-    private Map<String, String> getContainerEnvironments() {
-        Map<String, String> result = new HashMap<>(1, 1F);
-        result.put("COLLECTOR_OTLP_ENABLED", Boolean.TRUE.toString());
-        return result;
+        withClasspathResourceMapping("/env/prometheus/prometheus.yml", "/etc/prometheus/prometheus.yml", BindMode.READ_ONLY);
+        setWaitStrategy(new HttpWaitStrategy().forPort(AgentE2ETestConfiguration.getInstance().getDefaultExposePort()).forPath("/-/ready"));
+        withExposedPorts(AgentE2ETestConfiguration.getInstance().getDefaultExposePort());
     }
     
     @Override
     public String getAbbreviation() {
-        return "jaeger";
-    }
-    
-    public String getHttpUrl() {
-        return String.format("http://%s:%s", getHost(), getMappedPort(16686));
+        return "prometheus";
     }
 }
