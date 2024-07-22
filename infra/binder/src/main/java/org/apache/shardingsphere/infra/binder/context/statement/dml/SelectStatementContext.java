@@ -412,7 +412,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private boolean isAllSubqueryTableInJoinTable(final TableSegment tableSegment) {
         if (tableSegment instanceof JoinTableSegment) {
-            return isAllSubqueryTableInJoinTable(((JoinTableSegment) tableSegment).getLeft()) && isAllSubqueryTableInJoinTable(((JoinTableSegment) tableSegment).getRight());
+            return isAllSubqueryTable(((JoinTableSegment) tableSegment).getLeft()) && isAllSubqueryTable(((JoinTableSegment) tableSegment).getRight());
         }
         return false;
     }
