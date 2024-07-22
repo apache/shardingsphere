@@ -18,16 +18,37 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.postgresql.jdbc.TimestampUtils;
 
 import java.sql.Date;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Date value parser of PostgreSQL.
  */
 public final class PostgreSQLDateValueParser implements PostgreSQLTextValueParser<Date> {
     
+    private static final DateTimeFormatter POSTGRESQL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd[ ][G][ ][XXXXX][XXX][X]");
+    
     @Override
     public Date parse(final String value) {
-        return Date.valueOf(value);
+        try {
+            return Date.valueOf(LocalDate.from(POSTGRESQL_DATE_TIME_FORMATTER.parse(value)));
+        } catch (final DateTimeParseException ignored) {
+            return fallbackToPostgreSQLTimestampUtils(value);
+        }
+    }
+    
+    private static Date fallbackToPostgreSQLTimestampUtils(final String value) {
+        try {
+            return new TimestampUtils(false, null).toDate(null, value);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        }
     }
 }
