@@ -144,4 +144,11 @@ class ComputeNodePersistServiceTest {
         new ComputeNodePersistService(repository).updateComputeNodeState("foo_instance_id", InstanceState.OK);
         verify(repository).persistEphemeral(ComputeNode.getComputeNodeStateNodePath("foo_instance_id"), InstanceState.OK.name());
     }
+    
+    @Test
+    void assertOffline() {
+        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3307));
+        new ComputeNodePersistService(repository).offline(computeNodeInstance);
+        verify(repository).delete(eq("/nodes/compute_nodes/online/proxy/" + computeNodeInstance.getMetaData().getId()));
+    }
 }
