@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.agent.common.cases.AgentE2ETestCases;
+import org.apache.shardingsphere.test.e2e.agent.engine.cases.AgentE2ETestCases;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

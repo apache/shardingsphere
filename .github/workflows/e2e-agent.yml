@@ -81,7 +81,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -DskipTests -Prelease
       - name: Build Proxy E2E Image
-        run: ./mvnw clean install -DskipTests -Pit.env.proxy -f test/e2e/agent/plugins/common/pom.xml
+        run: ./mvnw clean install -DskipTests -Pit.env.proxy -f test/e2e/agent/engine/pom.xml
       - name: Save Proxy E2E Image
         run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-agent-test.tar apache/shardingsphere-proxy-agent-test:latest
       - uses: actions/upload-artifact@v4
@@ -90,7 +90,7 @@ jobs:
           path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-agent-test.tar
           retention-days: 10
       - name: Build JDBC E2E Image
-        run: ./mvnw clean install -DskipTests -Pit.env.jdbc -f test/e2e/agent/plugins/common/pom.xml
+        run: ./mvnw clean install -DskipTests -Pit.env.jdbc -f test/e2e/agent/engine/pom.xml
       - name: Save JDBC E2E Image
         run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-jdbc-agent-test.tar apache/shardingsphere-jdbc-agent-test:latest
       - uses: actions/upload-artifact@v4

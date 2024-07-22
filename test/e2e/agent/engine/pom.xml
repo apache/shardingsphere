@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-test-e2e-agent</artifactId>
+        <version>5.5.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>shardingsphere-test-e2e-agent-engine</artifactId>
+    <name>${project.artifactId}</name>
+    
+    <properties>
+        <docker.proxy.context.directory>target/proxy</docker.proxy.context.directory>
+        <docker.proxy.image.name>apache/shardingsphere-proxy-agent-test</docker.proxy.image.name>
+        <docker.jdbc.context.directory>target/jdbc</docker.jdbc.context.directory>
+        <docker.jdbc.image.name>apache/shardingsphere-jdbc-agent-test</docker.jdbc.image.name>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-e2e-env</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-e2e-agent-proxy-fixture</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-stdlib-jdk8</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin-stdlib.version}</version>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <profiles>
+        <profile>
+            <id>it.env.proxy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <outputDirectory>${docker.proxy.context.directory}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/resources/docker/proxy/</directory>
+                                            <includes>
+                                                <include>Dockerfile</include>
+                                            </includes>
+                                        </resource>
+                                        <resource>
+                                            <directory>${project.basedir}/../../../../distribution/proxy/target/</directory>
+                                            <includes>
+                                                <include>${docker.proxy.distribution.name}.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>dockerfile-maven-plugin</artifactId>
+                        <configuration>
+                            <repository>${docker.proxy.image.name}</repository>
+                            <tag>${project.version}</tag>
+                            <tag>latest</tag>
+                            <buildArgs>
+                                <APP_NAME>${docker.proxy.distribution.name}</APP_NAME>
+                            </buildArgs>
+                            <contextDirectory>${docker.proxy.context.directory}</contextDirectory>
+                            <dockerfile>${docker.proxy.context.directory}/Dockerfile</dockerfile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>shardingsphere-proxy-bin</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>it.env.jdbc</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-dockerfile</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <outputDirectory>${docker.jdbc.context.directory}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/resources/docker/jdbc</directory>
+                                            <includes>
+                                                <include>Dockerfile</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-app</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <outputDirectory>${docker.jdbc.context.directory}/shardingsphere-jdbc-app</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/../fixture/jdbc-fixture/target/app</directory>
+                                        </resource>
+                                        <resource>
+                                            <directory>${project.basedir}/../../../../distribution/agent/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>dockerfile-maven-plugin</artifactId>
+                        <configuration>
+                            <repository>${docker.jdbc.image.name}</repository>
+                            <tag>latest</tag>
+                            <contextDirectory>${docker.jdbc.context.directory}</contextDirectory>
+                            <dockerfile>${docker.jdbc.context.directory}/Dockerfile</dockerfile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>shardingsphere-jdbc-bin</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

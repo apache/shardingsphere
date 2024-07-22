@@ -28,7 +28,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>common</module>
         <module>metrics</module>
         <module>tracing</module>
         <module>logging</module>

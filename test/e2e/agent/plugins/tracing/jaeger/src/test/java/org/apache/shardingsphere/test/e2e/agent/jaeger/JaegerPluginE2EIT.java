@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jaeger;
 
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.JaegerSpanAssert;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.JaegerE2ETestCase;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.JaegerE2ETestCases;
@@ -36,7 +36,7 @@ class JaegerPluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertTraceAgent(final JaegerE2ETestCase testCase) {
-        JaegerSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getJaegerHttpUrl(), testCase);
+        JaegerSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), testCase);
     }
     
     private static boolean isEnabled() {

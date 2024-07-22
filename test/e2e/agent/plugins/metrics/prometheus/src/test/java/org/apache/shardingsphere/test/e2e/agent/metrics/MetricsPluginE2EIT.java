@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics;
 
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestConfiguration;
-import org.apache.shardingsphere.test.e2e.agent.common.env.AgentE2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.framework.AgentE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricAssert;
 import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricE2ETestCase;
 import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricE2ETestCases;
@@ -36,7 +36,7 @@ class MetricsPluginE2EIT {
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertWithAgent(final MetricE2ETestCase metricTestCase) {
-        MetricAssert.assertIs(AgentE2ETestEnvironment.getInstance().getPrometheusHttpUrl(), metricTestCase);
+        MetricAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), metricTestCase);
     }
     
     private static boolean isEnabled() {
