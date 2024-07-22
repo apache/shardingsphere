@@ -48,7 +48,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
-import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -69,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUti
 import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SubqueryExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.util.WhereExtractUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -403,7 +403,18 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether sql statement contains table subquery segment or not
      */
     public boolean containsTableSubquery() {
-        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWithSegment().isPresent();
+        return getSqlStatement().getFrom().isPresent() && isAllSubqueryTable(getSqlStatement().getFrom().get()) || getSqlStatement().getWithSegment().isPresent();
+    }
+    
+    private boolean isAllSubqueryTable(final TableSegment tableSegment) {
+        return tableSegment instanceof SubqueryTableSegment || isAllSubqueryTableInJoinTable(tableSegment);
+    }
+    
+    private boolean isAllSubqueryTableInJoinTable(final TableSegment tableSegment) {
+        if (tableSegment instanceof JoinTableSegment) {
+            return isAllSubqueryTableInJoinTable(((JoinTableSegment) tableSegment).getLeft()) && isAllSubqueryTableInJoinTable(((JoinTableSegment) tableSegment).getRight());
+        }
+        return false;
     }
     
     /**
