@@ -183,4 +183,13 @@ public final class ComputeNodePersistService {
     public void updateComputeNodeState(final String instanceId, final InstanceState instanceState) {
         repository.persistEphemeral(ComputeNode.getComputeNodeStateNodePath(instanceId), instanceState.name());
     }
+    
+    /**
+     * Compute node offline.
+     *
+     * @param computeNodeInstance compute node instance
+     */
+    public void offline(final ComputeNodeInstance computeNodeInstance) {
+        repository.delete(ComputeNode.getOnlineInstanceNodePath(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getMetaData().getType()));
+    }
 }
