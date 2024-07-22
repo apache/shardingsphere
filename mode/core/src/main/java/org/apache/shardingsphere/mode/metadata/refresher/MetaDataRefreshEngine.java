@@ -76,4 +76,33 @@ public final class MetaDataRefreshEngine {
         }
         IGNORED_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
     }
+    
+    /**
+     * Refresh meta data for federation.
+     *
+     * @param sqlStatementContext SQL statement context
+     */
+    @SuppressWarnings("unchecked")
+    public void refresh(final SQLStatementContext sqlStatementContext) {
+        getFederationMetaDataRefresher(sqlStatementContext).ifPresent(federationMetaDataRefresher -> {
+            String schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
+                    .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
+            federationMetaDataRefresher.refresh(metaDataManagerPersistService, database, schemaName, sqlStatementContext.getDatabaseType(), sqlStatementContext.getSqlStatement());
+        });
+    }
+    
+    /**
+     * SQL statement is federation or not.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @return is federation or not
+     */
+    public boolean isFederation(final SQLStatementContext sqlStatementContext) {
+        return getFederationMetaDataRefresher(sqlStatementContext).isPresent();
+    }
+    
+    private Optional<FederationMetaDataRefresher> getFederationMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
+        Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
+        return TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass.getSuperclass());
+    }
 }

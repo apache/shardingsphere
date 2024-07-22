@@ -167,6 +167,11 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }
+        MetaDataRefreshEngine metaDataRefreshEngine = getMetaDataRefreshEngine();
+        if (proxySQLExecutor.getSqlFederationEngine().enabled() && metaDataRefreshEngine.isFederation(queryContext.getSqlStatementContext())) {
+            metaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
+            return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
+        }
         ExecutionContext executionContext = generateExecutionContext();
         return isNeedImplicitCommitTransaction(queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
                 ? doExecuteWithImplicitCommitTransaction(() -> doExecute(executionContext))
@@ -280,9 +285,13 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
+        getMetaDataRefreshEngine().refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+    }
+    
+    private MetaDataRefreshEngine getMetaDataRefreshEngine() {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        new MetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), queryContext.getUsedDatabase(),
-                contextManager.getMetaDataContexts().getMetaData().getProps()).refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+        return new MetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), queryContext.getUsedDatabase(),
+                contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
     private QueryResponseHeader processExecuteQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
