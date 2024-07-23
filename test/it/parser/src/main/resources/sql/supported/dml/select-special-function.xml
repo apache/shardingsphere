@@ -25,6 +25,7 @@
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from 4)" db-types="MySQL" />
+    <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
     <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL,Presto" />
     <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
@@ -145,5 +146,14 @@
     <sql-case id="select_json_parse" value="SELECT JSON_PARSE('{&quot;k1&quot;:&quot;v31&quot;,&quot;k2&quot;:300}')" db-types="Doris" />
     <sql-case id="select_json_parse_error_to_null" value="SELECT JSON_PARSE('invalid json')" db-types="Doris" />
     <sql-case id="select_json_parse_error_to_value" value="SELECT JSON_PARSE('invalid json', '{}')" db-types="Doris" />
+    <sql-case id="select_std" value="SELECT STD(1)" db-types="MySQL" />
+    <sql-case id="select_stddev" value="SELECT STDDEV(1)" db-types="MySQL" />
+    <sql-case id="select_stddev_pop" value="SELECT STDDEV_POP(1)" db-types="MySQL" />
+    <sql-case id="select_stddev_samp" value="SELECT STDDEV_SAMP(1)" db-types="MySQL" />
+    <sql-case id="select_str_to_date" value="SELECT STR_TO_DATE('01,5,2013','%d,%m,%Y')" db-types="MySQL" />
+    <sql-case id="select_strcmp" value="SELECT STRCMP('text', 'text2')" db-types="MySQL" />
+    <sql-case id="select_subdate" value="SELECT SUBDATE('2008-01-02 12:00:00', 31)" db-types="MySQL" />
+    <sql-case id="select_subtime" value="SELECT SUBTIME('2007-12-31 23:59:59.999999','1 1:1:1.000002')" db-types="MySQL" />
+    <sql-case id="select_sysdate" value="SELECT SYSDATE()" db-types="MySQL" />
 
 </sql-cases>
