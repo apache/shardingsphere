@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-./opt/shardingsphere-proxy/bin/start.sh -g && sleep 20
+bash /opt/shardingsphere-proxy/bin/start.sh -g && sleep 20
 
 for ((i=1; i<=10; i++))
 do mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;insert into t_order values (${i}, ${i}, \"INSERT_TEST\");"
