@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.metadata.reviser.column;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
