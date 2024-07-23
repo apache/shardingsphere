@@ -74,7 +74,7 @@ class OpenGaussErrorPacketFactoryTest {
         assertThat(actualFields.size(), is(4));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY), is("ERROR"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE), is("58000"));
-        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE), is("Unknown exception." + System.lineSeparator() + "More details: No reason"));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE), is("Unknown exception." + System.lineSeparator() + "More details: java.lang.RuntimeException: No reason"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERROR_CODE), is("0"));
     }
     
