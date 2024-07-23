@@ -122,6 +122,15 @@ public final class SQLFederationEngine implements AutoCloseable {
     }
     
     /**
+     * SQL federation enabled or not.
+     *
+     * @return enabled or not
+     */
+    public boolean enabled() {
+        return sqlFederationRule.getConfiguration().isSqlFederationEnabled();
+    }
+    
+    /**
      * Decide use SQL federation or not.
      *
      * @param queryContext query context
