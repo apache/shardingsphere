@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule;
+package org.apache.shardingsphere.encrypt.rule.table;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;

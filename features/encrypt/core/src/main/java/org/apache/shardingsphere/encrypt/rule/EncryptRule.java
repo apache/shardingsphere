@@ -26,6 +26,7 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.rule.attribute.EncryptTableMapperRuleAttribute;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
