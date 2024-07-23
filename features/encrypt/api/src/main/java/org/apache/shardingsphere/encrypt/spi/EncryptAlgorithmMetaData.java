@@ -21,8 +21,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Properties;
-
 /**
  * Encrypt algorithm meta data.
  */
@@ -36,6 +34,4 @@ public final class EncryptAlgorithmMetaData {
     private final boolean supportEquivalentFilter;
     
     private final boolean supportLike;
-    
-    private final Properties defaultProps;
 }

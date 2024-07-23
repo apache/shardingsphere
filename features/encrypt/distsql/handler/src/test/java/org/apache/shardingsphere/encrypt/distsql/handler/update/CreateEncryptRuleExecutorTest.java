@@ -88,7 +88,7 @@ class CreateEncryptRuleExecutorTest {
     
     private CreateEncryptRuleStatement createAESEncryptRuleSQLStatement(final boolean ifNotExists) {
         EncryptColumnSegment encryptColumnSegment = new EncryptColumnSegment("user_id",
-                new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("AES", PropertiesBuilder.build(new Property("aes-key-value", "abc")))),
+                new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("AES", PropertiesBuilder.build(new Property("aes-key-value", "abc"), new Property("digest-algorithm-name", "SHA-1")))),
                 new EncryptColumnItemSegment("assisted_column", null),
                 new EncryptColumnItemSegment("like_column", null));
         Collection<EncryptRuleSegment> rules = new LinkedList<>();

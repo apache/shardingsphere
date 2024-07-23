@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
@@ -92,18 +91,6 @@ class EncryptRuleTest {
         pwdColumnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", "like_query_test_encryptor"));
         assertTrue(pwdColumnConfig.getLikeQuery().isPresent());
         assertThat(pwdColumnConfig.getLikeQuery().get().getEncryptorName(), is("like_query_test_encryptor"));
-    }
-    
-    @Test
-    void assertAESEncryptRuleDefaultProps() {
-        EncryptRuleConfiguration defaultPropsEncryptRuleConfig = new EncryptRuleConfiguration(Collections.emptyList(),
-                Collections.singletonMap("aes_encryptor", new AlgorithmConfiguration("AES", new Properties())));
-        assertThat(defaultPropsEncryptRuleConfig.getEncryptors().get("aes_encryptor").getProps().getProperty(DIGEST_ALGORITHM_NAME), is(MessageDigestAlgorithms.SHA_1));
-        Properties props = new Properties();
-        props.put(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_256);
-        EncryptRuleConfiguration sha256EncryptRuleConfig = new EncryptRuleConfiguration(Collections.emptyList(),
-                Collections.singletonMap("aes_encryptor", new AlgorithmConfiguration("AES", props)));
-        assertThat(sha256EncryptRuleConfig.getEncryptors().get("aes_encryptor").getProps().getProperty(DIGEST_ALGORITHM_NAME), is(MessageDigestAlgorithms.SHA_256));
     }
     
     private Map<String, AlgorithmConfiguration> getEncryptors(final AlgorithmConfiguration standardEncryptConfig, final AlgorithmConfiguration queryAssistedEncryptConfig,

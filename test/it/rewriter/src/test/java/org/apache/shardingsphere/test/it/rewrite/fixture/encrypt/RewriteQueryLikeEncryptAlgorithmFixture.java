@@ -22,12 +22,10 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
-import java.util.Properties;
-
 @Getter
 public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true, new Properties());
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true);
     
     @Override
     public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
