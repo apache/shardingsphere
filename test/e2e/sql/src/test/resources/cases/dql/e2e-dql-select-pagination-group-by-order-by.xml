@@ -67,14 +67,13 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <!-- TODO open this comment when refresh metadata support view without push down execute -->
-    <!--<test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>-->
+    </test-case>
     
     <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d USING(product_id) WHERE p.product_id > ? ORDER BY p.product_id DESC FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select inner join fetch statement when use sharding feature and federation executor engine.">
@@ -92,8 +91,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <!-- TODO open this comment when refresh metadata support view without push down execute -->
-    <!--<test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
+    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select ... from subquery view fetch statement when use sharding feature and federation executor engine.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -101,5 +99,5 @@
     <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select ... from union view fetch statement when use sharding feature and federation executor engine.">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>-->
+    </test-case>
 </e2e-test-cases>
