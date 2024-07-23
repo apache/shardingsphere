@@ -27,6 +27,5 @@ RUN chmod +x /opt/entrypoint.sh
 RUN mv /opt/${APP_NAME} ${LOCAL_PATH} && mkdir -p ${LOCAL_PATH}/ext-lib && wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar -P ${LOCAL_PATH}/ext-lib
 RUN apt update
 RUN apt install default-mysql-client -y
-RUN "${LOCAL_PATH}/bin/start.sh -g"
 
 ENTRYPOINT /opt/entrypoint.sh
