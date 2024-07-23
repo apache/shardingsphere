@@ -19,9 +19,9 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import org.junit.jupiter.api.Test;
 
+import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.ZoneOffset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -30,6 +30,9 @@ class PostgreSQLDateValueParserTest {
     
     @Test
     void assertParse() {
-        assertThat(new PostgreSQLDateValueParser().parse("2020-01-01"), is(Date.from(LocalDate.of(2020, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant())));
+        assertThat(new PostgreSQLDateValueParser().parse("2020-01-01"), is(Date.valueOf(LocalDate.of(2020, 1, 1))));
+        assertThat(new PostgreSQLDateValueParser().parse("2020-01-01 +08"), is(Date.valueOf(LocalDate.of(2020, 1, 1).atStartOfDay(ZoneOffset.of("+8")).toLocalDate())));
+        assertThat(new PostgreSQLDateValueParser().parse("2020-01-01 +08:00"), is(Date.valueOf(LocalDate.of(2020, 1, 1).atStartOfDay(ZoneOffset.of("+8")).toLocalDate())));
+        assertThat(new PostgreSQLDateValueParser().parse("2020-01-01 +08:00:00"), is(Date.valueOf(LocalDate.of(2020, 1, 1).atStartOfDay(ZoneOffset.of("+8")).toLocalDate())));
     }
 }
