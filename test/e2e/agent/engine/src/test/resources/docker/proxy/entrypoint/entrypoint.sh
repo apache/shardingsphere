@@ -15,17 +15,12 @@
 # limitations under the License.
 #
 
-FROM eclipse-temurin:11-jdk
+bash /opt/shardingsphere-proxy/bin/start.sh -g && sleep 30
 
-ARG APP_NAME
-ENV IS_DOCKER true
-ENV LOCAL_PATH /opt/shardingsphere-proxy
-
-ADD entrypoint/entrypoint.sh /opt/entrypoint.sh
-ADD ${APP_NAME}.tar.gz /opt
-RUN chmod +x /opt/entrypoint.sh
-RUN mv /opt/${APP_NAME} ${LOCAL_PATH} && mkdir -p ${LOCAL_PATH}/ext-lib && wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar -P ${LOCAL_PATH}/ext-lib
-RUN apt update
-RUN apt install default-mysql-client -y
-
-ENTRYPOINT /opt/entrypoint.sh
+for ((i=1; i<=10; i++))
+do mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;insert into t_order values (${i}, ${i}, \"INSERT_TEST\");"
+done
+mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;set autocommit=false;INSERT INTO t_order (order_id, user_id, status) VALUES (1000, 1000, \"ROLL_BACK\");"
+mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;set autocommit = fasle;UPDATE t_order SET status = 1000 WHERE order_id =1000;commit;"
+mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;SELECT * FROM t_order;"
+mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;SELECT * FROM non_existent_table;"
