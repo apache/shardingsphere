@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
@@ -94,6 +95,11 @@ public final class DriverExecuteExecutor {
                     new ExecuteQueryCallbackFactory(prepareEngine.getType()).newInstance(database, queryContext), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return null != resultSet;
         }
+        MetaDataRefreshEngine metaDataRefreshEngine = getMetaDataRefreshEngine(database);
+        if (sqlFederationEngine.enabled() && metaDataRefreshEngine.isFederation(queryContext.getSqlStatementContext())) {
+            metaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
+            return true;
+        }
         ExecutionContext executionContext =
                 new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         if (database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
@@ -102,6 +108,10 @@ public final class DriverExecuteExecutor {
         }
         executeType = ExecuteType.RAW_PUSH_DOWN;
         return rawPushDownExecutor.execute(database, executionContext);
+    }
+    
+    private MetaDataRefreshEngine getMetaDataRefreshEngine(final ShardingSphereDatabase database) {
+        return new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps());
     }
     
     /**
