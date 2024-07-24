@@ -58,6 +58,7 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
+        digest-algorithm-name: SHA-1
     assisted_encryptor:
       type: MD5
       props:

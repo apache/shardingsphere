@@ -45,8 +45,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptRuleTest {
     
-    private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
-    
     @Test
     void assertGetAllTableNames() {
         assertThat(new EncryptRule("foo_db", createEncryptRuleConfiguration()).getAllTableNames(), is(Collections.singleton("t_encrypt")));

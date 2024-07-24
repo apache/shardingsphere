@@ -18,6 +18,7 @@
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
+        props.setProperty("digest-algorithm-name", "SHA-1");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("phone", new EncryptColumnItemRuleConfiguration("phone", "standard_encryptor"));
         EncryptTableRuleConfiguration orderItemRule = new EncryptTableRuleConfiguration("t_order_item", Collections.singleton(columnConfigAes));
         EncryptColumnRuleConfiguration statusColumnConfig =

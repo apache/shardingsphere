@@ -65,6 +65,7 @@ Solution description: after selecting the appropriate encryption algorithm, such
       type: AES
       props:
         aes-key-value: 123456abc
+        digest-algorithm-name: SHA-1
   tables:
     t_user:
       columns:

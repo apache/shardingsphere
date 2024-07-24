@@ -60,8 +60,8 @@ mysql> SHOW ENCRYPT RULES FROM encrypt_db;
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
 | table     | logic_column | cipher_column | assisted_query_column | like_query_column | encryptor_type | encryptor_props         | assisted_query_type | assisted_query_props | like_query_type | like_query_props |
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
-| t_user    | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc |                     |                      |                 |                  |
-| t_encrypt | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc |                     |                      |                 |                  |
+| t_user    | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc, digest-algorithm-name=SHA-1 |                     |                      |                 |                  |
+| t_encrypt | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc, digest-algorithm-name=SHA-1 |                     |                      |                 |                  |
 +-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
 2 rows in set (0.00 sec)
 ```
@@ -77,8 +77,8 @@ mysql> SHOW ENCRYPT RULES;
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
 | table     | logic_column | cipher_column | assisted_query_column | like_query_column | encryptor_type | encryptor_props         | assisted_query_type | assisted_query_props | like_query_type | like_query_props |
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
-| t_user    | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc |                     |                      |                 |                  |
-| t_encrypt | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc |                     |                      |                 |                  |
+| t_user    | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc, digest-algorithm-name=SHA-1 |                     |                      |                 |                  |
+| t_encrypt | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc, digest-algorithm-name=SHA-1 |                     |                      |                 |                  |
 +-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
 2 rows in set (0.00 sec)
 ```
@@ -94,7 +94,7 @@ mysql> SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db;
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
 | table     | logic_column | cipher_column | assisted_query_column | like_query_column | encryptor_type | encryptor_props         | assisted_query_type | assisted_query_props | like_query_type | like_query_props |
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
-| t_encrypt | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc |                     |                      |                 |                  |
+| t_encrypt | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc, digest-algorithm-name=SHA-1 |                     |                      |                 |                  |
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
 1 row in set (0.01 sec)
 ```
@@ -110,7 +110,7 @@ mysql> SHOW ENCRYPT TABLE RULE t_encrypt;
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
 | table     | logic_column | cipher_column | assisted_query_column | like_query_column | encryptor_type | encryptor_props         | assisted_query_type | assisted_query_props | like_query_type | like_query_props |
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
-| t_encrypt | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc |                     |                      |                 |                  |
+| t_encrypt | pwd          | pwd_cipher    |                       |                   | AES            | aes-key-value=123456abc, digest-algorithm-name=SHA-1 |                     |                      |                 |                  |
 +-----------+--------------+---------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+
 1 row in set (0.01 sec)
 ```

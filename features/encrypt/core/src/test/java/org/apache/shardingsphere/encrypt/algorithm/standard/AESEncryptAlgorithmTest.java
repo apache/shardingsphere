@@ -65,6 +65,12 @@ class AESEncryptAlgorithmTest {
     }
     
     @Test
+    void assertCreateNewInstanceWithEmptyDigestAlgorithm() {
+        assertThrows(AlgorithmInitializationException.class, () -> encryptAlgorithm.init(PropertiesBuilder.build(new Property("aes-key-value", "123456abc"),
+                new Property("digest-algorithm-name", ""))));
+    }
+    
+    @Test
     void assertEncrypt() {
         Object actual = encryptAlgorithm.encrypt("test", mock(AlgorithmSQLContext.class));
         assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
