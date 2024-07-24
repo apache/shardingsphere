@@ -101,7 +101,7 @@ jobs:
           
   agent-mysql:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: E2E - Agent with MySQL
+    name: E2E - Agent with MySQL(JDK ${{ matrix.java-version }})
     needs: [ global-environment, build-e2e-image ]
     runs-on: ubuntu-latest
     timeout-minutes: 15
