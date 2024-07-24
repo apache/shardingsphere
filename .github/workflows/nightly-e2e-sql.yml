@@ -73,7 +73,6 @@ jobs:
       max-parallel: 20
       fail-fast: false
       matrix:
-        java-version: [ 11, 21 ]
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
@@ -111,7 +110,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
+          java-version: 21
       - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v4
