@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -15,7 +16,7 @@
 # limitations under the License.
 #
 
-nohup /opt/shardingsphere-proxy/bin/start.sh -g > /dev/null 2>&1 &
+nohup bash -c "/opt/shardingsphere-proxy/bin/start.sh -g" </dev/null &>/dev/null &
 sleep 20
 
 for ((i=1; i<=10; i++))
