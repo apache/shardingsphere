@@ -127,9 +127,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.authority.rule.AuthorityRule"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.authority.spi.PrivilegeProvider\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker\\E"
   }, {
@@ -216,6 +213,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/org.testcontainers.dockerclient.DockerClientProviderStrategy\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "pattern":"\\QMETA-INF/services/org.testcontainers.utility.ImageNameSubstitutor\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Q\\E"

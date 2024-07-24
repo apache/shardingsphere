@@ -37,7 +37,7 @@ services:
 JDK 22 according to https://www.graalvm.org/downloads/. If `SDKMAN!` is used,
 
 ```shell
-sdk install java 22.0.1-graalce
+sdk install java 22.0.2-graalce
 ```
 
 2. Install the local toolchain as required by https://www.graalvm.org/jdk22/reference-manual/native-image/#prerequisites.

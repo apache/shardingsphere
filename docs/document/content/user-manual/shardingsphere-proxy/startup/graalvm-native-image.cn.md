@@ -35,7 +35,7 @@ services:
    或 `GraalVM Community Edition` 的下游发行版。若使用 `SDKMAN!`，
 
 ```shell
-sdk install java 22.0.1-graalce
+sdk install java 22.0.2-graalce
 ```
 
 2. 根据 https://www.graalvm.org/jdk22/reference-manual/native-image/#prerequisites 的要求安装本地工具链。

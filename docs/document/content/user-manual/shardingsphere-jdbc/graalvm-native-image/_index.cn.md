@@ -13,12 +13,9 @@ Image，你需要借助于 GraalVM Native Build Tools。GraalVM Native Build Too
 CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 
 ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 GraalVM Native Image。使用者可通过 SDKMAN! 快速切换 JDK。这同理
-适用于 `Oracle GraalVM`， `Liberica NIK` 和 `Mandrel` 等 `GraalVM CE` 的下游发行版。
+适用于 https://sdkman.io/jdks#graal ， https://sdkman.io/jdks#nik 和 https://sdkman.io/jdks#mandrel 等 `GraalVM CE` 的下游发行版。
 
-- GraalVM CE For JDK 22.0.1，对应于 SDKMAN! 的 `22.0.1-graalce`
-- Oracle GraalVM For JDK 22.0.1，对应于 SDKMAN! 的 `22.0.1-graal`
-- Liberica NIK For JDK 22.0.1，对应于 SDKMAN! 的 `24.0.1.r22-nik`
-- Mandrel For JDK 22.0.1，对应于 SDKMAN! 的 `24.0.1.r22-mandrel`
+- GraalVM CE For JDK 22.0.2，对应于 SDKMAN! 的 `22.0.2-graalce`
 
 用户依然可以使用 SDKMAN! 上的 `21.0.2-graalce` 等旧版本的 GraalVM CE 来构建 ShardingSphere 的 GraalVM Native Image 产物。
 但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
@@ -328,7 +325,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
        <dependency>
           <groupId>com.clickhouse</groupId>
           <artifactId>clickhouse-jdbc</artifactId>
-          <version>0.6.0-patch5</version>
+          <version>0.6.3</version>
           <classifier>http</classifier>
        </dependency>
     </dependencies>
