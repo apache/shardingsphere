@@ -41,7 +41,6 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -67,9 +66,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         validateHandler.validate(propsMap, getExpectedPrivileges(sqlStatement));
         try {
-            MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database.getName(), propsMap);
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().afterStorageUnitsAltered(database.getName(), originalMetaDataContexts);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("alter", propsMap.keySet(), ex);
         }

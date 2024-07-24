@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 
 import java.sql.SQLException;
@@ -54,11 +53,8 @@ public final class AlterDatabaseRuleOperator implements DatabaseRuleOperator {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
-        MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
         metaDataManagerPersistService.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
-        Collection<MetaDataVersion> result = metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
-        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts);
-        return result;
+        return metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
     }
     
     @SuppressWarnings("unchecked")
