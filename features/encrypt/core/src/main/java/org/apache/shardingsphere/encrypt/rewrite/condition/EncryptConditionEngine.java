@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCon
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -54,6 +55,7 @@ import java.util.TreeSet;
 /**
  * Encrypt condition engine.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class EncryptConditionEngine {
     
