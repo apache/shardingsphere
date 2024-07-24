@@ -20,9 +20,14 @@ nohup bash -c "/opt/shardingsphere-proxy/bin/start.sh -g" </dev/null &>/dev/null
 sleep 20
 
 for ((i=1; i<=10; i++))
-do mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;insert into t_order values (${i}, ${i}, \"INSERT_TEST\");"
+do mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;INSERT INTO t_order (order_id, user_id, status) VALUES (${i}, ${i}, \"INSERT_TEST\");"
 done
-mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;set autocommit=false;INSERT INTO t_order (order_id, user_id, status) VALUES (1000, 1000, \"ROLL_BACK\");"
-mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;set autocommit = false;UPDATE t_order SET status = 1000 WHERE order_id =1000;commit;"
+mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;set autocommit=0;INSERT INTO t_order (order_id, user_id, status) VALUES (1000, 1000, \"ROLL_BACK\");rollback"
+mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;set autocommit=0;UPDATE t_order SET status = 1000 WHERE order_id =1000;commit;"
 mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;SELECT * FROM t_order;"
+for ((i=1; i<=10; i++))
+do mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;DELETE FROM t_order WHERE order_id=${i};"
+done
+set +e
 mysql -uroot -h127.0.0.1 -proot -P3307 -e "USE sharding_db;SELECT * FROM non_existent_table;"
+set -e
