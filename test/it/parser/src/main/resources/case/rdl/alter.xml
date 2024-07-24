@@ -204,6 +204,7 @@
                 <cipher name="user_cipher">
                     <encryptor algorithm-name="AES">
                         <property key="aes-key-value" value="123456abc" />
+                        <property key="digest-algorithm-name" value="SHA-1" />
                     </encryptor>
                 </cipher>
             </column>
@@ -223,6 +224,7 @@
                 <cipher name="user_cipher">
                     <encryptor algorithm-name="AES">
                         <property key="aes-key-value" value="123456abc" />
+                        <property key="digest-algorithm-name" value="SHA-1" />
                     </encryptor>
                 </cipher>
                 <assisted-query name="assisted_column">
@@ -245,6 +247,7 @@
                 <cipher name="user_cipher">
                     <encryptor algorithm-name="AES">
                         <property key="aes-key-value" value="123456abc" />
+                        <property key="digest-algorithm-name" value="SHA-1" />
                     </encryptor>
                 </cipher>
                 <like-query name="like_column">
@@ -267,6 +270,7 @@
                 <cipher name="user_cipher">
                     <encryptor algorithm-name="AES">
                         <property key="aes-key-value" value="123456abc" />
+                        <property key="digest-algorithm-name" value="SHA-1" />
                     </encryptor>
                 </cipher>
             </column>

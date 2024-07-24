@@ -72,6 +72,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
       type: AES
       props:
         aes-key-value: 123456abc
+        digest-algorithm-name: SHA-1
   tables:
     t_user:
       columns:
