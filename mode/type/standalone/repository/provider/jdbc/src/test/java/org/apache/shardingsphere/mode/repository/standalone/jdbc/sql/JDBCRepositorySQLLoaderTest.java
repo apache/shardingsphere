@@ -27,6 +27,9 @@ class JDBCRepositorySQLLoaderTest {
     @Test
     void assertLoad() {
         assertThat(JDBCRepositorySQLLoader.load("MySQL").getType(), is("MySQL"));
+        assertThat(JDBCRepositorySQLLoader.load("EmbeddedDerby").getType(), is("EmbeddedDerby"));
+        assertThat(JDBCRepositorySQLLoader.load("DerbyNetworkServer").getType(), is("DerbyNetworkServer"));
+        assertThat(JDBCRepositorySQLLoader.load("HSQLDB").getType(), is("HSQLDB"));
     }
     
     @Test
