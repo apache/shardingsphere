@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -63,7 +62,6 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
             }
             // TODO refactor to new metadata refresh way
         }
-        MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         metaDataManagerPersistService.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
@@ -71,11 +69,8 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         if (null != toBeAlteredRuleConfig && ((DatabaseRuleConfiguration) toBeAlteredRuleConfig).isEmpty()) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
             metaDataManagerPersistService.removeRuleConfiguration(database.getName(), Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
-            metaDataManagerPersistService.afterRuleConfigurationDropped(database.getName(), originalMetaDataContexts);
             return Collections.emptyList();
         }
-        Collection<MetaDataVersion> result = metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
-        metaDataManagerPersistService.afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts);
-        return result;
+        return metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
 }

@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -69,9 +68,7 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
         }
         validateHandler.validate(propsMap, getExpectedPrivileges(sqlStatement));
         try {
-            MetaDataContexts originalMetaDataContexts = contextManager.getMetaDataContexts();
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().registerStorageUnits(database.getName(), propsMap);
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().afterStorageUnitsAltered(database.getName(), originalMetaDataContexts);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("register", propsMap.keySet(), ex);
         }
