@@ -29,6 +29,7 @@ import org.apache.shardingsphere.encrypt.rule.attribute.EncryptTableMapperRuleAt
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -106,6 +107,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
      * @param tableName table name
      * @return encrypt table
      */
+    @HighFrequencyInvocation
     public Optional<EncryptTable> findEncryptTable(final String tableName) {
         return Optional.ofNullable(tables.get(tableName));
     }
@@ -116,6 +118,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
      * @param tableName table name
      * @return encrypt table
      */
+    @HighFrequencyInvocation
     public EncryptTable getEncryptTable(final String tableName) {
         return findEncryptTable(tableName).orElseThrow(() -> new EncryptTableNotFoundException(tableName));
     }

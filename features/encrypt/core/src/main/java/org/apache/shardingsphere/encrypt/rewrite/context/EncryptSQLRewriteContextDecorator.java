@@ -62,17 +62,6 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         sqlRewriteContext.addSQLTokenGenerators(sqlTokenGenerators);
     }
     
-    private Collection<EncryptCondition> createEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {
-        SQLStatementContext sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
-        if (!(sqlStatementContext instanceof WhereAvailable)) {
-            return Collections.emptyList();
-        }
-        Collection<WhereSegment> whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
-        Collection<ColumnSegment> columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
-        return new EncryptConditionEngine(encryptRule, sqlRewriteContext.getDatabase().getSchemas()).createEncryptConditions(whereSegments, columnSegments, sqlStatementContext,
-                sqlRewriteContext.getDatabase().getName());
-    }
-    
     private boolean containsEncryptTable(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof TableAvailable)) {
             return false;
@@ -83,6 +72,17 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
             }
         }
         return false;
+    }
+    
+    private Collection<EncryptCondition> createEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {
+        SQLStatementContext sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
+        if (!(sqlStatementContext instanceof WhereAvailable)) {
+            return Collections.emptyList();
+        }
+        Collection<WhereSegment> whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
+        Collection<ColumnSegment> columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
+        return new EncryptConditionEngine(encryptRule, sqlRewriteContext.getDatabase().getSchemas())
+                .createEncryptConditions(whereSegments, columnSegments, sqlStatementContext, sqlRewriteContext.getDatabase().getName());
     }
     
     private void rewriteParameters(final SQLRewriteContext sqlRewriteContext, final Collection<ParameterRewriter> parameterRewriters) {
