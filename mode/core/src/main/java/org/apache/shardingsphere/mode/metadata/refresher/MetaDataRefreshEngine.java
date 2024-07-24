@@ -101,6 +101,7 @@ public final class MetaDataRefreshEngine {
         return getFederationMetaDataRefresher(sqlStatementContext).isPresent();
     }
     
+    @SuppressWarnings("rawtypes")
     private Optional<FederationMetaDataRefresher> getFederationMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
         Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
         return TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass.getSuperclass());
