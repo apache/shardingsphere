@@ -12,14 +12,11 @@ Build GraalVM Native containing Maven dependencies of `org.apache.shardingsphere
 Image, you need to resort to GraalVM Native Build Tools. GraalVM Native Build Tools provides Maven Plugin and Gradle Plugin 
 to simplify long list of shell commands for GraalVM CE's `native-image` command line tool.
 
-ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as follows or higher. Users can quickly switch 
-JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as `Oracle GraalVM`, `Liberica NIK` 
-and `Mandrel`.
+ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as follows or higher. Users can quickly switch
+JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as https://sdkman.io/jdks#graal ,
+https://sdkman.io/jdks#nik and https://sdkman.io/jdks#mandrel .
 
-- GraalVM CE For JDK 22.0.1, corresponding to `21.0.2-graalce` of SDKMAN!
-- Oracle GraalVM For JDK 22.0.1, corresponding to `22.0.1-graal` of SDKMAN!
-- Liberica NIK For JDK 22.0.1, corresponding to `24.0.1.r22-nik` of SDKMAN!
-- Mandrel For JDK 22.0.1, corresponding to `24.0.1.r22-mandrel` of SDKMAN!
+- GraalVM CE For JDK 22.0.2, corresponding to `22.0.2-graalce` of SDKMAN!
 
 Users can still use the old versions of GraalVM CE such as `21.0.2-graalce` on SDKMAN! to build the GraalVM Native Image product of ShardingSphere. 
 However, this will cause the failure of building the GraalVM Native Image when integrating some third-party dependencies. 
@@ -343,7 +340,7 @@ Possible configuration examples are as follows,
        <dependency>
           <groupId>com.clickhouse</groupId>
           <artifactId>clickhouse-jdbc</artifactId>
-          <version>0.6.0-patch5</version>
+          <version>0.6.3</version>
           <classifier>http</classifier>
        </dependency>
     </dependencies>

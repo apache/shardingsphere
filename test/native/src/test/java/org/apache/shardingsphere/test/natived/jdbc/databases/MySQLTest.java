@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 /**
- * Unable to use `org.testcontainers:mysql:1.19.3` under GraalVM Native Image.
+ * Unable to use `org.testcontainers:mysql:1.20.0` under GraalVM Native Image.
  * Background comes from <a href="https://github.com/testcontainers/testcontainers-java/issues/7954">testcontainers/testcontainers-java#7954</a>.
  */
 @EnabledInNativeImage
@@ -61,7 +61,7 @@ class MySQLTest {
     
     @SuppressWarnings("resource")
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>(DockerImageName.parse("mysql:8.4.0-oracle"))
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>(DockerImageName.parse("mysql:9.0.1-oraclelinux9"))
             .withEnv("MYSQL_DATABASE", DATABASE)
             .withEnv("MYSQL_ROOT_PASSWORD", PASSWORD)
             .withExposedPorts(3306);

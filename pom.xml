@@ -124,7 +124,7 @@
         <h2.version>2.2.224</h2.version>
         <opengauss.version>3.1.0-og</opengauss.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <clickhouse-jdbc.version>0.6.0-patch5</clickhouse-jdbc.version>
+        <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
         <hive.version>3.1.3</hive.version>
         <presto.version>0.282</presto.version>
         
@@ -139,10 +139,10 @@
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.0</awaitility.version>
-        <testcontainers.version>1.19.8</testcontainers.version>
+        <testcontainers.version>1.20.0</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
-        <graal-sdk.version>24.0.1</graal-sdk.version>
+        <graal-sdk.version>24.0.2</graal-sdk.version>
         <jedis.version>4.4.6</jedis.version>
         
         <!-- 3rd party library plugin versions -->
