@@ -43,6 +43,7 @@ jobs:
       max-parallel: 20
       fail-fast: false
       matrix:
+        java-version: [ 11, 21 ]
         operation: [ transaction, pipeline, showprocesslist ]
         image: [ { type: "it.docker.mysql.version", version: "mysql:5.7,mysql:8.0" }, { type: "it.docker.postgresql.version", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0" }, { type: "it.docker.mariadb.version", version: "mariadb:11" } ]
         exclude:
@@ -66,11 +67,11 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Setup JDK 11
+      - name: Setup JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: ${{ matrix.java-version }}
       - name: Build ${{ matrix.operation }} E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
