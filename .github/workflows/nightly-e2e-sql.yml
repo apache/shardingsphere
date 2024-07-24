@@ -45,7 +45,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 21
       - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
@@ -73,6 +73,7 @@ jobs:
       max-parallel: 20
       fail-fast: false
       matrix:
+        java-version: [ 11, 21 ]
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
@@ -110,7 +111,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: ${{ matrix.java-version }}
       - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v4
