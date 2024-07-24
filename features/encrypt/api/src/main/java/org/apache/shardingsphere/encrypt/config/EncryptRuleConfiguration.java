@@ -18,48 +18,25 @@
 package org.apache.shardingsphere.encrypt.config;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Encrypt rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
 public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
     private final Collection<EncryptTableRuleConfiguration> tables;
     
     private final Map<String, AlgorithmConfiguration> encryptors;
-    
-    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors) {
-        this.tables = tables;
-        this.encryptors = rebuildEncryptorsWithDefaultProperties(encryptors);
-    }
-    
-    private Map<String, AlgorithmConfiguration> rebuildEncryptorsWithDefaultProperties(final Map<String, AlgorithmConfiguration> encryptors) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(encryptors.size(), 1F);
-        for (Entry<String, AlgorithmConfiguration> entry : encryptors.entrySet()) {
-            // todo Replace with MultiSourceProperties, MultiSourceProperties need support marshal.
-            Properties props = new Properties();
-            props.putAll(entry.getValue().getProps());
-            Properties defaultProps = TypedSPILoader.findUninitedService(EncryptAlgorithm.class, entry.getValue().getType()).map(EncryptAlgorithm::getMetaData)
-                    .map(EncryptAlgorithmMetaData::getDefaultProps).orElseGet(Properties::new);
-            defaultProps.forEach(props::putIfAbsent);
-            result.put(entry.getKey(), new AlgorithmConfiguration(entry.getValue().getType(), props));
-        }
-        return result;
-    }
     
     @Override
     public boolean isEmpty() {

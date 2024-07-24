@@ -44,6 +44,7 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
+        digest-algorithm-name: SHA-1
     like_encryptor:
       type: CORE.QUERY_LIKE.FIXTURE
   tables:

@@ -26,10 +26,8 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.MockedStatic;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,24 +43,14 @@ class AESEncryptAlgorithmTest {
     
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
+        encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
     }
     
     @Test
-    void assertDefaultDigestAlgorithm() throws NoSuchAlgorithmException {
-        MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class);
-        digestUtilsMockedStatic.when(() -> DigestUtils.getDigest("SHA-1")).thenReturn(MessageDigest.getInstance("SHA-1"));
-        TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
+    void assertDigestAlgorithm() {
+        MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class, Answers.CALLS_REAL_METHODS);
+        TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
         digestUtilsMockedStatic.verify(() -> DigestUtils.getDigest("SHA-1"), times(1));
-        digestUtilsMockedStatic.close();
-    }
-    
-    @Test
-    void assertSHA512DigestAlgorithm() throws NoSuchAlgorithmException {
-        MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class);
-        digestUtilsMockedStatic.when(() -> DigestUtils.getDigest("SHA-512")).thenReturn(MessageDigest.getInstance("SHA-512"));
-        TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-512")));
-        digestUtilsMockedStatic.verify(() -> DigestUtils.getDigest("SHA-512"), times(1));
         digestUtilsMockedStatic.close();
     }
     

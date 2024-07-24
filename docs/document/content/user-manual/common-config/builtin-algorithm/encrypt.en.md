@@ -17,10 +17,10 @@ Type: AES
 
 Attributes:
 
-| *Name*                | *DataType* | *Description*                                       |
-|-----------------------|------------|-----------------------------------------------------|
-| aes-key-value         | String     | AES KEY                                             |
-| digest-algorithm-name | String     | AES KEY DIGEST ALGORITHM (optional, default: SHA-1) |
+| *Name*                | *DataType* | *Description*            |
+|-----------------------|------------|--------------------------|
+| aes-key-value         | String     | AES KEY                  |
+| digest-algorithm-name | String     | AES KEY DIGEST ALGORITHM |
 
 ### Assisted Encrypt Algorithm
 

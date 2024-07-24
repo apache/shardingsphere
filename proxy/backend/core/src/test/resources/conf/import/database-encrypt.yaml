@@ -46,6 +46,7 @@ rules:
         type: AES
         props:
           aes-key-value: 123456abc
+          digest-algorithm-name: SHA-1
     tables:
       t_encrypt:
         columns:

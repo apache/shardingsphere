@@ -51,10 +51,11 @@ rules:
       type: AES
       props:
         aes-key-value: 123456
+        digest-algorithm-name: SHA-1
     assisted_encryptor:
       type: assistedTest
       props:
         aes-key-value: 123456
-
+        digest-algorithm-name: SHA-1
 props:
   sql-show: false

@@ -137,6 +137,7 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
+        digest-algorithm-name: SHA-1
     rewrite_it_like_encryptor_fixture:
       type: IT.ENCRYPT.LIKE.FIXTURE
       props:
