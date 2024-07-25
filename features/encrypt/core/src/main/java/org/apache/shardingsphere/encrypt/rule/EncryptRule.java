@@ -125,7 +125,7 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     
     /**
      * Find query encryptor.
-     * 
+     *
      * @param tableName table name
      * @param columnName column name
      * @return query encryptor
