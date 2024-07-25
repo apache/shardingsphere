@@ -28,13 +28,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import java.util.Collection;
 
 /**
- * Join conditions same encryptor usage checker.
+ * Join conditions encryptor comparator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JoinConditionsSameEncryptorUsageChecker {
+public final class JoinConditionsEncryptorComparator {
     
     /**
-     * Judge whether all join conditions use same encryptor or not.
+     * Compare whether same encryptor.
      *
      * @param joinConditions join conditions
      * @param encryptRule encrypt rule

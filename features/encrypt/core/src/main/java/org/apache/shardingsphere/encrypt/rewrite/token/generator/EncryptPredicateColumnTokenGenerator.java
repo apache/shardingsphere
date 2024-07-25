@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
-import org.apache.shardingsphere.encrypt.rewrite.token.comparator.JoinConditionsSameEncryptorUsageChecker;
+import org.apache.shardingsphere.encrypt.rewrite.token.comparator.JoinConditionsEncryptorComparator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
@@ -84,7 +84,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
             joinConditions = ((WhereAvailable) sqlStatementContext).getJoinConditions();
         }
-        ShardingSpherePreconditions.checkState(JoinConditionsSameEncryptorUsageChecker.isSame(joinConditions, encryptRule),
+        ShardingSpherePreconditions.checkState(JoinConditionsEncryptorComparator.isSame(joinConditions, encryptRule),
                 () -> new UnsupportedSQLOperationException("Can not use different encryptor in join condition"));
         String defaultSchema = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         ShardingSphereSchema schema = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));

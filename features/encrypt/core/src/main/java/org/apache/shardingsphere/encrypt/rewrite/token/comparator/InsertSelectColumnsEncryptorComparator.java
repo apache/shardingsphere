@@ -31,13 +31,13 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Insert select columns same encryptor usage checker.
+ * Insert select columns encryptor comparator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertSelectColumnsSameEncryptorUsageChecker {
+public final class InsertSelectColumnsEncryptorComparator {
     
     /**
-     * Judge whether all insert select columns use same encryptor or not.
+     * Compare whether same encryptor.
      *
      * @param insertColumns insert columns
      * @param projections projections
@@ -48,13 +48,14 @@ public final class InsertSelectColumnsSameEncryptorUsageChecker {
         Iterator<ColumnSegment> insertColumnsIterator = insertColumns.iterator();
         Iterator<Projection> projectionIterator = projections.iterator();
         while (insertColumnsIterator.hasNext()) {
-            ColumnSegment columnSegment = insertColumnsIterator.next();
-            EncryptAlgorithm columnEncryptor = encryptRule.findQueryEncryptor(
-                    columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), columnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
+            ColumnSegment insertColumnSegment = insertColumnsIterator.next();
+            EncryptAlgorithm insertColumnEncryptor = encryptRule.findQueryEncryptor(
+                    insertColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), insertColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
             Projection projection = projectionIterator.next();
-            ColumnSegmentBoundInfo columnBoundInfo = getColumnSegmentBoundInfo(projection);
-            EncryptAlgorithm projectionEncryptor = encryptRule.findQueryEncryptor(columnBoundInfo.getOriginalTable().getValue(), columnBoundInfo.getOriginalColumn().getValue()).orElse(null);
-            if (!EncryptorComparator.isSame(columnEncryptor, projectionEncryptor)) {
+            ColumnSegmentBoundInfo projectionColumnBoundInfo = getColumnSegmentBoundInfo(projection);
+            EncryptAlgorithm projectionEncryptor =
+                    encryptRule.findQueryEncryptor(projectionColumnBoundInfo.getOriginalTable().getValue(), projectionColumnBoundInfo.getOriginalColumn().getValue()).orElse(null);
+            if (!EncryptorComparator.isSame(insertColumnEncryptor, projectionEncryptor)) {
                 return false;
             }
         }
