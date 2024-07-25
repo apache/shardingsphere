@@ -192,20 +192,22 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        ShardingSphereDatabase reloadShardingSphereDatabase = buildShardingSphereDatabase(databaseName, reloadMetaDataContexts);
-        metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadShardingSphereDatabase, originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        //ShardingSphereDatabase reloadShardingSphereDatabase = buildShardingSphereDatabase(databaseName, reloadMetaDataContexts);
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
                         .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
+        metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     private void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        ShardingSphereDatabase reloadShardingSphereDatabase = buildShardingSphereDatabase(databaseName, reloadMetaDataContexts);
-        metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadShardingSphereDatabase, originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        //ShardingSphereDatabase reloadShardingSphereDatabase = buildShardingSphereDatabase(databaseName, reloadMetaDataContexts);
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
                         .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
+        metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     private void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
