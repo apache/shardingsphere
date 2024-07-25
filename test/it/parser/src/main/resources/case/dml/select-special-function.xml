@@ -2663,8 +2663,7 @@
         <projections start-index="7" stop-index="18">
             <expression-projection start-index="7" stop-index="18" text="FOUND_ROWS()">
                 <expr>
-                    <function function-name="FOUND_ROWS" text="FOUND_ROWS()" start-index="7" stop-index="18">
-                    </function>
+                    <function function-name="FOUND_ROWS" text="FOUND_ROWS()" start-index="7" stop-index="18" />
                 </expr>
             </expression-projection>
         </projections>
@@ -2718,7 +2717,11 @@
 
     <select sql-case-id="select_get_format">
         <projections start-index="7" stop-index="29">
-            <expression-projection start-index="7" stop-index="29" text="GET_FORMAT(DATE, 'EUR')" />
+            <expression-projection start-index="7" stop-index="29" text="GET_FORMAT(DATE, 'EUR')">
+                <parameter>
+                    <literal-expression value="EUR" start-index="24" stop-index="28" />
+                </parameter>
+            </expression-projection>
         </projections>
     </select>
 
