@@ -35,11 +35,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -73,24 +75,6 @@ class EncryptRuleTest {
                 new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()), new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties())));
     }
     
-    @Test
-    void assertAssistedQueryEncryptorNameSpecified() {
-        EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
-        pwdColumnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("pwd_assist", "assisted_query_test_encryptor"));
-        assertTrue(pwdColumnConfig.getAssistedQuery().isPresent());
-        assertThat(pwdColumnConfig.getAssistedQuery().get().getEncryptorName(), is("assisted_query_test_encryptor"));
-    }
-    
-    @Test
-    void assertLikeQueryEncryptorNameSpecified() {
-        EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
-        pwdColumnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", "like_query_test_encryptor"));
-        assertTrue(pwdColumnConfig.getLikeQuery().isPresent());
-        assertThat(pwdColumnConfig.getLikeQuery().get().getEncryptorName(), is("like_query_test_encryptor"));
-    }
-    
     private Map<String, AlgorithmConfiguration> getEncryptors(final AlgorithmConfiguration standardEncryptConfig, final AlgorithmConfiguration queryAssistedEncryptConfig,
                                                               final AlgorithmConfiguration queryLikeEncryptConfig) {
         Map<String, AlgorithmConfiguration> result = new HashMap<>(3, 1F);
@@ -98,6 +82,18 @@ class EncryptRuleTest {
         result.put("assisted_encryptor", queryAssistedEncryptConfig);
         result.put("like_encryptor", queryLikeEncryptConfig);
         return result;
+    }
+    
+    @Test
+    void assertFindQueryEncryptor() {
+        EncryptRule encryptRule = new EncryptRule("foo_db", createEncryptRuleConfiguration());
+        assertThat(encryptRule.findQueryEncryptor("t_encrypt", "credit_card"),
+                is(Optional.of(encryptRule.getEncryptTable("t_encrypt").getEncryptColumn("credit_card").getCipher().getEncryptor())));
+    }
+    
+    @Test
+    void assertNotFindQueryEncryptor() {
+        assertFalse(new EncryptRule("foo_db", createEncryptRuleConfiguration()).findQueryEncryptor("t_encrypt", "invalid_col").isPresent());
     }
     
     @SuppressWarnings("unused")
