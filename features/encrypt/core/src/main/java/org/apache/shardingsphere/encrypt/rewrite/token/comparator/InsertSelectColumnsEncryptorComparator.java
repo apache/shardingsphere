@@ -53,7 +53,8 @@ public final class InsertSelectColumnsEncryptorComparator {
                     insertColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), insertColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
             Projection projection = projectionIterator.next();
             ColumnSegmentBoundInfo projectionColumnBoundInfo = getColumnSegmentBoundInfo(projection);
-            EncryptAlgorithm projectionEncryptor = encryptRule.findQueryEncryptor(projectionColumnBoundInfo.getOriginalTable().getValue(), projectionColumnBoundInfo.getOriginalColumn().getValue()).orElse(null);
+            EncryptAlgorithm projectionEncryptor =
+                    encryptRule.findQueryEncryptor(projectionColumnBoundInfo.getOriginalTable().getValue(), projectionColumnBoundInfo.getOriginalColumn().getValue()).orElse(null);
             if (!EncryptorComparator.isSame(insertColumnEncryptor, projectionEncryptor)) {
                 return false;
             }
