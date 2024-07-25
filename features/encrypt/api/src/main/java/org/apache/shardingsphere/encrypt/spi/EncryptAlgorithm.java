@@ -55,7 +55,7 @@ public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * convert to encryptor configuration.
-     * 
+     *
      * @return converted configuration
      */
     default AlgorithmConfiguration toConfiguration() {
