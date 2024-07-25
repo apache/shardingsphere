@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
-import org.apache.shardingsphere.encrypt.rewrite.token.util.EncryptTokenGeneratorUtils;
+import org.apache.shardingsphere.encrypt.rewrite.token.acrosstable.InsertSelectColumnsSameEncryptorUsageChecker;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -65,7 +65,7 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
         if (null != insertStatementContext.getInsertSelectContext()) {
             Collection<Projection> projections = insertStatementContext.getInsertSelectContext().getSelectStatementContext().getProjectionsContext().getExpandProjections();
             ShardingSpherePreconditions.checkState(insertColumns.size() == projections.size(), () -> new UnsupportedSQLOperationException("Column count doesn't match value count."));
-            ShardingSpherePreconditions.checkState(EncryptTokenGeneratorUtils.isUseSameEncryptor(insertColumns, projections, encryptRule),
+            ShardingSpherePreconditions.checkState(InsertSelectColumnsSameEncryptorUsageChecker.isSame(insertColumns, projections, encryptRule),
                     () -> new UnsupportedSQLOperationException("Can not use different encryptor in insert select columns"));
         }
         EncryptTable encryptTable = encryptRule.getEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
