@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rewrite.token.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -52,7 +51,7 @@ public final class EncryptTokenGeneratorUtils {
      * @param encryptRule encrypt rule
      * @return whether all join conditions use same encryptor or not
      */
-    public static boolean isAllJoinConditionsUseSameEncryptor(final Collection<BinaryOperationExpression> joinConditions, final EncryptRule encryptRule) {
+    public static boolean isUseSameEncryptor(final Collection<BinaryOperationExpression> joinConditions, final EncryptRule encryptRule) {
         for (BinaryOperationExpression each : joinConditions) {
             if (!(each.getLeft() instanceof ColumnSegment) || !(each.getRight() instanceof ColumnSegment)) {
                 continue;
@@ -66,14 +65,28 @@ public final class EncryptTokenGeneratorUtils {
         return true;
     }
     
-    private static boolean isDifferentEncryptor(final EncryptAlgorithm leftColumnEncryptor, final EncryptAlgorithm rightColumnEncryptor) {
-        if (null != leftColumnEncryptor && null != rightColumnEncryptor) {
-            if (!leftColumnEncryptor.getType().equals(rightColumnEncryptor.getType())) {
-                return true;
+    /**
+     * Judge whether all insert select columns use same encryptor or not.
+     *
+     * @param insertColumns insert columns
+     * @param projections projections
+     * @param encryptRule encrypt rule
+     * @return whether all insert select columns use same encryptor or not 
+     */
+    public static boolean isUseSameEncryptor(final Collection<ColumnSegment> insertColumns, final Collection<Projection> projections, final EncryptRule encryptRule) {
+        Iterator<ColumnSegment> insertColumnsIterator = insertColumns.iterator();
+        Iterator<Projection> projectionIterator = projections.iterator();
+        while (insertColumnsIterator.hasNext()) {
+            ColumnSegment columnSegment = insertColumnsIterator.next();
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(columnSegment.getColumnBoundInfo(), encryptRule);
+            Projection projection = projectionIterator.next();
+            ColumnSegmentBoundInfo columnBoundInfo = getColumnSegmentBoundInfo(projection);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(columnBoundInfo, encryptRule);
+            if (isDifferentEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
+                return false;
             }
-            return !leftColumnEncryptor.equals(rightColumnEncryptor);
         }
-        return null != leftColumnEncryptor || null != rightColumnEncryptor;
+        return true;
     }
     
     private static EncryptAlgorithm getColumnEncryptor(final ColumnSegmentBoundInfo columnBoundInfo, final EncryptRule encryptRule) {
@@ -90,30 +103,20 @@ public final class EncryptTokenGeneratorUtils {
         return encryptColumn.getCipher().getEncryptor();
     }
     
-    /**
-     * Judge whether all insert select columns use same encryptor or not.
-     *
-     * @param insertColumns insert columns
-     * @param projections projections
-     * @param encryptRule encrypt rule
-     * @return whether all insert select columns use same encryptor or not 
-     */
-    public static boolean isAllInsertSelectColumnsUseSameEncryptor(final Collection<ColumnSegment> insertColumns, final Collection<Projection> projections, final EncryptRule encryptRule) {
-        Iterator<ColumnSegment> insertColumnsIterator = insertColumns.iterator();
-        Iterator<Projection> projectionIterator = projections.iterator();
-        while (insertColumnsIterator.hasNext()) {
-            ColumnSegment columnSegment = insertColumnsIterator.next();
-            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(columnSegment.getColumnBoundInfo(), encryptRule);
-            Projection projection = projectionIterator.next();
-            ColumnSegmentBoundInfo columnBoundInfo = projection instanceof ColumnProjection
-                    ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
-                    : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
-            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(columnBoundInfo, encryptRule);
-            if (isDifferentEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
-                return false;
+    private static ColumnSegmentBoundInfo getColumnSegmentBoundInfo(final Projection projection) {
+        return projection instanceof ColumnProjection
+                ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
+                : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
+    }
+    
+    private static boolean isDifferentEncryptor(final EncryptAlgorithm leftColumnEncryptor, final EncryptAlgorithm rightColumnEncryptor) {
+        if (null != leftColumnEncryptor && null != rightColumnEncryptor) {
+            if (!leftColumnEncryptor.getType().equals(rightColumnEncryptor.getType())) {
+                return true;
             }
+            return !leftColumnEncryptor.equals(rightColumnEncryptor);
         }
-        return true;
+        return null != leftColumnEncryptor || null != rightColumnEncryptor;
     }
     
     /**
@@ -123,25 +126,19 @@ public final class EncryptTokenGeneratorUtils {
      * @param encryptRule encrypt rule
      * @return whether contains encrypt projection in combine statement or not
      */
-    public static boolean isContainsEncryptProjectionInCombineStatement(final SelectStatementContext selectStatementContext, final EncryptRule encryptRule) {
+    public static boolean containsEncryptProjectionInCombineStatement(final SelectStatementContext selectStatementContext, final EncryptRule encryptRule) {
         if (!selectStatementContext.getSqlStatement().getCombine().isPresent()) {
             return false;
         }
         CombineSegment combineSegment = selectStatementContext.getSqlStatement().getCombine().get();
-        List<Projection> leftProjections = new ArrayList<>(selectStatementContext.getSubqueryContexts().get(combineSegment.getLeft().getStartIndex()).getProjectionsContext().getExpandProjections());
-        List<Projection> rightProjections = new ArrayList<>(selectStatementContext.getSubqueryContexts().get(combineSegment.getRight().getStartIndex()).getProjectionsContext().getExpandProjections());
+        List<Projection> leftProjections = selectStatementContext.getSubqueryContexts().get(combineSegment.getLeft().getStartIndex()).getProjectionsContext().getExpandProjections();
+        List<Projection> rightProjections = selectStatementContext.getSubqueryContexts().get(combineSegment.getRight().getStartIndex()).getProjectionsContext().getExpandProjections();
         ShardingSpherePreconditions.checkState(leftProjections.size() == rightProjections.size(), () -> new UnsupportedSQLOperationException("Column projections must be same for combine statement"));
         for (int i = 0; i < leftProjections.size(); i++) {
             Projection leftProjection = leftProjections.get(i);
             Projection rightProjection = rightProjections.get(i);
-            ColumnSegmentBoundInfo leftColumnBoundInfo = leftProjection instanceof ColumnProjection
-                    ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) leftProjection).getOriginalTable(), ((ColumnProjection) leftProjection).getOriginalColumn())
-                    : new ColumnSegmentBoundInfo(new IdentifierValue(leftProjection.getColumnLabel()));
-            ColumnSegmentBoundInfo rightColumnBoundInfo = rightProjection instanceof ColumnProjection
-                    ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) rightProjection).getOriginalTable(), ((ColumnProjection) rightProjection).getOriginalColumn())
-                    : new ColumnSegmentBoundInfo(new IdentifierValue(rightProjection.getColumnLabel()));
-            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(leftColumnBoundInfo, encryptRule);
-            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(rightColumnBoundInfo, encryptRule);
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(getColumnSegmentBoundInfo(leftProjection), encryptRule);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(getColumnSegmentBoundInfo(rightProjection), encryptRule);
             if (null != leftColumnEncryptor || null != rightColumnEncryptor) {
                 return true;
             }

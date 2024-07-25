@@ -90,7 +90,7 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
             Collection<ColumnSegment> derivedInsertColumns = insertStatementContext.getSqlStatement().getDerivedInsertColumns();
             Collection<Projection> projections = insertStatementContext.getInsertSelectContext().getSelectStatementContext().getProjectionsContext().getExpandProjections();
             ShardingSpherePreconditions.checkState(derivedInsertColumns.size() == projections.size(), () -> new UnsupportedSQLOperationException("Column count doesn't match value count."));
-            ShardingSpherePreconditions.checkState(EncryptTokenGeneratorUtils.isAllInsertSelectColumnsUseSameEncryptor(derivedInsertColumns, projections, encryptRule),
+            ShardingSpherePreconditions.checkState(EncryptTokenGeneratorUtils.isUseSameEncryptor(derivedInsertColumns, projections, encryptRule),
                     () -> new UnsupportedSQLOperationException("Can not use different encryptor in insert select columns"));
         }
         return new UseDefaultInsertColumnsToken(
