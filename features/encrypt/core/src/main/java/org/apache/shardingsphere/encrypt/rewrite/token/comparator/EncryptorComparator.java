@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.acrosstable;
+package org.apache.shardingsphere.encrypt.rewrite.token.comparator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 /**
- * Same encryptor comparator.
+ * Encryptor comparator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SameEncryptorComparator {
+public final class EncryptorComparator {
     
     /**
-     * Compare whether to same encryptor.
+     * Compare whether same encryptor.
      *
      * @param encryptor1 encryptor 1 to be compared
      * @param encryptor2 encryptor 2 to be compared
-     * @return same or different encryptors
+     * @return same encryptors or not
      */
     public static boolean isSame(final EncryptAlgorithm encryptor1, final EncryptAlgorithm encryptor2) {
         if (null == encryptor1 && null == encryptor2) {

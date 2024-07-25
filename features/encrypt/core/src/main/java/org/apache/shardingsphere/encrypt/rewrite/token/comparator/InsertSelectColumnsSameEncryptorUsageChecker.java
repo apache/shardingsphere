@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.acrosstable;
+package org.apache.shardingsphere.encrypt.rewrite.token.comparator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,7 +42,7 @@ public final class InsertSelectColumnsSameEncryptorUsageChecker {
      * @param insertColumns insert columns
      * @param projections projections
      * @param encryptRule encrypt rule
-     * @return same or different encryptors are using 
+     * @return same encryptors or not 
      */
     public static boolean isSame(final Collection<ColumnSegment> insertColumns, final Collection<Projection> projections, final EncryptRule encryptRule) {
         Iterator<ColumnSegment> insertColumnsIterator = insertColumns.iterator();
@@ -54,7 +54,7 @@ public final class InsertSelectColumnsSameEncryptorUsageChecker {
             Projection projection = projectionIterator.next();
             ColumnSegmentBoundInfo columnBoundInfo = getColumnSegmentBoundInfo(projection);
             EncryptAlgorithm projectionEncryptor = encryptRule.findQueryEncryptor(columnBoundInfo.getOriginalTable().getValue(), columnBoundInfo.getOriginalColumn().getValue()).orElse(null);
-            if (!SameEncryptorComparator.isSame(columnEncryptor, projectionEncryptor)) {
+            if (!EncryptorComparator.isSame(columnEncryptor, projectionEncryptor)) {
                 return false;
             }
         }
