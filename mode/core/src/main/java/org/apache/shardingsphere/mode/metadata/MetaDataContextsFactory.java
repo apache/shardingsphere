@@ -112,6 +112,29 @@ public final class MetaDataContextsFactory {
         return new MetaDataContexts(metaData, initStatistics(persistService, metaData));
     }
     
+    /**
+     * Create meta data contexts without loading schema.
+     * @param databaseName database name
+     * @param metaDataContexts original metad data contexts
+     * @param switchingResource switching resource
+     * @param ruleConfigs rule configs
+     * @param metaDataPersistService meta data persist service
+     * @param computeNodeInstanceContext compute node instance context
+     * @return meta data contexts
+     * @throws SQLException SQL exception
+     */
+    public static MetaDataContexts create(final String databaseName, final MetaDataContexts metaDataContexts,
+                                          final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
+                                          final MetaDataPersistService metaDataPersistService,
+                                          final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, true, switchingResource, ruleConfigs,
+                metaDataContexts, metaDataPersistService, computeNodeInstanceContext);
+        ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
+        RuleMetaData changedGlobalMetaData = new RuleMetaData(
+                GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
+        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, metaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+    }
+    
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext computeNodeInstanceContext,
                                                        final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
         return computeNodeInstanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData ? databaseConfigs.keySet() : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();

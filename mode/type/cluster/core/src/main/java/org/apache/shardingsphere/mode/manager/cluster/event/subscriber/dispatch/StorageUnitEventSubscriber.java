@@ -25,6 +25,8 @@ import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.RegisterSto
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.sql.SQLException;
+
 /**
  * Storage unit event subscriber.
  */
@@ -37,9 +39,10 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      * Renew for register storage unit.
      *
      * @param event register storage unit event
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final RegisterStorageUnitEvent event) {
+    public synchronized void renew(final RegisterStorageUnitEvent event) throws SQLException {
         if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
@@ -52,9 +55,10 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      * Renew for alter storage unit.
      *
      * @param event register storage unit event
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final AlterStorageUnitEvent event) {
+    public synchronized void renew(final AlterStorageUnitEvent event) throws SQLException {
         if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
                 .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
             return;
@@ -67,9 +71,10 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      * Renew for unregister storage unit.
      *
      * @param event register storage unit event
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final UnregisterStorageUnitEvent event) {
+    public synchronized void renew(final UnregisterStorageUnitEvent event) throws SQLException {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
             return;
         }
