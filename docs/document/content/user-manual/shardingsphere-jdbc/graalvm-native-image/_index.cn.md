@@ -355,8 +355,8 @@ ShardingSphere 定义了 `nativeTestInShardingSphere` 的 Maven Profile 用于�
 sudo apt install unzip zip curl sed -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 22.0.1-graalce
-sdk use java 22.0.1-graalce
+sdk install java 22.0.2-graalce
+sdk use java 22.0.2-graalce
 sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git

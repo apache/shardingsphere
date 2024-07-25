@@ -56,6 +56,12 @@
             <type>pom</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.graalvm.espresso</groupId>
+            <artifactId>espresso-runtime-resources-linux-amd64</artifactId>
+            <version>${graal-sdk.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
     <build>
