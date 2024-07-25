@@ -29,7 +29,7 @@ public final class SameEncryptorComparator {
     
     /**
      * Compare whether to same encryptor.
-     * 
+     *
      * @param encryptor1 encryptor 1 to be compared
      * @param encryptor2 encryptor 2 to be compared
      * @return same or different encryptors
