@@ -20,7 +20,10 @@ package org.apache.shardingsphere.encrypt.distsql.handler.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+
+import java.util.Properties;
 
 @Getter
 public final class DistSQLEncryptAlgorithmFixture implements EncryptAlgorithm {
@@ -35,6 +38,11 @@ public final class DistSQLEncryptAlgorithmFixture implements EncryptAlgorithm {
     @Override
     public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
         return "decryptValue";
+    }
+    
+    @Override
+    public AlgorithmConfiguration toConfiguration() {
+        return new AlgorithmConfiguration(getType(), new Properties());
     }
     
     @Override
