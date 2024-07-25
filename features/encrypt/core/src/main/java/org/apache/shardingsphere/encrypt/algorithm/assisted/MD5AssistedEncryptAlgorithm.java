@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -30,16 +30,18 @@ import java.util.Properties;
 /**
  * MD5 assisted encrypt algorithm.
  */
-@EqualsAndHashCode
 public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
     @Getter
     private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false);
     
+    private Properties props;
+    
     private MessageDigestAlgorithm digestAlgorithm;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         digestAlgorithm = TypedSPILoader.getService(MessageDigestAlgorithm.class, getType(), props);
     }
     
@@ -51,6 +53,11 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
         throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
+    }
+    
+    @Override
+    public AlgorithmConfiguration toConfiguration() {
+        return new AlgorithmConfiguration(getType(), props);
     }
     
     @Override
