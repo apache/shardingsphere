@@ -92,7 +92,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private void addGenerateSQLTokens(final Collection<SQLToken> sqlTokens, final SelectStatementContext selectStatementContext) {
         ShardingSpherePreconditions.checkState(
-                !selectStatementContext.isContainsCombine() || !EncryptTokenGeneratorUtils.isContainsEncryptProjectionInCombineStatement(selectStatementContext, encryptRule),
+                !selectStatementContext.isContainsCombine() || !EncryptTokenGeneratorUtils.containsEncryptProjectionInCombineStatement(selectStatementContext, encryptRule),
                 () -> new UnsupportedSQLOperationException("Can not support encrypt projection in combine statement"));
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
             SubqueryType subqueryType = selectStatementContext.getSubqueryType();
