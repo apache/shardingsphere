@@ -170,4 +170,17 @@ public final class EncryptTable {
     public boolean isLikeQueryColumn(final String columnName) {
         return columns.values().stream().anyMatch(each -> columnName.equalsIgnoreCase(each.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(null)));
     }
+    
+    /**
+     * Find query encryptor.
+     *
+     * @param columnName column name
+     * @return query encryptor
+     */
+    public Optional<EncryptAlgorithm> findQueryEncryptor(String columnName) {
+        if (!isEncryptColumn(columnName)) {
+            return Optional.empty();
+        }
+        return Optional.of(getEncryptColumn(columnName).getQueryEncryptor());
+    }
 }

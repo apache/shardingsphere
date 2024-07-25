@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.Optional;
 
@@ -58,5 +59,14 @@ public final class EncryptColumn {
      */
     public Optional<LikeQueryColumnItem> getLikeQuery() {
         return Optional.ofNullable(likeQuery);
+    }
+    
+    /**
+     * Get query encryptor.
+     *
+     * @return query encryptor
+     */
+    public EncryptAlgorithm getQueryEncryptor() {
+        return null == assistedQuery ? cipher.getEncryptor() : assistedQuery.getEncryptor();
     }
 }
