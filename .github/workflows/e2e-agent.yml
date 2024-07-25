@@ -101,7 +101,7 @@ jobs:
           
   agent-mysql:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: E2E - Agent with MySQL(JDK ${{ matrix.java-version }})
+    name: E2E - Agent with MySQL
     needs: [ global-environment, build-e2e-image ]
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -109,7 +109,6 @@ jobs:
       max-parallel: 20
       fail-fast: false
       matrix:
-        java-version: [ 11, 21 ]
         include:
           - adapter: proxy
             feature: tracing
@@ -140,7 +139,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
+          java-version: 21
       - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
