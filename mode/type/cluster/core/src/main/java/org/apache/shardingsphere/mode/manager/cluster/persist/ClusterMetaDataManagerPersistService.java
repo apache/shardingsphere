@@ -196,7 +196,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadShardingSphereDatabase, originalMetaDataContexts.getMetaData().getDatabase(databaseName));
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
-                        .persist(databaseName, schemaName, schemaData, metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases())));
+                        .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
     }
     
     private void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
@@ -205,7 +205,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadShardingSphereDatabase, originalMetaDataContexts.getMetaData().getDatabase(databaseName));
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
-                        .persist(databaseName, schemaName, schemaData, metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases())));
+                        .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
     }
     
     private void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
