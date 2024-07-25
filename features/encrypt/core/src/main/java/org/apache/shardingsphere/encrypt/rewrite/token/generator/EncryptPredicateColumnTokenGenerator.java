@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
-import org.apache.shardingsphere.encrypt.rewrite.token.acrosstable.JoinConditionsSameEncryptorUsageChecker;
+import org.apache.shardingsphere.encrypt.rewrite.token.comparator.JoinConditionsSameEncryptorUsageChecker;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;

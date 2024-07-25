@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.acrosstable;
+package org.apache.shardingsphere.encrypt.rewrite.token.comparator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,7 +38,7 @@ public final class JoinConditionsSameEncryptorUsageChecker {
      *
      * @param joinConditions join conditions
      * @param encryptRule encrypt rule
-     * @return same or different encryptors are using
+     * @return same encryptors or not
      */
     public static boolean isSame(final Collection<BinaryOperationExpression> joinConditions, final EncryptRule encryptRule) {
         for (BinaryOperationExpression each : joinConditions) {
@@ -49,7 +49,7 @@ public final class JoinConditionsSameEncryptorUsageChecker {
             EncryptAlgorithm leftColumnEncryptor = encryptRule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
             ColumnSegmentBoundInfo rightColumnInfo = ((ColumnSegment) each.getRight()).getColumnBoundInfo();
             EncryptAlgorithm rightColumnEncryptor = encryptRule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
-            if (!SameEncryptorComparator.isSame(leftColumnEncryptor, rightColumnEncryptor)) {
+            if (!EncryptorComparator.isSame(leftColumnEncryptor, rightColumnEncryptor)) {
                 return false;
             }
         }
