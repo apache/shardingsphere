@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.encrypt.spi;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+
+import java.util.Properties;
 
 /**
  * Encrypt algorithm.
@@ -49,4 +52,13 @@ public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
      * @return encrypt algorithm meta data
      */
     EncryptAlgorithmMetaData getMetaData();
+    
+    /**
+     * convert to encryptor configuration.
+     *
+     * @return converted configuration
+     */
+    default AlgorithmConfiguration toConfiguration() {
+        return new AlgorithmConfiguration(getType(), new Properties());
+    }
 }
