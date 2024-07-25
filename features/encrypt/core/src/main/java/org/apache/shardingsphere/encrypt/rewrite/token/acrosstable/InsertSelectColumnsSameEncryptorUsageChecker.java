@@ -49,12 +49,12 @@ public final class InsertSelectColumnsSameEncryptorUsageChecker {
         Iterator<Projection> projectionIterator = projections.iterator();
         while (insertColumnsIterator.hasNext()) {
             ColumnSegment columnSegment = insertColumnsIterator.next();
-            EncryptAlgorithm leftColumnEncryptor = encryptRule.findQueryEncryptor(
+            EncryptAlgorithm columnEncryptor = encryptRule.findQueryEncryptor(
                     columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), columnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
             Projection projection = projectionIterator.next();
             ColumnSegmentBoundInfo columnBoundInfo = getColumnSegmentBoundInfo(projection);
-            EncryptAlgorithm rightColumnEncryptor = encryptRule.findQueryEncryptor(columnBoundInfo.getOriginalTable().getValue(), columnBoundInfo.getOriginalColumn().getValue()).orElse(null);
-            if (!SameEncryptorComparator.isSame(leftColumnEncryptor, rightColumnEncryptor)) {
+            EncryptAlgorithm projectionEncryptor = encryptRule.findQueryEncryptor(columnBoundInfo.getOriginalTable().getValue(), columnBoundInfo.getOriginalColumn().getValue()).orElse(null);
+            if (!SameEncryptorComparator.isSame(columnEncryptor, projectionEncryptor)) {
                 return false;
             }
         }
