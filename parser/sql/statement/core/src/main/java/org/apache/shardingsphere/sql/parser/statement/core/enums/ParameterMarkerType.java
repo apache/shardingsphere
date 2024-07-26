@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Parameter marker type enum.
+ * Parameter marker type.
  */
 @RequiredArgsConstructor
 @Getter

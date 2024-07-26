@@ -416,7 +416,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
                 ctx.selectWithParens().getStop().getStopIndex(), (OpenGaussSelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
         if (null != ctx.EXISTS()) {
-            subquerySegment.setSubqueryType(SubqueryType.EXISTS_SUBQUERY);
+            subquerySegment.setSubqueryType(SubqueryType.EXISTS);
             return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
         }
         return new SubqueryExpressionSegment(subquerySegment);

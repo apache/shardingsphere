@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dcl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLTypeEnum;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
 /**
@@ -35,7 +35,7 @@ public final class TLSOptionSegment implements SQLSegment {
     
     private int stopIndex;
     
-    private SSLTypeEnum type;
+    private SSLType type;
     
     private String x509Subject;
     

@@ -119,7 +119,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         }
         SubquerySegment insertSelectSegment = getSqlStatement().getInsertSelect().get();
         SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, params, insertSelectSegment.getSelect(), currentDatabaseName, Collections.emptyList());
-        selectStatementContext.setSubqueryType(SubqueryType.INSERT_SELECT_SUBQUERY);
+        selectStatementContext.setSubqueryType(SubqueryType.INSERT_SELECT);
         InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, params, paramsOffset.get());
         paramsOffset.addAndGet(insertSelectContext.getParameterCount());
         return Optional.of(insertSelectContext);

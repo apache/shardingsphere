@@ -21,13 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Transaction access type enum.
+ * Transaction access type.
  */
 @RequiredArgsConstructor
 @Getter
 public enum TransactionAccessType {
     
     READ_ONLY("READ_ONLY"),
+    
     READ_WRITE("READ_WRITE");
     
     private final String accessType;

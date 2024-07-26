@@ -168,16 +168,16 @@ public final class EncryptProjectionTokenGenerator {
     
     private Collection<Projection> generateProjections(final EncryptColumn encryptColumn, final ColumnProjection columnProjection,
                                                        final SubqueryType subqueryType, final boolean shorthandProjection) {
-        if (null == subqueryType || SubqueryType.PROJECTION_SUBQUERY == subqueryType) {
+        if (null == subqueryType || SubqueryType.PROJECTION == subqueryType) {
             return Collections.singleton(generateProjection(encryptColumn, columnProjection, shorthandProjection));
         }
-        if (SubqueryType.TABLE_SUBQUERY == subqueryType || SubqueryType.JOIN_SUBQUERY == subqueryType) {
+        if (SubqueryType.TABLE == subqueryType || SubqueryType.JOIN == subqueryType) {
             return generateProjectionsInTableSegmentSubquery(encryptColumn, columnProjection, shorthandProjection, subqueryType);
         }
-        if (SubqueryType.PREDICATE_SUBQUERY == subqueryType) {
+        if (SubqueryType.PREDICATE == subqueryType) {
             return Collections.singleton(generateProjectionInPredicateSubquery(encryptColumn, columnProjection, shorthandProjection));
         }
-        if (SubqueryType.INSERT_SELECT_SUBQUERY == subqueryType) {
+        if (SubqueryType.INSERT_SELECT == subqueryType) {
             return generateProjectionsInInsertSelectSubquery(encryptColumn, columnProjection, shorthandProjection);
         }
         throw new UnsupportedSQLOperationException(
@@ -197,7 +197,7 @@ public final class EncryptProjectionTokenGenerator {
         IdentifierValue encryptColumnOwner = shorthandProjection ? columnProjection.getOwner().orElse(null) : null;
         QuoteCharacter quoteCharacter = columnProjection.getName().getQuoteCharacter();
         IdentifierValue columnName = new IdentifierValue(encryptColumn.getCipher().getName(), quoteCharacter);
-        IdentifierValue alias = SubqueryType.JOIN_SUBQUERY == subqueryType ? null : columnProjection.getAlias().orElse(columnProjection.getName());
+        IdentifierValue alias = SubqueryType.JOIN == subqueryType ? null : columnProjection.getAlias().orElse(columnProjection.getName());
         result.add(new ColumnProjection(encryptColumnOwner, columnName, alias, databaseType));
         IdentifierValue assistedColumOwner = columnProjection.getOwner().orElse(null);
         encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType)));

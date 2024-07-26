@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeEnum;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
 /**
@@ -65,5 +65,5 @@ public final class PasswordOrLockOptionSegment implements SQLSegment {
     
     private boolean updatePasswordLockTime;
     
-    private ACLAttributeEnum updatePasswordRequireCurrent;
+    private ACLAttributeType updatePasswordRequireCurrent;
 }

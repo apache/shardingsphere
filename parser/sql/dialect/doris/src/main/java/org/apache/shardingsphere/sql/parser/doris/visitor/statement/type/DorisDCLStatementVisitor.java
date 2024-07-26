@@ -87,9 +87,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TlsOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UsernameContext;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeEnum;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLTypeEnum;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLTypeEnum.UserResourceSpecifiedLimitEnum;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType.UserResourceSpecifiedLimitType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordOrLockOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;
@@ -475,13 +475,13 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitRequireClause(final RequireClauseContext ctx) {
         TLSOptionSegment result = new TLSOptionSegment();
         if (null != ctx.NONE()) {
-            result.setType(SSLTypeEnum.SSL_TYPE_NONE);
+            result.setType(SSLType.NONE);
         } else if (null != ctx.X509()) {
-            result.setType(SSLTypeEnum.SSL_TYPE_X509);
+            result.setType(SSLType.X509);
         } else if (null != ctx.SSL()) {
-            result.setType(SSLTypeEnum.SSL_TYPE_ANY);
+            result.setType(SSLType.ANY);
         } else {
-            result.setType(SSLTypeEnum.SSL_TYPE_SPECIFIED);
+            result.setType(SSLType.SPECIFIED);
             for (TlsOptionContext each : ctx.tlsOption()) {
                 if (null != each.SUBJECT()) {
                     result.setX509Subject(each.string_().getText());
@@ -502,19 +502,19 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
         result.setStopIndex(ctx.stop.getStopIndex());
         for (ConnectOptionContext each : ctx.connectOption()) {
             if (null != each.MAX_QUERIES_PER_HOUR()) {
-                result.setSpecifiedLimits(UserResourceSpecifiedLimitEnum.QUERIES_PER_HOUR);
+                result.setSpecifiedLimits(UserResourceSpecifiedLimitType.QUERIES_PER_HOUR);
                 result.setQuestions(new NumberLiteralValue(each.NUMBER_().getText()).getValue().intValue());
             }
             if (null != each.MAX_UPDATES_PER_HOUR()) {
-                result.setSpecifiedLimits(UserResourceSpecifiedLimitEnum.UPDATES_PER_HOUR);
+                result.setSpecifiedLimits(UserResourceSpecifiedLimitType.UPDATES_PER_HOUR);
                 result.setUpdates(new NumberLiteralValue(each.NUMBER_().getText()).getValue().intValue());
             }
             if (null != each.MAX_CONNECTIONS_PER_HOUR()) {
-                result.setSpecifiedLimits(UserResourceSpecifiedLimitEnum.CONNECTIONS_PER_HOUR);
+                result.setSpecifiedLimits(UserResourceSpecifiedLimitType.CONNECTIONS_PER_HOUR);
                 result.setConnPerHour(new NumberLiteralValue(each.NUMBER_().getText()).getValue().intValue());
             }
             if (null != each.MAX_USER_CONNECTIONS()) {
-                result.setSpecifiedLimits(UserResourceSpecifiedLimitEnum.USER_CONNECTIONS);
+                result.setSpecifiedLimits(UserResourceSpecifiedLimitType.USER_CONNECTIONS);
                 result.setUserConn(new NumberLiteralValue(each.NUMBER_().getText()).getValue().intValue());
             }
         }
@@ -680,13 +680,15 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     }
     
     private void fillPasswordRequire(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
+        ACLAttributeType aclAttributeType;
         if (null != ctx.DEFAULT()) {
-            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.DEFAULT);
+            aclAttributeType = ACLAttributeType.DEFAULT;
         } else if (null != ctx.OPTIONAL()) {
-            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.NO);
+            aclAttributeType = ACLAttributeType.NO;
         } else {
-            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.YES);
+            aclAttributeType = ACLAttributeType.YES;
         }
+        segment.setUpdatePasswordRequireCurrent(aclAttributeType);
     }
     
     @Override

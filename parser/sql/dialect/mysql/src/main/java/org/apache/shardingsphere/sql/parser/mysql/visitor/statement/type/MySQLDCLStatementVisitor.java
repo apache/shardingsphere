@@ -87,9 +87,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TlsOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UsernameContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeEnum;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLTypeEnum;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLTypeEnum.UserResourceSpecifiedLimitEnum;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType.UserResourceSpecifiedLimitType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordOrLockOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;
@@ -474,13 +474,13 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     public ASTNode visitRequireClause(final RequireClauseContext ctx) {
         TLSOptionSegment result = new TLSOptionSegment();
         if (null != ctx.NONE()) {
-            result.setType(SSLTypeEnum.SSL_TYPE_NONE);
+            result.setType(SSLType.NONE);
         } else if (null != ctx.X509()) {
-            result.setType(SSLTypeEnum.SSL_TYPE_X509);
+            result.setType(SSLType.X509);
         } else if (null != ctx.SSL()) {
-            result.setType(SSLTypeEnum.SSL_TYPE_ANY);
+            result.setType(SSLType.ANY);
         } else {
-            result.setType(SSLTypeEnum.SSL_TYPE_SPECIFIED);
+            result.setType(SSLType.SPECIFIED);
             for (TlsOptionContext each : ctx.tlsOption()) {
                 if (null != each.SUBJECT()) {
                     result.setX509Subject(each.string_().getText());
@@ -501,19 +501,19 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
         result.setStopIndex(ctx.stop.getStopIndex());
         for (ConnectOptionContext each : ctx.connectOption()) {
             if (null != each.MAX_QUERIES_PER_HOUR()) {
-                result.setSpecifiedLimits(UserResourceSpecifiedLimitEnum.QUERIES_PER_HOUR);
+                result.setSpecifiedLimits(UserResourceSpecifiedLimitType.QUERIES_PER_HOUR);
                 result.setQuestions(new NumberLiteralValue(each.NUMBER_().getText()).getValue().intValue());
             }
             if (null != each.MAX_UPDATES_PER_HOUR()) {
-                result.setSpecifiedLimits(UserResourceSpecifiedLimitEnum.UPDATES_PER_HOUR);
+                result.setSpecifiedLimits(UserResourceSpecifiedLimitType.UPDATES_PER_HOUR);
                 result.setUpdates(new NumberLiteralValue(each.NUMBER_().getText()).getValue().intValue());
             }
             if (null != each.MAX_CONNECTIONS_PER_HOUR()) {
-                result.setSpecifiedLimits(UserResourceSpecifiedLimitEnum.CONNECTIONS_PER_HOUR);
+                result.setSpecifiedLimits(UserResourceSpecifiedLimitType.CONNECTIONS_PER_HOUR);
                 result.setConnPerHour(new NumberLiteralValue(each.NUMBER_().getText()).getValue().intValue());
             }
             if (null != each.MAX_USER_CONNECTIONS()) {
-                result.setSpecifiedLimits(UserResourceSpecifiedLimitEnum.USER_CONNECTIONS);
+                result.setSpecifiedLimits(UserResourceSpecifiedLimitType.USER_CONNECTIONS);
                 result.setUserConn(new NumberLiteralValue(each.NUMBER_().getText()).getValue().intValue());
             }
         }
@@ -680,11 +680,11 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     private void fillPasswordRequire(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
         if (null != ctx.DEFAULT()) {
-            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.DEFAULT);
+            segment.setUpdatePasswordRequireCurrent(ACLAttributeType.DEFAULT);
         } else if (null != ctx.OPTIONAL()) {
-            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.NO);
+            segment.setUpdatePasswordRequireCurrent(ACLAttributeType.NO);
         } else {
-            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.YES);
+            segment.setUpdatePasswordRequireCurrent(ACLAttributeType.YES);
         }
     }
     

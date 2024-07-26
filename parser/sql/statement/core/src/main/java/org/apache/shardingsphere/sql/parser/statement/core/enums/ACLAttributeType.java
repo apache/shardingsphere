@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
-public enum ACLAttributeEnum {
+/**
+ * ACL attribute type.
+ */
+public enum ACLAttributeType {
     
-    DEFAULT, YES, NO
+    YES, NO, DEFAULT
 }

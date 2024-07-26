@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 /**
- * Subquery type enum.
+ * Subquery type.
  */
 public enum SubqueryType {
     
-    PROJECTION_SUBQUERY, TABLE_SUBQUERY, JOIN_SUBQUERY, PREDICATE_SUBQUERY, INSERT_SELECT_SUBQUERY, EXISTS_SUBQUERY
+    PROJECTION, TABLE, JOIN, PREDICATE, INSERT_SELECT, EXISTS
 }
