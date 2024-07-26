@@ -66,9 +66,9 @@ rules:
           shardingColumn: user_id
           shardingAlgorithmName: t_user_extend_inline
     t_role:
-      actualDataNodes: db.T_ROLE
+      actualDataNodes: db.t_role
     t_role_admin:
-      actualDataNodes: db.T_ROLE_ADMIN
+      actualDataNodes: db.t_role_admin
     t_account_view:
       actualDataNodes: db.t_account_view_${0..1}
       tableStrategy:
