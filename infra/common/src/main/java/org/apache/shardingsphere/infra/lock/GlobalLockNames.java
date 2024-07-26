@@ -30,7 +30,9 @@ public enum GlobalLockNames {
     
     GLOBAL_LOCK("global_clock"),
     
-    STATISTICS("statistics");
+    STATISTICS("statistics"),
+    
+    PERSIST_DATABASE_SCHEMAS("persist_database_%s_schemas");
     
     private final String lockName;
 }

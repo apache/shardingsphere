@@ -21,10 +21,13 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.lock.GlobalLockNames;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -33,6 +36,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -67,7 +71,9 @@ public final class StorageUnitManager {
     public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) throws SQLException {
         closeStaleRules(databaseName);
         SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+        MetaDataContexts originalMetaDataContexts = metaDataContexts.get();
         buildNewMetaDataContext(databaseName, switchingResource);
+        alterSchema(databaseName, originalMetaDataContexts);
     }
     
     /**
@@ -80,7 +86,9 @@ public final class StorageUnitManager {
     public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) throws SQLException {
         closeStaleRules(databaseName);
         SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+        MetaDataContexts originalMetaDataContexts = metaDataContexts.get();
         buildNewMetaDataContext(databaseName, switchingResource);
+        alterSchema(databaseName, originalMetaDataContexts);
     }
     
     /**
@@ -94,12 +102,14 @@ public final class StorageUnitManager {
         closeStaleRules(databaseName);
         SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
                 Collections.singletonList(storageUnitName));
+        MetaDataContexts originalMetaDataContexts = metaDataContexts.get();
         buildNewMetaDataContext(databaseName, switchingResource);
+        dropSchema(databaseName, originalMetaDataContexts);
     }
     
     private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.create(databaseName, metaDataContexts.get(),
-                switchingResource, null, metaDataPersistService, computeNodeInstanceContext);
+        MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, true,
+                switchingResource, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
         metaDataContexts.set(reloadMetaDataContexts);
         metaDataContexts.get().getMetaData().getDatabases().putAll(buildShardingSphereDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
         switchingResource.closeStaleDataSources();
@@ -124,6 +134,36 @@ public final class StorageUnitManager {
             if (each instanceof AutoCloseable) {
                 ((AutoCloseable) each).close();
             }
+        }
+    }
+    
+    private void alterSchema(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        LockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.PERSIST_DATABASE_SCHEMAS.getLockName(), databaseName));
+        try {
+            if (computeNodeInstanceContext.getLockContext().tryLock(lockDefinition, 0L)) {
+                metaDataPersistService.persistReloadDatabaseByAlter(databaseName, metaDataContexts.get().getMetaData().getDatabase(databaseName),
+                        originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+                Optional.ofNullable(metaDataContexts.get().getStatistics().getDatabaseData().get(databaseName))
+                        .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
+                                .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
+            }
+        } finally {
+            computeNodeInstanceContext.getLockContext().unlock(lockDefinition);
+        }
+    }
+    
+    private void dropSchema(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        LockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.PERSIST_DATABASE_SCHEMAS.getLockName(), databaseName));
+        try {
+            if (computeNodeInstanceContext.getLockContext().tryLock(lockDefinition, 0L)) {
+                metaDataPersistService.persistReloadDatabaseByDrop(databaseName, metaDataContexts.get().getMetaData().getDatabase(databaseName),
+                        originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+                Optional.ofNullable(metaDataContexts.get().getStatistics().getDatabaseData().get(databaseName))
+                        .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
+                                .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
+            }
+        } finally {
+            computeNodeInstanceContext.getLockContext().unlock(lockDefinition);
         }
     }
 }

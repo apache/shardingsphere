@@ -18,11 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -33,7 +29,6 @@ import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
 import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
 import org.apache.shardingsphere.mode.persist.service.ListenerAssistedPersistService;
@@ -45,7 +40,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -118,28 +112,22 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
         metaDataPersistService.getDataSourceUnitService().persistConfigurations(databaseName, toBeRegisteredProps);
-        afterStorageUnitsAltered(databaseName, originalMetaDataContexts);
     }
     
     @Override
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
         metaDataPersistService.getMetaDataVersionPersistService()
                 .switchActiveVersion(dataSourceService.persistConfigurations(databaseName, toBeUpdatedProps));
-        afterStorageUnitsAltered(databaseName, originalMetaDataContexts);
     }
     
     @Override
-    public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+    public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
         for (String each : getToBeDroppedResourceNames(databaseName, toBeDroppedStorageUnitNames)) {
             metaDataPersistService.getDataSourceUnitService().delete(databaseName, each);
         }
-        afterStorageUnitsDropped(databaseName, originalMetaDataContexts);
     }
     
     private Collection<String> getToBeDroppedResourceNames(final String databaseName, final Collection<String> toBeDroppedResourceNames) {
@@ -155,13 +143,10 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) throws SQLException {
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+    public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
         if (null != toBeAlteredRuleConfig) {
-            Collection<MetaDataVersion> result = metaDataPersistService.getDatabaseRulePersistService()
+            return metaDataPersistService.getDatabaseRulePersistService()
                     .persistConfigurations(databaseName, Collections.singleton(toBeAlteredRuleConfig));
-            afterRuleConfigurationAltered(databaseName, originalMetaDataContexts);
-            return result;
         }
         return Collections.emptyList();
     }
@@ -175,9 +160,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void removeRuleConfiguration(final String databaseName, final String ruleName) throws SQLException {
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
         metaDataPersistService.getDatabaseRulePersistService().delete(databaseName, ruleName);
-        afterRuleConfigurationDropped(databaseName, originalMetaDataContexts);
     }
     
     @Override
@@ -188,53 +171,5 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void alterProperties(final Properties props) {
         metaDataPersistService.getPropsService().persist(props);
-    }
-    
-    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        //ShardingSphereDatabase reloadShardingSphereDatabase = buildShardingSphereDatabase(databaseName, reloadMetaDataContexts);
-        Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
-                .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
-                        .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
-        metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
-    }
-    
-    private void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        //ShardingSphereDatabase reloadShardingSphereDatabase = buildShardingSphereDatabase(databaseName, reloadMetaDataContexts);
-        Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
-                .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
-                        .persist(databaseName, schemaName, schemaData, originalMetaDataContexts.getMetaData().getDatabases())));
-        metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
-    }
-    
-    private void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        ShardingSphereDatabase reloadShardingSphereDatabase = buildShardingSphereDatabase(databaseName, reloadMetaDataContexts);
-        metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadShardingSphereDatabase,
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
-    }
-    
-    private void afterRuleConfigurationDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        ShardingSphereDatabase reloadShardingSphereDatabase = buildShardingSphereDatabase(databaseName, reloadMetaDataContexts);
-        metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadShardingSphereDatabase,
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
-    }
-    
-    private ShardingSphereDatabase buildShardingSphereDatabase(final String databaseName, final MetaDataContexts reloadMetaDataContexts) throws SQLException {
-        ShardingSphereDatabase reloadShardingSphereDatabase = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
-        return new ShardingSphereDatabase(reloadShardingSphereDatabase.getName(),
-                reloadShardingSphereDatabase.getProtocolType(), reloadShardingSphereDatabase.getResourceMetaData(),
-                reloadShardingSphereDatabase.getRuleMetaData(), buildSchemas(reloadMetaDataContexts, reloadShardingSphereDatabase));
-    }
-    
-    private Map<String, ShardingSphereSchema> buildSchemas(final MetaDataContexts reloadMetaDataContexts, final ShardingSphereDatabase originalDatabase) throws SQLException {
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(originalDatabase.getProtocolType(),
-                originalDatabase.getResourceMetaData().getStorageUnits(), originalDatabase.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
-                new DatabaseTypeRegistry(originalDatabase.getProtocolType()).getDefaultSchemaName(originalDatabase.getName()));
-        return GenericSchemaBuilder.build(material);
     }
 }

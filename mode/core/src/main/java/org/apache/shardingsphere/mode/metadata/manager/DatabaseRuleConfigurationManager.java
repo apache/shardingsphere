@@ -21,12 +21,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.lock.GlobalLockNames;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -77,7 +80,9 @@ public final class DatabaseRuleConfigurationManager {
         rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
         rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
                 ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
+        MetaDataContexts originalMetaDataContexts = metaDataContexts.get();
         refreshMetadata(databaseName, database, rules);
+        alterSchema(databaseName, originalMetaDataContexts);
     }
     
     /**
@@ -101,7 +106,9 @@ public final class DatabaseRuleConfigurationManager {
             rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
                     ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
         }
+        MetaDataContexts originalMetaDataContexts = metaDataContexts.get();
         refreshMetadata(databaseName, database, rules);
+        dropSchema(databaseName, originalMetaDataContexts);
     }
     
     private void refreshMetadata(final String databaseName, final ShardingSphereDatabase database, final Collection<ShardingSphereRule> rules) throws SQLException {
@@ -118,5 +125,39 @@ public final class DatabaseRuleConfigurationManager {
         database.getSchemas().forEach((key, value) -> result.put(key, new ShardingSphereSchema(value.getTables(),
                 metaDataPersistService.getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), key))));
         return result;
+    }
+    
+    private void alterSchema(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        if (!computeNodeInstanceContext.isCluster()) {
+            metaDataPersistService.persistReloadDatabaseByAlter(databaseName, metaDataContexts.get().getMetaData().getDatabase(databaseName),
+                    originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+            return;
+        }
+        LockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.PERSIST_DATABASE_SCHEMAS.getLockName(), databaseName));
+        try {
+            if (computeNodeInstanceContext.getLockContext().tryLock(lockDefinition, 0L)) {
+                metaDataPersistService.persistReloadDatabaseByAlter(databaseName, metaDataContexts.get().getMetaData().getDatabase(databaseName),
+                        originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+            }
+        } finally {
+            computeNodeInstanceContext.getLockContext().unlock(lockDefinition);
+        }
+    }
+    
+    private void dropSchema(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        if (!computeNodeInstanceContext.isCluster()) {
+            metaDataPersistService.persistReloadDatabaseByDrop(databaseName, metaDataContexts.get().getMetaData().getDatabase(databaseName),
+                    originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+            return;
+        }
+        LockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.PERSIST_DATABASE_SCHEMAS.getLockName(), databaseName));
+        try {
+            if (computeNodeInstanceContext.getLockContext().tryLock(lockDefinition, 0L)) {
+                metaDataPersistService.persistReloadDatabaseByDrop(databaseName, metaDataContexts.get().getMetaData().getDatabase(databaseName),
+                        originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+            }
+        } finally {
+            computeNodeInstanceContext.getLockContext().unlock(lockDefinition);
+        }
     }
 }

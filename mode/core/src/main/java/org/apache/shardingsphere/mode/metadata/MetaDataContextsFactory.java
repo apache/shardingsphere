@@ -127,7 +127,7 @@ public final class MetaDataContextsFactory {
                                           final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
                                           final MetaDataPersistService metaDataPersistService,
                                           final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, true, switchingResource, ruleConfigs,
+        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, false, switchingResource, ruleConfigs,
                 metaDataContexts, metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
