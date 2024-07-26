@@ -42,7 +42,7 @@ public final class InsertSelectColumnsEncryptorComparator {
      * @param insertColumns insert columns
      * @param projections projections
      * @param encryptRule encrypt rule
-     * @return same encryptors or not 
+     * @return same encryptors or not
      */
     public static boolean isSame(final Collection<ColumnSegment> insertColumns, final Collection<Projection> projections, final EncryptRule encryptRule) {
         Iterator<ColumnSegment> insertColumnsIterator = insertColumns.iterator();
