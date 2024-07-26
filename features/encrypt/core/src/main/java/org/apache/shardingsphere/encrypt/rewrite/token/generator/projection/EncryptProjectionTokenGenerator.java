@@ -66,7 +66,7 @@ public final class EncryptProjectionTokenGenerator {
      * Generate SQL tokens.
      *
      * @param selectStatementContext select statement context
-     * @return SQL tokens
+     * @return generated SQL tokens
      */
     public Collection<SQLToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         Collection<SQLToken> result = new LinkedHashSet<>();
