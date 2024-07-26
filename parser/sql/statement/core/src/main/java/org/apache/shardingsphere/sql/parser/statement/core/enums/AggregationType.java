@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.enums;
 import java.util.Arrays;
 
 /**
- * Aggregation function enum.
+ * Aggregation type.
  */
 public enum AggregationType {
     

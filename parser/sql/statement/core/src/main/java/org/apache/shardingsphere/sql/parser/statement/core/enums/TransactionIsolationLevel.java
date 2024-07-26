@@ -21,17 +21,22 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Transaction isolation level enum.
+ * Transaction isolation level.
  */
 @RequiredArgsConstructor
 @Getter
 public enum TransactionIsolationLevel {
     
     NONE("NONE"),
+    
     READ_UNCOMMITTED("READ-UNCOMMITTED"),
+    
     READ_COMMITTED("READ-COMMITTED"),
+    
     REPEATABLE_READ("REPEATABLE-READ"),
+    
     SNAPSHOT("SNAPSHOT"),
+    
     SERIALIZABLE("SERIALIZABLE");
     
     private final String isolationLevel;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 /**
- * Algorithm option enum.
+ * Algorithm option.
  */
 public enum AlgorithmOption {
     

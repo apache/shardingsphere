@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 /**
- * Lock table option enum.
+ * Lock table option.
  */
 public enum LockTableOption {
     

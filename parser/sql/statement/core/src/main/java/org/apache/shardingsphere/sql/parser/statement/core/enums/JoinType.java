@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 /**
- * Join type enum.
+ * Join type.
  */
 public enum JoinType {
     

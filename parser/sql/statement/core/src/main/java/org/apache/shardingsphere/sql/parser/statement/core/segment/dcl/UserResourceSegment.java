@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLTypeEnum;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType.UserResourceSpecifiedLimitType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
 /**
@@ -41,5 +41,5 @@ public final class UserResourceSegment implements SQLSegment {
     
     private int userConn;
     
-    private SSLTypeEnum.UserResourceSpecifiedLimitEnum specifiedLimits;
+    private UserResourceSpecifiedLimitType specifiedLimits;
 }

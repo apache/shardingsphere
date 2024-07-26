@@ -91,11 +91,11 @@ public final class SubqueryExtractUtils {
         for (ProjectionSegment each : projections.getProjections()) {
             if (each instanceof SubqueryProjectionSegment) {
                 SubquerySegment subquery = ((SubqueryProjectionSegment) each).getSubquery();
-                subquery.setSubqueryType(SubqueryType.PROJECTION_SUBQUERY);
+                subquery.setSubqueryType(SubqueryType.PROJECTION);
                 result.add(subquery);
                 extractSubquerySegments(result, subquery.getSelect());
             } else if (each instanceof ExpressionProjectionSegment) {
-                extractSubquerySegmentsFromExpression(result, ((ExpressionProjectionSegment) each).getExpr(), SubqueryType.PROJECTION_SUBQUERY);
+                extractSubquerySegmentsFromExpression(result, ((ExpressionProjectionSegment) each).getExpr(), SubqueryType.PROJECTION);
             }
         }
     }
@@ -113,7 +113,7 @@ public final class SubqueryExtractUtils {
     private static void extractSubquerySegmentsFromJoinTableSegment(final List<SubquerySegment> result, final TableSegment tableSegment) {
         if (tableSegment instanceof SubqueryTableSegment) {
             SubquerySegment subquery = ((SubqueryTableSegment) tableSegment).getSubquery();
-            subquery.setSubqueryType(SubqueryType.JOIN_SUBQUERY);
+            subquery.setSubqueryType(SubqueryType.JOIN);
             result.add(subquery);
             extractSubquerySegments(result, subquery.getSelect());
         } else if (tableSegment instanceof JoinTableSegment) {
@@ -124,13 +124,13 @@ public final class SubqueryExtractUtils {
     
     private static void extractSubquerySegmentsFromSubqueryTableSegment(final List<SubquerySegment> result, final SubqueryTableSegment subqueryTableSegment) {
         SubquerySegment subquery = subqueryTableSegment.getSubquery();
-        subquery.setSubqueryType(SubqueryType.TABLE_SUBQUERY);
+        subquery.setSubqueryType(SubqueryType.TABLE);
         result.add(subquery);
         extractSubquerySegments(result, subquery.getSelect());
     }
     
     private static void extractSubquerySegmentsFromWhere(final List<SubquerySegment> result, final ExpressionSegment expressionSegment) {
-        extractSubquerySegmentsFromExpression(result, expressionSegment, SubqueryType.PREDICATE_SUBQUERY);
+        extractSubquerySegmentsFromExpression(result, expressionSegment, SubqueryType.PREDICATE);
     }
     
     private static void extractSubquerySegmentsFromExpression(final List<SubquerySegment> result, final ExpressionSegment expressionSegment, final SubqueryType subqueryType) {
