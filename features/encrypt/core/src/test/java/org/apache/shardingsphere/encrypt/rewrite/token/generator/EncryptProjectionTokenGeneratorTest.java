@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -84,7 +83,6 @@ class EncryptProjectionTokenGeneratorTest {
         when(encryptTable1.getEncryptColumn("mobile")).thenReturn(encryptColumn);
         when(result.findEncryptTable("t_order").isPresent()).thenReturn(true);
         when(result.getEncryptTable("t_order").isEncryptColumn("order_id")).thenReturn(true);
-        when(result.getEncryptTable("t_order").getEncryptColumn("order_id").getCipher().getEncryptor()).thenReturn(mock(EncryptAlgorithm.class));
         return result;
     }
     

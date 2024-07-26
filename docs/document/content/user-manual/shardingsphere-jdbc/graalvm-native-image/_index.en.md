@@ -371,8 +371,8 @@ You must install Docker Engine to execute `testcontainers-java` related unit tes
 sudo apt install unzip zip curl sed -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 21.0.2-graalce
-sdk use java 21.0.2-graalce
+sdk install java 22.0.2-graalce
+sdk use java 22.0.2-graalce
 sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git

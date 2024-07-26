@@ -123,6 +123,18 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         return findEncryptTable(tableName).orElseThrow(() -> new EncryptTableNotFoundException(tableName));
     }
     
+    /**
+     * Find query encryptor.
+     *
+     * @param tableName table name
+     * @param columnName column name
+     * @return query encryptor
+     */
+    @HighFrequencyInvocation
+    public Optional<EncryptAlgorithm> findQueryEncryptor(final String tableName, final String columnName) {
+        return findEncryptTable(tableName).flatMap(optional -> optional.findQueryEncryptor(columnName));
+    }
+    
     @Override
     public RuleAttributes getAttributes() {
         return attributes.get();

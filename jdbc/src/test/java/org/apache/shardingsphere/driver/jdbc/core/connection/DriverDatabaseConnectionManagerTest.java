@@ -164,7 +164,7 @@ class DriverDatabaseConnectionManagerTest {
     void assertGetConnectionsWhenConnectionCreateFailed() {
         SQLException ex = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "invalid_ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY));
         assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
-                + "Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties.\n"
+                + "Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties." + System.lineSeparator()
                 + "More details: java.sql.SQLException: Mock invalid data source"));
     }
     

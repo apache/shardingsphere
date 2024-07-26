@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spi;
+package org.apache.shardingsphere.encrypt.rewrite.token.comparator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 /**
- * Encrypt algorithm meta data.
+ * Encryptor comparator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class EncryptAlgorithmMetaData {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EncryptorComparator {
     
-    private final boolean supportDecrypt;
-    
-    private final boolean supportEquivalentFilter;
-    
-    private final boolean supportLike;
+    /**
+     * Compare whether same encryptor.
+     *
+     * @param encryptor1 encryptor 1 to be compared
+     * @param encryptor2 encryptor 2 to be compared
+     * @return same encryptors or not
+     */
+    public static boolean isSame(final EncryptAlgorithm encryptor1, final EncryptAlgorithm encryptor2) {
+        return null != encryptor1 && null != encryptor2 ? encryptor1.toConfiguration().equals(encryptor2.toConfiguration()) : encryptor1 == encryptor2;
+    }
 }

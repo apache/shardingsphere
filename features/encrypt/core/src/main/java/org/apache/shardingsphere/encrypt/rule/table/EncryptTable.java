@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnIte
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.Collection;
@@ -75,6 +76,7 @@ public final class EncryptTable {
      * @param logicColumnName logic column name
      * @return found encryptor
      */
+    @HighFrequencyInvocation
     public Optional<EncryptAlgorithm> findEncryptor(final String logicColumnName) {
         return columns.containsKey(logicColumnName) ? Optional.of(columns.get(logicColumnName).getCipher().getEncryptor()) : Optional.empty();
     }
@@ -94,6 +96,7 @@ public final class EncryptTable {
      * @param logicColumnName logic column name
      * @return encrypt column or not
      */
+    @HighFrequencyInvocation
     public boolean isEncryptColumn(final String logicColumnName) {
         return columns.containsKey(logicColumnName);
     }
@@ -104,6 +107,7 @@ public final class EncryptTable {
      * @param logicColumnName logic column name
      * @return encrypt column
      */
+    @HighFrequencyInvocation
     public EncryptColumn getEncryptColumn(final String logicColumnName) {
         ShardingSpherePreconditions.checkState(isEncryptColumn(logicColumnName), () -> new EncryptColumnNotFoundException(table, logicColumnName));
         return columns.get(logicColumnName);
@@ -169,5 +173,19 @@ public final class EncryptTable {
      */
     public boolean isLikeQueryColumn(final String columnName) {
         return columns.values().stream().anyMatch(each -> columnName.equalsIgnoreCase(each.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(null)));
+    }
+    
+    /**
+     * Find query encryptor.
+     *
+     * @param columnName column name
+     * @return query encryptor
+     */
+    @HighFrequencyInvocation
+    public Optional<EncryptAlgorithm> findQueryEncryptor(final String columnName) {
+        if (!isEncryptColumn(columnName)) {
+            return Optional.empty();
+        }
+        return Optional.of(getEncryptColumn(columnName).getQueryEncryptor());
     }
 }

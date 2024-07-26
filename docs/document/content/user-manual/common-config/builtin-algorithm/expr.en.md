@@ -85,8 +85,8 @@ Example:
 This is an optional implementation. You need to actively declare the following dependencies in the `pom.xml` of your own project. 
 And please make sure your own projects are compiled with OpenJDK 21+ or its downstream distribution.
 
-Due to the limitations of https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too , 
-this module is only ready on Linux when used in environments other than GraalVM Native Image.
+Due to the limitation of https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too,
+when this module is used in a non-GraalVM Native Image environment, it is only ready on Linux with System Property `os.arch` set to `amd64`.
 
 Truffle's backward compatibility matrix with the JDK is located at https://medium.com/graalvm/40027a59c401 .
 
@@ -100,13 +100,18 @@ Truffle's backward compatibility matrix with the JDK is located at https://mediu
     <dependency>
         <groupId>org.graalvm.polyglot</groupId>
         <artifactId>polyglot</artifactId>
-        <version>24.0.0</version>
+        <version>24.0.2</version>
     </dependency>
     <dependency>
         <groupId>org.graalvm.polyglot</groupId>
         <artifactId>java-community</artifactId>
-        <version>24.0.0</version>
+        <version>24.0.2</version>
         <type>pom</type>
+    </dependency>
+    <dependency>
+        <groupId>org.graalvm.espresso</groupId>
+        <artifactId>espresso-runtime-resources-linux-amd64</artifactId>
+        <version>24.0.2</version>
     </dependency>
 </dependencies>
 ```

@@ -403,18 +403,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether sql statement contains table subquery segment or not
      */
     public boolean containsTableSubquery() {
-        return getSqlStatement().getFrom().isPresent() && isAllSubqueryTable(getSqlStatement().getFrom().get()) || getSqlStatement().getWithSegment().isPresent();
-    }
-    
-    private boolean isAllSubqueryTable(final TableSegment tableSegment) {
-        return tableSegment instanceof SubqueryTableSegment || isAllSubqueryTableInJoinTable(tableSegment);
-    }
-    
-    private boolean isAllSubqueryTableInJoinTable(final TableSegment tableSegment) {
-        if (tableSegment instanceof JoinTableSegment) {
-            return isAllSubqueryTable(((JoinTableSegment) tableSegment).getLeft()) && isAllSubqueryTable(((JoinTableSegment) tableSegment).getRight());
-        }
-        return false;
+        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWithSegment().isPresent();
     }
     
     /**

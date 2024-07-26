@@ -20,7 +20,10 @@ package org.apache.shardingsphere.encrypt.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+
+import java.util.Properties;
 
 @Getter
 public final class CoreQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
@@ -35,6 +38,11 @@ public final class CoreQueryAssistedEncryptAlgorithmFixture implements EncryptAl
     @Override
     public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
         throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
+    }
+    
+    @Override
+    public AlgorithmConfiguration toConfiguration() {
+        return new AlgorithmConfiguration(getType(), new Properties());
     }
     
     @Override
