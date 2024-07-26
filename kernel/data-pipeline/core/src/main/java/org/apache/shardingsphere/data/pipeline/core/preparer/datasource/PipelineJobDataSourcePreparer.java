@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
-import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
@@ -39,6 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -107,9 +107,9 @@ public final class PipelineJobDataSourcePreparer {
         final long startTimeMillis = System.currentTimeMillis();
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
-            String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
+            List<String> createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
             try (Connection targetConnection = dataSourceManager.getDataSource(each.getTargetDataSourceConfig()).getConnection()) {
-                for (String sql : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(createTargetTableSQL)) {
+                for (String sql : createTargetTableSQL) {
                     executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(sql));
                 }
             }
@@ -135,8 +135,8 @@ public final class PipelineJobDataSourcePreparer {
         return PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find() ? createTableSQL : PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
     
-    private String getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig,
-                                           final PipelineDataSourceManager dataSourceManager, final SQLParserEngine sqlParserEngine) throws SQLException {
+    private List<String> getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig,
+                                                 final PipelineDataSourceManager dataSourceManager, final SQLParserEngine sqlParserEngine) throws SQLException {
         DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
         String schemaName = createTableConfig.getSourceName().getSchemaName().toString();
