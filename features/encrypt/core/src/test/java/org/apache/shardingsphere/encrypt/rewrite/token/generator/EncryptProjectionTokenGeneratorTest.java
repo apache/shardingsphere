@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.EncryptProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -59,14 +60,13 @@ import static org.mockito.Mockito.when;
 
 class EncryptProjectionTokenGeneratorTest {
     
-    private final EncryptProjectionTokenGenerator generator = new EncryptProjectionTokenGenerator();
-    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private EncryptProjectionTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(mockEncryptRule());
-        generator.setDatabaseType(databaseType);
+        generator = new EncryptProjectionTokenGenerator(Collections.emptyList(), mockEncryptRule(), databaseType);
     }
     
     private EncryptRule mockEncryptRule() {

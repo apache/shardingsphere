@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.projection;
 
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -29,15 +27,11 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
@@ -59,37 +53,28 @@ import java.util.Optional;
 /**
  * Projection token generator for encrypt.
  */
-@Setter
-public final class EncryptProjectionTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, PreviousSQLTokensAware, EncryptRuleAware, DatabaseTypeAware {
+@RequiredArgsConstructor
+public final class EncryptProjectionTokenGenerator {
     
-    private List<SQLToken> previousSQLTokens;
+    private final List<SQLToken> previousSQLTokens;
     
-    private EncryptRule encryptRule;
+    private final EncryptRule encryptRule;
     
-    private DatabaseType databaseType;
+    private final DatabaseType databaseType;
     
-    @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()
-                || sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
-    }
-    
-    @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    /**
+     * Generate SQL tokens.
+     *
+     * @param selectStatementContext select statement context
+     * @return SQL tokens
+     */
+    public Collection<SQLToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         Collection<SQLToken> result = new LinkedHashSet<>();
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            generateSQLTokens((SelectStatementContext) sqlStatementContext, result);
-        } else if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), result);
+        addGenerateSQLTokens(result, selectStatementContext);
+        for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
+            addGenerateSQLTokens(result, each);
         }
         return result;
-    }
-    
-    private void generateSQLTokens(final SelectStatementContext selectStatementContext, final Collection<SQLToken> sqlTokens) {
-        addGenerateSQLTokens(sqlTokens, selectStatementContext);
-        for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
-            addGenerateSQLTokens(sqlTokens, each);
-        }
     }
     
     private void addGenerateSQLTokens(final Collection<SQLToken> sqlTokens, final SelectStatementContext selectStatementContext) {
