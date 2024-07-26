@@ -20,10 +20,10 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
-import org.apache.shardingsphere.encrypt.rewrite.token.util.EncryptTokenGeneratorUtils;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
@@ -41,10 +41,12 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.Previou
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -92,7 +94,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private void addGenerateSQLTokens(final Collection<SQLToken> sqlTokens, final SelectStatementContext selectStatementContext) {
         ShardingSpherePreconditions.checkState(
-                !selectStatementContext.isContainsCombine() || !EncryptTokenGeneratorUtils.containsEncryptProjectionInCombineStatement(selectStatementContext, encryptRule),
+                !selectStatementContext.isContainsCombine() || !containsEncryptProjectionInCombineStatement(selectStatementContext),
                 () -> new UnsupportedSQLOperationException("Can not support encrypt projection in combine statement"));
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
             SubqueryType subqueryType = selectStatementContext.getSubqueryType();
@@ -115,6 +117,34 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 }
             }
         }
+    }
+    
+    private boolean containsEncryptProjectionInCombineStatement(final SelectStatementContext selectStatementContext) {
+        if (!selectStatementContext.getSqlStatement().getCombine().isPresent()) {
+            return false;
+        }
+        CombineSegment combineSegment = selectStatementContext.getSqlStatement().getCombine().get();
+        List<Projection> leftProjections = selectStatementContext.getSubqueryContexts().get(combineSegment.getLeft().getStartIndex()).getProjectionsContext().getExpandProjections();
+        List<Projection> rightProjections = selectStatementContext.getSubqueryContexts().get(combineSegment.getRight().getStartIndex()).getProjectionsContext().getExpandProjections();
+        ShardingSpherePreconditions.checkState(leftProjections.size() == rightProjections.size(), () -> new UnsupportedSQLOperationException("Column projections must be same for combine statement"));
+        for (int i = 0; i < leftProjections.size(); i++) {
+            Projection leftProjection = leftProjections.get(i);
+            Projection rightProjection = rightProjections.get(i);
+            ColumnSegmentBoundInfo leftColumnInfo = getColumnSegmentBoundInfo(leftProjection);
+            EncryptAlgorithm leftColumnEncryptor = encryptRule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
+            ColumnSegmentBoundInfo rightColumnInfo = getColumnSegmentBoundInfo(rightProjection);
+            EncryptAlgorithm rightColumnEncryptor = encryptRule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
+            if (null != leftColumnEncryptor || null != rightColumnEncryptor) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private ColumnSegmentBoundInfo getColumnSegmentBoundInfo(final Projection projection) {
+        return projection instanceof ColumnProjection
+                ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
+                : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
     }
     
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
