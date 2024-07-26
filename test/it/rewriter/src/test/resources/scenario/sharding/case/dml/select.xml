@@ -514,8 +514,8 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_binding_table_with_uppercase_table_name">
-        <input sql="SELECT * FROM T_ROLE JOIN T_ROLE_ADMIN ON T_ROLE.ROLE_ID = T_ROLE_ADMIN.ROLE_ID WHERE T_ROLE_ADMIN.ROLE_ID = ?" parameters="1000" />
-        <output sql="SELECT * FROM T_ROLE JOIN T_ROLE_ADMIN ON T_ROLE.ROLE_ID = T_ROLE_ADMIN.ROLE_ID WHERE T_ROLE_ADMIN.ROLE_ID = ?" parameters="1000" />
+        <input sql="SELECT * FROM t_role JOIN t_role_admin ON t_role.role_id = t_role_admin.role_id WHERE t_role_admin.role_id = ?" parameters="1000" />
+        <output sql="SELECT * FROM t_role JOIN t_role_admin ON t_role.role_id = t_role_admin.role_id WHERE t_role_admin.role_id = ?" parameters="1000" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_and_condition_and_lowercase_keyword">
