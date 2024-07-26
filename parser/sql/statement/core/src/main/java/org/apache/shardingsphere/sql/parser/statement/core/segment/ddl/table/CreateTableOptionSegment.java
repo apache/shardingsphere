@@ -42,6 +42,10 @@ public final class CreateTableOptionSegment implements CreateDefinitionSegment {
     
     private CommentSegment commentSegment;
     
+    private String charsetName;
+    
+    private String collateName;
+    
     /**
      * Get engine.
      *

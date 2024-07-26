@@ -54,4 +54,10 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     @Setter
     private boolean isRef;
+    
+    @Setter
+    private String charsetName;
+    
+    @Setter
+    private String collateName;
 }
