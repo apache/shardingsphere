@@ -149,7 +149,7 @@ public final class MetaDataPersistService {
      * @param currentDatabase current database
      */
     public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
+        Map<String, ShardingSphereSchema> toBeDeletedSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         toBeAddedSchemas.forEach((schemaName, schema) -> {
             if (schema.isEmpty()) {
@@ -157,7 +157,7 @@ public final class MetaDataPersistService {
             }
             databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, schema.getTables());
         });
-        toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
+        toBeDeletedSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
     }
     
     /**

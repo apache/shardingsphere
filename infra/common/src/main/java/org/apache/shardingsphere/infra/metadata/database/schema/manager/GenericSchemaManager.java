@@ -42,6 +42,7 @@ public final class GenericSchemaManager {
      */
     public static Map<String, ShardingSphereSchema> getToBeAddedTablesBySchemas(final Map<String, ShardingSphereSchema> reloadSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(currentSchemas.size(), 1F);
+        reloadSchemas.entrySet().stream().filter(entry -> !currentSchemas.containsKey(entry.getKey())).forEach(entry -> result.put(entry.getKey(), entry.getValue()));
         reloadSchemas.entrySet().stream().filter(entry -> currentSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue))
                 .forEach((key, value) -> result.put(key, getToBeAddedTablesBySchema(value, currentSchemas.get(key))));
         return result;
