@@ -123,7 +123,7 @@ public final class StorageUnitManager {
     }
     
     private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, switchingResource, null);
+        MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, true, switchingResource, null);
         metaDataContexts.set(reloadMetaDataContexts);
         metaDataContexts.get().getMetaData().getDatabases().putAll(buildShardingSphereDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
         switchingResource.closeStaleDataSources();
