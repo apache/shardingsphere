@@ -91,12 +91,12 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false)), Collections.singletonList(new ShardingSphereIndex("broadcast_id_idx")),
                 Collections.emptyList()));
-        tables.put("T_ROLE", new ShardingSphereTable("T_ROLE", Arrays.asList(
+        tables.put("t_role", new ShardingSphereTable("t_role", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("ROLE_ID", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("T_ROLE_ADMIN", new ShardingSphereTable("T_ROLE_ADMIN", Arrays.asList(
+                new ShardingSphereColumn("role_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_role_admin", new ShardingSphereTable("t_role_admin", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("ROLE_ID", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("role_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_view", new ShardingSphereTable("t_account_view", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
