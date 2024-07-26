@@ -57,7 +57,7 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     @Setter
     private String charsetName;
-
+    
     @Setter
     private String collateName;
 }
