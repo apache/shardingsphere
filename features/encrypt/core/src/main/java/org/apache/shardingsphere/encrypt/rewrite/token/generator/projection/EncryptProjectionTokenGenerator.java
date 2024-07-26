@@ -70,41 +70,33 @@ public final class EncryptProjectionTokenGenerator {
      */
     public Collection<SQLToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         Collection<SQLToken> result = new LinkedHashSet<>();
-        addGenerateSQLTokens(result, selectStatementContext);
+        generateSQLTokens(result, selectStatementContext);
         for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
-            addGenerateSQLTokens(result, each);
+            generateSQLTokens(result, each);
         }
         return result;
     }
     
-    private void addGenerateSQLTokens(final Collection<SQLToken> sqlTokens, final SelectStatementContext selectStatementContext) {
-        ShardingSpherePreconditions.checkState(
-                !selectStatementContext.isContainsCombine() || !containsEncryptProjectionInCombineStatement(selectStatementContext),
+    private void generateSQLTokens(final Collection<SQLToken> generatedSQLTokens, final SelectStatementContext selectStatementContext) {
+        ShardingSpherePreconditions.checkState(!containsEncryptProjectionInCombineSegment(selectStatementContext),
                 () -> new UnsupportedSQLOperationException("Can not support encrypt projection in combine statement"));
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
-            SubqueryType subqueryType = selectStatementContext.getSubqueryType();
-            if (each instanceof ColumnProjectionSegment) {
-                ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) each;
-                ColumnProjection columnProjection = buildColumnProjection(columnSegment);
-                String originalColumnName = columnProjection.getOriginalColumn().getValue();
-                Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnProjection.getOriginalTable().getValue());
-                if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(originalColumnName) && !selectStatementContext.containsTableSubquery()) {
-                    sqlTokens.add(generateSQLToken(encryptTable.get().getEncryptColumn(originalColumnName), columnSegment, columnProjection, subqueryType));
-                }
-            }
             ShardingSpherePreconditions.checkState(!(each instanceof ShorthandProjectionSegment) || !selectStatementContext.containsTableSubquery(),
                     () -> new UnsupportedSQLOperationException("Can not support encrypt shorthand expand with subquery statement"));
+            if (each instanceof ColumnProjectionSegment) {
+                generateSQLToken(selectStatementContext, (ColumnProjectionSegment) each).ifPresent(generatedSQLTokens::add);
+            }
             if (each instanceof ShorthandProjectionSegment) {
                 ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) each;
                 Collection<Projection> actualColumns = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getActualColumns();
                 if (!actualColumns.isEmpty()) {
-                    sqlTokens.add(generateSQLToken(shorthandSegment, actualColumns, selectStatementContext, subqueryType));
+                    generatedSQLTokens.add(generateSQLToken(shorthandSegment, actualColumns, selectStatementContext, selectStatementContext.getSubqueryType()));
                 }
             }
         }
     }
     
-    private boolean containsEncryptProjectionInCombineStatement(final SelectStatementContext selectStatementContext) {
+    private boolean containsEncryptProjectionInCombineSegment(final SelectStatementContext selectStatementContext) {
         if (!selectStatementContext.getSqlStatement().getCombine().isPresent()) {
             return false;
         }
@@ -140,16 +132,22 @@ public final class EncryptProjectionTokenGenerator {
         return result;
     }
     
-    private SubstitutableColumnNameToken generateSQLToken(final EncryptColumn encryptColumn, final ColumnProjectionSegment columnSegment,
-                                                          final ColumnProjection columnProjection, final SubqueryType subqueryType) {
-        Collection<Projection> projections = generateProjections(encryptColumn, columnProjection, subqueryType, false);
-        int startIndex = columnSegment.getColumn().getOwner().isPresent() ? columnSegment.getColumn().getOwner().get().getStopIndex() + 2 : columnSegment.getColumn().getStartIndex();
-        return new SubstitutableColumnNameToken(startIndex, columnSegment.getStopIndex(), projections, databaseType);
+    private Optional<SubstitutableColumnNameToken> generateSQLToken(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnSegment) {
+        ColumnProjection columnProjection = buildColumnProjection(columnSegment);
+        String columnName = columnProjection.getOriginalColumn().getValue();
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnProjection.getOriginalTable().getValue());
+        if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnName) && !selectStatementContext.containsTableSubquery()) {
+            EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
+            Collection<Projection> projections = generateProjections(encryptColumn, columnProjection, selectStatementContext.getSubqueryType(), false);
+            int startIndex = columnSegment.getColumn().getOwner().isPresent() ? columnSegment.getColumn().getOwner().get().getStopIndex() + 2 : columnSegment.getColumn().getStartIndex();
+            return Optional.of(new SubstitutableColumnNameToken(startIndex, columnSegment.getStopIndex(), projections, databaseType));
+        }
+        return Optional.empty();
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final Collection<Projection> actualColumns,
                                                           final SelectStatementContext selectStatementContext, final SubqueryType subqueryType) {
-        List<Projection> projections = new LinkedList<>();
+        Collection<Projection> projections = new LinkedList<>();
         for (Projection each : actualColumns) {
             if (each instanceof ColumnProjection) {
                 ColumnProjection columnProjection = (ColumnProjection) each;
@@ -172,11 +170,14 @@ public final class EncryptProjectionTokenGenerator {
                                                        final SubqueryType subqueryType, final boolean shorthandProjection) {
         if (null == subqueryType || SubqueryType.PROJECTION_SUBQUERY == subqueryType) {
             return Collections.singleton(generateProjection(encryptColumn, columnProjection, shorthandProjection));
-        } else if (SubqueryType.TABLE_SUBQUERY == subqueryType || SubqueryType.JOIN_SUBQUERY == subqueryType) {
+        }
+        if (SubqueryType.TABLE_SUBQUERY == subqueryType || SubqueryType.JOIN_SUBQUERY == subqueryType) {
             return generateProjectionsInTableSegmentSubquery(encryptColumn, columnProjection, shorthandProjection, subqueryType);
-        } else if (SubqueryType.PREDICATE_SUBQUERY == subqueryType) {
+        }
+        if (SubqueryType.PREDICATE_SUBQUERY == subqueryType) {
             return Collections.singleton(generateProjectionInPredicateSubquery(encryptColumn, columnProjection, shorthandProjection));
-        } else if (SubqueryType.INSERT_SELECT_SUBQUERY == subqueryType) {
+        }
+        if (SubqueryType.INSERT_SELECT_SUBQUERY == subqueryType) {
             return generateProjectionsInInsertSelectSubquery(encryptColumn, columnProjection, shorthandProjection);
         }
         throw new UnsupportedSQLOperationException(
