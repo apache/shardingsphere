@@ -935,7 +935,7 @@
                 <version>${derby.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.squareup.okio</groupId> 
+                <groupId>com.squareup.okio</groupId>
                 <artifactId>okio</artifactId>
                 <version>${okio.version}</version>
             </dependency>
