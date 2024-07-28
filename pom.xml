@@ -157,7 +157,7 @@
         <httpcore.version>4.4.15</httpcore.version>
         <guice.version>4.0</guice.version>
         <hadoop.version>3.1.0</hadoop.version>
-        <nimbus.version>4.41.1</nimbus.version>
+        <nimbus.version>9.37.2</nimbus.version>
         <avro.version>1.7.7</avro.version>
         <libthrift.version>0.9.3</libthrift.version>
         <metrics-core.version>3.2.1</metrics-core.version>
