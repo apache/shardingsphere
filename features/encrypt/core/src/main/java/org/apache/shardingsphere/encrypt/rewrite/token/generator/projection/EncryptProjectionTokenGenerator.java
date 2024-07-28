@@ -124,14 +124,6 @@ public final class EncryptProjectionTokenGenerator {
                 : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
     }
     
-    private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
-        IdentifierValue owner = segment.getColumn().getOwner().map(OwnerSegment::getIdentifier).orElse(null);
-        ColumnProjection result = new ColumnProjection(owner, segment.getColumn().getIdentifier(), segment.getAliasName().isPresent() ? segment.getAlias().orElse(null) : null, databaseType);
-        result.setOriginalColumn(segment.getColumn().getColumnBoundInfo().getOriginalColumn());
-        result.setOriginalTable(segment.getColumn().getColumnBoundInfo().getOriginalTable());
-        return result;
-    }
-    
     private Optional<SubstitutableColumnNameToken> generateSQLToken(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnSegment) {
         ColumnProjection columnProjection = buildColumnProjection(columnSegment);
         String columnName = columnProjection.getOriginalColumn().getValue();
@@ -164,6 +156,14 @@ public final class EncryptProjectionTokenGenerator {
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
         return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, selectStatementContext.getDatabaseType());
+    }
+    
+    private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
+        IdentifierValue owner = segment.getColumn().getOwner().map(OwnerSegment::getIdentifier).orElse(null);
+        ColumnProjection result = new ColumnProjection(owner, segment.getColumn().getIdentifier(), segment.getAliasName().isPresent() ? segment.getAlias().orElse(null) : null, databaseType);
+        result.setOriginalColumn(segment.getColumn().getColumnBoundInfo().getOriginalColumn());
+        result.setOriginalTable(segment.getColumn().getColumnBoundInfo().getOriginalTable());
+        return result;
     }
     
     private Collection<Projection> generateProjections(final EncryptColumn encryptColumn, final ColumnProjection columnProjection,
