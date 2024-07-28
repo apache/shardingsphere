@@ -164,6 +164,12 @@
         <jersey.version>1.19</jersey.version>
         <jetty.version>9.3.20.v20170531</jetty.version>
         <jline.version>2.14.3</jline.version>
+        <jsr305.version>3.0.2</jsr305.version>
+        <snappy.version>1.1.10.5</snappy.version>
+        <jettison.version>1.5.4</jettison.version>
+        <jamon.version>2.4.1</jamon.version>
+        <derby.version>10.14.2.0</derby.version>
+        <okio.version>3.6.0</okio.version>
         
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
@@ -902,6 +908,36 @@
                 <groupId>jline</groupId>
                 <artifactId>jline</artifactId>
                 <version>${jline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>${snappy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jettison</groupId>
+                <artifactId>jettison</artifactId>
+                <version>${jettison.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jamon</groupId>
+                <artifactId>jamon-runtime</artifactId>
+                <version>${jamon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>${okio.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
