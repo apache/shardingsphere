@@ -97,7 +97,7 @@
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
         <seata.version>2.0.0</seata.version>
         
-        <netty.version>4.1.106.Final</netty.version>
+        <netty.version>4.1.112.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
         
         <curator.version>5.7.0</curator.version>
