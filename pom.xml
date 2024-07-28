@@ -824,6 +824,7 @@
                             </goals>
                             <configuration>
                                 <rules>
+                                    <dependencyConvergence />
                                     <requireMavenVersion>
                                         <version>${maven.version.range}</version>
                                     </requireMavenVersion>
