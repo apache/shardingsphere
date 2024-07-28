@@ -162,7 +162,7 @@
         <metrics-core.version>3.2.1</metrics-core.version>
         <jcodings.version>1.0.18</jcodings.version>
         <jersey.version>1.19</jersey.version>
-        <jetty.version>9.3.20.v20170531</jetty.version>
+        <jetty.version>9.4.53.v20231009</jetty.version>
         <jline.version>2.14.3</jline.version>
         
         <!-- 3rd party library plugin versions -->
