@@ -241,15 +241,15 @@ The text of each license is the standard Apache 2.0 license.
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.19: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-context 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-core 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-grpclb 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-netty 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf-lite 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-stub 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-util 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-api 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-util 1.65.1: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.10.1: https://github.com/google/gson, Apache 2.0
     guava 32.1.2-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
@@ -274,20 +274,20 @@ The text of each license is the standard Apache 2.0 license.
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-transport 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-transport-classes-epoll 4.1.106.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.106.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.106.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-transport 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.112.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.112.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.112.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.112.Final: https://github.com/netty, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-linux-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-linux-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0

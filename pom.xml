@@ -106,7 +106,7 @@
         <jetcd.version>0.7.7</jetcd.version>
         <vertx.version>4.5.1</vertx.version>
         
-        <grpc.version>1.58.0</grpc.version>
+        <grpc.version>1.65.1</grpc.version>
         <protobuf.version>3.21.12</protobuf.version>
         <okhttp.version>4.12.0</okhttp.version>
         
