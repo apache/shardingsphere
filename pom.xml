@@ -168,7 +168,7 @@
         <snappy.version>1.1.10.5</snappy.version>
         <jettison.version>1.5.4</jettison.version>
         <jamon.version>2.4.1</jamon.version>
-        <derby.version>10.14.2.0</derby.version>
+        <derby.version>10.17.1.0</derby.version>
         <okio.version>3.6.0</okio.version>
         
         <!-- 3rd party library plugin versions -->
