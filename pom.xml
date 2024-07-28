@@ -158,7 +158,7 @@
         <guice.version>4.0</guice.version>
         <hadoop.version>3.1.0</hadoop.version>
         <avro.version>1.7.7</avro.version>
-        <libthrift.version>0.9.3</libthrift.version>
+        <libthrift.version>0.14.0</libthrift.version>
         <nimbus.version>4.41.1</nimbus.version>
         <metrics-core.version>3.2.1</metrics-core.version>
         <jcodings.version>1.0.18</jcodings.version>
