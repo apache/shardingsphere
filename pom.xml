@@ -144,7 +144,7 @@
         
         <graal-sdk.version>24.0.2</graal-sdk.version>
         <jedis.version>4.4.6</jedis.version>
-
+        
         <joda-time.version>2.9.9</joda-time.version>
         <jackson-asl.version>1.9.13</jackson-asl.version>
         <commons-lang.version>2.6</commons-lang.version>
@@ -736,7 +736,7 @@
                 <version>${jedis.version}</version>
                 <scope>provided</scope>
             </dependency>
-
+            
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
@@ -802,7 +802,7 @@
                 <artifactId>guice-servlet</artifactId>
                 <version>${guice.version}</version>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-annotations</artifactId>
