@@ -153,7 +153,7 @@
         <commons-compress.version>1.26.2</commons-compress.version>
         <commons-io.version>2.11.0</commons-io.version>
         <commons-net.version>3.6</commons-net.version>
-        <httpclient.version>4.4.1</httpclient.version>
+        <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.15</httpcore.version>
         <guice.version>4.0</guice.version>
         <hadoop.version>3.1.0</hadoop.version>
