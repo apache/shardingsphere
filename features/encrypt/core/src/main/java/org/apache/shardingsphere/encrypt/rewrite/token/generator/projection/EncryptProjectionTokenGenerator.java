@@ -132,7 +132,8 @@ public final class EncryptProjectionTokenGenerator {
             EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
             Collection<Projection> projections = generateProjections(encryptColumn, columnProjection, selectStatementContext.getSubqueryType(), false);
             int startIndex = columnSegment.getColumn().getOwner().isPresent() ? columnSegment.getColumn().getOwner().get().getStopIndex() + 2 : columnSegment.getColumn().getStartIndex();
-            return Optional.of(new SubstitutableColumnNameToken(startIndex, columnSegment.getStopIndex(), projections, databaseType));
+            int stopIndex = columnSegment.getStopIndex();
+            return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, projections, databaseType));
         }
         return Optional.empty();
     }
