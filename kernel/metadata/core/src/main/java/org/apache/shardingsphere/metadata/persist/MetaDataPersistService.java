@@ -149,15 +149,10 @@ public final class MetaDataPersistService {
      * @param currentDatabase current database
      */
     public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
+        Map<String, ShardingSphereSchema> toBeDeletedSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        toBeAddedSchemas.forEach((schemaName, schema) -> {
-            if (schema.isEmpty()) {
-                databaseMetaDataService.addSchema(databaseName, schemaName);
-            }
-            databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, schema.getTables());
-        });
-        toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
+        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.persistByAlterConfiguration(databaseName, key, value));
+        toBeDeletedSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
     }
     
     /**
@@ -170,7 +165,7 @@ public final class MetaDataPersistService {
     public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, key, value.getTables()));
+        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.persistByDropConfiguration(databaseName, key, value));
         toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
     }
 }
