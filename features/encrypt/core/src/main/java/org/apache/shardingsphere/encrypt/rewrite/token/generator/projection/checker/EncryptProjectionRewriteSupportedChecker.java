@@ -44,7 +44,7 @@ public final class EncryptProjectionRewriteSupportedChecker {
     
     /**
      * Check not contain encrypt projection in combine segment.
-     * 
+     *
      * @param encryptRule encrypt rule
      * @param selectStatementContext select statement context
      */
@@ -85,7 +85,7 @@ public final class EncryptProjectionRewriteSupportedChecker {
     
     /**
      * Check not contain encrypt shorthand expand with subquery statement.
-     * 
+     *
      * @param selectStatementContext select statement context
      * @param projectionSegment projection segment
      */
