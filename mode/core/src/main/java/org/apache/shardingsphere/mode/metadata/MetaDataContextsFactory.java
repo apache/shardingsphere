@@ -237,8 +237,8 @@ public final class MetaDataContextsFactory {
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts createByAlterRule(final String databaseName, final boolean internalLoadMetaData, final Collection<RuleConfiguration> ruleConfigs,
-                                                          final MetaDataContexts orginalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
-                                                          final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                     final MetaDataContexts orginalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
+                                                     final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         Map<String, ShardingSphereDatabase> changedDatabases =
                 createChangedDatabases(databaseName, internalLoadMetaData, null, ruleConfigs, orginalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = orginalMetaDataContexts.getMetaData().getProps();
