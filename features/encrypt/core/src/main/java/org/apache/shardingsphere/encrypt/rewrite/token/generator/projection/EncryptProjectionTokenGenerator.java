@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.projection;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.checker.EncryptProjectionRewriteSupportedChecker;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -31,17 +31,14 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -78,11 +75,9 @@ public final class EncryptProjectionTokenGenerator {
     
     private Collection<SQLToken> generateSelectSQLTokens(final SelectStatementContext selectStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        ShardingSpherePreconditions.checkState(!containsEncryptProjectionInCombineSegment(selectStatementContext),
-                () -> new UnsupportedSQLOperationException("Can not support encrypt projection in combine statement."));
+        EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptProjectionInCombineSegment(encryptRule, selectStatementContext);
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
-            ShardingSpherePreconditions.checkState(!(each instanceof ShorthandProjectionSegment) || !selectStatementContext.containsTableSubquery(),
-                    () -> new UnsupportedSQLOperationException("Can not support encrypt shorthand expand with subquery statement."));
+            EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptShorthandExpandWithSubqueryStatement(selectStatementContext, each);
             if (each instanceof ColumnProjectionSegment) {
                 generateSQLToken(selectStatementContext, (ColumnProjectionSegment) each).ifPresent(result::add);
             }
@@ -95,36 +90,6 @@ public final class EncryptProjectionTokenGenerator {
             }
         }
         return result;
-    }
-    
-    private boolean containsEncryptProjectionInCombineSegment(final SelectStatementContext selectStatementContext) {
-        if (!selectStatementContext.getSqlStatement().getCombine().isPresent()) {
-            return false;
-        }
-        CombineSegment combineSegment = selectStatementContext.getSqlStatement().getCombine().get();
-        List<Projection> leftProjections = selectStatementContext.getSubqueryContexts().get(combineSegment.getLeft().getStartIndex()).getProjectionsContext().getExpandProjections();
-        List<Projection> rightProjections = selectStatementContext.getSubqueryContexts().get(combineSegment.getRight().getStartIndex()).getProjectionsContext().getExpandProjections();
-        ShardingSpherePreconditions.checkState(leftProjections.size() == rightProjections.size(), () -> new UnsupportedSQLOperationException("Column projections must be same for combine statement"));
-        for (int i = 0; i < leftProjections.size(); i++) {
-            if (containsEncryptProjectionInCombineSegment(leftProjections.get(i), rightProjections.get(i))) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsEncryptProjectionInCombineSegment(final Projection leftProjection, final Projection rightProjection) {
-        ColumnSegmentBoundInfo leftColumnInfo = getColumnSegmentBoundInfo(leftProjection);
-        EncryptAlgorithm leftColumnEncryptor = encryptRule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
-        ColumnSegmentBoundInfo rightColumnInfo = getColumnSegmentBoundInfo(rightProjection);
-        EncryptAlgorithm rightColumnEncryptor = encryptRule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
-        return null != leftColumnEncryptor || null != rightColumnEncryptor;
-    }
-    
-    private ColumnSegmentBoundInfo getColumnSegmentBoundInfo(final Projection projection) {
-        return projection instanceof ColumnProjection
-                ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
-                : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
     }
     
     private Optional<SubstitutableColumnNameToken> generateSQLToken(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnSegment) {
