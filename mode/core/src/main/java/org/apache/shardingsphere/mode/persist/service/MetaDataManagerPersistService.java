@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -117,10 +116,9 @@ public interface MetaDataManagerPersistService {
      *
      * @param databaseName database name
      * @param toBeAlteredRuleConfig to be altered rule config
-     * @return meta data versions
      * @throws SQLException SQL exception
      */
-    Collection<MetaDataVersion> alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) throws SQLException;
+    void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) throws SQLException;
     
     /**
      * Remove rule configuration item.

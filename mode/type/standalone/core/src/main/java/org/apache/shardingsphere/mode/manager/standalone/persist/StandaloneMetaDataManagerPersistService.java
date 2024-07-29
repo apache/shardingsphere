@@ -289,7 +289,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) throws SQLException {
+    public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) throws SQLException {
         if (null != toBeAlteredRuleConfig) {
             Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
                     .persistConfigurations(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), Collections.singletonList(toBeAlteredRuleConfig));
@@ -302,7 +302,6 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             }
             clearServiceCache();
         }
-        return Collections.emptyList();
     }
     
     private Optional<DispatchEvent> buildAlterRuleItemEvent(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {

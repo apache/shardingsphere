@@ -168,15 +168,14 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
+    public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
         MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
         if (null != toBeAlteredRuleConfig) {
-            Collection<MetaDataVersion> result = metaDataPersistService.getDatabaseRulePersistService()
+            Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
                     .persistConfigurations(databaseName, Collections.singleton(toBeAlteredRuleConfig));
+            metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
             afterRuleConfigurationAltered(databaseName, originalMetaDataContexts);
-            return result;
         }
-        return Collections.emptyList();
     }
     
     @Override
