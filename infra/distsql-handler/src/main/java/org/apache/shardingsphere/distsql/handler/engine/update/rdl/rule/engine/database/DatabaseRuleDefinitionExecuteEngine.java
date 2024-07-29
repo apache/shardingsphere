@@ -57,8 +57,7 @@ public final class DatabaseRuleDefinitionExecuteEngine {
         checkBeforeUpdate();
         RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
         if (getRefreshStatus(rule.isPresent())) {
-            contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                    .switchActiveVersion(DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, database, currentRuleConfig));
+            DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, database, currentRuleConfig);
         }
     }
     

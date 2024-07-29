@@ -25,17 +25,14 @@ import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRul
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -51,10 +48,9 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
     
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<MetaDataVersion> operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database,
-                                               final RuleConfiguration currentRuleConfig) throws SQLException {
+    public void operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) throws SQLException {
         if (!executor.hasAnyOneToBeDropped(sqlStatement)) {
-            return Collections.emptyList();
+            return;
         }
         if (sqlStatement instanceof StaticDataSourceContainedRuleAwareStatement) {
             for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
@@ -69,8 +65,8 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         if (null != toBeAlteredRuleConfig && ((DatabaseRuleConfiguration) toBeAlteredRuleConfig).isEmpty()) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
             metaDataManagerPersistService.removeRuleConfiguration(database.getName(), Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
-            return Collections.emptyList();
+        } else {
+            metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
         }
-        return metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
 }

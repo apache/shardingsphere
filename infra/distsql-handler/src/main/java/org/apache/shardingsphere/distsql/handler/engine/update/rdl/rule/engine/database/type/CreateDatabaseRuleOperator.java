@@ -24,13 +24,11 @@ import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRul
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -48,11 +46,10 @@ public final class CreateDatabaseRuleOperator implements DatabaseRuleOperator {
     
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<MetaDataVersion> operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database,
-                                               final RuleConfiguration currentRuleConfig) throws SQLException {
+    public void operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) throws SQLException {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        return metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
+        metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
     }
     
     @SuppressWarnings("unchecked")
