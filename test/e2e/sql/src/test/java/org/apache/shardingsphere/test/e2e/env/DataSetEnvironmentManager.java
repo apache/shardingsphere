@@ -237,7 +237,7 @@ public final class DataSetEnvironmentManager {
         
         private String getQuotedTableName(final String tableName, final DatabaseType databaseType) {
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-            return dialectDatabaseMetaData.getQuoteCharacter().wrap(tableName);
+            return dialectDatabaseMetaData.getQuoteCharacter().wrap(dialectDatabaseMetaData.formatTableNamePattern(tableName));
         }
     }
 }

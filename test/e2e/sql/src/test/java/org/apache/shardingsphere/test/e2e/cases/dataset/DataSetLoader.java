@@ -63,6 +63,12 @@ public final class DataSetLoader {
         if (new File(result).exists()) {
             return result;
         }
+        if (databaseType.getTrunkDatabaseType().isPresent()) {
+            result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, databaseType.getTrunkDatabaseType().get().getType().toLowerCase(), dataSetFile);
+            if (new File(result).exists()) {
+                return result;
+            }
+        }
         result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, mode.toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
