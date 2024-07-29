@@ -43,8 +43,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -55,8 +57,6 @@ import java.util.TreeMap;
  */
 @Slf4j
 public final class PipelineDDLGenerator {
-    
-    private static final String DELIMITER = ";";
     
     private static final String SET_SEARCH_PATH_PREFIX = "set search_path";
     
@@ -72,17 +72,22 @@ public final class PipelineDDLGenerator {
      * @return DDL SQL
      * @throws SQLException SQL exception 
      */
-    public String generateLogicDDL(final DatabaseType databaseType, final DataSource sourceDataSource,
-                                   final String schemaName, final String sourceTableName, final String targetTableName, final SQLParserEngine parserEngine) throws SQLException {
+    public List<String> generateLogicDDL(final DatabaseType databaseType, final DataSource sourceDataSource,
+                                         final String schemaName, final String sourceTableName, final String targetTableName, final SQLParserEngine parserEngine) throws SQLException {
         long startTimeMillis = System.currentTimeMillis();
-        StringBuilder result = new StringBuilder();
+        List<String> result = new ArrayList<>();
         for (String each : DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType).buildCreateTableSQLs(sourceDataSource, schemaName, sourceTableName)) {
             Optional<String> queryContext = decorate(databaseType, sourceDataSource, schemaName, targetTableName, parserEngine, each);
-            queryContext.ifPresent(optional -> result.append(optional).append(DELIMITER).append(System.lineSeparator()));
+            queryContext.ifPresent(sql -> {
+                String trimmedSql = sql.trim();
+                if (!Strings.isNullOrEmpty(trimmedSql)) {
+                    result.add(trimmedSql);
+                }
+            });
         }
         log.info("generateLogicDDL, databaseType={}, schemaName={}, sourceTableName={}, targetTableName={}, cost {} ms",
                 databaseType.getType(), schemaName, sourceTableName, targetTableName, System.currentTimeMillis() - startTimeMillis);
-        return result.toString();
+        return result;
     }
     
     private Optional<String> decorate(final DatabaseType databaseType, final DataSource dataSource, final String schemaName, final String targetTableName,
