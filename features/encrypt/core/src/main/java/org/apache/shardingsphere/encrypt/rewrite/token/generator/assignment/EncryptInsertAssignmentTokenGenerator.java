@@ -47,8 +47,9 @@ public final class EncryptInsertAssignmentTokenGenerator implements CollectionSQ
                 && encryptRule.findEncryptTable(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).isPresent();
     }
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
-        return new EncryptAssignmentTokenGenerator(encryptRule, databaseName).generateSQLTokens(sqlStatementContext);
+        return new EncryptAssignmentTokenGenerator(encryptRule, databaseName).generateSQLTokens(sqlStatementContext, sqlStatementContext.getSqlStatement().getSetAssignment().get());
     }
 }

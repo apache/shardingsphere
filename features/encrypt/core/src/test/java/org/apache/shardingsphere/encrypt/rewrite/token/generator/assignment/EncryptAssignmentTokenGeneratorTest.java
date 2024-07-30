@@ -86,25 +86,25 @@ class EncryptAssignmentTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(mock(ParameterMarkerExpressionSegment.class));
-        assertThat(tokenGenerator.generateSQLTokens(updateStatement).size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(updateStatement, setAssignmentSegment).size(), is(1));
     }
     
     @Test
     void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
-        assertThat(tokenGenerator.generateSQLTokens(updateStatement).size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(updateStatement, setAssignmentSegment).size(), is(1));
     }
     
     @Test
     void assertGenerateSQLTokenWithUpdateEmpty() {
         when(assignmentSegment.getValue()).thenReturn(null);
-        assertTrue(tokenGenerator.generateSQLTokens(updateStatement).isEmpty());
+        assertTrue(tokenGenerator.generateSQLTokens(updateStatement, setAssignmentSegment).isEmpty());
     }
     
     @Test
     void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
         when(insertStatement.getSqlStatement().getSetAssignment()).thenReturn(Optional.of(setAssignmentSegment));
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
-        assertThat(tokenGenerator.generateSQLTokens(insertStatement).size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(insertStatement, setAssignmentSegment).size(), is(1));
     }
 }

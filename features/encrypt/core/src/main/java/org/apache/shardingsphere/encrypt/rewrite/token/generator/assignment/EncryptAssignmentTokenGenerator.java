@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptLiteralAssignmentToken;
@@ -34,9 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -58,30 +54,22 @@ public final class EncryptAssignmentTokenGenerator {
      * Generate SQL tokens.
      * 
      * @param sqlStatementContext SQL statement context
+     * @param setAssignmentSegment set assignment segment
      * @return generated SQL tokens
      */
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final SetAssignmentSegment setAssignmentSegment) {
         String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         String schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
-        for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
+        for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             String columnName = each.getColumns().get(0).getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
                 generateSQLToken(schemaName, encryptTable.getTable(), encryptTable.getEncryptColumn(columnName), each).ifPresent(result::add);
             }
         }
         return result;
-    }
-    
-    private SetAssignmentSegment getSetAssignmentSegment(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof InsertStatement) {
-            Optional<SetAssignmentSegment> result = ((InsertStatement) sqlStatement).getSetAssignment();
-            Preconditions.checkState(result.isPresent());
-            return result.get();
-        }
-        return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
     private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final ColumnAssignmentSegment segment) {

@@ -49,6 +49,6 @@ public final class EncryptUpdateAssignmentTokenGenerator implements CollectionSQ
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final UpdateStatementContext sqlStatementContext) {
-        return new EncryptAssignmentTokenGenerator(encryptRule, databaseName).generateSQLTokens(sqlStatementContext);
+        return new EncryptAssignmentTokenGenerator(encryptRule, databaseName).generateSQLTokens(sqlStatementContext, sqlStatementContext.getSqlStatement().getSetAssignment());
     }
 }
