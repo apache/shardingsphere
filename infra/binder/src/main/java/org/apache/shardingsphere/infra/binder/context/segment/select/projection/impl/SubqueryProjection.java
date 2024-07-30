@@ -53,7 +53,7 @@ public final class SubqueryProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType) : ProjectionUtils.getColumnNameFromSubquery(subquerySegment, databaseType);
+        return getAlias().isPresent() ? ProjectionUtils.getIdentifierValue(getAlias().get(), databaseType) : ProjectionUtils.getColumnNameFromSubquery(subquerySegment, databaseType);
     }
     
     @Override

@@ -34,17 +34,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 public final class ProjectionUtils {
     
     /**
-     * Get column label from alias.
+     * Get identifier value.
      *
-     * @param alias alias
+     * @param identifierValue identifier value
      * @param databaseType database type
-     * @return column label
+     * @return identifier value
      */
-    public static String getColumnLabelFromAlias(final IdentifierValue alias, final DatabaseType databaseType) {
-        return getIdentifierValueByDatabaseType(alias, databaseType);
-    }
-    
-    private static String getIdentifierValueByDatabaseType(final IdentifierValue identifierValue, final DatabaseType databaseType) {
+    public static String getIdentifierValue(final IdentifierValue identifierValue, final DatabaseType databaseType) {
         if (QuoteCharacter.NONE != identifierValue.getQuoteCharacter()) {
             return identifierValue.getValue();
         }
@@ -55,17 +51,6 @@ public final class ProjectionUtils {
             return identifierValue.getValue().toUpperCase();
         }
         return identifierValue.getValue();
-    }
-    
-    /**
-     * Get column name from column.
-     *
-     * @param columnName column name
-     * @param databaseType database type
-     * @return column name
-     */
-    public static String getColumnNameFromColumn(final IdentifierValue columnName, final DatabaseType databaseType) {
-        return getIdentifierValueByDatabaseType(columnName, databaseType);
     }
     
     /**

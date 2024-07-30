@@ -97,7 +97,7 @@ public final class SubqueryTableBindUtils {
     private static String getColumnNameFromExpression(final ExpressionSegment expressionSegment, final DatabaseType databaseType) {
         String result;
         if (expressionSegment instanceof AliasAvailable && ((AliasAvailable) expressionSegment).getAlias().isPresent()) {
-            result = ProjectionUtils.getColumnLabelFromAlias(((AliasAvailable) expressionSegment).getAlias().get(), databaseType);
+            result = ProjectionUtils.getIdentifierValue(((AliasAvailable) expressionSegment).getAlias().get(), databaseType);
         } else {
             result = ProjectionUtils.getColumnNameFromExpression(expressionSegment.getText(), databaseType);
         }
