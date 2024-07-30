@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.binder.engine.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.util.ProjectionUtils;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -96,10 +96,11 @@ public final class SubqueryTableBindUtils {
     
     private static String getColumnNameFromExpression(final ExpressionSegment expressionSegment, final DatabaseType databaseType) {
         String result;
+        DialectProjectionIdentifierExtractor identifierExtractor = new DialectProjectionIdentifierExtractor(databaseType);
         if (expressionSegment instanceof AliasAvailable && ((AliasAvailable) expressionSegment).getAlias().isPresent()) {
-            result = ProjectionUtils.getIdentifierValue(((AliasAvailable) expressionSegment).getAlias().get(), databaseType);
+            result = identifierExtractor.getIdentifierValue(((AliasAvailable) expressionSegment).getAlias().get());
         } else {
-            result = ProjectionUtils.getColumnNameFromExpression(expressionSegment.getText(), databaseType);
+            result = identifierExtractor.getColumnNameFromExpression(expressionSegment.getText());
         }
         return result;
     }

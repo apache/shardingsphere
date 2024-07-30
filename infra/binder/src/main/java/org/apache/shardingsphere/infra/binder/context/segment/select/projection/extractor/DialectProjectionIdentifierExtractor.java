@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.segment.select.projection.util;
+package org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
@@ -28,19 +27,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
- * Projection utility class.
+ * Dialect projection identifier extractor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProjectionUtils {
+@RequiredArgsConstructor
+public final class DialectProjectionIdentifierExtractor {
+    
+    private final DatabaseType databaseType;
     
     /**
      * Get identifier value.
      *
      * @param identifierValue identifier value
-     * @param databaseType database type
      * @return identifier value
      */
-    public static String getIdentifierValue(final IdentifierValue identifierValue, final DatabaseType databaseType) {
+    public String getIdentifierValue(final IdentifierValue identifierValue) {
         if (QuoteCharacter.NONE != identifierValue.getQuoteCharacter()) {
             return identifierValue.getValue();
         }
@@ -58,10 +58,9 @@ public final class ProjectionUtils {
      *
      * @param functionName function name
      * @param functionExpression function expression
-     * @param databaseType database type
      * @return column name
      */
-    public static String getColumnNameFromFunction(final String functionName, final String functionExpression, final DatabaseType databaseType) {
+    public String getColumnNameFromFunction(final String functionName, final String functionExpression) {
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             return functionName.toLowerCase();
         }
@@ -75,10 +74,9 @@ public final class ProjectionUtils {
      * Get column name from expression.
      *
      * @param expression expression
-     * @param databaseType database type
      * @return column name
      */
-    public static String getColumnNameFromExpression(final String expression, final DatabaseType databaseType) {
+    public String getColumnNameFromExpression(final String expression) {
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             return "?column?";
         }
@@ -92,10 +90,9 @@ public final class ProjectionUtils {
      * Get column name from subquery segment.
      *
      * @param subquerySegment subquery segment
-     * @param databaseType database type
      * @return column name
      */
-    public static String getColumnNameFromSubquery(final SubqueryProjectionSegment subquerySegment, final DatabaseType databaseType) {
+    public String getColumnNameFromSubquery(final SubqueryProjectionSegment subquerySegment) {
         // TODO support postgresql subquery projection
         if (databaseType instanceof OracleDatabaseType) {
             return subquerySegment.getText().replace(" ", "").toUpperCase();
