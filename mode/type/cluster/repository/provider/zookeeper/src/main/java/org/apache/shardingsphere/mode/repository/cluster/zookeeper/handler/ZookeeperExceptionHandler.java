@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 import org.apache.zookeeper.KeeperException.ConnectionLossException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -38,7 +38,7 @@ public final class ZookeeperExceptionHandler {
      * <p>Ignore interrupt and connection invalid exception.</p>
      *
      * @param cause to be handled exception
-     * @throws ClusterPersistRepositoryException cluster persist repository exception
+     * @throws ClusterRepositoryPersistException cluster persist repository exception
      */
     public static void handleException(final Exception cause) {
         if (null == cause) {
@@ -51,7 +51,7 @@ public final class ZookeeperExceptionHandler {
             log.info("InterruptedException caught");
             Thread.currentThread().interrupt();
         } else {
-            throw new ClusterPersistRepositoryException(cause);
+            throw new ClusterRepositoryPersistException(cause);
         }
     }
     
