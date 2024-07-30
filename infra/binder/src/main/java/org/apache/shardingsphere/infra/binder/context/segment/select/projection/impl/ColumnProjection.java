@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
@@ -61,14 +61,14 @@ public final class ColumnProjection implements Projection {
     
     @Override
     public String getColumnName() {
-        DialectProjectionIdentifierExtractor identifierExtractor = new DialectProjectionIdentifierExtractor(databaseType);
-        return databaseType instanceof MySQLDatabaseType ? identifierExtractor.getIdentifierValue(name) : getColumnLabel();
+        ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
+        return databaseType instanceof MySQLDatabaseType ? extractEngine.getIdentifierValue(name) : getColumnLabel();
     }
     
     @Override
     public String getColumnLabel() {
-        DialectProjectionIdentifierExtractor identifierExtractor = new DialectProjectionIdentifierExtractor(databaseType);
-        return getAlias().isPresent() ? identifierExtractor.getIdentifierValue(getAlias().get()) : identifierExtractor.getIdentifierValue(name);
+        ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
+        return getAlias().isPresent() ? extractEngine.getIdentifierValue(getAlias().get()) : extractEngine.getIdentifierValue(name);
     }
     
     @Override
