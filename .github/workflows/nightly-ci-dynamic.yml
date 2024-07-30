@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Nightly - Dynamic CI
+name: Nightly - CI Dynamic
 
 on:
   workflow_dispatch:
