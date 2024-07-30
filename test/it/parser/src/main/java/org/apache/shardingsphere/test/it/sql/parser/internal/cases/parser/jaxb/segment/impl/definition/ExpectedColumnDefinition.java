@@ -46,7 +46,7 @@ public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     
     @XmlElement
     private ExpectedColumn column;
-
+    
     @XmlAttribute(name = "not-null")
     private boolean notNull;
     
