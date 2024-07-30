@@ -23,19 +23,19 @@ on:
       inputs:
         adapter:
           description: 'adapter'
-          required: false
+          required: true
           default: "[ proxy, jdbc ]"
         mode:
           description: 'mode'
-          required: false
+          required: true
           default: "[ Standalone, Cluster ]"
         database:
-          description: 'mode'
-          required: false
+          description: 'database'
+          required: true
           default: "[ MySQL, PostgreSQL, openGauss ]"
         scenario:
           description: 'scenario'
-          required: false
+          required: true
           default: "[ empty_rules ]"
         additional-options:
           description: 'additional-options'
