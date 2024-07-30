@@ -30,15 +30,14 @@ import static org.hamcrest.Matchers.is;
 
 class ProjectionUtilsTest {
     
-    private final IdentifierValue alias = new IdentifierValue("Data", QuoteCharacter.NONE);
-    
     @Test
-    void assertGetColumnLabelFromAlias() {
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(new IdentifierValue("Data", QuoteCharacter.QUOTE), new PostgreSQLDatabaseType()), is("Data"));
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is("data"));
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, TypedSPILoader.getService(DatabaseType.class, "openGauss")), is("data"));
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, TypedSPILoader.getService(DatabaseType.class, "Oracle")), is("DATA"));
-        assertThat(ProjectionUtils.getColumnLabelFromAlias(alias, TypedSPILoader.getService(DatabaseType.class, "MySQL")), is("Data"));
+    void assertGetIdentifierValue() {
+        assertThat(ProjectionUtils.getIdentifierValue(new IdentifierValue("Data", QuoteCharacter.QUOTE), new PostgreSQLDatabaseType()), is("Data"));
+        IdentifierValue identifierValue = new IdentifierValue("Data", QuoteCharacter.NONE);
+        assertThat(ProjectionUtils.getIdentifierValue(identifierValue, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is("data"));
+        assertThat(ProjectionUtils.getIdentifierValue(identifierValue, TypedSPILoader.getService(DatabaseType.class, "openGauss")), is("data"));
+        assertThat(ProjectionUtils.getIdentifierValue(identifierValue, TypedSPILoader.getService(DatabaseType.class, "Oracle")), is("DATA"));
+        assertThat(ProjectionUtils.getIdentifierValue(identifierValue, TypedSPILoader.getService(DatabaseType.class, "MySQL")), is("Data"));
     }
     
     @Test

@@ -51,7 +51,7 @@ public final class ExpressionProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType)
+        return getAlias().isPresent() ? ProjectionUtils.getIdentifierValue(getAlias().get(), databaseType)
                 : ProjectionUtils.getColumnNameFromExpression(expressionSegment.getText(), databaseType);
     }
     

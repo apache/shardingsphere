@@ -61,12 +61,12 @@ public final class ColumnProjection implements Projection {
     
     @Override
     public String getColumnName() {
-        return databaseType instanceof MySQLDatabaseType ? ProjectionUtils.getColumnNameFromColumn(name, databaseType) : getColumnLabel();
+        return databaseType instanceof MySQLDatabaseType ? ProjectionUtils.getIdentifierValue(name, databaseType) : getColumnLabel();
     }
     
     @Override
     public String getColumnLabel() {
-        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType) : ProjectionUtils.getColumnNameFromColumn(name, databaseType);
+        return getAlias().isPresent() ? ProjectionUtils.getIdentifierValue(getAlias().get(), databaseType) : ProjectionUtils.getIdentifierValue(name, databaseType);
     }
     
     @Override

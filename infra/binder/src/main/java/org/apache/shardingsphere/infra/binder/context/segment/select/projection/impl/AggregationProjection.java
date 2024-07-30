@@ -62,7 +62,7 @@ public class AggregationProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return getAlias().isPresent() && !DerivedColumn.isDerivedColumnName(getAlias().get().getValueWithQuoteCharacters()) ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType)
+        return getAlias().isPresent() && !DerivedColumn.isDerivedColumnName(getAlias().get().getValueWithQuoteCharacters()) ? ProjectionUtils.getIdentifierValue(getAlias().get(), databaseType)
                 : ProjectionUtils.getColumnNameFromFunction(type.name(), expression, databaseType);
     }
     
