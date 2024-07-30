@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Nightly - CI
+name: Nightly - Dynamic CI
 
 on:
   workflow_dispatch:
@@ -23,11 +23,15 @@ on:
       java-version:
         description: 'JDK Version'
         required: false
-        default: ""
+        default: "[21]"
       os:
         description: 'System OS'
         required: false
-        default: ""
+        default: "['ubuntu-latest']"
+      job:
+        description: 'Job Name'
+        required: true
+        default: "ci-dynamic"
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
@@ -38,7 +42,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
   
   ci-dynamic:
-    if: inputs.java-version != ''
+    if: github.repository == 'apache/shardingsphere' && github.event.inputs.job == 'ci-dynamic'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
@@ -71,7 +75,7 @@ jobs:
         run: ./mvnw clean package -B -f examples/pom.xml -T1C
   
   ci-jdk8-dynamic:
-    if: github.repository == 'apache/shardingsphere' && contains(github.event.inputs.java-version, '8')
+    if: github.repository == 'apache/shardingsphere' && github.event.inputs.job == 'ci-jdk8-dynamic'
     name: CI - JDK 8 on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
@@ -106,18 +110,18 @@ jobs:
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw test -B -ntp -fae -T1C
-
+  
   ci-native-test:
-    if: github.repository == 'apache/shardingsphere' && contains(github.event.inputs.java-version, 'graalvm')
+    if: github.repository == 'apache/shardingsphere' && github.event.inputs.job == 'ci-native-test'
     name: NativeTest CI - GraalVM CE on ${{ matrix.os }}
     needs: global-environment
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ fromJson(github.event.inputs.os) }}
     timeout-minutes: 90
     strategy:
       max-parallel: 20
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
+        os: ${{ fromJson(github.event.inputs.os) }}
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
