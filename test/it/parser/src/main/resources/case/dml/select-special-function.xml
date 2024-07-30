@@ -2718,9 +2718,14 @@
     <select sql-case-id="select_get_format">
         <projections start-index="7" stop-index="29">
             <expression-projection start-index="7" stop-index="29" text="GET_FORMAT(DATE, 'EUR')">
-                <parameter>
-                    <literal-expression value="EUR" start-index="24" stop-index="28" />
-                </parameter>
+                <function function-name="GET_FORMAT" text="GET_FORMAT(DATE, 'EUR')" start-index="7" stop-index="29">
+                    <parameter>
+                        <literal-expression value="DATE" start-index="18" stop-index="21" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="EUR" start-index="24" stop-index="28" />
+                    </parameter>
+                </function>
             </expression-projection>
         </projections>
     </select>
