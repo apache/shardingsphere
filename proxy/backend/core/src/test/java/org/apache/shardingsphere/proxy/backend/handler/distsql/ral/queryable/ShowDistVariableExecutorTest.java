@@ -22,12 +22,12 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ class ShowDistVariableExecutorTest {
     @Test
     void assertShowCachedConnections() {
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1,
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("CACHED_CONNECTIONS"), contextManager);
         assertThat(actual.size(), is(1));
