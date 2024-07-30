@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
@@ -61,24 +61,22 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof UpdateStatementContext || sqlStatementContext instanceof InsertStatementContext
-                && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent();
+        return (sqlStatementContext instanceof UpdateStatementContext
+                || sqlStatementContext instanceof InsertStatementContext && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent())
+                && encryptRule.findEncryptTable(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).isPresent();
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         String schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             String columnName = each.getColumns().get(0).getIdentifier().getValue();
-            if (encryptTable.get().isEncryptColumn(columnName)) {
-                generateSQLToken(schemaName, encryptTable.get().getTable(), encryptTable.get().getEncryptColumn(columnName), each).ifPresent(result::add);
+            if (encryptTable.isEncryptColumn(columnName)) {
+                generateSQLToken(schemaName, encryptTable.getTable(), encryptTable.getEncryptColumn(columnName), each).ifPresent(result::add);
             }
         }
         return result;
