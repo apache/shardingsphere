@@ -30,6 +30,8 @@ import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +54,7 @@ public final class Bootstrap {
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
         List<String> addresses = bootstrapArgs.getAddresses();
+        checkPort(addresses, port);
         new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.isForce());
         Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
                 .ifPresent(optional -> new Thread(new CDCServer(addresses, optional)).start());
@@ -59,5 +62,13 @@ public final class Bootstrap {
         ShardingSphereProxy proxy = new ShardingSphereProxy();
         bootstrapArgs.getSocketPath().ifPresent(proxy::start);
         proxy.start(port, addresses);
+    }
+    
+    private static void checkPort(final List<String> addresses, final int port) throws IOException {
+        for (String each : addresses) {
+            try (ServerSocket socket = new ServerSocket()) {
+                socket.bind(new InetSocketAddress(each, port));
+            }
+        }
     }
 }
