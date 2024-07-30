@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Dialect projection identifier extractor.
  */
-@RequiredArgsConstructor
-public final class DialectProjectionIdentifierExtractor {
-    
-    private final DatabaseType databaseType;
+public interface DialectProjectionIdentifierExtractor extends DatabaseTypedSPI {
     
     /**
      * Get identifier value.
@@ -40,18 +32,7 @@ public final class DialectProjectionIdentifierExtractor {
      * @param identifierValue identifier value
      * @return identifier value
      */
-    public String getIdentifierValue(final IdentifierValue identifierValue) {
-        if (QuoteCharacter.NONE != identifierValue.getQuoteCharacter()) {
-            return identifierValue.getValue();
-        }
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            return identifierValue.getValue().toLowerCase();
-        }
-        if (databaseType instanceof OracleDatabaseType) {
-            return identifierValue.getValue().toUpperCase();
-        }
-        return identifierValue.getValue();
-    }
+    String getIdentifierValue(IdentifierValue identifierValue);
     
     /**
      * Get column name from function.
@@ -60,15 +41,7 @@ public final class DialectProjectionIdentifierExtractor {
      * @param functionExpression function expression
      * @return column name
      */
-    public String getColumnNameFromFunction(final String functionName, final String functionExpression) {
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            return functionName.toLowerCase();
-        }
-        if (databaseType instanceof OracleDatabaseType) {
-            return functionExpression.replace(" ", "").toUpperCase();
-        }
-        return functionExpression;
-    }
+    String getColumnNameFromFunction(String functionName, String functionExpression);
     
     /**
      * Get column name from expression.
@@ -76,15 +49,7 @@ public final class DialectProjectionIdentifierExtractor {
      * @param expression expression
      * @return column name
      */
-    public String getColumnNameFromExpression(final String expression) {
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            return "?column?";
-        }
-        if (databaseType instanceof OracleDatabaseType) {
-            return expression.replace(" ", "").toUpperCase();
-        }
-        return expression;
-    }
+    String getColumnNameFromExpression(String expression);
     
     /**
      * Get column name from subquery segment.
@@ -92,11 +57,5 @@ public final class DialectProjectionIdentifierExtractor {
      * @param subquerySegment subquery segment
      * @return column name
      */
-    public String getColumnNameFromSubquery(final SubqueryProjectionSegment subquerySegment) {
-        // TODO support postgresql subquery projection
-        if (databaseType instanceof OracleDatabaseType) {
-            return subquerySegment.getText().replace(" ", "").toUpperCase();
-        }
-        return subquerySegment.getText();
-    }
+    String getColumnNameFromSubquery(SubqueryProjectionSegment subquerySegment);
 }

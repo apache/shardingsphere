@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -53,8 +53,8 @@ public final class SubqueryProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        DialectProjectionIdentifierExtractor identifierExtractor = new DialectProjectionIdentifierExtractor(databaseType);
-        return getAlias().isPresent() ? identifierExtractor.getIdentifierValue(getAlias().get()) : identifierExtractor.getColumnNameFromSubquery(subquerySegment);
+        ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
+        return getAlias().isPresent() ? extractEngine.getIdentifierValue(getAlias().get()) : extractEngine.getColumnNameFromSubquery(subquerySegment);
     }
     
     @Override
