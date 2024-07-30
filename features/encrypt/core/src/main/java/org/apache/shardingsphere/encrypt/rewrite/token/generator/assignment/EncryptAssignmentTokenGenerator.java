@@ -52,7 +52,7 @@ public final class EncryptAssignmentTokenGenerator {
     
     /**
      * Generate SQL tokens.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
      * @param setAssignmentSegment set assignment segment
      * @return generated SQL tokens
