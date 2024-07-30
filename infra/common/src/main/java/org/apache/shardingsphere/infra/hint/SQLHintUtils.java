@@ -104,8 +104,8 @@ public final class SQLHintUtils {
     }
     
     private static Map<String, String> getSQLHintKeyValues(final String hintKeyValueText) {
-        Map<String, String> result = new CaseInsensitiveMap<>();
         Collection<String> sqlHints = Splitter.on(SQL_HINT_SPLIT).trimResults().splitToList(hintKeyValueText.trim());
+        Map<String, String> result = new CaseInsensitiveMap<>(sqlHints.size(), 1F);
         for (String each : sqlHints) {
             List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).trimResults().splitToList(each);
             if (SQL_HINT_VALUE_SIZE == hintValues.size()) {
