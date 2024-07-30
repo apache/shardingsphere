@@ -21,15 +21,6 @@ on:
   schedule:
     - cron: '0 18 */1 * *'  # once a day. UTC time
   workflow_dispatch:
-    inputs:
-      java-version:
-        description: 'JDK Version'
-        required: false
-        default: ""
-      os:
-        description: 'System OS'
-        required: false
-        default: ""
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
