@@ -155,9 +155,8 @@ public final class EncryptProjectionTokenGenerator {
     
     private ColumnProjection generateProjection(final EncryptColumn encryptColumn, final ColumnProjection columnProjection, final boolean shorthandProjection) {
         IdentifierValue encryptColumnOwner = shorthandProjection ? columnProjection.getOwner().orElse(null) : null;
-        String encryptColumnName = encryptColumn.getCipher().getName();
-        return new ColumnProjection(encryptColumnOwner, new IdentifierValue(encryptColumnName, columnProjection.getName().getQuoteCharacter()),
-                columnProjection.getAlias().orElse(columnProjection.getName()), databaseType);
+        IdentifierValue cipherColumnName = new IdentifierValue(encryptColumn.getCipher().getName(), columnProjection.getName().getQuoteCharacter());
+        return new ColumnProjection(encryptColumnOwner, cipherColumnName, columnProjection.getAlias().orElse(columnProjection.getName()), databaseType);
     }
     
     private Collection<Projection> generateProjectionsInTableSegmentSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection,
@@ -165,9 +164,9 @@ public final class EncryptProjectionTokenGenerator {
         Collection<Projection> result = new LinkedList<>();
         IdentifierValue encryptColumnOwner = shorthandProjection ? columnProjection.getOwner().orElse(null) : null;
         QuoteCharacter quoteCharacter = columnProjection.getName().getQuoteCharacter();
-        IdentifierValue columnName = new IdentifierValue(encryptColumn.getCipher().getName(), quoteCharacter);
+        IdentifierValue cipherColumnName = new IdentifierValue(encryptColumn.getCipher().getName(), quoteCharacter);
         IdentifierValue alias = SubqueryType.JOIN == subqueryType ? null : columnProjection.getAlias().orElse(columnProjection.getName());
-        result.add(new ColumnProjection(encryptColumnOwner, columnName, alias, databaseType));
+        result.add(new ColumnProjection(encryptColumnOwner, cipherColumnName, alias, databaseType));
         IdentifierValue assistedColumOwner = columnProjection.getOwner().orElse(null);
         encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType)));
         encryptColumn.getLikeQuery().ifPresent(optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType)));
