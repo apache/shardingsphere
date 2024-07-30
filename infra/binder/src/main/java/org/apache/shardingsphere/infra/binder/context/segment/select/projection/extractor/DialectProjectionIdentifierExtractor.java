@@ -41,7 +41,7 @@ public interface DialectProjectionIdentifierExtractor extends DatabaseTypedSPI {
      * @param functionExpression function expression
      * @return column name
      */
-    String getColumnNameFromFunction(final String functionName, final String functionExpression);
+    String getColumnNameFromFunction(String functionName, String functionExpression);
     
     /**
      * Get column name from expression.
@@ -57,5 +57,5 @@ public interface DialectProjectionIdentifierExtractor extends DatabaseTypedSPI {
      * @param subquerySegment subquery segment
      * @return column name
      */
-    String getColumnNameFromSubquery(final SubqueryProjectionSegment subquerySegment);
+    String getColumnNameFromSubquery(SubqueryProjectionSegment subquerySegment);
 }
