@@ -25,8 +25,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -50,19 +50,20 @@ public final class EncryptAssignmentTokenGenerator {
     
     private final String databaseName;
     
+    private final DatabaseType databaseType;
+    
     /**
      * Generate SQL tokens.
      *
-     * @param sqlStatementContext SQL statement context
+     * @param tablesContext SQL statement context
      * @param setAssignmentSegment set assignment segment
      * @return generated SQL tokens
      */
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final SetAssignmentSegment setAssignmentSegment) {
-        String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
+    public Collection<SQLToken> generateSQLTokens(final TablesContext tablesContext, final SetAssignmentSegment setAssignmentSegment) {
+        String tableName = tablesContext.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
-        String schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
+        String schemaName = tablesContext.getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName));
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             String columnName = each.getColumns().get(0).getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
