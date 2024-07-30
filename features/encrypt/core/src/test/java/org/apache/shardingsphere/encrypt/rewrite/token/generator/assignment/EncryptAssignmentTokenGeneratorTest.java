@@ -20,8 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -32,11 +31,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,16 +42,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class EncryptAssignmentTokenGeneratorTest {
     
     private EncryptAssignmentTokenGenerator tokenGenerator;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private UpdateStatementContext updateStatement;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private InsertStatementContext insertStatement;
+    private TablesContext tablesContext;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ColumnAssignmentSegment assignmentSegment;
@@ -65,11 +57,9 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), null);
-        when(updateStatement.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
-        when(updateStatement.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), null, null);
+        when(tablesContext.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).thenReturn("columns");
-        when(insertStatement.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
     }
     
@@ -78,7 +68,6 @@ class EncryptAssignmentTokenGeneratorTest {
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.isEncryptColumn("columns")).thenReturn(true);
         when(encryptTable.getEncryptColumn("columns")).thenReturn(mock(EncryptColumn.class, RETURNS_DEEP_STUBS));
-        when(result.findEncryptTable("table")).thenReturn(Optional.of(encryptTable));
         when(result.getEncryptTable("table")).thenReturn(encryptTable);
         return result;
     }
@@ -86,25 +75,24 @@ class EncryptAssignmentTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(mock(ParameterMarkerExpressionSegment.class));
-        assertThat(tokenGenerator.generateSQLTokens(updateStatement, setAssignmentSegment).size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }
     
     @Test
     void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
-        assertThat(tokenGenerator.generateSQLTokens(updateStatement, setAssignmentSegment).size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }
     
     @Test
     void assertGenerateSQLTokenWithUpdateEmpty() {
         when(assignmentSegment.getValue()).thenReturn(null);
-        assertTrue(tokenGenerator.generateSQLTokens(updateStatement, setAssignmentSegment).isEmpty());
+        assertTrue(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).isEmpty());
     }
     
     @Test
     void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
-        when(insertStatement.getSqlStatement().getSetAssignment()).thenReturn(Optional.of(setAssignmentSegment));
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
-        assertThat(tokenGenerator.generateSQLTokens(insertStatement, setAssignmentSegment).size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
     }
 }
