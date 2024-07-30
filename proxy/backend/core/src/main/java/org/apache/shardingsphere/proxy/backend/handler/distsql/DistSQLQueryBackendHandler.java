@@ -49,7 +49,7 @@ public final class DistSQLQueryBackendHandler implements DistSQLBackendHandler {
     private MergedResult mergedResult;
     
     public DistSQLQueryBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        DistSQLConnectionContext distsqlConnectionContext = new DistSQLConnectionContext(connectionSession.getConnectionContext(),
+        DistSQLConnectionContext distsqlConnectionContext = new DistSQLConnectionContext(connectionSession.getQueryContext(),
                 connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getProtocolType(),
                 connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
         engine = new DistSQLQueryExecuteEngine(sqlStatement, connectionSession.getUsedDatabaseName(), ProxyContext.getInstance().getContextManager(), distsqlConnectionContext);
