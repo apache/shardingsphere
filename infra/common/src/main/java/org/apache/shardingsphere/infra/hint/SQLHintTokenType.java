@@ -30,12 +30,7 @@ public enum SQLHintTokenType {
     /**
      * SQL start hint token.
      */
-    SQL_START_HINT_TOKEN("/* SHARDINGSPHERE_HINT:", "/* ShardingSphere hint:"),
-    
-    /**
-     * SQL hint token.
-     */
-    SQL_HINT_TOKEN("shardingsphere_hint:", "shardingsphere hint:");
+    SQL_START_HINT_TOKEN("SHARDINGSPHERE_HINT", "ShardingSphere hint");
     
     private final String key;
     

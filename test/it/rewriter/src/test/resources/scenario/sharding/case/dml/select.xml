@@ -573,4 +573,9 @@
         <input sql="SELECT COUNT(*) FROM t_account_view WHERE account_id = 1" />
         <output sql="SELECT COUNT(*) FROM t_account_view_1 WHERE account_id = 1" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_dbeaver_sql_hint_and_shardingsphere_sql_hint" db-types="MySQL">
+        <input sql="/* ApplicationName=DBeaver 24.1.0 - SQLEditor &lt;Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=db */ SELECT * FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="/* ApplicationName=DBeaver 24.1.0 - SQLEditor &lt;Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=db */ SELECT * FROM t_account_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
 </rewrite-assertions>
