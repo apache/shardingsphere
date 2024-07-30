@@ -35,7 +35,7 @@ public final class ProjectionUtils {
     
     /**
      * Get identifier value.
-     * 
+     *
      * @param identifierValue identifier value
      * @param databaseType database type
      * @return identifier value
