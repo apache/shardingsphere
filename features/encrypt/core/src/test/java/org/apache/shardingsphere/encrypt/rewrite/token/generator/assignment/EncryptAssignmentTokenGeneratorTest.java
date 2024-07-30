@@ -26,12 +26,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -45,11 +45,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EncryptAssignmentTokenGeneratorTest {
     
-    private final EncryptAssignmentTokenGenerator tokenGenerator = new EncryptAssignmentTokenGenerator();
+    private EncryptAssignmentTokenGenerator tokenGenerator;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private UpdateStatementContext updateStatement;
@@ -65,7 +65,7 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        tokenGenerator.setEncryptRule(mockEncryptRule());
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), null);
         when(updateStatement.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(updateStatement.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
         when(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).thenReturn("columns");
@@ -81,17 +81,6 @@ class EncryptAssignmentTokenGeneratorTest {
         when(result.findEncryptTable("table")).thenReturn(Optional.of(encryptTable));
         when(result.getEncryptTable("table")).thenReturn(encryptTable);
         return result;
-    }
-    
-    @Test
-    void assertIsGenerateSQLTokenUpdateSQLSuccess() {
-        assertTrue(tokenGenerator.isGenerateSQLToken(updateStatement));
-    }
-    
-    @Test
-    void assertIsGenerateSQLTokenUpdateSQLFail() {
-        when(insertStatement.getSqlStatement().getSetAssignment()).thenReturn(Optional.of(setAssignmentSegment));
-        assertTrue(tokenGenerator.isGenerateSQLToken(insertStatement));
     }
     
     @Test
