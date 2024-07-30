@@ -103,4 +103,23 @@ class SQLHintUtilsTest {
         assertTrue(actual.findHintDataSourceName().isPresent());
         assertThat(actual.findHintDataSourceName().get(), is("ds_1"));
     }
+    
+    @Test
+    void assertFindHintDataSourceNameWithDBeaverHint() {
+        HintValueContext actual = SQLHintUtils.extractHint("/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_1*/ SELECT * FROM t_order");
+        assertTrue(actual.findHintDataSourceName().isPresent());
+        assertThat(actual.findHintDataSourceName().get(), is("ds_1"));
+    }
+    
+    @Test
+    void assertRemoveHint() {
+        String actual = SQLHintUtils.removeHint("/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_1*/ SELECT * FROM t_order");
+        assertThat(actual, is("SELECT * FROM t_order"));
+    }
+    
+    @Test
+    void assertRemoveHintWithDBeaverHint() {
+        String actual = SQLHintUtils.removeHint("/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_1*/ SELECT * FROM t_order");
+        assertThat(actual, is("/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */  SELECT * FROM t_order"));
+    }
 }

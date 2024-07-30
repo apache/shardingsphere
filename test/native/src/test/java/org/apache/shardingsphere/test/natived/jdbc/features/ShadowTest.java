@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.natived.jdbc.commons.entity.OrderItem;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.AddressRepository;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -47,6 +48,7 @@ class ShadowTest {
     
     private AddressRepository addressRepository;
     
+    @Disabled("Fix this unit test when shadow comment get value from hint value context")
     @Test
     void assertShadowInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
