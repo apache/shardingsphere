@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler;
 
-import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ class ZookeeperExceptionHandlerTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex, instanceOf(ClusterPersistRepositoryException.class));
+            assertThat(ex, instanceOf(ClusterRepositoryPersistException.class));
         }
     }
 }
