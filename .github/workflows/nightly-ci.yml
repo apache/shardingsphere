@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   ci:
-    if: github.repository == 'apache/shardingsphere' && inputs.java-version == ''
+    if: github.repository == 'apache/shardingsphere'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
