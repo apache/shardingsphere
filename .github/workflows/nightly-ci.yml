@@ -73,7 +73,7 @@ jobs:
         run: ./mvnw clean package -B -f examples/pom.xml -T1C
   
   dynamic-ci:
-    if: github.repository == 'apache/shardingsphere' && inputs.java-version != ''
+    if: inputs.java-version != ''
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
