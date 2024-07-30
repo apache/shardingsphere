@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type;
 
+import org.apache.shardingsphere.test.e2e.engine.context.SingleE2EContext;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -54,29 +57,31 @@ class RQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
-        assertExecute(containerComposer);
+        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
+                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
+        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
+        assertExecute(containerComposer, singleE2EContext);
     }
     
-    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException {
+    private void assertExecute(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
         try (
                 Connection connection = containerComposer.getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
-            statement.execute(containerComposer.getSQL());
+            statement.execute(singleE2EContext.getSQL());
             try (ResultSet resultSet = statement.getResultSet()) {
-                assertResultSet(containerComposer, resultSet);
+                assertResultSet(singleE2EContext, resultSet);
             }
         }
     }
     
-    private void assertResultSet(final SingleE2EContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
-        assertRows(resultSet, containerComposer.getDataSet().getRows());
+    private void assertResultSet(final SingleE2EContext singleE2EContext, final ResultSet resultSet) throws SQLException {
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns(singleE2EContext));
+        assertRows(resultSet, singleE2EContext.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContainerComposer containerComposer) {
+    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContext singleE2EContext) {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : singleE2EContext.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;

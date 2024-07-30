@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.composer;
+package org.apache.shardingsphere.test.e2e.engine.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Single E2E container composer.
- */
 @Getter
-public final class SingleE2EContainerComposer extends E2EContainerComposer {
+public class SingleE2EContext {
     
     private final String sql;
     
@@ -43,20 +40,13 @@ public final class SingleE2EContainerComposer extends E2EContainerComposer {
     
     private final DataSet dataSet;
     
-    private final DataSet generatedKeyDataSet;
-    
-    public SingleE2EContainerComposer(final AssertionTestParameter testParam) {
-        super(testParam);
+    public SingleE2EContext(final AssertionTestParameter testParam) {
         sql = testParam.getTestCaseContext().getTestCase().getSql();
         sqlExecuteType = testParam.getSqlExecuteType();
         assertion = testParam.getAssertion();
         dataSet = null == assertion || null == assertion.getExpectedDataFile()
                 ? null
                 : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), assertion.getExpectedDataFile());
-        generatedKeyDataSet = null == assertion || null == assertion.getExpectedGeneratedKeyDataFile()
-                ? null
-                : DataSetLoader.load(
-                        testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), assertion.getExpectedGeneratedKeyDataFile());
     }
     
     /**
@@ -72,4 +62,5 @@ public final class SingleE2EContainerComposer extends E2EContainerComposer {
         List<Object> params = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return params.isEmpty() ? sql : String.format(sql.replace("%", "ÿ").replace("?", "%s"), params.toArray()).replace("ÿ", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
+    
 }

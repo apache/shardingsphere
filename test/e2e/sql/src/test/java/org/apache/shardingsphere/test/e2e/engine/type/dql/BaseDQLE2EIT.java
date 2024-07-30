@@ -23,7 +23,8 @@ import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.context.SingleE2EContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -63,18 +64,19 @@ public abstract class BaseDQLE2EIT {
     
     private boolean useXMLAsExpectedDataset;
     
-    protected final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
+    protected final void init(final AssertionTestParameter testParam, final E2EContainerComposer containerComposer,
+                              final SingleE2EContext singleE2EContext) throws SQLException, IOException, JAXBException {
         fillDataOnlyOnce(testParam, containerComposer);
-        expectedDataSource = null == containerComposer.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getExpectedDataSourceMap().size()
+        expectedDataSource = null == singleE2EContext.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getExpectedDataSourceMap().size()
                 ? getFirstExpectedDataSource(containerComposer.getExpectedDataSourceMap().values())
-                : containerComposer.getExpectedDataSourceMap().get(containerComposer.getAssertion().getExpectedDataSourceName());
-        useXMLAsExpectedDataset = null != containerComposer.getAssertion().getExpectedDataFile();
+                : containerComposer.getExpectedDataSourceMap().get(singleE2EContext.getAssertion().getExpectedDataSourceName());
+        useXMLAsExpectedDataset = null != singleE2EContext.getAssertion().getExpectedDataFile();
         if (0 != testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds()) {
             Awaitility.await().atMost(Duration.ofMinutes(5L)).pollDelay(testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds(), TimeUnit.SECONDS).until(() -> true);
         }
     }
     
-    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws IOException, JAXBException {
+    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final E2EContainerComposer containerComposer) throws IOException, JAXBException {
         String cacheKey = testParam.getKey() + "-" + System.identityHashCode(containerComposer.getActualDataSourceMap());
         if (!FILLED_SUITES.contains(cacheKey)) {
             synchronized (FILLED_SUITES) {
@@ -98,22 +100,22 @@ public abstract class BaseDQLE2EIT {
         assertRows(actualResultSet, expectedResultSet);
     }
     
-    protected final void assertResultSet(final SingleE2EContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
-        assertRows(resultSet, getIgnoreAssertColumns(containerComposer), containerComposer.getDataSet().getRows());
+    protected final void assertResultSet(final SingleE2EContext singleE2EContext, final ResultSet resultSet) throws SQLException {
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns(singleE2EContext));
+        assertRows(resultSet, getIgnoreAssertColumns(singleE2EContext), singleE2EContext.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContainerComposer containerComposer) {
+    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContext singleE2EContext) {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : singleE2EContext.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;
     }
     
-    private Collection<String> getIgnoreAssertColumns(final SingleE2EContainerComposer containerComposer) {
+    private Collection<String> getIgnoreAssertColumns(final SingleE2EContext singleE2EContext) {
         Collection<String> result = new LinkedList<>();
-        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : singleE2EContext.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns().stream().filter(DataSetColumn::isIgnoreAssertData).map(DataSetColumn::getName).collect(Collectors.toList()));
         }
         return result;
