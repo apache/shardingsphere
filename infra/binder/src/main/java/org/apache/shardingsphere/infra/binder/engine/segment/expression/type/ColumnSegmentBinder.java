@@ -86,7 +86,8 @@ public final class ColumnSegmentBinder {
     private static ColumnSegment copy(final ColumnSegment segment) {
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         segment.getOwner().ifPresent(result::setOwner);
-        result.getParentheses().addAll(segment.getParentheses());
+        segment.getLeftParentheses().ifPresent(result::setLeftParentheses);
+        segment.getRightParentheses().ifPresent(result::setRightParentheses);
         return result;
     }
     
