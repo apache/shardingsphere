@@ -47,6 +47,9 @@ public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     @XmlElement
     private ExpectedColumn column;
     
+    @XmlAttribute(name = "not-null")
+    private boolean notNull;
+    
     @XmlElement(name = "referenced-table")
     private final List<ExpectedSimpleTable> referencedTables = new LinkedList<>();
 }
