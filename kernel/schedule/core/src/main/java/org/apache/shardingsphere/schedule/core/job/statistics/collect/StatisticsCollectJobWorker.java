@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
@@ -30,13 +29,14 @@ import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Statistics collect job worker.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Slf4j
 public final class StatisticsCollectJobWorker {
     
@@ -46,28 +46,26 @@ public final class StatisticsCollectJobWorker {
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
     
+    private static ScheduleJobBootstrap scheduleJobBootstrap;
+    
+    private final ContextManager contextManager;
+    
     /**
      * Initialize job worker.
-     *
-     * @param contextManager context manager
      */
-    public static void initialize(final ContextManager contextManager) {
+    public void initialize() {
         if (WORKER_INITIALIZED.compareAndSet(false, true)) {
-            start(contextManager);
+            ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
+            if ("ZooKeeper".equals(modeConfig.getRepository().getType())) {
+                scheduleJobBootstrap = new ScheduleJobBootstrap(createRegistryCenter(modeConfig), new StatisticsCollectJob(contextManager), createJobConfiguration());
+                scheduleJobBootstrap.schedule();
+                return;
+            }
+            log.warn("Can not collect statistics because of unsupported cluster type: {}", modeConfig.getRepository().getType());
         }
     }
     
-    private static void start(final ContextManager contextManager) {
-        ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
-        if ("ZooKeeper".equals(modeConfig.getRepository().getType())) {
-            ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(createRegistryCenter(modeConfig), new StatisticsCollectJob(contextManager), createJobConfiguration());
-            bootstrap.schedule();
-            return;
-        }
-        log.warn("Can not collect statistics because of unsupported cluster type: {}", modeConfig.getRepository().getType());
-    }
-    
-    private static CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig) {
+    private CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig) {
         ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
         String namespace = String.join("/", repositoryConfig.getNamespace(), ShardingSphereDataNode.getJobPath());
         CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfiguration(repositoryConfig, namespace));
@@ -75,7 +73,7 @@ public final class StatisticsCollectJobWorker {
         return result;
     }
     
-    private static ZookeeperConfiguration getZookeeperConfiguration(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespace) {
+    private ZookeeperConfiguration getZookeeperConfiguration(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespace) {
         // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use SPI to load impl
         ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), namespace);
         Properties props = repositoryConfig.getProps();
@@ -96,7 +94,17 @@ public final class StatisticsCollectJobWorker {
         return result;
     }
     
-    private static JobConfiguration createJobConfiguration() {
+    private JobConfiguration createJobConfiguration() {
         return JobConfiguration.newBuilder(JOB_NAME, 1).cron(CRON_EXPRESSION).overwrite(true).build();
+    }
+    
+    /**
+     * Destroy job worker.
+     */
+    public void destroy() {
+        if (WORKER_INITIALIZED.compareAndSet(true, false)) {
+            Optional.ofNullable(scheduleJobBootstrap).ifPresent(ScheduleJobBootstrap::shutdown);
+            scheduleJobBootstrap = null;
+        }
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
@@ -128,7 +129,9 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
     
     private void refreshShardingSphereStatisticsData() {
         PersistRepository repository = contextManager.getPersistServiceFacade().getRepository();
-        if (repository instanceof ClusterPersistRepository) {
+        if (contextManager.getComputeNodeInstanceContext().isCluster()
+                && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()
+                && repository instanceof ClusterPersistRepository) {
             new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) repository))).asyncRefresh();
         }
     }
