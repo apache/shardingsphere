@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.util.eventbus;
 
 import com.google.common.eventbus.EventBus;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * Event bus context.
@@ -26,11 +25,6 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 public final class EventBusContext {
     
     private final EventBus eventBus = new EventBus();
-    
-    static {
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-    }
     
     /**
      * Register event subscriber.
