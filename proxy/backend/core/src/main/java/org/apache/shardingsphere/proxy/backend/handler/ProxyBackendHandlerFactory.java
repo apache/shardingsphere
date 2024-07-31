@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.checker.ProxyBackendHandlerChecker;
+import org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandlerFactory;
@@ -147,7 +147,7 @@ public final class ProxyBackendHandlerFactory {
         Grantee grantee = connectionSession.getConnectionContext().getGrantee();
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        for (ProxyBackendHandlerChecker each : ShardingSphereServiceLoader.getServiceInstances(ProxyBackendHandlerChecker.class)) {
+        for (SQLExecutionChecker each : ShardingSphereServiceLoader.getServiceInstances(SQLExecutionChecker.class)) {
             each.check(metaData, grantee, queryContext, database);
         }
         return DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
