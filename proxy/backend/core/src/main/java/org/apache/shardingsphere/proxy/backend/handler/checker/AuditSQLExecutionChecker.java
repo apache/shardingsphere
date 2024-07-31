@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.handler.checker;
 
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
+import org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 /**
- * Audit proxy backend handler checker.
+ * Audit SQL execution checker.
  */
-public final class AuditProxyBackendHandlerChecker implements ProxyBackendHandlerChecker {
+public final class AuditSQLExecutionChecker implements SQLExecutionChecker {
     
     @Override
     public void check(final ShardingSphereMetaData metaData, final Grantee grantee, final QueryContext queryContext, final ShardingSphereDatabase database) {
