@@ -21,10 +21,10 @@ import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
  * Authority proxy backend handler checker.
@@ -32,9 +32,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 public final class AuthorityProxyBackendHandlerChecker implements ProxyBackendHandlerChecker {
     
     @Override
-    public void check(final ConnectionSession connectionSession, final QueryContext queryContext, final ShardingSphereDatabase database) {
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee()).isAuthorized(database.getName()),
+    public void check(final ShardingSphereMetaData metaData, final Grantee grantee, final QueryContext queryContext, final ShardingSphereDatabase database) {
+        AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, grantee).isAuthorized(database.getName()),
                 () -> new UnknownDatabaseException(database.getName()));
     }
 }
