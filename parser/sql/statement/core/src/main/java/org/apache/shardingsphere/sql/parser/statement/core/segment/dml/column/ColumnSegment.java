@@ -20,13 +20,12 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,7 +53,9 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private boolean isVariable;
     
-    private List<ParenthesesSegment> parentheses = new LinkedList<>();
+    private ParenthesesSegment leftParentheses;
+    
+    private ParenthesesSegment rightParentheses;
     
     public ColumnSegment(final int startIndex, final int stopIndex, final IdentifierValue identifier) {
         this.startIndex = startIndex;
@@ -98,5 +99,23 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     @Override
     public String getText() {
         return getExpression();
+    }
+    
+    /**
+     * Get left parentheses.
+     *
+     * @return left parentheses
+     */
+    public Optional<ParenthesesSegment> getLeftParentheses() {
+        return Optional.ofNullable(leftParentheses);
+    }
+    
+    /**
+     * Get right parentheses.
+     *
+     * @return right parentheses
+     */
+    public Optional<ParenthesesSegment> getRightParentheses() {
+        return Optional.ofNullable(rightParentheses);
     }
 }

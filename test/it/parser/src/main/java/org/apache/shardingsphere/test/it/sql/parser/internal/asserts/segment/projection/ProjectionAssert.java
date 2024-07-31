@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
@@ -49,7 +48,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.top.ExpectedTopProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
-import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -139,16 +137,31 @@ public final class ProjectionAssert {
         } else {
             IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
         }
-        if (!expected.getParentheses().isEmpty()) {
-            assertThat(expected.getParentheses().size(), is(actual.getColumn().getParentheses().size()));
-            Iterator<ParenthesesSegment> iterator = actual.getColumn().getParentheses().iterator();
-            expected.getParentheses().forEach(each -> ParenthesesAssert.assertIs(assertContext, iterator.next(), each));
-        }
+        assertLeftParentheses(assertContext, actual, expected);
+        assertRightParentheses(assertContext, actual, expected);
         if (null == expected.getOwner()) {
             assertFalse(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
             assertTrue(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
             OwnerAssert.assertIs(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
+        }
+    }
+    
+    private static void assertLeftParentheses(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
+        if (null == expected.getLeftParentheses()) {
+            assertFalse(actual.getColumn().getLeftParentheses().isPresent(), assertContext.getText("Actual left parentheses should not exist."));
+        } else {
+            assertTrue(actual.getColumn().getLeftParentheses().isPresent(), assertContext.getText("Actual left parentheses should exist."));
+            ParenthesesAssert.assertIs(assertContext, actual.getColumn().getLeftParentheses().get(), expected.getLeftParentheses());
+        }
+    }
+    
+    private static void assertRightParentheses(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
+        if (null == expected.getRightParentheses()) {
+            assertFalse(actual.getColumn().getRightParentheses().isPresent(), assertContext.getText("Actual right parentheses should not exist."));
+        } else {
+            assertTrue(actual.getColumn().getRightParentheses().isPresent(), assertContext.getText("Actual right parentheses should exist."));
+            ParenthesesAssert.assertIs(assertContext, actual.getColumn().getRightParentheses().get(), expected.getRightParentheses());
         }
     }
     

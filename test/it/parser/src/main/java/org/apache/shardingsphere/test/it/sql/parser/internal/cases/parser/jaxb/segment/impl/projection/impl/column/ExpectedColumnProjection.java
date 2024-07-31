@@ -26,8 +26,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Expected column projection.
@@ -42,6 +40,9 @@ public final class ExpectedColumnProjection extends AbstractExpectedIdentifierSQ
     @XmlElement
     private ExpectedOwner owner;
     
-    @XmlElement(name = "parentheses")
-    private List<ExpectedParentheses> parentheses = new LinkedList<>();
+    @XmlElement(name = "left-parentheses")
+    private ExpectedParentheses leftParentheses;
+    
+    @XmlElement(name = "right-parentheses")
+    private ExpectedParentheses rightParentheses;
 }

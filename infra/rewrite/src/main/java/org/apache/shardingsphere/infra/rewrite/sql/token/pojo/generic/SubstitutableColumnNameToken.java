@@ -57,8 +57,8 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<Projection> projections, final DatabaseType databaseType) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.lastColumn = false;
-        this.quoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
+        lastColumn = false;
+        quoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
         this.projections = projections;
     }
     
@@ -103,12 +103,14 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     }
     
     private void appendColumnProjection(final ColumnProjection columnProjection, final Map<String, String> logicActualTableNames, final StringBuilder builder) {
+        columnProjection.getLeftParentheses().ifPresent(optional -> builder.append("("));
         if (columnProjection.getOwner().isPresent()) {
             IdentifierValue owner = columnProjection.getOwner().get();
             String actualTableOwner = logicActualTableNames.getOrDefault(owner.getValue(), owner.getValue());
             builder.append(getValueWithQuoteCharacters(new IdentifierValue(actualTableOwner, owner.getQuoteCharacter()))).append('.');
         }
         builder.append(getValueWithQuoteCharacters(columnProjection.getName()));
+        columnProjection.getRightParentheses().ifPresent(optional -> builder.append(")"));
         if (columnProjection.getAlias().isPresent()) {
             builder.append(" AS ").append(getValueWithQuoteCharacters(columnProjection.getAlias().get()));
         }
