@@ -30,7 +30,7 @@ public interface ProxyBackendHandlerChecker {
     
     /**
      * Check.
-     * 
+     *
      * @param connectionSession connection session
      * @param queryContext query context
      * @param database database
