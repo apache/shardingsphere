@@ -99,7 +99,7 @@ public final class EncryptProjectionTokenGenerator {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnProjection.getOriginalTable().getValue());
         if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnName) && !selectStatementContext.containsTableSubquery()) {
             EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
-            Collection<Projection> projections = generateProjections(encryptColumn, columnProjection, selectStatementContext.getSubqueryType(), false);
+            Collection<Projection> projections = generateProjections(encryptColumn, columnProjection, selectStatementContext.getSubqueryType());
             int startIndex = getStartIndex(columnSegment);
             int stopIndex = getStopIndex(columnSegment);
             previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
@@ -117,7 +117,7 @@ public final class EncryptProjectionTokenGenerator {
                 Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnProjection.getOriginalTable().getValue());
                 if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getOriginalColumn().getValue()) && !selectStatementContext.containsTableSubquery()) {
                     EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnProjection.getOriginalColumn().getValue());
-                    projections.addAll(generateProjections(encryptColumn, columnProjection, subqueryType, true));
+                    projections.addAll(generateProjections(encryptColumn, columnProjection, subqueryType));
                     continue;
                 }
             }
@@ -153,7 +153,7 @@ public final class EncryptProjectionTokenGenerator {
     }
     
     private Collection<Projection> generateProjections(final EncryptColumn encryptColumn, final ColumnProjection columnProjection,
-                                                       final SubqueryType subqueryType, final boolean shorthandProjection) {
+                                                       final SubqueryType subqueryType) {
         if (null == subqueryType || SubqueryType.PROJECTION == subqueryType) {
             return Collections.singleton(generateProjection(encryptColumn, columnProjection));
         }
@@ -161,10 +161,10 @@ public final class EncryptProjectionTokenGenerator {
             return generateProjectionsInTableSegmentSubquery(encryptColumn, columnProjection, subqueryType);
         }
         if (SubqueryType.PREDICATE == subqueryType) {
-            return Collections.singleton(generateProjectionInPredicateSubquery(encryptColumn, columnProjection, shorthandProjection));
+            return Collections.singleton(generateProjectionInPredicateSubquery(encryptColumn, columnProjection));
         }
         if (SubqueryType.INSERT_SELECT == subqueryType) {
-            return generateProjectionsInInsertSelectSubquery(encryptColumn, columnProjection, shorthandProjection);
+            return generateProjectionsInInsertSelectSubquery(encryptColumn, columnProjection);
         }
         throw new UnsupportedSQLOperationException(
                 "Projections not in simple select, table subquery, join subquery, predicate subquery and insert select subquery are not supported in encrypt feature.");
@@ -192,7 +192,7 @@ public final class EncryptProjectionTokenGenerator {
         return result;
     }
     
-    private ColumnProjection generateProjectionInPredicateSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection, final boolean shorthandProjection) {
+    private ColumnProjection generateProjectionInPredicateSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
         QuoteCharacter quoteCharacter = columnProjection.getName().getQuoteCharacter();
         ParenthesesSegment leftParentheses = columnProjection.getLeftParentheses().orElse(null);
         ParenthesesSegment rightParentheses = columnProjection.getRightParentheses().orElse(null);
@@ -203,7 +203,7 @@ public final class EncryptProjectionTokenGenerator {
                         databaseType, leftParentheses, rightParentheses));
     }
     
-    private Collection<Projection> generateProjectionsInInsertSelectSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection, final boolean shorthandProjection) {
+    private Collection<Projection> generateProjectionsInInsertSelectSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
         QuoteCharacter quoteCharacter = columnProjection.getName().getQuoteCharacter();
         IdentifierValue columnName = new IdentifierValue(encryptColumn.getCipher().getName(), quoteCharacter);
         Collection<Projection> result = new LinkedList<>();
