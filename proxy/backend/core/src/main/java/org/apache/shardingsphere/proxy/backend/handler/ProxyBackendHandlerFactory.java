@@ -19,8 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.checker.AuthorityChecker;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
@@ -31,11 +29,8 @@ import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -43,6 +38,7 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.checker.ProxyBackendHandlerChecker;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandlerFactory;
@@ -145,13 +141,11 @@ public final class ProxyBackendHandlerFactory {
         if (null == databaseName) {
             return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
         }
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee()).isAuthorized(databaseName),
-                () -> new UnknownDatabaseException(databaseName));
-        SQLAuditEngine.audit(queryContext, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), database);
-        backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
-        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
+        for (ProxyBackendHandlerChecker each : ShardingSphereServiceLoader.getServiceInstances(ProxyBackendHandlerChecker.class)) {
+            each.check(connectionSession, queryContext, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName));
+        }
+        return DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession)
+                .orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
     
     private static void allowExecutingWhenTransactionalError(final DatabaseType databaseType, final ConnectionSession connectionSession, final SQLStatement sqlStatement) throws SQLException {
