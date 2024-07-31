@@ -2644,4 +2644,152 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_format_pico_time">
+        <projections start-index="7" stop-index="28">
+            <expression-projection start-index="7" stop-index="28" text="FORMAT_PICO_TIME(3501)">
+                <expr>
+                    <function function-name="FORMAT_PICO_TIME" text="FORMAT_PICO_TIME(3501)" start-index="7" stop-index="28">
+                        <parameter>
+                            <literal-expression value="3501" start-index="24" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_found_rows">
+        <projections start-index="7" stop-index="18">
+            <expression-projection start-index="7" stop-index="18" text="FOUND_ROWS()">
+                <expr>
+                    <function function-name="FOUND_ROWS" text="FOUND_ROWS()" start-index="7" stop-index="18" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_from_base64">
+        <projections start-index="7" stop-index="35">
+            <expression-projection start-index="7" stop-index="35" text="FROM_BASE64(TO_BASE64('abc'))">
+                <expr>
+                    <function function-name="FROM_BASE64" text="FROM_BASE64(TO_BASE64('abc'))" start-index="7" stop-index="35">
+                        <parameter>
+                            <function function-name="TO_BASE64" text="TO_BASE64('abc')" start-index="19" stop-index="34">
+                                <parameter>
+                                    <literal-expression value="abc" start-index="29" stop-index="33" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_from_days">
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" text="FROM_DAYS(730669)">
+                <expr>
+                    <function function-name="FROM_DAYS" text="FROM_DAYS(730669)" start-index="7" stop-index="23">
+                        <parameter>
+                            <literal-expression value="730669" start-index="17" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_from_unixtime">
+        <projections start-index="7" stop-index="31">
+            <expression-projection start-index="7" stop-index="31" text="FROM_UNIXTIME(1447430881)">
+                <expr>
+                    <function function-name="FROM_UNIXTIME" text="FROM_UNIXTIME(1447430881)" start-index="7" stop-index="31">
+                        <parameter>
+                            <literal-expression value="1447430881" start-index="21" stop-index="30" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_get_format">
+        <projections start-index="7" stop-index="29">
+            <expression-projection start-index="7" stop-index="29" text="GET_FORMAT(DATE, 'EUR')">
+                <function function-name="GET_FORMAT" text="GET_FORMAT(DATE, 'EUR')" start-index="7" stop-index="29">
+                    <parameter>
+                        <literal-expression value="DATE" start-index="18" stop-index="21" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="EUR" start-index="24" stop-index="28" />
+                    </parameter>
+                </function>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_get_lock">
+        <projections start-index="7" stop-index="26">
+            <expression-projection start-index="7" stop-index="26" text="GET_LOCK('lock1',10)">
+                <expr>
+                    <function function-name="GET_LOCK" text="GET_LOCK('lock1',10)" start-index="7" stop-index="26">
+                        <parameter>
+                            <literal-expression value="lock1" start-index="16" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="10" start-index="24" stop-index="25" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_greatest">
+        <projections start-index="7" stop-index="19">
+            <expression-projection start-index="7" stop-index="19" text="GREATEST(2,0)">
+                <expr>
+                    <function function-name="GREATEST" text="GREATEST(2,0)" start-index="7" stop-index="19">
+                        <parameter>
+                            <literal-expression value="2" start-index="16" stop-index="16" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="18" stop-index="18" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_grouping">
+        <from>
+            <simple-table name="t_order" start-index="29" stop-index="35" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="GROUPING(status)" start-index="7" stop-index="22" />
+        </projections>
+        <order-by>
+            <column-item name="status" start-index="46" stop-index="51" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_gtid_subset">
+        <projections start-index="7" stop-index="105">
+            <expression-projection start-index="7" stop-index="105" text="GTID_SUBSET('3E11FA47-71CA-11E1-9E33-C80AA9429562:23','3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57')">
+                <expr>
+                    <function function-name="GTID_SUBSET" text="GTID_SUBSET('3E11FA47-71CA-11E1-9E33-C80AA9429562:23','3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57')" start-index="7" stop-index="105">
+                        <parameter>
+                            <literal-expression value="3E11FA47-71CA-11E1-9E33-C80AA9429562:23" start-index="19" stop-index="59" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57" start-index="61" stop-index="104" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
