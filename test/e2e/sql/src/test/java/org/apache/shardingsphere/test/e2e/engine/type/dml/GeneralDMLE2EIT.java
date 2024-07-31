@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type.dml;
 
-import org.apache.shardingsphere.test.e2e.engine.context.SingleE2EContext;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -52,28 +49,26 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
-                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
-        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
-        init(testParam, containerComposer);
+        E2ETestContext context = new E2ETestContext(testParam);
+        init(testParam);
         int actualUpdateCount;
-        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLExecuteType.Literal == singleE2EContext.getSqlExecuteType()
-                    ? executeUpdateForStatement(singleE2EContext, connection)
-                    : executeUpdateForPreparedStatement(singleE2EContext, connection);
+        try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+            actualUpdateCount = SQLExecuteType.Literal == context.getSqlExecuteType()
+                    ? executeUpdateForStatement(context, connection)
+                    : executeUpdateForPreparedStatement(context, connection);
         }
-        assertDataSet(containerComposer, singleE2EContext, actualUpdateCount, testParam);
+        assertDataSet(context, actualUpdateCount, testParam);
     }
     
-    private int executeUpdateForStatement(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
+    private int executeUpdateForStatement(final E2ETestContext context, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(singleE2EContext.getSQL());
+            return statement.executeUpdate(context.getSQL());
         }
     }
     
-    private int executeUpdateForPreparedStatement(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(singleE2EContext.getSQL())) {
-            for (SQLValue each : singleE2EContext.getAssertion().getSQLValues()) {
+    private int executeUpdateForPreparedStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
+            for (SQLValue each : context.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             return preparedStatement.executeUpdate();
@@ -88,29 +83,27 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
-                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
-        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
-        init(testParam, containerComposer);
+        E2ETestContext context = new E2ETestContext(testParam);
+        init(testParam);
         int actualUpdateCount;
-        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLExecuteType.Literal == singleE2EContext.getSqlExecuteType()
-                    ? executeForStatement(singleE2EContext, connection)
-                    : executeForPreparedStatement(singleE2EContext, connection);
+        try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+            actualUpdateCount = SQLExecuteType.Literal == context.getSqlExecuteType()
+                    ? executeForStatement(context, connection)
+                    : executeForPreparedStatement(context, connection);
         }
-        assertDataSet(containerComposer, singleE2EContext, actualUpdateCount, testParam);
+        assertDataSet(context, actualUpdateCount, testParam);
     }
     
-    private int executeForStatement(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
+    private int executeForStatement(final E2ETestContext context, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse(statement.execute(singleE2EContext.getSQL()), "Not a DML statement.");
+            assertFalse(statement.execute(context.getSQL()), "Not a DML statement.");
             return statement.getUpdateCount();
         }
     }
     
-    private int executeForPreparedStatement(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(singleE2EContext.getSQL())) {
-            for (SQLValue each : singleE2EContext.getAssertion().getSQLValues()) {
+    private int executeForPreparedStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
+            for (SQLValue each : context.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             assertFalse(preparedStatement.execute(), "Not a DML statement.");

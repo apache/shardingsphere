@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
-import org.apache.shardingsphere.test.e2e.engine.context.SingleE2EContext;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -49,7 +48,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.DAL)
-class DALE2EIT {
+class DALE2EIT implements E2EEnvironmentAware {
+    
+    private E2EEnvironmentEngine environmentSetupEngine;
+    
+    @Override
+    public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
+        this.environmentSetupEngine = environmentEngine;
+    }
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -59,42 +65,40 @@ class DALE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
-                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
-        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
-        assertExecute(containerComposer, singleE2EContext);
+        E2ETestContext context = new E2ETestContext(testParam);
+        assertExecute(context);
     }
     
-    private void assertExecute(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
-        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
+    private void assertExecute(final E2ETestContext context) throws SQLException {
+        try (Connection connection = this.environmentSetupEngine.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
-                statement.execute(singleE2EContext.getSQL());
-                assertExecuteResult(singleE2EContext, statement);
+                statement.execute(context.getSQL());
+                assertExecuteResult(context, statement);
             }
         }
     }
     
-    private void assertExecuteResult(final SingleE2EContext singleE2EContext, final Statement statement) throws SQLException {
+    private void assertExecuteResult(final E2ETestContext context, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.getResultSet()) {
-            if (null == singleE2EContext.getAssertion().getAssertionSQL()) {
-                assertResultSet(singleE2EContext, resultSet);
+            if (null == context.getAssertion().getAssertionSQL()) {
+                assertResultSet(context, resultSet);
             } else {
-                statement.execute(singleE2EContext.getAssertion().getAssertionSQL().getSql());
+                statement.execute(context.getAssertion().getAssertionSQL().getSql());
                 try (ResultSet assertionSQLResultSet = statement.getResultSet()) {
-                    assertResultSet(singleE2EContext, assertionSQLResultSet);
+                    assertResultSet(context, assertionSQLResultSet);
                 }
             }
         }
     }
     
-    private void assertResultSet(final SingleE2EContext singleE2EContext, final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns(singleE2EContext));
-        assertRows(resultSet, singleE2EContext.getDataSet().getRows());
+    private void assertResultSet(final E2ETestContext context, final ResultSet resultSet) throws SQLException {
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns(context));
+        assertRows(resultSet, context.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContext singleE2EContext) {
+    private Collection<DataSetColumn> getExpectedColumns(final E2ETestContext context) {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetaData each : singleE2EContext.getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;
@@ -133,7 +137,7 @@ class DALE2EIT {
     }
     
     private void assertDateValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
-        if (E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
+        if (E2ETestContext.NOT_VERIFY_FLAG.equals(expected)) {
             return;
         }
         assertThat(DateTimeFormatterFactory.getTimeFormatter().format(actual.getDate(columnIndex).toLocalDate()), is(expected));

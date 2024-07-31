@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.test.e2e.engine.context.SingleE2EContext;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -52,7 +51,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.RAL)
-class RALE2EIT {
+class RALE2EIT implements E2EEnvironmentAware {
+    
+    private E2EEnvironmentEngine environmentEngine;
+    
+    @Override
+    public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
+        this.environmentEngine = environmentEngine;
+    }
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -62,35 +68,33 @@ class RALE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
-                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
-        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
-        init(containerComposer, singleE2EContext);
-        assertExecute(containerComposer, singleE2EContext);
-        tearDown(containerComposer, singleE2EContext);
+        E2ETestContext context = new E2ETestContext(testParam);
+        init(context);
+        assertExecute(context);
+        tearDown(context);
     }
     
-    private void assertExecute(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
-        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
+    private void assertExecute(final E2ETestContext context) throws SQLException {
+        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
-                assertResultSet(singleE2EContext, statement);
+                assertResultSet(context, statement);
             }
         }
     }
     
-    private void init(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
-        if (null != singleE2EContext.getAssertion().getInitialSQL()) {
-            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-                executeInitSQLs(singleE2EContext, connection);
+    private void init(final E2ETestContext context) throws SQLException {
+        if (null != context.getAssertion().getInitialSQL()) {
+            try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
+                executeInitSQLs(context, connection);
             }
         }
     }
     
-    private void executeInitSQLs(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
-        if (null == singleE2EContext.getAssertion().getInitialSQL().getSql()) {
+    private void executeInitSQLs(final E2ETestContext context, final Connection connection) throws SQLException {
+        if (null == context.getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(singleE2EContext.getAssertion().getInitialSQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(context.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -98,19 +102,19 @@ class RALE2EIT {
         Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
-    private void tearDown(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
-        if (null != singleE2EContext.getAssertion().getDestroySQL()) {
-            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-                executeDestroySQLs(singleE2EContext, connection);
+    private void tearDown(final E2ETestContext context) throws SQLException {
+        if (null != context.getAssertion().getDestroySQL()) {
+            try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
+                executeDestroySQLs(context, connection);
             }
         }
     }
     
-    private void executeDestroySQLs(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
-        if (null == singleE2EContext.getAssertion().getDestroySQL().getSql()) {
+    private void executeDestroySQLs(final E2ETestContext context, final Connection connection) throws SQLException {
+        if (null == context.getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(singleE2EContext.getAssertion().getDestroySQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(context.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -118,39 +122,39 @@ class RALE2EIT {
         Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
-    private void assertResultSet(final SingleE2EContext singleE2EContext, final Statement statement) throws SQLException {
-        if (null == singleE2EContext.getAssertion().getAssertionSQL()) {
-            assertResultSet(singleE2EContext, statement, singleE2EContext.getSQL());
+    private void assertResultSet(final E2ETestContext context, final Statement statement) throws SQLException {
+        if (null == context.getAssertion().getAssertionSQL()) {
+            assertResultSet(context, statement, context.getSQL());
         } else {
-            statement.execute(singleE2EContext.getSQL());
+            statement.execute(context.getSQL());
             Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
-            assertResultSet(singleE2EContext, statement, singleE2EContext.getAssertion().getAssertionSQL().getSql());
+            assertResultSet(context, statement, context.getAssertion().getAssertionSQL().getSql());
         }
     }
     
-    private void assertResultSet(final SingleE2EContext singleE2EContext, final Statement statement, final String sql) throws SQLException {
+    private void assertResultSet(final E2ETestContext context, final Statement statement, final String sql) throws SQLException {
         statement.execute(sql);
         try (ResultSet resultSet = statement.getResultSet()) {
-            assertResultSet(singleE2EContext, resultSet);
+            assertResultSet(context, resultSet);
         }
     }
     
-    private void assertResultSet(final SingleE2EContext singleE2EContext, final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns(singleE2EContext));
-        assertRows(resultSet, getIgnoreAssertColumns(singleE2EContext), singleE2EContext.getDataSet().getRows());
+    private void assertResultSet(final E2ETestContext context, final ResultSet resultSet) throws SQLException {
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns(context));
+        assertRows(resultSet, getIgnoreAssertColumns(context), context.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContext singleE2EContext) {
+    private Collection<DataSetColumn> getExpectedColumns(final E2ETestContext context) {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetaData each : singleE2EContext.getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;
     }
     
-    private Collection<String> getIgnoreAssertColumns(final SingleE2EContext singleE2EContext) {
+    private Collection<String> getIgnoreAssertColumns(final E2ETestContext context) {
         Collection<String> result = new LinkedList<>();
-        for (DataSetMetaData each : singleE2EContext.getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns().stream().filter(DataSetColumn::isIgnoreAssertData).map(DataSetColumn::getName).collect(Collectors.toList()));
         }
         return result;

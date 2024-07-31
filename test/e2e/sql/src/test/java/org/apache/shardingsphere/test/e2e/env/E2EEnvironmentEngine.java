@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.composer;
+package org.apache.shardingsphere.test.e2e.env;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
@@ -45,9 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * E2E container composer.
  */
 @Getter
-public final class E2EContainerComposer {
-    
-    public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
+public final class E2EEnvironmentEngine {
     
     private static final ContainerComposerRegistry CONTAINER_COMPOSER_REGISTRY = new ContainerComposerRegistry();
     
@@ -57,7 +54,6 @@ public final class E2EContainerComposer {
     
     private static final Collection<String> INITIALIZED_SUITES = new HashSet<>();
     
-    @Getter(AccessLevel.NONE)
     private final ContainerComposer containerComposer;
     
     private final Map<String, DataSource> actualDataSourceMap;
@@ -66,7 +62,7 @@ public final class E2EContainerComposer {
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public E2EContainerComposer(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
+    public E2EEnvironmentEngine(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
         containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(key, scenario, databaseType, adapterMode, adapterType);
         containerComposer.start();
         actualDataSourceMap = containerComposer.getActualDataSourceMap();

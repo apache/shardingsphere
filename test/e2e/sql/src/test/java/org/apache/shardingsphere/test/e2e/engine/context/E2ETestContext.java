@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-public class SingleE2EContext {
+public class E2ETestContext {
+    
+    public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     private final String sql;
     
@@ -40,7 +42,7 @@ public class SingleE2EContext {
     
     private final DataSet dataSet;
     
-    public SingleE2EContext(final AssertionTestParameter testParam) {
+    public E2ETestContext(final AssertionTestParameter testParam) {
         sql = testParam.getTestCaseContext().getTestCase().getSql();
         sqlExecuteType = testParam.getSqlExecuteType();
         assertion = testParam.getAssertion();
