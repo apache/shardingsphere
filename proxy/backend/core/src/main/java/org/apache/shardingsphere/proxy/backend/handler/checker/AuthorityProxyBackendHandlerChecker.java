@@ -33,9 +33,6 @@ public final class AuthorityProxyBackendHandlerChecker implements ProxyBackendHa
     
     @Override
     public void check(final ConnectionSession connectionSession, final QueryContext queryContext, final ShardingSphereDatabase database) {
-        if (null == database) {
-            return;
-        }
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee()).isAuthorized(database.getName()),
                 () -> new UnknownDatabaseException(database.getName()));
