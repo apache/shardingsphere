@@ -19,29 +19,28 @@ name: Nightly - E2E SQL Dynamic
 
 on:
   workflow_dispatch:
-    workflow_dispatch:
-      inputs:
-        adapter:
-          description: 'adapter'
-          required: true
-          default: "[ proxy, jdbc ]"
-        mode:
-          description: 'mode'
-          required: true
-          default: "[ Standalone, Cluster ]"
-        database:
-          description: 'database'
-          required: true
-          default: "[ MySQL, PostgreSQL, openGauss ]"
-        scenario:
-          description: 'scenario'
-          required: true
-          default: "[ empty_rules ]"
-        additional-options:
-          description: 'additional-options'
-          required: false
-          default: "[ '' ]"
-          
+    inputs:
+      adapter:
+        description: 'adapter'
+        required: true
+        default: "[ proxy, jdbc ]"
+      mode:
+        description: 'mode'
+        required: true
+        default: "[ Standalone, Cluster ]"
+      database:
+        description: 'database'
+        required: true
+        default: "[ MySQL, PostgreSQL, openGauss ]"
+      scenario:
+        description: 'scenario'
+        required: true
+        default: "[ empty_rules ]"
+      additional-options:
+        description: 'additional-options'
+        required: false
+        default: "[ '' ]"
+        
 concurrency:
   group: e2e-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
