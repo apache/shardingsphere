@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.checker;
 
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -31,9 +32,10 @@ public interface ProxyBackendHandlerChecker {
     /**
      * Check.
      *
+     * @param metaData ShardingSphere meta data
      * @param grantee grantee
      * @param queryContext query context
      * @param database database
      */
-    void check(Grantee grantee, QueryContext queryContext, ShardingSphereDatabase database);
+    void check(ShardingSphereMetaData metaData, Grantee grantee, QueryContext queryContext, ShardingSphereDatabase database);
 }
