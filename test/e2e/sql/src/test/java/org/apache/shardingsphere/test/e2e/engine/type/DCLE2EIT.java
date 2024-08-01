@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type;
 
+import org.apache.shardingsphere.test.e2e.engine.context.SingleE2EContext;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
@@ -48,18 +51,20 @@ class DCLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
+                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
+        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
                         new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType())) {
-            assertExecuteUpdate(containerComposer);
+            assertExecuteUpdate(containerComposer, singleE2EContext);
         }
     }
     
-    private void assertExecuteUpdate(final SingleE2EContainerComposer containerComposer) throws SQLException {
-        String sql = containerComposer.getSQL();
+    private void assertExecuteUpdate(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
+        String sql = singleE2EContext.getSQL();
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
+            if (SQLExecuteType.Literal == singleE2EContext.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
                 }
@@ -79,18 +84,20 @@ class DCLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
+        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
+                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
+        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
                         new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType())) {
-            assertExecute(containerComposer);
+            assertExecute(containerComposer, singleE2EContext);
         }
     }
     
-    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException {
-        String sql = containerComposer.getSQL();
+    private void assertExecute(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
+        String sql = singleE2EContext.getSQL();
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
+            if (SQLExecuteType.Literal == singleE2EContext.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);
                 }

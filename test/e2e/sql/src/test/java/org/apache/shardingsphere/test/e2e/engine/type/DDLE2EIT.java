@@ -20,6 +20,9 @@ package org.apache.shardingsphere.test.e2e.engine.type;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
+import org.apache.shardingsphere.test.e2e.engine.context.SingleE2EContext;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
@@ -27,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -65,28 +68,30 @@ class DDLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
-        init(containerComposer);
+        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
+                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
+        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
+        init(containerComposer, singleE2EContext);
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
-                executeUpdateForStatement(containerComposer, connection);
+            if (SQLExecuteType.Literal == singleE2EContext.getSqlExecuteType()) {
+                executeUpdateForStatement(singleE2EContext, connection);
             } else {
-                executeUpdateForPreparedStatement(containerComposer, connection);
+                executeUpdateForPreparedStatement(singleE2EContext, connection);
             }
-            assertTableMetaData(testParam, containerComposer);
+            assertTableMetaData(testParam, containerComposer, singleE2EContext);
         }
-        tearDown(containerComposer);
+        tearDown(containerComposer, singleE2EContext);
     }
     
-    private void executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
+    private void executeUpdateForStatement(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse(statement.executeUpdate(containerComposer.getSQL()) > 0, "Not a DDL statement.");
+            assertFalse(statement.executeUpdate(singleE2EContext.getSQL()) > 0, "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void executeUpdateForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
+    private void executeUpdateForPreparedStatement(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(singleE2EContext.getSQL())) {
             assertFalse(preparedStatement.executeUpdate() > 0, "Not a DDL statement.");
         }
         waitCompleted();
@@ -100,46 +105,48 @@ class DDLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
-        init(containerComposer);
+        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
+                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
+        SingleE2EContext singleE2EContext = new SingleE2EContext(testParam);
+        init(containerComposer, singleE2EContext);
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
-                executeForStatement(containerComposer, connection);
+            if (SQLExecuteType.Literal == singleE2EContext.getSqlExecuteType()) {
+                executeForStatement(singleE2EContext, connection);
             } else {
-                executeForPreparedStatement(containerComposer, connection);
+                executeForPreparedStatement(singleE2EContext, connection);
             }
-            assertTableMetaData(testParam, containerComposer);
+            assertTableMetaData(testParam, containerComposer, singleE2EContext);
         }
-        tearDown(containerComposer);
+        tearDown(containerComposer, singleE2EContext);
     }
     
-    private void executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
+    private void executeForStatement(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse(statement.execute(containerComposer.getSQL()), "Not a DDL statement.");
+            assertFalse(statement.execute(singleE2EContext.getSQL()), "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void executeForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
+    private void executeForPreparedStatement(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(singleE2EContext.getSQL())) {
             assertFalse(preparedStatement.execute(), "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void init(final SingleE2EContainerComposer containerComposer) throws SQLException {
-        assertNotNull(containerComposer.getAssertion().getInitialSQL(), "Init SQL is required");
-        assertNotNull(containerComposer.getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
+    private void init(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
+        assertNotNull(singleE2EContext.getAssertion().getInitialSQL(), "Init SQL is required");
+        assertNotNull(singleE2EContext.getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-            executeInitSQLs(containerComposer, connection);
+            executeInitSQLs(singleE2EContext, connection);
         }
     }
     
-    private void executeInitSQLs(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
-        if (null == containerComposer.getAssertion().getInitialSQL().getSql()) {
+    private void executeInitSQLs(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
+        if (null == singleE2EContext.getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(singleE2EContext.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -147,19 +154,19 @@ class DDLE2EIT {
         }
     }
     
-    private void tearDown(final SingleE2EContainerComposer containerComposer) throws SQLException {
-        if (null != containerComposer.getAssertion().getDestroySQL()) {
+    private void tearDown(final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
+        if (null != singleE2EContext.getAssertion().getDestroySQL()) {
             try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
-                executeDestroySQLs(containerComposer, connection);
+                executeDestroySQLs(singleE2EContext, connection);
             }
         }
     }
     
-    private void executeDestroySQLs(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
-        if (null == containerComposer.getAssertion().getDestroySQL().getSql()) {
+    private void executeDestroySQLs(final SingleE2EContext singleE2EContext, final Connection connection) throws SQLException {
+        if (null == singleE2EContext.getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(singleE2EContext.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -167,9 +174,9 @@ class DDLE2EIT {
         }
     }
     
-    private void assertTableMetaData(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
-        String tableName = containerComposer.getAssertion().getInitialSQL().getAffectedTable();
-        DataSetMetaData expected = containerComposer.getDataSet().findMetaData(tableName);
+    private void assertTableMetaData(final AssertionTestParameter testParam, final E2EContainerComposer containerComposer, final SingleE2EContext singleE2EContext) throws SQLException {
+        String tableName = singleE2EContext.getAssertion().getInitialSQL().getAffectedTable();
+        DataSetMetaData expected = singleE2EContext.getDataSet().findMetaData(tableName);
         Collection<DataNode> dataNodes = InlineExpressionParserFactory.newInstance(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
             assertNotContainsTable(containerComposer, dataNodes);
@@ -183,7 +190,7 @@ class DDLE2EIT {
         assertIndexMetaData(actualIndexes, expected.getIndexes());
     }
     
-    private void assertNotContainsTable(final SingleE2EContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
+    private void assertNotContainsTable(final E2EContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
             try (Connection connection = containerComposer.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
@@ -195,7 +202,7 @@ class DDLE2EIT {
         assertFalse(connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next(), String.format("Table `%s` should not existed", tableName));
     }
     
-    private List<DataSetColumn> getActualColumns(final SingleE2EContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
+    private List<DataSetColumn> getActualColumns(final E2EContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = containerComposer.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
@@ -220,7 +227,7 @@ class DDLE2EIT {
         }
     }
     
-    private List<DataSetIndex> getActualIndexes(final SingleE2EContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
+    private List<DataSetIndex> getActualIndexes(final E2EContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = containerComposer.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {

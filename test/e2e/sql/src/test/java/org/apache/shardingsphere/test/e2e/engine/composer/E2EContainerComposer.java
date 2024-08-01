@@ -21,13 +21,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.e2e.engine.TotalSuitesCountCalculator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * E2E container composer.
  */
 @Getter
-public abstract class E2EContainerComposer {
+public final class E2EContainerComposer {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
@@ -66,23 +66,22 @@ public abstract class E2EContainerComposer {
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    protected E2EContainerComposer(final E2ETestParameter testParam) {
-        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
-                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
+    public E2EContainerComposer(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
+        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(key, scenario, databaseType, adapterMode, adapterType);
         containerComposer.start();
         actualDataSourceMap = containerComposer.getActualDataSourceMap();
         targetDataSource = containerComposer.getTargetDataSource();
         expectedDataSourceMap = containerComposer.getExpectedDataSourceMap();
-        executeLogicDatabaseInitSQLFileOnlyOnce(testParam, targetDataSource);
+        executeLogicDatabaseInitSQLFileOnlyOnce(key, scenario, databaseType, targetDataSource);
     }
     
     @SneakyThrows({SQLException.class, IOException.class})
-    private void executeLogicDatabaseInitSQLFileOnlyOnce(final E2ETestParameter testParam, final DataSource targetDataSource) {
-        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(testParam.getScenario()).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, testParam.getDatabaseType());
+    private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType, final DataSource targetDataSource) {
+        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
         if (!logicDatabaseInitSQLFile.isPresent()) {
             return;
         }
-        String cacheKey = testParam.getKey() + "-" + System.identityHashCode(targetDataSource);
+        String cacheKey = key + "-" + System.identityHashCode(targetDataSource);
         if (!INITIALIZED_SUITES.contains(cacheKey)) {
             synchronized (INITIALIZED_SUITES) {
                 if (!INITIALIZED_SUITES.contains(cacheKey)) {
