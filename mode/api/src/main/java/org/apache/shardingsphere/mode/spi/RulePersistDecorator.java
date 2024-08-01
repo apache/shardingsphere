@@ -29,6 +29,14 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface RulePersistDecorator extends TypedSPI {
     
     /**
+     * Check whether the rule configuration can be restored.
+     *
+     * @param ruleConfig rule configuration to be checked
+     * @return can be restored or not
+     */
+    boolean canBeRestored(RuleConfiguration ruleConfig);
+    
+    /**
      * Restore rule configuration.
      *
      * @param ruleConfig rule configuration to be restored

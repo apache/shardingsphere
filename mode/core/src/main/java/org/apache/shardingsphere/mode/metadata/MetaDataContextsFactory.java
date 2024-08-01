@@ -61,6 +61,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -89,7 +90,16 @@ public final class MetaDataContextsFactory {
                 : param.getDatabaseConfigs();
         // TODO load global data sources from persist service
         Map<String, DataSource> globalDataSources = param.getGlobalDataSources();
-        Collection<RuleConfiguration> globalRuleConfigs = isDatabaseMetaDataExisted ? persistService.getGlobalRuleService().load() : param.getGlobalRuleConfigs();
+        Collection<RuleConfiguration> globalRuleConfigs;
+        if (isDatabaseMetaDataExisted) {
+            globalRuleConfigs = persistService.getGlobalRuleService().load();
+        } else if (computeNodeInstanceContext.isCluster()) {
+            globalRuleConfigs = getGlobalRuleConfigurations(param.getGlobalRuleConfigs());
+            param.getGlobalRuleConfigs().clear();
+            param.getGlobalRuleConfigs().addAll(globalRuleConfigs);
+        } else {
+            globalRuleConfigs = param.getGlobalRuleConfigs();
+        }
         ConfigurationProperties props = isDatabaseMetaDataExisted ? new ConfigurationProperties(persistService.getPropsService().load()) : new ConfigurationProperties(param.getProps());
         Map<String, ShardingSphereDatabase> databases = isDatabaseMetaDataExisted
                 ? InternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, computeNodeInstanceContext)
@@ -141,6 +151,15 @@ public final class MetaDataContextsFactory {
         if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getStorageUnits().isEmpty()) {
             databaseConfigs.get(databaseName).getDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         }
+    }
+    
+    private static Collection<RuleConfiguration> getGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        for (RuleConfiguration each : globalRuleConfigs) {
+            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each.getClass());
+            result.add(rulePersistDecorator.isPresent() && rulePersistDecorator.get().canBeRestored(each) ? rulePersistDecorator.get().restore(each) : each);
+        }
+        return result;
     }
     
     private static ShardingSphereStatistics initStatistics(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
