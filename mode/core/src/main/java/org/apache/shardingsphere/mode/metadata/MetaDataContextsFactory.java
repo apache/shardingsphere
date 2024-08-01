@@ -108,23 +108,6 @@ public final class MetaDataContextsFactory {
         return result;
     }
     
-    private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        if (!computeNodeInstanceContext.isCluster()) {
-            return;
-        }
-        for (RulePersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RulePersistDecorator.class)) {
-            ShardingSphereRule rule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(each.getRuleType());
-            if (!(rule instanceof GlobalRule)) {
-                continue;
-            }
-            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().removeIf(eachRule -> each.getRuleType().isAssignableFrom(rule.getClass()));
-            RuleConfiguration restoredRuleConfig = each.restore(rule.getConfiguration());
-            ShardingSphereRule rebuiltRule = GlobalRulesBuilder.buildRules(
-                    Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
-            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().add(rebuiltRule);
-        }
-    }
-    
     /**
      * Create meta data contexts.
      *
@@ -199,6 +182,23 @@ public final class MetaDataContextsFactory {
             if (loadedSchemaData.getTableData().containsKey(entry.getKey())) {
                 entry.setValue(loadedSchemaData.getTableData().get(entry.getKey()));
             }
+        }
+    }
+    
+    private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        if (!computeNodeInstanceContext.isCluster()) {
+            return;
+        }
+        for (RulePersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RulePersistDecorator.class)) {
+            ShardingSphereRule rule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(each.getRuleType());
+            if (!(rule instanceof GlobalRule)) {
+                continue;
+            }
+            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().removeIf(eachRule -> each.getRuleType().isAssignableFrom(rule.getClass()));
+            RuleConfiguration restoredRuleConfig = each.restore(rule.getConfiguration());
+            ShardingSphereRule rebuiltRule = GlobalRulesBuilder.buildRules(
+                    Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
+            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().add(rebuiltRule);
         }
     }
     
