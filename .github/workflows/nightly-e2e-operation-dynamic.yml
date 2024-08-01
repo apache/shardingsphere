@@ -23,11 +23,11 @@ on:
       java-version:
         description: 'java-version'
         required: true
-        default: "[ 11, 21 ]"
+        default: "[ '11', '21' ]"
       operation:
         description: 'operation'
         required: true
-        default: "[ transaction, pipeline, showprocesslist ]"
+        default: "[ 'transaction', 'pipeline', 'showprocesslist' ]"
       image:
         description: 'image'
         required: true

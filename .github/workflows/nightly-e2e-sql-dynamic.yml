@@ -23,19 +23,19 @@ on:
       adapter:
         description: 'adapter'
         required: true
-        default: "[ proxy, jdbc ]"
+        default: "[ 'proxy', 'jdbc' ]"
       mode:
         description: 'mode'
         required: true
-        default: "[ Standalone, Cluster ]"
+        default: "[ 'Standalone', 'Cluster' ]"
       database:
         description: 'database'
         required: true
-        default: "[ MySQL, PostgreSQL, openGauss ]"
+        default: "[ 'MySQL', 'PostgreSQL', 'openGauss' ]"
       scenario:
         description: 'scenario'
         required: true
-        default: "[ empty_rules ]"
+        default: "[ 'empty_rules', 'distsql_rdl' ]"
       additional-options:
         description: 'additional-options'
         required: false
