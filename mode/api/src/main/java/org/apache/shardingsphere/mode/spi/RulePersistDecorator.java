@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.spi;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -34,6 +35,13 @@ public interface RulePersistDecorator extends TypedSPI {
      * @return restored rule configuration
      */
     RuleConfiguration restore(RuleConfiguration ruleConfig);
+    
+    /**
+     * Get rule type.
+     *
+     * @return rule type
+     */
+    Class<? extends ShardingSphereRule> getRuleType();
     
     @Override
     Class<? extends RuleConfiguration> getType();
