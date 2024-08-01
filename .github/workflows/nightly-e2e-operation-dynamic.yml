@@ -50,6 +50,7 @@ jobs:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 40
     strategy:
       max-parallel: 20
       fail-fast: false
@@ -66,7 +67,6 @@ jobs:
             image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0" }
           - operation: showprocesslist
             image: { type: "it.docker.mariadb.version", version: "mariadb:11" }
-    timeout-minutes: 40
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4

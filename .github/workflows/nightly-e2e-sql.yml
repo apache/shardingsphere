@@ -39,7 +39,7 @@ jobs:
     name: Build E2E Image
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -68,7 +68,7 @@ jobs:
     needs: [ build-e2e-image, global-environment ]
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     strategy:
       max-parallel: 20
       fail-fast: false
