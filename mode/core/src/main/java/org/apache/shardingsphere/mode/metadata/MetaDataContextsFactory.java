@@ -224,8 +224,7 @@ public final class MetaDataContextsFactory {
     }
     
     private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService) {
-        Collection<RuleConfiguration> globalRuleConfigs = param.getGlobalRuleConfigs();
-        persistService.persistGlobalRuleConfiguration(globalRuleConfigs, param.getProps());
+        persistService.persistGlobalRuleConfiguration(decorateGlobalRuleConfigurations(param.getGlobalRuleConfigs()), param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             persistService.persistConfigurations(entry.getKey(), entry.getValue(),
@@ -233,6 +232,16 @@ public final class MetaDataContextsFactory {
                             .collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                     metadataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         }
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static Collection<RuleConfiguration> decorateGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        for (RuleConfiguration each : globalRuleConfigs) {
+            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each.getClass());
+            result.add(rulePersistDecorator.isPresent() ? rulePersistDecorator.get().decorate(each) : each);
+        }
+        return result;
     }
     
     private static void persistMetaData(final MetaDataContexts metaDataContexts, final MetaDataPersistService persistService) {
