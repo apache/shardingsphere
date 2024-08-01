@@ -24,9 +24,11 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Rule persist decorator.
+ * 
+ * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface RulePersistDecorator extends TypedSPI {
+public interface RulePersistDecorator<T extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check whether the rule configuration can be restored.
@@ -34,7 +36,7 @@ public interface RulePersistDecorator extends TypedSPI {
      * @param ruleConfig rule configuration to be checked
      * @return can be restored or not
      */
-    boolean canBeRestored(RuleConfiguration ruleConfig);
+    boolean canBeRestored(T ruleConfig);
     
     /**
      * Restore rule configuration.
@@ -42,7 +44,7 @@ public interface RulePersistDecorator extends TypedSPI {
      * @param ruleConfig rule configuration to be restored
      * @return restored rule configuration
      */
-    RuleConfiguration restore(RuleConfiguration ruleConfig);
+    RuleConfiguration restore(T ruleConfig);
     
     /**
      * Get rule type.
@@ -52,5 +54,5 @@ public interface RulePersistDecorator extends TypedSPI {
     Class<? extends ShardingSphereRule> getRuleType();
     
     @Override
-    Class<? extends RuleConfiguration> getType();
+    Class<T> getType();
 }
