@@ -23,11 +23,11 @@ on:
       java-version:
         description: 'JDK Version'
         required: false
-        default: "[21]"
+        default: "[ '21' ]"
       os:
         description: 'System OS'
         required: false
-        default: "['ubuntu-latest']"
+        default: "[ 'ubuntu-latest' ]"
       job:
         description: 'Job Name'
         required: true
