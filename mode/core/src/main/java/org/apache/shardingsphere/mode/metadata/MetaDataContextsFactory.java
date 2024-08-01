@@ -44,17 +44,22 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
+import org.apache.shardingsphere.mode.spi.RulePersistDecorator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,7 +99,9 @@ public final class MetaDataContextsFactory {
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props);
         ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
         MetaDataContexts result = new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
-        if (!isDatabaseMetaDataExisted) {
+        if (isDatabaseMetaDataExisted) {
+            restoreRules(result, computeNodeInstanceContext);
+        } else {
             persistDatabaseConfigurations(result, param, persistService);
             persistMetaData(result, persistService);
         }
@@ -175,6 +182,23 @@ public final class MetaDataContextsFactory {
             if (loadedSchemaData.getTableData().containsKey(entry.getKey())) {
                 entry.setValue(loadedSchemaData.getTableData().get(entry.getKey()));
             }
+        }
+    }
+    
+    private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        if (!computeNodeInstanceContext.isCluster()) {
+            return;
+        }
+        for (RulePersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RulePersistDecorator.class)) {
+            ShardingSphereRule rule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(each.getRuleType());
+            if (!(rule instanceof GlobalRule)) {
+                continue;
+            }
+            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().removeIf(eachRule -> each.getRuleType().isAssignableFrom(rule.getClass()));
+            RuleConfiguration restoredRuleConfig = each.restore(rule.getConfiguration());
+            ShardingSphereRule rebuiltRule = GlobalRulesBuilder.buildRules(
+                    Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
+            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().add(rebuiltRule);
         }
     }
     
