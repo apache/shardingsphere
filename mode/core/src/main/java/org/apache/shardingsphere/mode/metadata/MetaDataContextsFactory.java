@@ -153,6 +153,7 @@ public final class MetaDataContextsFactory {
         }
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<RuleConfiguration> getGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (RuleConfiguration each : globalRuleConfigs) {
@@ -204,6 +205,7 @@ public final class MetaDataContextsFactory {
         }
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         if (!computeNodeInstanceContext.isCluster()) {
             return;
