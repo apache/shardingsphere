@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.InvalidVariableValueException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
@@ -31,13 +32,18 @@ import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.spi.RulePersistDecorator;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -101,7 +107,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
             LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+                decorateGlobalRuleConfiguration(contextManager);
             });
         }
     }
@@ -110,9 +116,19 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
             LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+                decorateGlobalRuleConfiguration(contextManager);
             });
         }
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void decorateGlobalRuleConfiguration(final ContextManager contextManager) {
+        Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>();
+        for (RuleConfiguration each : contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations()) {
+            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each);
+            globalRuleConfigs.add(rulePersistDecorator.isPresent() && contextManager.getComputeNodeInstanceContext().isCluster() ? rulePersistDecorator.get().decorate(each) : each);
+        }
+        contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(globalRuleConfigs);
     }
     
     @Override

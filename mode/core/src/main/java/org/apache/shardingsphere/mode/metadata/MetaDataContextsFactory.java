@@ -112,7 +112,7 @@ public final class MetaDataContextsFactory {
         if (isDatabaseMetaDataExisted) {
             restoreRules(result, computeNodeInstanceContext);
         } else {
-            persistDatabaseConfigurations(result, param, persistService);
+            persistDatabaseConfigurations(result, param, persistService, computeNodeInstanceContext);
             persistMetaData(result, persistService);
         }
         return result;
@@ -223,8 +223,9 @@ public final class MetaDataContextsFactory {
         }
     }
     
-    private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService) {
-        persistService.persistGlobalRuleConfiguration(decorateGlobalRuleConfigurations(param.getGlobalRuleConfigs()), param.getProps());
+    private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService,
+                                                      final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        persistService.persistGlobalRuleConfiguration(decorateGlobalRuleConfigurations(param.getGlobalRuleConfigs(), computeNodeInstanceContext), param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             persistService.persistConfigurations(entry.getKey(), entry.getValue(),
@@ -235,11 +236,11 @@ public final class MetaDataContextsFactory {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static Collection<RuleConfiguration> decorateGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
+    private static Collection<RuleConfiguration> decorateGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (RuleConfiguration each : globalRuleConfigs) {
             Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each.getClass());
-            result.add(rulePersistDecorator.isPresent() ? rulePersistDecorator.get().decorate(each) : each);
+            result.add(rulePersistDecorator.isPresent() && computeNodeInstanceContext.isCluster() ? rulePersistDecorator.get().decorate(each) : each);
         }
         return result;
     }
