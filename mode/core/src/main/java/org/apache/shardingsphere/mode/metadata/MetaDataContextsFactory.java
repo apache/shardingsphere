@@ -231,21 +231,21 @@ public final class MetaDataContextsFactory {
      * @param databaseName database name
      * @param internalLoadMetaData internal load meta data
      * @param switchingResource switching resource
-     * @param orginalMetaDataContexts original meta data contexts
+     * @param originalMetaDataContexts original meta data contexts
      * @param metaDataPersistService meta data persist service
      * @param computeNodeInstanceContext compute node instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts createBySwitchResource(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
-                                                          final MetaDataContexts orginalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
+                                                          final MetaDataContexts originalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
                                                           final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         Map<String, ShardingSphereDatabase> changedDatabases =
-                createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, null, orginalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
-        ConfigurationProperties props = orginalMetaDataContexts.getMetaData().getProps();
+                createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, null, originalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
+        ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(orginalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
-        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, orginalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
+        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
     }
     
     /**
@@ -254,21 +254,21 @@ public final class MetaDataContextsFactory {
      * @param databaseName database name
      * @param internalLoadMetaData internal load meta data
      * @param ruleConfigs rule configs
-     * @param orginalMetaDataContexts original meta data contexts
+     * @param originalMetaDataContexts original meta data contexts
      * @param metaDataPersistService meta data persist service
      * @param computeNodeInstanceContext compute node instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts createByAlterRule(final String databaseName, final boolean internalLoadMetaData, final Collection<RuleConfiguration> ruleConfigs,
-                                                     final MetaDataContexts orginalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
+                                                     final MetaDataContexts originalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
                                                      final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         Map<String, ShardingSphereDatabase> changedDatabases =
-                createChangedDatabases(databaseName, internalLoadMetaData, null, ruleConfigs, orginalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
-        ConfigurationProperties props = orginalMetaDataContexts.getMetaData().getProps();
+                createChangedDatabases(databaseName, internalLoadMetaData, null, ruleConfigs, originalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
+        ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(orginalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
-        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, orginalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
+        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
     }
     
     /**
