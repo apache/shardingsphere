@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
@@ -38,10 +39,13 @@ import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDat
 import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.RulePersistDecorator;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -151,11 +155,20 @@ public class MetaDataContextManager {
         Map<String, ShardingSphereDatabase> changedDatabases = MetaDataContextsFactory
                 .createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
-        RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, changedDatabases, props));
+        RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(getGlobalRuleConfigurations(), changedDatabases, props));
         MetaDataContexts result = MetaDataContextsFactory.create(metaDataPersistService,
                 new ShardingSphereMetaData(changedDatabases, metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
         switchingResource.closeStaleDataSources();
+        return result;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private Collection<RuleConfiguration> getGlobalRuleConfigurations() {
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        for (RuleConfiguration each : metaDataPersistService.getGlobalRuleService().load()) {
+            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each);
+            result.add(rulePersistDecorator.isPresent() && computeNodeInstanceContext.isCluster() ? rulePersistDecorator.get().restore(each) : each);
+        }
         return result;
     }
 }
