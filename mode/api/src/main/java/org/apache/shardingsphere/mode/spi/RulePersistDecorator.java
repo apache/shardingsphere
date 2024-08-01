@@ -33,7 +33,7 @@ public interface RulePersistDecorator extends TypedSPI {
      * @param ruleConfig rule configuration to be restored
      * @return restored rule configuration
      */
-    RuleConfiguration restore(final RuleConfiguration ruleConfig);
+    RuleConfiguration restore(RuleConfiguration ruleConfig);
     
     @Override
     Class<? extends RuleConfiguration> getType();
