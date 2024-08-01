@@ -34,7 +34,7 @@ public interface RulePersistDecorator extends TypedSPI {
      * @param ruleConfig rule configuration to be checked
      * @return can be restored or not
      */
-    boolean canBeRestored(final RuleConfiguration ruleConfig);
+    boolean canBeRestored(RuleConfiguration ruleConfig);
     
     /**
      * Restore rule configuration.
