@@ -39,7 +39,7 @@ import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDat
 import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.spi.RulePersistDecorator;
+import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -166,7 +166,7 @@ public class MetaDataContextManager {
     private Collection<RuleConfiguration> getGlobalRuleConfigurations() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (RuleConfiguration each : metaDataPersistService.getGlobalRuleService().load()) {
-            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each);
+            Optional<RuleConfigurationPersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each);
             result.add(rulePersistDecorator.isPresent() && computeNodeInstanceContext.isCluster() ? rulePersistDecorator.get().restore(each) : each);
         }
         return result;

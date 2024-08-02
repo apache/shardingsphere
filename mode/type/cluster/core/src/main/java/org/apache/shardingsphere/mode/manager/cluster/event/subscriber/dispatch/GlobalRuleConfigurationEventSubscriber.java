@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.dispatch.config.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.spi.RulePersistDecorator;
+import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
 import java.util.Optional;
 
@@ -41,6 +41,7 @@ public final class GlobalRuleConfigurationEventSubscriber implements EventSubscr
      *
      * @param event global rule alter event
      */
+    @SuppressWarnings("unchecked")
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
         if (!event.getActiveVersion().equals(
@@ -52,6 +53,6 @@ public final class GlobalRuleConfigurationEventSubscriber implements EventSubscr
             return;
         }
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(
-                TypedSPILoader.findService(RulePersistDecorator.class, ruleConfig.getClass()).map(optional -> optional.restore(ruleConfig.get())).orElse(ruleConfig.get()));
+                TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, ruleConfig.getClass()).map(optional -> optional.restore(ruleConfig.get())).orElse(ruleConfig.get()));
     }
 }

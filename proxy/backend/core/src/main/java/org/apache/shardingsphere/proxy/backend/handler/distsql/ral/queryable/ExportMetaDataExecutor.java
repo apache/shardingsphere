@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.spi.RulePersistDecorator;
+import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
@@ -129,7 +129,7 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
     private Collection<RuleConfiguration> decorateGlobalRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigs) {
-            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each);
+            Optional<RuleConfigurationPersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each);
             result.add(
                     rulePersistDecorator.isPresent() && ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().isCluster() ? rulePersistDecorator.get().decorate(each) : each);
         }
