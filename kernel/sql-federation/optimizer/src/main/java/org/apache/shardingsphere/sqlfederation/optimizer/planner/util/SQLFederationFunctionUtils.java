@@ -23,6 +23,7 @@ import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.MySQLBinFunction;
 import org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.MySQLBitCountFunction;
 
 /**
@@ -53,6 +54,7 @@ public final class SQLFederationFunctionUtils {
         schemaPlus.add("bit_count", ScalarFunctionImpl.create(MySQLBitCountFunction.class, "bitCount"));
         schemaPlus.add("atan", ScalarFunctionImpl.create(SqlFunctions.class, "atan2"));
         schemaPlus.add("atan2", ScalarFunctionImpl.create(SqlFunctions.class, "atan"));
+        schemaPlus.add("bin", ScalarFunctionImpl.create(MySQLBinFunction.class, "bin"));
         if ("pg_catalog".equalsIgnoreCase(schemaName)) {
             schemaPlus.add("pg_catalog.pg_table_is_visible", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "pgTableIsVisible"));
             schemaPlus.add("pg_catalog.pg_get_userbyid", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "pgGetUserById"));

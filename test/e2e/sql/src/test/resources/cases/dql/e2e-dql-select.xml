@@ -347,4 +347,27 @@
                     INNER JOIN (SELECT item_id, order_id FROM t_order_item limit 10) res2 ON res1.order_id = res2.order_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT bin(2), bin(-2), BIN(2.5), BIN(-2.5), BIN('2.5'), BIN('-2.5'), BIN('123hello world'), BIN('-123hello world')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT BIN('18446744073709551615'), BIN('-9223372036854775808'), BIN('-18446744073709551615')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT t4.order_id, t3.item_id, bin(t4.order_id), bin(t3.item_id), t2.* FROM t_product t1
+                    INNER JOIN (
+                                SELECT product_id, bin(type_int), bin(type_smallint), bin(type_decimal), bin(type_float),
+                                bin(type_double), bin(type_bit), bin(type_tinyint), bin(type_mediumint), bin(type_bigint),
+                                bin(type_date), bin(type_time), bin(type_datetime), bin(type_timestamp), bin(type_year),
+                                bin(type_char), bin(type_text), bin(type_varchar), bin(type_longtext), bin(type_longblob),
+                                bin(type_mediumtext), bin(type_mediumblob), bin(type_binary), bin(type_varbinary),
+                                bin(type_blob), bin(type_enum), bin(type_set), bin(type_json), bin(type_unsigned_int),
+                                bin(type_unsigned_bigint), bin(type_unsigned_tinyint), bin(type_unsigned_smallint), bin(type_unsigned_float),
+                                bin(type_unsigned_double), bin(type_unsigned_decimal) FROM t_product_extend
+                               ) t2 ON t1.product_id = t2.product_id
+                    INNER JOIN t_order_item t3 ON t2.product_id = t3.product_id INNER JOIN t_order t4 ON t4.order_id = t3.order_id order by t1.product_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>
