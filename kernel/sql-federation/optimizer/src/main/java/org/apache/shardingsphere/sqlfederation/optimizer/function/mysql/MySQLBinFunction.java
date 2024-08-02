@@ -46,6 +46,9 @@ public final class MySQLBinFunction {
     }
     
     private static String getFirstNumbers(final String value) {
+        if (value.isEmpty()) {
+            return "0";
+        }
         boolean isNegative = '-' == value.charAt(0);
         StringBuilder result = new StringBuilder();
         if (isNegative) {
@@ -58,7 +61,7 @@ public final class MySQLBinFunction {
                 break;
             }
         }
-        if (0 == result.length() || (isNegative && 1 == result.length())) {
+        if (0 == result.length() || isNegative && 1 == result.length()) {
             return "0";
         }
         return result.toString();
