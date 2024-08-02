@@ -41,7 +41,7 @@ public final class MySQLBinFunction {
         if (value instanceof Number && !(value instanceof BigInteger)) {
             return Long.toBinaryString(((Number) value).longValue());
         }
-        BigInteger bigIntegerValue = value instanceof BigInteger ? (BigInteger) value : new BigInteger(getFirstNumbers((String.valueOf(value))));
+        BigInteger bigIntegerValue = value instanceof BigInteger ? (BigInteger) value : new BigInteger(getFirstNumbers(String.valueOf(value)));
         return -1 != bigIntegerValue.signum() ? bigIntegerValue.toString(2) : bigIntegerValue.add(BigInteger.ONE.shiftLeft(Long.SIZE).subtract(BigInteger.ONE)).add(BigInteger.ONE).toString(2);
     }
     
