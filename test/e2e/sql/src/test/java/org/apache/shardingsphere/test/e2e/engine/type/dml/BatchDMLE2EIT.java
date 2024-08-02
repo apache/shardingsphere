@@ -21,10 +21,7 @@ import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAsser
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
@@ -63,16 +60,14 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
-                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
         dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(ScenarioDataPath.Type.ACTUAL),
-                containerComposer.getActualDataSourceMap(), testParam.getDatabaseType());
+                getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();
         int[] actualUpdateCounts;
-        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
+        try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
             actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
         }
-        assertDataSet(containerComposer, actualUpdateCounts, testParam);
+        assertDataSet(actualUpdateCounts, testParam);
     }
     
     private int[] executeBatchForPreparedStatement(final CaseTestParameter testParam, final Connection connection) throws SQLException {
@@ -99,13 +94,11 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2EContainerComposer containerComposer = new E2EContainerComposer(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
-                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
         dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(ScenarioDataPath.Type.ACTUAL),
-                containerComposer.getActualDataSourceMap(), testParam.getDatabaseType());
+                getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();
         try (
-                Connection connection = containerComposer.getTargetDataSource().getConnection();
+                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
             for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
