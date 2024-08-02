@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
-    private final MySQLShowDatabasesStatement showDatabasesStatement;
+    private final ShowDatabasesStatement showDatabasesStatement;
     
     private MergedResult mergedResult;
     
