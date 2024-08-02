@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.comparator.JoinConditionsEncryptorComparator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -61,15 +60,13 @@ import java.util.Optional;
  */
 @HighFrequencyInvocation
 @Setter
-public final class EncryptPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware, EncryptRuleAware, DatabaseTypeAware {
+public final class EncryptPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware, EncryptRuleAware {
     
     private String databaseName;
     
     private Map<String, ShardingSphereSchema> schemas;
     
     private EncryptRule encryptRule;
-    
-    private DatabaseType databaseType;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -78,44 +75,41 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Collection<ColumnSegment> columnSegments = Collections.emptyList();
-        Collection<WhereSegment> whereSegments = Collections.emptyList();
-        Collection<BinaryOperationExpression> joinConditions = Collections.emptyList();
-        if (sqlStatementContext instanceof WhereAvailable) {
-            columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
-            whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
-            joinConditions = ((WhereAvailable) sqlStatementContext).getJoinConditions();
-        }
-        ShardingSpherePreconditions.checkState(JoinConditionsEncryptorComparator.isSame(joinConditions, encryptRule),
+        ShardingSpherePreconditions.checkState(JoinConditionsEncryptorComparator.isSame(((WhereAvailable) sqlStatementContext).getJoinConditions(), encryptRule),
                 () -> new UnsupportedSQLOperationException("Can not use different encryptor in join condition"));
+        Collection<ColumnSegment> columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
+        Collection<WhereSegment> whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
         String defaultSchema = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         ShardingSphereSchema schema = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
         Map<String, String> columnExpressionTableNames = ((TableAvailable) sqlStatementContext).getTablesContext().findTableNames(columnSegments, schema);
-        return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments);
+        return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments, sqlStatementContext.getDatabaseType());
     }
     
-    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnExpressionTableNames, final Collection<WhereSegment> whereSegments) {
+    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments,
+                                                   final Map<String, String> columnExpressionTableNames, final Collection<WhereSegment> whereSegments, final DatabaseType databaseType) {
         Collection<SQLToken> result = new LinkedHashSet<>(columnSegments.size(), 1F);
         for (ColumnSegment each : columnSegments) {
             String tableName = Optional.ofNullable(columnExpressionTableNames.get(each.getExpression())).orElse("");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getIdentifier().getValue())) {
-                result.add(buildSubstitutableColumnNameToken(encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()), each, whereSegments));
+                result.add(buildSubstitutableColumnNameToken(encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()), each, whereSegments, databaseType));
             }
         }
         return result;
     }
     
-    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn, final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments) {
+    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn,
+                                                                           final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments, final DatabaseType databaseType) {
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
         if (includesLike(whereSegments, columnSegment)) {
             LikeQueryColumnItem likeQueryColumnItem = encryptColumn.getLikeQuery().orElseThrow(() -> new UnsupportedEncryptSQLException("LIKE"));
-            return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumnItem.getName(), columnSegment.getIdentifier().getQuoteCharacter()), databaseType);
+            return new SubstitutableColumnNameToken(
+                    startIndex, stopIndex, createColumnProjections(likeQueryColumnItem.getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType), databaseType);
         }
         Collection<Projection> columnProjections =
-                encryptColumn.getAssistedQuery().map(optional -> createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter()))
-                        .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter()));
+                encryptColumn.getAssistedQuery().map(optional -> createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType))
+                        .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType));
         return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType);
     }
     
@@ -145,7 +139,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return columnSegment instanceof ColumnSegment && columnSegment.getStartIndex() == targetColumnSegment.getStartIndex() && columnSegment.getStopIndex() == targetColumnSegment.getStopIndex();
     }
     
-    private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
+    private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter, final DatabaseType databaseType) {
         return Collections.singleton(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType));
     }
 }
