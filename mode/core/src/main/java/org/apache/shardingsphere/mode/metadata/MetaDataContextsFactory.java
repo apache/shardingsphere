@@ -46,13 +46,13 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
@@ -61,7 +61,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -94,7 +93,7 @@ public final class MetaDataContextsFactory {
         if (isDatabaseMetaDataExisted) {
             globalRuleConfigs = persistService.getGlobalRuleService().load();
         } else if (computeNodeInstanceContext.isCluster()) {
-            globalRuleConfigs = getGlobalRuleConfigurations(param.getGlobalRuleConfigs());
+            globalRuleConfigs = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext).tryRestore(param.getGlobalRuleConfigs());
             param.getGlobalRuleConfigs().clear();
             param.getGlobalRuleConfigs().addAll(globalRuleConfigs);
         } else {
@@ -153,16 +152,6 @@ public final class MetaDataContextsFactory {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Collection<RuleConfiguration> getGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Collection<RuleConfiguration> result = new LinkedList<>();
-        for (RuleConfiguration each : globalRuleConfigs) {
-            Optional<RuleConfigurationPersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each.getClass());
-            result.add(rulePersistDecorator.isPresent() && rulePersistDecorator.get().canBeRestored(each) ? rulePersistDecorator.get().restore(each) : each);
-        }
-        return result;
-    }
-    
     private static ShardingSphereStatistics initStatistics(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
         if (metaData.getDatabases().isEmpty()) {
             return new ShardingSphereStatistics();
@@ -212,10 +201,7 @@ public final class MetaDataContextsFactory {
         }
         for (RuleConfigurationPersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationPersistDecorator.class)) {
             ShardingSphereRule rule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(each.getRuleType());
-            if (!(rule instanceof GlobalRule)) {
-                continue;
-            }
-            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().removeIf(eachRule -> each.getRuleType().isAssignableFrom(rule.getClass()));
+            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().removeIf(eachRule -> each.getRuleType() == eachRule.getClass());
             RuleConfiguration restoredRuleConfig = each.restore(rule.getConfiguration());
             ShardingSphereRule rebuiltRule = GlobalRulesBuilder.buildRules(
                     Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
@@ -225,7 +211,8 @@ public final class MetaDataContextsFactory {
     
     private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService,
                                                       final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        persistService.persistGlobalRuleConfiguration(decorateGlobalRuleConfigurations(param.getGlobalRuleConfigs(), computeNodeInstanceContext), param.getProps());
+        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext);
+        persistService.persistGlobalRuleConfiguration(ruleConfigPersistDecorateEngine.decorate(param.getGlobalRuleConfigs()), param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             persistService.persistConfigurations(entry.getKey(), entry.getValue(),
@@ -233,16 +220,6 @@ public final class MetaDataContextsFactory {
                             .collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                     metadataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         }
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static Collection<RuleConfiguration> decorateGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        Collection<RuleConfiguration> result = new LinkedList<>();
-        for (RuleConfiguration each : globalRuleConfigs) {
-            Optional<RuleConfigurationPersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each.getClass());
-            result.add(rulePersistDecorator.isPresent() && computeNodeInstanceContext.isCluster() ? rulePersistDecorator.get().decorate(each) : each);
-        }
-        return result;
     }
     
     private static void persistMetaData(final MetaDataContexts metaDataContexts, final MetaDataPersistService persistService) {

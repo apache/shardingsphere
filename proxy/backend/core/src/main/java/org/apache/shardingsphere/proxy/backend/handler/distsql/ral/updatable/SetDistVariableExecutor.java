@@ -32,18 +32,16 @@ import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
+import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -121,13 +119,10 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         }
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private void decorateGlobalRuleConfiguration(final ContextManager contextManager) {
-        Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>();
-        for (RuleConfiguration each : contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations()) {
-            Optional<RuleConfigurationPersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each);
-            globalRuleConfigs.add(rulePersistDecorator.isPresent() && contextManager.getComputeNodeInstanceContext().isCluster() ? rulePersistDecorator.get().decorate(each) : each);
-        }
+        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(
+                ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext());
+        Collection<RuleConfiguration> globalRuleConfigs = ruleConfigPersistDecorateEngine.decorate(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations());
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(globalRuleConfigs);
     }
     
