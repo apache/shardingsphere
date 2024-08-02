@@ -64,7 +64,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     
     private boolean isClusterMode(final AdapterMode adapterMode, final AdapterType adapterType) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return AdapterMode.CLUSTER == adapterMode && AdapterType.PROXY == adapterType;
+        return AdapterMode.CLUSTER == adapterMode && AdapterType.PROXY == adapterType || AdapterType.PROXY_RANDOM == adapterType;
     }
     
     private ContainerComposer createContainerComposer(final boolean clusterMode, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {

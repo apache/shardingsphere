@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.enums;
+package org.apache.shardingsphere.test.e2e.env.container.atomic;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
 
 /**
- * Adapter type.
+ * Combo IT container.
  */
-@RequiredArgsConstructor
-@Getter
-public enum AdapterType {
+public interface ComboITContainer extends ITContainer {
     
-    JDBC("jdbc"),
-    
-    PROXY("proxy"),
-    
-    PROXY_RANDOM("proxy_random");
-    
-    private final String value;
+    /**
+     * Get containers.
+     *
+     * @return containers
+     */
+    Collection<ITContainer> getContainers();
 }
