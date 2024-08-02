@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
