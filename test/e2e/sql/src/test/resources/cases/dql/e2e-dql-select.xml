@@ -348,7 +348,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT bin(''), SELECT bin(2), bin(-2), BIN(2.5), BIN(-2.5), BIN('2.5'), BIN('-2.5'), BIN('123hello world'), BIN('-123hello world')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+    <test-case sql="SELECT bin(2), bin(-2), BIN(2.5), BIN(-2.5), BIN('2.5'), BIN('-2.5'), BIN('123hello world'), BIN('-123hello world')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
