@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.spi.RulePersistDecorator;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
@@ -43,8 +44,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -75,7 +78,7 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
         ExportedMetaData exportedMetaData = new ExportedMetaData();
         exportedMetaData.setDatabases(getDatabases(proxyContext));
         exportedMetaData.setProps(generatePropsData(metaData.getProps().getProps()));
-        exportedMetaData.setRules(generateRulesData(metaData.getGlobalRuleMetaData().getConfigurations()));
+        exportedMetaData.setRules(generateRulesData(decorateGlobalRuleConfigurations(metaData.getGlobalRuleMetaData().getConfigurations())));
         ExportedClusterInfo exportedClusterInfo = new ExportedClusterInfo();
         exportedClusterInfo.setMetaData(exportedMetaData);
         generateSnapshotInfo(metaData, exportedClusterInfo);
@@ -120,6 +123,17 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
             result.append(YamlEngine.marshal(Collections.singletonList(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
         }
         return result.toString();
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private Collection<RuleConfiguration> decorateGlobalRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        for (RuleConfiguration each : ruleConfigs) {
+            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each);
+            result.add(
+                    rulePersistDecorator.isPresent() && ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().isCluster() ? rulePersistDecorator.get().decorate(each) : each);
+        }
+        return result;
     }
     
     private void generateSnapshotInfo(final ShardingSphereMetaData metaData, final ExportedClusterInfo exportedClusterInfo) {
