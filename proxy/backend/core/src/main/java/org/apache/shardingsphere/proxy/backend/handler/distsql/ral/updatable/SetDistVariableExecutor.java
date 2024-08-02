@@ -37,7 +37,6 @@ import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
@@ -120,8 +119,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
     }
     
     private void decorateGlobalRuleConfiguration(final ContextManager contextManager) {
-        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(
-                ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext());
+        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(contextManager.getComputeNodeInstanceContext());
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigPersistDecorateEngine.decorate(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations());
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(globalRuleConfigs);
     }
