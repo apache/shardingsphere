@@ -23,15 +23,15 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Rule persist decorator.
+ * Rule configuration persist decorator.
  * 
  * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface RulePersistDecorator<T extends RuleConfiguration> extends TypedSPI {
+public interface RuleConfigurationPersistDecorator<T extends RuleConfiguration> extends TypedSPI {
     
     /**
-     * Decorate.
+     * Decorate rule configuration.
      *
      * @param ruleConfig to be decorated rule configuration
      * @return decorated rule configuration

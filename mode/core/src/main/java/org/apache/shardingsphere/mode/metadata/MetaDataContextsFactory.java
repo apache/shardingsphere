@@ -54,7 +54,7 @@ import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
-import org.apache.shardingsphere.mode.spi.RulePersistDecorator;
+import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -157,7 +157,7 @@ public final class MetaDataContextsFactory {
     private static Collection<RuleConfiguration> getGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (RuleConfiguration each : globalRuleConfigs) {
-            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each.getClass());
+            Optional<RuleConfigurationPersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each.getClass());
             result.add(rulePersistDecorator.isPresent() && rulePersistDecorator.get().canBeRestored(each) ? rulePersistDecorator.get().restore(each) : each);
         }
         return result;
@@ -210,7 +210,7 @@ public final class MetaDataContextsFactory {
         if (!computeNodeInstanceContext.isCluster()) {
             return;
         }
-        for (RulePersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RulePersistDecorator.class)) {
+        for (RuleConfigurationPersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationPersistDecorator.class)) {
             ShardingSphereRule rule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(each.getRuleType());
             if (!(rule instanceof GlobalRule)) {
                 continue;
@@ -239,7 +239,7 @@ public final class MetaDataContextsFactory {
     private static Collection<RuleConfiguration> decorateGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (RuleConfiguration each : globalRuleConfigs) {
-            Optional<RulePersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RulePersistDecorator.class, each.getClass());
+            Optional<RuleConfigurationPersistDecorator> rulePersistDecorator = TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each.getClass());
             result.add(rulePersistDecorator.isPresent() && computeNodeInstanceContext.isCluster() ? rulePersistDecorator.get().decorate(each) : each);
         }
         return result;
