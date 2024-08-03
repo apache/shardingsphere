@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.ComposableSQLToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.ComposableSQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collections;

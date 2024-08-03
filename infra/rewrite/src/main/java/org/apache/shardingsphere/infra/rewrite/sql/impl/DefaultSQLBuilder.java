@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 
 import java.util.List;
 

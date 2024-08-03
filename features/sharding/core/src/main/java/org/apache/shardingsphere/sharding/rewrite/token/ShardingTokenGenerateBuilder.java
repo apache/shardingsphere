@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.SQLTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.AggregationDistinctTokenGenerator;
@@ -37,10 +37,10 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.RowCountT
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyAssignmentTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyInsertColumnTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyInsertValuesTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyAssignmentTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyInsertColumnTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 
