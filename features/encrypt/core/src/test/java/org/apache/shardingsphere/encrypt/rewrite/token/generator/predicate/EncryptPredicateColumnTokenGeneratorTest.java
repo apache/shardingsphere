@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
@@ -44,14 +43,12 @@ class EncryptPredicateColumnTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         generator.setSchemas(Collections.emptyMap());
         assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdateStatementContext()));
     }
     
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
-        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         generator.setSchemas(Collections.emptyMap());
         Collection<SQLToken> substitutableColumnNameTokens = generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createUpdateStatementContext());
         assertThat(substitutableColumnNameTokens.size(), is(1));
@@ -60,7 +57,6 @@ class EncryptPredicateColumnTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensWhenJoinConditionUseDifferentEncryptor() {
-        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         generator.setSchemas(Collections.emptyMap());
         assertThrows(UnsupportedSQLOperationException.class, () -> generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createSelectStatementContext()));
     }
