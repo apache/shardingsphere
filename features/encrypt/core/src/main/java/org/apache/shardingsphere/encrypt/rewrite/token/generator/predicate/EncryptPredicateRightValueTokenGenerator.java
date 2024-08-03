@@ -80,14 +80,10 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     }
     
     private SQLToken generateSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition) {
-        List<Object> originalValues = encryptCondition.getValues(parameters);
-        return generateSQLToken(schemaName, encryptTable, encryptCondition, originalValues);
-    }
-    
-    private SQLToken generateSQLToken(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         int startIndex = encryptCondition.getStartIndex();
         int stopIndex = encryptCondition.getStopIndex();
-        Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptTable, encryptCondition, originalValues));
+        Map<Integer, Object> indexValues = getPositionValues(
+                encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptTable, encryptCondition, encryptCondition.getValues(parameters)));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
         if (encryptCondition instanceof EncryptBinaryCondition && ((EncryptBinaryCondition) encryptCondition).getExpressionSegment() instanceof FunctionSegment) {
             return new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex,
