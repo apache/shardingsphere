@@ -57,7 +57,6 @@ class EncryptGroupByItemTokenGeneratorTest {
     @BeforeEach
     void setup() {
         generator.setEncryptRule(mockEncryptRule());
-        generator.setDatabaseName("db_schema");
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         generator.setDatabaseType(databaseType);
     }

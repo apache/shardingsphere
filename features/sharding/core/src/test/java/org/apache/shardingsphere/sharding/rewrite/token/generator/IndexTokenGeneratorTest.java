@@ -72,7 +72,6 @@ class IndexTokenGeneratorTest {
         IndexTokenGenerator generator = new IndexTokenGenerator();
         generator.setShardingRule(mock(ShardingRule.class));
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
-        generator.setDatabaseName("test");
         Collection<SQLToken> actual = generator.generateSQLTokens(alterIndexStatementContext);
         assertThat(actual.size(), is(1));
         assertThat((new LinkedList<>(actual)).get(0).getStartIndex(), is(1));
