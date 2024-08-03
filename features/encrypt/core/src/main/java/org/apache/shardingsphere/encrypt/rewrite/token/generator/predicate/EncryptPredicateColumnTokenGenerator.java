@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
+import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.comparator.JoinConditionsEncryptorComparator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -85,25 +85,26 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments, sqlStatementContext.getDatabaseType());
     }
     
-    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments,
-                                                   final Map<String, String> columnExpressionTableNames, final Collection<WhereSegment> whereSegments, final DatabaseType databaseType) {
+    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnExpressionTableNames,
+                                                   final Collection<WhereSegment> whereSegments, final DatabaseType databaseType) {
         Collection<SQLToken> result = new LinkedHashSet<>(columnSegments.size(), 1F);
         for (ColumnSegment each : columnSegments) {
             String tableName = columnExpressionTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getIdentifier().getValue())) {
-                result.add(buildSubstitutableColumnNameToken(encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()), each, whereSegments, databaseType));
+                result.add(buildSubstitutableColumnNameToken(encryptTable.get().getTable(), encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()), each, whereSegments, databaseType));
             }
         }
         return result;
     }
     
-    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn,
+    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final String tableName, final EncryptColumn encryptColumn,
                                                                            final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments, final DatabaseType databaseType) {
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
         if (includesLike(whereSegments, columnSegment)) {
-            LikeQueryColumnItem likeQueryColumnItem = encryptColumn.getLikeQuery().orElseThrow(() -> new UnsupportedEncryptSQLException("LIKE"));
+            LikeQueryColumnItem likeQueryColumnItem = encryptColumn.getLikeQuery().orElseThrow(
+                    () -> new MissingMatchedEncryptQueryAlgorithmException(tableName, columnSegment.getIdentifier().getValue(), "LIKE"));
             return new SubstitutableColumnNameToken(
                     startIndex, stopIndex, createColumnProjections(likeQueryColumnItem.getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType), databaseType);
         }
