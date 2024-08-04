@@ -63,14 +63,13 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
     public void check(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext) {
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
-                ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
-                check(encryptRule, columnSegment, columnTableNames);
+                checkColumnOrderByItem(encryptRule, schema, sqlStatementContext, ((ColumnOrderByItemSegment) each.getSegment()).getColumn());
             }
         }
     }
     
-    private void check(final EncryptRule encryptRule, final ColumnSegment columnSegment, final Map<String, String> columnTableNames) {
+    private void checkColumnOrderByItem(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext, final ColumnSegment columnSegment) {
+        Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
         String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         String columnName = columnSegment.getIdentifier().getValue();
