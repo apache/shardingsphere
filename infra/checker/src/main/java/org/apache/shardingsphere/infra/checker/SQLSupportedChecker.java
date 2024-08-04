@@ -15,20 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator;
+package org.apache.shardingsphere.infra.checker;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * SQL token generator.
+ * SQL supported checker.
+ * 
+ * @param <T> type of SQL statement context
+ * @param <R> type of ShardingSphere rule
  */
-public interface SQLTokenGenerator {
+public interface SQLSupportedChecker<T extends SQLStatementContext, R extends ShardingSphereRule> {
     
     /**
-     * Judge whether need to generate SQL token.
+     * Judge whether to need check SQL.
      *
-     * @param sqlStatementContext SQL statement context
-     * @return is generate SQL token or not
+     * @param sqlStatementContext to be checked SQL statement context
+     * @return check SQL or not
      */
-    boolean isGenerateSQLToken(SQLStatementContext sqlStatementContext);
+    boolean isCheck(SQLStatementContext sqlStatementContext);
+    
+    /**
+     * Check SQL.
+     *
+     * @param rule rule
+     * @param sqlStatementContext to be checked SQL statement context
+     */
+    void check(R rule, T sqlStatementContext);
 }

@@ -39,8 +39,9 @@
         <module>distsql-handler</module>
         <module>parser</module>
         <module>binder</module>
-        <module>rewrite</module>
+        <module>checker</module>
         <module>route</module>
+        <module>rewrite</module>
         <module>merge</module>
         <module>executor</module>
         <module>session</module>

@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator;
+package org.apache.shardingsphere.infra.checker;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import groovy.lang.Singleton;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
+
+import java.util.Collection;
 
 /**
- * SQL token generator.
+ * SQL supported checkers factory.
+ * 
+ * @param <T> type of rule
  */
-public interface SQLTokenGenerator {
+@Singleton
+public interface SQLSupportedCheckersFactory<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Judge whether need to generate SQL token.
+     * Get SQL supported checkers.
      *
-     * @param sqlStatementContext SQL statement context
-     * @return is generate SQL token or not
+     * @return got checkers
      */
-    boolean isGenerateSQLToken(SQLStatementContext sqlStatementContext);
+    Collection<SQLSupportedChecker<?, T>> getCheckers();
 }

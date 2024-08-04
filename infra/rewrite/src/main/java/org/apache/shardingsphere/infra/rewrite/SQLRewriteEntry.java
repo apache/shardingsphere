@@ -79,14 +79,13 @@ public final class SQLRewriteEntry {
     private SQLRewriteContext createSQLRewriteContext(final QueryContext queryContext, final RouteContext routeContext, final ConnectionContext connectionContext) {
         HintValueContext hintValueContext = queryContext.getHintValueContext();
         SQLRewriteContext result = new SQLRewriteContext(database, queryContext.getSqlStatementContext(), queryContext.getSql(), queryContext.getParameters(), connectionContext, hintValueContext);
-        decorate(decorators, result, routeContext, hintValueContext);
+        decorate(result, routeContext, hintValueContext);
         result.generateSQLTokens();
         return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void decorate(final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext,
-                          final RouteContext routeContext, final HintValueContext hintValueContext) {
+    private void decorate(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final HintValueContext hintValueContext) {
         if (hintValueContext.isSkipSQLRewrite()) {
             return;
         }

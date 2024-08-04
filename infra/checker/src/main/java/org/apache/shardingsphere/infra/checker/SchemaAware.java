@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator;
+package org.apache.shardingsphere.infra.checker;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+
+import java.util.Map;
 
 /**
- * SQL token generator.
+ * Schema aware.
  */
-public interface SQLTokenGenerator {
+public interface SchemaAware {
     
     /**
-     * Judge whether need to generate SQL token.
+     * Set schema meta data.
      *
-     * @param sqlStatementContext SQL statement context
-     * @return is generate SQL token or not
+     * @param schemas schema meta data map
      */
-    boolean isGenerateSQLToken(SQLStatementContext sqlStatementContext);
+    void setSchemas(Map<String, ShardingSphereSchema> schemas);
+    
+    /**
+     * Set default schema.
+     *
+     * @param defaultSchema default schema
+     */
+    void setDefaultSchema(ShardingSphereSchema defaultSchema);
 }
