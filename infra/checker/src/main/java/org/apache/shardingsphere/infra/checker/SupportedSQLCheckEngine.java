@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * SQL supported check engine.
+ * Supported SQL check engine.
  */
-public final class SQLSupportedCheckEngine {
+public final class SupportedSQLCheckEngine {
     
     /**
      * Check SQL.
@@ -44,9 +44,9 @@ public final class SQLSupportedCheckEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void checkSQL(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext, final Map<String, ShardingSphereSchema> schemas, final String databaseName) {
         ShardingSphereSchema schema = getSchema(sqlStatementContext, schemas, databaseName);
-        for (Entry<ShardingSphereRule, SQLSupportedCheckersFactory> entry : OrderedSPILoader.getServices(SQLSupportedCheckersFactory.class, rules).entrySet()) {
-            Collection<SQLSupportedChecker> checkers = entry.getValue().getCheckers();
-            for (SQLSupportedChecker each : checkers) {
+        for (Entry<ShardingSphereRule, SupportedSQLCheckersBuilder> entry : OrderedSPILoader.getServices(SupportedSQLCheckersBuilder.class, rules).entrySet()) {
+            Collection<SupportedSQLChecker> checkers = entry.getValue().getSupportedSQLCheckers();
+            for (SupportedSQLChecker each : checkers) {
                 if (each.isCheck(sqlStatementContext)) {
                     each.check(entry.getKey(), schema, sqlStatementContext);
                 }
@@ -54,7 +54,7 @@ public final class SQLSupportedCheckEngine {
         }
     }
     
-    private static ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext, final Map<String, ShardingSphereSchema> schemas, final String databaseName) {
+    private ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext, final Map<String, ShardingSphereSchema> schemas, final String databaseName) {
         ShardingSphereSchema defaultSchema = schemas.get(new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         return sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(schemas::get).orElse(defaultSchema) : defaultSchema;
     }

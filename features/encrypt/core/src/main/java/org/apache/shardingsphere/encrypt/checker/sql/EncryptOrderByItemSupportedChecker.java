@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.checker.SQLSupportedChecker;
+import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -40,7 +40,7 @@ import java.util.Optional;
  * Order by item supported checker for encrypt.
  */
 @HighFrequencyInvocation
-public final class EncryptOrderByItemSupportedChecker implements SQLSupportedChecker<SelectStatementContext, EncryptRule> {
+public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChecker<SelectStatementContext, EncryptRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {

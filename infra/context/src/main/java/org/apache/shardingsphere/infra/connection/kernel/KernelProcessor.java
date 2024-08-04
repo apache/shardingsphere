@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.connection.kernel;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.checker.SQLSupportedCheckEngine;
+import org.apache.shardingsphere.infra.checker.SupportedSQLCheckEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -60,7 +60,7 @@ public final class KernelProcessor {
     
     private void check(final QueryContext queryContext) {
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
-        new SQLSupportedCheckEngine().checkSQL(database.getRuleMetaData().getRules(), queryContext.getSqlStatementContext(), database.getSchemas(), database.getName());
+        new SupportedSQLCheckEngine().checkSQL(database.getRuleMetaData().getRules(), queryContext.getSqlStatementContext(), database.getSchemas(), database.getName());
     }
     
     private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ConnectionContext connectionContext) {

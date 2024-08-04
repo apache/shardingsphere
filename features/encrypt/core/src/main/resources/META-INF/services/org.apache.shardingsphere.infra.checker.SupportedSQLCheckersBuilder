@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.checker.sql.EncryptSQLSupportedCheckersFactory
+org.apache.shardingsphere.encrypt.checker.sql.EncryptSupportedSQLCheckersBuilder

@@ -17,24 +17,32 @@
 
 package org.apache.shardingsphere.infra.checker;
 
-import groovy.lang.Singleton;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
-
-import java.util.Collection;
 
 /**
- * SQL supported checkers factory.
+ * Supported SQL checker.
  * 
- * @param <T> type of rule
+ * @param <T> type of SQL statement context
+ * @param <R> type of ShardingSphere rule
  */
-@Singleton
-public interface SQLSupportedCheckersFactory<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface SupportedSQLChecker<T extends SQLStatementContext, R extends ShardingSphereRule> {
     
     /**
-     * Get SQL supported checkers.
+     * Judge whether to need check SQL.
      *
-     * @return got checkers
+     * @param sqlStatementContext to be checked SQL statement context
+     * @return check SQL or not
      */
-    Collection<SQLSupportedChecker<?, T>> getCheckers();
+    boolean isCheck(SQLStatementContext sqlStatementContext);
+    
+    /**
+     * Check SQL.
+     *
+     * @param rule rule
+     * @param schema schema
+     * @param sqlStatementContext to be checked SQL statement context
+     */
+    void check(R rule, ShardingSphereSchema schema, T sqlStatementContext);
 }
