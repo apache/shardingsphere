@@ -48,7 +48,7 @@ public final class SQLSupportedCheckEngine {
             Collection<SQLSupportedChecker> checkers = entry.getValue().getCheckers();
             for (SQLSupportedChecker each : checkers) {
                 if (each.isCheck(sqlStatementContext)) {
-                    each.check(entry.getKey(), sqlStatementContext, schema);
+                    each.check(entry.getKey(), schema, sqlStatementContext);
                 }
             }
         }

@@ -41,8 +41,8 @@ public interface SQLSupportedChecker<T extends SQLStatementContext, R extends Sh
      * Check SQL.
      *
      * @param rule rule
-     * @param sqlStatementContext to be checked SQL statement context
      * @param schema schema
+     * @param sqlStatementContext to be checked SQL statement context
      */
-    void check(R rule, T sqlStatementContext, ShardingSphereSchema schema);
+    void check(R rule, ShardingSphereSchema schema, T sqlStatementContext);
 }

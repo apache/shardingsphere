@@ -60,7 +60,7 @@ public final class EncryptOrderByItemSupportedChecker implements SQLSupportedChe
     }
     
     @Override
-    public void check(final EncryptRule encryptRule, final SelectStatementContext sqlStatementContext, final ShardingSphereSchema schema) {
+    public void check(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext) {
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
