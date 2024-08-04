@@ -25,6 +25,9 @@ import java.util.Collection;
 
 /**
  * SQL supported checkers factory.
+ * 
+ * @param <T> type of rule
+ 
  */
 @Singleton
 public interface SQLSupportedCheckersFactory<T extends ShardingSphereRule> extends OrderedSPI<T> {
