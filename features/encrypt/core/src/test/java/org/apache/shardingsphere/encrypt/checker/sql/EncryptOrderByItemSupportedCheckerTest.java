@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.checker.sql;
 
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -48,16 +48,20 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EncryptOrderByItemTokenGeneratorTest {
+class EncryptOrderByItemSupportedCheckerTest {
     
-    private final EncryptOrderByItemTokenGenerator generator = new EncryptOrderByItemTokenGenerator();
+    private final EncryptOrderByItemSupportedChecker checker = new EncryptOrderByItemSupportedChecker();
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(mockEncryptRule());
-        generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        checker.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+    }
+    
+    @Test
+    void assertCheck() {
+        assertThrows(UnsupportedEncryptSQLException.class, () -> checker.check(mockEncryptRule(), buildSelectStatementContext()));
     }
     
     private EncryptRule mockEncryptRule() {
@@ -69,11 +73,6 @@ class EncryptOrderByItemTokenGeneratorTest {
         when(encryptTable.getEncryptColumn("certificate_number")).thenReturn(encryptColumn);
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
-    }
-    
-    @Test
-    void assertGenerateSQLTokens() {
-        assertThrows(UnsupportedEncryptSQLException.class, () -> generator.generateSQLTokens(buildSelectStatementContext()));
     }
     
     private SelectStatementContext buildSelectStatementContext() {

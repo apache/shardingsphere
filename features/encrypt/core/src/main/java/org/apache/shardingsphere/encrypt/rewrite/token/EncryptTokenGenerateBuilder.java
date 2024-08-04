@@ -27,9 +27,6 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAlterTab
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptGroupByItemTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptIndexColumnTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptOrderByItemTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate.EncryptPredicateColumnTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate.EncryptPredicateRightValueTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment.EncryptInsertAssignmentTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment.EncryptUpdateAssignmentTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptInsertCipherNameTokenGenerator;
@@ -37,6 +34,8 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptI
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptInsertDerivedColumnsTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptInsertOnUpdateTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptInsertValuesTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate.EncryptPredicateColumnTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate.EncryptPredicateRightValueTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.EncryptInsertSelectProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.EncryptSelectProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -77,7 +76,6 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         addSQLTokenGenerator(result, new EncryptInsertOnUpdateTokenGenerator());
         addSQLTokenGenerator(result, new EncryptCreateTableTokenGenerator());
         addSQLTokenGenerator(result, new EncryptAlterTableTokenGenerator());
-        addSQLTokenGenerator(result, new EncryptOrderByItemTokenGenerator());
         addSQLTokenGenerator(result, new EncryptGroupByItemTokenGenerator());
         addSQLTokenGenerator(result, new EncryptIndexColumnTokenGenerator());
         return result;
