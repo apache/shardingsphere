@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.projection;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.checker.EncryptProjectionRewriteSupportedChecker;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -76,9 +75,7 @@ public final class EncryptProjectionTokenGenerator {
     
     private Collection<SQLToken> generateSelectSQLTokens(final SelectStatementContext selectStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptProjectionInCombineSegment(encryptRule, selectStatementContext);
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
-            EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptShorthandExpandWithSubqueryStatement(selectStatementContext, each);
             if (each instanceof ColumnProjectionSegment) {
                 generateSQLToken(selectStatementContext, (ColumnProjectionSegment) each).ifPresent(result::add);
             }

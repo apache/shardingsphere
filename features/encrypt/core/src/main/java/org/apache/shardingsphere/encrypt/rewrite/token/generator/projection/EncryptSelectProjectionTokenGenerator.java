@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Projection token generator for encrypt.
+ * Select projection token generator for encrypt.
  */
 @HighFrequencyInvocation
 @Setter

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.checker.sql;
 
+import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptInsertSelectProjectionSupportedChecker;
+import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptSelectProjectionSupportedChecker;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
@@ -33,6 +35,8 @@ public final class EncryptSupportedSQLCheckersBuilder implements SupportedSQLChe
     @Override
     public Collection<SupportedSQLChecker<?, EncryptRule>> getSupportedSQLCheckers() {
         return Arrays.asList(
+                new EncryptSelectProjectionSupportedChecker(),
+                new EncryptInsertSelectProjectionSupportedChecker(),
                 new EncryptPredicateColumnSupportedChecker(),
                 new EncryptOrderByItemSupportedChecker());
     }

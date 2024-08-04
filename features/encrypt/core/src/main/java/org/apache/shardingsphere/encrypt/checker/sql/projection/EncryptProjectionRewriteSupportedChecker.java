@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.checker;
+package org.apache.shardingsphere.encrypt.checker.sql.projection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
