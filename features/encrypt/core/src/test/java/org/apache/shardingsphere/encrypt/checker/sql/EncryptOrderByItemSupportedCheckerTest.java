@@ -37,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -50,18 +49,11 @@ import static org.mockito.Mockito.when;
 
 class EncryptOrderByItemSupportedCheckerTest {
     
-    private final EncryptOrderByItemSupportedChecker checker = new EncryptOrderByItemSupportedChecker();
-    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
-    @BeforeEach
-    void setup() {
-        checker.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
-    }
     
     @Test
     void assertCheck() {
-        assertThrows(UnsupportedEncryptSQLException.class, () -> checker.check(mockEncryptRule(), buildSelectStatementContext()));
+        assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(ShardingSphereSchema.class), buildSelectStatementContext()));
     }
     
     private EncryptRule mockEncryptRule() {

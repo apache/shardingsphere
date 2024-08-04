@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.checker.sql;
 
-import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.Ord
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.checker.SQLSupportedChecker;
-import org.apache.shardingsphere.infra.checker.SchemaAware;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -42,12 +40,7 @@ import java.util.Optional;
  * Order by item supported checker for encrypt.
  */
 @HighFrequencyInvocation
-@Setter
-public final class EncryptOrderByItemSupportedChecker implements SQLSupportedChecker<SelectStatementContext, EncryptRule>, SchemaAware {
-    
-    private Map<String, ShardingSphereSchema> schemas;
-    
-    private ShardingSphereSchema defaultSchema;
+public final class EncryptOrderByItemSupportedChecker implements SQLSupportedChecker<SelectStatementContext, EncryptRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
@@ -67,8 +60,7 @@ public final class EncryptOrderByItemSupportedChecker implements SQLSupportedChe
     }
     
     @Override
-    public void check(final EncryptRule encryptRule, final SelectStatementContext sqlStatementContext) {
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> defaultSchema);
+    public void check(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext) {
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
