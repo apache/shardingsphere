@@ -76,7 +76,7 @@ class ShowStorageUnitExecutorTest {
         nameMap.put(0, "ds_2");
         nameMap.put(1, "ds_1");
         nameMap.put(2, "ds_0");
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null), mock(ContextManager.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null, null), mock(ContextManager.class));
         assertThat(actual.size(), is(3));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         int index = 0;
@@ -99,10 +99,29 @@ class ShowStorageUnitExecutorTest {
     }
     
     @Test
+    void assertGetRowsWithLikePattern() {
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), "_0", null), mock(ContextManager.class));
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow data = actual.iterator().next();
+        assertThat(data.getCell(1), is("ds_0"));
+        assertThat(data.getCell(2), is("MySQL"));
+        assertThat(data.getCell(3), is("localhost"));
+        assertThat(data.getCell(4), is("3307"));
+        assertThat(data.getCell(5), is("ds_0"));
+        assertThat(data.getCell(6), is(""));
+        assertThat(data.getCell(7), is(""));
+        assertThat(data.getCell(8), is(""));
+        assertThat(data.getCell(9), is("100"));
+        assertThat(data.getCell(10), is("10"));
+        assertThat(data.getCell(11), is(""));
+        assertThat(data.getCell(12), is("{\"openedConnections\":[],\"closed\":false}"));
+    }
+    
+    @Test
     void assertGetRowsWithUnusedStorageUnits() {
         RuleMetaData metaData = mockUnusedStorageUnitsRuleMetaData();
         when(database.getRuleMetaData()).thenReturn(metaData);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0), mock(ContextManager.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null, 0), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         LocalDataQueryResultRow data = rowData.next();
