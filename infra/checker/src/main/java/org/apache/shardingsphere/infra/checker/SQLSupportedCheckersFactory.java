@@ -31,7 +31,7 @@ public interface SQLSupportedCheckersFactory<T extends ShardingSphereRule> exten
     
     /**
      * Get SQL supported checkers.
-     * 
+     *
      * @return got checkers
      */
     Collection<SQLSupportedChecker<?, T>> getCheckers();
