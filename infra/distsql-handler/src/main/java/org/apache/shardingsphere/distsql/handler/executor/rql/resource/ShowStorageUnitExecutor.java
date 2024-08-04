@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Show storage unit executor.
@@ -93,6 +95,10 @@ public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowS
             }
         } else {
             result.putAll(database.getResourceMetaData().getStorageUnits());
+        }
+        if (sqlStatement.getLikePattern().isPresent()) {
+            Pattern pattern = Pattern.compile(RegexUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get()), Pattern.CASE_INSENSITIVE);
+            result.keySet().removeIf(each -> !pattern.matcher(each).find());
         }
         return result;
     }
