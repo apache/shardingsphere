@@ -2792,4 +2792,232 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_random_bytes">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="RANDOM_BYTES(16)">
+                <expr>
+                    <function function-name="RANDOM_BYTES" text="RANDOM_BYTES(16)" start-index="7" stop-index="22">
+                        <parameter>
+                            <literal-expression value="16" start-index="20" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_rank">
+        <projections start-index="7" stop-index="12">
+            <expression-projection start-index="7" stop-index="12" text="RANK()">
+                <expr>
+                    <function function-name="RANK" start-index="7" stop-index="12" text="RANK()">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="numbers" start-index="19" stop-index="25" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_regexp_instr">
+        <projections start-index="7" stop-index="40">
+            <expression-projection start-index="7" stop-index="40" text="REGEXP_INSTR('dog cat dog', 'dog')">
+                <expr>
+                    <function function-name="REGEXP_INSTR" text="REGEXP_INSTR('dog cat dog', 'dog')" start-index="7" stop-index="40">
+                        <parameter>
+                            <literal-expression value="dog cat dog" start-index="20" stop-index="32" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="dog" start-index="35" stop-index="39" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_regexp_like">
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="REGEXP_LIKE('CamelCase', 'CAMELCASE')">
+                <expr>
+                    <function function-name="REGEXP_LIKE" text="REGEXP_LIKE('CamelCase', 'CAMELCASE')" start-index="7" stop-index="43">
+                        <parameter>
+                            <literal-expression value="CamelCase" start-index="19" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="CAMELCASE" start-index="32" stop-index="42" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_regexp_replace">
+        <projections start-index="7" stop-index="39">
+            <expression-projection start-index="7" stop-index="39" text="REGEXP_REPLACE('a b c', 'b', 'X')">
+                <expr>
+                    <function function-name="REGEXP_REPLACE" text="REGEXP_REPLACE('a b c', 'b', 'X')" start-index="7" stop-index="39">
+                        <parameter>
+                            <literal-expression value="a b c" start-index="22" stop-index="28" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="b" start-index="31" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="X" start-index="36" stop-index="38" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_regexp_substr">
+        <projections start-index="7" stop-index="44">
+            <expression-projection start-index="7" stop-index="44" text="REGEXP_SUBSTR('abc def ghi', '[a-z]+')">
+                <expr>
+                    <function function-name="REGEXP_SUBSTR" text="REGEXP_SUBSTR('abc def ghi', '[a-z]+')" start-index="7" stop-index="44">
+                        <parameter>
+                            <literal-expression value="abc def ghi" start-index="21" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="[a-z]+" start-index="36" stop-index="43" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_release_lock">
+        <projections start-index="7" stop-index="27">
+            <expression-projection start-index="7" stop-index="27" text="RELEASE_LOCK('lock1')">
+                <expr>
+                    <function function-name="RELEASE_LOCK" text="RELEASE_LOCK('lock1')" start-index="7" stop-index="27">
+                        <parameter>
+                            <literal-expression value="lock1" start-index="20" stop-index="26" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_release_all_locks">
+        <projections start-index="7" stop-index="25">
+            <expression-projection start-index="7" stop-index="25" text="RELEASE_ALL_LOCKS()">
+                <expr>
+                    <function function-name="RELEASE_ALL_LOCKS" text="RELEASE_ALL_LOCKS()" start-index="7" stop-index="25">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_repeat">
+        <projections start-index="7" stop-index="24">
+            <expression-projection start-index="7" stop-index="24" text="REPEAT('MySQL', 3)">
+                <expr>
+                    <function function-name="REPEAT" text="REPEAT('MySQL', 3)" start-index="7" stop-index="24">
+                        <parameter>
+                            <literal-expression value="MySQL" start-index="14" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="3" start-index="23" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_replace">
+        <projections start-index="7" stop-index="41">
+            <expression-projection start-index="7" stop-index="41" text="REPLACE('www.mysql.com', 'w', 'Ww')">
+                <expr>
+                    <function function-name="REPLACE" text="REPLACE('www.mysql.com', 'w', 'Ww')" start-index="7" stop-index="41">
+                        <parameter>
+                            <literal-expression value="www.mysql.com" start-index="15" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="w" start-index="32" stop-index="34" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Ww" start-index="37" stop-index="40" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_reverse">
+        <projections start-index="7" stop-index="20">
+            <expression-projection start-index="7" stop-index="20" text="REVERSE('abc')">
+                <expr>
+                    <function function-name="REVERSE" text="REVERSE('abc')" start-index="7" stop-index="20">
+                        <parameter>
+                            <literal-expression value="abc" start-index="15" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_right">
+        <projections start-index="7" stop-index="27">
+            <expression-projection start-index="7" stop-index="27" text="RIGHT('foobarbar', 4)">
+                <expr>
+                    <function function-name="RIGHT" text="RIGHT('foobarbar', 4)" start-index="7" stop-index="27">
+                        <parameter>
+                            <literal-expression value="foobarbar" start-index="13" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="4" start-index="26" stop-index="26" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_roles_graphml">
+        <projections start-index="7" stop-index="21">
+            <expression-projection start-index="7" stop-index="21" text="ROLES_GRAPHML()">
+                <expr>
+                    <function function-name="ROLES_GRAPHML" text="ROLES_GRAPHML()" start-index="7" stop-index="21">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_round">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="ROUND(1.58)">
+                <expr>
+                    <function function-name="ROUND" text="ROUND(1.58)" start-index="7" stop-index="17">
+                        <parameter>
+                            <literal-expression value="1.58" start-index="13" stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_row_count">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="ROW_COUNT()">
+                <expr>
+                    <function function-name="ROW_COUNT" text="ROW_COUNT()" start-index="7" stop-index="17">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

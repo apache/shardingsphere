@@ -165,4 +165,19 @@
     <sql-case id="select_greatest" value="SELECT GREATEST(2,0)" db-types="MySQL" />
     <sql-case id="select_grouping" value="SELECT GROUPING(status) FROM t_order order by status" db-types="MySQL" />
     <sql-case id="select_gtid_subset" value="SELECT GTID_SUBSET('3E11FA47-71CA-11E1-9E33-C80AA9429562:23','3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57')" db-types="MySQL" />
+    <sql-case id="select_random_bytes" value="SELECT RANDOM_BYTES(16)" db-types="MySQL" />
+    <sql-case id="select_rank" value="SELECT RANK() FROM numbers" db-types="MySQL" />
+    <sql-case id="select_regexp_instr" value="SELECT REGEXP_INSTR('dog cat dog', 'dog')" db-types="MySQL" />
+    <sql-case id="select_regexp_like" value="SELECT REGEXP_LIKE('CamelCase', 'CAMELCASE')" db-types="MySQL" />
+    <sql-case id="select_regexp_replace" value="SELECT REGEXP_REPLACE('a b c', 'b', 'X')" db-types="MySQL" />
+    <sql-case id="select_regexp_substr" value="SELECT REGEXP_SUBSTR('abc def ghi', '[a-z]+')" db-types="MySQL" />
+    <sql-case id="select_release_lock" value="SELECT RELEASE_LOCK('lock1')" db-types="MySQL" />
+    <sql-case id="select_release_all_locks" value="SELECT RELEASE_ALL_LOCKS()" db-types="MySQL" />
+    <sql-case id="select_repeat" value="SELECT REPEAT('MySQL', 3)" db-types="MySQL" />
+    <sql-case id="select_replace" value="SELECT REPLACE('www.mysql.com', 'w', 'Ww')" db-types="MySQL" />
+    <sql-case id="select_reverse" value="SELECT REVERSE('abc')" db-types="MySQL" />
+    <sql-case id="select_right" value="SELECT RIGHT('foobarbar', 4)" db-types="MySQL" />
+    <sql-case id="select_roles_graphml" value="SELECT ROLES_GRAPHML()" db-types="MySQL" />
+    <sql-case id="select_round" value="SELECT ROUND(1.58)" db-types="MySQL" />
+    <sql-case id="select_row_count" value="SELECT ROW_COUNT()" db-types="MySQL" />
 </sql-cases>
