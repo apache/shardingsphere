@@ -65,18 +65,16 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
                 Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
-                check(encryptRule, Collections.singleton(columnSegment), columnTableNames);
+                check(encryptRule, columnSegment, columnTableNames);
             }
         }
     }
     
-    private void check(final EncryptRule encryptRule, final Collection<ColumnSegment> columnSegments, final Map<String, String> columnTableNames) {
-        for (ColumnSegment each : columnSegments) {
-            String tableName = columnTableNames.getOrDefault(each.getExpression(), "");
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            String columnName = each.getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName), () -> new UnsupportedEncryptSQLException("ORDER BY"));
-        }
+    private void check(final EncryptRule encryptRule, final ColumnSegment columnSegment, final Map<String, String> columnTableNames) {
+        String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        String columnName = columnSegment.getIdentifier().getValue();
+        ShardingSpherePreconditions.checkState(!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName), () -> new UnsupportedEncryptSQLException("ORDER BY"));
     }
     
     private Collection<OrderByItem> getOrderByItems(final SelectStatementContext sqlStatementContext) {
