@@ -22,8 +22,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Encrypt SQL supported checker factory.
@@ -32,7 +32,9 @@ public final class EncryptSupportedSQLCheckersBuilder implements SupportedSQLChe
     
     @Override
     public Collection<SupportedSQLChecker<?, EncryptRule>> getSupportedSQLCheckers() {
-        return Collections.singleton(new EncryptOrderByItemSupportedChecker());
+        return Arrays.asList(
+                new EncryptPredicateColumnSupportedChecker(),
+                new EncryptOrderByItemSupportedChecker());
     }
     
     @Override
