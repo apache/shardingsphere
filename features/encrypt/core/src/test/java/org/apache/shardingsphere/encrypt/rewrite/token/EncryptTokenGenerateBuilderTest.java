@@ -60,7 +60,7 @@ class EncryptTokenGenerateBuilderTest {
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
         EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(encryptRule, selectStatementContext, Collections.emptyList(), DefaultDatabase.LOGIC_NAME);
         Collection<SQLTokenGenerator> sqlTokenGenerators = encryptTokenGenerateBuilder.getSQLTokenGenerators();
-        assertThat(sqlTokenGenerators.size(), is(2));
+        assertThat(sqlTokenGenerators.size(), is(1));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator item1 = iterator.next();
         assertThat(item1, instanceOf(EncryptSelectProjectionTokenGenerator.class));
