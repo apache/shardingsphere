@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptOrderByItemTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.EncryptSelectProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
@@ -66,9 +65,6 @@ class EncryptTokenGenerateBuilderTest {
         SQLTokenGenerator item1 = iterator.next();
         assertThat(item1, instanceOf(EncryptSelectProjectionTokenGenerator.class));
         assertSQLTokenGenerator(item1);
-        SQLTokenGenerator item2 = iterator.next();
-        assertThat(item2, instanceOf(EncryptOrderByItemTokenGenerator.class));
-        assertSQLTokenGenerator(item2);
     }
     
     private void assertSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) {
