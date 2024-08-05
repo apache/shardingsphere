@@ -48,8 +48,10 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.sqlfederation.optimizer.function.SQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.view.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.converter.EnumerableModifyConverterRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.converter.EnumerableScanConverterRule;
@@ -198,12 +200,14 @@ public final class SQLFederationPlannerUtils {
      * @param schema schema
      * @param relDataTypeFactory rel data type factory
      * @param connectionConfig connection config
+     * @param databaseType database type
      * @return calcite catalog reader
      */
-    public static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+    public static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig,
+                                                           final DatabaseType databaseType) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, schema);
-        SQLFederationFunctionUtils.registryUserDefinedFunction(schemaName, rootSchema.plus());
+        DatabaseTypedSPILoader.findService(SQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(rootSchema.plus(), schemaName));
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     
