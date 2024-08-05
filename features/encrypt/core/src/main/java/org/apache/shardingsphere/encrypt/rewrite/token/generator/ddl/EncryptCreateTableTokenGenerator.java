@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.ddl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.constant.EncryptColumnDataType;
@@ -52,11 +52,11 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final CreateTableStatementContext createTableStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final CreateTableStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        String tableName = createTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
-        List<ColumnDefinitionSegment> columns = new ArrayList<>(createTableStatementContext.getSqlStatement().getColumnDefinitions());
+        List<ColumnDefinitionSegment> columns = new ArrayList<>(sqlStatementContext.getSqlStatement().getColumnDefinitions());
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
