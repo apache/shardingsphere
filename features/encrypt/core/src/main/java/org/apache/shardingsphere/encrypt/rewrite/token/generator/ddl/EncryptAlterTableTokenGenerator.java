@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.ddl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.constant.EncryptColumnDataType;
@@ -65,14 +65,14 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final AlterTableStatementContext alterTableStatementContext) {
-        String tableName = alterTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+    public Collection<SQLToken> generateSQLTokens(final AlterTableStatementContext sqlStatementContext) {
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
-        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(encryptTable, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions()));
-        result.addAll(getModifyColumnTokens(encryptTable, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
-        result.addAll(getChangeColumnTokens(encryptTable, alterTableStatementContext.getSqlStatement().getChangeColumnDefinitions()));
-        List<SQLToken> dropColumnTokens = getDropColumnTokens(encryptTable, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
-        String databaseName = alterTableStatementContext.getDatabaseType().getType();
+        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getAddColumnDefinitions()));
+        result.addAll(getModifyColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getModifyColumnDefinitions()));
+        result.addAll(getChangeColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getChangeColumnDefinitions()));
+        List<SQLToken> dropColumnTokens = getDropColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getDropColumnDefinitions());
+        String databaseName = sqlStatementContext.getDatabaseType().getType();
         if ("SQLServer".equals(databaseName)) {
             result.addAll(mergeDropColumnStatement(dropColumnTokens, "", ""));
         } else if ("Oracle".equals(databaseName)) {
