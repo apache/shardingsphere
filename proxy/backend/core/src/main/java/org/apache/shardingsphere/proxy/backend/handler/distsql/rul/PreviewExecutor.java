@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatem
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -133,7 +132,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     
     private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData, final SQLFederationEngine federationEngine) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaData.getProps());
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaData);
         SQLFederationContext context = new SQLFederationContext(true, queryContext, metaData,
                 ((ProxyDatabaseConnectionManager) connectionContext.getDatabaseConnectionManager()).getConnectionSession().getProcessId());
         federationEngine.executeQuery(prepareEngine, createPreviewCallback(sqlStatement), context);
@@ -156,8 +155,8 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ConfigurationProperties props) {
-        int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereMetaData metaData) {
+        int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionContext.getDatabaseConnectionManager(),
                 connectionContext.getExecutorStatementManager(), new StatementOption(false), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
