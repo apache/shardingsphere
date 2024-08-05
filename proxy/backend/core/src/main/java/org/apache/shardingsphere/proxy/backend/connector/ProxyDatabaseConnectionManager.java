@@ -74,8 +74,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                                            final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(databaseName, "Current database name is null.");
         Collection<Connection> connections;
+        String cacheKey = getKey(databaseName, dataSourceName);
         synchronized (cachedConnections) {
-            connections = cachedConnections.get(databaseName.toLowerCase() + "." + dataSourceName);
+            connections = cachedConnections.get(cacheKey);
         }
         List<Connection> result;
         int maxConnectionSize = connectionOffset + connectionSize;
@@ -85,7 +86,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             Collection<Connection> newConnections = createNewConnections(databaseName, dataSourceName, maxConnectionSize, connectionMode);
             result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(databaseName.toLowerCase() + "." + dataSourceName, newConnections);
+                cachedConnections.putAll(cacheKey, newConnections);
             }
             executeTransactionHooksAfterCreateConnections(result);
         } else {
@@ -95,10 +96,14 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             allConnections.addAll(newConnections);
             result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(databaseName.toLowerCase() + "." + dataSourceName, newConnections);
+                cachedConnections.putAll(cacheKey, newConnections);
             }
         }
         return result;
+    }
+    
+    private String getKey(final String databaseName, final String dataSourceName) {
+        return databaseName.toLowerCase() + "." + dataSourceName;
     }
     
     private void executeTransactionHooksAfterCreateConnections(final List<Connection> result) throws SQLException {
