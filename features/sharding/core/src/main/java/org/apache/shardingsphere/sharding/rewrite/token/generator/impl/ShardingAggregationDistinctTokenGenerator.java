@@ -31,9 +31,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Aggregation distinct token generator.
+ * Sharding aggregation distinct token generator.
  */
-public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, IgnoreForSingleRoute {
+public final class ShardingAggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

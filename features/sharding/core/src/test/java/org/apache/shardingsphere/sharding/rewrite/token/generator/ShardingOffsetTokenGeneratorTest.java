@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.OffsetTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOffsetTokenGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
@@ -36,23 +36,23 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class OffsetTokenGeneratorTest {
+class ShardingOffsetTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        OffsetTokenGenerator offsetTokenGenerator = new OffsetTokenGenerator();
-        assertFalse(offsetTokenGenerator.isGenerateSQLToken(insertStatementContext));
+        ShardingOffsetTokenGenerator shardingOffsetTokenGenerator = new ShardingOffsetTokenGenerator();
+        assertFalse(shardingOffsetTokenGenerator.isGenerateSQLToken(insertStatementContext));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getPaginationContext().getOffsetSegment().isPresent()).thenReturn(Boolean.FALSE);
-        assertFalse(offsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        assertFalse(shardingOffsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
         when(selectStatementContext.getPaginationContext().getOffsetSegment().isPresent()).thenReturn(Boolean.TRUE);
         ParameterMarkerPaginationValueSegment parameterMarkerPaginationValueSegment = mock(ParameterMarkerPaginationValueSegment.class);
         when(selectStatementContext.getPaginationContext().getOffsetSegment().get()).thenReturn(parameterMarkerPaginationValueSegment);
-        assertFalse(offsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        assertFalse(shardingOffsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
         NumberLiteralPaginationValueSegment numberLiteralPaginationValueSegment = mock(NumberLiteralPaginationValueSegment.class);
         when(selectStatementContext.getPaginationContext().getOffsetSegment().get()).thenReturn(numberLiteralPaginationValueSegment);
-        assertTrue(offsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        assertTrue(shardingOffsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
     }
     
     @Test
@@ -68,7 +68,7 @@ class OffsetTokenGeneratorTest {
         when(paginationContext.getRevisedOffset()).thenReturn(testRevisedOffset);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getPaginationContext()).thenReturn(paginationContext);
-        OffsetTokenGenerator offsetTokenGenerator = new OffsetTokenGenerator();
-        assertThat(offsetTokenGenerator.generateSQLToken(selectStatementContext).toString(), is(String.valueOf(testRevisedOffset)));
+        ShardingOffsetTokenGenerator shardingOffsetTokenGenerator = new ShardingOffsetTokenGenerator();
+        assertThat(shardingOffsetTokenGenerator.generateSQLToken(selectStatementContext).toString(), is(String.valueOf(testRevisedOffset)));
     }
 }

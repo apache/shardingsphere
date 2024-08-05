@@ -31,10 +31,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Di
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
 
 /**
- * Fetch direction token generator.
+ * Sharding fetch direction token generator.
  */
 @Setter
-public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext>, ConnectionContextAware {
+public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext>, ConnectionContextAware {
     
     private ConnectionContext connectionContext;
     

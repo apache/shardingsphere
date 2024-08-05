@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStateme
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.MoveStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.CursorTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingCursorTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.CursorToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -38,11 +38,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class CursorTokenGeneratorTest {
+class ShardingCursorTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        CursorTokenGenerator generator = new CursorTokenGenerator();
+        ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
         Optional<CursorNameSegment> cursorName = Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor")));
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class);
@@ -61,7 +61,7 @@ class CursorTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLToken() {
-        CursorTokenGenerator generator = new CursorTokenGenerator();
+        ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator();
         CursorStatementContext statementContext = mock(CursorStatementContext.class);
         when(statementContext.getCursorName()).thenReturn(Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor"))));
         SQLToken actual = generator.generateSQLToken(statementContext);

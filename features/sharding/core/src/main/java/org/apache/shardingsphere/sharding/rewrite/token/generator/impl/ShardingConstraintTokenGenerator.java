@@ -32,10 +32,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Constraint token generator.
+ * Sharding constraint token generator.
  */
 @Setter
-public final class ConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware {
+public final class ShardingConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware {
     
     private ShardingRule shardingRule;
     

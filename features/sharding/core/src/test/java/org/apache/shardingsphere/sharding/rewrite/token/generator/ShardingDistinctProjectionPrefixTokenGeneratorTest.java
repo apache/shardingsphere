@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.DistinctProjectionPrefixTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingDistinctProjectionPrefixTokenGenerator;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -34,11 +34,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DistinctProjectionPrefixTokenGeneratorTest {
+class ShardingDistinctProjectionPrefixTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        DistinctProjectionPrefixTokenGenerator generator = new DistinctProjectionPrefixTokenGenerator();
+        ShardingDistinctProjectionPrefixTokenGenerator generator = new ShardingDistinctProjectionPrefixTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(UnknownSQLStatementContext.class)));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         List<AggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
@@ -53,7 +53,7 @@ class DistinctProjectionPrefixTokenGeneratorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         final int testStartIndex = 1;
         when(selectStatementContext.getProjectionsContext().getStartIndex()).thenReturn(testStartIndex);
-        DistinctProjectionPrefixTokenGenerator generator = new DistinctProjectionPrefixTokenGenerator();
+        ShardingDistinctProjectionPrefixTokenGenerator generator = new ShardingDistinctProjectionPrefixTokenGenerator();
         assertThat(generator.generateSQLToken(selectStatementContext).toString(), is("DISTINCT "));
     }
 }

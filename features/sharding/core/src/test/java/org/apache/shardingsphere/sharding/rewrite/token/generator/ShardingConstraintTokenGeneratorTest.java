@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator;
 import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ConstraintTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingConstraintTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ConstraintToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
@@ -38,11 +38,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ConstraintTokenGeneratorTest {
+class ShardingConstraintTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        ConstraintTokenGenerator generator = new ConstraintTokenGenerator();
+        ShardingConstraintTokenGenerator generator = new ShardingConstraintTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(UnknownSQLStatementContext.class)));
         AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class);
         Collection<ConstraintSegment> constraintSegments = new LinkedList<>();
@@ -61,7 +61,7 @@ class ConstraintTokenGeneratorTest {
         when(constraintSegment.getIdentifier()).thenReturn(constraintIdentifier);
         AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class);
         when(alterTableStatementContext.getConstraints()).thenReturn(Collections.singleton(constraintSegment));
-        ConstraintTokenGenerator generator = new ConstraintTokenGenerator();
+        ShardingConstraintTokenGenerator generator = new ShardingConstraintTokenGenerator();
         generator.setShardingRule(mock(ShardingRule.class));
         Collection<SQLToken> actual = generator.generateSQLTokens(alterTableStatementContext);
         assertThat(actual.size(), is(1));
