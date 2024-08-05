@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mode.manager.cluster.listener.MetaDataChangedLi
 import org.apache.shardingsphere.mode.manager.cluster.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
  * Listener assisted subscriber.
@@ -76,11 +75,9 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
     }
     
     private void refreshShardingSphereStatisticsData() {
-        PersistRepository repository = contextManager.getPersistServiceFacade().getRepository();
-        if (contextManager.getComputeNodeInstanceContext().isCluster()
-                && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()
-                && repository instanceof ClusterPersistRepository) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) repository))).asyncRefresh();
+        if (contextManager.getComputeNodeInstanceContext().isCluster() && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
+            new ShardingSphereStatisticsRefreshEngine(contextManager,
+                    new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()))).asyncRefresh();
         }
     }
 }

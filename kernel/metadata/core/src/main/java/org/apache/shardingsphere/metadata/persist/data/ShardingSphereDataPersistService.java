@@ -139,4 +139,13 @@ public final class ShardingSphereDataPersistService {
         tableRowDataPersistService.delete(databaseName, schemaName, alteredShardingSphereDatabaseData.getTableName(),
                 alteredShardingSphereDatabaseData.getDeletedRows());
     }
+    
+    /**
+     * Delete sharding sphere database data.
+     *
+     * @param databaseName database name
+     */
+    public void delete(final String databaseName) {
+        repository.delete(ShardingSphereDataNode.getDatabaseNamePath(databaseName));
+    }
 }

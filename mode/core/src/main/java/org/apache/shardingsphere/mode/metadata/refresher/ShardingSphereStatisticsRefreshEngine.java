@@ -92,10 +92,10 @@ public final class ShardingSphereStatisticsRefreshEngine {
                 ShardingSphereStatistics changedStatistics = new ShardingSphereStatistics();
                 for (Entry<String, ShardingSphereDatabaseData> entry : statistics.getDatabaseData().entrySet()) {
                     if (metaData.containsDatabase(entry.getKey())) {
-                        collectForDatabase(entry.getKey(), entry.getValue(), metaData.getDatabases(), changedStatistics);
+                        collectForDatabase(entry.getKey(), entry.getValue(), metaData, changedStatistics);
                     }
                 }
-                compareUpdateAndSendEvent(statistics, changedStatistics, metaData.getDatabases());
+                compareAndUpdate(changedStatistics);
             } finally {
                 globalLockContext.unlock(lockDefinition);
             }
@@ -103,71 +103,82 @@ public final class ShardingSphereStatisticsRefreshEngine {
     }
     
     private void collectForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData,
-                                    final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics statistics) {
+                                    final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
         for (Entry<String, ShardingSphereSchemaData> entry : databaseData.getSchemaData().entrySet()) {
-            if (databases.get(databaseName.toLowerCase()).containsSchema(entry.getKey())) {
-                collectForSchema(databaseName, entry.getKey(), entry.getValue(), databases, statistics);
+            if (metaData.getDatabase(databaseName).containsSchema(entry.getKey())) {
+                collectForSchema(databaseName, entry.getKey(), entry.getValue(), metaData, statistics);
             }
         }
     }
     
     private void collectForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
-                                  final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics statistics) {
+                                  final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
         for (Entry<String, ShardingSphereTableData> entry : schemaData.getTableData().entrySet()) {
-            if (databases.get(databaseName.toLowerCase()).getSchema(schemaName).containsTable(entry.getKey())) {
-                collectForTable(databaseName, schemaName, databases.get(databaseName).getSchema(schemaName).getTable(entry.getKey()), databases, statistics);
+            if (metaData.getDatabase(databaseName).getSchema(schemaName).containsTable(entry.getKey())) {
+                collectForTable(databaseName, schemaName, metaData.getDatabase(databaseName).getSchema(schemaName).getTable(entry.getKey()), metaData, statistics);
             }
         }
     }
     
     private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
-                                 final Map<String, ShardingSphereDatabase> databases, final ShardingSphereStatistics statistics) {
+                                 final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
         Optional<ShardingSphereStatisticsCollector> dataCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, table.getName());
-        if (!dataCollector.isPresent()) {
-            return;
-        }
         Optional<ShardingSphereTableData> tableData = Optional.empty();
-        try {
-            tableData = dataCollector.get().collect(databaseName, table, databases, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData());
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error(String.format("Collect %s.%s.%s data failed", databaseName, schemaName, table.getName()), ex);
+        if (dataCollector.isPresent()) {
+            try {
+                tableData = dataCollector.get().collect(databaseName, table, metaData.getDatabases(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData());
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error(String.format("Collect %s.%s.%s data failed", databaseName, schemaName, table.getName()), ex);
+            }
         }
-        tableData.ifPresent(optional -> statistics.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData()).getSchemaData()
-                .computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), optional));
+        ShardingSphereDatabaseData databaseData = statistics.containsDatabase(databaseName) ? statistics.getDatabase(databaseName) : new ShardingSphereDatabaseData();
+        ShardingSphereSchemaData schemaData = databaseData.containsSchema(schemaName) ? databaseData.getSchema(schemaName) : new ShardingSphereSchemaData();
+        tableData.ifPresent(optional -> schemaData.putTable(table.getName(), optional));
+        databaseData.putSchema(schemaName, schemaData);
+        statistics.putDatabase(databaseName, databaseData);
     }
     
-    private void compareUpdateAndSendEvent(final ShardingSphereStatistics statistics, final ShardingSphereStatistics changedStatistics,
-                                           final Map<String, ShardingSphereDatabase> databases) {
-        changedStatistics.getDatabaseData().forEach(
-                (key, value) -> compareUpdateAndSendEventForDatabase(key, statistics.getDatabaseData().get(key), value, statistics, databases.get(key.toLowerCase())));
-    }
-    
-    private void compareUpdateAndSendEventForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData, final ShardingSphereDatabaseData changedDatabaseData,
-                                                      final ShardingSphereStatistics statistics, final ShardingSphereDatabase database) {
-        changedDatabaseData.getSchemaData().forEach(
-                (key, value) -> compareUpdateAndSendEventForSchema(databaseName, key, databaseData.getSchemaData().get(key), value, statistics, database.getSchema(key)));
-    }
-    
-    private void compareUpdateAndSendEventForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
-                                                    final ShardingSphereSchemaData changedSchemaData, final ShardingSphereStatistics statistics, final ShardingSphereSchema schema) {
-        changedSchemaData.getTableData().forEach(
-                (key, value) -> compareUpdateAndSendEventForTable(databaseName, schemaName, schemaData.getTableData().get(key), value, statistics, schema.getTable(key)));
-    }
-    
-    private void compareUpdateAndSendEventForTable(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
-                                                   final ShardingSphereTableData changedTableData, final ShardingSphereStatistics statistics, final ShardingSphereTable table) {
-        if (tableData.equals(changedTableData)) {
-            return;
+    private void compareAndUpdate(final ShardingSphereStatistics changedStatistics) {
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
+        for (Entry<String, ShardingSphereDatabaseData> entry : changedStatistics.getDatabaseData().entrySet()) {
+            compareAndUpdateForDatabase(entry.getKey(), statistics.getDatabase(entry.getKey()), entry.getValue(), statistics, metaData.getDatabase(entry.getKey()));
         }
-        statistics.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
-        AlteredShardingSphereDatabaseData alteredShardingSphereDatabaseData = getShardingSphereSchemaDataAlteredPOJO(databaseName, schemaName, tableData, changedTableData, table);
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereDataPersistService().update(alteredShardingSphereDatabaseData);
+        for (Entry<String, ShardingSphereDatabaseData> entry : statistics.getDatabaseData().entrySet()) {
+            if (!changedStatistics.containsDatabase(entry.getKey())) {
+                statistics.dropDatabase(entry.getKey());
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereDataPersistService().delete(entry.getKey());
+            }
+        }
     }
     
-    private AlteredShardingSphereDatabaseData getShardingSphereSchemaDataAlteredPOJO(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
-                                                                                     final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
+    private void compareAndUpdateForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData, final ShardingSphereDatabaseData changedDatabaseData,
+                                             final ShardingSphereStatistics statistics, final ShardingSphereDatabase database) {
+        for (Entry<String, ShardingSphereSchemaData> entry : changedDatabaseData.getSchemaData().entrySet()) {
+            compareAndUpdateForSchema(databaseName, entry.getKey(), databaseData.getSchema(entry.getKey()), entry.getValue(), statistics, database.getSchema(entry.getKey()));
+        }
+    }
+    
+    private void compareAndUpdateForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
+                                           final ShardingSphereSchemaData changedSchemaData, final ShardingSphereStatistics statistics, final ShardingSphereSchema schema) {
+        for (Entry<String, ShardingSphereTableData> entry : changedSchemaData.getTableData().entrySet()) {
+            compareAndUpdateForTable(databaseName, schemaName, schemaData.getTable(entry.getKey()), entry.getValue(), statistics, schema.getTable(entry.getKey()));
+        }
+    }
+    
+    private void compareAndUpdateForTable(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
+                                          final ShardingSphereTableData changedTableData, final ShardingSphereStatistics statistics, final ShardingSphereTable table) {
+        if (!tableData.equals(changedTableData)) {
+            statistics.getDatabase(databaseName).getSchema(schemaName).putTable(changedTableData.getName(), changedTableData);
+            AlteredShardingSphereDatabaseData alteredShardingSphereDatabaseData = createAlteredShardingSphereDatabaseData(databaseName, schemaName, tableData, changedTableData, table);
+            contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereDataPersistService().update(alteredShardingSphereDatabaseData);
+        }
+    }
+    
+    private AlteredShardingSphereDatabaseData createAlteredShardingSphereDatabaseData(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
+                                                                                      final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
         AlteredShardingSphereDatabaseData result = new AlteredShardingSphereDatabaseData(databaseName, schemaName, tableData.getName());
         Map<String, ShardingSphereRowData> tableDataMap = tableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
         Map<String, ShardingSphereRowData> changedTableDataMap = changedTableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
