@@ -52,11 +52,11 @@ import static org.mockito.Mockito.when;
 
 class EncryptAlterTableTokenGeneratorTest {
     
-    private final EncryptAlterTableTokenGenerator generator = new EncryptAlterTableTokenGenerator();
+    private EncryptAlterTableTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(mockEncryptRule());
+        generator = new EncryptAlterTableTokenGenerator(mockEncryptRule());
     }
     
     private EncryptRule mockEncryptRule() {

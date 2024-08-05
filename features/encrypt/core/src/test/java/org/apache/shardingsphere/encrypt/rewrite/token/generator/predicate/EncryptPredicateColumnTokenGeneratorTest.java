@@ -32,11 +32,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptPredicateColumnTokenGeneratorTest {
     
-    private final EncryptPredicateColumnTokenGenerator generator = new EncryptPredicateColumnTokenGenerator();
+    private EncryptPredicateColumnTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
+        generator = new EncryptPredicateColumnTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test

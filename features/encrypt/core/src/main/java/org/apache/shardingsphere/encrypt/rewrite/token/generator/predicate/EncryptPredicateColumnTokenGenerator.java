@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
@@ -55,10 +55,11 @@ import java.util.Optional;
  * Predicate column token generator for encrypt.
  */
 @HighFrequencyInvocation
+@RequiredArgsConstructor
 @Setter
-public final class EncryptPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, EncryptRuleAware, SchemaMetaDataAware {
+public final class EncryptPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware {
     
-    private EncryptRule encryptRule;
+    private final EncryptRule encryptRule;
     
     private Map<String, ShardingSphereSchema> schemas;
     

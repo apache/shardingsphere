@@ -50,13 +50,13 @@ import static org.mockito.Mockito.when;
 
 class EncryptGroupByItemTokenGeneratorTest {
     
-    private final EncryptGroupByItemTokenGenerator generator = new EncryptGroupByItemTokenGenerator();
+    private EncryptGroupByItemTokenGenerator generator;
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(mockEncryptRule());
+        generator = new EncryptGroupByItemTokenGenerator(mockEncryptRule());
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         generator.setDatabaseType(databaseType);
     }

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class EncryptInsertAssignmentTokenGeneratorTest {
     
-    private final EncryptInsertAssignmentTokenGenerator tokenGenerator = new EncryptInsertAssignmentTokenGenerator();
+    private EncryptInsertAssignmentTokenGenerator tokenGenerator;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private InsertStatementContext insertStatementContext;
@@ -49,7 +49,7 @@ class EncryptInsertAssignmentTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        tokenGenerator.setEncryptRule(mockEncryptRule());
+        tokenGenerator = new EncryptInsertAssignmentTokenGenerator(mockEncryptRule());
         when(insertStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         ColumnAssignmentSegment assignmentSegment = mock(ColumnAssignmentSegment.class);
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));

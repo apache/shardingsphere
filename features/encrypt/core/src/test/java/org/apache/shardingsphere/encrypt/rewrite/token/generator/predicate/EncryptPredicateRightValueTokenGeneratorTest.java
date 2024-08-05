@@ -37,11 +37,11 @@ import static org.mockito.Mockito.mock;
 
 class EncryptPredicateRightValueTokenGeneratorTest {
     
-    private final EncryptPredicateRightValueTokenGenerator generator = new EncryptPredicateRightValueTokenGenerator();
+    private EncryptPredicateRightValueTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
+        generator = new EncryptPredicateRightValueTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test

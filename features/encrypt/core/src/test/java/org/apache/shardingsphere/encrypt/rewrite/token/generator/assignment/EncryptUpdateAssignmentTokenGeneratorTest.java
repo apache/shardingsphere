@@ -38,14 +38,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class EncryptUpdateAssignmentTokenGeneratorTest {
     
-    private final EncryptUpdateAssignmentTokenGenerator tokenGenerator = new EncryptUpdateAssignmentTokenGenerator();
+    private EncryptUpdateAssignmentTokenGenerator tokenGenerator;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private UpdateStatementContext updateStatementContext;
     
     @BeforeEach
     void setup() {
-        tokenGenerator.setEncryptRule(mockEncryptRule());
+        tokenGenerator = new EncryptUpdateAssignmentTokenGenerator(mockEncryptRule());
         when(updateStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         ColumnAssignmentSegment assignmentSegment = mock(ColumnAssignmentSegment.class);
         when(updateStatementContext.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singleton(assignmentSegment));

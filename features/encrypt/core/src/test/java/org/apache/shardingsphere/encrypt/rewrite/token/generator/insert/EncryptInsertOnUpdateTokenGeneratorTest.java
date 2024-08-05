@@ -52,11 +52,11 @@ import static org.mockito.Mockito.when;
 
 class EncryptInsertOnUpdateTokenGeneratorTest {
     
-    private final EncryptInsertOnUpdateTokenGenerator generator = new EncryptInsertOnUpdateTokenGenerator();
+    private EncryptInsertOnUpdateTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(mockEncryptRule());
+        generator = new EncryptInsertOnUpdateTokenGenerator(mockEncryptRule());
     }
     
     private EncryptRule mockEncryptRule() {
