@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.function.mysql;
+package org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.function.mysql;
+package org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,6 +34,7 @@ public final class MySQLBinFunction {
      * @param value value
      * @return binary string
      */
+    @SuppressWarnings("unused")
     public static String bin(final Object value) {
         if (null == value) {
             return null;
@@ -42,7 +43,7 @@ public final class MySQLBinFunction {
             return Long.toBinaryString(((Number) value).longValue());
         }
         BigInteger bigIntegerValue = value instanceof BigInteger ? (BigInteger) value : new BigInteger(getFirstNumbers(String.valueOf(value)));
-        return -1 != bigIntegerValue.signum() ? bigIntegerValue.toString(2) : bigIntegerValue.add(BigInteger.ONE.shiftLeft(Long.SIZE).subtract(BigInteger.ONE)).add(BigInteger.ONE).toString(2);
+        return -1 == bigIntegerValue.signum() ? bigIntegerValue.add(BigInteger.ONE.shiftLeft(Long.SIZE).subtract(BigInteger.ONE)).add(BigInteger.ONE).toString(2) : bigIntegerValue.toString(2);
     }
     
     private static String getFirstNumbers(final String value) {

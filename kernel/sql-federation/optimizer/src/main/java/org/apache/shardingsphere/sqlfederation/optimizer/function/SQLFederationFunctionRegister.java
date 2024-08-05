@@ -15,34 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.resultset.converter;
+package org.apache.shardingsphere.sqlfederation.optimizer.function;
 
+import org.apache.calcite.schema.SchemaPlus;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * SQL federation column type converter.
+ * SQL federation function register.
  */
 @SingletonSPI
-public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
+public interface SQLFederationFunctionRegister extends DatabaseTypedSPI {
     
     /**
-     * Convert column value.
+     * Register function.
      *
-     * @param columnValue column value
-     * @return converted column value
+     * @param schemaPlus schema plus
+     * @param schemaName schema name
      */
-    default Object convertColumnValue(Object columnValue) {
-        return columnValue;
-    }
-    
-    /**
-     * Convert column type.
-     *
-     * @param columnType column type
-     * @return converted column type
-     */
-    default int convertColumnType(int columnType) {
-        return columnType;
-    }
+    void registerFunction(SchemaPlus schemaPlus, String schemaName);
 }

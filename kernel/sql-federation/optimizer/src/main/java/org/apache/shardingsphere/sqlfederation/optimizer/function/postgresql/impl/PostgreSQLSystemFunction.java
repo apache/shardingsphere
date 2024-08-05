@@ -15,34 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.resultset.converter;
+package org.apache.shardingsphere.sqlfederation.optimizer.function.postgresql.impl;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * SQL federation column type converter.
+ * PostgreSQL system function.
  */
-@SingletonSPI
-public interface SQLFederationColumnTypeConverter extends DatabaseTypedSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLSystemFunction {
     
     /**
-     * Convert column value.
+     * Mock pg_table_is_visible function.
      *
-     * @param columnValue column value
-     * @return converted column value
+     * @param oid oid
+     * @return true
      */
-    default Object convertColumnValue(Object columnValue) {
-        return columnValue;
+    @SuppressWarnings("unused")
+    public static boolean pgTableIsVisible(final Long oid) {
+        return true;
     }
     
     /**
-     * Convert column type.
+     * Mock pg_get_userbyid function.
      *
-     * @param columnType column type
-     * @return converted column type
+     * @param oid oid
+     * @return user name
      */
-    default int convertColumnType(int columnType) {
-        return columnType;
+    @SuppressWarnings("unused")
+    public static String pgGetUserById(final Long oid) {
+        return "mock user";
     }
 }
