@@ -236,7 +236,7 @@ class SQLStatementCompilerIT {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
         SQLFederationSchema sqlFederationSchema = new SQLFederationSchema(SCHEMA_NAME, schema, databaseType, new JavaTypeFactoryImpl());
         CalciteCatalogReader catalogReader =
-                SQLFederationPlannerUtils.createCatalogReader(SCHEMA_NAME, sqlFederationSchema, relDataTypeFactory, connectionConfig, selectStatementContext.getDatabaseType());
+                SQLFederationPlannerUtils.createCatalogReader(SCHEMA_NAME, sqlFederationSchema, relDataTypeFactory, connectionConfig, databaseType);
         SqlValidator validator = SQLFederationPlannerUtils.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
         RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
         return SQLFederationPlannerUtils.createSqlToRelConverter(catalogReader, validator, cluster, mock(SQLParserRule.class), databaseType, false);
