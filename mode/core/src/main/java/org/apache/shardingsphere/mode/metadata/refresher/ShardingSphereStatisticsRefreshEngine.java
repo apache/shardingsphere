@@ -155,21 +155,21 @@ public final class ShardingSphereStatisticsRefreshEngine {
     }
     
     private void compareAndUpdateForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData, final ShardingSphereDatabaseData changedDatabaseData,
-                                                      final ShardingSphereStatistics statistics, final ShardingSphereDatabase database) {
+                                             final ShardingSphereStatistics statistics, final ShardingSphereDatabase database) {
         for (Entry<String, ShardingSphereSchemaData> entry : changedDatabaseData.getSchemaData().entrySet()) {
             compareAndUpdateForSchema(databaseName, entry.getKey(), databaseData.getSchema(entry.getKey()), entry.getValue(), statistics, database.getSchema(entry.getKey()));
         }
     }
     
     private void compareAndUpdateForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
-                                                    final ShardingSphereSchemaData changedSchemaData, final ShardingSphereStatistics statistics, final ShardingSphereSchema schema) {
+                                           final ShardingSphereSchemaData changedSchemaData, final ShardingSphereStatistics statistics, final ShardingSphereSchema schema) {
         for (Entry<String, ShardingSphereTableData> entry : changedSchemaData.getTableData().entrySet()) {
             compareAndUpdateForTable(databaseName, schemaName, schemaData.getTable(entry.getKey()), entry.getValue(), statistics, schema.getTable(entry.getKey()));
         }
     }
     
     private void compareAndUpdateForTable(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
-                                                   final ShardingSphereTableData changedTableData, final ShardingSphereStatistics statistics, final ShardingSphereTable table) {
+                                          final ShardingSphereTableData changedTableData, final ShardingSphereStatistics statistics, final ShardingSphereTable table) {
         if (!tableData.equals(changedTableData)) {
             statistics.getDatabase(databaseName).getSchema(schemaName).putTable(changedTableData.getName(), changedTableData);
             AlteredShardingSphereDatabaseData alteredShardingSphereDatabaseData = createAlteredShardingSphereDatabaseData(databaseName, schemaName, tableData, changedTableData, table);
@@ -178,7 +178,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
     }
     
     private AlteredShardingSphereDatabaseData createAlteredShardingSphereDatabaseData(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
-                                                                                     final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
+                                                                                      final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
         AlteredShardingSphereDatabaseData result = new AlteredShardingSphereDatabaseData(databaseName, schemaName, tableData.getName());
         Map<String, ShardingSphereRowData> tableDataMap = tableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
         Map<String, ShardingSphereRowData> changedTableDataMap = changedTableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
