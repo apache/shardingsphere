@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
@@ -52,14 +52,15 @@ import java.util.Map;
  * Predicate right value token generator for encrypt.
  */
 @HighFrequencyInvocation
+@RequiredArgsConstructor
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware, EncryptRuleAware, DatabaseNameAware {
+public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware, DatabaseNameAware {
+    
+    private final EncryptRule encryptRule;
     
     private List<Object> parameters;
     
     private Collection<EncryptCondition> encryptConditions;
-    
-    private EncryptRule encryptRule;
     
     private String databaseName;
     

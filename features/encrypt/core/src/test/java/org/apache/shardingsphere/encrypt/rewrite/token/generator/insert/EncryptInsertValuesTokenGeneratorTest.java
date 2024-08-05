@@ -30,11 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptInsertValuesTokenGeneratorTest {
     
-    private final EncryptInsertValuesTokenGenerator generator = new EncryptInsertValuesTokenGenerator();
+    private EncryptInsertValuesTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
+        generator = new EncryptInsertValuesTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test

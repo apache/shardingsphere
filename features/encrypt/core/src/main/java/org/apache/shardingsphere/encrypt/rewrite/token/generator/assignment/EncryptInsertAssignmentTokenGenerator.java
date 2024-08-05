@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -34,10 +34,11 @@ import java.util.Collection;
  * Insert assignment generator for encrypt.
  */
 @HighFrequencyInvocation
+@RequiredArgsConstructor
 @Setter
-public final class EncryptInsertAssignmentTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, EncryptRuleAware, DatabaseNameAware {
+public final class EncryptInsertAssignmentTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, DatabaseNameAware {
     
-    private EncryptRule encryptRule;
+    private final EncryptRule encryptRule;
     
     private String databaseName;
     

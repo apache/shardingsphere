@@ -48,11 +48,11 @@ import static org.mockito.Mockito.when;
 
 class EncryptCreateTableTokenGeneratorTest {
     
-    private final EncryptCreateTableTokenGenerator generator = new EncryptCreateTableTokenGenerator();
+    private EncryptCreateTableTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(mockEncryptRule());
+        generator = new EncryptCreateTableTokenGenerator(mockEncryptRule());
     }
     
     private EncryptRule mockEncryptRule() {

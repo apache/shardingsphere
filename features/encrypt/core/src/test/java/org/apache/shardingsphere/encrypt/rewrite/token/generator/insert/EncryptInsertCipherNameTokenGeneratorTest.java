@@ -34,11 +34,11 @@ import static org.mockito.Mockito.mock;
 
 class EncryptInsertCipherNameTokenGeneratorTest {
     
-    private final EncryptInsertCipherNameTokenGenerator generator = new EncryptInsertCipherNameTokenGenerator();
+    private EncryptInsertCipherNameTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
+        generator = new EncryptInsertCipherNameTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test

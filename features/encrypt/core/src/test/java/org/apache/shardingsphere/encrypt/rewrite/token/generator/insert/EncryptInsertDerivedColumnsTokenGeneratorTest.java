@@ -43,25 +43,24 @@ class EncryptInsertDerivedColumnsTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotInsertStatementContext() {
-        assertFalse(new EncryptInsertDerivedColumnsTokenGenerator().isGenerateSQLToken(mock(SQLStatementContext.class)));
+        assertFalse(new EncryptInsertDerivedColumnsTokenGenerator(mock(EncryptRule.class)).isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithoutInsertColumns() {
-        assertFalse(new EncryptInsertDerivedColumnsTokenGenerator().isGenerateSQLToken(mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
+        assertFalse(new EncryptInsertDerivedColumnsTokenGenerator(mock(EncryptRule.class)).isGenerateSQLToken(mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
     void assertIsGenerateSQLTokenWithInsertColumns() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.containsInsertColumns()).thenReturn(true);
-        assertTrue(new EncryptInsertDerivedColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
+        assertTrue(new EncryptInsertDerivedColumnsTokenGenerator(mock(EncryptRule.class)).isGenerateSQLToken(insertStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokensNotContainColumns() {
-        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator();
-        tokenGenerator.setEncryptRule(mockEncryptRule());
+        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator(mockEncryptRule());
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("foo_tbl");
         assertTrue(tokenGenerator.generateSQLTokens(insertStatementContext).isEmpty());
@@ -69,8 +68,7 @@ class EncryptInsertDerivedColumnsTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensNotExistColumns() {
-        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator();
-        tokenGenerator.setEncryptRule(mockEncryptRule());
+        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator(mockEncryptRule());
         ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
         when(columnSegment.getIdentifier().getValue()).thenReturn("bar_col");
         InsertStatementContext insertStatementContext = mockInsertStatementContext();
@@ -80,8 +78,7 @@ class EncryptInsertDerivedColumnsTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensExistColumns() {
-        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator();
-        tokenGenerator.setEncryptRule(mockEncryptRule());
+        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator(mockEncryptRule());
         Collection<SQLToken> actual = tokenGenerator.generateSQLTokens(mockInsertStatementContext());
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getStartIndex(), is(1));
