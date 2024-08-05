@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ProjectionsTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingProjectionsTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ProjectionsTokenGeneratorTest {
+class ShardingProjectionsTokenGeneratorTest {
     
     private static final String TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION = "TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION";
     
@@ -112,17 +112,17 @@ class ProjectionsTokenGeneratorTest {
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projections);
         when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
         when(selectStatementContext.getSqlStatement()).thenReturn(new MySQLSelectStatement());
-        ProjectionsTokenGenerator generator = getProjectionsTokenGenerator();
+        ShardingProjectionsTokenGenerator generator = getProjectionsTokenGenerator();
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
         assertThat(actual.toString(routeUnit), is(", " + TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION + " AS " + TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS + " "
                 + ", " + TEST_ACTUAL_TABLE_NAME_WRAPPED + ".null" + " AS " + TEST_DERIVED_PROJECTION_ALIAS + " "
                 + ", " + TEST_OTHER_DERIVED_PROJECTION_EXPRESSION + " AS " + TEST_OTHER_DERIVED_PROJECTION_ALIAS + " "));
     }
     
-    private ProjectionsTokenGenerator getProjectionsTokenGenerator() {
+    private ShardingProjectionsTokenGenerator getProjectionsTokenGenerator() {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(Collections.singleton(routeUnit));
-        ProjectionsTokenGenerator result = new ProjectionsTokenGenerator();
+        ShardingProjectionsTokenGenerator result = new ShardingProjectionsTokenGenerator();
         result.setRouteContext(routeContext);
         return result;
     }

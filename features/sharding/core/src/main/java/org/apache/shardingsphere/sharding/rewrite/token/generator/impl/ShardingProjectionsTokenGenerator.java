@@ -51,10 +51,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Projections token generator.
+ * Sharding projections token generator.
  */
 @Setter
-public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute, RouteContextAware {
+public final class ShardingProjectionsTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute, RouteContextAware {
     
     private RouteContext routeContext;
     

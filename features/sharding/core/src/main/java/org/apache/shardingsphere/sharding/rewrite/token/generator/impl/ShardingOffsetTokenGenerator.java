@@ -17,24 +17,31 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.DistinctProjectionPrefixToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.OffsetToken;
 
 /**
- * Distinct projection prefix token generator.
+ * Sharding offset token generator.
  */
-public final class DistinctProjectionPrefixTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
+public final class ShardingOffsetTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().isPresent()
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment;
     }
     
     @Override
-    public DistinctProjectionPrefixToken generateSQLToken(final SelectStatementContext selectStatementContext) {
-        return new DistinctProjectionPrefixToken(selectStatementContext.getProjectionsContext().getStartIndex());
+    public OffsetToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        PaginationContext pagination = selectStatementContext.getPaginationContext();
+        Preconditions.checkState(pagination.getOffsetSegment().isPresent());
+        return new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset());
     }
 }

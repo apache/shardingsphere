@@ -17,31 +17,24 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.RowCountToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.DistinctProjectionPrefixToken;
 
 /**
- * Row count token generator.
+ * Sharding distinct projection prefix token generator.
  */
-public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
+public final class ShardingDistinctProjectionPrefixTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext
-                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().isPresent()
-                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment;
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
     }
     
     @Override
-    public RowCountToken generateSQLToken(final SelectStatementContext selectStatementContext) {
-        PaginationContext pagination = selectStatementContext.getPaginationContext();
-        Preconditions.checkState(pagination.getRowCountSegment().isPresent());
-        return new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(), pagination.getRevisedRowCount(selectStatementContext));
+    public DistinctProjectionPrefixToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        return new DistinctProjectionPrefixToken(selectStatementContext.getProjectionsContext().getStartIndex());
     }
 }

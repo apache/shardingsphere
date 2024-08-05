@@ -38,10 +38,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Index token generator.
+ * Sharding index token generator.
  */
 @Setter
-public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware, SchemaMetaDataAware {
+public final class ShardingIndexTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware, SchemaMetaDataAware {
     
     private ShardingRule shardingRule;
     

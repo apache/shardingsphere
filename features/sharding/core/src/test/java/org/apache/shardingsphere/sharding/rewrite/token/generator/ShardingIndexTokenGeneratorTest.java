@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.IndexTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingIndexTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -43,12 +43,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class IndexTokenGeneratorTest {
+class ShardingIndexTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
         UnknownSQLStatementContext sqlStatementContext = mock(UnknownSQLStatementContext.class);
-        IndexTokenGenerator generator = new IndexTokenGenerator();
+        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
         AlterIndexStatementContext alterIndexStatementContext = mock(AlterIndexStatementContext.class);
         Collection<IndexSegment> indexSegments = new LinkedList<>();
@@ -69,7 +69,7 @@ class IndexTokenGeneratorTest {
         when(alterIndexStatementContext.getIndexes()).thenReturn(Collections.singleton(indexSegment));
         when(alterIndexStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(alterIndexStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
-        IndexTokenGenerator generator = new IndexTokenGenerator();
+        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator();
         generator.setShardingRule(mock(ShardingRule.class));
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         Collection<SQLToken> actual = generator.generateSQLTokens(alterIndexStatementContext);

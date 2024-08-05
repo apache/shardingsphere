@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.OrderByTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOrderByTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class OrderByTokenGeneratorTest {
+class ShardingOrderByTokenGeneratorTest {
     
     private static final String TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
     
@@ -59,7 +59,7 @@ class OrderByTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        OrderByTokenGenerator generator = new OrderByTokenGenerator();
+        ShardingOrderByTokenGenerator generator = new ShardingOrderByTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(InsertStatementContext.class)));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getOrderByContext().isGenerated()).thenReturn(Boolean.FALSE);
@@ -78,7 +78,7 @@ class OrderByTokenGeneratorTest {
         when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Collection<OrderByItem> orderByItems = getOrderByItems();
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(orderByItems);
-        OrderByTokenGenerator generator = new OrderByTokenGenerator();
+        ShardingOrderByTokenGenerator generator = new ShardingOrderByTokenGenerator();
         OrderByToken actual = generator.generateSQLToken(selectStatementContext);
         assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
         assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));

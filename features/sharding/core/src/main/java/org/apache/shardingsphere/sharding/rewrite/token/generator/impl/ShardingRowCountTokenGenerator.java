@@ -24,24 +24,24 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.OffsetToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.RowCountToken;
 
 /**
- * Offset token generator.
+ * Sharding row count token generator.
  */
-public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
+public final class ShardingRowCountTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext
-                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().isPresent()
-                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment;
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().isPresent()
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment;
     }
     
     @Override
-    public OffsetToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+    public RowCountToken generateSQLToken(final SelectStatementContext selectStatementContext) {
         PaginationContext pagination = selectStatementContext.getPaginationContext();
-        Preconditions.checkState(pagination.getOffsetSegment().isPresent());
-        return new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset());
+        Preconditions.checkState(pagination.getRowCountSegment().isPresent());
+        return new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(), pagination.getRevisedRowCount(selectStatementContext));
     }
 }

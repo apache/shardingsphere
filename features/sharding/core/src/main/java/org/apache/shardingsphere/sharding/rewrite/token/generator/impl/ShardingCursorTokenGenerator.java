@@ -29,10 +29,10 @@ import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 
 /**
- * Cursor token generator.
+ * Sharding cursor token generator.
  */
 @Setter
-public final class CursorTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware {
+public final class ShardingCursorTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware {
     
     private ShardingRule shardingRule;
     
