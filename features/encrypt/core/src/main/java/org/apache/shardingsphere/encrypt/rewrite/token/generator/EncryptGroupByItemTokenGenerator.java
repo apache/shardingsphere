@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -53,7 +52,7 @@ import java.util.Optional;
  */
 @HighFrequencyInvocation
 @Setter
-public final class EncryptGroupByItemTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, EncryptRuleAware, SchemaMetaDataAware, DatabaseTypeAware {
+public final class EncryptGroupByItemTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, EncryptRuleAware, SchemaMetaDataAware, DatabaseTypeAware {
     
     private EncryptRule encryptRule;
     
@@ -65,70 +64,56 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && containsGroupByItem(sqlStatementContext);
+        return sqlStatementContext instanceof SelectStatementContext && containsGroupByItem((SelectStatementContext) sqlStatementContext);
     }
     
-    @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Collection<SQLToken> result = new LinkedHashSet<>();
-        ShardingSphereSchema schema = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> defaultSchema);
-        for (OrderByItem each : getGroupByItems(sqlStatementContext)) {
-            if (each.getSegment() instanceof ColumnOrderByItemSegment) {
-                ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                Map<String, String> columnTableNames = ((TableAvailable) sqlStatementContext).getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
-                result.addAll(generateSQLTokensWithColumnSegments(Collections.singleton(columnSegment), columnTableNames));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<SubstitutableColumnNameToken> generateSQLTokensWithColumnSegments(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnTableNames) {
-        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        for (ColumnSegment each : columnSegments) {
-            String tableName = columnTableNames.getOrDefault(each.getExpression(), "");
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            String columnName = each.getIdentifier().getValue();
-            if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {
-                continue;
-            }
-            int startIndex = each.getOwner().isPresent() ? each.getOwner().get().getStopIndex() + 2 : each.getStartIndex();
-            int stopIndex = each.getStopIndex();
-            EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
-            SubstitutableColumnNameToken encryptColumnNameToken = encryptColumn.getAssistedQuery()
-                    .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional.getName(), each.getIdentifier().getQuoteCharacter()), databaseType))
-                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getCipher().getName(), each.getIdentifier().getQuoteCharacter()),
-                            databaseType));
-            result.add(encryptColumnNameToken);
-        }
-        return result;
-    }
-    
-    private Collection<OrderByItem> getGroupByItems(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectStatementContext)) {
-            return Collections.emptyList();
-        }
-        SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
-        Collection<OrderByItem> result = new LinkedList<>(statementContext.getGroupByContext().getItems());
-        for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {
-            result.addAll(getGroupByItems(each));
-        }
-        return result;
-    }
-    
-    private boolean containsGroupByItem(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectStatementContext)) {
-            return false;
-        }
-        SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
-        if (!statementContext.getGroupByContext().getItems().isEmpty()) {
+    private boolean containsGroupByItem(final SelectStatementContext sqlStatementContext) {
+        if (!sqlStatementContext.getGroupByContext().getItems().isEmpty()) {
             return true;
         }
-        for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {
+        for (SelectStatementContext each : sqlStatementContext.getSubqueryContexts().values()) {
             if (containsGroupByItem(each)) {
                 return true;
             }
         }
         return false;
+    }
+    
+    @Override
+    public Collection<SQLToken> generateSQLTokens(final SelectStatementContext sqlStatementContext) {
+        Collection<SQLToken> result = new LinkedHashSet<>();
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> defaultSchema);
+        for (OrderByItem each : getGroupByItems(sqlStatementContext)) {
+            if (each.getSegment() instanceof ColumnOrderByItemSegment) {
+                ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
+                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
+                generateSQLToken(columnSegment, columnTableNames).ifPresent(result::add);
+            }
+        }
+        return result;
+    }
+    
+    private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnSegment columnSegment, final Map<String, String> columnTableNames) {
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnTableNames.getOrDefault(columnSegment.getExpression(), ""));
+        String columnName = columnSegment.getIdentifier().getValue();
+        if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {
+            return Optional.empty();
+        }
+        EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
+        int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
+        int stopIndex = columnSegment.getStopIndex();
+        return Optional.of(encryptColumn.getAssistedQuery()
+                .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter()), databaseType))
+                .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getCipher().getName(),
+                        columnSegment.getIdentifier().getQuoteCharacter()), databaseType)));
+    }
+    
+    private Collection<OrderByItem> getGroupByItems(final SelectStatementContext sqlStatementContext) {
+        Collection<OrderByItem> result = new LinkedList<>(sqlStatementContext.getGroupByContext().getItems());
+        for (SelectStatementContext each : sqlStatementContext.getSubqueryContexts().values()) {
+            result.addAll(getGroupByItems(each));
+        }
+        return result;
     }
     
     private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
