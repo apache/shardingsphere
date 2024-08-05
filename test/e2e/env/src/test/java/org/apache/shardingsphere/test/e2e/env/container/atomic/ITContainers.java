@@ -57,7 +57,9 @@ public final class ITContainers implements Startable {
      * @return registered container
      */
     public <T extends ITContainer> T registerContainer(final T container) {
-        if (container instanceof EmbeddedITContainer) {
+        if (container instanceof ComboITContainer) {
+            ((ComboITContainer) container).getContainers().forEach(this::registerContainer);
+        } else if (container instanceof EmbeddedITContainer) {
             embeddedContainers.add((EmbeddedITContainer) container);
         } else {
             DockerITContainer dockerContainer = (DockerITContainer) container;

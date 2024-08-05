@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereMultiProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
@@ -53,6 +54,8 @@ public final class AdapterContainerFactory {
                 return AdapterMode.CLUSTER == mode
                         ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig)
                         : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
+            case PROXY_RANDOM:
+                return new ShardingSphereMultiProxyClusterContainer(databaseType, containerConfig);
             case JDBC:
                 return new ShardingSphereJdbcContainer(storageContainer, scenario, databaseType);
             default:
