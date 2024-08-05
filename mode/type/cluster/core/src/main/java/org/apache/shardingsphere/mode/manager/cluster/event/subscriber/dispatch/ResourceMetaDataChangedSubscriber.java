@@ -23,18 +23,17 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.CreateOrAlterTableEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.CreateOrAlterViewEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropViewEvent;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Map;
 
@@ -128,11 +127,9 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
     }
     
     private void refreshShardingSphereStatisticsData() {
-        PersistRepository repository = contextManager.getPersistServiceFacade().getRepository();
-        if (contextManager.getComputeNodeInstanceContext().isCluster()
-                && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()
-                && repository instanceof ClusterPersistRepository) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) repository))).asyncRefresh();
+        if (contextManager.getComputeNodeInstanceContext().isCluster() && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
+            new ShardingSphereStatisticsRefreshEngine(contextManager,
+                    new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()))).asyncRefresh();
         }
     }
 }
