@@ -53,5 +53,16 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StateChangedSubscriber",
   "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getDefaultType","parameterTypes":[] }, {"name":"getProps","parameterTypes":[] }, {"name":"getProviderType","parameterTypes":[] }]
 }
 ]
