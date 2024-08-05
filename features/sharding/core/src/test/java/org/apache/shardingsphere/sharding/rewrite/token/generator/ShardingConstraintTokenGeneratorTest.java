@@ -42,7 +42,7 @@ class ShardingConstraintTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        ShardingConstraintTokenGenerator generator = new ShardingConstraintTokenGenerator();
+        ShardingConstraintTokenGenerator generator = new ShardingConstraintTokenGenerator(mock(ShardingRule.class));
         assertFalse(generator.isGenerateSQLToken(mock(UnknownSQLStatementContext.class)));
         AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class);
         Collection<ConstraintSegment> constraintSegments = new LinkedList<>();
@@ -61,8 +61,7 @@ class ShardingConstraintTokenGeneratorTest {
         when(constraintSegment.getIdentifier()).thenReturn(constraintIdentifier);
         AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class);
         when(alterTableStatementContext.getConstraints()).thenReturn(Collections.singleton(constraintSegment));
-        ShardingConstraintTokenGenerator generator = new ShardingConstraintTokenGenerator();
-        generator.setShardingRule(mock(ShardingRule.class));
+        ShardingConstraintTokenGenerator generator = new ShardingConstraintTokenGenerator(mock(ShardingRule.class));
         Collection<SQLToken> actual = generator.generateSQLTokens(alterTableStatementContext);
         assertThat(actual.size(), is(1));
         assertConstraintToken((ConstraintToken) actual.iterator().next());
