@@ -94,7 +94,8 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
     }
     
     private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnSegment columnSegment, final Map<String, String> columnTableNames) {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnTableNames.getOrDefault(columnSegment.getExpression(), ""));
+        String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         String columnName = columnSegment.getIdentifier().getValue();
         if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {
             return Optional.empty();
@@ -104,8 +105,8 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
         int stopIndex = columnSegment.getStopIndex();
         return Optional.of(encryptColumn.getAssistedQuery()
                 .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter()), databaseType))
-                .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptColumn.getCipher().getName(),
-                        columnSegment.getIdentifier().getQuoteCharacter()), databaseType)));
+                .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex,
+                        createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter()), databaseType)));
     }
     
     private Collection<OrderByItem> getGroupByItems(final SelectStatementContext sqlStatementContext) {
