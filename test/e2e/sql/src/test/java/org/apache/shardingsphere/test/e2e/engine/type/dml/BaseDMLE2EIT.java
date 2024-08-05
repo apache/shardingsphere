@@ -39,6 +39,7 @@ import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMe
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.junit.jupiter.api.AfterEach;
 
 import javax.sql.DataSource;
@@ -87,7 +88,7 @@ public abstract class BaseDMLE2EIT implements E2EEnvironmentAware {
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public final void init(final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
+    public final void init(final E2ETestParameter testParam) throws SQLException, IOException, JAXBException {
         dataSetEnvironmentManager =
                 new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();
