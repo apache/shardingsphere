@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -43,7 +42,7 @@ class ShardingParameterRewriterBuilderTest {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
         Collection<ParameterRewriter> actual = new ShardingParameterRewriterBuilder(
-                mock(ShardingRule.class), mock(RouteContext.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext).getParameterRewriters();
+                mock(RouteContext.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext).getParameterRewriters();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(ShardingPaginationParameterRewriter.class));
     }
@@ -54,7 +53,6 @@ class ShardingParameterRewriterBuilderTest {
         when(routeContext.isSingleRouting()).thenReturn(true);
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        assertTrue(new ShardingParameterRewriterBuilder(
-                mock(ShardingRule.class), routeContext, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext).getParameterRewriters().isEmpty());
+        assertTrue(new ShardingParameterRewriterBuilder(routeContext, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext).getParameterRewriters().isEmpty());
     }
 }
