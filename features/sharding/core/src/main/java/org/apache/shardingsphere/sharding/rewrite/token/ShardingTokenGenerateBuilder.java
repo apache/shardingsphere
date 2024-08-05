@@ -22,6 +22,10 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.SQLTokenGeneratorBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyAssignmentTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyInsertColumnTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingAggregationDistinctTokenGenerator;
@@ -30,19 +34,14 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingC
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingDistinctProjectionPrefixTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingFetchDirectionTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingIndexTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOffsetTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOrderByTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingProjectionsTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRowCountTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRowCountTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyAssignmentTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyInsertColumnTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -62,13 +61,13 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        addSQLTokenGenerator(result, new ShardingTableTokenGenerator());
+        addSQLTokenGenerator(result, new ShardingTableTokenGenerator(shardingRule));
         addSQLTokenGenerator(result, new ShardingDistinctProjectionPrefixTokenGenerator());
         addSQLTokenGenerator(result, new ShardingProjectionsTokenGenerator());
         addSQLTokenGenerator(result, new ShardingOrderByTokenGenerator());
         addSQLTokenGenerator(result, new ShardingAggregationDistinctTokenGenerator());
-        addSQLTokenGenerator(result, new ShardingIndexTokenGenerator());
-        addSQLTokenGenerator(result, new ShardingConstraintTokenGenerator());
+        addSQLTokenGenerator(result, new ShardingIndexTokenGenerator(shardingRule));
+        addSQLTokenGenerator(result, new ShardingConstraintTokenGenerator(shardingRule));
         addSQLTokenGenerator(result, new ShardingOffsetTokenGenerator());
         addSQLTokenGenerator(result, new ShardingRowCountTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertColumnTokenGenerator());
@@ -77,7 +76,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new ShardingInsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new ShardingRemoveTokenGenerator());
-        addSQLTokenGenerator(result, new ShardingCursorTokenGenerator());
+        addSQLTokenGenerator(result, new ShardingCursorTokenGenerator(shardingRule));
         addSQLTokenGenerator(result, new ShardingFetchDirectionTokenGenerator());
         return result;
     }
@@ -85,9 +84,6 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
         if (toBeAddedSQLTokenGenerator instanceof IgnoreForSingleRoute && routeContext.isSingleRouting()) {
             return;
-        }
-        if (toBeAddedSQLTokenGenerator instanceof ShardingRuleAware) {
-            ((ShardingRuleAware) toBeAddedSQLTokenGenerator).setShardingRule(shardingRule);
         }
         if (toBeAddedSQLTokenGenerator instanceof RouteContextAware) {
             ((RouteContextAware) toBeAddedSQLTokenGenerator).setRouteContext(routeContext);

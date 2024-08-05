@@ -50,23 +50,20 @@ class TableTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLTokenWhenConfigAllBindingTables() {
-        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
         ShardingRule shardingRule = mock(ShardingRule.class);
         Collection<String> logicTableNames = Arrays.asList("t_order", "t_order_item");
         when(shardingRule.getShardingLogicTableNames(logicTableNames)).thenReturn(logicTableNames);
         when(shardingRule.isAllBindingTables(logicTableNames)).thenReturn(true);
-        generator.setShardingRule(shardingRule);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(logicTableNames);
-        assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
+        assertTrue(new ShardingTableTokenGenerator(shardingRule).isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertIsGenerateSQLTokenWhenContainsTableSharding() {
-        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
+        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator(mock(ShardingRule.class));
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.containsTableSharding()).thenReturn(true);
-        generator.setShardingRule(mock(ShardingRule.class));
         generator.setRouteContext(routeContext);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
@@ -76,8 +73,7 @@ class TableTokenGeneratorTest {
     void assertGenerateSQLTokenWhenSQLStatementIsTableAvailable() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findShardingTable(anyString())).thenReturn(Optional.of(mock(ShardingTable.class)));
-        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
-        generator.setShardingRule(shardingRule);
+        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator(shardingRule);
         CreateTableStatementContext sqlStatementContext = mock(CreateTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
@@ -87,7 +83,7 @@ class TableTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokenWhenSQLStatementIsNotTableAvailable() {
-        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator();
+        ShardingTableTokenGenerator generator = new ShardingTableTokenGenerator(mock(ShardingRule.class));
         SQLStatementContext sqlStatementContext = mock(UnknownSQLStatementContext.class);
         assertThat(generator.generateSQLTokens(sqlStatementContext), is(Collections.emptyList()));
     }

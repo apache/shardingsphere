@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingCursorTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.CursorToken;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ class ShardingCursorTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
-        ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator();
+        ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator(mock(ShardingRule.class));
         assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
         Optional<CursorNameSegment> cursorName = Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor")));
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class);
@@ -61,7 +62,7 @@ class ShardingCursorTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLToken() {
-        ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator();
+        ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator(mock(ShardingRule.class));
         CursorStatementContext statementContext = mock(CursorStatementContext.class);
         when(statementContext.getCursorName()).thenReturn(Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor"))));
         SQLToken actual = generator.generateSQLToken(statementContext);

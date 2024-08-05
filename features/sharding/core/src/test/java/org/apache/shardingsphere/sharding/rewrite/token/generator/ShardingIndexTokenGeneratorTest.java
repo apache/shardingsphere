@@ -48,7 +48,7 @@ class ShardingIndexTokenGeneratorTest {
     @Test
     void assertIsGenerateSQLToken() {
         UnknownSQLStatementContext sqlStatementContext = mock(UnknownSQLStatementContext.class);
-        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator();
+        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
         AlterIndexStatementContext alterIndexStatementContext = mock(AlterIndexStatementContext.class);
         Collection<IndexSegment> indexSegments = new LinkedList<>();
@@ -69,8 +69,7 @@ class ShardingIndexTokenGeneratorTest {
         when(alterIndexStatementContext.getIndexes()).thenReturn(Collections.singleton(indexSegment));
         when(alterIndexStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(alterIndexStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
-        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator();
-        generator.setShardingRule(mock(ShardingRule.class));
+        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         Collection<SQLToken> actual = generator.generateSQLTokens(alterIndexStatementContext);
         assertThat(actual.size(), is(1));

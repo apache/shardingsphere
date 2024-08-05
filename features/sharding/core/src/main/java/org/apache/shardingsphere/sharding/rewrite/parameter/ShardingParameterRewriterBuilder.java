@@ -22,13 +22,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,8 +37,6 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class ShardingParameterRewriterBuilder implements ParameterRewriterBuilder {
-    
-    private final ShardingRule shardingRule;
     
     private final RouteContext routeContext;
     
@@ -59,9 +55,6 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     private void addParameterRewriter(final Collection<ParameterRewriter> paramRewriters, final ParameterRewriter toBeAddedParamRewriter) {
         if (toBeAddedParamRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) toBeAddedParamRewriter).setSchemas(schemas);
-        }
-        if (toBeAddedParamRewriter instanceof ShardingRuleAware) {
-            ((ShardingRuleAware) toBeAddedParamRewriter).setShardingRule(shardingRule);
         }
         if (toBeAddedParamRewriter instanceof RouteContextAware) {
             ((RouteContextAware) toBeAddedParamRewriter).setRouteContext(routeContext);

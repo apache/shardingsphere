@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 
 import java.util.Collection;
@@ -40,10 +40,11 @@ import java.util.Map;
 /**
  * Sharding index token generator.
  */
+@RequiredArgsConstructor
 @Setter
-public final class ShardingIndexTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware, SchemaMetaDataAware {
+public final class ShardingIndexTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware {
     
-    private ShardingRule shardingRule;
+    private final ShardingRule shardingRule;
     
     private Map<String, ShardingSphereSchema> schemas;
     

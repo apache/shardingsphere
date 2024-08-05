@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingD
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -77,9 +76,6 @@ class ShardingTokenGenerateBuilderTest {
     }
     
     private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws Exception {
-        if (sqlTokenGenerator instanceof ShardingRuleAware) {
-            assertField(sqlTokenGenerator, shardingRule, "shardingRule");
-        }
         if (sqlTokenGenerator instanceof RouteContextAware) {
             assertField(sqlTokenGenerator, routeContext, "routeContext");
         }

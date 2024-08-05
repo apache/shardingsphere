@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ConstraintToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -34,10 +33,10 @@ import java.util.LinkedList;
 /**
  * Sharding constraint token generator.
  */
-@Setter
-public final class ShardingConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware {
+@RequiredArgsConstructor
+public final class ShardingConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext> {
     
-    private ShardingRule shardingRule;
+    private final ShardingRule shardingRule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
