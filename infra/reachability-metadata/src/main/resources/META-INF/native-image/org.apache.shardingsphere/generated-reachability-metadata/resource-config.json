@@ -106,13 +106,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\QMETA-INF/services/io.vertx.core.spi.VertxServiceProvider\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.algorithm.standard.AESEncryptAlgorithm"},
-    "pattern":"\\QMETA-INF/services/java.net.spi.URLStreamHandlerProvider\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
-    "pattern":"\\QMETA-INF/services/java.nio.channels.spi.SelectorProvider\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
@@ -154,6 +148,12 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.audit.SQLAuditor\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.sql.prepare.ExecutionPrepareDecorator\\E"
   }, {
@@ -162,6 +162,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.merge.MergeEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator\\E"
@@ -211,12 +214,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/org.testcontainers.core.CreateContainerCmdModifier\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
-    "pattern":"\\QMETA-INF/services/org.testcontainers.dockerclient.DockerClientProviderStrategy\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
-    "pattern":"\\QMETA-INF/services/org.testcontainers.utility.ImageNameSubstitutor\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Q\\E"
   }, {
@@ -233,16 +230,7 @@
     "pattern":"\\Qcom/clickhouse/client/internal/jpountz/util/linux/amd64/liblz4-java.so\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
-    "pattern":"\\Qcom/github/dockerjava/zerodep/shaded/org/apache/hc/client5/version.properties\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
     "pattern":"\\Qcontainer-license-acceptance.txt\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
-    "pattern":"\\Qdocker-java.properties\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
-    "pattern":"\\Qjndi.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qjta.properties\\E"
@@ -251,12 +239,9 @@
     "pattern":"\\Qlib/sqlparser/druid.jar\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
-    "pattern":"\\Qmozilla/public-suffix-list.txt\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
     "pattern":"\\Qorg/apache/hc/core5/version.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
     "pattern":"\\Qorg/h2/util/data.zip\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
@@ -2717,7 +2702,16 @@
     "pattern":"\\Qseata.conf\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
+    "pattern":"\\Qsql/DerbyNetworkServer.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
+    "pattern":"\\Qsql/EmbeddedDerby.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":"\\Qsql/H2.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
+    "pattern":"\\Qsql/HSQLDB.xml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":"\\Qsql/MySQL.xml\\E"
@@ -2756,9 +2750,6 @@
     "pattern":"\\Qtest-native/yaml/features/readwrite-splitting.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/shadow.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
     "pattern":"\\Qtest-native/yaml/features/sharding.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
@@ -2776,9 +2767,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
     "pattern":"\\Qtest-native/yaml/transactions/xa/narayana.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
-    "pattern":"\\Qtestcontainers.properties\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qtransactions-defaults.properties\\E"
   }, {
@@ -2794,8 +2782,5 @@
   "bundles":[{
     "name":"com.microsoft.sqlserver.jdbc.SQLServerResource",
     "locales":["zh-CN"]
-  }, {
-    "name":"sun.text.resources.cldr.FormatData",
-    "locales":["en"]
   }]
 }

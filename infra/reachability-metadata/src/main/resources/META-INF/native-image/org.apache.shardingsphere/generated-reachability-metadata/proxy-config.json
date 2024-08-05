@@ -4,7 +4,7 @@
     "interfaces":["io.seata.config.Configuration"]
   },
   {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
     "interfaces":["java.sql.Connection"]
   }
 ]
