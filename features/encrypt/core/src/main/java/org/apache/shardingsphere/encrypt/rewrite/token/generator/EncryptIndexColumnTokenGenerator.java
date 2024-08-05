@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
@@ -59,22 +58,18 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Preconditions.checkArgument(sqlStatementContext instanceof IndexAvailable, "SQLStatementContext must implementation IndexAvailable interface.");
-        if (!(sqlStatementContext instanceof TableAvailable) || ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().isEmpty()) {
-            return Collections.emptyList();
-        }
         String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().iterator().next();
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : ((IndexAvailable) sqlStatementContext).getIndexColumns()) {
             if (encryptTable.isEncryptColumn(each.getIdentifier().getValue())) {
-                getColumnToken(encryptTable, each).ifPresent(result::add);
+                generateSQLToken(encryptTable, each).ifPresent(result::add);
             }
         }
         return result;
     }
     
-    private Optional<SQLToken> getColumnToken(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
+    private Optional<SQLToken> generateSQLToken(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         QuoteCharacter quoteCharacter = columnSegment.getIdentifier().getQuoteCharacter();
         int startIndex = columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
