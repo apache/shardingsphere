@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
@@ -42,10 +42,11 @@ import java.util.Map.Entry;
 /**
  * Predicate parameter rewriter for encrypt.
  */
+@RequiredArgsConstructor
 @Setter
-public final class EncryptPredicateParameterRewriter implements ParameterRewriter, EncryptRuleAware, EncryptConditionsAware, DatabaseNameAware {
+public final class EncryptPredicateParameterRewriter implements ParameterRewriter, EncryptConditionsAware, DatabaseNameAware {
     
-    private EncryptRule encryptRule;
+    private final EncryptRule encryptRule;
     
     private Collection<EncryptCondition> encryptConditions;
     

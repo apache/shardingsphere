@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
@@ -58,10 +57,10 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        addParameterRewriter(result, new EncryptAssignmentParameterRewriter());
-        addParameterRewriter(result, new EncryptPredicateParameterRewriter());
-        addParameterRewriter(result, new EncryptInsertValueParameterRewriter());
-        addParameterRewriter(result, new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter());
+        addParameterRewriter(result, new EncryptAssignmentParameterRewriter(encryptRule));
+        addParameterRewriter(result, new EncryptPredicateParameterRewriter(encryptRule));
+        addParameterRewriter(result, new EncryptInsertValueParameterRewriter(encryptRule));
+        addParameterRewriter(result, new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter(encryptRule));
         return result;
     }
     
@@ -76,9 +75,6 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         if (toBeAddedParamRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) toBeAddedParamRewriter).setSchemas(schemas);
             ((SchemaMetaDataAware) toBeAddedParamRewriter).setDefaultSchema(schemas.get(new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName)));
-        }
-        if (toBeAddedParamRewriter instanceof EncryptRuleAware) {
-            ((EncryptRuleAware) toBeAddedParamRewriter).setEncryptRule(encryptRule);
         }
         if (toBeAddedParamRewriter instanceof EncryptConditionsAware) {
             ((EncryptConditionsAware) toBeAddedParamRewriter).setEncryptConditions(encryptConditions);

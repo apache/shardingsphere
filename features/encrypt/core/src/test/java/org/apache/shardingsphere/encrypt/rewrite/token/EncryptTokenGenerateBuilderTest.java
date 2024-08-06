@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.EncryptSelectProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
@@ -29,10 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -64,30 +60,5 @@ class EncryptTokenGenerateBuilderTest {
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator item1 = iterator.next();
         assertThat(item1, instanceOf(EncryptSelectProjectionTokenGenerator.class));
-        assertSQLTokenGenerator(item1);
-    }
-    
-    private void assertSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) {
-        if (sqlTokenGenerator instanceof EncryptRuleAware) {
-            assertField(sqlTokenGenerator, encryptRule, "encryptRule");
-        }
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) {
-        assertThat(Plugins.getMemberAccessor().get(findField(sqlTokenGenerator.getClass(), fieldName, filedInstance.getClass()), sqlTokenGenerator), is(filedInstance));
-    }
-    
-    private Field findField(final Class<?> clazz, final String fieldName, final Class<?> fieldType) {
-        Class<?> searchClass = clazz;
-        while (null != searchClass && !Object.class.equals(searchClass)) {
-            for (Field each : searchClass.getDeclaredFields()) {
-                if (fieldName.equals(each.getName()) && fieldType.equals(each.getType())) {
-                    return each;
-                }
-            }
-            searchClass = searchClass.getSuperclass();
-        }
-        throw new IllegalStateException("No such field in class.");
     }
 }
