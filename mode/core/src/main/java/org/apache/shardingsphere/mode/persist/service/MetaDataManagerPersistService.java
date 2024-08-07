@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.persist.service;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 
@@ -150,4 +151,23 @@ public interface MetaDataManagerPersistService {
      * @param props pros
      */
     void alterProperties(Properties props);
+    
+    /**
+     * Create table.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param table table
+     * @param logicDataSourceName logic data source name
+     */
+    void createTable(String databaseName, String schemaName, ShardingSphereTable table, String logicDataSourceName);
+    
+    /**
+     * Drop tables.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableNames table names
+     */
+    void dropTables(String databaseName, String schemaName, Collection<String> tableNames);
 }
