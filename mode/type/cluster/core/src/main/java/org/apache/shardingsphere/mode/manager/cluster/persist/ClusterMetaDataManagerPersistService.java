@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist;
 
+import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -200,6 +201,17 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void alterProperties(final Properties props) {
         metaDataPersistService.getPropsService().persist(props);
+    }
+    
+    @Override
+    public void createTable(final String databaseName, final String schemaName, final ShardingSphereTable table, final String logicDataSourceName) {
+        DatabaseMetaDataPersistService databaseMetaDataService = metaDataPersistService.getDatabaseMetaDataService();
+        databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, Maps.of(table.getName(), table));
+    }
+    
+    @Override
+    public void dropTables(final String databaseName, final String schemaName, final Collection<String> tableNames) {
+        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().delete(databaseName, schemaName, each));
     }
     
     private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
