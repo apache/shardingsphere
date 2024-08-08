@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConst
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Statistics assemble utils.
@@ -71,7 +72,7 @@ public final class StatisticsAssembleUtils {
     }
     
     private static void assembleOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas) {
-        for (Map.Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
+        for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
             for (String each : entry.getValue().getAllTableNames()) {
                 Object[] rows = new Object[10];
                 rows[0] = entry.getKey();

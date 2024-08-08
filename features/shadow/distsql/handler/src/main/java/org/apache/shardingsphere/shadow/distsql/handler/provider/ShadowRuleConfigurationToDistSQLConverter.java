@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.constant.ShadowDistSQLCo
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Shadow rule configuration to DistSQL converter.
@@ -57,9 +58,9 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
     
     private String getShadowTables(final String shadowRuleName, final Map<String, ShadowTableConfiguration> ruleConfig, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
         StringBuilder result = new StringBuilder();
-        Iterator<Map.Entry<String, ShadowTableConfiguration>> iterator = ruleConfig.entrySet().iterator();
+        Iterator<Entry<String, ShadowTableConfiguration>> iterator = ruleConfig.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String, ShadowTableConfiguration> shadowTableConfig = iterator.next();
+            Entry<String, ShadowTableConfiguration> shadowTableConfig = iterator.next();
             if (shadowTableConfig.getValue().getDataSourceNames().contains(shadowRuleName)) {
                 String shadowTableTypes = getShadowTableTypes(shadowTableConfig.getValue().getShadowAlgorithmNames(), algorithmConfigs);
                 result.append(String.format(ShadowDistSQLConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
