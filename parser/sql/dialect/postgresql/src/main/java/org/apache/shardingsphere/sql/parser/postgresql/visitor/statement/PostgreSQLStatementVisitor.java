@@ -1299,7 +1299,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+                (null == ((LiteralExpressionSegment) astNode).getLiterals()) ? null : Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     @Override
@@ -1308,7 +1309,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+                (null == ((LiteralExpressionSegment) astNode).getLiterals()) ? null : Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     @Override
@@ -1317,7 +1319,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+                (null == ((LiteralExpressionSegment) astNode).getLiterals()) ? null : Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {

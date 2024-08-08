@@ -117,6 +117,9 @@ public final class SQLValue {
     
     @Override
     public String toString() {
+        if (null == value) {
+            return null;
+        }
         if (value instanceof String) {
             return formatString((String) value);
         }
