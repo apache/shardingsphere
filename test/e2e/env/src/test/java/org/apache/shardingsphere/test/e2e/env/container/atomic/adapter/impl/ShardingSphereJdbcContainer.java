@@ -17,25 +17,19 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl;
 
-import com.google.common.base.Strings;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
+import org.apache.shardingsphere.infra.url.core.ShardingSphereURLLoadEngine;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -43,16 +37,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, AdapterContainer {
     
-    private final StorageContainer storageContainer;
-    
     private final ScenarioCommonPath scenarioCommonPath;
     
     private final DatabaseType databaseType;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereJdbcContainer(final StorageContainer storageContainer, final String scenario, final DatabaseType databaseType) {
-        this.storageContainer = storageContainer;
+    public ShardingSphereJdbcContainer(final String scenario, final DatabaseType databaseType) {
         scenarioCommonPath = new ScenarioCommonPath(scenario);
         this.databaseType = databaseType;
     }
@@ -65,40 +56,23 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
     public DataSource getTargetDataSource(final String serverLists) {
         DataSource dataSource = targetDataSourceProvider.get();
         if (null == dataSource) {
-            if (Strings.isNullOrEmpty(serverLists)) {
-                try {
-                    targetDataSourceProvider.set(
-                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(scenarioCommonPath.getRuleConfigurationFile(databaseType))));
-                } catch (final SQLException | IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            } else {
-                targetDataSourceProvider.set(createGovernanceClientDataSource(serverLists));
-            }
+            targetDataSourceProvider.set(createTargetDataSource());
         }
         return targetDataSourceProvider.get();
     }
     
     @SneakyThrows({SQLException.class, IOException.class})
-    private DataSource createGovernanceClientDataSource(final String serverLists) {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(scenarioCommonPath.getRuleConfigurationFile(databaseType)), YamlRootConfiguration.class);
-        rootConfig.setMode(createYamlModeConfiguration(serverLists));
-        return YamlShardingSphereDataSourceFactory.createDataSource(Collections.emptyMap(), YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
-    }
-    
-    private YamlModeConfiguration createYamlModeConfiguration(final String serverLists) {
-        YamlModeConfiguration result = new YamlModeConfiguration();
-        result.setType("Cluster");
-        YamlPersistRepositoryConfiguration repositoryConfig = new YamlPersistRepositoryConfiguration();
-        // TODO process more types
-        repositoryConfig.setType("ZooKeeper");
-        repositoryConfig.getProps().setProperty("namespace", "it_db");
-        repositoryConfig.getProps().setProperty("server-lists", serverLists);
-        repositoryConfig.getProps().setProperty("timeToLiveSeconds", "60");
-        repositoryConfig.getProps().setProperty("operationTimeoutMilliseconds", "500");
-        repositoryConfig.getProps().setProperty("retryIntervalMilliseconds", "500");
-        repositoryConfig.getProps().setProperty("maxRetries", "3");
-        result.setRepository(repositoryConfig);
+    private DataSource createTargetDataSource() {
+        ShardingSphereURLLoadEngine urlLoadEngine = new ShardingSphereURLLoadEngine(ShardingSphereURL.parse("absolutepath:" + scenarioCommonPath.getRuleConfigurationFile(databaseType)));
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(urlLoadEngine.loadContent());
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        result.setDataSource(dataSource);
+        result.setUsername("root");
+        result.setPassword("Root@123");
+        result.setMaximumPoolSize(2);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        result.setLeakDetectionThreshold(10000L);
         return result;
     }
     
