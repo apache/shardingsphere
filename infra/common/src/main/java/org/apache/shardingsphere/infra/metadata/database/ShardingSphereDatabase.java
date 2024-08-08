@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -69,8 +70,7 @@ public final class ShardingSphereDatabase {
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
         this.ruleMetaData = ruleMetaData;
-        this.schemas = new ConcurrentHashMap<>(schemas.size(), 1F);
-        schemas.forEach((key, value) -> this.schemas.put(key.toLowerCase(), value));
+        this.schemas = new CaseInsensitiveMap<>(schemas, new ConcurrentHashMap<>(schemas.size(), 1F));
     }
     
     /**
@@ -145,7 +145,7 @@ public final class ShardingSphereDatabase {
      * @return contains schema from database or not
      */
     public boolean containsSchema(final String schemaName) {
-        return schemas.containsKey(schemaName.toLowerCase());
+        return schemas.containsKey(schemaName);
     }
     
     /**
@@ -155,7 +155,7 @@ public final class ShardingSphereDatabase {
      * @return schema
      */
     public ShardingSphereSchema getSchema(final String schemaName) {
-        return schemas.get(schemaName.toLowerCase());
+        return schemas.get(schemaName);
     }
     
     /**
@@ -165,7 +165,7 @@ public final class ShardingSphereDatabase {
      * @param schema schema
      */
     public void addSchema(final String schemaName, final ShardingSphereSchema schema) {
-        schemas.put(schemaName.toLowerCase(), schema);
+        schemas.put(schemaName, schema);
     }
     
     /**
@@ -174,7 +174,7 @@ public final class ShardingSphereDatabase {
      * @param schemaName schema name
      */
     public void dropSchema(final String schemaName) {
-        schemas.remove(schemaName.toLowerCase());
+        schemas.remove(schemaName);
     }
     
     /**
