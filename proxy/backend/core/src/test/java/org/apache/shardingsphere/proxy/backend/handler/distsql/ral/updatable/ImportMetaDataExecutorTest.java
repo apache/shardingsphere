@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -44,7 +45,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +52,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -79,19 +78,18 @@ class ImportMetaDataExecutorTest {
     }
     
     @Test
-    void assertImportEmptyMetaData() throws SQLException {
+    void assertImportEmptyMetaData() {
         init(null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        executor.executeUpdate(new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY))).getPath()), contextManager);
-        assertNotNull(contextManager.getDatabase("empty_metadata"));
+        assertThrows(EmptyStorageUnitException.class, () -> executor.executeUpdate(
+                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY))).getPath()), contextManager));
     }
     
     @Test
-    void assertImportMetaDataFromJsonValue() throws SQLException {
+    void assertImportMetaDataFromJsonValue() {
         init(EMPTY);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        executor.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null), contextManager);
-        assertNotNull(contextManager.getDatabase("sharding_db"));
+        assertThrows(NullPointerException.class, () -> executor.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null), contextManager));
     }
     
     @Test
