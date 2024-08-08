@@ -61,7 +61,7 @@ public final class RuleConfigurationPersistDecorateEngine {
             return ruleConfigs;
         }
         return ruleConfigs.stream()
-                .map(each -> TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each).map(optional -> optional.restore(each)).orElse(each)).collect(Collectors.toList());
+                .map(each -> TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each.getClass()).map(optional -> optional.restore(each)).orElse(each)).collect(Collectors.toList());
     }
     
     /**

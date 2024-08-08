@@ -212,7 +212,7 @@ public final class MetaDataContextsFactory {
     private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService,
                                                       final ComputeNodeInstanceContext computeNodeInstanceContext) {
         RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext);
-        persistService.persistGlobalRuleConfiguration(ruleConfigPersistDecorateEngine.decorate(param.getGlobalRuleConfigs()), param.getProps());
+        persistService.persistGlobalRuleConfiguration(ruleConfigPersistDecorateEngine.decorate(metadataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations()), param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             persistService.persistConfigurations(entry.getKey(), entry.getValue(),
