@@ -53,9 +53,9 @@ class ShardingRowCountTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLToken() {
-        final int testOffsetSegmentValue = 12;
+        final long testOffsetSegmentValue = 12L;
         NumberLiteralLimitValueSegment offsetSegment = new NumberLiteralLimitValueSegment(1, 2, testOffsetSegmentValue);
-        final int testRowCountSegmentValue = 8;
+        final long testRowCountSegmentValue = 8L;
         NumberLiteralLimitValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(4, 5, testRowCountSegmentValue);
         PaginationContext paginationContext = new PaginationContext(offsetSegment, rowCountSegment, null);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);

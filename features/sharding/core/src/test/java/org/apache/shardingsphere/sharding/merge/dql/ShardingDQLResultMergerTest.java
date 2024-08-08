@@ -130,7 +130,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -202,7 +202,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -281,7 +281,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -360,7 +360,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -442,7 +442,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);

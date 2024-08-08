@@ -64,7 +64,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
-        sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null));
+        sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, Long.MAX_VALUE, true), null));
         SelectStatementContext selectStatementContext =
                 new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
