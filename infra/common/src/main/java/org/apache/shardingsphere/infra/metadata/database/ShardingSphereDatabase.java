@@ -70,7 +70,7 @@ public final class ShardingSphereDatabase {
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
         this.ruleMetaData = ruleMetaData;
-        this.schemas = new CaseInsensitiveMap<>(schemas, new ConcurrentHashMap<>());
+        this.schemas = new CaseInsensitiveMap<>(schemas, new ConcurrentHashMap<>(schemas.size(), 1F));
     }
     
     /**
