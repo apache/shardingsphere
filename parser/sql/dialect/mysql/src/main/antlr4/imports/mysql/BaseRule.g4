@@ -126,7 +126,7 @@ identifier
     | UNDERSCORE_CHARSET
     | BQUOTA_STRING
     ;
-    
+
 identifierKeywordsUnambiguous
     : ACTION
     | ACCOUNT
@@ -522,6 +522,8 @@ identifierKeywordsUnambiguous
     | XML
     | YEAR
     | YEAR_MONTH
+    | CONDITION
+    | DESCRIBE
     ;
     
 identifierKeywordsAmbiguous1RolesAndLabels
