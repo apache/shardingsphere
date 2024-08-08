@@ -27,12 +27,25 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +54,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MetaDataRefreshEngine {
     
-    private static final Collection<Class<? extends SQLStatement>> IGNORED_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Collection<Class<? extends DDLStatement>> DDL_STATEMENT_CLASSES = Arrays.asList(CreateTableStatement.class, AlterTableStatement.class, DropTableStatement.class,
+            CreateViewStatement.class, AlterViewStatement.class, DropViewStatement.class, CreateIndexStatement.class, AlterIndexStatement.class, DropIndexStatement.class, CreateSchemaStatement.class,
+            AlterSchemaStatement.class, DropSchemaStatement.class, RenameTableStatement.class);
     
     private final MetaDataManagerPersistService metaDataManagerPersistService;
     
@@ -58,11 +73,11 @@ public final class MetaDataRefreshEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
-        if (IGNORED_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
+        Class sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
+        if (!DDL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return;
         }
-        Optional<MetaDataRefresher> schemaRefresher = TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass.getSuperclass());
+        Optional<MetaDataRefresher> schemaRefresher = TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass);
         if (schemaRefresher.isPresent()) {
             String schemaName = null;
             if (sqlStatementContext instanceof TableAvailable) {
@@ -72,9 +87,7 @@ public final class MetaDataRefreshEngine {
             Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
             schemaRefresher.get().refresh(metaDataManagerPersistService, database,
                     logicDataSourceNames, schemaName, sqlStatementContext.getDatabaseType(), sqlStatementContext.getSqlStatement(), props);
-            return;
         }
-        IGNORED_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
     }
     
     /**
