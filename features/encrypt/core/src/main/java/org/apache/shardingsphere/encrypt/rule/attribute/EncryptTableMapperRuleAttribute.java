@@ -28,7 +28,7 @@ import java.util.Collections;
  */
 public final class EncryptTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
-    private final CaseInsensitiveSet<String> logicalTableMapper;
+    private final Collection<String> logicalTableMapper;
     
     public EncryptTableMapperRuleAttribute(final Collection<String> encryptTableNames) {
         logicalTableMapper = new CaseInsensitiveSet<>(encryptTableNames);
