@@ -37,15 +37,17 @@ public interface MetaDataManagerPersistService {
      * Create database.
      *
      * @param databaseName database name
+     * @throws SQLException SQL exception
      */
-    void createDatabase(String databaseName);
+    void createDatabase(String databaseName) throws SQLException;
     
     /**
      * Drop database.
      *
      * @param databaseName database name
+     * @throws SQLException SQL exception
      */
-    void dropDatabase(String databaseName);
+    void dropDatabase(String databaseName) throws SQLException;
     
     /**
      * Create schema.
@@ -59,8 +61,9 @@ public interface MetaDataManagerPersistService {
      * Alter schema.
      *
      * @param alterSchemaPOJO alter schema pojo
+     * @throws SQLException SQL exception
      */
-    void alterSchema(AlterSchemaPOJO alterSchemaPOJO);
+    void alterSchema(AlterSchemaPOJO alterSchemaPOJO) throws SQLException;
     
     /**
      * Drop schema.

@@ -34,6 +34,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
 
+import java.sql.SQLException;
+
 /**
  * Drop database backend handler.
  */
@@ -45,7 +47,7 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     private final ConnectionSession connectionSession;
     
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute() throws SQLException {
         check(sqlStatement, connectionSession.getConnectionContext().getGrantee());
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             checkSupportedDropCurrentDatabase(connectionSession);

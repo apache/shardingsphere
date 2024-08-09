@@ -40,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,7 +108,7 @@ class DropDatabaseBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropWithoutCurrentDatabase() {
+    void assertExecuteDropWithoutCurrentDatabase() throws SQLException {
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabaseName(null);
@@ -115,7 +116,7 @@ class DropDatabaseBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropCurrentDatabaseWithMySQL() {
+    void assertExecuteDropCurrentDatabaseWithMySQL() throws SQLException {
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
@@ -133,7 +134,7 @@ class DropDatabaseBackendHandlerTest {
     }
     
     @Test
-    void assertExecuteDropOtherDatabase() {
+    void assertExecuteDropOtherDatabase() throws SQLException {
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(sqlStatement.getDatabaseName()).thenReturn("bar_db");
         ResponseHeader responseHeader = handler.execute();
