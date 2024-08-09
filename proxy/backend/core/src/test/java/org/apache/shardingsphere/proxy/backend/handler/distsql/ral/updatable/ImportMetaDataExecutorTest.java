@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import lombok.SneakyThrows;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
@@ -87,7 +88,7 @@ class ImportMetaDataExecutorTest {
     }
     
     @Test
-    void assertImportEmptyMetaData() throws NoSuchFieldException, IllegalAccessException {
+    void assertImportEmptyMetaData() {
         init(null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         assertThrows(EmptyStorageUnitException.class, () -> executor.executeUpdate(
@@ -95,7 +96,7 @@ class ImportMetaDataExecutorTest {
     }
     
     @Test
-    void assertImportMetaDataFromJsonValue() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertImportMetaDataFromJsonValue() throws SQLException {
         init(EMPTY);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         executor.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null), contextManager);
@@ -103,14 +104,15 @@ class ImportMetaDataExecutorTest {
     }
     
     @Test
-    void assertImportExistedMetaDataFromFile() throws NoSuchFieldException, IllegalAccessException {
+    void assertImportExistedMetaDataFromFile() {
         init(EMPTY);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         assertThrows(DatabaseCreateExistsException.class, () -> executor.executeUpdate(
                 new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY))).getPath()), contextManager));
     }
     
-    private void init(final String feature) throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
+    private void init(final String feature) {
         executor = new ImportMetaDataExecutor();
         ContextManager contextManager = mockContextManager(feature);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
