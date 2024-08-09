@@ -9478,4 +9478,24 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_with_reserved_word_with_table_ref">
+        <projections start-index="7" stop-index="19">
+            <column-projection name="condition" start-index="7" stop-index="19" >
+                <owner name="xxx" start-index="7" stop-index="9" />
+            </column-projection>
+        </projections>
+        <from start-index="26" stop-index="28">
+            <simple-table name="xxx" start-index="26" stop-index="28"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_reserved_word">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="describe" start-index="7" stop-index="14" />
+        </projections>
+        <from start-index="21" stop-index="23">
+            <simple-table name="xxx" start-index="21" stop-index="23"/>
+        </from>
+    </select>
 </sql-parser-test-cases>
