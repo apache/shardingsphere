@@ -105,7 +105,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
         if (result && null != enumerator.current()) {
             currentRows = enumerator.current().getClass().isArray() && !(enumerator.current() instanceof byte[]) ? (Object[]) enumerator.current() : new Object[]{enumerator.current()};
         } else {
-            currentRows = new Object[]{};
+            currentRows = new Object[]{null};
         }
         return result;
     }

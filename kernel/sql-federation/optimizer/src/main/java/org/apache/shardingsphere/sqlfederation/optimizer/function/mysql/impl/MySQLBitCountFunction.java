@@ -39,7 +39,7 @@ public final class MySQLBitCountFunction {
     @SuppressWarnings("unused")
     public static Object bitCount(final Object value) {
         if (null == value) {
-            return 0;
+            return null;
         }
         if (value instanceof byte[]) {
             return bitCount((byte[]) value);
