@@ -23,3 +23,5 @@ coverage:
         threshold: 0.1%
 ignore:
   - "examples/.*"
+codecov:
+  max_report_age: off
