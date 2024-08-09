@@ -49,7 +49,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({AutoMockExtension.class})
+@ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 class DatabaseConnectorFactoryTest {
     
