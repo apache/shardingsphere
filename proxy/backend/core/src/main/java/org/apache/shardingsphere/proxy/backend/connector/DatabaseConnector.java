@@ -133,9 +133,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(),
                 sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList(), database);
         ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(connectionSession.getUsedDatabaseName()));
-        if (!isSystemSchema && !database.isComplete()) {
-            throw new EmptyRuleException(connectionSession.getUsedDatabaseName());
-        }
+        ShardingSpherePreconditions.checkState(isSystemSchema || database.isComplete(), () -> new EmptyRuleException(connectionSession.getUsedDatabaseName()));
     }
     
     /**
