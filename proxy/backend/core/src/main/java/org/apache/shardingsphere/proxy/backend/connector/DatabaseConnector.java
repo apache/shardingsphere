@@ -154,18 +154,11 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         cachedResultSets.add(resultSet);
     }
     
-    /**
-     * Execute to database.
-     *
-     * @return backend response
-     * @throws SQLException SQL exception
-     */
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
-            ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
-            return processExecuteFederation(resultSet, metaDataContexts);
+            return processExecuteFederation(doExecuteFederation(metaDataContexts), metaDataContexts);
         }
         MetaDataRefreshEngine metaDataRefreshEngine = getMetaDataRefreshEngine();
         if (proxySQLExecutor.getSqlFederationEngine().enabled() && metaDataRefreshEngine.isFederation(queryContext.getSqlStatementContext())) {
@@ -180,8 +173,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private ExecutionContext generateExecutionContext() {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-        return new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps(),
-                databaseConnectionManager.getConnectionSession().getConnectionContext());
+        return new KernelProcessor().generateExecutionContext(
+                queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
     }
     
     private boolean isNeedImplicitCommitTransaction(final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
@@ -190,10 +183,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         }
         TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
         TransactionStatus transactionStatus = databaseConnectionManager.getConnectionSession().getTransactionStatus();
-        if (!TransactionType.isDistributedTransaction(transactionType) || transactionStatus.isInTransaction()) {
-            return false;
-        }
-        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
+        return multiExecutionUnits && TransactionType.isDistributedTransaction(transactionType) && !transactionStatus.isInTransaction() && isWriteDMLStatement(sqlStatement);
     }
     
     private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
@@ -230,7 +220,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
                 : processExecuteUpdate(result.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
-    private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) {
+    private ResultSet doExecuteFederation(final MetaDataContexts metaDataContexts) {
         boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName());
         DatabaseType protocolType = database.getProtocolType();
@@ -291,8 +281,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private MetaDataRefreshEngine getMetaDataRefreshEngine() {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        return new MetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), queryContext.getUsedDatabase(),
-                contextManager.getMetaDataContexts().getMetaData().getProps());
+        return new MetaDataRefreshEngine(
+                contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), queryContext.getUsedDatabase(), contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
     private QueryResponseHeader processExecuteQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
@@ -327,8 +317,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-        MergeEngine mergeEngine =
-                new MergeEngine(metaData.getGlobalRuleMetaData(), queryContext.getUsedDatabase(), metaData.getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
+        MergeEngine mergeEngine = new MergeEngine(
+                metaData.getGlobalRuleMetaData(), queryContext.getUsedDatabase(), metaData.getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
@@ -336,22 +326,20 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         Optional<GeneratedKeyContext> generatedKeyContext = queryContext.getSqlStatementContext() instanceof InsertStatementContext
                 ? ((InsertStatementContext) queryContext.getSqlStatementContext()).getGeneratedKeyContext()
                 : Optional.empty();
-        Collection<Comparable<?>> autoIncrementGeneratedValues =
-                generatedKeyContext.filter(GeneratedKeyContext::isSupportAutoIncrement).map(GeneratedKeyContext::getGeneratedValues).orElseGet(Collections::emptyList);
+        Collection<Comparable<?>> autoIncrementGeneratedValues = generatedKeyContext.filter(GeneratedKeyContext::isSupportAutoIncrement)
+                .map(GeneratedKeyContext::getGeneratedValues).orElseGet(Collections::emptyList);
         UpdateResponseHeader result = new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement(), updateResults, autoIncrementGeneratedValues);
-        mergeUpdateCount(queryContext.getSqlStatementContext(), result);
+        if (isNeedAccumulate()) {
+            result.mergeUpdateCount();
+        }
         return result;
     }
     
-    private void mergeUpdateCount(final SQLStatementContext sqlStatementContext, final UpdateResponseHeader response) {
-        if (isNeedAccumulate(sqlStatementContext)) {
-            response.mergeUpdateCount();
-        }
-    }
-    
-    private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
+    private boolean isNeedAccumulate() {
         Collection<DataNodeRuleAttribute> ruleAttributes = queryContext.getUsedDatabase().getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
+        Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableAvailable
+                ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
+                : Collections.emptyList();
         return !ruleAttributes.isEmpty() && ruleAttributes.iterator().next().isNeedAccumulate(tableNames);
     }
     
