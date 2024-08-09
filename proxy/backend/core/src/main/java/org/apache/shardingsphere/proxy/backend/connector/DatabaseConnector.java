@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleE
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
@@ -89,6 +90,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Database connector.
@@ -217,16 +219,17 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return result;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private ResponseHeader doExecute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        List result = proxySQLExecutor.execute(executionContext);
+        List<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
         refreshMetaData(executionContext);
         Object executeResultSample = result.iterator().next();
-        return executeResultSample instanceof QueryResult ? processExecuteQuery(queryContext.getSqlStatementContext(), result, (QueryResult) executeResultSample) : processExecuteUpdate(result);
+        return executeResultSample instanceof QueryResult
+                ? processExecuteQuery(queryContext.getSqlStatementContext(), result.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
+                : processExecuteUpdate(result.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
     private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) {
