@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -42,9 +44,11 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,6 +56,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -62,9 +67,13 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ImportMetaDataExecutorTest {
     
-    private static final String METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7InNoYXJkaW5nX2RiIjoiZGF0YWJhc2VOYW1lOiBzaGFyZGluZ19kYlxuZGF0YVNvdXJjZXM6XG5ydWxlczpcbiJ9LCJwcm9w"
-            + "cyI6InByb3BzOlxuICBzeXN0ZW0tbG9nLWxldmVsOiBJTkZPXG4gIHNxbC1zaG93OiBmYWxzZVxuIiwicnVsZXMiOiJydWxlczpcbi0gIUFVVEhPUklUWVxuICBwcml2aWxlZ2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFR"
-            + "FxuICB1c2VyczpcbiAgLSBhdXRoZW50aWNhdGlvbk1ldGhvZE5hbWU6ICcnXG4gICAgcGFzc3dvcmQ6IHJvb3RcbiAgICB1c2VyOiByb290QCVcbiJ9fQ==";
+    private static final String METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7InNoYXJkaW5nX2RiIjoiZGF0YWJhc2VOYW1lOiBzaGFyZGluZ19kYlxuZGF0YVNvdXJjZXM6XG4gIGRzXzA6XG4gICAgcGFzc3dvcmQ6IFxu"
+            + "ICAgIGRhdGFTb3VyY2VDbGFzc05hbWU6IG51bGxcbiAgICB1cmw6IGpkYmM6bXlzcWw6Ly8xMjcuMC4wLjE6MzMwNi9kZW1vX2RzXzA/dXNlU1NMPWZhbHNlXG4gICAgdXNlcm5hbWU6IHJvb3RcbiAgICBtaW5Qb29sU2l6ZTogMVxuICAgI"
+            + "GNvbm5lY3Rpb25UaW1lb3V0TWlsbGlzZWNvbmRzOiAzMDAwMFxuICAgIG1heExpZmV0aW1lTWlsbGlzZWNvbmRzOiAxODAwMDAwXG4gICAgaWRsZVRpbWVvdXRNaWxsaXNlY29uZHM6IDYwMDAwXG4gICAgbWF4UG9vbFNpemU6IDUwXG4gIG"
+            + "RzXzE6XG4gICAgcGFzc3dvcmQ6IFxuICAgIGRhdGFTb3VyY2VDbGFzc05hbWU6IG51bGxcbiAgICB1cmw6IGpkYmM6bXlzcWw6Ly8xMjcuMC4wLjE6MzMwNi9kZW1vX2RzXzE/dXNlU1NMPWZhbHNlXG4gICAgdXNlcm5hbWU6IHJvb3RcbiA"
+            + "gICBtaW5Qb29sU2l6ZTogMVxuICAgIGNvbm5lY3Rpb25UaW1lb3V0TWlsbGlzZWNvbmRzOiAzMDAwMFxuICAgIG1heExpZmV0aW1lTWlsbGlzZWNvbmRzOiAxODAwMDAwXG4gICAgaWRsZVRpbWVvdXRNaWxsaXNlY29uZHM6IDYwMDAwXG4g"
+            + "ICAgbWF4UG9vbFNpemU6IDUwXG5ydWxlczpcbiJ9LCJwcm9wcyI6InByb3BzOlxuICBzeXN0ZW0tbG9nLWxldmVsOiBJTkZPXG4gIHNxbC1zaG93OiBmYWxzZVxuIiwicnVsZXMiOiJydWxlczpcbi0gIUFVVEhPUklUWVxuICBwcml2aWxlZ"
+            + "2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFRFxuICB1c2VyczpcbiAgLSBhdXRoZW50aWNhdGlvbk1ldGhvZE5hbWU6ICcnXG4gICAgcGFzc3dvcmQ6IHJvb3RcbiAgICB1c2VyOiByb290QCVcbiJ9fQ==";
     
     private static final String EMPTY = "empty_metadata";
     
@@ -78,7 +87,7 @@ class ImportMetaDataExecutorTest {
     }
     
     @Test
-    void assertImportEmptyMetaData() {
+    void assertImportEmptyMetaData() throws NoSuchFieldException, IllegalAccessException {
         init(null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         assertThrows(EmptyStorageUnitException.class, () -> executor.executeUpdate(
@@ -86,25 +95,30 @@ class ImportMetaDataExecutorTest {
     }
     
     @Test
-    void assertImportMetaDataFromJsonValue() {
+    void assertImportMetaDataFromJsonValue() throws SQLException, NoSuchFieldException, IllegalAccessException {
         init(EMPTY);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        assertThrows(NullPointerException.class, () -> executor.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null), contextManager));
+        executor.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null), contextManager);
+        assertNotNull(contextManager.getDatabase("sharding_db"));
     }
     
     @Test
-    void assertImportExistedMetaDataFromFile() {
+    void assertImportExistedMetaDataFromFile() throws NoSuchFieldException, IllegalAccessException {
         init(EMPTY);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         assertThrows(DatabaseCreateExistsException.class, () -> executor.executeUpdate(
                 new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY))).getPath()), contextManager));
     }
     
-    private void init(final String feature) {
+    private void init(final String feature) throws NoSuchFieldException, IllegalAccessException {
         executor = new ImportMetaDataExecutor();
         ContextManager contextManager = mockContextManager(feature);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);
+        YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
+        Plugins.getMemberAccessor().set(executor.getClass().getDeclaredField("databaseConfigImportExecutor"), executor, databaseConfigImportExecutor);
+        Plugins.getMemberAccessor().set(databaseConfigImportExecutor.getClass().getDeclaredField("validateHandler"), databaseConfigImportExecutor,
+                mock(DistSQLDataSourcePoolPropertiesValidator.class));
     }
     
     private ContextManager mockContextManager(final String feature) {
