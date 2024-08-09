@@ -238,12 +238,12 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        List<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
-        refreshMetaData(executionContext);
-        Object executeResultSample = result.iterator().next();
+        List<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
+        getMetaDataRefreshEngine().refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+        Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(queryContext.getSqlStatementContext(), result.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
-                : processExecuteUpdate(result.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
+                ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
+                : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
     
     private ResultSet doExecuteFederation() {
@@ -273,10 +273,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         }
         mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCStreamQueryResult(resultSet)));
         return new QueryResponseHeader(queryHeaders);
-    }
-    
-    private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
-        getMetaDataRefreshEngine().refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
     }
     
     private MetaDataRefreshEngine getMetaDataRefreshEngine() {
