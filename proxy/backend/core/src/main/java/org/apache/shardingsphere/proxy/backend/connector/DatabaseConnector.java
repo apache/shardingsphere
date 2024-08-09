@@ -123,7 +123,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         this.queryContext = queryContext;
         this.databaseConnectionManager = databaseConnectionManager;
         contextManager = ProxyContext.getInstance().getContextManager();
-        database = contextManager.getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName());
+        database = queryContext.getUsedDatabase();
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         checkBackendReady(sqlStatementContext);
         containsDerivedProjections = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections();
@@ -280,8 +280,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private MetaDataRefreshEngine getMetaDataRefreshEngine() {
-        return new MetaDataRefreshEngine(
-                contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), queryContext.getUsedDatabase(), contextManager.getMetaDataContexts().getMetaData().getProps());
+        return new MetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
     private QueryResponseHeader processExecuteQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
@@ -293,7 +292,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     private List<QueryHeader> createQueryHeaders(final SQLStatementContext sqlStatementContext, final QueryResult queryResultSample) throws SQLException {
         int columnCount = getColumnCount(sqlStatementContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
-        ShardingSphereDatabase database = queryContext.getUsedDatabase();
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             result.add(createQueryHeader(queryHeaderBuilderEngine, sqlStatementContext, queryResultSample, database, columnIndex));
@@ -316,7 +314,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
-                queryContext.getUsedDatabase(), contextManager.getMetaDataContexts().getMetaData().getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
+                database, contextManager.getMetaDataContexts().getMetaData().getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
@@ -334,7 +332,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isNeedAccumulate() {
-        Collection<DataNodeRuleAttribute> ruleAttributes = queryContext.getUsedDatabase().getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
+        Collection<DataNodeRuleAttribute> ruleAttributes = database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
         Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableAvailable
                 ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
                 : Collections.emptyList();
