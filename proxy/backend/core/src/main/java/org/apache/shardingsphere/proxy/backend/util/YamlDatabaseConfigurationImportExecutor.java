@@ -71,8 +71,9 @@ public final class YamlDatabaseConfigurationImportExecutor {
      * Import proxy database from yaml configuration.
      *
      * @param yamlConfig yaml proxy database configuration
+     * @throws SQLException SQL exception
      */
-    public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) {
+    public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) throws SQLException {
         String databaseName = yamlConfig.getDatabaseName();
         checkDatabase(databaseName);
         addDatabase(databaseName);
@@ -93,7 +94,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         ShardingSpherePreconditions.checkState(!ProxyContext.getInstance().databaseExists(databaseName), () -> new DatabaseCreateExistsException(databaseName));
     }
     
-    private void addDatabase(final String databaseName) {
+    private void addDatabase(final String databaseName) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
@@ -156,7 +157,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         return result;
     }
     
-    private void dropDatabase(final String databaseName) {
+    private void dropDatabase(final String databaseName) throws SQLException {
         ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(databaseName);
     }
 }
