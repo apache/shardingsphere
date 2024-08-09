@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -50,6 +49,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -67,7 +67,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
@@ -105,6 +104,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ContextManager contextManager;
     
+    private final ShardingSphereDatabase database;
+    
     private final boolean containsDerivedProjections;
     
     private final ProxySQLExecutor proxySQLExecutor;
@@ -122,21 +123,45 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         this.queryContext = queryContext;
         this.databaseConnectionManager = databaseConnectionManager;
         contextManager = ProxyContext.getInstance().getContextManager();
+        database = contextManager.getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName());
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        failedIfBackendNotReady(databaseConnectionManager.getConnectionSession(), sqlStatementContext);
+        checkBackendReady(sqlStatementContext);
         containsDerivedProjections = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections();
         if (sqlStatementContext instanceof CursorAvailable) {
-            prepareCursorStatementContext((CursorAvailable) sqlStatementContext, databaseConnectionManager.getConnectionSession());
+            prepareCursorStatementContext((CursorAvailable) sqlStatementContext);
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
     }
     
-    private void failedIfBackendNotReady(final ConnectionSession connectionSession, final SQLStatementContext sqlStatementContext) {
-        ShardingSphereDatabase database = contextManager.getDatabase(connectionSession.getUsedDatabaseName());
+    private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
         boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(),
                 sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList(), database);
-        ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(connectionSession.getUsedDatabaseName()));
-        ShardingSpherePreconditions.checkState(isSystemSchema || database.isComplete(), () -> new EmptyRuleException(connectionSession.getUsedDatabaseName()));
+        ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(database.getName()));
+        ShardingSpherePreconditions.checkState(isSystemSchema || database.isComplete(), () -> new EmptyRuleException(database.getName()));
+    }
+    
+    private void prepareCursorStatementContext(final CursorAvailable statementContext) {
+        if (statementContext.getCursorName().isPresent()) {
+            prepareCursorStatementContext(statementContext, statementContext.getCursorName().get().getIdentifier().getValue().toLowerCase());
+        }
+        if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
+            databaseConnectionManager.getConnectionSession().getConnectionContext().clearCursorContext();
+        }
+    }
+    
+    private void prepareCursorStatementContext(final CursorAvailable statementContext, final String cursorName) {
+        CursorConnectionContext cursorContext = databaseConnectionManager.getConnectionSession().getConnectionContext().getCursorContext();
+        if (statementContext instanceof CursorStatementContext) {
+            cursorContext.getCursorStatementContexts().put(cursorName, (CursorStatementContext) statementContext);
+        }
+        if (statementContext instanceof CursorAware) {
+            ShardingSpherePreconditions.checkContainsKey(
+                    cursorContext.getCursorStatementContexts(), cursorName, () -> new IllegalArgumentException(String.format("Cursor %s does not exist.", cursorName)));
+            ((CursorAware) statementContext).setCursorStatementContext(cursorContext.getCursorStatementContexts().get(cursorName));
+        }
+        if (statementContext instanceof CloseStatementContext) {
+            cursorContext.removeCursor(cursorName);
+        }
     }
     
     /**
@@ -203,8 +228,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             transactionManager.rollback();
-            String databaseName = databaseConnectionManager.getConnectionSession().getUsedDatabaseName();
-            throw SQLExceptionTransformEngine.toSQLException(ex, contextManager.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, database.getProtocolType());
         }
         return result;
     }
@@ -224,7 +248,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private ResultSet doExecuteFederation() {
         boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
-        ShardingSphereDatabase database = contextManager.getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName());
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
                 queryContext.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
@@ -238,44 +261,18 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         int maxConnectionsSizePerQuery = metaData.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         JDBCBackendStatement statementManager = (JDBCBackendStatement) databaseConnectionManager.getConnectionSession().getStatementManager();
         return new DriverExecutionPrepareEngine<>(driverType, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager,
-                new StatementOption(isReturnGeneratedKeys), metaData.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).getRuleMetaData().getRules(),
-                metaData.getMetaData().getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).getResourceMetaData().getStorageUnits());
+                new StatementOption(isReturnGeneratedKeys), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
     
     private ResponseHeader processExecuteFederation(final ResultSet resultSet) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         queryHeaders = new ArrayList<>(columnCount);
-        ShardingSphereDatabase database = contextManager.getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName());
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(null == database ? null : database.getProtocolType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             queryHeaders.add(queryHeaderBuilderEngine.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), database, columnIndex));
         }
         mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCStreamQueryResult(resultSet)));
         return new QueryResponseHeader(queryHeaders);
-    }
-    
-    private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession) {
-        if (statementContext.getCursorName().isPresent()) {
-            String cursorName = statementContext.getCursorName().get().getIdentifier().getValue().toLowerCase();
-            prepareCursorStatementContext(statementContext, connectionSession, cursorName);
-        }
-        if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
-            connectionSession.getConnectionContext().clearCursorContext();
-        }
-    }
-    
-    private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession, final String cursorName) {
-        if (statementContext instanceof CursorStatementContext) {
-            connectionSession.getConnectionContext().getCursorContext().getCursorStatementContexts().put(cursorName, (CursorStatementContext) statementContext);
-        }
-        if (statementContext instanceof CursorAware) {
-            CursorStatementContext cursorStatementContext = connectionSession.getConnectionContext().getCursorContext().getCursorStatementContexts().get(cursorName);
-            Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
-            ((CursorAware) statementContext).setCursorStatementContext(cursorStatementContext);
-        }
-        if (statementContext instanceof CloseStatementContext) {
-            connectionSession.getConnectionContext().getCursorContext().removeCursor(cursorName);
-        }
     }
     
     private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
