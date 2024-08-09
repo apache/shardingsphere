@@ -21,6 +21,11 @@ ARG APP_NAME
 ENV IS_DOCKER true
 ENV LOCAL_PATH /opt/shardingsphere-proxy
 
+ADD entrypoint/entrypoint.sh /opt/entrypoint.sh
 ADD ${APP_NAME}.tar.gz /opt
+RUN chmod +x /opt/entrypoint.sh
 RUN mv /opt/${APP_NAME} ${LOCAL_PATH} && mkdir -p ${LOCAL_PATH}/ext-lib && wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar -P ${LOCAL_PATH}/ext-lib
-ENTRYPOINT ${LOCAL_PATH}/bin/start.sh -g
+RUN apt update
+RUN apt install default-mysql-client -y
+
+ENTRYPOINT /opt/entrypoint.sh

@@ -107,6 +107,7 @@
                                             <directory>${project.basedir}/src/test/resources/docker/proxy/</directory>
                                             <includes>
                                                 <include>Dockerfile</include>
+                                                <include>entrypoint/entrypoint.sh</include>
                                             </includes>
                                         </resource>
                                         <resource>

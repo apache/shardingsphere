@@ -38,7 +38,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -115,11 +114,6 @@ public final class AgentE2ETestEnvironment {
         containers.registerContainer(governanceContainer);
         containers.registerContainer(proxyContainer);
         containers.start();
-        try {
-            proxyRequestExecutor = new ProxyRequestExecutor(proxyContainer.getConnection());
-            proxyRequestExecutor.start();
-        } catch (final SQLException ignored) {
-        }
     }
     
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
