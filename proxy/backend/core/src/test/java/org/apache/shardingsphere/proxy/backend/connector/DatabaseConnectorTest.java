@@ -120,15 +120,14 @@ class DatabaseConnectorTest {
     }
     
     private ContextManager mockContextManager() {
-        RuleMetaData globalRuleMetaData =
-                new RuleMetaData(Arrays.asList(new SQLParserRule(new SQLParserRuleConfiguration(mock(CacheOption.class), mock(CacheOption.class))), sqlFederationRule));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(new SQLParserRule(new SQLParserRuleConfiguration(mock(CacheOption.class), mock(CacheOption.class))), sqlFederationRule));
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
         ShardingSphereDataPersistService shardingSphereDataPersistService = mock(ShardingSphereDataPersistService.class);
         when(shardingSphereDataPersistService.load(any())).thenReturn(Optional.empty());
         when(metaDataPersistService.getShardingSphereDataPersistService()).thenReturn(shardingSphereDataPersistService);
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService,
-                new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(
+                metaDataPersistService, new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getDatabase("foo_db")).thenReturn(databases.get("foo_db"));
@@ -207,8 +206,7 @@ class DatabaseConnectorTest {
     void assertAddStatementCorrectly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext),
-                databaseConnectionManager, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, false);
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
         assertThat(actual.size(), is(1));
@@ -219,8 +217,7 @@ class DatabaseConnectorTest {
     void assertAddResultSetCorrectly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext),
-                databaseConnectionManager, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, false);
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
         assertThat(actual.size(), is(1));
@@ -231,8 +228,7 @@ class DatabaseConnectorTest {
     void assertCloseCorrectly() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext),
-                databaseConnectionManager, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
         Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
@@ -249,8 +245,7 @@ class DatabaseConnectorTest {
     void assertCloseResultSetsWithExceptionThrown() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext),
-                databaseConnectionManager, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();
