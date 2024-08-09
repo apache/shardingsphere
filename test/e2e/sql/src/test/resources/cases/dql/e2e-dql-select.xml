@@ -306,6 +306,10 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
+    <test-case sql="SELECT BIT_COUNT(NULL)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT bit_count(123456), bit_count('123456'), bit_count('abcdefg'), BIT_COUNT('abcdef1234'), bit_count(''), bit_count(1 + 1)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -368,6 +372,18 @@
                                 bin(type_unsigned_double), bin(type_unsigned_decimal) FROM t_product_extend
                                ) t2 ON t1.product_id = t2.product_id
                     INNER JOIN t_order_item t3 ON t2.product_id = t3.product_id INNER JOIN t_order t4 ON t4.order_id = t3.order_id order by t1.product_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT BIN(NULL)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT BIN('')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT BIN(NULL), BIN(''), BIN(' ')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>
