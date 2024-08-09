@@ -44,11 +44,14 @@ jobs:
         run: ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh
 
       - name: Upload coverage reports to Codecov
-        #Test if token is same with Nianjun
-        run: |
-          echo "Codecov Token: ${{ secrets.CODECOV_TOKEN }}"
-          npx codecov -f ./target/mergeReport/jacoco.xml -t ${{ secrets.CODECOV_TOKEN }}
-#        uses: codecov/codecov-action@v3
-#        with:
-#          files: ./target/mergeReport/jacoco.xml
-#          token: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./target/mergeReport/jacoco.xml
+          #change token on wrong
+          token: e66ee916-739d-4478-a899-4ee13b0c05ss
+      - name: Upload coverage reports to Codecov for test2
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./target/mergeReport/jacoco.xml
+          #empty token
+          token:
