@@ -242,8 +242,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         refreshMetaData(executionContext);
         Object executeResultSample = result.iterator().next();
         return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(queryContext.getSqlStatementContext(), result.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
-                : processExecuteUpdate(result.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
+                ? processExecuteQuery(queryContext.getSqlStatementContext(), result.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
+                : processExecuteUpdate(result.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
     
     private ResultSet doExecuteFederation() {
