@@ -1,0 +1,113 @@
+{
+  "resources":{
+  "includes":[{
+    "condition":{"typeReachable":"org.apache.logging.log4j.util.ProviderUtil"},
+    "pattern":"\\QMETA-INF/log4j-provider.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+    "pattern":"\\QMETA-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+    "pattern":"\\QMETA-INF/services/java.lang.System$LoggerFinder\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.impl.ThreadContextDataInjector"},
+    "pattern":"\\QMETA-INF/services/org.apache.logging.log4j.core.util.ContextDataProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.WatchManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.logging.log4j.core.util.WatchEventService\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.util.ProviderUtil"},
+    "pattern":"\\QMETA-INF/services/org.apache.logging.log4j.spi.Provider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.util.PropertiesUtil$Environment"},
+    "pattern":"\\QMETA-INF/services/org.apache.logging.log4j.util.PropertySource\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test.jsn\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test.json\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test.yml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test2626b418.jsn\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test2626b418.json\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test2626b418.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test2626b418.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test2626b418.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2-test2626b418.yml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.util.PropertiesUtil"},
+    "pattern":"\\Qlog4j2.StatusLogger.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.util.PropertiesUtil"},
+    "pattern":"\\Qlog4j2.component.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2.jsn\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2.json\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.util.PropertiesUtil$Environment"},
+    "pattern":"\\Qlog4j2.system.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j2.yml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j22626b418.jsn\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j22626b418.json\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j22626b418.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j22626b418.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j22626b418.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.util.Loader"},
+    "pattern":"\\Qlog4j22626b418.yml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+    "pattern":"jdk.jfr:\\Qjdk/jfr/internal/query/view.ini\\E"
+  }]},
+  "bundles":[{
+    "name":"sun.util.resources.cldr.CalendarData",
+    "locales":["und"]
+  }]
+}

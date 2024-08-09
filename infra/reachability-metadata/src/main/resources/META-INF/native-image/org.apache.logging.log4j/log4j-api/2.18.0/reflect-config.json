@@ -1,0 +1,1408 @@
+[
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.util.ServiceLoaderUtil"},
+  "name":"java.util.ServiceLoader",
+  "methods":[{"name":"load","parameterTypes":["java.lang.Class","java.lang.ClassLoader"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.AsyncAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.ConsoleAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.DailyRollingFileAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.EnhancedRollingFileAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.FileAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.NullAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.RewriteAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.RollingFileAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.SocketAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.appender.SyslogAppenderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.filter.DenyAllFilterBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.filter.LevelMatchFilterBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.filter.LevelRangeFilterBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.filter.StringMatchFilterBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.layout.HtmlLayoutBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.layout.PatternLayoutBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.layout.SimpleLayoutBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.layout.TTCCLayoutBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.layout.XmlLayoutBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.rolling.CompositeTriggeringPolicyBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.rolling.SizeBasedTriggeringPolicyBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.builders.rolling.TimeBasedRollingPolicyBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory"},
+  "name":"org.apache.log4j.config.PropertiesConfigurationFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.config.PropertiesConfigurationFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.layout.Log4j1SyslogLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.layout.Log4j1XmlLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.pattern.Log4j1LevelPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.pattern.Log4j1MdcPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.pattern.Log4j1NdcPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory"},
+  "name":"org.apache.log4j.xml.XmlConfigurationFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.log4j.xml.XmlConfigurationFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.AppenderSet"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.AsyncAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.ConsoleAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.CountingNoOpAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.FailoverAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.FailoversPlugin"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.FileAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.HttpAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.MemoryMappedFileAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.NullAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.OutputStreamAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.RandomAccessFileAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.RollingFileAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.ScriptAppenderSelector"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.SmtpAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.SocketAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.SyslogAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.WriterAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.db.ColumnMapping"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.db.jdbc.ColumnConfig"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.db.jdbc.DataSourceConnectionSource"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.db.jdbc.DriverManagerConnectionSource"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.db.jdbc.FactoryMethodConnectionSource"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.db.jdbc.JdbcAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.mom.JmsAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.mom.jeromq.JeroMqAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.mom.kafka.KafkaAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.nosql.NoSqlAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rewrite.LoggerNameLevelRewritePolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rewrite.MapRewritePolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rewrite.PropertiesRewritePolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rewrite.RewriteAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.CronTriggeringPolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.DirectWriteRolloverStrategy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.NoOpTriggeringPolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.OnStartupTriggeringPolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.TimeBasedTriggeringPolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.DeleteAction"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.IfAccumulatedFileCount"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.IfAccumulatedFileSize"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.IfAll"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.IfAny"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.IfFileName"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.IfLastModified"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.IfNot"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.PathSortByModificationTime"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.PosixViewAttributeAction"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.rolling.action.ScriptCondition"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.routing.IdlePurgePolicy"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.routing.Route"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.routing.Routes"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.appender.routing.RoutingAppender"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.async.ArrayBlockingQueueFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.async.AsyncLoggerConfig"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.async.AsyncLoggerConfig$RootLogger"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.async.AsyncWaitStrategyFactoryConfig"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.async.DisruptorBlockingQueueFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.async.JCToolsBlockingQueueFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.async.LinkedTransferQueueFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.AppenderControlArraySet"},
+  "name":"org.apache.logging.log4j.core.config.AppenderControlArraySet",
+  "fields":[{"name":"appenderArray"}]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.AppenderRef"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.AppendersPlugin"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.CustomLevelConfig"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.CustomLevels"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.DefaultAdvertiser"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.HttpWatcher"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.LoggerConfig"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.LoggerConfig$RootLogger"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.LoggersPlugin"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.PropertiesPlugin"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.Property"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.ScriptsPlugin"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.arbiters.ClassArbiter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.arbiters.DefaultArbiter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.arbiters.ScriptArbiter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.arbiters.SelectArbiter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.arbiters.SystemPropertyArbiter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory"},
+  "name":"org.apache.logging.log4j.core.config.json.JsonConfigurationFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.json.JsonConfigurationFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$BigDecimalConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$BigIntegerConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$BooleanConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$ByteArrayConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$ByteConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$CharArrayConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$CharacterConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$CharsetConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$ClassConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$CronExpressionConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$DoubleConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$DurationConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$FileConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$FloatConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$InetAddressConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$IntegerConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$LevelConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$LongConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$PathConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$PatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$SecurityProviderConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$ShortConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$StringConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$UriConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$UrlConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.plugins.convert.TypeConverters$UuidConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory"},
+  "name":"org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory"},
+  "name":"org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory"},
+  "name":"org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.BurstFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.CompositeFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.DenyAllFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.DynamicThresholdFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.LevelMatchFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.LevelRangeFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.MapFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.MarkerFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.MutableThreadContextMapFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.NoMarkerFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.RegexFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.ScriptFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.StringMatchFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.StructuredDataFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.ThreadContextMapFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.ThresholdFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.filter.TimeFilter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.LogManager"},
+  "name":"org.apache.logging.log4j.core.impl.Log4jContextFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.util.ProviderUtil"},
+  "name":"org.apache.logging.log4j.core.impl.Log4jProvider"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.impl.ThreadContextDataInjector"},
+  "name":"org.apache.logging.log4j.core.impl.ThreadContextDataProvider"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+  "name":"org.apache.logging.log4j.core.jmx.AppenderAdmin",
+  "queryAllPublicConstructors":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+  "name":"org.apache.logging.log4j.core.jmx.AppenderAdminMBean",
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+  "name":"org.apache.logging.log4j.core.jmx.ContextSelectorAdmin",
+  "queryAllPublicConstructors":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+  "name":"org.apache.logging.log4j.core.jmx.ContextSelectorAdminMBean",
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+  "name":"org.apache.logging.log4j.core.jmx.LoggerContextAdmin",
+  "queryAllPublicConstructors":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+  "name":"org.apache.logging.log4j.core.jmx.LoggerContextAdminMBean",
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+  "name":"org.apache.logging.log4j.core.jmx.StatusLoggerAdmin",
+  "queryAllPublicConstructors":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.jmx.Server"},
+  "name":"org.apache.logging.log4j.core.jmx.StatusLoggerAdminMBean",
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.CsvLogEventLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.CsvParameterLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.GelfLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.HtmlLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.JsonLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.LevelPatternSelector"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.LoggerFields"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.MarkerPatternSelector"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.MessageLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.PatternLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.PatternMatch"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.Rfc5424Layout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.ScriptPatternSelector"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.SerializedLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.SyslogLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.XmlLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.layout.YamlLayout"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.ContextMapLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.ContextMapLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.DateLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.DateLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.EnvironmentLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.EnvironmentLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.EventLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.EventLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.JavaLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.JavaLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.JmxRuntimeInputArgumentsLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.JmxRuntimeInputArgumentsLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.JndiLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.Log4jLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.Log4jLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.LowerLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.LowerLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.MainMapLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.MainMapLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.MapLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.MapLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.MarkerLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.MarkerLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.ResourceBundleLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.ResourceBundleLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.StructuredDataLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.StructuredDataLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.SystemPropertiesLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.SystemPropertiesLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.lookup.UpperLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.core.lookup.UpperLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.net.MulticastDnsAdvertiser"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.net.SocketAddress"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.net.SocketOptions"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.net.SocketPerformancePreferences"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.net.ssl.KeyStoreConfiguration"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.net.ssl.SslConfiguration"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.net.ssl.TrustStoreConfiguration"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter$Black"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter$Blue"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter$Cyan"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter$Green"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter$Magenta"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter$Red"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter$White"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter$Yellow"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.ClassNamePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.LoggerContext"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.AbstractConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory$Factory"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.DefaultConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$Builder"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$SerializerBuilder"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.pattern.PatternParser"},
+  "name":"org.apache.logging.log4j.core.pattern.DatePatternConverter",
+  "methods":[{"name":"newInstance","parameterTypes":["java.lang.String[]"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.EncodingPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.EndOfBatchPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.EqualsIgnoreCaseReplacementConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.EqualsReplacementConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.ExtendedThrowablePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.FileDatePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.FileLocationPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.FullLocationPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.HighlightConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.IntegerPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.LoggerContext"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.AbstractConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory$Factory"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.DefaultConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$Builder"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$SerializerBuilder"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.pattern.PatternParser"},
+  "name":"org.apache.logging.log4j.core.pattern.LevelPatternConverter",
+  "methods":[{"name":"newInstance","parameterTypes":["java.lang.String[]"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.LineLocationPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.LoggerContext"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.AbstractConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory$Factory"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.DefaultConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$Builder"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$SerializerBuilder"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.pattern.PatternParser"},
+  "name":"org.apache.logging.log4j.core.pattern.LineSeparatorPatternConverter",
+  "methods":[{"name":"newInstance","parameterTypes":["java.lang.String[]"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerFqcnPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.LoggerContext"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.AbstractConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory$Factory"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.DefaultConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$Builder"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$SerializerBuilder"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.pattern.PatternParser"},
+  "name":"org.apache.logging.log4j.core.pattern.LoggerPatternConverter",
+  "methods":[{"name":"newInstance","parameterTypes":["java.lang.String[]"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.MapPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.MarkerPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.MarkerSimpleNamePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.MaxLengthConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.MdcPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.LoggerContext"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.AbstractConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory$Factory"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.DefaultConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$Builder"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$SerializerBuilder"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.pattern.PatternParser"},
+  "name":"org.apache.logging.log4j.core.pattern.MessagePatternConverter",
+  "methods":[{"name":"newInstance","parameterTypes":["org.apache.logging.log4j.core.config.Configuration","java.lang.String[]"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.MethodLocationPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.NanoTimePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.NdcPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.ProcessIdPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.RegexReplacement"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.RegexReplacementConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.RelativeTimePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.RepeatPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.RootThrowablePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.SequenceNumberPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.StyleConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadIdPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.LoggerContext"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.AbstractConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.ConfigurationFactory$Factory"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.DefaultConfiguration"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$Builder"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.layout.PatternLayout$SerializerBuilder"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.pattern.PatternParser"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadNamePatternConverter",
+  "methods":[{"name":"newInstance","parameterTypes":["java.lang.String[]"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.ThreadPriorityPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.ThrowablePatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.UuidPatternConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.pattern.VariablesNotEmptyReplacementConverter"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.script.Script"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.script.ScriptFile"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.script.ScriptRef"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.core.util.KeyValuePair"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.spi.AbstractLogger"},
+  "name":"org.apache.logging.log4j.message.DefaultFlowMessageFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.spi.AbstractLogger"},
+  "name":"org.apache.logging.log4j.message.ParameterizedMessageFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.util.PropertiesUtil$Environment"},
+  "name":"org.apache.logging.log4j.util.EnvironmentPropertySource"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.util.PropertiesUtil$Environment"},
+  "name":"org.apache.logging.log4j.util.SystemPropertiesPropertySource"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.util.SortedArrayStringMap"},
+  "name":"org.apache.logging.log4j.util.internal.DefaultObjectInputFilter",
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.web.WebLookup"
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.lookup.Interpolator"},
+  "name":"org.apache.logging.log4j.web.WebLookup",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.logging.log4j.core.config.plugins.util.PluginRegistry"},
+  "name":"org.apache.logging.log4j.web.appender.ServletAppender"
+}
+]
