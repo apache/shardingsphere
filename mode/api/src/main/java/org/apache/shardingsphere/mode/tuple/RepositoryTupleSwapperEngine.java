@@ -72,7 +72,6 @@ public final class RepositoryTupleSwapperEngine {
         Collection<RepositoryTuple> result = new LinkedList<>();
         RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         for (Field each : getFields(yamlRuleConfig.getClass())) {
-            @SuppressWarnings("deprecation")
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
             result.addAll(swapToRepositoryTuples(yamlRuleConfig, ruleNodePath, each));
@@ -110,8 +109,8 @@ public final class RepositoryTupleSwapperEngine {
                     ? Collections.emptyList()
                     : Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
         }
-        if (fieldValue instanceof String && !((String) fieldValue).isEmpty()) {
-            return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
+        if (fieldValue instanceof String) {
+            return ((String) fieldValue).isEmpty() ? Collections.emptyList() : Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
         }
         if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
             return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
@@ -190,7 +189,6 @@ public final class RepositoryTupleSwapperEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final RuleNodePath ruleNodePath, final RepositoryTuple repositoryTuple) {
         for (Field each : fields) {
-            @SuppressWarnings("deprecation")
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
             setFieldValue(yamlRuleConfig, each, ruleNodePath, repositoryTuple);
