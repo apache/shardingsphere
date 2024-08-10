@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalNodePathTest {
@@ -49,5 +50,11 @@ class GlobalNodePathTest {
         Optional<String> actual = GlobalNodePath.getRuleName("/rules/transaction/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("transaction"));
+    }
+    
+    @Test
+    void assertGetRuleNameWhenNotFound() {
+        Optional<String> actual = GlobalNodePath.getRuleName("/invalid/transaction/active_version");
+        assertFalse(actual.isPresent());
     }
 }
