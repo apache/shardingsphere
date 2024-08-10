@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.tuple.fixture.leaf;
+package org.apache.shardingsphere.mode.tuple.fixture.node;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
-@RepositoryTupleEntity(value = "leaf", leaf = true)
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public final class LeafYamlRuleConfiguration implements YamlRuleConfiguration {
-    
-    private String value;
+import java.util.Arrays;
+import java.util.Collections;
+
+public final class RuleNodePathProviderFixture implements RuleNodePathProvider {
     
     @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+    public RuleNodePath getRuleNodePath() {
+        return new RuleNodePath("node", Collections.singleton("map_value"), Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "leaf"));
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
         return RuleConfiguration.class;
     }
 }

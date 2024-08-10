@@ -109,8 +109,8 @@ public final class RepositoryTupleSwapperEngine {
                     ? Collections.emptyList()
                     : Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
         }
-        if (fieldValue instanceof String && !((String) fieldValue).isEmpty()) {
-            return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
+        if (fieldValue instanceof String) {
+            return ((String) fieldValue).isEmpty() ? Collections.emptyList() : Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
         }
         if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
             return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
