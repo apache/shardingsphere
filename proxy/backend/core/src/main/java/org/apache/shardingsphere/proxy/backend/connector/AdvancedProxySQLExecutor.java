@@ -37,6 +37,7 @@ public interface AdvancedProxySQLExecutor {
      *
      * @param executionContext execution context
      * @param contextManager context manager
+     * @param database database
      * @param databaseConnector database connector
      * @return execute result
      * @throws SQLException SQL exception
