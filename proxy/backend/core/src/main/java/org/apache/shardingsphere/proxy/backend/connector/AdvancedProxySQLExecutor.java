@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -36,9 +37,10 @@ public interface AdvancedProxySQLExecutor {
      *
      * @param executionContext execution context
      * @param contextManager context manager
+     * @param database database
      * @param databaseConnector database connector
      * @return execute result
      * @throws SQLException SQL exception
      */
-    List<ExecuteResult> execute(ExecutionContext executionContext, ContextManager contextManager, DatabaseConnector databaseConnector) throws SQLException;
+    List<ExecuteResult> execute(ExecutionContext executionContext, ContextManager contextManager, ShardingSphereDatabase database, DatabaseConnector databaseConnector) throws SQLException;
 }
