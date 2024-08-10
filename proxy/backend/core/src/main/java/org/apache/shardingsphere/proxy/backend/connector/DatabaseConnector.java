@@ -240,7 +240,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         Collection<AdvancedProxySQLExecutor> advancedExecutors = ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class);
-        List<ExecuteResult> executeResults = advancedExecutors.isEmpty() ? proxySQLExecutor.execute(executionContext) : advancedExecutors.iterator().next().execute(executionContext);
+        List<ExecuteResult> executeResults = advancedExecutors.isEmpty() ? proxySQLExecutor.execute(executionContext) : advancedExecutors.iterator().next().execute(executionContext, this);
         getMetaDataRefreshEngine().refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
