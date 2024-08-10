@@ -72,7 +72,6 @@ public final class RepositoryTupleSwapperEngine {
         Collection<RepositoryTuple> result = new LinkedList<>();
         RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         for (Field each : getFields(yamlRuleConfig.getClass())) {
-            @SuppressWarnings("deprecation")
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
             result.addAll(swapToRepositoryTuples(yamlRuleConfig, ruleNodePath, each));
@@ -190,7 +189,6 @@ public final class RepositoryTupleSwapperEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final RuleNodePath ruleNodePath, final RepositoryTuple repositoryTuple) {
         for (Field each : fields) {
-            @SuppressWarnings("deprecation")
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
             setFieldValue(yamlRuleConfig, each, ruleNodePath, repositoryTuple);
