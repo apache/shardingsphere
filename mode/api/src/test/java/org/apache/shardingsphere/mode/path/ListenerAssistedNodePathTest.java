@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ListenerAssistedNodePathTest {
@@ -38,6 +39,12 @@ class ListenerAssistedNodePathTest {
         Optional<String> actual = ListenerAssistedNodePath.getDatabaseName("/listener_assisted/foo_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), Matchers.is("foo_db"));
+    }
+    
+    @Test
+    void assertGetDatabaseNameWhenNotFound() {
+        Optional<String> actual = ListenerAssistedNodePath.getDatabaseName("/invalid/foo_db");
+        assertFalse(actual.isPresent());
     }
     
     @Test
