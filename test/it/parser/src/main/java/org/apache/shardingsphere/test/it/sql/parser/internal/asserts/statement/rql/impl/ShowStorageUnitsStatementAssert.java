@@ -62,5 +62,11 @@ public final class ShowStorageUnitsStatementAssert {
             assertTrue(actual.getUsageCount().isPresent(), assertContext.getText("Actual usage count should exist."));
             assertThat(assertContext.getText("Usage count assertion error"), actual.getUsageCount().get(), is(expected.getUsageCount()));
         }
+        if (null == expected.getLikePattern()) {
+            assertFalse(actual.getLikePattern().isPresent(), assertContext.getText("Actual like pattern should not exist."));
+        } else {
+            assertTrue(actual.getLikePattern().isPresent(), assertContext.getText("Actual like pattern should exist."));
+            assertThat(assertContext.getText("Like pattern assertion error"), actual.getLikePattern().get(), is(expected.getLikePattern()));
+        }
     }
 }
