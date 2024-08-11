@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mode.tuple.fixture.none.NoneYamlRuleConfigurati
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -134,9 +135,29 @@ class RepositoryTupleSwapperEngineTest {
     @Test
     void assertSwapToYamlRuleConfigurationWithEmptyNodeYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RepositoryTuple("/metadata/foo_db/rules/node/string_value/versions", "")), NodeYamlRuleConfiguration.class);
+                Collections.singleton(new RepositoryTuple("/metadata/foo_db/rules/node/string_value/versions/0", "")), NodeYamlRuleConfiguration.class);
         assertTrue(actual.isPresent());
         NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
         assertThat(actualYamlConfig.getStringValue(), is(""));
+    }
+    
+    @Test
+    void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
+        Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Arrays.asList(
+                new RepositoryTuple("/metadata/foo_db/rules/node/map_value/k/versions/0", "v"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/string_value/versions/0", "str"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/boolean_value/versions/0", "true"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/integer_value/versions/0", "1"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/long_value/versions/0", "10"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/enum_value/versions/0", "FOO")), NodeYamlRuleConfiguration.class);
+        assertTrue(actual.isPresent());
+        NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
+        assertThat(actualYamlConfig.getMapValue().size(), is(1));
+        assertThat(actualYamlConfig.getMapValue().get("k").getValue(), is("v"));
+        assertThat(actualYamlConfig.getStringValue(), is("str"));
+        assertTrue(actualYamlConfig.getBooleanValue());
+        assertThat(actualYamlConfig.getIntegerValue(), is(1));
+        assertThat(actualYamlConfig.getLongValue(), is(10L));
+        assertThat(actualYamlConfig.getEnumValue(), is(NodeYamlRuleConfigurationEnum.FOO));
     }
 }
