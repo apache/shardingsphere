@@ -118,9 +118,7 @@ class RepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToYamlRuleConfigurationWithInvalidLeafYamlRuleConfiguration() {
-        Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RepositoryTuple("/invalid", "foo")), LeafYamlRuleConfiguration.class);
-        assertFalse(actual.isPresent());
+        assertFalse(new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RepositoryTuple("/invalid", "foo")), LeafYamlRuleConfiguration.class).isPresent());
     }
     
     @Test
