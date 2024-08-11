@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mode.tuple.fixture.none.NoneYamlRuleConfigurati
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -54,8 +55,7 @@ class RepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToRepositoryTuplesWithEmptyNodeYamlRuleConfiguration() {
-        Collection<RepositoryTuple> actual = new RepositoryTupleSwapperEngine().swapToRepositoryTuples(new NodeYamlRuleConfiguration());
-        assertTrue(actual.isEmpty());
+        assertTrue(new RepositoryTupleSwapperEngine().swapToRepositoryTuples(new NodeYamlRuleConfiguration()).isEmpty());
     }
     
     @Test
@@ -72,12 +72,13 @@ class RepositoryTupleSwapperEngineTest {
         leaf.setValue("leaf");
         yamlRuleConfig.setLeaf(leaf);
         yamlRuleConfig.setGens(Collections.singleton("value"));
+        yamlRuleConfig.setGen("single_gen");
         List<RepositoryTuple> actual = new ArrayList<>(new RepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig));
-        assertThat(actual.size(), is(9));
+        assertThat(actual.size(), is(10));
         assertThat(actual.get(0).getKey(), is("map_value/k"));
         assertThat(actual.get(0).getValue(), is("value: v" + System.lineSeparator()));
         assertThat(actual.get(1).getKey(), is("collection_value"));
-        assertThat(actual.get(1).getValue(), is("- !!org.apache.shardingsphere.mode.tuple.fixture.leaf.LeafYamlRuleConfiguration" + System.lineSeparator() + "  value: foo" + System.lineSeparator()));
+        assertThat(actual.get(1).getValue(), is("- !LEAF" + System.lineSeparator() + "  value: foo" + System.lineSeparator()));
         assertThat(actual.get(2).getKey(), is("string_value"));
         assertThat(actual.get(2).getValue(), is("str"));
         assertThat(actual.get(3).getKey(), is("boolean_value"));
@@ -92,6 +93,8 @@ class RepositoryTupleSwapperEngineTest {
         assertThat(actual.get(7).getValue(), is("value: leaf" + System.lineSeparator()));
         assertThat(actual.get(8).getKey(), is("gens/gen: value"));
         assertThat(actual.get(8).getValue(), is("value"));
+        assertThat(actual.get(9).getKey(), is("gen"));
+        assertThat(actual.get(9).getValue(), is("single_gen"));
     }
     
     @Test
@@ -101,16 +104,84 @@ class RepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToYamlRuleConfigurationWithoutGlobalLeafYamlRuleConfiguration() {
-        assertFalse(new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RepositoryTuple("/rules/invalid/versions/0", "value: foo" + System.lineSeparator())), GlobalLeafYamlRuleConfiguration.class).isPresent());
+        assertFalse(new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RepositoryTuple("invalid", "")), GlobalLeafYamlRuleConfiguration.class).isPresent());
     }
     
     @Test
     void assertSwapToYamlRuleConfigurationWithGlobalLeafYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo" + System.lineSeparator())), GlobalLeafYamlRuleConfiguration.class);
+                Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo")), GlobalLeafYamlRuleConfiguration.class);
         assertTrue(actual.isPresent());
         GlobalLeafYamlRuleConfiguration actualYamlConfig = (GlobalLeafYamlRuleConfiguration) actual.get();
         assertThat(actualYamlConfig.getValue(), is("foo"));
+    }
+    
+    @Test
+    void assertSwapToYamlRuleConfigurationWithInvalidLeafYamlRuleConfiguration() {
+        assertFalse(new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RepositoryTuple("/invalid", "foo")), LeafYamlRuleConfiguration.class).isPresent());
+    }
+    
+    @Test
+    void assertSwapToYamlRuleConfigurationWithInvalidNodeYamlRuleConfiguration() {
+        Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
+                Collections.singleton(new RepositoryTuple("/invalid", "foo")), NodeYamlRuleConfiguration.class);
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertSwapToYamlRuleConfigurationWithEmptyNodeYamlRuleConfiguration() {
+        Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
+                Collections.singleton(new RepositoryTuple("/metadata/foo_db/rules/node/string_value/versions/0", "")), NodeYamlRuleConfiguration.class);
+        assertTrue(actual.isPresent());
+        NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
+        assertThat(actualYamlConfig.getStringValue(), is(""));
+    }
+    
+    @Test
+    void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
+        Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Arrays.asList(
+                new RepositoryTuple("/metadata/foo_db/rules/node/map_value/k/versions/0", "v"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/collection_value/versions/0", "- !LEAF" + System.lineSeparator() + "  value: foo"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/string_value/versions/0", "str"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/boolean_value/versions/0", "true"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/integer_value/versions/0", "1"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/long_value/versions/0", "10"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/enum_value/versions/0", "FOO")), NodeYamlRuleConfiguration.class);
+        assertTrue(actual.isPresent());
+        NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
+        assertThat(actualYamlConfig.getMapValue().size(), is(1));
+        assertThat(actualYamlConfig.getMapValue().get("k").getValue(), is("v"));
+        assertThat(actualYamlConfig.getCollectionValue().size(), is(1));
+        assertThat(actualYamlConfig.getCollectionValue().iterator().next().getValue(), is("foo"));
+        assertThat(actualYamlConfig.getStringValue(), is("str"));
+        assertTrue(actualYamlConfig.getBooleanValue());
+        assertThat(actualYamlConfig.getIntegerValue(), is(1));
+        assertThat(actualYamlConfig.getLongValue(), is(10L));
+        assertThat(actualYamlConfig.getEnumValue(), is(NodeYamlRuleConfigurationEnum.FOO));
+    }
+    
+    @Test
+    void assertSwapToEmptyRuleConfigurations() {
+        assertTrue(new RepositoryTupleSwapperEngine().swapToRuleConfigurations(Collections.emptyList()).isEmpty());
+    }
+    
+    @Test
+    void assertSwapToRuleConfigurations() {
+        assertTrue(new RepositoryTupleSwapperEngine().swapToRuleConfigurations(Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isEmpty());
+    }
+    
+    @Test
+    void assertSwapToEmptyRuleConfiguration() {
+        assertFalse(new RepositoryTupleSwapperEngine().swapToRuleConfiguration("leaf", Collections.emptyList()).isPresent());
+    }
+    
+    @Test
+    void assertSwapToNotFoundRuleConfiguration() {
+        assertFalse(new RepositoryTupleSwapperEngine().swapToRuleConfiguration("invalid", Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isPresent());
+    }
+    
+    @Test
+    void assertSwapToRuleConfiguration() {
+        assertFalse(new RepositoryTupleSwapperEngine().swapToRuleConfiguration("leaf", Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isPresent());
     }
 }

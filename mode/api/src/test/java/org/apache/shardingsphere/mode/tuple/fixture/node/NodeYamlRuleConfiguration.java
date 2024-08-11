@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleKeyListNam
 import org.apache.shardingsphere.mode.tuple.fixture.leaf.LeafYamlRuleConfiguration;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ import java.util.Map;
 public final class NodeYamlRuleConfiguration implements YamlRuleConfiguration {
     
     @RepositoryTupleField(type = Type.OTHER)
-    private Map<String, LeafYamlRuleConfiguration> mapValue;
+    private Map<String, LeafYamlRuleConfiguration> mapValue = new HashMap<>();
     
     @RepositoryTupleField(type = Type.OTHER)
     private Collection<LeafYamlRuleConfiguration> collectionValue = new LinkedList<>();
@@ -62,7 +63,11 @@ public final class NodeYamlRuleConfiguration implements YamlRuleConfiguration {
     
     @RepositoryTupleField(type = Type.OTHER)
     @RepositoryTupleKeyListNameGenerator(RepositoryTupleKeyListNameGeneratorFixture.class)
-    private Collection<String> gens;
+    private Collection<String> gens = new LinkedList<>();
+    
+    @RepositoryTupleField(type = Type.OTHER)
+    @RepositoryTupleKeyListNameGenerator(RepositoryTupleKeyListNameGeneratorFixture.class)
+    private String gen;
     
     @Override
     public Class<? extends RuleConfiguration> getRuleConfigurationType() {

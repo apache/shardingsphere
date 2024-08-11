@@ -15,24 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.tuple.fixture.node;
+package org.apache.shardingsphere.mode.tuple.fixture.leaf;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
-import java.util.Arrays;
-
-public final class RuleNodePathProviderFixture implements RuleNodePathProvider {
+@RequiredArgsConstructor
+@Getter
+public final class LeafRuleConfiguration implements RuleConfiguration {
     
-    @Override
-    public RuleNodePath getRuleNodePath() {
-        return new RuleNodePath("node", Arrays.asList("map_value", "gens"),
-                Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "gen", "leaf"));
-    }
-    
-    @Override
-    public Class<? extends RuleConfiguration> getType() {
-        return RuleConfiguration.class;
-    }
+    private final String value;
 }
