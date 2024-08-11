@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.tuple;
 
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.tuple.fixture.leaf.GlobalLeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.tuple.fixture.leaf.LeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.tuple.fixture.node.NodeYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.tuple.fixture.node.NodeYamlRuleConfigurationEnum;
@@ -27,9 +29,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RepositoryTupleSwapperEngineTest {
@@ -88,5 +92,25 @@ class RepositoryTupleSwapperEngineTest {
         assertThat(actual.get(7).getValue(), is("value: leaf" + System.lineSeparator()));
         assertThat(actual.get(8).getKey(), is("gens/gen: value"));
         assertThat(actual.get(8).getValue(), is("value"));
+    }
+    
+    @Test
+    void assertSwapToYamlRuleConfigurationWithoutRepositoryTupleEntityAnnotation() {
+        assertFalse(new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.emptyList(), NoneYamlRuleConfiguration.class).isPresent());
+    }
+    
+    @Test
+    void assertSwapToYamlRuleConfigurationWithoutGlobalLeafYamlRuleConfiguration() {
+        assertFalse(new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
+                Collections.singleton(new RepositoryTuple("/rules/invalid/versions/0", "value: foo" + System.lineSeparator())), GlobalLeafYamlRuleConfiguration.class).isPresent());
+    }
+    
+    @Test
+    void assertSwapToYamlRuleConfigurationWithGlobalLeafYamlRuleConfiguration() {
+        Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
+                Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo" + System.lineSeparator())), GlobalLeafYamlRuleConfiguration.class);
+        assertTrue(actual.isPresent());
+        GlobalLeafYamlRuleConfiguration actualYamlConfig = (GlobalLeafYamlRuleConfiguration) actual.get();
+        assertThat(actualYamlConfig.getValue(), is("foo"));
     }
 }
