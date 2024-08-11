@@ -61,7 +61,7 @@
     <show-shadow-rules sql-case-id="show-shadow-rules">
         <database name="shadow_db" start-index="34" stop-index="42" />
     </show-shadow-rules>
-
+    
     <show-shadow-table-rules sql-case-id="show-shadow-table-rules">
         <database name="shadow_db" start-index="29" stop-index="37" />
     </show-shadow-table-rules>
@@ -78,7 +78,7 @@
     <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
         <database name="shadow_db" start-index="28" stop-index="36" />
     </show-shadow-algorithms>
-
+    
     <show-default-shadow-algorithm sql-case-id="show-default-shadow-algorithm">
         <database name="shadow_db" start-index="35" stop-index="43" />
     </show-default-shadow-algorithm>
@@ -118,7 +118,7 @@
     <show-unused-sharding-algorithms sql-case-id="show-unused-sharding-algorithms">
         <database name="databaseName" start-index="37" stop-index="48" />
     </show-unused-sharding-algorithms>
-
+    
     <show-unused-sharding-key-generators sql-case-id="show-unused-sharding-key-generators">
         <database name="databaseName" start-index="41" stop-index="52" />
     </show-unused-sharding-key-generators>
@@ -166,7 +166,7 @@
     <count-mask-rule sql-case-id="count-mask-rule">
         <database name="db1" start-index="21" stop-index="23" />
     </count-mask-rule>
-
+    
     <count-broadcast-rule sql-case-id="count-broadcast-rule">
         <database name="db1" start-index="26" stop-index="28" />
     </count-broadcast-rule>
@@ -174,6 +174,10 @@
     <show-storage-units sql-case-id="show-storage-units" />
     
     <show-storage-units sql-case-id="show-storage-units-from">
+        <database name="sharding_db" start-index="24" stop-index="34" />
+    </show-storage-units>
+    
+    <show-storage-units sql-case-id="show-storage-units-like"  like-pattern="ds_%">
         <database name="sharding_db" start-index="24" stop-index="34" />
     </show-storage-units>
     

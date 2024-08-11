@@ -13,7 +13,7 @@ weight = 1
 {{% tab name="语法" %}}
 ```sql
 ShowStorageUnit ::=
-  'SHOW' 'STORAGE' 'UNITS' showLike? ('WHERE' 'USAGE_COUNT' '=' usageCount)? ('FROM' databaseName)?
+  'SHOW' 'STORAGE' 'UNITS' ('FROM' databaseName)? showLike? ('WHERE' 'USAGE_COUNT' '=' usageCount)?
 
 showLike ::=
   'LIKE' likePattern
