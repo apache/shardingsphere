@@ -17,22 +17,12 @@
 
 package org.apache.shardingsphere.mode.tuple.fixture.node;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleKeyListNameGenerator;
 
-import java.util.Arrays;
-
-public final class RuleNodePathProviderFixture implements RuleNodePathProvider {
+public final class RepositoryTupleKeyListNameGeneratorFixture implements RepositoryTupleKeyListNameGenerator.Generator {
     
     @Override
-    public RuleNodePath getRuleNodePath() {
-        return new RuleNodePath("node", Arrays.asList("map_value", "gens"),
-                Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "leaf"));
-    }
-    
-    @Override
-    public Class<? extends RuleConfiguration> getType() {
-        return RuleConfiguration.class;
+    public String generate(final Object tupleValue) {
+        return String.format("gen: %s", tupleValue);
     }
 }

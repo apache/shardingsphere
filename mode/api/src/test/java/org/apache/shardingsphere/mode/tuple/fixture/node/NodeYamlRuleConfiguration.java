@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleKeyListNameGenerator;
 import org.apache.shardingsphere.mode.tuple.fixture.leaf.LeafYamlRuleConfiguration;
 
 import java.util.Collection;
@@ -58,6 +59,10 @@ public final class NodeYamlRuleConfiguration implements YamlRuleConfiguration {
     
     @RepositoryTupleField(type = Type.OTHER)
     private LeafYamlRuleConfiguration leaf;
+    
+    @RepositoryTupleField(type = Type.OTHER)
+    @RepositoryTupleKeyListNameGenerator(RepositoryTupleKeyListNameGeneratorFixture.class)
+    private Collection<String> gens;
     
     @Override
     public Class<? extends RuleConfiguration> getRuleConfigurationType() {
