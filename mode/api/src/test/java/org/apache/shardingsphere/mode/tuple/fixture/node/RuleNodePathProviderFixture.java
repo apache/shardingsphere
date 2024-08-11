@@ -28,7 +28,7 @@ public final class RuleNodePathProviderFixture implements RuleNodePathProvider {
     @Override
     public RuleNodePath getRuleNodePath() {
         return new RuleNodePath("node", Arrays.asList("map_value", "gens"),
-                Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "leaf"));
+                Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "gen", "leaf"));
     }
     
     @Override

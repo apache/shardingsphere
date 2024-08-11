@@ -64,6 +64,10 @@ public final class NodeYamlRuleConfiguration implements YamlRuleConfiguration {
     @RepositoryTupleKeyListNameGenerator(RepositoryTupleKeyListNameGeneratorFixture.class)
     private Collection<String> gens;
     
+    @RepositoryTupleField(type = Type.OTHER)
+    @RepositoryTupleKeyListNameGenerator(RepositoryTupleKeyListNameGeneratorFixture.class)
+    private String gen;
+    
     @Override
     public Class<? extends RuleConfiguration> getRuleConfigurationType() {
         return RuleConfiguration.class;

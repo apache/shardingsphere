@@ -72,8 +72,9 @@ class RepositoryTupleSwapperEngineTest {
         leaf.setValue("leaf");
         yamlRuleConfig.setLeaf(leaf);
         yamlRuleConfig.setGens(Collections.singleton("value"));
+        yamlRuleConfig.setGen("single_gen");
         List<RepositoryTuple> actual = new ArrayList<>(new RepositoryTupleSwapperEngine().swapToRepositoryTuples(yamlRuleConfig));
-        assertThat(actual.size(), is(9));
+        assertThat(actual.size(), is(10));
         assertThat(actual.get(0).getKey(), is("map_value/k"));
         assertThat(actual.get(0).getValue(), is("value: v" + System.lineSeparator()));
         assertThat(actual.get(1).getKey(), is("collection_value"));
@@ -92,6 +93,8 @@ class RepositoryTupleSwapperEngineTest {
         assertThat(actual.get(7).getValue(), is("value: leaf" + System.lineSeparator()));
         assertThat(actual.get(8).getKey(), is("gens/gen: value"));
         assertThat(actual.get(8).getValue(), is("value"));
+        assertThat(actual.get(9).getKey(), is("gen"));
+        assertThat(actual.get(9).getValue(), is("single_gen"));
     }
     
     @Test
