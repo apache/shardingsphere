@@ -143,6 +143,7 @@ class RepositoryTupleSwapperEngineTest {
     void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new RepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Arrays.asList(
                 new RepositoryTuple("/metadata/foo_db/rules/node/map_value/k/versions/0", "v"),
+                new RepositoryTuple("/metadata/foo_db/rules/node/collection_value/versions/0", "- !LEAF" + System.lineSeparator() + "  value: foo"),
                 new RepositoryTuple("/metadata/foo_db/rules/node/string_value/versions/0", "str"),
                 new RepositoryTuple("/metadata/foo_db/rules/node/boolean_value/versions/0", "true"),
                 new RepositoryTuple("/metadata/foo_db/rules/node/integer_value/versions/0", "1"),
@@ -152,6 +153,8 @@ class RepositoryTupleSwapperEngineTest {
         NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
         assertThat(actualYamlConfig.getMapValue().size(), is(1));
         assertThat(actualYamlConfig.getMapValue().get("k").getValue(), is("v"));
+        assertThat(actualYamlConfig.getCollectionValue().size(), is(1));
+        assertThat(actualYamlConfig.getCollectionValue().iterator().next().getValue(), is("foo"));
         assertThat(actualYamlConfig.getStringValue(), is("str"));
         assertTrue(actualYamlConfig.getBooleanValue());
         assertThat(actualYamlConfig.getIntegerValue(), is(1));
