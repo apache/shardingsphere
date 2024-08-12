@@ -38,14 +38,6 @@ class StandardPipelineDataSourceConfigurationTest {
     private static final String PASSWORD = "password";
     
     @Test
-    void assertCreateWithSimpleParameters() {
-        StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(JDBC_URL, USERNAME, PASSWORD);
-        assertGetConfig(actual);
-        actual = new StandardPipelineDataSourceConfiguration(actual.getParameter());
-        assertGetConfig(actual);
-    }
-    
-    @Test
     void assertCreateWithYamlDataSourceConfiguration() {
         Map<String, Object> yamlDataSourceConfig = new HashMap<>();
         yamlDataSourceConfig.put("url", JDBC_URL);

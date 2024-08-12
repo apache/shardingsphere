@@ -34,6 +34,8 @@ import org.postgresql.replication.fluent.logical.ChainedLogicalStreamBuilder;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -66,8 +68,11 @@ class PostgreSQLLogicalReplicationTest {
     
     @Test
     void assertCreatePgConnectionSuccess() throws SQLException {
-        Connection connection = logicalReplication.createConnection(
-                new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+        Map<String, Object> poolProps = new HashMap<>(3, 1F);
+        poolProps.put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL");
+        poolProps.put("username", "root");
+        poolProps.put("password", "root");
+        Connection connection = logicalReplication.createConnection(new StandardPipelineDataSourceConfiguration(poolProps));
         assertFalse(connection.isClosed());
     }
     

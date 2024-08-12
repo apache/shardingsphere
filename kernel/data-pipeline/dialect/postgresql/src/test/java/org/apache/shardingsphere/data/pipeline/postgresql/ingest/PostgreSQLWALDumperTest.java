@@ -49,6 +49,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -106,8 +108,12 @@ class PostgreSQLWALDumperTest {
     }
     
     private IncrementalDumperContext createDumperContext(final String jdbcUrl, final String username, final String password) {
+        Map<String, Object> poolProps = new HashMap<>(3, 1F);
+        poolProps.put("url", jdbcUrl);
+        poolProps.put("username", username);
+        poolProps.put("password", password);
         DumperCommonContext commonContext = new DumperCommonContext(null,
-                new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password),
+                new StandardPipelineDataSourceConfiguration(poolProps),
                 new ActualAndLogicTableNameMapper(Collections.singletonMap(new CaseInsensitiveIdentifier("t_order_0"), new CaseInsensitiveIdentifier("t_order"))),
                 new TableAndSchemaNameMapper(Collections.emptyMap()));
         return new IncrementalDumperContext(commonContext, "0101123456", false);

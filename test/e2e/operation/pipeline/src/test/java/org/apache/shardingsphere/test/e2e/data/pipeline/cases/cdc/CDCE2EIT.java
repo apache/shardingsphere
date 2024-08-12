@@ -62,7 +62,9 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -167,8 +169,11 @@ class CDCE2EIT {
     }
     
     private PipelineDataSourceWrapper createStandardDataSource(final PipelineContainerComposer containerComposer, final String storageUnitName) {
-        return new PipelineDataSourceWrapper(new StandardPipelineDataSourceConfiguration(containerComposer.getActualJdbcUrlTemplate(storageUnitName, false),
-                containerComposer.getUsername(), containerComposer.getPassword()));
+        Map<String, Object> poolProps = new HashMap<>(3, 1F);
+        poolProps.put("url", containerComposer.getActualJdbcUrlTemplate(storageUnitName, false));
+        poolProps.put("username", containerComposer.getUsername());
+        poolProps.put("password", containerComposer.getPassword());
+        return new PipelineDataSourceWrapper(new StandardPipelineDataSourceConfiguration(poolProps));
     }
     
     private CDCClient buildCDCClientAndStart(final PipelineDataSourceWrapper dataSource, final PipelineContainerComposer containerComposer) {
