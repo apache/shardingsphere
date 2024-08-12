@@ -64,7 +64,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         enableStreamingQuery(yamlRootConfig);
         updateShardingRuleConfiguration(yamlRootConfig);
         yamlRootConfig.setMode(createStandaloneModeConfiguration());
-        return createDataSourceWithoutCache(yamlRootConfig);
+        return createShardingSphereDataSource(yamlRootConfig);
     }
     
     private void removeAuthorityRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
@@ -126,10 +126,10 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         return result;
     }
     
-    private DataSource createDataSourceWithoutCache(final YamlRootConfiguration yamlRootConfig) throws SQLException {
+    private DataSource createShardingSphereDataSource(final YamlRootConfiguration yamlRootConfig) throws SQLException {
         Map<String, DataSource> dataSourceMap = new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlRootConfig.getDataSources(), false);
         try {
-            return createDataSource(dataSourceMap, yamlRootConfig);
+            return createShardingSphereDataSource(dataSourceMap, yamlRootConfig);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -138,8 +138,8 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
     }
     
-    private DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration yamlRootConfig) throws SQLException {
-        ModeConfiguration modeConfig = null == yamlRootConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(yamlRootConfig.getMode());
+    private DataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration yamlRootConfig) throws SQLException {
+        ModeConfiguration modeConfig = new YamlModeConfigurationSwapper().swapToObject(yamlRootConfig.getMode());
         Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootConfig.getRules());
         return ShardingSphereDataSourceFactory.createDataSource(yamlRootConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, yamlRootConfig.getProps());
     }
