@@ -281,19 +281,15 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      * @param jobId job id
      * @return job item infos
      */
-    public List<CDCJobItemInfo> getJobItemInfos(final String jobId) {
+    public Collection<CDCJobItemInfo> getJobItemInfos(final String jobId) {
         CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(jobId);
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(jobConfig.getDatabaseName());
-        Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(jobType).getJobItemInfos(jobId);
-        List<CDCJobItemInfo> result = new LinkedList<>();
-        for (TransmissionJobItemInfo each : jobItemInfos) {
+        Collection<CDCJobItemInfo> result = new LinkedList<>();
+        for (TransmissionJobItemInfo each : new TransmissionJobManager(jobType).getJobItemInfos(jobId)) {
             TransmissionJobItemProgress jobItemProgress = each.getJobItemProgress();
-            if (null == jobItemProgress) {
-                result.add(new CDCJobItemInfo(each, "", ""));
-                continue;
-            }
-            result.add(new CDCJobItemInfo(each, jobItemProgress.getIncremental().getIncrementalPosition().map(Object::toString).orElse(""),
-                    getCurrentPosition(database, jobItemProgress.getDataSourceName())));
+            String confirmedPosition = null == jobItemProgress ? "" : jobItemProgress.getIncremental().getIncrementalPosition().map(Object::toString).orElse("");
+            String currentPosition = null == jobItemProgress ? "" : getCurrentPosition(database, jobItemProgress.getDataSourceName());
+            result.add(new CDCJobItemInfo(each, confirmedPosition, currentPosition));
         }
         return result;
     }
