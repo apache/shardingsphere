@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.client;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Matcher;
@@ -26,7 +25,6 @@ import java.util.regex.Pattern;
 /**
  * Server version.
  */
-@Getter
 @Slf4j
 public final class ServerVersion {
     
