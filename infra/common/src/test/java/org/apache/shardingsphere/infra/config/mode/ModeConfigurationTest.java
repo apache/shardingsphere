@@ -17,26 +17,18 @@
 
 package org.apache.shardingsphere.infra.config.mode;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Mode configuration.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ModeConfiguration {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class ModeConfigurationTest {
     
-    private final String type;
-    
-    private final PersistRepositoryConfiguration repository;
-    
-    /**
-     * Is cluster mode or not.
-     *
-     * @return true if is cluster, else false
-     */
-    public boolean isCluster() {
-        return type.contains("Cluster");
+    @Test
+    void assertIsCluster() {
+        ModeConfiguration standaloneModeConfiguration = new ModeConfiguration("Standalone", null);
+        assertFalse(standaloneModeConfiguration.isCluster());
+        ModeConfiguration clusterModeConfiguration = new ModeConfiguration("Cluster", null);
+        assertTrue(clusterModeConfiguration.isCluster());
     }
 }

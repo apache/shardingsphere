@@ -211,15 +211,6 @@ public final class ComputeNodeInstanceContext {
     }
     
     /**
-     * Is cluster instance or not.
-     *
-     * @return true if is cluster, else false
-     */
-    public boolean isCluster() {
-        return "Cluster".equals(modeConfiguration.getType());
-    }
-    
-    /**
      *  Get lock context.
      *
      * @return lock context

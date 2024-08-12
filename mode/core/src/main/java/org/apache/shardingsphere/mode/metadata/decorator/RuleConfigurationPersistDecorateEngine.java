@@ -42,7 +42,7 @@ public final class RuleConfigurationPersistDecorateEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> decorate(final Collection<RuleConfiguration> ruleConfigs) {
-        if (!computeNodeInstanceContext.isCluster()) {
+        if (!computeNodeInstanceContext.getModeConfiguration().isCluster()) {
             return ruleConfigs;
         }
         return ruleConfigs.stream()
@@ -57,7 +57,7 @@ public final class RuleConfigurationPersistDecorateEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> restore(final Collection<RuleConfiguration> ruleConfigs) {
-        if (!computeNodeInstanceContext.isCluster()) {
+        if (!computeNodeInstanceContext.getModeConfiguration().isCluster()) {
             return ruleConfigs;
         }
         return ruleConfigs.stream()

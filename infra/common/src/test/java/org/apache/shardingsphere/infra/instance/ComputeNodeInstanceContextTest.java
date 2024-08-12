@@ -31,9 +31,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -108,15 +106,5 @@ class ComputeNodeInstanceContextTest {
         ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
         assertThat(context.getModeConfiguration(), is(modeConfig));
-    }
-    
-    @Test
-    void assertIsCluster() {
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
-                new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
-        assertFalse(context.isCluster());
-        ComputeNodeInstanceContext clusterContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
-                new ModeConfiguration("Cluster", null), lockContext, eventBusContext);
-        assertTrue(clusterContext.isCluster());
     }
 }
