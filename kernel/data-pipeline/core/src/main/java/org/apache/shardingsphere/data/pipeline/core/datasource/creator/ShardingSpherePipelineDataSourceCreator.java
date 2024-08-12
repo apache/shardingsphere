@@ -59,7 +59,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     @Override
     public DataSource create(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
-        removeAuthorityRule(yamlRootConfig);
+        removeAuthorityRuleConfiguration(yamlRootConfig);
         updateSingleRuleConfiguration(yamlRootConfig);
         disableSystemSchemaMetadata(yamlRootConfig);
         enableStreamingQuery(yamlRootConfig);
@@ -72,15 +72,15 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         return createDataSourceWithoutCache(yamlRootConfig);
     }
     
-    private void removeAuthorityRule(final YamlRootConfiguration rootConfig) {
-        rootConfig.getRules().stream().filter(YamlAuthorityRuleConfiguration.class::isInstance).findFirst().map(each -> rootConfig.getRules().remove(each));
+    private void removeAuthorityRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
+        yamlRootConfig.getRules().removeIf(YamlAuthorityRuleConfiguration.class::isInstance);
     }
     
-    private void updateSingleRuleConfiguration(final YamlRootConfiguration rootConfig) {
-        rootConfig.getRules().removeIf(YamlSingleRuleConfiguration.class::isInstance);
+    private void updateSingleRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
+        yamlRootConfig.getRules().removeIf(YamlSingleRuleConfiguration.class::isInstance);
         YamlSingleRuleConfiguration singleRuleConfig = new YamlSingleRuleConfiguration();
         singleRuleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_TABLES));
-        rootConfig.getRules().add(singleRuleConfig);
+        yamlRootConfig.getRules().add(singleRuleConfig);
     }
     
     private void disableSystemSchemaMetadata(final YamlRootConfiguration rootConfig) {
