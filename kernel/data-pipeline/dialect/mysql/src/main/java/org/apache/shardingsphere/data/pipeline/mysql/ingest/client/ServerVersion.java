@@ -53,12 +53,12 @@ public final class ServerVersion {
     }
     
     /**
-     * Greater than or equal to current version.
+     * Whether to greater than or equal to current version.
      *
      * @param major the major
      * @param minor the minor
      * @param series the series
-     * @return the boolean
+     * @return greater than or equal to current version or not
      */
     public boolean greaterThanOrEqualTo(final int major, final int minor, final int series) {
         if (this.major < major) {

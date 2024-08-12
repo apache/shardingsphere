@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -31,9 +31,9 @@ import java.util.Properties;
 @Slf4j
 public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
-    private static final String MYSQL_CONNECTOR_VERSION = initMysqlConnectorVersion();
+    private static final String MYSQL_CONNECTOR_VERSION = initMySQLConnectorVersion();
     
-    private static final List<String> NOT_OVERRIDE_PROPERTIES = Collections.singletonList("netTimeoutForStreamingResults");
+    private static final Collection<String> NOT_OVERRIDE_PROPERTIES = Collections.singleton("netTimeoutForStreamingResults");
     
     private final Properties queryProps = new Properties();
     
@@ -50,19 +50,15 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     
     private String getZeroDateTimeBehavior() {
         // refer https://bugs.mysql.com/bug.php?id=91065
-        String zeroDateTimeBehavior = "convertToNull";
-        if (null != MYSQL_CONNECTOR_VERSION) {
-            zeroDateTimeBehavior = new ServerVersion(MYSQL_CONNECTOR_VERSION).greaterThanOrEqualTo(8, 0, 0) ? "CONVERT_TO_NULL" : zeroDateTimeBehavior;
-        }
-        return zeroDateTimeBehavior;
+        return null != MYSQL_CONNECTOR_VERSION && new ServerVersion(MYSQL_CONNECTOR_VERSION).greaterThanOrEqualTo(8, 0, 0) ? "CONVERT_TO_NULL" : "convertToNull";
     }
     
-    private static String initMysqlConnectorVersion() {
+    private static String initMySQLConnectorVersion() {
         try {
-            Class<?> mysqlDriverClass = Thread.currentThread().getContextClassLoader().loadClass("com.mysql.jdbc.Driver");
-            return mysqlDriverClass.getPackage().getImplementationVersion();
+            Class<?> driverClass = Thread.currentThread().getContextClassLoader().loadClass("com.mysql.jdbc.Driver");
+            return driverClass.getPackage().getImplementationVersion();
         } catch (final ClassNotFoundException ex) {
-            log.warn("not find com.mysql.jdbc.Driver class");
+            log.warn("Can not find `com.mysql.jdbc.Driver` class.");
             return null;
         }
     }
@@ -70,10 +66,9 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     @Override
     public void extendQueryProperties(final Properties props) {
         for (String each : queryProps.stringPropertyNames()) {
-            if (NOT_OVERRIDE_PROPERTIES.contains(each) && props.containsKey(each)) {
-                continue;
+            if (!NOT_OVERRIDE_PROPERTIES.contains(each) || !props.containsKey(each)) {
+                props.setProperty(each, queryProps.getProperty(each));
             }
-            props.setProperty(each, queryProps.getProperty(each));
         }
     }
     
