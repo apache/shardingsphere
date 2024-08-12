@@ -20,8 +20,12 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -30,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLPipelineSQLBuilderTest {
     
-    private final PostgreSQLPipelineSQLBuilder sqlBuilder = new PostgreSQLPipelineSQLBuilder();
+    private final DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
     
     @Test
     void assertBuildInsertSQLOnDuplicateClause() {

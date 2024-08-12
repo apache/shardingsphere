@@ -21,6 +21,10 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -31,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLPipelineSQLBuilderTest {
     
-    private final MySQLPipelineSQLBuilder sqlBuilder = new MySQLPipelineSQLBuilder();
+    private final DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     
     @Test
     void assertBuildInsertSQLOnDuplicateClause() {
