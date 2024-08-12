@@ -38,9 +38,9 @@ public enum TemporaryConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_META_DATA_COLLECTOR_ENABLED("proxy-meta-data-collector-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
-     * System schema metadata enabled.
+     * System schema metadata assembly enabled.
      */
-    SYSTEM_SCHEMA_METADATA_ENABLED("system-schema-metadata-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
+    SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED("system-schema-metadata-assembly-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
     
     private final String key;
     
