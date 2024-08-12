@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.Pr
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
@@ -37,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +55,7 @@ public final class PipelineJobDataSourcePreparer {
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
-    private final DialectPipelineJobDataSourcePrepareOption option;
+    private final DatabaseType databaseType;
     
     /**
      * Prepare target schemas.
@@ -90,7 +92,8 @@ public final class PipelineJobDataSourcePreparer {
                 Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
-            if (option.isSupportIfNotExistsOnCreateSchema()) {
+            if (DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
+                    .map(DialectPipelineJobDataSourcePrepareOption::isSupportIfNotExistsOnCreateSchema).orElse(true)) {
                 throw ex;
             }
             log.warn("Create schema failed", ex);
@@ -122,7 +125,8 @@ public final class PipelineJobDataSourcePreparer {
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
-            for (String each : option.getIgnoredExceptionMessages()) {
+            for (String each : DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
+                    .map(DialectPipelineJobDataSourcePrepareOption::getIgnoredExceptionMessages).orElse(Collections.emptyList())) {
                 if (ex.getMessage().contains(each)) {
                     return;
                 }
