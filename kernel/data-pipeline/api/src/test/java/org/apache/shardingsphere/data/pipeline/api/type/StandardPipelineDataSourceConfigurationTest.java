@@ -39,7 +39,7 @@ class StandardPipelineDataSourceConfigurationTest {
     
     @Test
     void assertCreateWithYamlDataSourceConfiguration() {
-        Map<String, Object> yamlDataSourceConfig = new HashMap<>();
+        Map<String, Object> yamlDataSourceConfig = new HashMap<>(5, 1F);
         yamlDataSourceConfig.put("url", JDBC_URL);
         yamlDataSourceConfig.put("username", USERNAME);
         yamlDataSourceConfig.put("password", PASSWORD);
