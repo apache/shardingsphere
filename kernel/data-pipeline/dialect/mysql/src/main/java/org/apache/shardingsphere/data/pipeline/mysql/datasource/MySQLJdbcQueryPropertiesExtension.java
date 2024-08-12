@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 /**
- * MySQL JDBC query properties extension.
+ * JDBC query properties extension of MySQL.
  */
 @Slf4j
 public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {

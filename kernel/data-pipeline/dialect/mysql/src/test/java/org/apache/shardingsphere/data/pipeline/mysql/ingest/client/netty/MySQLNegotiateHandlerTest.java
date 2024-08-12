@@ -44,7 +44,6 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -85,10 +84,9 @@ class MySQLNegotiateHandlerTest {
         mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
         ServerInfo serverInfo = (ServerInfo) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler);
-        assertNotNull(serverInfo);
-        assertThat(serverInfo.getServerVersion().getMajor(), is(5));
-        assertThat(serverInfo.getServerVersion().getMinor(), is(7));
-        assertThat(serverInfo.getServerVersion().getSeries(), is(22));
+        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("major"), serverInfo.getServerVersion()), is(5));
+        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("minor"), serverInfo.getServerVersion()), is(7));
+        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("series"), serverInfo.getServerVersion()), is(22));
     }
     
     @Test
