@@ -50,8 +50,6 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     @Getter
     private final String parameter;
     
-    private final DataSourcePoolProperties dataSourcePoolProps;
-    
     @Getter
     private final DatabaseType databaseType;
     
@@ -64,6 +62,8 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     @Getter
     private final String password;
     
+    private final DataSourcePoolProperties dataSourcePoolProps;
+    
     @SuppressWarnings("unchecked")
     public StandardPipelineDataSourceConfiguration(final String param) {
         this(param, YamlEngine.unmarshal(param, Map.class));
@@ -71,6 +71,10 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     
     public StandardPipelineDataSourceConfiguration(final Map<String, Object> poolProps) {
         this(YamlEngine.marshal(poolProps), new HashMap<>(poolProps));
+    }
+    
+    public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
+        this(wrapParameter(jdbcUrl, username, password));
     }
     
     private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> poolProps) {
@@ -82,30 +86,17 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
             poolProps.put("url", poolProps.get("jdbcUrl"));
             poolProps.remove("jdbcUrl");
         }
-        poolProps.remove(DATA_SOURCE_CLASS_NAME);
         databaseType = DatabaseTypeFactory.get(String.valueOf(poolProps.get("url")));
+        poolProps.remove(DATA_SOURCE_CLASS_NAME);
         poolProps.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
-        appendJdbcQueryProperties(databaseType, poolProps);
+        appendJdbcQueryProperties(poolProps);
+        url = String.valueOf(poolProps.get("url"));
         username = String.valueOf(poolProps.get("username"));
         password = String.valueOf(poolProps.get("password"));
-        url = String.valueOf(poolProps.get("url"));
         dataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(poolProps);
     }
     
-    public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this(wrapParameter(jdbcUrl, username, password));
-    }
-    
-    private static Map<String, Object> wrapParameter(final String jdbcUrl, final String username, final String password) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        // Reference ConnectionPropertySynonyms
-        result.put("url", jdbcUrl);
-        result.put("username", username);
-        result.put("password", password);
-        return result;
-    }
-    
-    private void appendJdbcQueryProperties(final DatabaseType databaseType, final Map<String, Object> poolProps) {
+    private void appendJdbcQueryProperties(final Map<String, Object> poolProps) {
         Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
@@ -115,6 +106,15 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         extension.get().extendQueryProperties(queryProps);
         String url = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProps);
         poolProps.put("url", url);
+    }
+    
+    private static Map<String, Object> wrapParameter(final String jdbcUrl, final String username, final String password) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        // Reference ConnectionPropertySynonyms
+        result.put("url", jdbcUrl);
+        result.put("username", username);
+        result.put("password", password);
+        return result;
     }
     
     @Override
