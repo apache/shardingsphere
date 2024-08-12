@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -73,10 +72,6 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         this(YamlEngine.marshal(poolProps), new HashMap<>(poolProps));
     }
     
-    public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this(wrapParameter(jdbcUrl, username, password));
-    }
-    
     private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> poolProps) {
         parameter = param;
         for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
@@ -106,15 +101,6 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         extension.get().extendQueryProperties(queryProps);
         String url = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProps);
         poolProps.put("url", url);
-    }
-    
-    private static Map<String, Object> wrapParameter(final String jdbcUrl, final String username, final String password) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        // Reference ConnectionPropertySynonyms
-        result.put("url", jdbcUrl);
-        result.put("username", username);
-        result.put("password", password);
-        return result;
     }
     
     @Override
