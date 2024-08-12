@@ -92,7 +92,7 @@ public final class MetaDataContextsFactory {
         Collection<RuleConfiguration> globalRuleConfigs;
         if (isDatabaseMetaDataExisted) {
             globalRuleConfigs = persistService.getGlobalRuleService().load();
-        } else if (computeNodeInstanceContext.isCluster()) {
+        } else if (computeNodeInstanceContext.getModeConfiguration().isCluster()) {
             globalRuleConfigs = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext).tryRestore(param.getGlobalRuleConfigs());
             param.getGlobalRuleConfigs().clear();
             param.getGlobalRuleConfigs().addAll(globalRuleConfigs);
@@ -196,7 +196,7 @@ public final class MetaDataContextsFactory {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        if (!computeNodeInstanceContext.isCluster()) {
+        if (!computeNodeInstanceContext.getModeConfiguration().isCluster()) {
             return;
         }
         for (RuleConfigurationPersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationPersistDecorator.class)) {

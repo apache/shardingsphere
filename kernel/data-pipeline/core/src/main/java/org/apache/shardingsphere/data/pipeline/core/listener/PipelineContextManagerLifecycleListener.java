@@ -49,7 +49,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
     @Override
     public void onInitialized(final ContextManager contextManager) {
         ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
-        if (!contextManager.getComputeNodeInstanceContext().isCluster()) {
+        if (!contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }
