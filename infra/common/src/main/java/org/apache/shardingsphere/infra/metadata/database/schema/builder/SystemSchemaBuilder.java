@@ -65,7 +65,7 @@ public final class SystemSchemaBuilder {
     }
     
     private static boolean isSystemSchemaMetaDataEnabled(final Properties props) {
-        TemporaryConfigurationPropertyKey configKey = TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ENABLED;
+        TemporaryConfigurationPropertyKey configKey = TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED;
         return Boolean.parseBoolean(props.getOrDefault(configKey.getKey(), configKey.getDefaultValue()).toString());
     }
     

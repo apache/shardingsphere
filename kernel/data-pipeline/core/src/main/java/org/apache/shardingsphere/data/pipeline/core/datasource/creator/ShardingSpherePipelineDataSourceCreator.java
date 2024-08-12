@@ -79,7 +79,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     }
     
     private void disableSystemSchemaMetadata(final YamlRootConfiguration yamlRootConfig) {
-        yamlRootConfig.getProps().put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
+        yamlRootConfig.getProps().put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
     }
     
     // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
