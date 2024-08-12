@@ -83,14 +83,14 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         yamlRootConfig.getRules().add(singleRuleConfig);
     }
     
-    private void disableSystemSchemaMetadata(final YamlRootConfiguration rootConfig) {
-        rootConfig.getProps().put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
+    private void disableSystemSchemaMetadata(final YamlRootConfiguration yamlRootConfig) {
+        yamlRootConfig.getProps().put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
     }
     
     // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
-    private void enableStreamingQuery(final YamlRootConfiguration rootConfig) {
+    private void enableStreamingQuery(final YamlRootConfiguration yamlRootConfig) {
         // Set a large enough value to enable ConnectionMode.MEMORY_STRICTLY, make sure streaming query work.
-        rootConfig.getProps().put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
+        yamlRootConfig.getProps().put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
     }
     
     private void enableRangeQueryForInline(final YamlShardingRuleConfiguration yamlShardingRuleConfig) {
@@ -125,10 +125,10 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         return result;
     }
     
-    private DataSource createDataSourceWithoutCache(final YamlRootConfiguration rootConfig) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources(), false);
+    private DataSource createDataSourceWithoutCache(final YamlRootConfiguration yamlRootConfig) throws SQLException {
+        Map<String, DataSource> dataSourceMap = new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlRootConfig.getDataSources(), false);
         try {
-            return createDataSource(dataSourceMap, rootConfig);
+            return createDataSource(dataSourceMap, yamlRootConfig);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -137,10 +137,10 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
     }
     
-    private DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig) throws SQLException {
-        ModeConfiguration modeConfig = null == rootConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
-        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules());
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
+    private DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration yamlRootConfig) throws SQLException {
+        ModeConfiguration modeConfig = null == yamlRootConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(yamlRootConfig.getMode());
+        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootConfig.getRules());
+        return ShardingSphereDataSourceFactory.createDataSource(yamlRootConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, yamlRootConfig.getProps());
     }
     
     @Override
