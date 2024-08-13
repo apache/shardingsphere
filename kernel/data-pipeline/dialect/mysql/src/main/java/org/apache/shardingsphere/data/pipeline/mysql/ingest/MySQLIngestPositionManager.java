@@ -47,16 +47,12 @@ public final class MySQLIngestPositionManager implements DialectIngestPositionMa
     }
     
     private BinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
-        String filename;
-        long position;
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            filename = resultSet.getString(1);
-            position = resultSet.getLong(2);
+            return new BinlogPosition(resultSet.getString(1), resultSet.getLong(2));
         }
-        return new BinlogPosition(filename, position);
     }
     
     @Override
