@@ -21,8 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -33,19 +31,19 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     
     private static final String MYSQL_CONNECTOR_VERSION = initMySQLConnectorVersion();
     
-    private static final Collection<String> NOT_OVERRIDE_PROPERTIES = Collections.singleton("netTimeoutForStreamingResults");
+    private final Properties toBeOverrideQueryProps = new Properties();
     
-    private final Properties queryProps = new Properties();
+    private final Properties completeIfMissedQueryProps = new Properties();
     
     public MySQLJdbcQueryPropertiesExtension() {
-        queryProps.setProperty("useSSL", Boolean.FALSE.toString());
-        queryProps.setProperty("useServerPrepStmts", Boolean.FALSE.toString());
-        queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
-        queryProps.setProperty("zeroDateTimeBehavior", getZeroDateTimeBehavior());
-        queryProps.setProperty("noDatetimeStringSync", Boolean.TRUE.toString());
-        queryProps.setProperty("jdbcCompliantTruncation", Boolean.FALSE.toString());
-        queryProps.setProperty("netTimeoutForStreamingResults", "600");
+        toBeOverrideQueryProps.setProperty("useSSL", Boolean.FALSE.toString());
+        toBeOverrideQueryProps.setProperty("useServerPrepStmts", Boolean.FALSE.toString());
+        toBeOverrideQueryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        toBeOverrideQueryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
+        toBeOverrideQueryProps.setProperty("zeroDateTimeBehavior", getZeroDateTimeBehavior());
+        toBeOverrideQueryProps.setProperty("noDatetimeStringSync", Boolean.TRUE.toString());
+        toBeOverrideQueryProps.setProperty("jdbcCompliantTruncation", Boolean.FALSE.toString());
+        completeIfMissedQueryProps.setProperty("netTimeoutForStreamingResults", "600");
     }
     
     private String getZeroDateTimeBehavior() {
@@ -65,9 +63,12 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     
     @Override
     public void extendQueryProperties(final Properties props) {
-        for (String each : queryProps.stringPropertyNames()) {
-            if (!NOT_OVERRIDE_PROPERTIES.contains(each) || !props.containsKey(each)) {
-                props.setProperty(each, queryProps.getProperty(each));
+        for (String each : toBeOverrideQueryProps.stringPropertyNames()) {
+            props.setProperty(each, toBeOverrideQueryProps.getProperty(each));
+        }
+        for (String each : completeIfMissedQueryProps.stringPropertyNames()) {
+            if (!props.containsKey(each)) {
+                props.setProperty(each, completeIfMissedQueryProps.getProperty(each));
             }
         }
     }
