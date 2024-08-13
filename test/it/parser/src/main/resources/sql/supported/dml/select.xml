@@ -280,6 +280,6 @@
     <sql-case id="select_with_index_hints1" value="SELECT * FROM t1 USE INDEX (i1) IGNORE INDEX (i2) USE INDEX (i2);" db-types="MySQL,Doris"/>
     <sql-case id="select_with_index_hints2" value="SELECT * FROM t1 USE INDEX () IGNORE INDEX (i2) USE INDEX (i1) USE INDEX (i2);" db-types="MySQL,Doris"/>
     <sql-case id="select_with_index_hints3" value="SELECT * FROM t1 USE INDEX (i1,i2) IGNORE INDEX (i2);" db-types="MySQL,Doris"/>
-    <sql-case id="select_with_reserved_word_with_table_ref" value="select xxx.condition from xxx" db-types="MySQL"/>
-    <sql-case id="select_with_reserved_word" value="select describe from xxx" db-types="MySQL"/>
+    <sql-case id="select_with_reserved_word_with_table_ref" value="select xxx.condition from xxx" db-types="MySQL,Doris"/>
+    <sql-case id="select_with_reserved_word" value="select describe from xxx" db-types="MySQL,Doris"/>
 </sql-cases>

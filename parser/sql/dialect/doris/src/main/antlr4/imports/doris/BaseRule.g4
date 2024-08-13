@@ -522,6 +522,8 @@ identifierKeywordsUnambiguous
     | XML
     | YEAR
     | YEAR_MONTH
+    | CONDITION
+    | DESCRIBE
     ;
     
 identifierKeywordsAmbiguous1RolesAndLabels
