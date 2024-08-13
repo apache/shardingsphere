@@ -65,8 +65,7 @@ class PostgreSQLIngestPositionManagerTest {
         when(connection.getCatalog()).thenReturn("sharding_db");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatement lsn96PreparedStatement = mockPostgreSQL96LSN();
-        when(connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", PostgreSQLIngestPositionManager.getUniqueSlotName(connection, ""),
-                "test_decoding"))).thenReturn(mock(PreparedStatement.class));
+        when(connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot(?, ?)")).thenReturn(mock(PreparedStatement.class));
         when(connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()")).thenReturn(lsn96PreparedStatement);
         PreparedStatement lsn10PreparedStatement = mockPostgreSQL10LSN();
         when(connection.prepareStatement("SELECT PG_CURRENT_WAL_LSN()")).thenReturn(lsn10PreparedStatement);
