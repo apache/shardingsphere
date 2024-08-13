@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -61,7 +62,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         removeAuthorityRuleConfiguration(yamlRootConfig);
         updateSingleRuleConfiguration(yamlRootConfig);
         disableSystemSchemaMetadata(yamlRootConfig);
-        enableStreamingQuery(yamlRootConfig);
+        updateConfigurationProperties(yamlRootConfig);
         updateShardingRuleConfiguration(yamlRootConfig);
         yamlRootConfig.setMode(createStandaloneModeConfiguration());
         return createShardingSphereDataSource(yamlRootConfig);
@@ -82,10 +83,12 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         yamlRootConfig.getProps().put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
     }
     
-    // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
-    private void enableStreamingQuery(final YamlRootConfiguration yamlRootConfig) {
+    private void updateConfigurationProperties(final YamlRootConfiguration yamlRootConfig) {
+        Properties newProps = new Properties();
         // Set a large enough value to enable ConnectionMode.MEMORY_STRICTLY, make sure streaming query work.
-        yamlRootConfig.getProps().put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
+        // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
+        newProps.put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
+        yamlRootConfig.setProps(newProps);
     }
     
     private void updateShardingRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
