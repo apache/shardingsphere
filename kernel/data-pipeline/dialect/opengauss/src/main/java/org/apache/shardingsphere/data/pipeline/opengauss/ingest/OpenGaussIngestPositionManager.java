@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLSlotNameGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo.ReplicationSlotInfo;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.opengauss.replication.LogSequenceNumber;
@@ -40,25 +40,9 @@ import java.util.Optional;
 @Slf4j
 public final class OpenGaussIngestPositionManager implements DialectIngestPositionManager {
     
-    private static final String SLOT_NAME_PREFIX = "pipeline";
-    
     private static final String DECODE_PLUGIN = "mppdb_decoding";
     
     private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
-    
-    /**
-     * Get the unique slot name by connection.
-     *
-     * @param connection connection
-     * @param slotNameSuffix slot name suffix
-     * @return the unique name by connection
-     * @throws SQLException failed when getCatalog
-     */
-    public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
-        // same as PostgreSQL, but length over 64 will throw an exception directly
-        String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
-        return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
-    }
     
     @Override
     public WALPosition init(final String data) {
@@ -74,7 +58,7 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     }
     
     private void createSlotIfNotExist(final Connection connection, final String slotNameSuffix) throws SQLException {
-        String slotName = getUniqueSlotName(connection, slotNameSuffix);
+        String slotName = PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix);
         Optional<ReplicationSlotInfo> slotInfo = getSlotInfo(connection, slotName);
         if (!slotInfo.isPresent()) {
             createSlot(connection, slotName);
@@ -132,7 +116,7 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     @Override
     public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            dropSlotIfExist(connection, getUniqueSlotName(connection, slotNameSuffix));
+            dropSlotIfExist(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
         }
     }
     

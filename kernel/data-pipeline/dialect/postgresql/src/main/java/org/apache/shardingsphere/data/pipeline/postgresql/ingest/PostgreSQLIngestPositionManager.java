@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
@@ -37,25 +36,9 @@ import java.sql.SQLException;
 @Slf4j
 public final class PostgreSQLIngestPositionManager implements DialectIngestPositionManager {
     
-    private static final String SLOT_NAME_PREFIX = "pipeline";
-    
     private static final String DECODE_PLUGIN = "test_decoding";
     
     private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
-    
-    /**
-     * Get the unique slot name by connection.
-     *
-     * @param connection the connection
-     * @param slotNameSuffix slot name suffix
-     * @return the unique name by connection
-     * @throws SQLException failed when getCatalog
-     */
-    public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
-        // PostgreSQL slot name maximum length can't exceed 64,automatic truncation when the length exceeds the limit
-        String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
-        return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
-    }
     
     @Override
     public WALPosition init(final String data) {
@@ -65,7 +48,7 @@ public final class PostgreSQLIngestPositionManager implements DialectIngestPosit
     @Override
     public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            createSlotIfNotExist(connection, getUniqueSlotName(connection, slotNameSuffix));
+            createSlotIfNotExist(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
             return getWALPosition(connection);
         }
     }
@@ -124,7 +107,7 @@ public final class PostgreSQLIngestPositionManager implements DialectIngestPosit
     }
     
     private void dropSlotIfExist(final Connection connection, final String slotNameSuffix) throws SQLException {
-        String slotName = getUniqueSlotName(connection, slotNameSuffix);
+        String slotName = PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix);
         if (!isSlotExisting(connection, slotName)) {
             log.info("dropSlotIfExist, slot not exist, slotName={}", slotName);
             return;

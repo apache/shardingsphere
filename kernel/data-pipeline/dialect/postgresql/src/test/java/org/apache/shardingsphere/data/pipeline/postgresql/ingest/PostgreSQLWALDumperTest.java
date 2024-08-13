@@ -25,12 +25,12 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonCo
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.ActualAndLogicTableNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
@@ -39,6 +39,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
@@ -59,7 +61,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(PostgreSQLIngestPositionManager.class)
+@StaticMockSettings({PostgreSQLIngestPositionManager.class, PostgreSQLSlotNameGenerator.class})
+@MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLWALDumperTest {
     
     @Mock
@@ -131,9 +134,8 @@ class PostgreSQLWALDumperTest {
             Plugins.getMemberAccessor().set(PostgreSQLWALDumper.class.getDeclaredField("logicalReplication"), walDumper, logicalReplication);
             when(logicalReplication.createConnection(dataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
-            when(PostgreSQLIngestPositionManager.getUniqueSlotName(eq(pgConnection), anyString())).thenReturn("0101123456");
-            when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLIngestPositionManager.getUniqueSlotName(pgConnection, ""), position.getLogSequenceNumber()))
-                    .thenReturn(pgReplicationStream);
+            when(PostgreSQLSlotNameGenerator.getUniqueSlotName(eq(pgConnection), anyString())).thenReturn("0101123456");
+            when(logicalReplication.createReplicationStream(pgConnection, "0101123456", position.getLogSequenceNumber())).thenReturn(pgReplicationStream);
             ByteBuffer data = ByteBuffer.wrap("table public.t_order_0: DELETE: order_id[integer]:1".getBytes());
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new IngestException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
