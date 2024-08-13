@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
@@ -68,7 +69,7 @@ class ShowCreateTableMergedResultTest {
         tables.put("t_order",
                 new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("t_order_foreign_key", "t_user"))));
         tables.put("t_user", new ShardingSphereTable("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereSchema(tables, Collections.emptyMap());
+        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
     }
     
     @Test

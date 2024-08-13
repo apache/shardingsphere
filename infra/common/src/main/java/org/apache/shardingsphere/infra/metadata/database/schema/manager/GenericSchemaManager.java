@@ -49,7 +49,7 @@ public final class GenericSchemaManager {
     }
     
     private static ShardingSphereSchema getToBeAddedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return new ShardingSphereSchema(getToBeAddedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
+        return new ShardingSphereSchema(currentSchema.getName(), getToBeAddedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
     }
     
     /**
@@ -78,7 +78,7 @@ public final class GenericSchemaManager {
     }
     
     private static ShardingSphereSchema getToBeDeletedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return new ShardingSphereSchema(getToBeDeletedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
+        return new ShardingSphereSchema(currentSchema.getName(), getToBeDeletedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
     }
     
     /**

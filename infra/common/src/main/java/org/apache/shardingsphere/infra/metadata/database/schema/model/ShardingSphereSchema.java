@@ -32,17 +32,21 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public final class ShardingSphereSchema {
     
+    private final String name;
+    
     private final Map<String, ShardingSphereTable> tables;
     
     private final Map<String, ShardingSphereView> views;
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public ShardingSphereSchema() {
+    public ShardingSphereSchema(final String name) {
+        this.name = name;
         tables = new ConcurrentHashMap<>();
         views = new ConcurrentHashMap<>();
     }
     
-    public ShardingSphereSchema(final Map<String, ShardingSphereTable> tables, final Map<String, ShardingSphereView> views) {
+    public ShardingSphereSchema(final String name, final Map<String, ShardingSphereTable> tables, final Map<String, ShardingSphereView> views) {
+        this.name = name;
         this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
         this.views = new ConcurrentHashMap<>(views.size(), 1F);
         tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));

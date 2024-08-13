@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -119,7 +120,7 @@ class ShardingRouteCacheableCheckerTest {
     }
     
     private ShardingSphereDatabase createDatabase(final ShardingRule shardingRule, final TimestampServiceRule timestampServiceRule) {
-        ShardingSphereSchema schema = new ShardingSphereSchema();
+        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME);
         schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, false, true, false, false)),

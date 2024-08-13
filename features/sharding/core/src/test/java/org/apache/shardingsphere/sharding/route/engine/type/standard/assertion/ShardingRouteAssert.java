@@ -114,6 +114,6 @@ public final class ShardingRouteAssert {
                 Collections.emptyList(), Collections.emptyList()));
         tables.put("t_hint_test", new ShardingSphereTable("t_hint_test", Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables, Collections.emptyMap()));
+        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap()));
     }
 }

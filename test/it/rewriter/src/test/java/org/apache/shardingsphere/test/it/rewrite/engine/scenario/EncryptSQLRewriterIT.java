@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewrite.engine.scenario;
 
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -95,7 +96,7 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
+        ShardingSphereSchema result = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
     }
     

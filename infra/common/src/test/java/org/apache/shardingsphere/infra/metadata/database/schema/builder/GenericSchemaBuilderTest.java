@@ -91,7 +91,7 @@ class GenericSchemaBuilderTest {
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, material);
         assertThat(actual.size(), is(1));
-        assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables(), Collections.emptyMap()).getTables());
+        assertTables(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, actual.values().iterator().next().getTables(), Collections.emptyMap()).getTables());
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {

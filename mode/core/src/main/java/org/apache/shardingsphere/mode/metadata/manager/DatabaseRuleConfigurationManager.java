@@ -115,7 +115,7 @@ public final class DatabaseRuleConfigurationManager {
     
     private Map<String, ShardingSphereSchema> buildShardingSphereSchemas(final ShardingSphereDatabase database) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(database.getSchemas().size(), 1F);
-        database.getSchemas().forEach((key, value) -> result.put(key, new ShardingSphereSchema(value.getTables(), value.getViews())));
+        database.getSchemas().forEach((key, value) -> result.put(key, new ShardingSphereSchema(key, value.getTables(), value.getViews())));
         return result;
     }
 }

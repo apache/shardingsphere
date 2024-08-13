@@ -136,7 +136,7 @@ public final class DatabaseMetaDataPersistService {
         Collection<String> schemaNames = loadAllSchemaNames(databaseName);
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaNames.size(), 1F);
         schemaNames.forEach(each -> result.put(each.toLowerCase(),
-                new ShardingSphereSchema(tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))));
+                new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))));
         return result;
     }
     
