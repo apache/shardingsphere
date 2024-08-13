@@ -67,7 +67,6 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
         Map<String, Collection<DataNode>> actualDataNodes = SingleTableDataNodeLoader.load(databaseName, aggregatedDataSources, excludedTables);
         Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, splitTables);
-        checkRuleConfiguration(databaseName, aggregatedDataSources, excludedTables, configuredDataNodes);
         boolean isSchemaSupportedDatabaseType = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaSupportedDatabaseType, actualDataNodes);
@@ -77,17 +76,6 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
     
     private boolean isExpandRequired(final Collection<String> splitTables) {
         return splitTables.stream().anyMatch(each -> each.contains(SingleTableConstants.ASTERISK));
-    }
-    
-    private void checkRuleConfiguration(final String databaseName, final Map<String, DataSource> dataSources, final Collection<String> excludedTables, final Collection<DataNode> dataNodes) {
-        for (DataNode each : dataNodes) {
-            if (!SingleTableConstants.ASTERISK.equals(each.getDataSourceName())) {
-                ShardingSpherePreconditions.checkContainsKey(dataSources, each.getDataSourceName(),
-                        () -> new InvalidSingleRuleConfigurationException(String.format("Data source `%s` does not exist in database `%s`", each.getDataSourceName(), databaseName)));
-            }
-            ShardingSpherePreconditions.checkNotContains(excludedTables, each.getTableName(),
-                    () -> new InvalidSingleRuleConfigurationException(String.format("Table `%s` existed and is not a single table in database `%s`", each.getTableName(), databaseName)));
-        }
     }
     
     private Collection<String> loadAllTables(final boolean isSchemaSupportedDatabaseType, final Map<String, Collection<DataNode>> actualDataNodes) {
