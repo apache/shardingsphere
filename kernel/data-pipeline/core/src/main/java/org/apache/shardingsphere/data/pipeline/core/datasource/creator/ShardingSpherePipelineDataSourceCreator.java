@@ -46,7 +46,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -61,7 +60,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
         removeAuthorityRuleConfiguration(yamlRootConfig);
         updateSingleRuleConfiguration(yamlRootConfig);
-        disableSystemSchemaMetadata(yamlRootConfig);
         updateConfigurationProperties(yamlRootConfig);
         updateShardingRuleConfiguration(yamlRootConfig);
         yamlRootConfig.setMode(createStandaloneModeConfiguration());
@@ -79,16 +77,19 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         yamlRootConfig.getRules().add(singleRuleConfig);
     }
     
+    private void updateConfigurationProperties(final YamlRootConfiguration yamlRootConfig) {
+        disableSystemSchemaMetadata(yamlRootConfig);
+        enableStreamingQuery(yamlRootConfig);
+    }
+    
     private void disableSystemSchemaMetadata(final YamlRootConfiguration yamlRootConfig) {
         yamlRootConfig.getProps().put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
     }
     
-    private void updateConfigurationProperties(final YamlRootConfiguration yamlRootConfig) {
-        Properties newProps = new Properties();
+    // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
+    private void enableStreamingQuery(final YamlRootConfiguration yamlRootConfig) {
         // Set a large enough value to enable ConnectionMode.MEMORY_STRICTLY, make sure streaming query work.
-        // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
-        newProps.put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
-        yamlRootConfig.setProps(newProps);
+        yamlRootConfig.getProps().put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
     }
     
     private void updateShardingRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
