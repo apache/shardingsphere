@@ -30,6 +30,14 @@ import java.sql.SQLException;
 public interface DialectIngestPositionManager extends DatabaseTypedSPI {
     
     /**
+     * Init position by string data.
+     *
+     * @param data string data
+     * @return position
+     */
+    IngestPosition init(String data);
+    
+    /**
      * Init position by data source.
      *
      * @param dataSource data source
@@ -38,14 +46,6 @@ public interface DialectIngestPositionManager extends DatabaseTypedSPI {
      * @throws SQLException SQL exception
      */
     IngestPosition init(DataSource dataSource, String slotNameSuffix) throws SQLException;
-    
-    /**
-     * Init position by string data.
-     *
-     * @param data string data
-     * @return position
-     */
-    IngestPosition init(String data);
     
     /**
      * Clean up by data source if necessary.
