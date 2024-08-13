@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLog
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.MppdbDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussTimestampUtils;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLSlotNameGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALEventConverter;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
@@ -125,7 +126,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         int majorVersion = getMajorVersion();
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.get().getLogSequenceNumber(),
-                    OpenGaussIngestPositionManager.getUniqueSlotName(connection, dumperContext.getJobId()), majorVersion);
+                    PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, dumperContext.getJobId()), majorVersion);
             DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX, majorVersion >= 3);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
