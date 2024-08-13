@@ -22,7 +22,7 @@ import lombok.ToString;
 import org.postgresql.replication.LogSequenceNumber;
 
 /**
- * PostgreSQL sequence.
+ * Log sequence number of PostgreSQL.
  */
 @RequiredArgsConstructor
 @ToString

@@ -46,12 +46,18 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     
     private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
-    @Override
-    public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            createSlotIfNotExist(connection, slotNameSuffix);
-            return getWalPosition(connection);
-        }
+    /**
+     * Get the unique slot name by connection.
+     *
+     * @param connection connection
+     * @param slotNameSuffix slot name suffix
+     * @return the unique name by connection
+     * @throws SQLException failed when getCatalog
+     */
+    public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
+        // same as PostgreSQL, but length over 64 will throw an exception directly
+        String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
+        return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
     }
     
     @Override
@@ -59,23 +65,24 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
         return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(data)));
     }
     
-    /**
-     * Create logical replication slot if it does not exist.
-     *
-     * @param connection connection
-     * @param slotNameSuffix slotName suffix
-     * @throws SQLException SQL exception
-     */
+    @Override
+    public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            createSlotIfNotExist(connection, slotNameSuffix);
+            return getWALPosition(connection);
+        }
+    }
+    
     private void createSlotIfNotExist(final Connection connection, final String slotNameSuffix) throws SQLException {
         String slotName = getUniqueSlotName(connection, slotNameSuffix);
         Optional<ReplicationSlotInfo> slotInfo = getSlotInfo(connection, slotName);
         if (!slotInfo.isPresent()) {
-            createSlotBySQL(connection, slotName);
+            createSlot(connection, slotName);
             return;
         }
         if (null == slotInfo.get().getDatabaseName()) {
             dropSlotIfExist(connection, slotName);
-            createSlotBySQL(connection, slotName);
+            createSlot(connection, slotName);
         }
     }
     
@@ -85,15 +92,12 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
             preparedStatement.setString(1, slotName);
             preparedStatement.setString(2, DECODE_PLUGIN);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (!resultSet.next()) {
-                    return Optional.empty();
-                }
-                return Optional.of(new ReplicationSlotInfo(resultSet.getString(1), resultSet.getString(2)));
+                return resultSet.next() ? Optional.of(new ReplicationSlotInfo(resultSet.getString(1), resultSet.getString(2))) : Optional.empty();
             }
         }
     }
     
-    private void createSlotBySQL(final Connection connection, final String slotName) throws SQLException {
+    private void createSlot(final Connection connection, final String slotName) throws SQLException {
         String sql = String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", slotName, DECODE_PLUGIN);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.execute();
@@ -104,7 +108,18 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
         }
     }
     
-    private WALPosition getWalPosition(final Connection connection) throws SQLException {
+    private void dropSlotIfExist(final Connection connection, final String slotName) throws SQLException {
+        if (!getSlotInfo(connection, slotName).isPresent()) {
+            log.info("dropSlotIfExist, slot not exist, ignore, slotName={}", slotName);
+            return;
+        }
+        String sql = String.format("SELECT * from pg_drop_replication_slot('%s')", slotName);
+        try (CallableStatement callableStatement = connection.prepareCall(sql)) {
+            callableStatement.execute();
+        }
+    }
+    
+    private WALPosition getWALPosition(final Connection connection) throws SQLException {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -118,31 +133,6 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
         try (Connection connection = dataSource.getConnection()) {
             dropSlotIfExist(connection, getUniqueSlotName(connection, slotNameSuffix));
         }
-    }
-    
-    private void dropSlotIfExist(final Connection connection, final String slotName) throws SQLException {
-        if (!getSlotInfo(connection, slotName).isPresent()) {
-            log.info("dropSlotIfExist, slot not exist, ignore, slotName={}", slotName);
-            return;
-        }
-        String sql = String.format("select * from pg_drop_replication_slot('%s')", slotName);
-        try (CallableStatement callableStatement = connection.prepareCall(sql)) {
-            callableStatement.execute();
-        }
-    }
-    
-    /**
-     * Get the unique slot name by connection.
-     *
-     * @param connection connection
-     * @param slotNameSuffix slot name suffix
-     * @return the unique name by connection
-     * @throws SQLException failed when getCatalog
-     */
-    public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
-        // same as PostgreSQL, but length over 64 will throw an exception directly
-        String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
-        return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
     }
     
     @Override

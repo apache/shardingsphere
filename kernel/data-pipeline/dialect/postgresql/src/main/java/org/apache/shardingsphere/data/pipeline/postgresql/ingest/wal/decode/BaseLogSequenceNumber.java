@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 /**
- * Base of log sequence number interface.
+ * Log sequence number.
  */
 public interface BaseLogSequenceNumber {
     
     /**
-     * Convert log sequence number to String.
+     * Convert log sequence number to string.
      *
-     * @return Long the sequence number of String value
+     * @return converted string value
      */
     String asString();
     
     /**
-     * Get the binded object.
+     * Get bound log sequence number.
      *
-     * @return Object the bind log sequence number
+     * @return bound log sequence number
      */
     Object get();
 }

@@ -33,17 +33,17 @@ import java.sql.SQLException;
 public final class MySQLIngestPositionManager implements DialectIngestPositionManager {
     
     @Override
-    public BinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return getBinlogPosition(connection);
-        }
-    }
-    
-    @Override
     public BinlogPosition init(final String data) {
         String[] array = data.split("#");
         Preconditions.checkArgument(2 == array.length, "Unknown binlog position: %s", data);
         return new BinlogPosition(array[0], Long.parseLong(array[1]));
+    }
+    
+    @Override
+    public BinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return getBinlogPosition(connection);
+        }
     }
     
     private BinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
