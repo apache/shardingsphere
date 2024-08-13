@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 
 class PostgreSQLSlotNameGeneratorTest {
     
-    
     @Test
     void assertGetUniqueSlotName() throws SQLException {
         Connection connection = mock(Connection.class);
