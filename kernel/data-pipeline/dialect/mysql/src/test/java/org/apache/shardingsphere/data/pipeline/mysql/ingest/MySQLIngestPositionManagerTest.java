@@ -63,7 +63,6 @@ class MySQLIngestPositionManagerTest {
     void assertGetCurrentPosition() throws SQLException {
         MySQLIngestPositionManager positionInitializer = new MySQLIngestPositionManager();
         BinlogPosition actual = positionInitializer.init(dataSource, "");
-        assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
     }

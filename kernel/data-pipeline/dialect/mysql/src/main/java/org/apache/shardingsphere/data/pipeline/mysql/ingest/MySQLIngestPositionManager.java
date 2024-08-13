@@ -43,13 +43,12 @@ public final class MySQLIngestPositionManager implements DialectIngestPositionMa
     public BinlogPosition init(final String data) {
         String[] array = data.split("#");
         Preconditions.checkArgument(2 == array.length, "Unknown binlog position: %s", data);
-        return new BinlogPosition(array[0], Long.parseLong(array[1]), 0L);
+        return new BinlogPosition(array[0], Long.parseLong(array[1]));
     }
     
     private BinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
         String filename;
         long position;
-        long serverId;
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -57,13 +56,7 @@ public final class MySQLIngestPositionManager implements DialectIngestPositionMa
             filename = resultSet.getString(1);
             position = resultSet.getLong(2);
         }
-        try (
-                PreparedStatement preparedStatement = connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'");
-                ResultSet resultSet = preparedStatement.executeQuery()) {
-            resultSet.next();
-            serverId = resultSet.getLong(2);
-        }
-        return new BinlogPosition(filename, position, serverId);
+        return new BinlogPosition(filename, position);
     }
     
     @Override
