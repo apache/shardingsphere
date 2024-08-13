@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewrite.engine.scenario;
 
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -100,7 +101,7 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         tables.put("t_account_view", new ShardingSphereTable("t_account_view", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
+        ShardingSphereSchema result = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
     }
     

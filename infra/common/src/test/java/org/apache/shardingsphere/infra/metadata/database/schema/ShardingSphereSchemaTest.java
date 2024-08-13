@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -37,31 +38,33 @@ class ShardingSphereSchemaTest {
     
     @Test
     void assertGetAllTableNames() {
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.emptyMap()).getAllTableNames(),
+        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.emptyMap()).getAllTableNames(),
                 is(new HashSet<>(Collections.singleton("tbl"))));
     }
     
     @Test
     void assertGetAllViewNames() {
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", mock(ShardingSphereTable.class)),
+        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", mock(ShardingSphereTable.class)),
                 Collections.singletonMap("tbl_view", mock(ShardingSphereView.class))).getAllViewNames(), is(new HashSet<>(Collections.singleton("tbl_view"))));
     }
     
     @Test
     void assertGetTable() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).getTable("tbl"), is(table));
+        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).getTable("tbl"), is(table));
     }
     
     @Test
     void assertGetView() {
         ShardingSphereView view = mock(ShardingSphereView.class);
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.singletonMap("tbl_view", view)).getView("tbl_view"), is(view));
+        assertThat(
+                new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.singletonMap("tbl_view", view)).getView("tbl_view"),
+                is(view));
     }
     
     @Test
     void assertPutTable() {
-        ShardingSphereSchema actual = new ShardingSphereSchema(Collections.emptyMap(), Collections.emptyMap());
+        ShardingSphereSchema actual = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyMap());
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         actual.putTable("tbl", table);
         assertThat(actual.getTable("tbl"), is(table));
@@ -69,54 +72,56 @@ class ShardingSphereSchemaTest {
     
     @Test
     void assertRemoveTable() {
-        ShardingSphereSchema actual = new ShardingSphereSchema(Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.emptyMap());
+        ShardingSphereSchema actual = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.emptyMap());
         actual.removeTable("tbl");
         assertNull(actual.getTable("tbl"));
     }
     
     @Test
     void assertContainsTable() {
-        assertTrue(new ShardingSphereSchema(Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.emptyMap()).containsTable("tbl"));
+        assertTrue(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.emptyMap()).containsTable("tbl"));
     }
     
     @Test
     void assertContainsColumn() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
                 new ShardingSphereColumn("col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertTrue(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).containsColumn("tbl", "col"));
+        assertTrue(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).containsColumn("tbl", "col"));
     }
     
     @Test
     void assertGetAllColumnNamesWhenContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
                 new ShardingSphereColumn("col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
+        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     void assertGetAllColumnNamesWhenNotContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
                 new ShardingSphereColumn("col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl1", table), Collections.emptyMap()).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
+        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl1", table), Collections.emptyMap()).getAllColumnNames("tbl2"),
+                is(Collections.<String>emptyList()));
     }
     
     @Test
     void assertContainsIndex() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.emptyList(), Collections.singletonList(new ShardingSphereIndex("col_idx")), Collections.emptyList());
-        assertTrue(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).containsIndex("tbl", "col_idx"));
+        assertTrue(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).containsIndex("tbl", "col_idx"));
     }
     
     @Test
     void assertGetVisibleColumnNamesWhenContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
                 new ShardingSphereColumn("col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).getVisibleColumnNames("tbl"), is(Collections.singletonList("col")));
+        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).getVisibleColumnNames("tbl"),
+                is(Collections.singletonList("col")));
     }
     
     @Test
     void assertGetVisibleColumnNamesWhenNotContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
                 new ShardingSphereColumn("col", 0, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).getVisibleColumnNames("tbl"), is(Collections.emptyList()));
+        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).getVisibleColumnNames("tbl"), is(Collections.emptyList()));
     }
 }

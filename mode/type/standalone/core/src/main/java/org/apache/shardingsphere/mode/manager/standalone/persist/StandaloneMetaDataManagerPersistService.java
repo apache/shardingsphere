@@ -94,7 +94,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void createSchema(final String databaseName, final String schemaName) {
-        ShardingSphereSchema schema = new ShardingSphereSchema();
+        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName);
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().get().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         database.addSchema(schemaName, schema);
@@ -162,7 +162,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {
-        ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables(), database.getSchema(schemaName).getViews());
+        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, database.getSchema(schemaName).getTables(), database.getSchema(schemaName).getViews());
         database.dropSchema(schemaName);
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singletonList(schemaName), schema.getAllTableNames());
     }
@@ -199,7 +199,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().get().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         for (String each : schemaNames) {
-            ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(each).getTables(), database.getSchema(each).getViews());
+            ShardingSphereSchema schema = new ShardingSphereSchema(each, database.getSchema(each).getTables(), database.getSchema(each).getViews());
             database.dropSchema(each);
             Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.eng
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -64,7 +65,7 @@ class GeneratedKeyContextEngineTest {
                 "tbl", Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, true, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereTable table2 = new ShardingSphereTable(
                 "tbl2", Collections.singletonList(new ShardingSphereColumn("ID", Types.INTEGER, true, true, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        schema = new ShardingSphereSchema(ImmutableMap.of(table.getName(), table, table2.getName(), table2), Collections.emptyMap());
+        schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, ImmutableMap.of(table.getName(), table, table2.getName(), table2), Collections.emptyMap());
     }
     
     @Test

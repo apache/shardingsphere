@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALSta
 import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -91,7 +92,7 @@ class QueryableRALBackendHandlerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
+        when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, createTableMap(), Collections.emptyMap()));
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database);
         assertDoesNotThrow(() -> new DistSQLQueryBackendHandler(createSqlStatement(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }

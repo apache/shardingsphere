@@ -90,7 +90,7 @@ public final class SchemaMetaDataManager {
         if (database.containsSchema(schemaName)) {
             return;
         }
-        database.addSchema(schemaName, new ShardingSphereSchema());
+        database.addSchema(schemaName, new ShardingSphereSchema(schemaName));
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     

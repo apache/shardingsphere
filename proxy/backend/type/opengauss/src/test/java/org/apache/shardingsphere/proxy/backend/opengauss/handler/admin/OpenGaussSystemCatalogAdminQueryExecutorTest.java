@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -135,7 +136,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
                 new ShardingSphereColumn("datacl", 2003, false, false, false, true, false, false),
                 new ShardingSphereColumn("datfrozenxid64", 1111, false, false, false, true, false, false),
                 new ShardingSphereColumn("datminmxid", 1111, false, false, false, true, false, false));
-        ShardingSphereSchema schema = new ShardingSphereSchema(
+        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap("pg_database", new ShardingSphereTable("pg_database", columns, Collections.emptyList(), Collections.emptyList())), Collections.emptyMap());
         result.put("sharding_db", new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "openGauss"),
                 mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), mock(RuleMetaData.class), Collections.singletonMap("pg_catalog", schema)));

@@ -104,7 +104,7 @@ class ExecutionContextBuilderTest {
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
         tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return Collections.singletonMap("name", new ShardingSphereSchema(tables, Collections.emptyMap()));
+        return Collections.singletonMap("name", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap()));
     }
     
     private Map<String, ShardingSphereSchema> buildDatabase() {
@@ -119,6 +119,6 @@ class ExecutionContextBuilderTest {
                 new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
         tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return Collections.singletonMap("name", new ShardingSphereSchema(tables, Collections.emptyMap()));
+        return Collections.singletonMap("name", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap()));
     }
 }

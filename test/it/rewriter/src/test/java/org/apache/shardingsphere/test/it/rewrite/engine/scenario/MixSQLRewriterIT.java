@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewrite.engine.scenario;
 
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -69,7 +70,7 @@ class MixSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
+        ShardingSphereSchema result = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
     }
     
