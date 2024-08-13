@@ -20,9 +20,9 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.postgresql.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
@@ -75,8 +75,9 @@ public final class PostgreSQLIngestPositionManager implements DialectIngestPosit
             log.info("createSlotIfNotExist, slot exist, slotName={}", slotName);
             return;
         }
-        String createSlotSQL = String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", slotName, DECODE_PLUGIN);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(createSlotSQL)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot(?, ?)")) {
+            preparedStatement.setString(1, slotName);
+            preparedStatement.setString(2, DECODE_PLUGIN);
             preparedStatement.execute();
         } catch (final SQLException ex) {
             if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {

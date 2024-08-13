@@ -19,18 +19,18 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo.ReplicationSlotInfo;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
 
 /**
@@ -98,8 +98,9 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     }
     
     private void createSlot(final Connection connection, final String slotName) throws SQLException {
-        String sql = String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", slotName, DECODE_PLUGIN);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot(?, ?)")) {
+            preparedStatement.setString(1, slotName);
+            preparedStatement.setString(2, DECODE_PLUGIN);
             preparedStatement.execute();
         } catch (final SQLException ex) {
             if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
@@ -113,16 +114,16 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
             log.info("dropSlotIfExist, slot not exist, ignore, slotName={}", slotName);
             return;
         }
-        String sql = String.format("SELECT * from pg_drop_replication_slot('%s')", slotName);
-        try (CallableStatement callableStatement = connection.prepareCall(sql)) {
-            callableStatement.execute();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from pg_drop_replication_slot(?)")) {
+            preparedStatement.setString(1, slotName);
+            preparedStatement.execute();
         }
     }
     
     private WALPosition getWALPosition(final Connection connection) throws SQLException {
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
-                ResultSet resultSet = preparedStatement.executeQuery()) {
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT PG_CURRENT_XLOG_LOCATION()")) {
             resultSet.next();
             return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }
