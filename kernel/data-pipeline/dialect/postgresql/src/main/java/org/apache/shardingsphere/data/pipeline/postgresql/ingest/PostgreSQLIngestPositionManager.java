@@ -72,7 +72,7 @@ public final class PostgreSQLIngestPositionManager implements DialectIngestPosit
     @Override
     public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            slotManager.dropIfExisted(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
+            slotManager.dropIfExisted(connection, slotNameSuffix);
         }
     }
     

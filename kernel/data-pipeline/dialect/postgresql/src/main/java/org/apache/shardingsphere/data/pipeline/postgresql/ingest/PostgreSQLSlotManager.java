@@ -50,7 +50,7 @@ public final class PostgreSQLSlotManager {
             return;
         }
         if (null == slotInfo.get().getDatabaseName()) {
-            dropIfExisted(connection, slotName);
+            doDrop(connection, slotName);
             doCreate(connection, slotName);
         }
     }
@@ -82,13 +82,18 @@ public final class PostgreSQLSlotManager {
      * Drop slot if existed.
      *
      * @param connection connection
-     * @param slotName slot name
+     * @param slotNameSuffix slot name suffix
      * @throws SQLException SQL exception
      */
-    public void dropIfExisted(final Connection connection, final String slotName) throws SQLException {
+    public void dropIfExisted(final Connection connection, final String slotNameSuffix) throws SQLException {
+        String slotName = PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix);
         if (!load(connection, slotName).isPresent()) {
             return;
         }
+        doDrop(connection, slotName);
+    }
+    
+    private void doDrop(final Connection connection, final String slotName) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT pg_drop_replication_slot(?)")) {
             preparedStatement.setString(1, slotName);
             preparedStatement.execute();
