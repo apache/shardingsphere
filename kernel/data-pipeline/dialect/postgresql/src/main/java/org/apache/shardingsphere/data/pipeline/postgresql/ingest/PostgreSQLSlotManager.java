@@ -19,40 +19,31 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo.ReplicationSlotInfo;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
-import org.postgresql.replication.LogSequenceNumber;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
- * PostgreSQL Ingest position creator.
+ * PostgreSQL slot manager.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLIngestPositionCreator {
+public final class PostgreSQLSlotManager {
     
     private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
     private final String decodePlugin;
     
     /**
-     * Create WAL position.
+     * Create slot.
      * 
      * @param connection connection
      * @param slotNameSuffix slot name suffix
-     * @param logSequenceNumberFetchSQL log sequence number fetch SQL
-     * @param logSequenceNumberCreator log sequence number creator
-     * @return WAL position
      */
-    public WALPosition create(final Connection connection, final String slotNameSuffix, final String logSequenceNumberFetchSQL,
-                              final Function<Object, BaseLogSequenceNumber> logSequenceNumberCreator) throws SQLException {
+    public void create(final Connection connection, final String slotNameSuffix) throws SQLException {
         createSlotIfNotExist(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
-        return getWALPosition(connection, logSequenceNumberFetchSQL, logSequenceNumberCreator);
     }
     
     private void createSlotIfNotExist(final Connection connection, final String slotName) throws SQLException {
@@ -87,16 +78,6 @@ public final class PostgreSQLIngestPositionCreator {
             if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
                 throw ex;
             }
-        }
-    }
-    
-    private WALPosition getWALPosition(final Connection connection, final String logSequenceNumberSQL,
-                                       final Function<Object, BaseLogSequenceNumber> logSequenceNumberCreator) throws SQLException {
-        try (
-                PreparedStatement preparedStatement = connection.prepareStatement(logSequenceNumberSQL);
-                ResultSet resultSet = preparedStatement.executeQuery()) {
-            resultSet.next();
-            return new WALPosition(logSequenceNumberCreator.apply(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }
     }
     

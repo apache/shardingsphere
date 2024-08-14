@@ -26,6 +26,8 @@ import org.postgresql.replication.LogSequenceNumber;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -33,7 +35,7 @@ import java.sql.SQLException;
  */
 public final class PostgreSQLIngestPositionManager implements DialectIngestPositionManager {
     
-    private final PostgreSQLIngestPositionCreator positionCreator = new PostgreSQLIngestPositionCreator("test_decoding");
+    private final PostgreSQLSlotManager slotManager = new PostgreSQLSlotManager("test_decoding");
     
     @Override
     public WALPosition init(final String data) {
@@ -43,7 +45,17 @@ public final class PostgreSQLIngestPositionManager implements DialectIngestPosit
     @Override
     public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return positionCreator.create(connection, slotNameSuffix, getLogSequenceNumberSQL(connection.getMetaData()), lsn -> new PostgreSQLLogSequenceNumber((LogSequenceNumber) lsn));
+            slotManager.create(connection, slotNameSuffix);
+            return getWALPosition(connection, getLogSequenceNumberSQL(connection.getMetaData()));
+        }
+    }
+    
+    private WALPosition getWALPosition(final Connection connection, final String logSequenceNumberSQL) throws SQLException {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(logSequenceNumberSQL);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            resultSet.next();
+            return new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }
     }
     
@@ -60,7 +72,7 @@ public final class PostgreSQLIngestPositionManager implements DialectIngestPosit
     @Override
     public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            positionCreator.dropSlotIfExisted(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
+            slotManager.dropSlotIfExisted(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
         }
     }
     

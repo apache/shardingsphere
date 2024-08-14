@@ -19,13 +19,15 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLIngestPositionCreator;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLSlotManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLSlotNameGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -33,7 +35,7 @@ import java.sql.SQLException;
  */
 public final class OpenGaussIngestPositionManager implements DialectIngestPositionManager {
     
-    private final PostgreSQLIngestPositionCreator positionCreator = new PostgreSQLIngestPositionCreator("mppdb_decoding");
+    private final PostgreSQLSlotManager slotManager = new PostgreSQLSlotManager("mppdb_decoding");
     
     @Override
     public WALPosition init(final String data) {
@@ -43,14 +45,24 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     @Override
     public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return positionCreator.create(connection, slotNameSuffix, "SELECT PG_CURRENT_XLOG_LOCATION()", lsn -> new OpenGaussLogSequenceNumber((LogSequenceNumber) lsn));
+            slotManager.create(connection, slotNameSuffix);
+            return getWALPosition(connection);
+        }
+    }
+    
+    private WALPosition getWALPosition(final Connection connection) throws SQLException {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            resultSet.next();
+            return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }
     }
     
     @Override
     public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            positionCreator.dropSlotIfExisted(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
+            slotManager.dropSlotIfExisted(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
         }
     }
     
