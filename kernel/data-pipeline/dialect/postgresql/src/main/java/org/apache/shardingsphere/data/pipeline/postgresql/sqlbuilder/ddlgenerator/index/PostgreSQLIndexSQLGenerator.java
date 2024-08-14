@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
+package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.index;
 
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.AbstractPostgreSQLDDLAdapter;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 import org.postgresql.jdbc.PgArray;
 

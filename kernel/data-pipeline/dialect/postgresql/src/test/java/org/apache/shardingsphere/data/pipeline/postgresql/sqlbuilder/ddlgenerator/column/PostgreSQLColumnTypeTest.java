@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
+package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.column;
 
 import org.junit.jupiter.api.Test;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
+package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.column;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +33,7 @@ public enum PostgreSQLColumnType {
     
     VARCHAR(new Long[]{1560L, 1561L, 1562L, 1563L, 1042L, 1043L, 1014L, 1015L}),
     
-    UNKNOWN(new Long[]{});
+    UNKNOWN(new Long[]{0L});
     
     private final Long[] values;
     
@@ -44,9 +44,6 @@ public enum PostgreSQLColumnType {
      * @return value of column type
      */
     public static PostgreSQLColumnType valueOf(final Long elemoid) {
-        if (0L == elemoid) {
-            return UNKNOWN;
-        }
         for (PostgreSQLColumnType each : values()) {
             if (Arrays.asList(each.values).contains(elemoid)) {
                 return each;
