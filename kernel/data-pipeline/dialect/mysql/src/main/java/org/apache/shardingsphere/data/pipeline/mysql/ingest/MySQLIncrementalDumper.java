@@ -79,8 +79,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     
     private final String catalog;
     
-    public MySQLIncrementalDumper(final IncrementalDumperContext dumperContext, final IngestPosition binlogPosition,
-                                  final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
+    public MySQLIncrementalDumper(final IncrementalDumperContext dumperContext, final IngestPosition binlogPosition, final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         Preconditions.checkArgument(dumperContext.getCommonContext().getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration,
                 "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
         this.dumperContext = dumperContext;
@@ -88,8 +87,8 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         this.channel = channel;
         this.metaDataLoader = metaDataLoader;
         StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig();
-        ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        ConnectionProperties connectionProps = parser.parse(pipelineDataSourceConfig.getUrl(), null, null);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType).parse(pipelineDataSourceConfig.getUrl(), null, null);
         ConnectInfo connectInfo = new ConnectInfo(
                 generateServerId(), connectionProps.getHostname(), connectionProps.getPort(), pipelineDataSourceConfig.getUsername(), pipelineDataSourceConfig.getPassword());
         log.info("incremental dump, jdbcUrl={}, serverId={}, hostname={}, port={}", pipelineDataSourceConfig.getUrl(), connectInfo.getServerId(), connectInfo.getHost(), connectInfo.getPort());

@@ -90,7 +90,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
     public OpenGaussWALDumper(final IncrementalDumperContext dumperContext, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperContext.getCommonContext().getDataSourceConfig().getClass()),
-                () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
+                () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support StandardPipelineDataSourceConfiguration"));
         this.dumperContext = dumperContext;
         walPosition = new AtomicReference<>((WALPosition) position);
         this.channel = channel;
@@ -125,8 +125,8 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         PGReplicationStream stream = null;
         int majorVersion = getMajorVersion();
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
-            stream = logicalReplication.createReplicationStream(connection, walPosition.get().getLogSequenceNumber(),
-                    PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, dumperContext.getJobId()), majorVersion);
+            stream = logicalReplication.createReplicationStream(
+                    connection, walPosition.get().getLogSequenceNumber(), PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, dumperContext.getJobId()), majorVersion);
             DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX, majorVersion >= 3);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
