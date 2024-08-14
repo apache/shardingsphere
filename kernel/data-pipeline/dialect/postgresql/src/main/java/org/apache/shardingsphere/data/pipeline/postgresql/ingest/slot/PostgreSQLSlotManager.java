@@ -38,7 +38,7 @@ public final class PostgreSQLSlotManager {
     
     /**
      * Create slot.
-     * 
+     *
      * @param connection connection
      * @param slotNameSuffix slot name suffix
      * @throws SQLException SQL exception
