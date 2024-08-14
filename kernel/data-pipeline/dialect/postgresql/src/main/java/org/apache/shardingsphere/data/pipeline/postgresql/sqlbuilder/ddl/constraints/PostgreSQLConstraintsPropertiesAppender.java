@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constraints;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.AbstractPostgreSQLDDLAdapter;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
 
 import java.sql.Connection;
 import java.util.Collection;
@@ -33,12 +33,14 @@ import java.util.stream.Collectors;
 /**
  * Constraints properties appender for PostgreSQL.
  */
-public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostgreSQLDDLAdapter {
+public final class PostgreSQLConstraintsPropertiesAppender {
     
     private static final Integer PG_CONSTRAINTS_INCLUDE_VERSION = 11;
     
+    private final PostgreSQLDDLTemplateExecutor templateExecutor;
+    
     public PostgreSQLConstraintsPropertiesAppender(final Connection connection, final int majorVersion, final int minorVersion) {
-        super(connection, majorVersion, minorVersion);
+        templateExecutor = new PostgreSQLDDLTemplateExecutor(connection, majorVersion, minorVersion);
     }
     
     /**
@@ -97,8 +99,8 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("cid", constraintsProp.get("oid"));
         Collection<Object> includes = new LinkedList<>();
-        if (getMajorVersion() >= PG_CONSTRAINTS_INCLUDE_VERSION) {
-            for (Map<String, Object> each : executeByTemplate(params, "component/index_constraint/%s/get_constraint_include.ftl")) {
+        if (templateExecutor.getMajorVersion() >= PG_CONSTRAINTS_INCLUDE_VERSION) {
+            for (Map<String, Object> each : templateExecutor.executeByTemplate(params, "component/index_constraint/%s/get_constraint_include.ftl")) {
                 includes.add(each.get("colname"));
             }
         }
@@ -120,7 +122,7 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
         Map<String, Object> params = new HashMap<>();
         params.put("cid", constraintColProps.get("oid"));
         params.put("colcnt", constraintColProps.get("col_count"));
-        return executeByTemplate(params, "component/index_constraint/%s/get_costraint_cols.ftl");
+        return templateExecutor.executeByTemplate(params, "component/index_constraint/%s/get_costraint_cols.ftl");
     }
     
     private Collection<Map<String, Object>> fetchConstraintsProperties(final Map<String, Object> context, final String constraintType) {
@@ -129,14 +131,14 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
         params.put("tid", context.get("tid"));
         params.put("cid", context.get("cid"));
         params.put("constraint_type", constraintType);
-        return executeByTemplate(params, "component/index_constraint/%s/properties.ftl");
+        return templateExecutor.executeByTemplate(params, "component/index_constraint/%s/properties.ftl");
     }
     
     private Collection<Map<String, Object>> getExclusionConstraints(final Map<String, Object> context) {
         Map<String, Object> params = new HashMap<>();
         params.put("tid", context.get("tid"));
         params.put("did", context.get("did"));
-        Collection<Map<String, Object>> result = executeByTemplate(params, "component/exclusion_constraint/%s/properties.ftl");
+        Collection<Map<String, Object>> result = templateExecutor.executeByTemplate(params, "component/exclusion_constraint/%s/properties.ftl");
         for (Map<String, Object> each : result) {
             getExclusionConstraintsColumns(each);
         }
@@ -148,7 +150,7 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
         params.put("cid", exclusionConstraintsProps.get("oid"));
         params.put("col_count", exclusionConstraintsProps.get("col_count"));
         Collection<Map<String, Object>> columns = new LinkedList<>();
-        for (Map<String, Object> each : executeByTemplate(params, "component/exclusion_constraint/%s/get_constraint_cols.ftl")) {
+        for (Map<String, Object> each : templateExecutor.executeByTemplate(params, "component/exclusion_constraint/%s/get_constraint_cols.ftl")) {
             boolean order = 0 == (((int) each.get("options")) & 1);
             boolean nullsOrder = 0 != (((int) each.get("options")) & 2);
             Map<String, Object> col = new HashMap<>();
@@ -165,8 +167,8 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
         Map<String, Object> map = new HashMap<>();
         map.put("cid", exclusionConstraintsProps.get("oid"));
         Collection<String> include = new LinkedList<>();
-        if (getMajorVersion() >= PG_CONSTRAINTS_INCLUDE_VERSION) {
-            for (Map<String, Object> each : executeByTemplate(map, "exclusion_constraint/%s/get_constraint_include.ftl")) {
+        if (templateExecutor.getMajorVersion() >= PG_CONSTRAINTS_INCLUDE_VERSION) {
+            for (Map<String, Object> each : templateExecutor.executeByTemplate(map, "exclusion_constraint/%s/get_constraint_include.ftl")) {
                 include.add(each.get("colname").toString());
             }
         }
@@ -176,7 +178,7 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
     private Collection<Map<String, Object>> getForeignKeys(final Long tid) {
         Map<String, Object> params = new HashMap<>();
         params.put("tid", tid);
-        Collection<Map<String, Object>> result = executeByTemplate(params, "component/foreign_key/%s/properties.ftl");
+        Collection<Map<String, Object>> result = templateExecutor.executeByTemplate(params, "component/foreign_key/%s/properties.ftl");
         for (Map<String, Object> each : result) {
             Collection<Map<String, Object>> columns = new LinkedList<>();
             Set<String> cols = new HashSet<>();
@@ -202,7 +204,7 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
     private void setRemoteName(final Map<String, Object> foreignKey, final Collection<Map<String, Object>> columns) {
         Map<String, Object> params = new HashMap<>();
         params.put("tid", columns.iterator().next().get("references"));
-        Map<String, Object> parents = executeByTemplateForSingleRow(params, "component/foreign_key/%s/get_parent.ftl");
+        Map<String, Object> parents = templateExecutor.executeByTemplateForSingleRow(params, "component/foreign_key/%s/get_parent.ftl");
         foreignKey.put("remote_schema", parents.get("schema"));
         foreignKey.put("remote_table", parents.get("table"));
     }
@@ -216,7 +218,7 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
         key.put("conkey", foreignKeyProps.get("conkey"));
         keys.add(key);
         params.put("keys", keys);
-        return executeByTemplate(params, "component/foreign_key/%s/get_constraint_cols.ftl");
+        return templateExecutor.executeByTemplate(params, "component/foreign_key/%s/get_constraint_cols.ftl");
     }
     
     private boolean isPartitionAndConstraintInherited(final Map<String, Object> constraint, final Map<String, Object> context) {
@@ -226,11 +228,11 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
     private Optional<String> searchCoveringIndex(final Long tid, final Set<String> cols) {
         Map<String, Object> params = new HashMap<>();
         params.put("tid", tid);
-        for (Map<String, Object> each : executeByTemplate(params, "component/foreign_key/%s/get_constraints.ftl")) {
+        for (Map<String, Object> each : templateExecutor.executeByTemplate(params, "component/foreign_key/%s/get_constraints.ftl")) {
             Map<String, Object> map = new HashMap<>();
             map.put("cid", each.get("oid"));
             map.put("colcnt", each.get("col_count"));
-            Collection<Map<String, Object>> rows = executeByTemplate(map, "component/foreign_key/%s/get_cols.ftl");
+            Collection<Map<String, Object>> rows = templateExecutor.executeByTemplate(map, "component/foreign_key/%s/get_cols.ftl");
             Set<String> indexCols = new HashSet<>();
             for (Map<String, Object> row : rows) {
                 indexCols.add(strip(row.get("column").toString()));
@@ -266,6 +268,6 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
     private Collection<Map<String, Object>> getCheckConstraints(final Long tid) {
         Map<String, Object> params = new HashMap<>();
         params.put("tid", tid);
-        return executeByTemplate(params, "component/check_constraint/%s/properties.ftl");
+        return templateExecutor.executeByTemplate(params, "component/check_constraint/%s/properties.ftl");
     }
 }

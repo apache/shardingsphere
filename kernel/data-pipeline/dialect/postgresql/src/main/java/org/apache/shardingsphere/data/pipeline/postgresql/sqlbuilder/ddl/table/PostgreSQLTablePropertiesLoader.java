@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.AbstractPostgreSQLDDLAdapter;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,16 +29,18 @@ import java.util.Map;
 /**
  * Table properties loader for PostgreSQL.
  */
-public final class PostgreSQLTablePropertiesLoader extends AbstractPostgreSQLDDLAdapter {
+public final class PostgreSQLTablePropertiesLoader {
     
     private final String tableName;
     
     private final String schemaName;
     
+    private final PostgreSQLDDLTemplateExecutor templateExecutor;
+    
     public PostgreSQLTablePropertiesLoader(final Connection connection, final String tableName, final String schemaName, final int majorVersion, final int minorVersion) {
-        super(connection, majorVersion, minorVersion);
         this.tableName = tableName;
         this.schemaName = schemaName;
+        templateExecutor = new PostgreSQLDDLTemplateExecutor(connection, majorVersion, minorVersion);
     }
     
     /**
@@ -58,28 +60,28 @@ public final class PostgreSQLTablePropertiesLoader extends AbstractPostgreSQLDDL
     
     private void fetchDataBaseId(final Map<String, Object> context) throws SQLException {
         Map<String, Object> params = new LinkedHashMap<>();
-        params.put("databaseName", getConnection().getCatalog());
-        context.putAll(executeByTemplateForSingleRow(params, "component/table/%s/get_database_id.ftl"));
+        params.put("databaseName", templateExecutor.getConnection().getCatalog());
+        context.putAll(templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_database_id.ftl"));
     }
     
     private void fetchTableId(final Map<String, Object> context) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("schemaName", schemaName);
         params.put("tableName", tableName);
-        context.putAll(executeByTemplateForSingleRow(params, "component/table/%s/get_table_id.ftl"));
+        context.putAll(templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_table_id.ftl"));
     }
     
     private void fetchSchemaId(final Map<String, Object> context) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("schemaName", schemaName);
-        context.putAll(executeByTemplateForSingleRow(params, "component/table/%s/get_schema_id.ftl"));
+        context.putAll(templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_schema_id.ftl"));
     }
     
     private void fetchTableProperties(final Map<String, Object> context) throws SQLException {
-        context.putAll(executeByTemplateForSingleRow(context, "component/table/%s/properties.ftl"));
+        context.putAll(templateExecutor.executeByTemplateForSingleRow(context, "component/table/%s/properties.ftl"));
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
-        formatSecurityLabels(context);
+        templateExecutor.formatSecurityLabels(context);
     }
     
     private void updateAutovacuumProperties(final Map<String, Object> context) {

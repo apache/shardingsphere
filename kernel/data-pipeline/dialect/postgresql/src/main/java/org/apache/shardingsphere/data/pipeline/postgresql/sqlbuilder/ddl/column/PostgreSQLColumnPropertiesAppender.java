@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.AbstractPostgreSQLDDLAdapter;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Column properties appender for PostgreSQL.
  */
-public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQLDDLAdapter {
+public final class PostgreSQLColumnPropertiesAppender {
     
     private static final Collection<String> TIME_TYPE_NAMES = new HashSet<>(Arrays.asList(
             "time", "timetz", "time without time zone", "time with time zone", "timestamp", "timestamptz", "timestamp without time zone", "timestamp with time zone"));
@@ -52,8 +52,10 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     
     private static final String ATT_OPTION_SPLIT = "=";
     
+    private final PostgreSQLDDLTemplateExecutor templateExecutor;
+    
     public PostgreSQLColumnPropertiesAppender(final Connection connection, final int majorVersion, final int minorVersion) {
-        super(connection, majorVersion, minorVersion);
+        templateExecutor = new PostgreSQLDDLTemplateExecutor(connection, majorVersion, minorVersion);
     }
     
     /**
@@ -64,7 +66,7 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     @SneakyThrows(SQLException.class)
     public void append(final Map<String, Object> context) {
         Collection<Map<String, Object>> typeAndInheritedColumns = getTypeAndInheritedColumns(context);
-        Collection<Map<String, Object>> allColumns = executeByTemplate(context, "component/columns/%s/properties.ftl");
+        Collection<Map<String, Object>> allColumns = templateExecutor.executeByTemplate(context, "component/columns/%s/properties.ftl");
         for (Map<String, Object> each : allColumns) {
             for (Map<String, Object> column : typeAndInheritedColumns) {
                 if (each.get("name").equals(column.get("name"))) {
@@ -96,7 +98,7 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     private Collection<Map<String, Object>> getColumnFromType(final Map<String, Object> context) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("tid", context.get("typoid"));
-        return executeByTemplate(params, "component/table/%s/get_columns_for_table.ftl");
+        return templateExecutor.executeByTemplate(params, "component/table/%s/get_columns_for_table.ftl");
     }
     
     private Collection<String> toCollection(final Array array) throws SQLException {
@@ -105,11 +107,11 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     
     private Collection<Map<String, Object>> getColumnFromInherits(final Collection<String> collInherits) {
         Collection<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : executeByTemplate(new LinkedHashMap<>(), "component/table/%s/get_inherits.ftl")) {
+        for (Map<String, Object> each : templateExecutor.executeByTemplate(new LinkedHashMap<>(), "component/table/%s/get_inherits.ftl")) {
             if (collInherits.contains((String) each.get("inherits"))) {
                 Map<String, Object> params = new LinkedHashMap<>();
                 params.put("tid", each.get("oid"));
-                result.addAll(executeByTemplate(params, "table/%s/get_columns_for_table.ftl"));
+                result.addAll(templateExecutor.executeByTemplate(params, "table/%s/get_columns_for_table.ftl"));
             }
         }
         return result;
@@ -130,7 +132,7 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("type_ids", allColumns.stream().map(each -> each.get("atttypid").toString()).collect(Collectors.joining(",")));
-        for (Map<String, Object> each : executeByTemplate(params, "component/columns/%s/edit_mode_types_multi.ftl")) {
+        for (Map<String, Object> each : templateExecutor.executeByTemplate(params, "component/columns/%s/edit_mode_types_multi.ftl")) {
             result.put(each.get("main_oid").toString(), toCollectionAndSort((Array) each.get("edit_types")));
         }
         return result;
@@ -144,7 +146,7 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
         handlePrimaryColumn(column);
         fetchLengthPrecision(column);
         formatColumnVariables(column);
-        formatSecurityLabels(column);
+        templateExecutor.formatSecurityLabels(column);
         editTypes.add(column.get("cltype").toString());
         column.put("edit_types", editTypes.stream().sorted().collect(Collectors.toList()));
         column.put("cltype", parseTypeName(column.get("cltype").toString()));
