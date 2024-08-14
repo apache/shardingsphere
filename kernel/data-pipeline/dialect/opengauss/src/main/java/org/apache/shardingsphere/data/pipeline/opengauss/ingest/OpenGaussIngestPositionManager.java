@@ -94,10 +94,9 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     
     private void dropSlotIfExist(final Connection connection, final String slotName) throws SQLException {
         if (!getSlotInfo(connection, slotName).isPresent()) {
-            log.info("dropSlotIfExist, slot not exist, ignore, slotName={}", slotName);
             return;
         }
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from pg_drop_replication_slot(?)")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT pg_drop_replication_slot(?)")) {
             preparedStatement.setString(1, slotName);
             preparedStatement.execute();
         }
