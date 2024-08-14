@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.table;
+package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.AbstractPostgreSQLDDLAdapter;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.AbstractPostgreSQLDDLAdapter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
