@@ -58,6 +58,17 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
                     : executeUpdateForPreparedStatement(context, connection);
         }
         assertDataSet(context, actualUpdateCount, testParam);
+        tearDown(context);
+    }
+    
+    void init(final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
+        super.init(testParam);
+        executeInitSQLs(testParam.getAssertion());
+    }
+    
+    void tearDown(final E2ETestContext context) throws SQLException {
+        super.tearDown();
+        executeDestroySQLs(context.getAssertion());
     }
     
     private int executeUpdateForStatement(final E2ETestContext context, final Connection connection) throws SQLException {
@@ -92,6 +103,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
                     : executeForPreparedStatement(context, connection);
         }
         assertDataSet(context, actualUpdateCount, testParam);
+        tearDown(context);
     }
     
     private int executeForStatement(final E2ETestContext context, final Connection connection) throws SQLException {

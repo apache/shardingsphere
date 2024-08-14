@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameter
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -323,5 +324,10 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
     
     private static boolean isEnabled() {
         return E2ETestParameterFactory.containsTestParameter() && E2ETestEnvironment.getInstance().isRunAdditionalTestCases();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        super.tearDown();
     }
 }
