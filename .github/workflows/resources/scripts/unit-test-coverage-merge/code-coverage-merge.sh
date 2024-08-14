@@ -1,7 +1,14 @@
 #!/bin/bash
 
 # Get file directory and output directory
-project="$GITHUB_WORKSPACE"
+#current="${{ github.workspace }}"
+
+# Use loop to get root directory, if module doesn't change, the loop needn't change
+#for i in {1..5}; do
+#  current=$(dirname "$current")
+#done
+
+project="$1"
 target="$project/target"
 
 echo $target
