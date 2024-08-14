@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWALDumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.CreateIncrementalDumperParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWALDumper;
 
 /**
  * OpenGauss incremental dumper creator.
@@ -31,9 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.Di
 public final class OpenGaussIncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context,
-                                                     final IngestPosition position, final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        return new OpenGaussWALDumper(context, position, channel, metaDataLoader);
+    public IncrementalDumper createIncrementalDumper(final CreateIncrementalDumperParameter param) {
+        return new OpenGaussWALDumper(param.getContext(), param.getPosition(), param.getChannel(), param.getMetaDataLoader());
     }
     
     @Override
