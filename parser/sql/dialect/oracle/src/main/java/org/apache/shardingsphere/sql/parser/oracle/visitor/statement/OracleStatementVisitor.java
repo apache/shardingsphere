@@ -1236,12 +1236,15 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStartIndex());
         List<TerminalNode> numbers = ctx.INTEGER_();
-        if (numbers.size() == 1) {
+        if (1 == numbers.size()) {
             result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
         }
-        if (numbers.size() == 2) {
+        if (2 == numbers.size()) {
             result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
             result.setScale(Integer.parseInt(numbers.get(1).getText()));
+        }
+        if (null != ctx.type) {
+            result.setType(ctx.type.getText());
         }
         return result;
     }
