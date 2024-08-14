@@ -367,4 +367,5 @@
         &quot;enable_persistent_index&quot; = &quot;false&quot;,
         &quot;compression&quot; = &quot;LZ4&quot;
             );" db-types="Doris"/>
+    <sql-case id="create_table_with_column_default_system_user_function" value="CREATE TABLE t (c VARCHAR(288) DEFAULT (SYSTEM_USER()));" db-types="MySQL"/>
 </sql-cases>
