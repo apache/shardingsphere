@@ -32,8 +32,8 @@ import static org.mockito.Mockito.mock;
 public final class H2IncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,
-                                                     final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
+    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context,
+                                                     final IngestPosition position, final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         return mock(IncrementalDumper.class);
     }
     

@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.client;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Connect info.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class ConnectInfo {

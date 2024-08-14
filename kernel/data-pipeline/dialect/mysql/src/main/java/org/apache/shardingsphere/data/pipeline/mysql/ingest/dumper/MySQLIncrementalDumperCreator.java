@@ -31,8 +31,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.Di
 public final class MySQLIncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,
-                                                     final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
+    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context,
+                                                     final IngestPosition position, final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         return new MySQLIncrementalDumper(context, position, channel, metaDataLoader);
     }
     

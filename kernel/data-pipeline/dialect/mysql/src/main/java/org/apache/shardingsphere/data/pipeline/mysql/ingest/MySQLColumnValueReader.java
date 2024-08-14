@@ -33,10 +33,7 @@ public final class MySQLColumnValueReader implements DialectColumnValueReader {
     
     @Override
     public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        if (isYearDataType(metaData.getColumnTypeName(columnIndex))) {
-            return Optional.of(resultSet.getShort(columnIndex));
-        }
-        return Optional.empty();
+        return isYearDataType(metaData.getColumnTypeName(columnIndex)) ? Optional.of(resultSet.getShort(columnIndex)) : Optional.empty();
     }
     
     private boolean isYearDataType(final String columnDataTypeName) {
