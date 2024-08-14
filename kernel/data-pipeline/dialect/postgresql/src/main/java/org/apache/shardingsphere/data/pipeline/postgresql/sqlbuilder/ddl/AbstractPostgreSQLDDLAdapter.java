@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator;
+package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl;
 
 import lombok.AccessLevel;
 import lombok.Getter;

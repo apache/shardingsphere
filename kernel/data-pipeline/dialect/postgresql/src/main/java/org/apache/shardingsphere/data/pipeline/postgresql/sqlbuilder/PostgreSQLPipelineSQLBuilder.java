@@ -21,10 +21,10 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.column.PostgreSQLColumnPropertiesAppender;
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.constraints.PostgreSQLConstraintsPropertiesAppender;
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.index.PostgreSQLIndexSQLGenerator;
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.table.PostgreSQLTablePropertiesLoader;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column.PostgreSQLColumnPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constraints.PostgreSQLConstraintsPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index.PostgreSQLIndexSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table.PostgreSQLTablePropertiesLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 
 import javax.sql.DataSource;
