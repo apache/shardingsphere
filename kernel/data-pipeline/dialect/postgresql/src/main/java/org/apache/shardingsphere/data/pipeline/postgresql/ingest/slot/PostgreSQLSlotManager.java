@@ -41,6 +41,7 @@ public final class PostgreSQLSlotManager {
      * 
      * @param connection connection
      * @param slotNameSuffix slot name suffix
+     * @throws SQLException SQL exception
      */
     public void create(final Connection connection, final String slotNameSuffix) throws SQLException {
         String slotName = PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix);
