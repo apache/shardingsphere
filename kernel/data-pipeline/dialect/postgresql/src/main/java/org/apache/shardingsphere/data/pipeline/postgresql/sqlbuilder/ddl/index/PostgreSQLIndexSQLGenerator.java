@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.AbstractPostgreSQLDDLAdapter;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 import org.postgresql.jdbc.PgArray;
 
@@ -31,12 +31,14 @@ import java.util.Map;
 /**
  * Index SQL generator for PostgreSQL.
  */
-public final class PostgreSQLIndexSQLGenerator extends AbstractPostgreSQLDDLAdapter {
+public final class PostgreSQLIndexSQLGenerator {
     
     private static final Integer PG_INDEX_INCLUDE_VERSION = 11;
     
+    private final PostgreSQLDDLTemplateExecutor templateExecutor;
+    
     public PostgreSQLIndexSQLGenerator(final Connection connection, final int majorVersion, final int minorVersion) {
-        super(connection, majorVersion, minorVersion);
+        templateExecutor = new PostgreSQLDDLTemplateExecutor(connection, majorVersion, minorVersion);
     }
     
     /**
@@ -61,22 +63,22 @@ public final class PostgreSQLIndexSQLGenerator extends AbstractPostgreSQLDDLAdap
     private Collection<Map<String, Object>> getIndexNodes(final Map<String, Object> context) {
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("tid", context.get("tid"));
-        return executeByTemplate(param, "component/indexes/%s/nodes.ftl");
+        return templateExecutor.executeByTemplate(param, "component/indexes/%s/nodes.ftl");
     }
     
     private String getIndexSql(final Map<String, Object> context, final Map<String, Object> indexNode) throws SQLException {
         Map<String, Object> indexData = getIndexData(context, indexNode);
         appendColumnDetails(indexData, (Long) indexNode.get("oid"));
-        if (getMajorVersion() >= PG_INDEX_INCLUDE_VERSION) {
+        if (templateExecutor.getMajorVersion() >= PG_INDEX_INCLUDE_VERSION) {
             appendIncludeDetails(indexData, (Long) indexNode.get("oid"));
         }
         return doGenerateIndexSql(indexData);
     }
     
     private String doGenerateIndexSql(final Map<String, Object> indexData) {
-        String result = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
+        String result = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/create.ftl", templateExecutor.getMajorVersion(), templateExecutor.getMinorVersion());
         result += System.lineSeparator();
-        result += PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
+        result += PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/alter.ftl", templateExecutor.getMajorVersion(), templateExecutor.getMinorVersion());
         return result;
     }
     
@@ -94,7 +96,7 @@ public final class PostgreSQLIndexSQLGenerator extends AbstractPostgreSQLDDLAdap
         param.put("tid", context.get("tid"));
         param.put("idx", indexNode.get("oid"));
         param.put("datlastsysoid", context.get("datlastsysoid"));
-        return executeByTemplate(param, "component/indexes/%s/properties.ftl");
+        return templateExecutor.executeByTemplate(param, "component/indexes/%s/properties.ftl");
     }
     
     private void appendColumnDetails(final Map<String, Object> indexData, final Long indexId) throws SQLException {
@@ -140,7 +142,7 @@ public final class PostgreSQLIndexSQLGenerator extends AbstractPostgreSQLDDLAdap
     private Collection<Map<String, Object>> fetchColumnDetails(final Long indexId) {
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("idx", indexId);
-        return executeByTemplate(param, "component/indexes/%s/column_details.ftl");
+        return templateExecutor.executeByTemplate(param, "component/indexes/%s/column_details.ftl");
     }
     
     private String getColumnPropertyDisplayData(final Map<String, Object> columnDetail, final Map<String, Object> indexData) throws SQLException {
@@ -167,7 +169,7 @@ public final class PostgreSQLIndexSQLGenerator extends AbstractPostgreSQLDDLAdap
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("idx", oid);
         Collection<Object> includes = new LinkedList<>();
-        for (Map<String, Object> each : executeByTemplate(param, "component/indexes/%s/include_details.ftl")) {
+        for (Map<String, Object> each : templateExecutor.executeByTemplate(param, "component/indexes/%s/include_details.ftl")) {
             includes.add(each.get("colname"));
         }
         indexData.put("include", includes);

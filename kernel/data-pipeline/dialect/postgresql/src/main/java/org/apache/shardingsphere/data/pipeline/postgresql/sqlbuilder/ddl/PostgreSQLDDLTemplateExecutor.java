@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
@@ -39,9 +38,9 @@ import java.util.stream.Collectors;
 /**
  * Abstract ddl adapter for PostgreSQL.
  */
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 @Getter
-public abstract class AbstractPostgreSQLDDLAdapter {
+public final class PostgreSQLDDLTemplateExecutor {
     
     private static final String SECURITY_LABEL_SPLIT = "=";
     
@@ -51,7 +50,14 @@ public abstract class AbstractPostgreSQLDDLAdapter {
     
     private final int minorVersion;
     
-    protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> params, final String path) {
+    /**
+     * Execute by template.
+     *
+     * @param params parameters
+     * @param path path
+     * @return execute result
+     */
+    public Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> params, final String path) {
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(PostgreSQLPipelineFreemarkerManager.getSQLByVersion(params, path, majorVersion, minorVersion))) {
@@ -75,7 +81,14 @@ public abstract class AbstractPostgreSQLDDLAdapter {
         return result;
     }
     
-    protected Map<String, Object> executeByTemplateForSingleRow(final Map<String, Object> params, final String path) {
+    /**
+     * Execute by template for single row.
+     *
+     * @param params parameters
+     * @param path path
+     * @return execute result
+     */
+    public Map<String, Object> executeByTemplateForSingleRow(final Map<String, Object> params, final String path) {
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(PostgreSQLPipelineFreemarkerManager.getSQLByVersion(params, path, majorVersion, minorVersion))) {
@@ -97,7 +110,13 @@ public abstract class AbstractPostgreSQLDDLAdapter {
         return result;
     }
     
-    protected void formatSecurityLabels(final Map<String, Object> data) throws SQLException {
+    /**
+     * Format security labels.
+     *
+     * @param data data
+     * @throws SQLException SQL exception
+     */
+    public void formatSecurityLabels(final Map<String, Object> data) throws SQLException {
         if (null == data.get("seclabels")) {
             return;
         }
