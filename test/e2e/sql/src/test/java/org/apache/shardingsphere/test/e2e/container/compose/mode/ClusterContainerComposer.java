@@ -58,7 +58,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, "",
                 StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, databaseType, AdapterContainerUtils.getAdapterContainerImage());
-        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, storageContainer, scenario, containerConfig);
+        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario, containerConfig);
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }

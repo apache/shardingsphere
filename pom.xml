@@ -1339,7 +1339,7 @@
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
                                 <trimStackTrace>false</trimStackTrace>
-                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
+                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
                             </configuration>
                         </plugin>
                     </plugins>
