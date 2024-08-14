@@ -47,11 +47,4 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: ./target/mergeReport/jacoco.xml
-          #change token on wrong
-          token: e66ee916-739d-4478-a899-4ee13b0c05ss
-      - name: Upload coverage reports to Codecov for test2
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./target/mergeReport/jacoco.xml
-          #empty token
-          token:
+          token: ${{ secrets.CODECOV }}

@@ -1,15 +1,8 @@
 #!/bin/bash
 
 # Get file directory and output directory
-current="${{ github.workspace }}"
-
-# Use loop to get root directory, if module doesn't change, the loop needn't change
-for i in {1..5}; do
-  current=$(dirname "$current")
-done
-
-project=$current
-target=$project/target
+project="$GITHUB_WORKSPACE"
+target="$project/target"
 
 echo $target
 # Create corresponding folders
