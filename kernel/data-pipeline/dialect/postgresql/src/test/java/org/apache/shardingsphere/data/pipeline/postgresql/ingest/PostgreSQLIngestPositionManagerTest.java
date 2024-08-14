@@ -119,7 +119,7 @@ class PostgreSQLIngestPositionManagerTest {
     @SneakyThrows(SQLException.class)
     private void mockSlotExistsOrNot(final boolean exists) {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        when(connection.prepareStatement("SELECT slot_name FROM pg_replication_slots WHERE slot_name=? AND plugin=?")).thenReturn(preparedStatement);
+        when(connection.prepareStatement("SELECT slot_name, database FROM pg_replication_slots WHERE slot_name=? AND plugin=?")).thenReturn(preparedStatement);
         ResultSet resultSet = mock(ResultSet.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(exists);
