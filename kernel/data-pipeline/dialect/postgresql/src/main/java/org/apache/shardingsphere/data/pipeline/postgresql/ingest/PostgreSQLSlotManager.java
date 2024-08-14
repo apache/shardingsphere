@@ -43,22 +43,19 @@ public final class PostgreSQLSlotManager {
      * @param slotNameSuffix slot name suffix
      */
     public void create(final Connection connection, final String slotNameSuffix) throws SQLException {
-        createSlotIfNotExist(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
-    }
-    
-    private void createSlotIfNotExist(final Connection connection, final String slotName) throws SQLException {
-        Optional<ReplicationSlotInfo> slotInfo = getSlotInfo(connection, slotName);
+        String slotName = PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix);
+        Optional<ReplicationSlotInfo> slotInfo = load(connection, slotName);
         if (!slotInfo.isPresent()) {
-            createSlot(connection, slotName);
+            doCreate(connection, slotName);
             return;
         }
         if (null == slotInfo.get().getDatabaseName()) {
-            dropSlotIfExisted(connection, slotName);
-            createSlot(connection, slotName);
+            dropIfExisted(connection, slotName);
+            doCreate(connection, slotName);
         }
     }
     
-    private Optional<ReplicationSlotInfo> getSlotInfo(final Connection connection, final String slotName) throws SQLException {
+    private Optional<ReplicationSlotInfo> load(final Connection connection, final String slotName) throws SQLException {
         String sql = "SELECT slot_name, database FROM pg_replication_slots WHERE slot_name=? AND plugin=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, slotName);
@@ -69,7 +66,7 @@ public final class PostgreSQLSlotManager {
         }
     }
     
-    private void createSlot(final Connection connection, final String slotName) throws SQLException {
+    private void doCreate(final Connection connection, final String slotName) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot(?, ?)")) {
             preparedStatement.setString(1, slotName);
             preparedStatement.setString(2, decodePlugin);
@@ -88,8 +85,8 @@ public final class PostgreSQLSlotManager {
      * @param slotName slot name
      * @throws SQLException SQL exception
      */
-    public void dropSlotIfExisted(final Connection connection, final String slotName) throws SQLException {
-        if (!getSlotInfo(connection, slotName).isPresent()) {
+    public void dropIfExisted(final Connection connection, final String slotName) throws SQLException {
+        if (!load(connection, slotName).isPresent()) {
             return;
         }
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT pg_drop_replication_slot(?)")) {
