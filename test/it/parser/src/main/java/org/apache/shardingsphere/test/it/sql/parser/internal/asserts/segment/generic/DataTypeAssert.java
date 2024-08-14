@@ -19,9 +19,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ge
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.generic.ExpectedDataType;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.generic.ExpectedDataTypeLength;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,5 +48,17 @@ public final class DataTypeAssert {
                 actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertContext.getText(String.format("%s end index assertion error: ", "dataType")),
                 actual.getStopIndex(), is(expected.getStopIndex()));
+        if (null != expected.getDataLength()) {
+            DataTypeLengthSegment actualDataLength = actual.getDataLength();
+            ExpectedDataTypeLength expectedDataLength = expected.getDataLength();
+            if (null != expectedDataLength.getType()) {
+                assertThat(assertContext.getText(String.format("%s name assertion error: ", "dataTypeLength")),
+                        actualDataLength.getType().get(), is(expectedDataLength.getType()));
+            }
+            if (null != expectedDataLength.getPrecision()) {
+                assertThat(assertContext.getText(String.format("%s name assertion error: ", "dataTypeLength")),
+                        actualDataLength.getPrecision(), is(expectedDataLength.getPrecision()));
+            }
+        }
     }
 }

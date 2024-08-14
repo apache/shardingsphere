@@ -239,9 +239,9 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDisk
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterHierarchyStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterInMemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterIndexTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterInMemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterJavaStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterLibraryStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterLockdownProfileStatement;
@@ -279,8 +279,8 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDis
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateEditionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateInMemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateJavaStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateLibraryStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateLockdownProfileStatement;
@@ -315,9 +315,9 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDiskg
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropEditionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropInMemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropIndexTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropInMemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropJavaStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropLibraryStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropLockdownProfileStatement;
@@ -334,8 +334,8 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropResto
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropSynonymStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropViewStatement;
