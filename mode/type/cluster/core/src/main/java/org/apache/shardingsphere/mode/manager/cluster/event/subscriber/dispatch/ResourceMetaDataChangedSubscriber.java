@@ -127,7 +127,8 @@ public final class ResourceMetaDataChangedSubscriber implements EventSubscriber 
     }
     
     private void refreshShardingSphereStatisticsData() {
-        if (contextManager.getComputeNodeInstanceContext().isCluster() && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
+        if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
+                && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
             new ShardingSphereStatisticsRefreshEngine(contextManager,
                     new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()))).asyncRefresh();
         }

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -50,8 +49,6 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     @Getter
     private final String parameter;
     
-    private final DataSourcePoolProperties dataSourcePoolProps;
-    
     @Getter
     private final DatabaseType databaseType;
     
@@ -64,48 +61,34 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     @Getter
     private final String password;
     
+    private final DataSourcePoolProperties dataSourcePoolProps;
+    
     @SuppressWarnings("unchecked")
-    public StandardPipelineDataSourceConfiguration(final String param) {
-        this(param, YamlEngine.unmarshal(param, Map.class));
+    public StandardPipelineDataSourceConfiguration(final String poolYamlContent) {
+        this(YamlEngine.unmarshal(poolYamlContent, Map.class));
     }
     
     public StandardPipelineDataSourceConfiguration(final Map<String, Object> poolProps) {
-        this(YamlEngine.marshal(poolProps), new HashMap<>(poolProps));
-    }
-    
-    private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> poolProps) {
-        parameter = param;
+        parameter = YamlEngine.marshal(poolProps);
+        Map<String, Object> newPoolProps = new HashMap<>(poolProps);
         for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
-            poolProps.put(each, "1");
+            newPoolProps.put(each, "1");
         }
-        if (poolProps.containsKey("jdbcUrl")) {
-            poolProps.put("url", poolProps.get("jdbcUrl"));
-            poolProps.remove("jdbcUrl");
+        if (newPoolProps.containsKey("jdbcUrl")) {
+            newPoolProps.put("url", newPoolProps.get("jdbcUrl"));
+            newPoolProps.remove("jdbcUrl");
         }
-        poolProps.remove(DATA_SOURCE_CLASS_NAME);
-        databaseType = DatabaseTypeFactory.get(String.valueOf(poolProps.get("url")));
-        poolProps.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
-        appendJdbcQueryProperties(databaseType, poolProps);
-        username = String.valueOf(poolProps.get("username"));
-        password = String.valueOf(poolProps.get("password"));
-        url = String.valueOf(poolProps.get("url"));
-        dataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(poolProps);
+        databaseType = DatabaseTypeFactory.get(String.valueOf(newPoolProps.get("url")));
+        newPoolProps.remove(DATA_SOURCE_CLASS_NAME);
+        newPoolProps.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
+        appendJdbcQueryProperties(newPoolProps);
+        url = String.valueOf(newPoolProps.get("url"));
+        username = String.valueOf(newPoolProps.get("username"));
+        password = String.valueOf(newPoolProps.get("password"));
+        dataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(newPoolProps);
     }
     
-    public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this(wrapParameter(jdbcUrl, username, password));
-    }
-    
-    private static Map<String, Object> wrapParameter(final String jdbcUrl, final String username, final String password) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        // Reference ConnectionPropertySynonyms
-        result.put("url", jdbcUrl);
-        result.put("username", username);
-        result.put("password", password);
-        return result;
-    }
-    
-    private void appendJdbcQueryProperties(final DatabaseType databaseType, final Map<String, Object> poolProps) {
+    private void appendJdbcQueryProperties(final Map<String, Object> poolProps) {
         Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;

@@ -31,7 +31,7 @@ public interface JdbcQueryPropertiesExtension extends DatabaseTypedSPI {
     /**
      * Extend query properties.
      *
-     * @param props props
+     * @param props query properties
      */
     void extendQueryProperties(Properties props);
 }

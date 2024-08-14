@@ -130,7 +130,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -202,7 +202,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -281,7 +281,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -360,7 +360,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -442,7 +442,7 @@ class ShardingDQLResultMergerTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
-        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1));
+        when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
@@ -513,7 +513,7 @@ class ShardingDQLResultMergerTest {
         ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true, false, false);
         ShardingSphereColumn column3 = new ShardingSphereColumn("col3", 0, false, false, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2, column3), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap());
+        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap());
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }
@@ -523,7 +523,7 @@ class ShardingDQLResultMergerTest {
         ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true, false, false);
         ShardingSphereColumn column3 = new ShardingSphereColumn("col3", 0, false, false, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2, column3), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap());
+        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap());
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "SQLServer"), mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), Collections.singletonMap("dbo", schema));
     }

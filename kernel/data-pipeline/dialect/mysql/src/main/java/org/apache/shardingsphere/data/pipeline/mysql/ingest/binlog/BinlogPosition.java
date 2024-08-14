@@ -32,8 +32,6 @@ public final class BinlogPosition implements IngestPosition {
     
     private final long position;
     
-    private final long serverId;
-    
     @Override
     public String toString() {
         return String.format("%s#%d", filename, position);

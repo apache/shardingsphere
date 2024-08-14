@@ -28,7 +28,7 @@ import java.util.Collections;
  */
 public final class MaskTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
-    private final CaseInsensitiveSet<String> logicalTableMapper;
+    private final Collection<String> logicalTableMapper;
     
     public MaskTableMapperRuleAttribute(final Collection<String> maskTableNames) {
         logicalTableMapper = new CaseInsensitiveSet<>(maskTableNames);

@@ -29,7 +29,7 @@ import java.util.Collections;
  */
 public final class SingleTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
-    private final CaseInsensitiveSet<String> logicTableMapper;
+    private final Collection<String> logicTableMapper;
     
     public SingleTableMapperRuleAttribute(final Collection<Collection<DataNode>> singleTableDataNodes) {
         logicTableMapper = new CaseInsensitiveSet<>(singleTableDataNodes.size(), 1F);

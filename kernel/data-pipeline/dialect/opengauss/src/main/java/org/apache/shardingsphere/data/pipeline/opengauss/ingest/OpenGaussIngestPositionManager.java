@@ -17,94 +17,39 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo.ReplicationSlotInfo;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
+import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot.PostgreSQLSlotManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * Ingest position manager for openGauss.
  */
-// TODO reuse PostgreSQLIngestPositionManager
-@Slf4j
 public final class OpenGaussIngestPositionManager implements DialectIngestPositionManager {
     
-    private static final String SLOT_NAME_PREFIX = "pipeline";
-    
-    private static final String DECODE_PLUGIN = "mppdb_decoding";
-    
-    private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
-    
-    @Override
-    public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            createSlotIfNotExist(connection, slotNameSuffix);
-            return getWalPosition(connection);
-        }
-    }
+    private final PostgreSQLSlotManager slotManager = new PostgreSQLSlotManager("mppdb_decoding");
     
     @Override
     public WALPosition init(final String data) {
         return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(data)));
     }
     
-    /**
-     * Create logical replication slot if it does not exist.
-     *
-     * @param connection connection
-     * @param slotNameSuffix slotName suffix
-     * @throws SQLException SQL exception
-     */
-    private void createSlotIfNotExist(final Connection connection, final String slotNameSuffix) throws SQLException {
-        String slotName = getUniqueSlotName(connection, slotNameSuffix);
-        Optional<ReplicationSlotInfo> slotInfo = getSlotInfo(connection, slotName);
-        if (!slotInfo.isPresent()) {
-            createSlotBySQL(connection, slotName);
-            return;
-        }
-        if (null == slotInfo.get().getDatabaseName()) {
-            dropSlotIfExist(connection, slotName);
-            createSlotBySQL(connection, slotName);
+    @Override
+    public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            slotManager.create(connection, slotNameSuffix);
+            return getWALPosition(connection);
         }
     }
     
-    private Optional<ReplicationSlotInfo> getSlotInfo(final Connection connection, final String slotName) throws SQLException {
-        String sql = "SELECT slot_name, database FROM pg_replication_slots WHERE slot_name=? AND plugin=?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, slotName);
-            preparedStatement.setString(2, DECODE_PLUGIN);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (!resultSet.next()) {
-                    return Optional.empty();
-                }
-                return Optional.of(new ReplicationSlotInfo(resultSet.getString(1), resultSet.getString(2)));
-            }
-        }
-    }
-    
-    private void createSlotBySQL(final Connection connection, final String slotName) throws SQLException {
-        String sql = String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", slotName, DECODE_PLUGIN);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.execute();
-        } catch (final SQLException ex) {
-            if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
-                throw ex;
-            }
-        }
-    }
-    
-    private WALPosition getWalPosition(final Connection connection) throws SQLException {
+    private WALPosition getWALPosition(final Connection connection) throws SQLException {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -116,33 +61,8 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     @Override
     public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            dropSlotIfExist(connection, getUniqueSlotName(connection, slotNameSuffix));
+            slotManager.dropIfExisted(connection, slotNameSuffix);
         }
-    }
-    
-    private void dropSlotIfExist(final Connection connection, final String slotName) throws SQLException {
-        if (!getSlotInfo(connection, slotName).isPresent()) {
-            log.info("dropSlotIfExist, slot not exist, ignore, slotName={}", slotName);
-            return;
-        }
-        String sql = String.format("select * from pg_drop_replication_slot('%s')", slotName);
-        try (CallableStatement callableStatement = connection.prepareCall(sql)) {
-            callableStatement.execute();
-        }
-    }
-    
-    /**
-     * Get the unique slot name by connection.
-     *
-     * @param connection connection
-     * @param slotNameSuffix slot name suffix
-     * @return the unique name by connection
-     * @throws SQLException failed when getCatalog
-     */
-    public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
-        // same as PostgreSQL, but length over 64 will throw an exception directly
-        String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
-        return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
     }
     
     @Override

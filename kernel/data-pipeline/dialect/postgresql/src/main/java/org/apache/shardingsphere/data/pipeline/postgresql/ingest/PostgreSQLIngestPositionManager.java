@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot.PostgreSQLSlotManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.postgresql.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,106 +34,47 @@ import java.sql.SQLException;
 /**
  * Ingest position manager for PostgreSQL.
  */
-@Slf4j
 public final class PostgreSQLIngestPositionManager implements DialectIngestPositionManager {
     
-    private static final String SLOT_NAME_PREFIX = "pipeline";
-    
-    private static final String DECODE_PLUGIN = "test_decoding";
-    
-    private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
-    
-    @Override
-    public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            createSlotIfNotExist(connection, getUniqueSlotName(connection, slotNameSuffix));
-            return getWalPosition(connection);
-        }
-    }
+    private final PostgreSQLSlotManager slotManager = new PostgreSQLSlotManager("test_decoding");
     
     @Override
     public WALPosition init(final String data) {
         return new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(data)));
     }
     
-    private void createSlotIfNotExist(final Connection connection, final String slotName) throws SQLException {
-        if (isSlotExisting(connection, slotName)) {
-            log.info("createSlotIfNotExist, slot exist, slotName={}", slotName);
-            return;
-        }
-        String createSlotSQL = String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", slotName, DECODE_PLUGIN);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(createSlotSQL)) {
-            preparedStatement.execute();
-        } catch (final SQLException ex) {
-            if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
-                throw ex;
-            }
+    @Override
+    public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            slotManager.create(connection, slotNameSuffix);
+            return getWALPosition(connection, getLogSequenceNumberSQL(connection.getMetaData()));
         }
     }
     
-    private boolean isSlotExisting(final Connection connection, final String slotName) throws SQLException {
-        String checkSlotSQL = "SELECT slot_name FROM pg_replication_slots WHERE slot_name=? AND plugin=?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(checkSlotSQL)) {
-            preparedStatement.setString(1, slotName);
-            preparedStatement.setString(2, DECODE_PLUGIN);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next();
-            }
-        }
-    }
-    
-    private WALPosition getWalPosition(final Connection connection) throws SQLException {
+    private WALPosition getWALPosition(final Connection connection, final String logSequenceNumberSQL) throws SQLException {
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement(getLogSequenceNumberSQL(connection));
+                PreparedStatement preparedStatement = connection.prepareStatement(logSequenceNumberSQL);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }
     }
     
-    private String getLogSequenceNumberSQL(final Connection connection) throws SQLException {
-        if (9 == connection.getMetaData().getDatabaseMajorVersion() && 6 <= connection.getMetaData().getDatabaseMinorVersion()) {
+    private String getLogSequenceNumberSQL(final DatabaseMetaData metaData) throws SQLException {
+        if (9 == metaData.getDatabaseMajorVersion() && 6 <= metaData.getDatabaseMinorVersion()) {
             return "SELECT PG_CURRENT_XLOG_LOCATION()";
         }
-        if (10 <= connection.getMetaData().getDatabaseMajorVersion()) {
+        if (10 <= metaData.getDatabaseMajorVersion()) {
             return "SELECT PG_CURRENT_WAL_LSN()";
         }
-        throw new PipelineInternalException("Unsupported PostgreSQL version: " + connection.getMetaData().getDatabaseProductVersion());
+        throw new PipelineInternalException("Unsupported PostgreSQL version: " + metaData.getDatabaseProductVersion());
     }
     
     @Override
     public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            dropSlotIfExist(connection, slotNameSuffix);
+            slotManager.dropIfExisted(connection, slotNameSuffix);
         }
-    }
-    
-    private void dropSlotIfExist(final Connection connection, final String slotNameSuffix) throws SQLException {
-        String slotName = getUniqueSlotName(connection, slotNameSuffix);
-        if (!isSlotExisting(connection, slotName)) {
-            log.info("dropSlotIfExist, slot not exist, slotName={}", slotName);
-            return;
-        }
-        log.info("dropSlotIfExist, slot exist, slotName={}", slotName);
-        String dropSlotSQL = "SELECT pg_drop_replication_slot(?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(dropSlotSQL)) {
-            preparedStatement.setString(1, slotName);
-            preparedStatement.execute();
-        }
-    }
-    
-    /**
-     * Get the unique slot name by connection.
-     *
-     * @param connection the connection
-     * @param slotNameSuffix slot name suffix
-     * @return the unique name by connection
-     * @throws SQLException failed when getCatalog
-     */
-    public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
-        // PostgreSQL slot name maximum length can't exceed 64,automatic truncation when the length exceeds the limit
-        String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
-        return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
     }
     
     @Override

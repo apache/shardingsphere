@@ -55,6 +55,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -90,14 +91,18 @@ class MySQLIncrementalDumperTest {
         MemoryPipelineChannel channel = new MemoryPipelineChannel(10000, records -> {
             
         });
-        incrementalDumper = new MySQLIncrementalDumper(dumperContext, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);
+        incrementalDumper = new MySQLIncrementalDumper(dumperContext, new BinlogPosition("binlog-000001", 4L), channel, metaDataLoader);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
         when(metaDataLoader.getTableMetaData(any(), any())).thenReturn(pipelineTableMetaData);
     }
     
     private IncrementalDumperContext createDumperContext() {
+        Map<String, Object> poolProps = new HashMap<>(3, 1F);
+        poolProps.put("url", "jdbc:mock://127.0.0.1:3306/test");
+        poolProps.put("username", "root");
+        poolProps.put("password", "root");
         DumperCommonContext commonContext = new DumperCommonContext(null,
-                new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"),
+                new StandardPipelineDataSourceConfiguration(poolProps),
                 new ActualAndLogicTableNameMapper(Collections.singletonMap(new CaseInsensitiveIdentifier("t_order"), new CaseInsensitiveIdentifier("t_order"))),
                 new TableAndSchemaNameMapper(Collections.emptyMap()));
         return new IncrementalDumperContext(commonContext, null, false);

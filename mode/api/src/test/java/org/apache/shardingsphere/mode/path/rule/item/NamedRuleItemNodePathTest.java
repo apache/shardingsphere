@@ -49,9 +49,15 @@ class NamedRuleItemNodePathTest {
     }
     
     @Test
-    void assertGetNameByActiveVersionPath() {
+    void assertGetNameByActiveVersion() {
         Optional<String> actual = converter.getNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_table/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
+    }
+    
+    @Test
+    void assertGetNameByActiveVersionWhenNotFound() {
+        Optional<String> actual = converter.getNameByActiveVersion("/invalid");
+        assertFalse(actual.isPresent());
     }
 }

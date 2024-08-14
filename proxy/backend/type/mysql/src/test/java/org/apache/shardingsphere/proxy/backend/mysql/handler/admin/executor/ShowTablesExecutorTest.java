@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -208,7 +209,7 @@ class ShowTablesExecutorTest {
         tables.put("t_account_bak", new ShardingSphereTable("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_test", new ShardingSphereTable("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereSchema schema = new ShardingSphereSchema(tables, Collections.emptyMap());
+        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
         when(database.isComplete()).thenReturn(true);

@@ -46,6 +46,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,8 +66,7 @@ class PipelineDataSourceSinkTest {
     
     private static final String TABLE_NAME = "test_table";
     
-    private final PipelineDataSourceConfiguration dataSourceConfig = new StandardPipelineDataSourceConfiguration(
-            "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root", "root", "root");
+    private PipelineDataSourceConfiguration dataSourceConfig;
     
     @Mock
     private PipelineChannel channel;
@@ -81,6 +81,11 @@ class PipelineDataSourceSinkTest {
     
     @BeforeEach
     void setUp() throws SQLException {
+        Map<String, Object> poolProps = new HashMap<>(3, 1F);
+        poolProps.put("url", "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root");
+        poolProps.put("username", "root");
+        poolProps.put("password", "root");
+        dataSourceConfig = new StandardPipelineDataSourceConfiguration(poolProps);
         PipelineSink pipelineSink = new PipelineDataSourceSink(mockImporterConfiguration(), mockPipelineDataSourceManager());
         importer = new SingleChannelConsumerImporter(channel, 100, 1000L, pipelineSink, new FixtureTransmissionJobItemContext());
     }

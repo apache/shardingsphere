@@ -28,7 +28,8 @@ public final class StatisticsCollectContextManagerLifecycleListener implements C
     
     @Override
     public void onInitialized(final ContextManager contextManager) {
-        if (contextManager.getComputeNodeInstanceContext().isCluster() && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
+        if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
+                && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
             new StatisticsCollectJobWorker(contextManager).initialize();
         }
     }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot.PostgreSQLSlotNameGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALEventConverter;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
@@ -114,7 +115,7 @@ public final class PostgreSQLWALDumper extends AbstractPipelineLifecycleRunnable
         // TODO use unified PgConnection
         try (
                 Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig());
-                PGReplicationStream stream = logicalReplication.createReplicationStream(connection, PostgreSQLIngestPositionManager.getUniqueSlotName(connection, dumperContext.getJobId()),
+                PGReplicationStream stream = logicalReplication.createReplicationStream(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, dumperContext.getJobId()),
                         walPosition.get().getLogSequenceNumber())) {
             PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);

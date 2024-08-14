@@ -119,12 +119,12 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, ShardingSphereSchema> convertToSchemaMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         if (schemaMetaDataMap.isEmpty()) {
-            return Collections.singletonMap(material.getDefaultSchemaName(), new ShardingSphereSchema());
+            return Collections.singletonMap(material.getDefaultSchemaName(), new ShardingSphereSchema(material.getDefaultSchemaName()));
         }
         Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>(schemaMetaDataMap.size(), 1F);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Map<String, ShardingSphereTable> tables = convertToTableMap(entry.getValue().getTables());
-            result.put(entry.getKey().toLowerCase(), new ShardingSphereSchema(tables, new LinkedHashMap<>()));
+            result.put(entry.getKey().toLowerCase(), new ShardingSphereSchema(entry.getKey(), tables, new LinkedHashMap<>()));
         }
         return result;
     }

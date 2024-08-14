@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManag
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.swapper.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
@@ -201,8 +201,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         StandardPipelineDataSourceConfiguration actualDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
-        return new IncrementalDumperContext(
-                new DumperCommonContext(dataSourceName, actualDataSourceConfig, JobDataNodeLineConvertUtils.buildTableNameMapper(dataNodeLine), tableAndSchemaNameMapper),
+        return new IncrementalDumperContext(new DumperCommonContext(dataSourceName, actualDataSourceConfig, JobDataNodeLineConvertUtils.buildTableNameMapper(dataNodeLine), tableAndSchemaNameMapper),
                 jobConfig.getJobId(), jobConfig.isDecodeWithTX());
     }
     
@@ -281,19 +280,15 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      * @param jobId job id
      * @return job item infos
      */
-    public List<CDCJobItemInfo> getJobItemInfos(final String jobId) {
+    public Collection<CDCJobItemInfo> getJobItemInfos(final String jobId) {
         CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(jobId);
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(jobConfig.getDatabaseName());
-        Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(jobType).getJobItemInfos(jobId);
-        List<CDCJobItemInfo> result = new LinkedList<>();
-        for (TransmissionJobItemInfo each : jobItemInfos) {
+        Collection<CDCJobItemInfo> result = new LinkedList<>();
+        for (TransmissionJobItemInfo each : new TransmissionJobManager(jobType).getJobItemInfos(jobId)) {
             TransmissionJobItemProgress jobItemProgress = each.getJobItemProgress();
-            if (null == jobItemProgress) {
-                result.add(new CDCJobItemInfo(each, "", ""));
-                continue;
-            }
-            result.add(new CDCJobItemInfo(each, jobItemProgress.getIncremental().getIncrementalPosition().map(Object::toString).orElse(""),
-                    getCurrentPosition(database, jobItemProgress.getDataSourceName())));
+            String confirmedPosition = null == jobItemProgress ? "" : jobItemProgress.getIncremental().getIncrementalPosition().map(Object::toString).orElse("");
+            String currentPosition = null == jobItemProgress ? "" : getCurrentPosition(database, jobItemProgress.getDataSourceName());
+            result.add(new CDCJobItemInfo(each, confirmedPosition, currentPosition));
         }
         return result;
     }

@@ -77,7 +77,7 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(yamlServerConfig.getProps());
     }
     
-    private void importDatabase(final ExportedMetaData exportedMetaData) {
+    private void importDatabase(final ExportedMetaData exportedMetaData) throws SQLException {
         for (String each : exportedMetaData.getDatabases().values()) {
             YamlProxyDatabaseConfiguration yamlDatabaseConfig = YamlEngine.unmarshal(each, YamlProxyDatabaseConfiguration.class);
             databaseConfigImportExecutor.importDatabaseConfiguration(yamlDatabaseConfig);

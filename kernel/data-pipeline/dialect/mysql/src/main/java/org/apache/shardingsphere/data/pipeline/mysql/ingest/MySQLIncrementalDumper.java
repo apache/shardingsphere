@@ -149,7 +149,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     }
     
     private PlaceholderRecord createPlaceholderRecord(final AbstractBinlogEvent event) {
-        PlaceholderRecord result = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
+        PlaceholderRecord result = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition()));
         result.setCommitTime(event.getTimestamp() * 1000L);
         return result;
     }
@@ -218,7 +218,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     
     private DataRecord createDataRecord(final PipelineSQLOperationType type, final AbstractRowsEvent rowsEvent, final int columnCount) {
         String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).toString();
-        IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId());
+        IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition());
         DataRecord result = new DataRecord(type, tableName, position, columnCount);
         result.setActualTableName(rowsEvent.getTableName());
         result.setCommitTime(rowsEvent.getTimestamp() * 1000L);

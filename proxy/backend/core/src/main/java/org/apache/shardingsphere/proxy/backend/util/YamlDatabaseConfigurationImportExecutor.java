@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -71,16 +72,15 @@ public final class YamlDatabaseConfigurationImportExecutor {
      * Import proxy database from yaml configuration.
      *
      * @param yamlConfig yaml proxy database configuration
+     * @throws SQLException SQL exception
      */
-    public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) {
+    public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) throws SQLException {
         String databaseName = yamlConfig.getDatabaseName();
         checkDatabase(databaseName);
+        checkDataSources(databaseName, yamlConfig.getDataSources());
         addDatabase(databaseName);
-        if (null == yamlConfig.getDataSources() || yamlConfig.getDataSources().isEmpty()) {
-            return;
-        }
-        importDataSources(databaseName, yamlConfig.getDataSources());
         try {
+            importDataSources(databaseName, yamlConfig.getDataSources());
             importRules(databaseName, yamlConfig.getRules());
         } catch (final ShardingSphereSQLException ex) {
             dropDatabase(databaseName);
@@ -88,12 +88,16 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
     }
     
+    private void checkDataSources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
+        ShardingSpherePreconditions.checkNotEmpty(dataSources, () -> new EmptyStorageUnitException(databaseName));
+    }
+    
     private void checkDatabase(final String databaseName) {
         ShardingSpherePreconditions.checkNotEmpty(databaseName, MissingRequiredDatabaseException::new);
         ShardingSpherePreconditions.checkState(!ProxyContext.getInstance().databaseExists(databaseName), () -> new DatabaseCreateExistsException(databaseName));
     }
     
-    private void addDatabase(final String databaseName) {
+    private void addDatabase(final String databaseName) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
@@ -156,7 +160,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         return result;
     }
     
-    private void dropDatabase(final String databaseName) {
+    private void dropDatabase(final String databaseName) throws SQLException {
         ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(databaseName);
     }
 }

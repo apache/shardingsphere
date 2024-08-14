@@ -42,8 +42,6 @@ class MySQLIngestPositionManagerTest {
     
     private static final long LOG_POSITION = 4L;
     
-    private static final long SERVER_ID = 555555L;
-    
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
@@ -55,15 +53,12 @@ class MySQLIngestPositionManagerTest {
         when(dataSource.getConnection()).thenReturn(connection);
         PreparedStatement positionStatement = mockPositionStatement();
         when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(positionStatement);
-        PreparedStatement serverIdStatement = mockServerIdStatement();
-        when(connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'")).thenReturn(serverIdStatement);
     }
     
     @Test
     void assertGetCurrentPosition() throws SQLException {
         MySQLIngestPositionManager positionInitializer = new MySQLIngestPositionManager();
         BinlogPosition actual = positionInitializer.init(dataSource, "");
-        assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
     }
@@ -75,15 +70,6 @@ class MySQLIngestPositionManagerTest {
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getString(1)).thenReturn(LOG_FILE_NAME);
         when(resultSet.getLong(2)).thenReturn(LOG_POSITION);
-        return result;
-    }
-    
-    private PreparedStatement mockServerIdStatement() throws SQLException {
-        PreparedStatement result = mock(PreparedStatement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(result.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getLong(2)).thenReturn(SERVER_ID);
         return result;
     }
 }

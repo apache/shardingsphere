@@ -92,7 +92,7 @@ public final class MetaDataContextsFactory {
         Collection<RuleConfiguration> globalRuleConfigs;
         if (isDatabaseMetaDataExisted) {
             globalRuleConfigs = persistService.getGlobalRuleService().load();
-        } else if (computeNodeInstanceContext.isCluster()) {
+        } else if (computeNodeInstanceContext.getModeConfiguration().isCluster()) {
             globalRuleConfigs = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext).tryRestore(param.getGlobalRuleConfigs());
             param.getGlobalRuleConfigs().clear();
             param.getGlobalRuleConfigs().addAll(globalRuleConfigs);
@@ -196,7 +196,7 @@ public final class MetaDataContextsFactory {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        if (!computeNodeInstanceContext.isCluster()) {
+        if (!computeNodeInstanceContext.getModeConfiguration().isCluster()) {
             return;
         }
         for (RuleConfigurationPersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationPersistDecorator.class)) {
@@ -212,7 +212,7 @@ public final class MetaDataContextsFactory {
     private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService,
                                                       final ComputeNodeInstanceContext computeNodeInstanceContext) {
         RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext);
-        persistService.persistGlobalRuleConfiguration(ruleConfigPersistDecorateEngine.decorate(param.getGlobalRuleConfigs()), param.getProps());
+        persistService.persistGlobalRuleConfiguration(ruleConfigPersistDecorateEngine.decorate(metadataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations()), param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             persistService.persistConfigurations(entry.getKey(), entry.getValue(),

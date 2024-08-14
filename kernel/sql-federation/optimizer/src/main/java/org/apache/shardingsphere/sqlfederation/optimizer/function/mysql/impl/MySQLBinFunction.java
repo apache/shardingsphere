@@ -42,14 +42,14 @@ public final class MySQLBinFunction {
         if (value instanceof Number && !(value instanceof BigInteger)) {
             return Long.toBinaryString(((Number) value).longValue());
         }
+        if (value instanceof String && ((String) value).isEmpty()) {
+            return null;
+        }
         BigInteger bigIntegerValue = value instanceof BigInteger ? (BigInteger) value : new BigInteger(getFirstNumbers(String.valueOf(value)));
         return -1 == bigIntegerValue.signum() ? bigIntegerValue.add(BigInteger.ONE.shiftLeft(Long.SIZE).subtract(BigInteger.ONE)).add(BigInteger.ONE).toString(2) : bigIntegerValue.toString(2);
     }
     
     private static String getFirstNumbers(final String value) {
-        if (value.isEmpty()) {
-            return "0";
-        }
         boolean isNegative = '-' == value.charAt(0);
         StringBuilder result = new StringBuilder();
         if (isNegative) {

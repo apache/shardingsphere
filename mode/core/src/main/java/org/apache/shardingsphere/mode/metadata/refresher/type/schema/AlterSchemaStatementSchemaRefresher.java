@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -35,7 +36,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
+                        final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<String> renameSchemaName = sqlStatement.getRenameSchema().map(optional -> optional.getValue().toLowerCase());
         if (!renameSchemaName.isPresent()) {
             return;

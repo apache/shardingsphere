@@ -28,11 +28,10 @@ import java.util.Collections;
  */
 public final class BroadcastTableNamesRuleAttribute implements TableMapperRuleAttribute {
     
-    private final CaseInsensitiveSet<String> logicalTableNames;
+    private final Collection<String> logicalTableNames;
     
     public BroadcastTableNamesRuleAttribute(final Collection<String> tables) {
-        logicalTableNames = new CaseInsensitiveSet<>();
-        logicalTableNames.addAll(tables);
+        logicalTableNames = new CaseInsensitiveSet<>(tables);
     }
     
     @Override

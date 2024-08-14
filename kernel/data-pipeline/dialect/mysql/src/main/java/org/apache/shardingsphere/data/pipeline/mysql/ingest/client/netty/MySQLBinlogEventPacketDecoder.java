@@ -231,7 +231,6 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.setFileName(binlogContext.getFileName());
         rowsEvent.setPosition(binlogEventHeader.getLogPos());
         rowsEvent.setTimestamp(binlogEventHeader.getTimestamp());
-        rowsEvent.setServerId(binlogEventHeader.getServerId());
     }
     
     private PlaceholderEvent decodePlaceholderEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
@@ -255,7 +254,6 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getLogPos());
         result.setTimestamp(binlogEventHeader.getTimestamp());
-        result.setServerId(binlogEventHeader.getServerId());
         return result;
     }
     
@@ -264,7 +262,6 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getLogPos());
         result.setTimestamp(binlogEventHeader.getTimestamp());
-        result.setServerId(binlogEventHeader.getServerId());
         return result;
     }
     

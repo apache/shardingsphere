@@ -29,23 +29,23 @@ import java.util.Collection;
  */
 public final class ShardingTableNamesRuleAttribute implements TableMapperRuleAttribute {
     
-    private final CaseInsensitiveSet<String> logicalTableNames;
+    private final Collection<String> logicalTableNames;
     
-    private final CaseInsensitiveSet<String> actualTableNames;
+    private final Collection<String> actualTableNames;
     
     public ShardingTableNamesRuleAttribute(final Collection<ShardingTable> shardingTables) {
         logicalTableNames = createLogicalTableNames(shardingTables);
         actualTableNames = createActualTableNames(shardingTables);
     }
     
-    private CaseInsensitiveSet<String> createLogicalTableNames(final Collection<ShardingTable> shardingTables) {
-        CaseInsensitiveSet<String> result = new CaseInsensitiveSet<>();
+    private Collection<String> createLogicalTableNames(final Collection<ShardingTable> shardingTables) {
+        Collection<String> result = new CaseInsensitiveSet<>();
         shardingTables.forEach(each -> result.add(each.getLogicTable()));
         return result;
     }
     
-    private CaseInsensitiveSet<String> createActualTableNames(final Collection<ShardingTable> shardingTables) {
-        CaseInsensitiveSet<String> result = new CaseInsensitiveSet<>();
+    private Collection<String> createActualTableNames(final Collection<ShardingTable> shardingTables) {
+        Collection<String> result = new CaseInsensitiveSet<>();
         shardingTables.stream().flatMap(each -> each.getActualDataNodes().stream()).map(DataNode::getTableName).forEach(result::add);
         return result;
     }

@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option;
+package org.apache.shardingsphere.mode.tuple.fixture.node;
 
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 
-/**
- * Default pipeline job data source prepare option.
- */
-public final class DefaultPipelineJobDataSourcePrepareOption implements DialectPipelineJobDataSourcePrepareOption {
+import java.util.Arrays;
+
+public final class RuleNodePathProviderFixture implements RuleNodePathProvider {
     
     @Override
-    public boolean isSupportIfNotExistsOnCreateSchema() {
-        return true;
+    public RuleNodePath getRuleNodePath() {
+        return new RuleNodePath("node", Arrays.asList("map_value", "gens"),
+                Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "gen", "leaf"));
     }
     
     @Override
-    public Collection<String> getIgnoredExceptionMessages() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+    public Class<? extends RuleConfiguration> getType() {
+        return RuleConfiguration.class;
     }
 }

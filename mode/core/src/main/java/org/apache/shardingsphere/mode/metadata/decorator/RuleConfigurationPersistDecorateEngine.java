@@ -42,11 +42,11 @@ public final class RuleConfigurationPersistDecorateEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> decorate(final Collection<RuleConfiguration> ruleConfigs) {
-        if (!computeNodeInstanceContext.isCluster()) {
+        if (!computeNodeInstanceContext.getModeConfiguration().isCluster()) {
             return ruleConfigs;
         }
         return ruleConfigs.stream()
-                .map(each -> TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each).map(optional -> optional.decorate(each)).orElse(each)).collect(Collectors.toList());
+                .map(each -> TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each.getClass()).map(optional -> optional.decorate(each)).orElse(each)).collect(Collectors.toList());
     }
     
     /**
@@ -57,11 +57,11 @@ public final class RuleConfigurationPersistDecorateEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> restore(final Collection<RuleConfiguration> ruleConfigs) {
-        if (!computeNodeInstanceContext.isCluster()) {
+        if (!computeNodeInstanceContext.getModeConfiguration().isCluster()) {
             return ruleConfigs;
         }
         return ruleConfigs.stream()
-                .map(each -> TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each).map(optional -> optional.restore(each)).orElse(each)).collect(Collectors.toList());
+                .map(each -> TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each.getClass()).map(optional -> optional.restore(each)).orElse(each)).collect(Collectors.toList());
     }
     
     /**
@@ -72,7 +72,7 @@ public final class RuleConfigurationPersistDecorateEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> tryRestore(final Collection<RuleConfiguration> ruleConfigs) {
-        return ruleConfigs.stream().map(each -> TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each)
+        return ruleConfigs.stream().map(each -> TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, each.getClass())
                 .filter(optional -> optional.canBeRestored(each)).map(optional -> optional.restore(each)).orElse(each)).collect(Collectors.toList());
     }
 }

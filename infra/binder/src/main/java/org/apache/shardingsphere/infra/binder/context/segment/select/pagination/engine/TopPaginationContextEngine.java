@@ -103,7 +103,7 @@ public final class TopPaginationContextEngine {
         int startIndex = expression.getStartIndex();
         int stopIndex = expression.getStopIndex();
         return expression instanceof LiteralExpressionSegment
-                ? new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, (int) ((LiteralExpressionSegment) expression).getLiterals(), boundOpened)
+                ? new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, Long.parseLong(((LiteralExpressionSegment) expression).getLiterals().toString()), boundOpened)
                 : new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -52,7 +53,7 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
         table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false));
         table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false));
         table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false));
-        ShardingSphereSchema result = new ShardingSphereSchema();
+        ShardingSphereSchema result = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME);
         result.getTables().put("user", table);
         return result;
     }

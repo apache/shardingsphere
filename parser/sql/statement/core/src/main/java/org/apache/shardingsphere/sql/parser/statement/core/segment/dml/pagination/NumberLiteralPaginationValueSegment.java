@@ -27,5 +27,5 @@ public interface NumberLiteralPaginationValueSegment extends PaginationValueSegm
      *
      * @return value
      */
-    long getValue();
+    Long getValue();
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -55,7 +56,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData(), param.getLabels()), modeConfig, eventBusContext);
         ClusterPersistRepository repository = getClusterPersistRepository(config);
         repository.init(config, computeNodeInstanceContext);
-        computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), new GlobalLockContext(new GlobalLockPersistService(repository)));
+        LockContext<?> lockContext = new GlobalLockContext(new GlobalLockPersistService(repository));
+        computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), lockContext);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext);
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
