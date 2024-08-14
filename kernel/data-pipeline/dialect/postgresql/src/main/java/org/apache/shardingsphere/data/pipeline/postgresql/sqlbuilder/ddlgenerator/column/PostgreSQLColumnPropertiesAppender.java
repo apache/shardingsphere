@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.column;
+package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.column;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.AbstractPostgreSQLDDLAdapter;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddlgenerator.AbstractPostgreSQLDDLAdapter;
 
 import java.sql.Array;
 import java.sql.Connection;
