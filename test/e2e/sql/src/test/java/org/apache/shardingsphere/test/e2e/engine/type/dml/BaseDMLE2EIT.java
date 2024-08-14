@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type.dml;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -28,10 +29,10 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -40,7 +41,7 @@ import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMe
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
-import org.junit.jupiter.api.AfterEach;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -62,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -88,13 +90,12 @@ public abstract class BaseDMLE2EIT implements E2EEnvironmentAware {
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public final void init(final E2ETestParameter testParam) throws SQLException, IOException, JAXBException {
+    protected void init(final E2ETestParameter testParam) throws SQLException, IOException, JAXBException {
         dataSetEnvironmentManager =
                 new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
         dataSetEnvironmentManager.fillData();
     }
     
-    @AfterEach
     void tearDown() {
         // TODO make sure test case can not be null
         if (null != dataSetEnvironmentManager) {
@@ -279,5 +280,50 @@ public abstract class BaseDMLE2EIT implements E2EEnvironmentAware {
         assertThat("Only support single table for DML.", generatedKeyDataSet.getMetaDataList().size(), is(1));
         assertMetaData(generatedKeys.getMetaData(), generatedKeyDataSet.getMetaDataList().get(0).getColumns());
         assertRows(generatedKeys, generatedKeyDataSet.getRows(), databaseType);
+    }
+    
+    protected void executeInitSQLs(final E2ETestCaseAssertion assertion) throws SQLException {
+        if (null == assertion.getInitialSQL()) {
+            return;
+        }
+        try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+            executeInitSQLs(assertion, connection);
+        }
+    }
+    
+    private void executeInitSQLs(final E2ETestCaseAssertion assertion, final Connection connection) throws SQLException {
+        if (null == assertion.getInitialSQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(assertion.getInitialSQL().getSql())) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
+            waitCompleted();
+        }
+    }
+    
+    private void waitCompleted() {
+        Awaitility.await().pollDelay(1500L, TimeUnit.MILLISECONDS).until(() -> true);
+    }
+    
+    protected void executeDestroySQLs(final E2ETestCaseAssertion assertion) throws SQLException {
+        if (null != assertion.getDestroySQL()) {
+            try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+                executeDestroySQLs(assertion, connection);
+            }
+        }
+    }
+    
+    private void executeDestroySQLs(final E2ETestCaseAssertion assertion, final Connection connection) throws SQLException {
+        if (null == assertion.getDestroySQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(assertion.getDestroySQL().getSql())) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
+            waitCompleted();
+        }
     }
 }

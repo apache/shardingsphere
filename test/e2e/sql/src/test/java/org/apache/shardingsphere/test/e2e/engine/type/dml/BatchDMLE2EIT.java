@@ -54,6 +54,29 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
             actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
         }
         assertDataSet(actualUpdateCounts, testParam);
+        tearDown(testParam);
+    }
+    
+    void init(final CaseTestParameter testParam) throws SQLException, IOException, JAXBException {
+        super.init(testParam);
+        executeInitSQLs(testParam);
+    }
+    
+    void tearDown(final CaseTestParameter testParam) throws SQLException {
+        super.tearDown();
+        executeDestroySQLs(testParam);
+    }
+    
+    private void executeInitSQLs(final CaseTestParameter testParam) throws SQLException {
+        for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+            executeInitSQLs(each);
+        }
+    }
+    
+    private void executeDestroySQLs(final CaseTestParameter testParam) throws SQLException {
+        for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+            executeDestroySQLs(each);
+        }
     }
     
     private int[] executeBatchForPreparedStatement(final CaseTestParameter testParam, final Connection connection) throws SQLException {
@@ -90,6 +113,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
             preparedStatement.clearBatch();
             assertThat(preparedStatement.executeBatch().length, is(0));
         }
+        tearDown(testParam);
     }
     
     private static boolean isEnabled() {
