@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot.PostgreSQLSlotManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.postgresql.replication.LogSequenceNumber;

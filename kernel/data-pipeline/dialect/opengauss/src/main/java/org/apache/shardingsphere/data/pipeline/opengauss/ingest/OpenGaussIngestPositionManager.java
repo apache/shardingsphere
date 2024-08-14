@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLSlotManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot.PostgreSQLSlotManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.opengauss.replication.LogSequenceNumber;
 
