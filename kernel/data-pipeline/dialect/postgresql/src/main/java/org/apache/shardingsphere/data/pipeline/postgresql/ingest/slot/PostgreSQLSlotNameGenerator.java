@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,7 +37,7 @@ public final class PostgreSQLSlotNameGenerator {
      *
      * @param connection connection
      * @param slotNameSuffix slot name suffix
-     * @return unique name by connection
+     * @return unique slot name
      * @throws SQLException failed when get catalog
      */
     public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
