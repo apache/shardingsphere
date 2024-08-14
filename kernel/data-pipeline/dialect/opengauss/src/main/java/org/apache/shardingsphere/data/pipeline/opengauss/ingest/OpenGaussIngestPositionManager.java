@@ -52,13 +52,12 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     @Override
     public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            createSlotIfNotExist(connection, slotNameSuffix);
+            createSlotIfNotExist(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
             return getWALPosition(connection);
         }
     }
     
-    private void createSlotIfNotExist(final Connection connection, final String slotNameSuffix) throws SQLException {
-        String slotName = PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix);
+    private void createSlotIfNotExist(final Connection connection, final String slotName) throws SQLException {
         Optional<ReplicationSlotInfo> slotInfo = getSlotInfo(connection, slotName);
         if (!slotInfo.isPresent()) {
             createSlot(connection, slotName);
@@ -95,10 +94,9 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     
     private void dropSlotIfExist(final Connection connection, final String slotName) throws SQLException {
         if (!getSlotInfo(connection, slotName).isPresent()) {
-            log.info("dropSlotIfExist, slot not exist, ignore, slotName={}", slotName);
             return;
         }
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from pg_drop_replication_slot(?)")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT pg_drop_replication_slot(?)")) {
             preparedStatement.setString(1, slotName);
             preparedStatement.execute();
         }
