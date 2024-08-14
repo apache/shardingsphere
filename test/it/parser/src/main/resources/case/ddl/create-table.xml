@@ -2881,4 +2881,11 @@
             <engine name="OLAP" start-index="187" stop-index="190"/>
         </create-table-option>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_column_default_system_user_function">
+        <table name="t" start-index="13" stop-index="13" />
+        <column-definition type="VARCHAR" start-index="16" stop-index="53">
+            <column name="c" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>
