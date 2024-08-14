@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWALDumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.CreateIncrementalDumperParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWALDumper;
 
 /**
  * PostgreSQL incremental dumper creator.
@@ -31,9 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.Di
 public final class PostgreSQLIncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context,
-                                                     final IngestPosition position, final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        return new PostgreSQLWALDumper(context, position, channel, metaDataLoader);
+    public IncrementalDumper createIncrementalDumper(final CreateIncrementalDumperParameter param) {
+        return new PostgreSQLWALDumper(param.getContext(), param.getPosition(), param.getChannel(), param.getMetaDataLoader());
     }
     
     @Override

@@ -20,8 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -35,15 +33,12 @@ public final class IncrementalDumperCreator {
     /**
      * Create incremental dumper.
      *
-     * @param dumperContext incremental dumper context
-     * @param channel channel
-     * @param metaDataLoader meta data loader
+     * @param param create incremental dumper parameter
      * @return incremental dumper
      */
-    public static IncrementalDumper create(final IncrementalDumperContext dumperContext, final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        ShardingSpherePreconditions.checkState(dumperContext.getCommonContext().getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration,
+    public static IncrementalDumper create(final CreateIncrementalDumperParameter param) {
+        ShardingSpherePreconditions.checkState(param.getContext().getCommonContext().getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration,
                 () -> new UnsupportedSQLOperationException("Incremental dumper only support StandardPipelineDataSourceConfiguration"));
-        return DatabaseTypedSPILoader.getService(DialectIncrementalDumperCreator.class, dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType())
-                .createIncrementalDumper(dumperContext, dumperContext.getCommonContext().getPosition(), channel, metaDataLoader);
+        return DatabaseTypedSPILoader.getService(DialectIncrementalDumperCreator.class, param.getContext().getCommonContext().getDataSourceConfig().getDatabaseType()).createIncrementalDumper(param);
     }
 }
