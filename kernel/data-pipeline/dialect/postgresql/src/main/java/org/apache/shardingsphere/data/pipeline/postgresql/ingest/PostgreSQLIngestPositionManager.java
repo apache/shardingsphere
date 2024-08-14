@@ -102,12 +102,11 @@ public final class PostgreSQLIngestPositionManager implements DialectIngestPosit
     @Override
     public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            dropSlotIfExist(connection, slotNameSuffix);
+            dropSlotIfExist(connection, PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix));
         }
     }
     
-    private void dropSlotIfExist(final Connection connection, final String slotNameSuffix) throws SQLException {
-        String slotName = PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix);
+    private void dropSlotIfExist(final Connection connection, final String slotName) throws SQLException {
         if (!isSlotExisting(connection, slotName)) {
             log.info("dropSlotIfExist, slot not exist, slotName={}", slotName);
             return;
