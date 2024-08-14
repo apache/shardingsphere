@@ -37,7 +37,7 @@ public final class SQLParserTestCases {
      * @return got case
      */
     public SQLParserTestCase get(final String caseId) {
-        //Preconditions.checkState(cases.containsKey(caseId), "Can not find SQL of ID: %s.", caseId);
+        // Preconditions.checkState(cases.containsKey(caseId), "Can not find SQL of ID: %s.", caseId);
         return cases.get(caseId);
     }
 }

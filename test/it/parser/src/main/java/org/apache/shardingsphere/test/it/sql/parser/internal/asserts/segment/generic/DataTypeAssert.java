@@ -55,8 +55,10 @@ public final class DataTypeAssert {
                 assertThat(assertContext.getText(String.format("%s name assertion error: ", "dataTypeLength")),
                         actualDataLength.getType().get(), is(expectedDataLength.getType()));
             }
-            assertThat(assertContext.getText(String.format("%s name assertion error: ", "dataTypeLength")),
-                    actualDataLength.getPrecision(), is(expectedDataLength.getPrecision()));
+            if (null != expectedDataLength.getPrecision()) {
+                assertThat(assertContext.getText(String.format("%s name assertion error: ", "dataTypeLength")),
+                        actualDataLength.getPrecision(), is(expectedDataLength.getPrecision()));
+            }
         }
     }
 }

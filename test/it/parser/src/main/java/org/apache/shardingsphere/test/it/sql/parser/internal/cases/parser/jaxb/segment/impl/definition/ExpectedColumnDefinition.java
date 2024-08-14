@@ -47,7 +47,7 @@ public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     
     @XmlElement
     private ExpectedColumn column;
-
+    
     @XmlElement
     private ExpectedDataType dataType;
     
