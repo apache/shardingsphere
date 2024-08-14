@@ -56,6 +56,7 @@ public final class PostgreSQLDDLTemplateExecutor {
      * @param params parameters
      * @param path path
      * @return execute result
+     * @throws SQLWrapperException SQL wrapper exception
      */
     public Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> params, final String path) {
         try (
@@ -87,6 +88,7 @@ public final class PostgreSQLDDLTemplateExecutor {
      * @param params parameters
      * @param path path
      * @return execute result
+     * @throws SQLWrapperException SQL wrapper exception
      */
     public Map<String, Object> executeByTemplateForSingleRow(final Map<String, Object> params, final String path) {
         try (
