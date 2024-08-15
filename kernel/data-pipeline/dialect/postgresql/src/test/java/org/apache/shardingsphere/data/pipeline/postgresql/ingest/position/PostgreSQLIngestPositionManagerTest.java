@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.position;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
