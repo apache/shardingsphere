@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.client;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
