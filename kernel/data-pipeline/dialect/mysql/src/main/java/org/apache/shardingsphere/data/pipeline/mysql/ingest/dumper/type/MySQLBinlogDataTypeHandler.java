@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL binlog data type handler.
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public final class MySQLBinlogDataTypeHandler { 
+public final class MySQLBinlogDataTypeHandler {
     
     /**
      * Handle column value.
