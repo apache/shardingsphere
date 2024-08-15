@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.position;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.MySQLBinlogPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 
 import javax.sql.DataSource;
@@ -33,25 +33,25 @@ import java.sql.SQLException;
 public final class MySQLIngestPositionManager implements DialectIngestPositionManager {
     
     @Override
-    public BinlogPosition init(final String data) {
+    public MySQLBinlogPosition init(final String data) {
         String[] array = data.split("#");
         Preconditions.checkArgument(2 == array.length, "Unknown binlog position: %s", data);
-        return new BinlogPosition(array[0], Long.parseLong(array[1]));
+        return new MySQLBinlogPosition(array[0], Long.parseLong(array[1]));
     }
     
     @Override
-    public BinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+    public MySQLBinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             return getBinlogPosition(connection);
         }
     }
     
-    private BinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
+    private MySQLBinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            return new BinlogPosition(resultSet.getString(1), resultSet.getLong(2));
+            return new MySQLBinlogPosition(resultSet.getString(1), resultSet.getLong(2));
         }
     }
     

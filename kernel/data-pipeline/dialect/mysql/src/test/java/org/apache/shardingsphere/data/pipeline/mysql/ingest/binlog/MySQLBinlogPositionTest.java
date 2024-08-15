@@ -17,23 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.junit.jupiter.api.Test;
 
-/**
- * Binlog position.
- */
-@RequiredArgsConstructor
-@Getter
-public final class BinlogPosition implements IngestPosition {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class MySQLBinlogPositionTest {
     
-    private final String filename;
-    
-    private final long position;
-    
-    @Override
-    public String toString() {
-        return String.format("%s#%d", filename, position);
+    @Test
+    void assertToString() {
+        assertThat(new MySQLBinlogPosition("mysql-bin.000001", 4L).toString(), is("mysql-bin.000001#4"));
     }
 }

@@ -23,7 +23,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogContext;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.MySQLBinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
@@ -54,7 +54,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     private static final String TX_BEGIN_SQL = "BEGIN";
     
-    private final BinlogContext binlogContext;
+    private final MySQLBinlogContext binlogContext;
     
     private final boolean decodeWithTX;
     
@@ -62,7 +62,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     public MySQLBinlogEventPacketDecoder(final int checksumLength, final Map<Long, MySQLBinlogTableMapEventPacket> tableMap, final boolean decodeWithTX) {
         this.decodeWithTX = decodeWithTX;
-        binlogContext = new BinlogContext(checksumLength, tableMap);
+        binlogContext = new MySQLBinlogContext(checksumLength, tableMap);
     }
     
     @Override

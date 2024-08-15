@@ -23,7 +23,7 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.internal.StringUtil;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogContext;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.MySQLBinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.QueryEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
@@ -66,7 +66,7 @@ class MySQLBinlogEventPacketDecoderTest {
     @Mock
     private MySQLBinlogTableMapEventPacket tableMapEventPacket;
     
-    private BinlogContext binlogContext;
+    private MySQLBinlogContext binlogContext;
     
     private MySQLBinlogEventPacketDecoder binlogEventPacketDecoder;
     
@@ -75,7 +75,7 @@ class MySQLBinlogEventPacketDecoderTest {
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4, new ConcurrentHashMap<>(), true);
-        binlogContext = (BinlogContext) Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext"), binlogEventPacketDecoder);
+        binlogContext = (MySQLBinlogContext) Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext"), binlogEventPacketDecoder);
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
         columnDefs = Lists.newArrayList(new MySQLBinlogColumnDef(MySQLBinaryColumnType.LONGLONG), new MySQLBinlogColumnDef(MySQLBinaryColumnType.LONG),
                 new MySQLBinlogColumnDef(MySQLBinaryColumnType.VARCHAR), new MySQLBinlogColumnDef(MySQLBinaryColumnType.NEWDECIMAL));
