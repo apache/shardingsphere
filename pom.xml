@@ -1342,6 +1342,12 @@
                                 <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
                             </configuration>
                         </plugin>
+                        <plugin>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <configuration>
+                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
+                            </configuration>
+                        </plugin>
                     </plugins>
                 </pluginManagement>
             </build>
