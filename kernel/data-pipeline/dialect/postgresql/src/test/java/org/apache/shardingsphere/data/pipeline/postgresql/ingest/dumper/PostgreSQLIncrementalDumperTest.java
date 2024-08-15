@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({PostgreSQLIngestPositionManager.class, PostgreSQLSlotNameGenerator.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
-class PostgreSQLWALDumperTest {
+class PostgreSQLIncrementalDumperTest {
     
     @Mock
     private PostgreSQLLogicalReplication logicalReplication;
@@ -80,7 +80,7 @@ class PostgreSQLWALDumperTest {
     
     private IncrementalDumperContext dumperContext;
     
-    private PostgreSQLWALDumper walDumper;
+    private PostgreSQLIncrementalDumper walDumper;
     
     private MemoryPipelineChannel channel;
     
@@ -97,7 +97,7 @@ class PostgreSQLWALDumperTest {
         String password = "root";
         createTable(jdbcUrl, username, password);
         dumperContext = createDumperContext(jdbcUrl, username, password);
-        walDumper = new PostgreSQLWALDumper(dumperContext, position, channel,
+        walDumper = new PostgreSQLIncrementalDumper(dumperContext, position, channel,
                 new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())));
     }
     
@@ -133,7 +133,7 @@ class PostgreSQLWALDumperTest {
     void assertStart() throws SQLException, ReflectiveOperationException {
         StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig();
         try {
-            Plugins.getMemberAccessor().set(PostgreSQLWALDumper.class.getDeclaredField("logicalReplication"), walDumper, logicalReplication);
+            Plugins.getMemberAccessor().set(PostgreSQLIncrementalDumper.class.getDeclaredField("logicalReplication"), walDumper, logicalReplication);
             when(logicalReplication.createConnection(dataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(PostgreSQLSlotNameGenerator.getUniqueSlotName(eq(pgConnection), anyString())).thenReturn("0101123456");

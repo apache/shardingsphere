@@ -28,7 +28,7 @@ public final class PostgreSQLIncrementalDumperCreator implements DialectIncremen
     
     @Override
     public IncrementalDumper createIncrementalDumper(final CreateIncrementalDumperParameter param) {
-        return new PostgreSQLWALDumper(param.getContext(), param.getPosition(), param.getChannel(), param.getMetaDataLoader());
+        return new PostgreSQLIncrementalDumper(param.getContext(), param.getPosition(), param.getChannel(), param.getMetaDataLoader());
     }
     
     @Override
