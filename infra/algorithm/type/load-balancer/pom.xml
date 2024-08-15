@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-algorithm</artifactId>
+        <artifactId>shardingsphere-infra-algorithm-type</artifactId>
         <version>5.5.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-algorithm-message-digest</artifactId>
+    <artifactId>shardingsphere-infra-algorithm-load-balancer</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
