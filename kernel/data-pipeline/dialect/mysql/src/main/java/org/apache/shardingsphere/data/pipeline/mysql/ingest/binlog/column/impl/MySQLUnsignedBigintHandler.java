@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedTinyintHandler;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.MySQLDataTypeHandler;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class MySQLUnsignedTinyintHandlerTest {
+/**
+ * MySQL unsigned bigint handler.
+ */
+public final class MySQLUnsignedBigintHandler implements MySQLDataTypeHandler {
     
-    private final MySQLUnsignedTinyintHandler handler = new MySQLUnsignedTinyintHandler();
+    private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
     
-    @Test
-    void assertHandle() {
-        Serializable actual = handler.handle((byte) 1);
-        assertThat(actual, is(1));
-        actual = handler.handle((byte) -1);
-        assertThat(actual, is(255));
+    @Override
+    public Serializable handle(final Serializable value) {
+        if (null == value) {
+            return null;
+        }
+        long longValue = (long) value;
+        return 0L > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
+    }
+    
+    @Override
+    public String getType() {
+        return "BIGINT UNSIGNED";
     }
 }

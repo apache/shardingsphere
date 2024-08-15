@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.DialectColumnValueReader;
 
