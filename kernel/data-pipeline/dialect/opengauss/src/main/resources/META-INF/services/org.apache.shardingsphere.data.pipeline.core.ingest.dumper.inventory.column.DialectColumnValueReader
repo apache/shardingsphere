@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussColumnValueReader
+org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.column.OpenGaussColumnValueReader

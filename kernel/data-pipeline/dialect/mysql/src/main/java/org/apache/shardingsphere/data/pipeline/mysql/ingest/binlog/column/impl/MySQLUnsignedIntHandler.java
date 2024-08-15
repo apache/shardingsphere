@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedIntHandler;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.MySQLDataTypeHandler;
 
 import java.io.Serializable;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class MySQLUnsignedIntHandlerTest {
+/**
+ * MySQL unsigned int handler.
+ */
+public final class MySQLUnsignedIntHandler implements MySQLDataTypeHandler {
     
-    private final MySQLUnsignedIntHandler handler = new MySQLUnsignedIntHandler();
+    private static final long INT_MODULO = 4294967296L;
     
-    @Test
-    void assertHandle() {
-        Serializable actual = handler.handle(1);
-        assertThat(actual, is(1L));
-        actual = handler.handle(-1);
-        assertThat(actual, is(4294967295L));
+    @Override
+    public Serializable handle(final Serializable value) {
+        if (null == value) {
+            return null;
+        }
+        int intValue = (int) value;
+        return intValue < 0 ? INT_MODULO + intValue : intValue;
+    }
+    
+    @Override
+    public String getType() {
+        return "INT UNSIGNED";
     }
 }

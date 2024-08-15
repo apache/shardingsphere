@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedMediumintHandler;
 import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
@@ -25,15 +24,15 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MySQLUnsignedMediumintHandlerTest {
+class MySQLUnsignedIntHandlerTest {
     
-    private final MySQLUnsignedMediumintHandler handler = new MySQLUnsignedMediumintHandler();
+    private final MySQLUnsignedIntHandler handler = new MySQLUnsignedIntHandler();
     
     @Test
     void assertHandle() {
         Serializable actual = handler.handle(1);
-        assertThat(actual, is(1));
+        assertThat(actual, is(1L));
         actual = handler.handle(-1);
-        assertThat(actual, is(16777215));
+        assertThat(actual, is(4294967295L));
     }
 }

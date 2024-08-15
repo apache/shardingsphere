@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 /**
- * MySQL unsigned bigint handler.
+ * MySQL data type handler.
  */
-public final class MySQLUnsignedBigintHandler implements MySQLDataTypeHandler {
+@SingletonSPI
+public interface MySQLDataTypeHandler extends TypedSPI {
     
-    private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
-    
-    @Override
-    public Serializable handle(final Serializable value) {
-        if (null == value) {
-            return null;
-        }
-        long longValue = (long) value;
-        return 0L > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
-    }
-    
-    @Override
-    public String getType() {
-        return "BIGINT UNSIGNED";
-    }
+    /**
+     * Handle column value.
+     *
+     * @param value column value
+     * @return handled column value
+     */
+    Serializable handle(Serializable value);
 }
