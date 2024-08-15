@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.type.view;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -57,12 +58,11 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
                 database.getProtocolType(), database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), material);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
-        if (actualTableMetaData.isPresent()) {
-            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
-            alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
-            alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
-            metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
-        }
+        Preconditions.checkState(actualTableMetaData.isPresent(), String.format("Load actual view metadata '%s' failed.", viewName));
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
+        alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
+        alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
+        metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
     @Override

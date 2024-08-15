@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.type.index;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -42,9 +43,7 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
         String indexName = null == sqlStatement.getIndex()
                 ? IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns())
                 : sqlStatement.getIndex().getIndexName().getIdentifier().getValue();
-        if (Strings.isNullOrEmpty(indexName)) {
-            return;
-        }
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(indexName), "Index name is not exist.");
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereTable table = newShardingSphereTable(database.getSchema(schemaName).getTable(tableName));
         table.putIndex(new ShardingSphereIndex(indexName));
