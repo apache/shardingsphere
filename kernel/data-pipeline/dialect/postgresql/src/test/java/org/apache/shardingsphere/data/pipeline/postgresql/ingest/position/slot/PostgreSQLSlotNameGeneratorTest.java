@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.position.slot;
 
 import org.junit.jupiter.api.Test;
 

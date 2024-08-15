@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.position;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
