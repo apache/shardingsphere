@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogNumberDataTypeHandler;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -25,7 +25,7 @@ import java.math.BigInteger;
 /**
  * MySQL binlog unsigned bigint data type handler.
  */
-public final class MySQLBinlogUnsignedBigintHandler implements MySQLBinlogDataTypeHandler {
+public final class MySQLBinlogUnsignedBigintHandler implements MySQLBinlogNumberDataTypeHandler {
     
     private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
     
@@ -35,7 +35,7 @@ public final class MySQLBinlogUnsignedBigintHandler implements MySQLBinlogDataTy
             return null;
         }
         long longValue = (long) value;
-        return 0L > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
+        return longValue < 0L ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
     }
     
     @Override

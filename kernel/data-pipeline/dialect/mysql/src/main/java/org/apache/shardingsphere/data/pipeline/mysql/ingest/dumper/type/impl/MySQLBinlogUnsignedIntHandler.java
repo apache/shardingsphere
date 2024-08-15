@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogNumberDataTypeHandler;
 
 import java.io.Serializable;
 
 /**
  * MySQL binlog unsigned int data type handler.
  */
-public final class MySQLBinlogUnsignedIntHandler implements MySQLBinlogDataTypeHandler {
+public final class MySQLBinlogUnsignedIntHandler implements MySQLBinlogNumberDataTypeHandler {
     
     private static final long INT_MODULO = 4294967296L;
     
