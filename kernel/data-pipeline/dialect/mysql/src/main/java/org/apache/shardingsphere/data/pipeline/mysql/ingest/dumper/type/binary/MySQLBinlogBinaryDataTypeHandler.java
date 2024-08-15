@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.binary;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 
 /**
- * MySQL binlog number data type handler.
+ * MySQL binlog binary data type handler.
  */
-@SingletonSPI
-public interface MySQLBinlogNumberDataTypeHandler extends TypedSPI {
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class MySQLBinlogBinaryDataTypeHandler {
     
     /**
      * Handle column value.
      *
+     * @param columnMetaData column meta data
      * @param value column value
      * @return handled column value
      */
-    Serializable handle(Serializable value);
+    public static Serializable handle(final PipelineColumnMetaData columnMetaData, final Serializable value) {
+        return PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType()) ? ((MySQLBinaryString) value).getBytes() : new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());
+    }
 }
