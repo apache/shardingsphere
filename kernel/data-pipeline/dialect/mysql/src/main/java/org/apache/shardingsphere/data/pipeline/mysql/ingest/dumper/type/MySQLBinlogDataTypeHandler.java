@@ -35,7 +35,8 @@ public final class MySQLBinlogDataTypeHandler {
     
     /**
      * Handle column value.
-     *
+     * 
+     * @param columnMetaData column meta data
      * @param value column value
      * @return handled column value
      */
