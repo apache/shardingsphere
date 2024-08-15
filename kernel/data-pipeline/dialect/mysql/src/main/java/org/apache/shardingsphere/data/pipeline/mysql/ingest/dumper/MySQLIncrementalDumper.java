@@ -169,11 +169,11 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
             Serializable[] afterValues = event.getAfterRows().get(i);
             DataRecord dataRecord = createDataRecord(PipelineSQLOperationType.UPDATE, event, beforeValues.length);
             for (int j = 0; j < beforeValues.length; j++) {
-                Serializable oldValue = beforeValues[j];
-                Serializable newValue = afterValues[j];
-                boolean updated = !Objects.deepEquals(newValue, oldValue);
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j + 1);
-                dataRecord.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, oldValue), handleValue(columnMetaData, newValue), updated, columnMetaData.isUniqueKey()));
+                Serializable oldValue = handleValue(columnMetaData, beforeValues[j]);
+                Serializable newValue = handleValue(columnMetaData, afterValues[j]);
+                boolean updated = !Objects.deepEquals(newValue, oldValue);
+                dataRecord.addColumn(new Column(columnMetaData.getName(), oldValue, newValue, updated, columnMetaData.isUniqueKey()));
             }
             result.add(dataRecord);
         }
