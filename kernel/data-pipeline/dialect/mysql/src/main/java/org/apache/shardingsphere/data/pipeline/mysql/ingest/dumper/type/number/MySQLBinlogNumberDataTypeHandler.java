@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-
 import java.io.Serializable;
 
 /**
  * MySQL binlog number data type handler.
  */
-@SingletonSPI
-public interface MySQLBinlogNumberDataTypeHandler extends TypedSPI {
+public interface MySQLBinlogNumberDataTypeHandler {
     
     /**
      * Handle column value.

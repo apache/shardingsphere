@@ -30,15 +30,7 @@ public final class MySQLBinlogUnsignedIntHandler implements MySQLBinlogNumberDat
     
     @Override
     public Serializable handle(final Serializable value) {
-        if (null == value) {
-            return null;
-        }
         int intValue = (int) value;
         return intValue < 0 ? INT_MODULO + intValue : intValue;
-    }
-    
-    @Override
-    public String getType() {
-        return "INT UNSIGNED";
     }
 }

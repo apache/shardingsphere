@@ -31,15 +31,7 @@ public final class MySQLBinlogUnsignedBigintHandler implements MySQLBinlogNumber
     
     @Override
     public Serializable handle(final Serializable value) {
-        if (null == value) {
-            return null;
-        }
         long longValue = (long) value;
         return longValue < 0L ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
-    }
-    
-    @Override
-    public String getType() {
-        return "BIGINT UNSIGNED";
     }
 }

@@ -30,15 +30,7 @@ public final class MySQLBinlogUnsignedTinyintHandler implements MySQLBinlogNumbe
     
     @Override
     public Serializable handle(final Serializable value) {
-        if (null == value) {
-            return null;
-        }
         byte byteValue = (byte) value;
         return byteValue < 0 ? TINYINT_MODULO + byteValue : byteValue;
-    }
-    
-    @Override
-    public String getType() {
-        return "TINYINT UNSIGNED";
     }
 }

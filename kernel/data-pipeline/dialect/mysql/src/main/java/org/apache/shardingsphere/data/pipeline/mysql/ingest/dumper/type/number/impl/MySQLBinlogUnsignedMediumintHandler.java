@@ -30,15 +30,7 @@ public final class MySQLBinlogUnsignedMediumintHandler implements MySQLBinlogNum
     
     @Override
     public Serializable handle(final Serializable value) {
-        if (null == value) {
-            return null;
-        }
         int intValue = (int) value;
         return intValue < 0 ? MEDIUMINT_MODULO + intValue : intValue;
-    }
-    
-    @Override
-    public String getType() {
-        return "MEDIUMINT UNSIGNED";
     }
 }
