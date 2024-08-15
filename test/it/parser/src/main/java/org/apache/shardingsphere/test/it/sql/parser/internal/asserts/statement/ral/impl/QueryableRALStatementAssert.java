@@ -33,6 +33,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableM
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ConvertYamlConfigurationStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ExportMetaDataStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowDistVariableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowDistVariablesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowTableMetaDataStatementAssert;
@@ -67,7 +68,7 @@ public final class QueryableRALStatementAssert {
         } else if (actual instanceof ExportDatabaseConfigurationStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ExportMetaDataStatement) {
-            ExistingAssert.assertIs(assertContext, actual, expected);
+            ExportMetaDataStatementAssert.assertIs(assertContext, (ExportMetaDataStatement) actual, expected);
         } else if (actual instanceof ExportStorageNodesStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowComputeNodeInfoStatement) {
