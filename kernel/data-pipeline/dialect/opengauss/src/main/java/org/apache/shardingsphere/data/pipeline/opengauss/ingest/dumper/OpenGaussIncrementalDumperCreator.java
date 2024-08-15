@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.CreateIncrementalDumperParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWALDumper;
 
 /**
  * OpenGauss incremental dumper creator.
