@@ -29,16 +29,16 @@ import java.util.Map;
 /**
  * Binlog context.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
+@Setter
 public final class BinlogContext {
-    
-    @Setter
-    private volatile String fileName;
     
     private final int checksumLength;
     
     private final Map<Long, MySQLBinlogTableMapEventPacket> tableMap;
+    
+    private volatile String fileName;
     
     /**
      * Cache table map event.
