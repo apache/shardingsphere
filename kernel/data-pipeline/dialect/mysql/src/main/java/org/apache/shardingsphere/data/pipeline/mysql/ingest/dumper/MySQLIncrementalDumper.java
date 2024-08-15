@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.MySQLBinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
@@ -41,8 +40,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLBinlogClient;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogNumberDataTypeHandler;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogDataTypeHandler;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
@@ -52,12 +50,10 @@ import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveI
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * MySQL incremental dumper.
@@ -155,7 +151,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
             DataRecord dataRecord = createDataRecord(PipelineSQLOperationType.INSERT, event, each.length);
             for (int i = 0; i < each.length; i++) {
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
-                dataRecord.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, columnMetaData.isUniqueKey()));
+                dataRecord.addColumn(new Column(columnMetaData.getName(), MySQLBinlogDataTypeHandler.handle(columnMetaData, each[i]), true, columnMetaData.isUniqueKey()));
             }
             result.add(dataRecord);
         }
@@ -170,8 +166,8 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
             DataRecord dataRecord = createDataRecord(PipelineSQLOperationType.UPDATE, event, beforeValues.length);
             for (int j = 0; j < beforeValues.length; j++) {
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j + 1);
-                Serializable oldValue = handleValue(columnMetaData, beforeValues[j]);
-                Serializable newValue = handleValue(columnMetaData, afterValues[j]);
+                Serializable oldValue = MySQLBinlogDataTypeHandler.handle(columnMetaData, beforeValues[j]);
+                Serializable newValue = MySQLBinlogDataTypeHandler.handle(columnMetaData, afterValues[j]);
                 boolean updated = !Objects.deepEquals(newValue, oldValue);
                 dataRecord.addColumn(new Column(columnMetaData.getName(), oldValue, newValue, updated, columnMetaData.isUniqueKey()));
             }
@@ -186,21 +182,11 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
             DataRecord dataRecord = createDataRecord(PipelineSQLOperationType.DELETE, event, each.length);
             for (int i = 0, length = each.length; i < length; i++) {
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
-                dataRecord.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), null, true, columnMetaData.isUniqueKey()));
+                dataRecord.addColumn(new Column(columnMetaData.getName(), MySQLBinlogDataTypeHandler.handle(columnMetaData, each[i]), null, true, columnMetaData.isUniqueKey()));
             }
             result.add(dataRecord);
         }
         return result;
-    }
-    
-    private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
-        if (value instanceof MySQLBinaryString) {
-            return PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType())
-                    ? ((MySQLBinaryString) value).getBytes()
-                    : new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());
-        }
-        Optional<MySQLBinlogNumberDataTypeHandler> dataTypeHandler = TypedSPILoader.findService(MySQLBinlogNumberDataTypeHandler.class, columnMetaData.getDataTypeName());
-        return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
     
     private DataRecord createDataRecord(final PipelineSQLOperationType type, final AbstractRowsEvent rowsEvent, final int columnCount) {
