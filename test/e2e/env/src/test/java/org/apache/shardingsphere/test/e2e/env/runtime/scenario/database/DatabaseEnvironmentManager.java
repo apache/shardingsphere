@@ -49,7 +49,7 @@ public final class DatabaseEnvironmentManager {
      * @return database types
      */
     public static Map<String, DatabaseType> getDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType) {
-        Collection<String> datasourceNames = unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.ACTUAL)).getDatabases();
+        Collection<String> datasourceNames = getDatabases(scenario, Type.ACTUAL);
         return crateDatabaseTypes(datasourceNames, defaultDatabaseType);
     }
     
@@ -71,7 +71,18 @@ public final class DatabaseEnvironmentManager {
      * @return expected database types
      */
     public static Map<String, DatabaseType> getExpectedDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType) {
-        return crateDatabaseTypes(unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.EXPECTED)).getDatabases(), defaultDatabaseType);
+        return crateDatabaseTypes(getDatabases(scenario, Type.EXPECTED), defaultDatabaseType);
+    }
+    
+    /**
+     * Get databases.
+     *
+     * @param scenario scenario
+     * @param type type
+     * @return databases
+     */
+    public static Collection<String> getDatabases(final String scenario, final Type type) {
+        return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(type)).getDatabases();
     }
     
     @SneakyThrows({IOException.class, JAXBException.class})

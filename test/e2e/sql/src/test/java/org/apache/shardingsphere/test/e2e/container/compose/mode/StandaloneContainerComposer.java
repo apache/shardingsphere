@@ -29,8 +29,13 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -40,18 +45,27 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     private final ITContainers containers;
     
-    private final StorageContainer storageContainer;
+    private final Collection<StorageContainer> actualStorageContainer = new LinkedList<>();
+    
+    private final StorageContainer expectStorageContainer;
     
     private final AdapterContainer adapterContainer;
     
-    public StandaloneContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
+    public StandaloneContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType,
+                                       final Map<DatabaseType, Collection<String>> storageDatabaseTypeMap) {
         containers = new ITContainers(scenario);
         // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, "", StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
+        for (Map.Entry<DatabaseType, Collection<String>> entry : storageDatabaseTypeMap.entrySet()) {
+            actualStorageContainer.add(containers.registerContainer(StorageContainerFactory.newInstance(entry.getKey(), "",
+                    StorageContainerConfigurationFactory.newInstance(entry.getKey(), scenario, Type.ACTUAL), entry.getValue())));
+        }
+        expectStorageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, "",
+                StorageContainerConfigurationFactory.newInstance(databaseType, scenario, Type.EXPECTED), DatabaseEnvironmentManager.getDatabases(scenario, Type.EXPECTED)),
+                String.join(".", databaseType.getType(), scenario, "expected.host"));
         adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario,
                 ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, databaseType)));
         if (adapterContainer instanceof DockerITContainer) {
-            ((DockerITContainer) adapterContainer).dependsOn(storageContainer);
+            ((DockerITContainer) adapterContainer).dependsOn(actualStorageContainer);
         }
     }
     
@@ -67,12 +81,15 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     @Override
     public Map<String, DataSource> getActualDataSourceMap() {
-        return storageContainer.getActualDataSourceMap();
+        return actualStorageContainer.stream().map(StorageContainer::getDataSourceMap).reduce((a, b) -> {
+            a.putAll(b);
+            return a;
+        }).orElse(Collections.emptyMap());
     }
     
     @Override
     public Map<String, DataSource> getExpectedDataSourceMap() {
-        return storageContainer.getExpectedDataSourceMap();
+        return expectStorageContainer.getDataSourceMap();
     }
     
     @Override

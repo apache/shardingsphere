@@ -27,6 +27,9 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQ
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Storage container factory.
  */
@@ -42,19 +45,33 @@ public final class StorageContainerFactory {
      * @return created instance
      * @throws RuntimeException runtime exception
      */
+    public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage, final StorageContainerConfiguration storageContainerConfig) {
+        return newInstance(databaseType, storageContainerImage, storageContainerConfig, Collections.emptyList());
+    }
+    
+    /**
+     * Create new instance of storage container.
+     *
+     * @param databaseType database type
+     * @param storageContainerImage storage container image
+     * @param storageContainerConfig storage container configuration
+     * @param databases databases
+     * @return created instance
+     * @throws RuntimeException runtime exception
+     */
     public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage,
-                                               final StorageContainerConfiguration storageContainerConfig) {
+                                               final StorageContainerConfiguration storageContainerConfig, final Collection<String> databases) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return new MySQLContainer(storageContainerImage, storageContainerConfig);
+                return new MySQLContainer(storageContainerImage, storageContainerConfig, databases);
             case "PostgreSQL":
-                return new PostgreSQLContainer(storageContainerImage, storageContainerConfig);
+                return new PostgreSQLContainer(storageContainerImage, storageContainerConfig, databases);
             case "openGauss":
-                return new OpenGaussContainer(storageContainerImage, storageContainerConfig);
+                return new OpenGaussContainer(storageContainerImage, storageContainerConfig, databases);
             case "H2":
-                return new H2Container(storageContainerConfig);
+                return new H2Container(storageContainerConfig, databases);
             case "MariaDB":
-                return new MariaDBContainer(storageContainerImage, storageContainerConfig);
+                return new MariaDBContainer(storageContainerImage, storageContainerConfig, databases);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

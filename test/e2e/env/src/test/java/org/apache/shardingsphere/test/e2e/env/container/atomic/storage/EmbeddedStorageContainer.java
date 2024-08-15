@@ -22,14 +22,11 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Embedded storage container.
@@ -41,31 +38,20 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     
     private final String scenario;
     
-    private final Map<String, DataSource> actualDataSourceMap;
+    private final Collection<String> databases;
     
-    private final Map<String, DataSource> expectedDataSourceMap;
+    private final Map<String, DataSource> dataSourceMap;
     
-    protected EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
+    protected EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario, final Collection<String> databases) {
         this.databaseType = databaseType;
         this.scenario = scenario;
-        actualDataSourceMap = createActualDataSourceMap();
-        expectedDataSourceMap = createExpectedDataSourceMap();
+        this.databases = databases;
+        dataSourceMap = createDataSourceMap();
     }
     
-    private Map<String, DataSource> createActualDataSourceMap() {
-        Collection<String> databaseNames = DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType).entrySet().stream()
-                .filter(entry -> entry.getValue().getClass().isAssignableFrom(databaseType.getClass())).map(Entry::getKey).collect(Collectors.toList());
-        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);
-        databaseNames.forEach(each -> result.put(each, StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + each),
-                "root", "Root@123")));
-        return result;
-    }
-    
-    private Map<String, DataSource> createExpectedDataSourceMap() {
-        Collection<String> databaseNames = DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, databaseType).entrySet().stream()
-                .filter(entry -> entry.getValue().getClass().isAssignableFrom(databaseType.getClass())).map(Entry::getKey).collect(Collectors.toList());
-        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);
-        databaseNames.forEach(each -> result.put(each, StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + each),
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(databases.size(), 1F);
+        databases.forEach(each -> result.put(each, StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + each),
                 "root", "Root@123")));
         return result;
     }

@@ -18,7 +18,7 @@
 databaseName: db
 
 dataSources:
-  ds_0:
+  db_0:
     url: jdbc:mysql://mysql.db.host:3306/db_0?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -28,7 +28,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_1:
+  db_1:
     url: jdbc:mysql://mysql.db.host:3306/db_1?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -38,7 +38,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_2:
+  db_2:
     url: jdbc:mysql://mysql.db.host:3306/db_2?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -48,7 +48,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_3:
+  db_3:
     url: jdbc:mysql://mysql.db.host:3306/db_3?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -58,7 +58,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_4:
+  db_4:
     url: jdbc:mysql://mysql.db.host:3306/db_4?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -68,7 +68,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_5:
+  db_5:
     url: jdbc:mysql://mysql.db.host:3306/db_5?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -78,7 +78,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_6:
+  db_6:
     url: jdbc:mysql://mysql.db.host:3306/db_6?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -88,7 +88,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_7:
+  db_7:
     url: jdbc:mysql://mysql.db.host:3306/db_7?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -98,7 +98,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_8:
+  db_8:
     url: jdbc:mysql://mysql.db.host:3306/db_8?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -108,7 +108,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 2
-  ds_9:
+  db_9:
     url: jdbc:mysql://mysql.db.host:3306/db_9?useSSL=false&characterEncoding=utf-8
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
@@ -126,13 +126,13 @@ rules:
   - !SHARDING
     tables:
       t_order:
-        actualDataNodes: ds_${0..9}.t_order
+        actualDataNodes: db_${0..9}.t_order
         databaseStrategy:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: it_standard_fixture
       t_order_item:
-        actualDataNodes: ds_${0..9}.t_order_item
+        actualDataNodes: db_${0..9}.t_order_item
         databaseStrategy:
           standard:
             shardingColumn: user_id
@@ -145,7 +145,7 @@ rules:
             - auditor_constant
           allowHintDisable: true
       t_order_details:
-        actualDataNodes: ds_${0..9}.t_order_details
+        actualDataNodes: db_${0..9}.t_order_details
         databaseStrategy:
           standard:
             shardingColumn: user_id

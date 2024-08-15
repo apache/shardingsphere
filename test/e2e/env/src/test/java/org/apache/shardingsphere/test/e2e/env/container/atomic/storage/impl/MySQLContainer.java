@@ -19,15 +19,12 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * MySQL container.
@@ -40,8 +37,8 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     private final StorageContainerConfiguration storageContainerConfig;
     
-    public MySQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:8.2.0" : containerImage);
+    public MySQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig, final Collection<String> databases) {
+        super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:8.2.0" : containerImage, databases);
         this.storageContainerConfig = storageContainerConfig;
     }
     
@@ -51,18 +48,6 @@ public final class MySQLContainer extends DockerStorageContainer {
         addEnvs(storageContainerConfig.getContainerEnvironments());
         mapResources(storageContainerConfig.getMountedResources());
         super.configure();
-    }
-    
-    @Override
-    protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getDatabaseTypes().entrySet().stream()
-                .filter(entry -> entry.getValue() instanceof MySQLDatabaseType).map(Entry::getKey).collect(Collectors.toList());
-    }
-    
-    @Override
-    protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream()
-                .filter(entry -> entry.getValue() instanceof MySQLDatabaseType).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override

@@ -33,8 +33,13 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -46,21 +51,30 @@ public final class ClusterContainerComposer implements ContainerComposer {
     
     private final GovernanceContainer governanceContainer;
     
-    private final StorageContainer storageContainer;
+    private final Collection<StorageContainer> actualStorageContainer = new LinkedList<>();
+    
+    private final StorageContainer expectStorageContainer;
     
     private final AdapterContainer adapterContainer;
     
-    public ClusterContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
+    public ClusterContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType,
+                                    final Map<DatabaseType, Collection<String>> storageDatabaseTypeMap) {
         containers = new ITContainers(scenario);
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
         // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, "",
-                StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
+        for (Map.Entry<DatabaseType, Collection<String>> entry : storageDatabaseTypeMap.entrySet()) {
+            actualStorageContainer.add(containers.registerContainer(StorageContainerFactory.newInstance(entry.getKey(), "",
+                    StorageContainerConfigurationFactory.newInstance(entry.getKey(), scenario, Type.ACTUAL), entry.getValue())));
+        }
+        expectStorageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, "",
+                StorageContainerConfigurationFactory.newInstance(databaseType, scenario, Type.EXPECTED), DatabaseEnvironmentManager.getDatabases(scenario, Type.EXPECTED)),
+                String.join(".", databaseType.getType(), scenario, "expected.host"));
         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, databaseType, AdapterContainerUtils.getAdapterContainerImage());
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario, containerConfig);
         if (adapterContainer instanceof DockerITContainer) {
-            ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
+            actualStorageContainer.forEach(actualStorage -> ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, actualStorage));
+            ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, expectStorageContainer);
         }
         this.adapterContainer = containers.registerContainer(adapterContainer);
     }
@@ -77,12 +91,15 @@ public final class ClusterContainerComposer implements ContainerComposer {
     
     @Override
     public Map<String, DataSource> getActualDataSourceMap() {
-        return storageContainer.getActualDataSourceMap();
+        return actualStorageContainer.stream().map(StorageContainer::getDataSourceMap).reduce((a, b) -> {
+            a.putAll(b);
+            return a;
+        }).orElse(Collections.emptyMap());
     }
     
     @Override
     public Map<String, DataSource> getExpectedDataSourceMap() {
-        return storageContainer.getExpectedDataSourceMap();
+        return expectStorageContainer.getDataSourceMap();
     }
     
     @Override

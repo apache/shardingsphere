@@ -18,14 +18,25 @@
 package org.apache.shardingsphere.test.e2e.container.compose;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.commons.math3.util.Pair;
+import org.apache.shardingsphere.driver.yaml.YamlJDBCConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
+import org.apache.shardingsphere.infra.url.core.ShardingSphereURLLoadEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.test.e2e.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.mode.StandaloneContainerComposer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,7 +79,20 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     }
     
     private ContainerComposer createContainerComposer(final boolean clusterMode, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
-        return clusterMode ? new ClusterContainerComposer(scenario, databaseType, adapterMode, adapterType) : new StandaloneContainerComposer(scenario, databaseType, adapterMode, adapterType);
+        Map<DatabaseType, Collection<String>> storageDatabaseTypeMap = getStorageDatabaseTypeMap(getYamlConfig(scenario, databaseType));
+        return clusterMode ? new ClusterContainerComposer(scenario, databaseType, adapterMode, adapterType, storageDatabaseTypeMap)
+                : new StandaloneContainerComposer(scenario, databaseType, adapterMode, adapterType, storageDatabaseTypeMap);
+    }
+    
+    private static Map<DatabaseType, Collection<String>> getStorageDatabaseTypeMap(final YamlJDBCConfiguration rootConfig) {
+        return rootConfig.getDataSources().entrySet().stream().map(entry -> new Pair<>(entry.getKey(), DatabaseTypeFactory.get((String) entry.getValue().get("url"))))
+                .collect(HashMultimap::<DatabaseType, String>create, (map, pair) -> map.put(pair.getSecond(), pair.getFirst()), Multimap::putAll).asMap();
+    }
+    
+    @SneakyThrows(IOException.class)
+    private YamlJDBCConfiguration getYamlConfig(final String scenario, final DatabaseType databaseType) {
+        ShardingSphereURLLoadEngine urlLoadEngine = new ShardingSphereURLLoadEngine(ShardingSphereURL.parse("absolutepath:" + new ScenarioCommonPath(scenario).getRuleConfigurationFile(databaseType)));
+        return YamlEngine.unmarshal(urlLoadEngine.loadContent(), YamlJDBCConfiguration.class);
     }
     
     @Override

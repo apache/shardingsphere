@@ -15,8 +15,12 @@
 -- limitations under the License.
 --
 
-SET character_set_database='utf8';
-SET character_set_server='utf8';
+SET
+character_set_database='utf8';
+SET
+character_set_server='utf8';
 
-DROP DATABASE IF EXISTS db;
-CREATE DATABASE db;
+DROP
+DATABASE IF EXISTS db;
+CREATE
+DATABASE db;

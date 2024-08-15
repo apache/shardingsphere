@@ -59,7 +59,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer {
         if (null == dataSource) {
             try {
                 targetDataSourceProvider.set(
-                        YamlShardingSphereDataSourceFactory.createDataSource(databaseContainer.getActualDataSourceMap(), new File(ruleConfigPath)));
+                        YamlShardingSphereDataSourceFactory.createDataSource(databaseContainer.getDataSourceMap(), new File(ruleConfigPath)));
             } catch (final SQLException | IOException ex) {
                 throw new RuntimeException(ex);
             }

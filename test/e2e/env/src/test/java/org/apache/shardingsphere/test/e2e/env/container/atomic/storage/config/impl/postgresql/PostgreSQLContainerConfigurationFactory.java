@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
@@ -44,19 +43,18 @@ public final class PostgreSQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
     /**
      * Create new instance of PostgreSQL container configuration.
      *
      * @param scenario scenario
+     * @param type type
      * @return created instance
      */
-    public static StorageContainerConfiguration newInstance(final String scenario) {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario),
-                DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")),
-                DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
+    public static StorageContainerConfiguration newInstance(final String scenario, final Type type) {
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario, type));
     }
     
     private static String getCommand() {
@@ -74,12 +72,15 @@ public final class PostgreSQLContainerConfigurationFactory {
         return result;
     }
     
-    private static Map<String, String> getMountedResources(final String scenario) {
-        Map<String, String> result = new HashMap<>(3, 1F);
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")) + "/01-actual-init.sql",
-                "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")) + "/01-expected-init.sql",
-                "/docker-entrypoint-initdb.d/01-expected-init.sql");
+    private static Map<String, String> getMountedResources(final String scenario, final Type type) {
+        Map<String, String> result = new HashMap<>(2, 1F);
+        if (Type.ACTUAL == type) {
+            result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")) + "/01-actual-init.sql",
+                    "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        } else {
+            result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")) + "/01-expected-init.sql",
+                    "/docker-entrypoint-initdb.d/01-expected-init.sql");
+        }
         result.put("/env/postgresql/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
         return result;
     }

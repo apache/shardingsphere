@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.EmbeddedStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -31,41 +29,28 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * H2 container.
  */
 public final class H2Container extends EmbeddedStorageContainer {
     
-    private final ScenarioDataPath scenarioDataPath;
+    private final StorageContainerConfiguration storageContainerConfig;
     
-    public H2Container(final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "H2"), storageContainerConfig.getScenario());
-        scenarioDataPath = new ScenarioDataPath(storageContainerConfig.getScenario());
+    public H2Container(final StorageContainerConfiguration storageContainerConfig, final Collection<String> databases) {
+        super(TypedSPILoader.getService(DatabaseType.class, "H2"), storageContainerConfig.getScenario(), databases);
+        this.storageContainerConfig = storageContainerConfig;
     }
     
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     public void start() {
-        fillActualDataSet();
-        fillExpectedDataSet();
-    }
-    
-    private void fillActualDataSet() throws SQLException, IOException {
-        for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
-            executeInitSQL(entry.getValue(), scenarioDataPath.getInitSQLFile(Type.ACTUAL, getDatabaseType()));
-            Optional<String> dbInitSQLFile = scenarioDataPath.findActualDatabaseInitSQLFile(entry.getKey(), getDatabaseType());
-            if (dbInitSQLFile.isPresent()) {
-                executeInitSQL(entry.getValue(), dbInitSQLFile.get());
+        for (Entry<String, DataSource> entry : getDataSourceMap().entrySet()) {
+            for (String each : storageContainerConfig.getMountedResources().keySet()) {
+                executeInitSQL(entry.getValue(), each);
             }
-        }
-    }
-    
-    private void fillExpectedDataSet() throws SQLException, IOException {
-        for (Entry<String, DataSource> entry : getExpectedDataSourceMap().entrySet()) {
-            executeInitSQL(entry.getValue(), scenarioDataPath.getInitSQLFile(Type.EXPECTED, getDatabaseType()));
         }
     }
     

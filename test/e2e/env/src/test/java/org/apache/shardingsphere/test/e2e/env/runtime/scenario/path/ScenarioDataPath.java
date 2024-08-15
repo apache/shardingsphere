@@ -73,21 +73,6 @@ public final class ScenarioDataPath {
     }
     
     /**
-     * Get init SQL file.
-     *
-     * @param type data type
-     * @param databaseType database type
-     * @return expected init SQL file
-     */
-    public String getInitSQLFile(final Type type, final DatabaseType databaseType) {
-        String initSQLFileName = String.join("-", "01", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
-        String initSQLResourceFile = String.join("/", getInitSQLResourcePath(type, databaseType), initSQLFileName);
-        URL url = Thread.currentThread().getContextClassLoader().getResource(initSQLResourceFile);
-        assertNotNull(url, String.format("File `%s` must exist.", initSQLResourceFile));
-        return url.getFile();
-    }
-    
-    /**
      * Find actual init SQL file by database name.
      *
      * @param databaseName database name

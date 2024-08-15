@@ -18,7 +18,7 @@
 databaseName: mask
 
 dataSources:
-  encrypt:
+  mask:
     url: jdbc:opengauss://opengauss.mask.host:5432/mask
     username: test_user
     password: Test@123

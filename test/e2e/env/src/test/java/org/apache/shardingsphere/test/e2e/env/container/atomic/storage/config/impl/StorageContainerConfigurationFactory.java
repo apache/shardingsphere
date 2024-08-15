@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.im
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.opengauss.OpenGaussContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.postgresql.PostgreSQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 /**
  * Storage container configuration factory.
@@ -38,19 +39,20 @@ public final class StorageContainerConfigurationFactory {
      *
      * @param databaseType database type
      * @param scenario scenario
+     * @param type type
      * @return created instance
      * @throws RuntimeException runtime exception
      */
-    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario) {
+    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario, final Type type) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return MySQLContainerConfigurationFactory.newInstance(scenario);
+                return MySQLContainerConfigurationFactory.newInstance(scenario, type);
             case "PostgreSQL":
-                return PostgreSQLContainerConfigurationFactory.newInstance(scenario);
+                return PostgreSQLContainerConfigurationFactory.newInstance(scenario, type);
             case "openGauss":
-                return OpenGaussContainerConfigurationFactory.newInstance(scenario);
+                return OpenGaussContainerConfigurationFactory.newInstance(scenario, type);
             case "H2":
-                return H2ContainerConfigurationFactory.newInstance(scenario);
+                return H2ContainerConfigurationFactory.newInstance(scenario, type);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

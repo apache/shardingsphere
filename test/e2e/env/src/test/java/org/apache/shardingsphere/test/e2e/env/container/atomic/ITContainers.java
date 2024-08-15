@@ -63,6 +63,18 @@ public final class ITContainers implements Startable {
      * @return registered container
      */
     public <T extends ITContainer> T registerContainer(final T container) {
+        return registerContainer(container, getNetworkAlias(container));
+    }
+    
+    /**
+     * Register container.
+     *
+     * @param container container to be registered
+     * @param networkAlias network alias
+     * @param <T> type of container
+     * @return registered container
+     */
+    public <T extends ITContainer> T registerContainer(final T container, final String networkAlias) {
         if (container instanceof ComboITContainer) {
             ((ComboITContainer) container).getContainers().forEach(this::registerContainer);
         } else if (container instanceof EmbeddedITContainer) {
@@ -70,7 +82,6 @@ public final class ITContainers implements Startable {
         } else {
             DockerITContainer dockerContainer = (DockerITContainer) container;
             dockerContainer.setNetwork(network);
-            String networkAlias = getNetworkAlias(container);
             dockerContainer.setNetworkAliases(Collections.singletonList(networkAlias));
             String loggerName = String.join(":", scenario, dockerContainer.getName());
             dockerContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), false));

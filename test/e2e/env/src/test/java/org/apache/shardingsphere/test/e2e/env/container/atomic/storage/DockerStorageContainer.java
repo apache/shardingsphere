@@ -48,13 +48,14 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private final DatabaseType databaseType;
     
-    private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
+    private final Collection<String> databases;
     
-    private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
+    private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    protected DockerStorageContainer(final DatabaseType databaseType, final String containerImage) {
+    protected DockerStorageContainer(final DatabaseType databaseType, final String containerImage, final Collection<String> databases) {
         super(databaseType.getType().toLowerCase(), containerImage);
         this.databaseType = databaseType;
+        this.databases = databases;
     }
     
     @Override
@@ -85,13 +86,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void postStart() {
-        actualDataSourceMap.putAll(createAccessDataSource(getDatabaseNames()));
-        expectedDataSourceMap.putAll(createAccessDataSource(getExpectedDatabaseNames()));
+        dataSourceMap.putAll(createAccessDataSource(databases));
     }
-    
-    protected abstract Collection<String> getDatabaseNames();
-    
-    protected abstract Collection<String> getExpectedDatabaseNames();
     
     /**
      * Create access data source.
