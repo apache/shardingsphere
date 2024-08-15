@@ -25,12 +25,12 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlog
 import java.util.Map;
 
 /**
- * Binlog context.
+ * MySQL binlog context.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class BinlogContext {
+public final class MySQLBinlogContext {
     
     private final int checksumLength;
     

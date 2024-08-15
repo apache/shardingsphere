@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.MySQLBinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
@@ -68,7 +68,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     
     private final IncrementalDumperContext dumperContext;
     
-    private final BinlogPosition binlogPosition;
+    private final MySQLBinlogPosition binlogPosition;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
@@ -80,7 +80,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     
     public MySQLIncrementalDumper(final IncrementalDumperContext dumperContext, final IngestPosition binlogPosition, final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         this.dumperContext = dumperContext;
-        this.binlogPosition = (BinlogPosition) binlogPosition;
+        this.binlogPosition = (MySQLBinlogPosition) binlogPosition;
         this.channel = channel;
         this.metaDataLoader = metaDataLoader;
         StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig();
@@ -139,7 +139,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     }
     
     private PlaceholderRecord createPlaceholderRecord(final AbstractBinlogEvent event) {
-        PlaceholderRecord result = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition()));
+        PlaceholderRecord result = new PlaceholderRecord(new MySQLBinlogPosition(event.getFileName(), event.getPosition()));
         result.setCommitTime(event.getTimestamp() * 1000L);
         return result;
     }
@@ -205,8 +205,8 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     
     private DataRecord createDataRecord(final PipelineSQLOperationType type, final AbstractRowsEvent rowsEvent, final int columnCount) {
         String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).toString();
-        IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition());
-        DataRecord result = new DataRecord(type, tableName, position, columnCount);
+        IngestPosition binlogPosition = new MySQLBinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition());
+        DataRecord result = new DataRecord(type, tableName, binlogPosition, columnCount);
         result.setActualTableName(rowsEvent.getTableName());
         result.setCommitTime(rowsEvent.getTimestamp() * 1000L);
         return result;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.MySQLBinlogPosition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +58,7 @@ class MySQLIngestPositionManagerTest {
     @Test
     void assertGetCurrentPosition() throws SQLException {
         MySQLIngestPositionManager positionInitializer = new MySQLIngestPositionManager();
-        BinlogPosition actual = positionInitializer.init(dataSource, "");
+        MySQLBinlogPosition actual = positionInitializer.init(dataSource, "");
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
     }

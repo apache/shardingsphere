@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class BinlogContextTest {
+class MySQLBinlogContextTest {
     
     private static final String TEST_SCHEMA = "test_schema";
     
@@ -45,11 +45,11 @@ class BinlogContextTest {
     @Mock
     private MySQLBinlogTableMapEventPacket tableMapEventPacket;
     
-    private BinlogContext binlogContext;
+    private MySQLBinlogContext binlogContext;
     
     @BeforeEach
     void setUp() {
-        binlogContext = new BinlogContext(4, new HashMap<>());
+        binlogContext = new MySQLBinlogContext(4, new HashMap<>());
         when(tableMapEventPacket.getSchemaName()).thenReturn(TEST_SCHEMA);
         when(tableMapEventPacket.getTableName()).thenReturn(TEST_TABLE);
     }
