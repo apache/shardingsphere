@@ -30,15 +30,7 @@ public final class MySQLBinlogUnsignedSmallintHandler implements MySQLBinlogNumb
     
     @Override
     public Serializable handle(final Serializable value) {
-        if (null == value) {
-            return null;
-        }
         short shortValue = (short) value;
         return shortValue < 0 ? SMALLINT_MODULO + shortValue : shortValue;
-    }
-    
-    @Override
-    public String getType() {
-        return "SMALLINT UNSIGNED";
     }
 }
