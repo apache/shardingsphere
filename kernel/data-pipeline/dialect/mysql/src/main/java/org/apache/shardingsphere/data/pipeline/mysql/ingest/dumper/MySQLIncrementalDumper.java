@@ -40,7 +40,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLBinlogClient;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.MySQLDataTypeHandler;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -74,7 +74,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     
     private final PipelineChannel channel;
     
-    private final MySQLClient client;
+    private final MySQLBinlogClient client;
     
     private final String catalog;
     
@@ -89,7 +89,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         ConnectInfo connectInfo = new ConnectInfo(
                 generateServerId(), connectionProps.getHostname(), connectionProps.getPort(), pipelineDataSourceConfig.getUsername(), pipelineDataSourceConfig.getPassword());
         log.info("incremental dump, jdbcUrl={}, serverId={}, hostname={}, port={}", pipelineDataSourceConfig.getUrl(), connectInfo.getServerId(), connectInfo.getHost(), connectInfo.getPort());
-        client = new MySQLClient(connectInfo, dumperContext.isDecodeWithTX());
+        client = new MySQLBinlogClient(connectInfo, dumperContext.isDecodeWithTX());
         catalog = connectionProps.getCatalog();
     }
     

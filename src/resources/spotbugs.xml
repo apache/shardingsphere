@@ -95,7 +95,7 @@
         <Bug code="OBL" />
     </Match>
     <Match>
-        <Class name="org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient" />
+        <Class name="org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLBinlogClient" />
         <Bug code="IS" />
     </Match>
 </FindBugsFilter>
