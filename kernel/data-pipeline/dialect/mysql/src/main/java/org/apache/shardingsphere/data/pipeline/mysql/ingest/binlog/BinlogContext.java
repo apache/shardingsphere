@@ -21,9 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,35 +56,5 @@ public final class BinlogContext {
      */
     public MySQLBinlogTableMapEventPacket getTableMapEvent(final long tableId) {
         return tableMap.get(tableId);
-    }
-    
-    /**
-     * Get table name by table id.
-     *
-     * @param tableId table id
-     * @return table name
-     */
-    public String getTableName(final long tableId) {
-        return tableMap.get(tableId).getTableName();
-    }
-    
-    /**
-     * Get database name by table id.
-     *
-     * @param tableId table id
-     * @return database name
-     */
-    public String getDatabaseName(final long tableId) {
-        return tableMap.get(tableId).getSchemaName();
-    }
-    
-    /**
-     * Get column defined by table id.
-     *
-     * @param tableId table id
-     * @return MySQL binlog column definitions
-     */
-    public List<MySQLBinlogColumnDef> getColumnDefs(final long tableId) {
-        return tableMap.get(tableId).getColumnDefs();
     }
 }
