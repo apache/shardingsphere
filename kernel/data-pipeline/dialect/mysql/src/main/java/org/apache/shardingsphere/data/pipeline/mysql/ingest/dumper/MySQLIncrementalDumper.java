@@ -103,24 +103,18 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {
-            List<AbstractBinlogEvent> events = client.poll();
-            if (events.isEmpty()) {
-                continue;
-            }
-            handleEvents(events);
+            handleEvents(client.poll());
         }
     }
     
     private void handleEvents(final List<AbstractBinlogEvent> events) {
         List<Record> dataRecords = new LinkedList<>();
         for (AbstractBinlogEvent each : events) {
-            List<? extends Record> records = handleEvent(each);
-            dataRecords.addAll(records);
+            dataRecords.addAll(handleEvent(each));
         }
-        if (dataRecords.isEmpty()) {
-            return;
+        if (!dataRecords.isEmpty()) {
+            channel.push(dataRecords);
         }
-        channel.push(dataRecords);
     }
     
     private List<? extends Record> handleEvent(final AbstractBinlogEvent event) {
@@ -179,9 +173,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
                 Serializable newValue = afterValues[j];
                 boolean updated = !Objects.deepEquals(newValue, oldValue);
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j + 1);
-                dataRecord.addColumn(new Column(columnMetaData.getName(),
-                        handleValue(columnMetaData, oldValue),
-                        handleValue(columnMetaData, newValue), updated, columnMetaData.isUniqueKey()));
+                dataRecord.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, oldValue), handleValue(columnMetaData, newValue), updated, columnMetaData.isUniqueKey()));
             }
             result.add(dataRecord);
         }
@@ -203,10 +195,9 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     
     private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
         if (value instanceof MySQLBinaryString) {
-            if (PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType())) {
-                return ((MySQLBinaryString) value).getBytes();
-            }
-            return new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());
+            return PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType())
+                    ? ((MySQLBinaryString) value).getBytes()
+                    : new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());
         }
         Optional<MySQLDataTypeHandler> dataTypeHandler = TypedSPILoader.findService(MySQLDataTypeHandler.class, columnMetaData.getDataTypeName());
         return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;

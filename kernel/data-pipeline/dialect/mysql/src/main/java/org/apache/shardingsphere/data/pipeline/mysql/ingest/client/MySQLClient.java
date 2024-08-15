@@ -71,21 +71,21 @@ public final class MySQLClient {
     
     private final ConnectInfo connectInfo;
     
+    private final boolean decodeWithTX;
+    
+    private final AtomicInteger reconnectTimes = new AtomicInteger();
+    
+    private final ArrayBlockingQueue<List<AbstractBinlogEvent>> blockingEventQueue = new ArrayBlockingQueue<>(2500);
+    
     private EventLoopGroup eventLoopGroup;
     
     private Channel channel;
     
     private Promise<Object> responseCallback;
     
-    private final ArrayBlockingQueue<List<AbstractBinlogEvent>> blockingEventQueue = new ArrayBlockingQueue<>(2500);
-    
     private ServerInfo serverInfo;
     
     private volatile boolean running = true;
-    
-    private final AtomicInteger reconnectTimes = new AtomicInteger();
-    
-    private final boolean decodeWithTX;
     
     /**
      * Connect to MySQL.
