@@ -31,13 +31,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectS
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -154,12 +153,12 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     }
     
     private Collection<String> getCatalogs(final ResourceMetaData resourceMetaData) throws SQLException {
-        Collection<String> result = new HashSet<>(resourceMetaData.getStorageUnits().size(), 1F);
-        for (Entry<String, StorageUnit> entry : resourceMetaData.getStorageUnits().entrySet()) {
-            try (Connection connection = entry.getValue().getDataSource().getConnection()) {
-                result.add(connection.getCatalog());
-            }
+        Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnits().values().stream().findFirst();
+        if (!storageUnit.isPresent()) {
+            return Collections.emptySet();
         }
-        return result;
+        try (Connection connection = storageUnit.get().getDataSource().getConnection()) {
+            return Collections.singleton(connection.getCatalog());
+        }
     }
 }
