@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 
@@ -38,6 +37,4 @@ public final class CreateIncrementalDumperParameter {
     private final PipelineChannel channel;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
-    
-    private final PipelineDataSourceManager dataSourceManager;
 }
