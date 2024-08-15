@@ -28,7 +28,7 @@ public final class OpenGaussIncrementalDumperCreator implements DialectIncrement
     
     @Override
     public IncrementalDumper createIncrementalDumper(final CreateIncrementalDumperParameter param) {
-        return new OpenGaussWALDumper(param.getContext(), param.getPosition(), param.getChannel(), param.getMetaDataLoader());
+        return new OpenGaussIncrementalDumper(param.getContext(), param.getPosition(), param.getChannel(), param.getMetaDataLoader());
     }
     
     @Override
