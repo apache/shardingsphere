@@ -23,12 +23,13 @@
         <artifactId>shardingsphere-infra-algorithm</artifactId>
         <version>5.5.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-algorithm-load-balancer</artifactId>
+    <artifactId>shardingsphere-infra-algorithm-type</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>core</module>
-        <module>type</module>
+        <module>key-generator</module>
+        <module>load-balancer</module>
+        <module>message-digest</module>
     </modules>
 </project>
