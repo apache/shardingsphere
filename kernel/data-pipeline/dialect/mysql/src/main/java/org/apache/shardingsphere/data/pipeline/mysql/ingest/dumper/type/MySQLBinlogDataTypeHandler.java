@@ -19,12 +19,12 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type;
 
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.binary.MySQLBinlogBinaryDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.MySQLBinlogNumberDataTypeHandler;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.util.Optional;
 
 /**
@@ -42,9 +42,7 @@ public final class MySQLBinlogDataTypeHandler {
      */
     public static Serializable handle(final PipelineColumnMetaData columnMetaData, final Serializable value) {
         if (value instanceof MySQLBinaryString) {
-            return PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType())
-                    ? ((MySQLBinaryString) value).getBytes()
-                    : new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());
+            return MySQLBinlogBinaryDataTypeHandler.handle(columnMetaData, value);
         }
         Optional<MySQLBinlogNumberDataTypeHandler> dataTypeHandler = TypedSPILoader.findService(MySQLBinlogNumberDataTypeHandler.class, columnMetaData.getDataTypeName());
         return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
