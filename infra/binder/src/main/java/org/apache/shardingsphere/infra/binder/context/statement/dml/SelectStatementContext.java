@@ -134,7 +134,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
                 return true;
             }
         }
-        return isContainsEnhancedTable(metaData, currentDatabaseName, getTablesContext().getTableNames());
+        return null != currentDatabaseName && isContainsEnhancedTable(metaData, currentDatabaseName, getTablesContext().getTableNames());
     }
     
     private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
