@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLUnsignedTinyintHandler
-org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLUnsignedSmallintHandler
-org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLUnsignedMediumintHandler
-org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLUnsignedIntHandler
-org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLUnsignedBigintHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLBinlogUnsignedTinyintHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLBinlogUnsignedSmallintHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLBinlogUnsignedMediumintHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLBinlogUnsignedIntHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl.MySQLBinlogUnsignedBigintHandler

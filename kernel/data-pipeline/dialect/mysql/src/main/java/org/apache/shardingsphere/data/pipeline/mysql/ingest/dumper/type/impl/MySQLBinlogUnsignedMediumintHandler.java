@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogDataTypeHandler;
 
 import java.io.Serializable;
 
 /**
- * MySQL unsigned smallint handler.
+ * MySQL binlog unsigned mediumint data type handler.
  */
-public final class MySQLUnsignedSmallintHandler implements MySQLDataTypeHandler {
+public final class MySQLBinlogUnsignedMediumintHandler implements MySQLBinlogDataTypeHandler {
     
-    private static final int SMALLINT_MODULO = 65536;
+    private static final int MEDIUMINT_MODULO = 16777216;
     
     @Override
     public Serializable handle(final Serializable value) {
         if (null == value) {
             return null;
         }
-        short shortValue = (short) value;
-        return 0 > shortValue ? SMALLINT_MODULO + shortValue : shortValue;
+        int intValue = (int) value;
+        return 0 > intValue ? MEDIUMINT_MODULO + intValue : intValue;
     }
     
     @Override
     public String getType() {
-        return "SMALLINT UNSIGNED";
+        return "MEDIUMINT UNSIGNED";
     }
 }

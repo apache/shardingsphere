@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class MySQLUnsignedTinyintHandlerTest {
     
-    private final MySQLUnsignedTinyintHandler handler = new MySQLUnsignedTinyintHandler();
+    private final MySQLBinlogUnsignedTinyintHandler handler = new MySQLBinlogUnsignedTinyintHandler();
     
     @Test
     void assertHandle() {
