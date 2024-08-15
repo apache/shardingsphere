@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo.ReplicationSlotInfo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,7 +44,7 @@ public final class PostgreSQLSlotManager {
      */
     public void create(final Connection connection, final String slotNameSuffix) throws SQLException {
         String slotName = PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, slotNameSuffix);
-        Optional<ReplicationSlotInfo> slotInfo = load(connection, slotName);
+        Optional<PostgreSQLReplicationSlotInfo> slotInfo = load(connection, slotName);
         if (!slotInfo.isPresent()) {
             doCreate(connection, slotName);
             return;
@@ -56,13 +55,13 @@ public final class PostgreSQLSlotManager {
         }
     }
     
-    private Optional<ReplicationSlotInfo> load(final Connection connection, final String slotName) throws SQLException {
+    private Optional<PostgreSQLReplicationSlotInfo> load(final Connection connection, final String slotName) throws SQLException {
         String sql = "SELECT slot_name, database FROM pg_replication_slots WHERE slot_name=? AND plugin=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, slotName);
             preparedStatement.setString(2, decodePlugin);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next() ? Optional.of(new ReplicationSlotInfo(resultSet.getString(1), resultSet.getString(2))) : Optional.empty();
+                return resultSet.next() ? Optional.of(new PostgreSQLReplicationSlotInfo(resultSet.getString(1), resultSet.getString(2))) : Optional.empty();
             }
         }
     }

@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.slot;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Replication slot info.
+ * Replication slot info of PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReplicationSlotInfo {
+public final class PostgreSQLReplicationSlotInfo {
     
     private final String slotName;
     
