@@ -67,11 +67,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * MySQL client.
+ * MySQL binlog client.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class MySQLClient {
+public final class MySQLBinlogClient {
     
     private final ConnectInfo connectInfo;
     
