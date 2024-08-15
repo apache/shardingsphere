@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.impl;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.MySQLDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLDataTypeHandler;
 
 import java.io.Serializable;
 
 /**
- * MySQL unsigned smallint handler.
+ * MySQL unsigned tinyint handler.
  */
-public final class MySQLUnsignedSmallintHandler implements MySQLDataTypeHandler {
+public final class MySQLUnsignedTinyintHandler implements MySQLDataTypeHandler {
     
-    private static final int SMALLINT_MODULO = 65536;
+    private static final int TINYINT_MODULO = 256;
     
     @Override
     public Serializable handle(final Serializable value) {
         if (null == value) {
             return null;
         }
-        short shortValue = (short) value;
-        return 0 > shortValue ? SMALLINT_MODULO + shortValue : shortValue;
+        byte byteValue = (byte) value;
+        return 0 > byteValue ? TINYINT_MODULO + byteValue : byteValue;
     }
     
     @Override
     public String getType() {
-        return "SMALLINT UNSIGNED";
+        return "TINYINT UNSIGNED";
     }
 }

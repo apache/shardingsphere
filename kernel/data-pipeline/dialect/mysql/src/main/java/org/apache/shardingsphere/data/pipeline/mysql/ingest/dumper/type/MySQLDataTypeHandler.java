@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.impl;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.io.Serializable;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class MySQLUnsignedSmallintHandlerTest {
+/**
+ * MySQL data type handler.
+ */
+@SingletonSPI
+public interface MySQLDataTypeHandler extends TypedSPI {
     
-    private final MySQLUnsignedSmallintHandler handler = new MySQLUnsignedSmallintHandler();
-    
-    @Test
-    void assertHandle() {
-        Serializable actual = handler.handle((short) 1);
-        assertThat(actual, is(1));
-        actual = handler.handle((short) -1);
-        assertThat(actual, is(65535));
-    }
+    /**
+     * Handle column value.
+     *
+     * @param value column value
+     * @return handled column value
+     */
+    Serializable handle(Serializable value);
 }
