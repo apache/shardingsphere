@@ -343,7 +343,7 @@ public final class MySQLClient {
         
         @Override
         public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
-            log.warn("MySQL binlog channel inactive");
+            log.warn("MySQL binlog channel inactive, channel: {}, running: {}", ctx.channel(), running);
             if (!running) {
                 return;
             }
