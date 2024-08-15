@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogNumberDataTypeHandler;
 
 import java.io.Serializable;
 
 /**
  * MySQL binlog unsigned smallint data type handler.
  */
-public final class MySQLBinlogUnsignedSmallintHandler implements MySQLBinlogDataTypeHandler {
+public final class MySQLBinlogUnsignedSmallintHandler implements MySQLBinlogNumberDataTypeHandler {
     
     private static final int SMALLINT_MODULO = 65536;
     
@@ -34,7 +34,7 @@ public final class MySQLBinlogUnsignedSmallintHandler implements MySQLBinlogData
             return null;
         }
         short shortValue = (short) value;
-        return 0 > shortValue ? SMALLINT_MODULO + shortValue : shortValue;
+        return shortValue < 0 ? SMALLINT_MODULO + shortValue : shortValue;
     }
     
     @Override

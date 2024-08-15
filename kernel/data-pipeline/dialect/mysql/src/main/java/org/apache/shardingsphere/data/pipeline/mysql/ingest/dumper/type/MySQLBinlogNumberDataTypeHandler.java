@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import java.io.Serializable;
 
 /**
- * MySQL binlog data type handler.
+ * MySQL binlog number data type handler.
  */
 @SingletonSPI
-public interface MySQLBinlogDataTypeHandler extends TypedSPI {
+public interface MySQLBinlogNumberDataTypeHandler extends TypedSPI {
     
     /**
      * Handle column value.

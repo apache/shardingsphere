@@ -41,7 +41,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLBinlogClient;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogNumberDataTypeHandler;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
@@ -199,7 +199,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
                     ? ((MySQLBinaryString) value).getBytes()
                     : new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());
         }
-        Optional<MySQLBinlogDataTypeHandler> dataTypeHandler = TypedSPILoader.findService(MySQLBinlogDataTypeHandler.class, columnMetaData.getDataTypeName());
+        Optional<MySQLBinlogNumberDataTypeHandler> dataTypeHandler = TypedSPILoader.findService(MySQLBinlogNumberDataTypeHandler.class, columnMetaData.getDataTypeName());
         return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
     
