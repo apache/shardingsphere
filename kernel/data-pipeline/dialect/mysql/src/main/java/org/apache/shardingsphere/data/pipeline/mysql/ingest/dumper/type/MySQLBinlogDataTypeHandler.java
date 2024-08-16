@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type;
 
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.binary.MySQLBinlogBinaryDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.binary.MySQLBinlogBinaryStringHandler;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.MySQLBinlogUnsignedNumberHandlerEngine;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 
@@ -44,7 +44,7 @@ public final class MySQLBinlogDataTypeHandler {
             return null;
         }
         if (value instanceof MySQLBinaryString) {
-            return MySQLBinlogBinaryDataTypeHandler.handle(columnMetaData, value);
+            return MySQLBinlogBinaryStringHandler.handle(columnMetaData, value);
         }
         Optional<Serializable> result = MySQLBinlogUnsignedNumberHandlerEngine.handle(columnMetaData, value);
         return result.orElse(value);
