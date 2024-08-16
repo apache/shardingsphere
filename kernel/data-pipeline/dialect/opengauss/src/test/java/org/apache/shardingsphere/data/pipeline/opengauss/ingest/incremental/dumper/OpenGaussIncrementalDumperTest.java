@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.dumper;
 
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.junit.jupiter.api.Test;
