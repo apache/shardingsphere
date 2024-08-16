@@ -376,7 +376,7 @@ public final class MySQLBinlogClient {
                 } catch (final RuntimeException ex) {
                     // CHECKSTYLE:ON
                     log.error("Reconnect failed, reconnect times: {}, lastBinlogEvent: {}", reconnectTimes, JsonUtils.toJsonString(lastBinlogEvent.get()), ex);
-                    Thread.sleep(1000L << reconnectTimes);
+                    this.wait(1000L << reconnectTimes);
                 }
             }
         }
