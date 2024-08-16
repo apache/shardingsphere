@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.AbstractWALEvent;
+
+import java.nio.ByteBuffer;
 
 /**
- * Log sequence number of openGauss.
+ * Logical replication decoding plugin.
  */
-@RequiredArgsConstructor
-@ToString
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+public interface DecodingPlugin {
     
-    private final LogSequenceNumber logSequenceNumber;
-    
-    @Override
-    public String asString() {
-        return logSequenceNumber.asString();
-    }
-    
-    @Override
-    public Object get() {
-        return logSequenceNumber;
-    }
+    /**
+     * Decode WAL event from logical replication data.
+     *
+     * @param data of logical replication
+     * @param logSequenceNumber log sequence number
+     * @return WAL event
+     */
+    AbstractWALEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
 }

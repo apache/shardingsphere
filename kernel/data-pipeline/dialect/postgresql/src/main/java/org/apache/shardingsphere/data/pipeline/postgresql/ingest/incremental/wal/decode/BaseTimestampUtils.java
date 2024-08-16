@@ -15,11 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
-
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseTimestampUtils;
-import org.opengauss.jdbc.TimestampUtils;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode;
 
 import java.sql.SQLException;
 import java.sql.Time;
@@ -27,20 +23,27 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * Timestamp utility class of openGauss.
+ * Logical replication decoding plugin interface.
  */
-@RequiredArgsConstructor
-public final class OpenGaussTimestampUtils implements BaseTimestampUtils {
+public interface BaseTimestampUtils {
     
-    private final TimestampUtils timestampUtils;
+    /**
+     * Get time.
+     *
+     * @param cal the cal
+     * @param input the input time of string
+     * @return Time the time
+     * @throws SQLException the exp
+     */
+    Time toTime(Calendar cal, String input) throws SQLException;
     
-    @Override
-    public Time toTime(final Calendar cal, final String input) throws SQLException {
-        return timestampUtils.toTime(cal, input);
-    }
-    
-    @Override
-    public Timestamp toTimestamp(final Calendar cal, final String input) throws SQLException {
-        return timestampUtils.toTimestamp(cal, input);
-    }
+    /**
+     * Get timestamp.
+     *
+     * @param cal the cal
+     * @param input the input timestamp of string
+     * @return Timestamp the timestamp
+     * @throws SQLException the exp
+     */
+    Timestamp toTimestamp(Calendar cal, String input) throws SQLException;
 }

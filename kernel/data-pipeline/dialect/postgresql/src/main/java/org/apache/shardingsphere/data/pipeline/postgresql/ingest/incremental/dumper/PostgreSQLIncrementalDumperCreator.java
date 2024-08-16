@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.dumper;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseTimestampUtils;
-import org.opengauss.jdbc.TimestampUtils;
-
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Calendar;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.CreateIncrementalDumperParameter;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
 
 /**
- * Timestamp utility class of openGauss.
+ * PostgreSQL incremental dumper creator.
  */
-@RequiredArgsConstructor
-public final class OpenGaussTimestampUtils implements BaseTimestampUtils {
-    
-    private final TimestampUtils timestampUtils;
+public final class PostgreSQLIncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
-    public Time toTime(final Calendar cal, final String input) throws SQLException {
-        return timestampUtils.toTime(cal, input);
+    public IncrementalDumper createIncrementalDumper(final CreateIncrementalDumperParameter param) {
+        return new PostgreSQLIncrementalDumper(param.getContext(), param.getPosition(), param.getChannel(), param.getMetaDataLoader());
     }
     
     @Override
-    public Timestamp toTimestamp(final Calendar cal, final String input) throws SQLException {
-        return timestampUtils.toTimestamp(cal, input);
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
 }

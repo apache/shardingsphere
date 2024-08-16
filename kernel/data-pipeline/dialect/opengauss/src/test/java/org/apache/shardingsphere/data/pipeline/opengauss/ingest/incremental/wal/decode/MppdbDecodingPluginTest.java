@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingException;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.DecodingException;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.CommitTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.DeleteRowEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.PlaceholderEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.UpdateRowEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.WriteRowEvent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.opengauss.jdbc.TimestampUtils;

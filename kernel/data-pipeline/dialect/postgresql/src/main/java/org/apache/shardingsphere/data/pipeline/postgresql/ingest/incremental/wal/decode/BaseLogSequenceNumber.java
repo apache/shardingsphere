@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
-
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode;
 
 /**
- * Log sequence number of openGauss.
+ * Log sequence number.
  */
-@RequiredArgsConstructor
-@ToString
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+public interface BaseLogSequenceNumber {
     
-    private final LogSequenceNumber logSequenceNumber;
+    /**
+     * Convert log sequence number to string.
+     *
+     * @return converted string value
+     */
+    String asString();
     
-    @Override
-    public String asString() {
-        return logSequenceNumber.asString();
-    }
-    
-    @Override
-    public Object get() {
-        return logSequenceNumber;
-    }
+    /**
+     * Get bound log sequence number.
+     *
+     * @return bound log sequence number
+     */
+    Object get();
 }

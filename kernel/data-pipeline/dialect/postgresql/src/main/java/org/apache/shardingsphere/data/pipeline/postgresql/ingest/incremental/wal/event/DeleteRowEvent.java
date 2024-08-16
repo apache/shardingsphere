@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+
+import java.util.List;
 
 /**
- * Log sequence number of openGauss.
+ * Delete row event.
  */
-@RequiredArgsConstructor
-@ToString
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+@Getter
+@Setter
+@ToString(callSuper = true)
+public final class DeleteRowEvent extends AbstractRowEvent {
     
-    private final LogSequenceNumber logSequenceNumber;
-    
-    @Override
-    public String asString() {
-        return logSequenceNumber.asString();
-    }
-    
-    @Override
-    public Object get() {
-        return logSequenceNumber;
-    }
+    private List<Object> primaryKeys;
 }

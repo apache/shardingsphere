@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.position.slot;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+import org.junit.jupiter.api.Test;
 
-/**
- * Log sequence number of openGauss.
- */
-@RequiredArgsConstructor
-@ToString
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class PostgreSQLSlotNameGeneratorTest {
     
-    private final LogSequenceNumber logSequenceNumber;
-    
-    @Override
-    public String asString() {
-        return logSequenceNumber.asString();
-    }
-    
-    @Override
-    public Object get() {
-        return logSequenceNumber;
+    @Test
+    void assertGetUniqueSlotName() throws SQLException {
+        Connection connection = mock(Connection.class);
+        when(connection.getCatalog()).thenReturn("foo_catalog");
+        assertThat(PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, "foo_slot"), is("pipeline_9a2b4a79ce8b4fca2835b1e947c446eb"));
     }
 }

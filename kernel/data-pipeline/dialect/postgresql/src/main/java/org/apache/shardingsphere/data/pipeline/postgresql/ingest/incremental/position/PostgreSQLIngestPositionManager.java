@@ -15,47 +15,59 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.position;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.position;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.position.slot.PostgreSQLSlotManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
-import org.opengauss.replication.LogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.PostgreSQLLogSequenceNumber;
+import org.postgresql.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Ingest position manager for openGauss.
+ * Ingest position manager for PostgreSQL.
  */
-public final class OpenGaussIngestPositionManager implements DialectIngestPositionManager {
+public final class PostgreSQLIngestPositionManager implements DialectIngestPositionManager {
     
-    private final PostgreSQLSlotManager slotManager = new PostgreSQLSlotManager("mppdb_decoding");
+    private final PostgreSQLSlotManager slotManager = new PostgreSQLSlotManager("test_decoding");
     
     @Override
     public WALPosition init(final String data) {
-        return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(data)));
+        return new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(data)));
     }
     
     @Override
     public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             slotManager.create(connection, slotNameSuffix);
-            return getWALPosition(connection);
+            return getWALPosition(connection, getLogSequenceNumberSQL(connection.getMetaData()));
         }
     }
     
-    private WALPosition getWALPosition(final Connection connection) throws SQLException {
+    private WALPosition getWALPosition(final Connection connection, final String logSequenceNumberSQL) throws SQLException {
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
+                PreparedStatement preparedStatement = connection.prepareStatement(logSequenceNumberSQL);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
+            return new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }
+    }
+    
+    private String getLogSequenceNumberSQL(final DatabaseMetaData metaData) throws SQLException {
+        if (9 == metaData.getDatabaseMajorVersion() && 6 <= metaData.getDatabaseMinorVersion()) {
+            return "SELECT PG_CURRENT_XLOG_LOCATION()";
+        }
+        if (10 <= metaData.getDatabaseMajorVersion()) {
+            return "SELECT PG_CURRENT_WAL_LSN()";
+        }
+        throw new PipelineInternalException("Unsupported PostgreSQL version: " + metaData.getDatabaseProductVersion());
     }
     
     @Override
@@ -67,6 +79,6 @@ public final class OpenGaussIngestPositionManager implements DialectIngestPositi
     
     @Override
     public String getDatabaseType() {
-        return "openGauss";
+        return "PostgreSQL";
     }
 }

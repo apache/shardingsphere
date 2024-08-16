@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
 
 /**
- * Log sequence number of openGauss.
+ * Abstract row event.
  */
-@RequiredArgsConstructor
-@ToString
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+@Getter
+@Setter
+@ToString(callSuper = true)
+public abstract class AbstractRowEvent extends AbstractWALEvent {
     
-    private final LogSequenceNumber logSequenceNumber;
+    private String schemaName;
     
-    @Override
-    public String asString() {
-        return logSequenceNumber.asString();
-    }
+    private String tableName;
     
-    @Override
-    public Object get() {
-        return logSequenceNumber;
-    }
+    private Long csn;
 }
