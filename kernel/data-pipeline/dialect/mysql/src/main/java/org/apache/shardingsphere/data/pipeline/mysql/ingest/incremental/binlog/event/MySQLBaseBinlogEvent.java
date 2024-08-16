@@ -20,17 +20,16 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
-import java.util.List;
-
 /**
- * Update rows event.
+ * MySQL base binlog event.
  */
 @Getter
 @Setter
-public final class UpdateRowsEvent extends AbstractRowsEvent {
+public abstract class MySQLBaseBinlogEvent {
     
-    private List<Serializable[]> beforeRows;
+    private String fileName;
     
-    private List<Serializable[]> afterRows;
+    private long position;
+    
+    private long timestamp;
 }

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.transaction;
 
 import lombok.Getter;
-import lombok.Setter;
-
-import java.io.Serializable;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 
 /**
- * Write rows event.
+ * XID event is generated for a COMMIT of a transaction that modifies one or more tables of an XA-capable storage engine.
+ *
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_event_xid">XID_EVENT</a>
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class WriteRowsEvent extends AbstractRowsEvent {
+public final class MySQLXidBinlogEvent extends MySQLBaseBinlogEvent {
     
-    private List<Serializable[]> afterRows;
+    private final long xid;
 }

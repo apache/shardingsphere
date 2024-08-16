@@ -24,14 +24,14 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogContext;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.AbstractBinlogEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.AbstractRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.DeleteRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.QueryEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.UpdateRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.WriteRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.XidEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLBaseRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLDeleteRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.query.MySQLQueryBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLUpdateRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLWriteRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.transaction.MySQLXidBinlogEvent;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinlogEventType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
@@ -58,7 +58,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     private final boolean decodeWithTX;
     
-    private List<AbstractBinlogEvent> records = new LinkedList<>();
+    private List<MySQLBaseBinlogEvent> records = new LinkedList<>();
     
     public MySQLBinlogEventPacketDecoder(final int checksumLength, final Map<Long, MySQLBinlogTableMapEventPacket> tableMap, final boolean decodeWithTX) {
         this.decodeWithTX = decodeWithTX;
@@ -75,12 +75,12 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             if (!checkEventIntegrity(in, binlogEventHeader)) {
                 return;
             }
-            Optional<AbstractBinlogEvent> binlogEvent = decodeEvent(binlogEventHeader, payload);
+            Optional<MySQLBaseBinlogEvent> binlogEvent = decodeEvent(binlogEventHeader, payload);
             if (!binlogEvent.isPresent()) {
                 skipChecksum(binlogEventHeader.getEventType(), in);
                 return;
             }
-            if (binlogEvent.get() instanceof PlaceholderEvent) {
+            if (binlogEvent.get() instanceof PlaceholderBinlogEvent) {
                 out.add(binlogEvent.get());
                 skipChecksum(binlogEventHeader.getEventType(), in);
                 return;
@@ -120,15 +120,15 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         return true;
     }
     
-    private void processEventWithTX(final AbstractBinlogEvent binlogEvent, final List<Object> out) {
-        if (binlogEvent instanceof QueryEvent) {
-            QueryEvent queryEvent = (QueryEvent) binlogEvent;
+    private void processEventWithTX(final MySQLBaseBinlogEvent binlogEvent, final List<Object> out) {
+        if (binlogEvent instanceof MySQLQueryBinlogEvent) {
+            MySQLQueryBinlogEvent queryEvent = (MySQLQueryBinlogEvent) binlogEvent;
             if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
                 records = new LinkedList<>();
             } else {
                 out.add(binlogEvent);
             }
-        } else if (binlogEvent instanceof XidEvent) {
+        } else if (binlogEvent instanceof MySQLXidBinlogEvent) {
             records.add(binlogEvent);
             out.add(records);
         } else {
@@ -136,9 +136,9 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         }
     }
     
-    private void processEventIgnoreTX(final AbstractBinlogEvent binlogEvent, final List<Object> out) {
-        if (binlogEvent instanceof QueryEvent) {
-            QueryEvent queryEvent = (QueryEvent) binlogEvent;
+    private void processEventIgnoreTX(final MySQLBaseBinlogEvent binlogEvent, final List<Object> out) {
+        if (binlogEvent instanceof MySQLQueryBinlogEvent) {
+            MySQLQueryBinlogEvent queryEvent = (MySQLQueryBinlogEvent) binlogEvent;
             if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
                 return;
             }
@@ -146,7 +146,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         out.add(binlogEvent);
     }
     
-    private Optional<AbstractBinlogEvent> decodeEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+    private Optional<MySQLBaseBinlogEvent> decodeEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         switch (MySQLBinlogEventType.valueOf(binlogEventHeader.getEventType()).orElse(MySQLBinlogEventType.UNKNOWN_EVENT)) {
             case ROTATE_EVENT:
                 decodeRotateEvent(binlogEventHeader, payload);
@@ -197,35 +197,31 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         binlogContext.putTableMapEvent(packet.getTableId(), packet);
     }
     
-    private WriteRowsEvent decodeWriteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+    private MySQLWriteRowsBinlogEvent decodeWriteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
         packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
-        WriteRowsEvent result = new WriteRowsEvent();
+        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(packet.getRows());
         initRowsEvent(result, binlogEventHeader, packet.getTableId());
-        result.setAfterRows(packet.getRows());
         return result;
     }
     
-    private UpdateRowsEvent decodeUpdateRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+    private MySQLUpdateRowsBinlogEvent decodeUpdateRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
         packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
-        UpdateRowsEvent result = new UpdateRowsEvent();
+        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent(packet.getRows(), packet.getRows2());
         initRowsEvent(result, binlogEventHeader, packet.getTableId());
-        result.setBeforeRows(packet.getRows());
-        result.setAfterRows(packet.getRows2());
         return result;
     }
     
-    private DeleteRowsEvent decodeDeleteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+    private MySQLDeleteRowsBinlogEvent decodeDeleteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
         packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
-        DeleteRowsEvent result = new DeleteRowsEvent();
+        MySQLDeleteRowsBinlogEvent result = new MySQLDeleteRowsBinlogEvent(packet.getRows());
         initRowsEvent(result, binlogEventHeader, packet.getTableId());
-        result.setBeforeRows(packet.getRows());
         return result;
     }
     
-    private void initRowsEvent(final AbstractRowsEvent rowsEvent, final MySQLBinlogEventHeader binlogEventHeader, final long tableId) {
+    private void initRowsEvent(final MySQLBaseRowsBinlogEvent rowsEvent, final MySQLBinlogEventHeader binlogEventHeader, final long tableId) {
         rowsEvent.setDatabaseName(binlogContext.getTableMapEvent(tableId).getSchemaName());
         rowsEvent.setTableName(binlogContext.getTableMapEvent(tableId).getTableName());
         rowsEvent.setFileName(binlogContext.getFileName());
@@ -233,8 +229,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.setTimestamp(binlogEventHeader.getTimestamp());
     }
     
-    private PlaceholderEvent decodePlaceholderEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        PlaceholderEvent result = createPlaceholderEvent(binlogEventHeader);
+    private PlaceholderBinlogEvent decodePlaceholderEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        PlaceholderBinlogEvent result = createPlaceholderEvent(binlogEventHeader);
         int remainDataLength = binlogEventHeader.getEventSize() + 1 - binlogEventHeader.getChecksumLength() - payload.getByteBuf().readerIndex();
         if (remainDataLength > 0) {
             payload.skipReserved(remainDataLength);
@@ -242,7 +238,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         return result;
     }
     
-    private QueryEvent decodeQueryEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+    private MySQLQueryBinlogEvent decodeQueryEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         int threadId = payload.readInt4();
         int executionTime = payload.readInt4();
         payload.skipReserved(1);
@@ -250,15 +246,15 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         payload.skipReserved(payload.readInt2());
         String databaseName = payload.readStringNul();
         String sql = payload.readStringFix(payload.getByteBuf().readableBytes() - binlogEventHeader.getChecksumLength());
-        QueryEvent result = new QueryEvent(threadId, executionTime, errorCode, databaseName, sql);
+        MySQLQueryBinlogEvent result = new MySQLQueryBinlogEvent(threadId, executionTime, errorCode, databaseName, sql);
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getLogPos());
         result.setTimestamp(binlogEventHeader.getTimestamp());
         return result;
     }
     
-    private XidEvent decodeXidEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        XidEvent result = new XidEvent(payload.readInt8());
+    private MySQLXidBinlogEvent decodeXidEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        MySQLXidBinlogEvent result = new MySQLXidBinlogEvent(payload.readInt8());
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getLogPos());
         result.setTimestamp(binlogEventHeader.getTimestamp());
@@ -266,8 +262,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
     
     // TODO May be used again later, keep this method first.
-    private PlaceholderEvent createPlaceholderEvent(final MySQLBinlogEventHeader binlogEventHeader) {
-        PlaceholderEvent result = new PlaceholderEvent();
+    private PlaceholderBinlogEvent createPlaceholderEvent(final MySQLBinlogEventHeader binlogEventHeader) {
+        PlaceholderBinlogEvent result = new PlaceholderBinlogEvent();
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getLogPos());
         result.setTimestamp(binlogEventHeader.getTimestamp());

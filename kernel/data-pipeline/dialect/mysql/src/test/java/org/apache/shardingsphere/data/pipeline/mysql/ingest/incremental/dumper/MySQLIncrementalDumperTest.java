@@ -32,11 +32,11 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogPosition;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.AbstractBinlogEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.DeleteRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.UpdateRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLDeleteRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLUpdateRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLWriteRowsBinlogEvent;
 import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
 import org.junit.jupiter.api.BeforeAll;
@@ -141,16 +141,15 @@ class MySQLIncrementalDumperTest {
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
-    private WriteRowsEvent createWriteRowsEvent() {
-        WriteRowsEvent result = new WriteRowsEvent();
+    private MySQLWriteRowsBinlogEvent createWriteRowsEvent() {
+        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         result.setDatabaseName("");
         result.setTableName("t_order");
-        result.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         return result;
     }
     
-    private List<Record> getRecordsByWriteRowsEvent(final WriteRowsEvent rowsEvent) throws ReflectiveOperationException {
-        Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleWriteRowsEvent", WriteRowsEvent.class, PipelineTableMetaData.class);
+    private List<Record> getRecordsByWriteRowsEvent(final MySQLWriteRowsBinlogEvent rowsEvent) throws ReflectiveOperationException {
+        Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleWriteRowsEvent", MySQLWriteRowsBinlogEvent.class, PipelineTableMetaData.class);
         return (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
     }
     
@@ -163,17 +162,15 @@ class MySQLIncrementalDumperTest {
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
-    private UpdateRowsEvent createUpdateRowsEvent() {
-        UpdateRowsEvent result = new UpdateRowsEvent();
+    private MySQLUpdateRowsBinlogEvent createUpdateRowsEvent() {
+        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}), Collections.singletonList(new Serializable[]{101, 1, "OK2"}));
         result.setDatabaseName("test");
         result.setTableName("t_order");
-        result.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
-        result.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK2"}));
         return result;
     }
     
-    private List<Record> getRecordsByUpdateRowsEvent(final UpdateRowsEvent rowsEvent) throws ReflectiveOperationException {
-        Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleUpdateRowsEvent", UpdateRowsEvent.class, PipelineTableMetaData.class);
+    private List<Record> getRecordsByUpdateRowsEvent(final MySQLUpdateRowsBinlogEvent rowsEvent) throws ReflectiveOperationException {
+        Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleUpdateRowsEvent", MySQLUpdateRowsBinlogEvent.class, PipelineTableMetaData.class);
         return (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
     }
     
@@ -186,39 +183,37 @@ class MySQLIncrementalDumperTest {
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
-    private DeleteRowsEvent createDeleteRowsEvent() {
-        DeleteRowsEvent result = new DeleteRowsEvent();
+    private MySQLDeleteRowsBinlogEvent createDeleteRowsEvent() {
+        MySQLDeleteRowsBinlogEvent result = new MySQLDeleteRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         result.setDatabaseName("");
         result.setTableName("t_order");
-        result.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         return result;
     }
     
-    private List<Record> getRecordsByDeleteRowsEvent(final DeleteRowsEvent rowsEvent) throws ReflectiveOperationException {
-        Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleDeleteRowsEvent", DeleteRowsEvent.class, PipelineTableMetaData.class);
+    private List<Record> getRecordsByDeleteRowsEvent(final MySQLDeleteRowsBinlogEvent rowsEvent) throws ReflectiveOperationException {
+        Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleDeleteRowsEvent", MySQLDeleteRowsBinlogEvent.class, PipelineTableMetaData.class);
         return (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
     }
     
     @Test
     void assertPlaceholderEvent() throws ReflectiveOperationException {
-        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class),
-                incrementalDumper, new PlaceholderEvent());
+        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", MySQLBaseBinlogEvent.class),
+                incrementalDumper, new PlaceholderBinlogEvent());
         assertThat(actual.size(), is(1));
     }
     
     @Test
     void assertRowsEventFiltered() throws ReflectiveOperationException {
-        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class),
+        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", MySQLBaseBinlogEvent.class),
                 incrementalDumper, getFilteredWriteRowsEvent());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
     }
     
-    private WriteRowsEvent getFilteredWriteRowsEvent() {
-        WriteRowsEvent result = new WriteRowsEvent();
+    private MySQLWriteRowsBinlogEvent getFilteredWriteRowsEvent() {
+        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(Collections.singletonList(new Serializable[]{1}));
         result.setDatabaseName("test");
         result.setTableName("t_order");
-        result.setAfterRows(Collections.singletonList(new Serializable[]{1}));
         return result;
     }
 }

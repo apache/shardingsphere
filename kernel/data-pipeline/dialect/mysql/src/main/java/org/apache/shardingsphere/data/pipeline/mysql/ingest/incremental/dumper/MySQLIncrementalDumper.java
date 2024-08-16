@@ -34,11 +34,11 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColum
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.data.MySQLBinlogDataHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.AbstractBinlogEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.AbstractRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.DeleteRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.UpdateRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLBaseRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLDeleteRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLUpdateRowsBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows.MySQLWriteRowsBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.MySQLBinlogClient;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -103,9 +103,9 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         }
     }
     
-    private void handleEvents(final List<AbstractBinlogEvent> events) {
+    private void handleEvents(final List<MySQLBaseBinlogEvent> events) {
         List<Record> dataRecords = new LinkedList<>();
-        for (AbstractBinlogEvent each : events) {
+        for (MySQLBaseBinlogEvent each : events) {
             dataRecords.addAll(handleEvent(each));
         }
         if (!dataRecords.isEmpty()) {
@@ -113,28 +113,28 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         }
     }
     
-    private List<? extends Record> handleEvent(final AbstractBinlogEvent event) {
-        if (!(event instanceof AbstractRowsEvent)) {
+    private List<? extends Record> handleEvent(final MySQLBaseBinlogEvent event) {
+        if (!(event instanceof MySQLBaseRowsBinlogEvent)) {
             return Collections.singletonList(createPlaceholderRecord(event));
         }
-        AbstractRowsEvent rowsEvent = (AbstractRowsEvent) event;
+        MySQLBaseRowsBinlogEvent rowsEvent = (MySQLBaseRowsBinlogEvent) event;
         if (!rowsEvent.getDatabaseName().equals(catalog) || !dumperContext.getCommonContext().getTableNameMapper().containsTable(rowsEvent.getTableName())) {
             return Collections.singletonList(createPlaceholderRecord(event));
         }
         PipelineTableMetaData tableMetaData = getPipelineTableMetaData(rowsEvent.getTableName());
-        if (event instanceof WriteRowsEvent) {
-            return handleWriteRowsEvent((WriteRowsEvent) event, tableMetaData);
+        if (event instanceof MySQLWriteRowsBinlogEvent) {
+            return handleWriteRowsEvent((MySQLWriteRowsBinlogEvent) event, tableMetaData);
         }
-        if (event instanceof UpdateRowsEvent) {
-            return handleUpdateRowsEvent((UpdateRowsEvent) event, tableMetaData);
+        if (event instanceof MySQLUpdateRowsBinlogEvent) {
+            return handleUpdateRowsEvent((MySQLUpdateRowsBinlogEvent) event, tableMetaData);
         }
-        if (event instanceof DeleteRowsEvent) {
-            return handleDeleteRowsEvent((DeleteRowsEvent) event, tableMetaData);
+        if (event instanceof MySQLDeleteRowsBinlogEvent) {
+            return handleDeleteRowsEvent((MySQLDeleteRowsBinlogEvent) event, tableMetaData);
         }
         return Collections.emptyList();
     }
     
-    private PlaceholderRecord createPlaceholderRecord(final AbstractBinlogEvent event) {
+    private PlaceholderRecord createPlaceholderRecord(final MySQLBaseBinlogEvent event) {
         PlaceholderRecord result = new PlaceholderRecord(new MySQLBinlogPosition(event.getFileName(), event.getPosition()));
         result.setCommitTime(event.getTimestamp() * 1000L);
         return result;
@@ -145,7 +145,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         return metaDataLoader.getTableMetaData(dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(logicTableName), actualTableName);
     }
     
-    private List<DataRecord> handleWriteRowsEvent(final WriteRowsEvent event, final PipelineTableMetaData tableMetaData) {
+    private List<DataRecord> handleWriteRowsEvent(final MySQLWriteRowsBinlogEvent event, final PipelineTableMetaData tableMetaData) {
         List<DataRecord> result = new LinkedList<>();
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord dataRecord = createDataRecord(PipelineSQLOperationType.INSERT, event, each.length);
@@ -158,7 +158,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         return result;
     }
     
-    private List<DataRecord> handleUpdateRowsEvent(final UpdateRowsEvent event, final PipelineTableMetaData tableMetaData) {
+    private List<DataRecord> handleUpdateRowsEvent(final MySQLUpdateRowsBinlogEvent event, final PipelineTableMetaData tableMetaData) {
         List<DataRecord> result = new LinkedList<>();
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
@@ -176,7 +176,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         return result;
     }
     
-    private List<DataRecord> handleDeleteRowsEvent(final DeleteRowsEvent event, final PipelineTableMetaData tableMetaData) {
+    private List<DataRecord> handleDeleteRowsEvent(final MySQLDeleteRowsBinlogEvent event, final PipelineTableMetaData tableMetaData) {
         List<DataRecord> result = new LinkedList<>();
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord dataRecord = createDataRecord(PipelineSQLOperationType.DELETE, event, each.length);
@@ -189,7 +189,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         return result;
     }
     
-    private DataRecord createDataRecord(final PipelineSQLOperationType type, final AbstractRowsEvent rowsEvent, final int columnCount) {
+    private DataRecord createDataRecord(final PipelineSQLOperationType type, final MySQLBaseRowsBinlogEvent rowsEvent, final int columnCount) {
         String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).toString();
         IngestPosition binlogPosition = new MySQLBinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition());
         DataRecord result = new DataRecord(type, tableName, binlogPosition, columnCount);

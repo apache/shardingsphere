@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
- * Abstract binlog event.
+ * MySQL write rows binlog event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class AbstractBinlogEvent {
+public final class MySQLWriteRowsBinlogEvent extends MySQLBaseRowsBinlogEvent {
     
-    private String fileName;
-    
-    private long position;
-    
-    private long timestamp;
+    private final List<Serializable[]> afterRows;
 }

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serializable;
-import java.util.List;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 
 /**
- * Delete rows event.
+ * MySQL rows base event.
  */
 @Getter
 @Setter
-public final class DeleteRowsEvent extends AbstractRowsEvent {
+public abstract class MySQLBaseRowsBinlogEvent extends MySQLBaseBinlogEvent {
     
-    private List<Serializable[]> beforeRows;
+    private String databaseName;
+    
+    private String tableName;
 }
