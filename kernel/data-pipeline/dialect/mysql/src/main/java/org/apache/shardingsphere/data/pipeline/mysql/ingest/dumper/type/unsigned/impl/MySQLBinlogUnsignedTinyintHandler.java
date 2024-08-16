@@ -19,18 +19,15 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigne
 
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.MySQLBinlogUnsignedNumberHandler;
 
-import java.io.Serializable;
-
 /**
  * MySQL binlog unsigned tinyint handler.
  */
-public final class MySQLBinlogUnsignedTinyintHandler implements MySQLBinlogUnsignedNumberHandler {
+public final class MySQLBinlogUnsignedTinyintHandler implements MySQLBinlogUnsignedNumberHandler<Byte> {
     
     private static final int TINYINT_MODULO = 256;
     
     @Override
-    public Serializable handle(final Serializable value) {
-        byte byteValue = (byte) value;
-        return byteValue < 0 ? TINYINT_MODULO + byteValue : byteValue;
+    public Number handle(final Byte value) {
+        return value < 0 ? TINYINT_MODULO + value : value;
     }
 }

@@ -36,6 +36,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class MySQLBinlogUnsignedNumberHandlerEngine {
     
+    @SuppressWarnings("rawtypes")
     private static final Map<String, MySQLBinlogUnsignedNumberHandler> HANDLERS = new HashMap<>();
     
     static {
@@ -53,6 +54,7 @@ public final class MySQLBinlogUnsignedNumberHandlerEngine {
      * @param value column value
      * @return handled column value
      */
+    @SuppressWarnings("unchecked")
     public static Optional<Serializable> handle(final PipelineColumnMetaData columnMetaData, final Serializable value) {
         String dataTypeName = columnMetaData.getDataTypeName();
         return HANDLERS.containsKey(dataTypeName) ? Optional.of(HANDLERS.get(dataTypeName).handle(value)) : Optional.empty();

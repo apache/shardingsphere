@@ -21,8 +21,10 @@ import java.io.Serializable;
 
 /**
  * MySQL binlog unsigned number handler.
+ * 
+ * @param <T> type of value
  */
-public interface MySQLBinlogUnsignedNumberHandler {
+public interface MySQLBinlogUnsignedNumberHandler<T extends Serializable> {
     
     /**
      * Handle unsigned number value.
@@ -30,5 +32,5 @@ public interface MySQLBinlogUnsignedNumberHandler {
      * @param value to be handled value
      * @return handled value
      */
-    Serializable handle(Serializable value);
+    Number handle(T value);
 }
