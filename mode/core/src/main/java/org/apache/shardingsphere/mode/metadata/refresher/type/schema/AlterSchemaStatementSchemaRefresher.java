@@ -39,7 +39,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<String> renameSchemaName = sqlStatement.getRenameSchema().map(optional -> optional.getValue().toLowerCase());
-        Preconditions.checkArgument(renameSchemaName.isPresent(), String.format("The renamed schema is not exist of schema '%s'.", schemaName));
+        Preconditions.checkArgument(renameSchemaName.isPresent(), "The renamed schema is not exist of schema '%s'.", schemaName);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO(database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(),
                 renameSchemaName.get(), logicDataSourceNames));
     }
