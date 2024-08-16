@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.impl;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl;
 
 import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MySQLUnsignedSmallintHandlerTest {
+class MySQLUnsignedBigintHandlerTest {
     
-    private final MySQLBinlogUnsignedSmallintHandler handler = new MySQLBinlogUnsignedSmallintHandler();
+    private final MySQLBinlogUnsignedBigintHandler handler = new MySQLBinlogUnsignedBigintHandler();
     
     @Test
     void assertHandle() {
-        Serializable actual = handler.handle((short) 1);
-        assertThat(actual, is(1));
-        actual = handler.handle((short) -1);
-        assertThat(actual, is(65535));
+        Serializable actual = handler.handle(1L);
+        assertThat(actual, is(1L));
+        actual = handler.handle(-1L);
+        assertThat(actual, is(new BigInteger("18446744073709551615")));
     }
 }

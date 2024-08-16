@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl;
+
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.MySQLBinlogUnsignedNumberHandler;
 
 import java.io.Serializable;
 
 /**
- * MySQL binlog number data type handler.
+ * MySQL binlog unsigned mediumint handler.
  */
-public interface MySQLBinlogNumberDataTypeHandler {
+public final class MySQLBinlogUnsignedMediumintHandler implements MySQLBinlogUnsignedNumberHandler {
     
-    /**
-     * Handle column value.
-     *
-     * @param value column value
-     * @return handled column value
-     */
-    Serializable handle(Serializable value);
+    private static final int MEDIUMINT_MODULO = 16777216;
+    
+    @Override
+    public Serializable handle(final Serializable value) {
+        int intValue = (int) value;
+        return intValue < 0 ? MEDIUMINT_MODULO + intValue : intValue;
+    }
 }

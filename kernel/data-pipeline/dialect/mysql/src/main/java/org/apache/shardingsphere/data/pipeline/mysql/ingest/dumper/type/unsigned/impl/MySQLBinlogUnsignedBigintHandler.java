@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.impl;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.MySQLBinlogNumberDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.MySQLBinlogUnsignedNumberHandler;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
- * MySQL binlog unsigned mediumint data type handler.
+ * MySQL binlog unsigned bigint handler.
  */
-public final class MySQLBinlogUnsignedMediumintHandler implements MySQLBinlogNumberDataTypeHandler {
+public final class MySQLBinlogUnsignedBigintHandler implements MySQLBinlogUnsignedNumberHandler {
     
-    private static final int MEDIUMINT_MODULO = 16777216;
+    private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
     
     @Override
     public Serializable handle(final Serializable value) {
-        int intValue = (int) value;
-        return intValue < 0 ? MEDIUMINT_MODULO + intValue : intValue;
+        long longValue = (long) value;
+        return longValue < 0L ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
     }
 }

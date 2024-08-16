@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned;
 
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.impl.MySQLBinlogUnsignedBigintHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.impl.MySQLBinlogUnsignedIntHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.impl.MySQLBinlogUnsignedMediumintHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.impl.MySQLBinlogUnsignedSmallintHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.impl.MySQLBinlogUnsignedTinyintHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedBigintHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedIntHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedMediumintHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedSmallintHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedTinyintHandler;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -31,12 +31,12 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * MySQL binlog number data type handler engine.
+ * MySQL binlog unsigned number handler engine.
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public final class MySQLBinlogNumberDataTypeHandlerEngine {
+public final class MySQLBinlogUnsignedNumberHandlerEngine {
     
-    private static final Map<String, MySQLBinlogNumberDataTypeHandler> HANDLERS = new HashMap<>();
+    private static final Map<String, MySQLBinlogUnsignedNumberHandler> HANDLERS = new HashMap<>();
     
     static {
         HANDLERS.put("TINYINT UNSIGNED", new MySQLBinlogUnsignedTinyintHandler());

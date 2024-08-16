@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.number.impl;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.MySQLBinlogUnsignedNumberHandler;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class MySQLUnsignedBigintHandlerTest {
+/**
+ * MySQL binlog unsigned tinyint handler.
+ */
+public final class MySQLBinlogUnsignedTinyintHandler implements MySQLBinlogUnsignedNumberHandler {
     
-    private final MySQLBinlogUnsignedBigintHandler handler = new MySQLBinlogUnsignedBigintHandler();
+    private static final int TINYINT_MODULO = 256;
     
-    @Test
-    void assertHandle() {
-        Serializable actual = handler.handle(1L);
-        assertThat(actual, is(1L));
-        actual = handler.handle(-1L);
-        assertThat(actual, is(new BigInteger("18446744073709551615")));
+    @Override
+    public Serializable handle(final Serializable value) {
+        byte byteValue = (byte) value;
+        return byteValue < 0 ? TINYINT_MODULO + byteValue : byteValue;
     }
 }
