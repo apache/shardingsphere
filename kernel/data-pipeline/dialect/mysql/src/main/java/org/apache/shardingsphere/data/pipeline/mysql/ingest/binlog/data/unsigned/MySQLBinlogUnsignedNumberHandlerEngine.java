@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned;
 
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedBigintHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedIntHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedMediumintHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedSmallintHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl.MySQLBinlogUnsignedTinyintHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.impl.MySQLBinlogUnsignedBigintHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.impl.MySQLBinlogUnsignedIntHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.impl.MySQLBinlogUnsignedSmallintHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.impl.MySQLBinlogUnsignedTinyintHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.impl.MySQLBinlogUnsignedMediumintHandler;
 
 import java.io.Serializable;
 import java.util.HashMap;
