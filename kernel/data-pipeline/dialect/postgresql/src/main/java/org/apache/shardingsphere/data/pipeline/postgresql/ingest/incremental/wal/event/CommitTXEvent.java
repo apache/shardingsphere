@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseTimestampUtils;
-import org.opengauss.jdbc.TimestampUtils;
-
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Calendar;
 
 /**
- * Timestamp utility class of openGauss.
+ * Commit TX event.
  */
 @RequiredArgsConstructor
-public final class OpenGaussTimestampUtils implements BaseTimestampUtils {
+@Getter
+public final class CommitTXEvent extends AbstractWALEvent {
     
-    private final TimestampUtils timestampUtils;
+    private final long xid;
     
-    @Override
-    public Time toTime(final Calendar cal, final String input) throws SQLException {
-        return timestampUtils.toTime(cal, input);
-    }
-    
-    @Override
-    public Timestamp toTimestamp(final Calendar cal, final String input) throws SQLException {
-        return timestampUtils.toTimestamp(cal, input);
-    }
+    private final Long csn;
 }

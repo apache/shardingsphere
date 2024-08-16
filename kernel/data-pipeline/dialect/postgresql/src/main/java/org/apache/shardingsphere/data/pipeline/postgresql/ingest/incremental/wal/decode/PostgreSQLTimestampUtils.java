@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseTimestampUtils;
-import org.opengauss.jdbc.TimestampUtils;
+import org.postgresql.jdbc.TimestampUtils;
 
 import java.sql.SQLException;
 import java.sql.Time;
@@ -27,10 +26,10 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * Timestamp utility class of openGauss.
+ * Timestamp utility class of PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class OpenGaussTimestampUtils implements BaseTimestampUtils {
+public final class PostgreSQLTimestampUtils implements BaseTimestampUtils {
     
     private final TimestampUtils timestampUtils;
     
