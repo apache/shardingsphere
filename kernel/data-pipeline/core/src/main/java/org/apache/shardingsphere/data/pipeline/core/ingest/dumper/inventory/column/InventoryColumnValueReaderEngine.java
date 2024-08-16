@@ -30,14 +30,14 @@ import java.sql.Types;
 import java.util.Optional;
 
 /**
- * Column value reader engine.
+ * Inventory column value reader engine.
  */
-public final class ColumnValueReaderEngine {
+public final class InventoryColumnValueReaderEngine {
     
-    private final DialectColumnValueReader columnReader;
+    private final DialectInventoryColumnValueReader columnReader;
     
-    public ColumnValueReaderEngine(final DatabaseType databaseType) {
-        columnReader = DatabaseTypedSPILoader.findService(DialectColumnValueReader.class, databaseType).orElse(null);
+    public InventoryColumnValueReaderEngine(final DatabaseType databaseType) {
+        columnReader = DatabaseTypedSPILoader.findService(DialectInventoryColumnValueReader.class, databaseType).orElse(null);
     }
     
     /**

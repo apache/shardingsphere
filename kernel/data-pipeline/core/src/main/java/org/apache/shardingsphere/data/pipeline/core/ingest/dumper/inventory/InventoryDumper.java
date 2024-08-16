@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.ColumnValueReaderEngine;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
@@ -81,7 +81,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
     
-    private final ColumnValueReaderEngine columnValueReaderEngine;
+    private final InventoryColumnValueReaderEngine columnValueReaderEngine;
     
     private final AtomicReference<Statement> runningStatement = new AtomicReference<>();
     
@@ -92,7 +92,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         this.metaDataLoader = metaDataLoader;
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
-        columnValueReaderEngine = new ColumnValueReaderEngine(databaseType);
+        columnValueReaderEngine = new InventoryColumnValueReaderEngine(databaseType);
     }
     
     @Override

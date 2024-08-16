@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.DialectColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.DialectInventoryColumnValueReader;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.Optional;
 
 /**
- * Column value reader for H2.
+ * Inventory column value reader for H2.
  */
-public final class H2ColumnValueReader implements DialectColumnValueReader {
+public final class H2InventoryColumnValueReader implements DialectInventoryColumnValueReader {
     
     @Override
     public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) {
