@@ -36,6 +36,16 @@
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-jdbc</artifactId>
+            <version>${hive.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.github.linghengqian</groupId>
+            <artifactId>hive-server2-jdbc-driver-thin</artifactId>
+            <version>${hive-server2-jdbc-driver-thin.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         
         <dependency>

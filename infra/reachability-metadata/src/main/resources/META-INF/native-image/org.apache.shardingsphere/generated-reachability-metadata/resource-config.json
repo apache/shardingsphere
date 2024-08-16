@@ -193,6 +193,9 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter\\E"
   }, {
