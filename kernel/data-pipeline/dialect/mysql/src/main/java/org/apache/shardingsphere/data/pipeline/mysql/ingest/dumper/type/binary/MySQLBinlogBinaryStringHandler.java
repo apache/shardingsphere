@@ -26,17 +26,17 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 
 /**
- * MySQL binlog binary data type handler.
+ * MySQL binlog binary string handler.
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public final class MySQLBinlogBinaryDataTypeHandler {
+public final class MySQLBinlogBinaryStringHandler {
     
     /**
-     * Handle column value.
+     * Handle binary string value.
      *
      * @param columnMetaData column meta data
-     * @param value column value
-     * @return handled column value
+     * @param value to be handled value
+     * @return handled value
      */
     public static Serializable handle(final PipelineColumnMetaData columnMetaData, final Serializable value) {
         return PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType()) ? ((MySQLBinaryString) value).getBytes() : new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());

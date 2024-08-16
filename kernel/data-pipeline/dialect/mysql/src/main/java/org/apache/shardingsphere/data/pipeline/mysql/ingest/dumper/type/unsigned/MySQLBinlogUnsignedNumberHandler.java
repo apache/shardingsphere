@@ -25,10 +25,10 @@ import java.io.Serializable;
 public interface MySQLBinlogUnsignedNumberHandler {
     
     /**
-     * Handle column value.
+     * Handle unsigned number value.
      *
-     * @param value column value
-     * @return handled column value
+     * @param value to be handled value
+     * @return handled value
      */
     Serializable handle(Serializable value);
 }
