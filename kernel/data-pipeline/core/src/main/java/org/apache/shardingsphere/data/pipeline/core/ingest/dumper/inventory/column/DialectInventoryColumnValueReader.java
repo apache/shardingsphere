@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.DialectColumnValueReader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -25,23 +26,19 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Column value reader for MySQL.
+ * Dialect inventory column value reader.
  */
-public final class MySQLColumnValueReader implements DialectColumnValueReader {
+@SingletonSPI
+public interface DialectInventoryColumnValueReader extends DatabaseTypedSPI {
     
-    private static final String YEAR_DATA_TYPE = "YEAR";
-    
-    @Override
-    public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return isYearDataType(metaData.getColumnTypeName(columnIndex)) ? Optional.of(resultSet.getShort(columnIndex)) : Optional.empty();
-    }
-    
-    private boolean isYearDataType(final String columnDataTypeName) {
-        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "MySQL";
-    }
+    /**
+     * Read dialect column value.
+     *
+     * @param resultSet result set
+     * @param resultSetMetaData result set meta data
+     * @param columnIndex column index
+     * @return column value
+     * @throws SQLException SQL exception
+     */
+    Optional<Object> read(ResultSet resultSet, ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException;
 }

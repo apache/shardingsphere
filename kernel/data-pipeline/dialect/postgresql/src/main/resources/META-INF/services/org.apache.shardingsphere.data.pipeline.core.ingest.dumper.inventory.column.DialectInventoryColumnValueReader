@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.column.MySQLColumnValueReader
+org.apache.shardingsphere.data.pipeline.postgresql.ingest.inventory.PostgreSQLInventoryColumnValueReader
