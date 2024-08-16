@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.MySQLBinlogPosition;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogPosition;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.position.MySQLIngestPositionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
