@@ -27,17 +27,17 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * MySQL binlog data type handler.
+ * MySQL binlog data handler.
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public final class MySQLBinlogDataTypeHandler {
+public final class MySQLBinlogDataHandler {
     
     /**
-     * Handle column value.
+     * Handle data value.
      *
      * @param columnMetaData column meta data
-     * @param value column value
-     * @return handled column value
+     * @param value to be handled value
+     * @return handled value
      */
     public static Serializable handle(final PipelineColumnMetaData columnMetaData, final Serializable value) {
         if (null == value) {
