@@ -71,6 +71,25 @@ public final class AddressRepository {
     }
     
     /**
+     * create table t_address if not exists in Hive.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void createTableIfNotExistsInHive() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS t_address\n"
+                + "(\n"
+                + "    address_id   BIGINT       NOT NULL,\n"
+                + "    address_name VARCHAR(100) NOT NULL,\n"
+                + "    PRIMARY KEY (address_id) disable novalidate\n"
+                + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
      * drop table t_address.
      *
      * @throws SQLException SQL exception
@@ -124,6 +143,22 @@ public final class AddressRepository {
      * @throws SQLException SQL exception
      */
     public void delete(final Long id) throws SQLException {
+        String sql = "DELETE FROM t_address WHERE address_id=?";
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+    
+    /**
+     * delete by id.
+     *
+     * @param id id
+     * @throws SQLException SQL exception
+     */
+    public void deleteInHive(final Long id) throws SQLException {
         String sql = "DELETE FROM t_address WHERE address_id=?";
         try (
                 Connection connection = dataSource.getConnection();

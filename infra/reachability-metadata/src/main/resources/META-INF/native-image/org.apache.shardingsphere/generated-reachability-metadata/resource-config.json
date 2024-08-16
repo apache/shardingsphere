@@ -2732,6 +2732,9 @@
     "pattern":"\\Qtest-native/yaml/databases/clickhouse.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
+    "pattern":"\\Qtest-native/yaml/databases/hive.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
     "pattern":"\\Qtest-native/yaml/databases/mysql.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},

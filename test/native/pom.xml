@@ -131,6 +131,17 @@ using Seata Client under GraalVM Native Image requires using the version release
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-hive</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-hive</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         
         <dependency>
             <groupId>org.awaitility</groupId>
@@ -162,6 +173,18 @@ using Seata Client under GraalVM Native Image requires using the version release
             <artifactId>clickhouse-jdbc</artifactId>
             <classifier>http</classifier>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.linghengqian</groupId>
+            <artifactId>hive-server2-jdbc-driver-thin</artifactId>
+            <version>${hive-server2-jdbc-driver-thin.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.woodstox</groupId>
+                    <artifactId>woodstox-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
