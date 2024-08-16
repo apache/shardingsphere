@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
+package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
