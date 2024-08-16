@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,11 +24,11 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Update rows event.
+ * MySQL update rows binlog event.
  */
 @Getter
 @Setter
-public final class UpdateRowsEvent extends AbstractRowsEvent {
+public final class MySQLUpdateRowsBinlogEvent extends MySQLBaseRowsBinlogEvent {
     
     private List<Serializable[]> beforeRows;
     

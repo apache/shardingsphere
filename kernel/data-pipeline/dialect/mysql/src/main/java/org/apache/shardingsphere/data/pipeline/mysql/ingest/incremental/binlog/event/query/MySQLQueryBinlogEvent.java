@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 
 /**
  * Query event.This event is written into the binary log file for:
@@ -30,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryEvent extends AbstractBinlogEvent {
+public final class MySQLQueryBinlogEvent extends MySQLBaseBinlogEvent {
     
     private final long threadId;
     

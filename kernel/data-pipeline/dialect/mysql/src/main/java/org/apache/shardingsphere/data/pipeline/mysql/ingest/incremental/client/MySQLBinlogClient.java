@@ -34,8 +34,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.AbstractBinlogEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.PlaceholderBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty.MySQLCommandPacketDecoder;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty.MySQLNegotiateHandler;
@@ -77,7 +77,7 @@ public final class MySQLBinlogClient {
     
     private final boolean decodeWithTX;
     
-    private final ArrayBlockingQueue<List<AbstractBinlogEvent>> blockingEventQueue = new ArrayBlockingQueue<>(2500);
+    private final ArrayBlockingQueue<List<MySQLBaseBinlogEvent>> blockingEventQueue = new ArrayBlockingQueue<>(2500);
     
     private EventLoopGroup eventLoopGroup;
     
@@ -226,8 +226,8 @@ public final class MySQLBinlogClient {
         channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, connectInfo.getServerId(), binlogFileName));
     }
     
-    private AbstractBinlogEvent getLastBinlogEvent(final String binlogFileName, final long binlogPosition) {
-        PlaceholderEvent result = new PlaceholderEvent();
+    private MySQLBaseBinlogEvent getLastBinlogEvent(final String binlogFileName, final long binlogPosition) {
+        PlaceholderBinlogEvent result = new PlaceholderBinlogEvent();
         result.setFileName(binlogFileName);
         result.setPosition(binlogPosition);
         return result;
@@ -242,12 +242,12 @@ public final class MySQLBinlogClient {
      *
      * @return binlog event
      */
-    public synchronized List<AbstractBinlogEvent> poll() {
+    public synchronized List<MySQLBaseBinlogEvent> poll() {
         if (!running) {
             return Collections.emptyList();
         }
         try {
-            List<AbstractBinlogEvent> result = blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
+            List<MySQLBaseBinlogEvent> result = blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
             return null == result ? Collections.emptyList() : result;
         } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
@@ -314,11 +314,11 @@ public final class MySQLBinlogClient {
     
     private final class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         
-        private final AtomicReference<AbstractBinlogEvent> lastBinlogEvent;
+        private final AtomicReference<MySQLBaseBinlogEvent> lastBinlogEvent;
         
         private final AtomicBoolean reconnectRequested = new AtomicBoolean(false);
         
-        MySQLBinlogEventHandler(final AbstractBinlogEvent lastBinlogEvent) {
+        MySQLBinlogEventHandler(final MySQLBaseBinlogEvent lastBinlogEvent) {
             this.lastBinlogEvent = new AtomicReference<>(lastBinlogEvent);
         }
         
@@ -329,7 +329,7 @@ public final class MySQLBinlogClient {
                 return;
             }
             if (msg instanceof List) {
-                List<AbstractBinlogEvent> records = (List<AbstractBinlogEvent>) msg;
+                List<MySQLBaseBinlogEvent> records = (List<MySQLBaseBinlogEvent>) msg;
                 if (records.isEmpty()) {
                     log.warn("The records is empty");
                     return;
@@ -338,8 +338,8 @@ public final class MySQLBinlogClient {
                 blockingEventQueue.put(records);
                 return;
             }
-            if (msg instanceof AbstractBinlogEvent) {
-                lastBinlogEvent.set((AbstractBinlogEvent) msg);
+            if (msg instanceof MySQLBaseBinlogEvent) {
+                lastBinlogEvent.set((MySQLBaseBinlogEvent) msg);
                 blockingEventQueue.put(Collections.singletonList(lastBinlogEvent.get()));
             }
         }

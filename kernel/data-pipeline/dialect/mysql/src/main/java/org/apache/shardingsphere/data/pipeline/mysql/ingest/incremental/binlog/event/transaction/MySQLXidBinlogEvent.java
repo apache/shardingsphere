@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.transaction;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 
 /**
  * XID event is generated for a COMMIT of a transaction that modifies one or more tables of an XA-capable storage engine.
@@ -27,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class XidEvent extends AbstractBinlogEvent {
+public final class MySQLXidBinlogEvent extends MySQLBaseBinlogEvent {
     
     private final long xid;
 }
