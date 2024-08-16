@@ -76,7 +76,7 @@ class PostgreSQLIngestPositionManagerTest {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
-        WALPosition actual = new PostgreSQLIngestPositionManager().init(dataSource, "");
+        WALPosition actual = new PostgreSQLIncrementalPositionManager().init(dataSource, "");
         assertThat(actual.getLogSequenceNumber().get(), is(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN)));
     }
     
@@ -84,7 +84,7 @@ class PostgreSQLIngestPositionManagerTest {
     void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
-        WALPosition actual = new PostgreSQLIngestPositionManager().init(dataSource, "");
+        WALPosition actual = new PostgreSQLIncrementalPositionManager().init(dataSource, "");
         assertThat(actual.getLogSequenceNumber().get(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
     }
     
@@ -93,7 +93,7 @@ class PostgreSQLIngestPositionManagerTest {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
-        assertThrows(RuntimeException.class, () -> new PostgreSQLIngestPositionManager().init(dataSource, ""));
+        assertThrows(RuntimeException.class, () -> new PostgreSQLIncrementalPositionManager().init(dataSource, ""));
     }
     
     @SneakyThrows(SQLException.class)
@@ -130,7 +130,7 @@ class PostgreSQLIngestPositionManagerTest {
         mockSlotExistsOrNot(true);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(connection.prepareStatement("SELECT pg_drop_replication_slot(?)")).thenReturn(preparedStatement);
-        new PostgreSQLIngestPositionManager().destroy(dataSource, "");
+        new PostgreSQLIncrementalPositionManager().destroy(dataSource, "");
         verify(preparedStatement).execute();
     }
 }

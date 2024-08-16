@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.In
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.ActualAndLogicTableNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.position.PostgreSQLIngestPositionManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.position.PostgreSQLIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.position.slot.PostgreSQLSlotNameGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.PostgreSQLLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
@@ -63,7 +63,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({PostgreSQLIngestPositionManager.class, PostgreSQLSlotNameGenerator.class})
+@StaticMockSettings({PostgreSQLIncrementalPositionManager.class, PostgreSQLSlotNameGenerator.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLIncrementalDumperTest {
     

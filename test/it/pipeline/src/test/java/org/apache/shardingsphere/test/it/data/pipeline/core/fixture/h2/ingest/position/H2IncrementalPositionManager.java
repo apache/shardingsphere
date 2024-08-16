@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.ingest.position;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 
 import javax.sql.DataSource;
 
 /**
- * Ingest position manager for H2.
+ * Incremental position manager for H2.
  */
-public final class H2IngestPositionManager implements DialectIngestPositionManager {
+public final class H2IncrementalPositionManager implements DialectIncrementalPositionManager {
     
     @Override
     public IngestPlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
