@@ -26,13 +26,6 @@ GraalVM CE only supports AWT for GraalVM CE For JDK22 and higher versions.
 ```shell
 com.sun.beans.introspect.ClassInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.ClassInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.ClassInfo
 java.beans.Introspector was unintentionally initialized at build time. To see why java.beans.Introspector got initialized use --trace-class-initialization=java.beans.Introspector
-com.sun.beans.util.Cache$Kind$2 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$2 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$2
-com.sun.beans.TypeResolver was unintentionally initialized at build time. To see why com.sun.beans.TypeResolver got initialized use --trace-class-initialization=com.sun.beans.TypeResolver
-java.beans.ThreadGroupContext was unintentionally initialized at build time. To see why java.beans.ThreadGroupContext got initialized use --trace-class-initialization=java.beans.ThreadGroupContext
-com.sun.beans.util.Cache$Kind was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind
-com.sun.beans.introspect.MethodInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.MethodInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.MethodInfo
-com.sun.beans.util.Cache$Kind$1 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$1 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$1
-com.sun.beans.util.Cache$Kind$3 was unintentionally initialized at build time. To see why com.sun.beans.util.Cache$Kind$3 got initialized use --trace-class-initialization=com.sun.beans.util.Cache$Kind$3
 ```
 
 ### Maven Ecology
@@ -90,7 +83,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
 Users need to actively use the GraalVM Reachability Metadata central repository.
 The following configuration is for reference to configure additional Gradle Tasks for the project,
 and the documentation of GraalVM Native Build Tools shall prevail.
-Due to the limitations of Gradle 8.6, 
+Due to the limitations of https://github.com/gradle/gradle/issues/17559 , 
 users need to introduce the JSON file of Metadata Repository through Maven dependency. 
 Reference https://github.com/graalvm/native-build-tools/issues/572 .
 
@@ -362,7 +355,7 @@ This subset of unit tests avoids the use of third-party libraries such as Mockit
 
 ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for executing nativeTest for the `shardingsphere-test-native` module.
 
-Assuming that the contributor is under a new Ubuntu 22.04.3 LTS instance, Contributors can manage the JDK and tool chain through 
+Assuming that the contributor is under a new Ubuntu 22.04.4 LTS instance, Contributors can manage the JDK and tool chain through 
 `SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-test-native` submodule.
 
 You must install Docker Engine to execute `testcontainers-java` related unit tests.
@@ -386,7 +379,7 @@ on https://github.com/oracle/graalvm-reachability-metadata . ShardingSphere acti
 some third-party libraries in the `shardingsphere-infra-reachability-metadata` submodule.
 
 If nativeTest execution fails, preliminary GraalVM Reachability Metadata should be generated for unit tests,
-and manually adjust the contents of the `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata` folder on the classpath of the `shardingsphere-infra-reachability-metadata` submodule to fix nativeTest.
+and manually adjust the contents of the `META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata/` folder on the classpath of the `shardingsphere-infra-reachability-metadata` submodule to fix nativeTest.
 If necessary, 
 use the `org.junit.jupiter.api.condition.DisabledInNativeImage` annotation or the `org.graalvm.nativeimage.imagecode` System Property blocks some unit tests from running under GraalVM Native Image.
 

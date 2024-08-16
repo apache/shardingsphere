@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.natived.jdbc.transactions.base;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.hc.core5.http.HttpStatus;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,14 +40,11 @@ import static org.hamcrest.Matchers.nullValue;
 @Testcontainers
 class SeataTest {
     
-    /**
-     * TODO Further processing of `/health` awaits <a href="https://github.com/apache/incubator-seata/pull/6356">apache/incubator-seata#6356</a>.
-     */
     @SuppressWarnings("resource")
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("seataio/seata-server:1.8.0")
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.1.0")
             .withExposedPorts(7091, 8091)
-            .waitingFor(Wait.forHttp("/health").forPort(7091).forStatusCode(HttpStatus.SC_UNAUTHORIZED));
+            .waitingFor(Wait.forHttp("/health").forPort(7091).forResponsePredicate(s -> s.equals("ok")));
     
     private static final String SERVICE_DEFAULT_GROUP_LIST_KEY = "service.default.grouplist";
     
