@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,9 +26,9 @@ import java.util.List;
 /**
  * MySQL write rows binlog event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class MySQLWriteRowsBinlogEvent extends MySQLBaseRowsBinlogEvent {
     
-    private List<Serializable[]> afterRows;
+    private final List<Serializable[]> afterRows;
 }

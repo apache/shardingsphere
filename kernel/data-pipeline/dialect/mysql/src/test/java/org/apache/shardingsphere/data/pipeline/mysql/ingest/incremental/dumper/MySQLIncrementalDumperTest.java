@@ -142,10 +142,9 @@ class MySQLIncrementalDumperTest {
     }
     
     private MySQLWriteRowsBinlogEvent createWriteRowsEvent() {
-        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent();
+        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         result.setDatabaseName("");
         result.setTableName("t_order");
-        result.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         return result;
     }
     
@@ -215,10 +214,9 @@ class MySQLIncrementalDumperTest {
     }
     
     private MySQLWriteRowsBinlogEvent getFilteredWriteRowsEvent() {
-        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent();
+        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(Collections.singletonList(new Serializable[]{1}));
         result.setDatabaseName("test");
         result.setTableName("t_order");
-        result.setAfterRows(Collections.singletonList(new Serializable[]{1}));
         return result;
     }
 }
