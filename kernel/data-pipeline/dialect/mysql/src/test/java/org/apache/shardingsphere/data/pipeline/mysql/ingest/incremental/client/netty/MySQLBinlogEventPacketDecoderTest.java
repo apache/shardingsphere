@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.netty;
 
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
@@ -23,12 +23,12 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.internal.StringUtil;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.MySQLBinlogContext;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.QueryEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.XidEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogContext;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.DeleteRowsEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.QueryEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.UpdateRowsEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.XidEvent;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
