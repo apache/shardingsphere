@@ -184,10 +184,9 @@ class MySQLIncrementalDumperTest {
     }
     
     private MySQLDeleteRowsBinlogEvent createDeleteRowsEvent() {
-        MySQLDeleteRowsBinlogEvent result = new MySQLDeleteRowsBinlogEvent();
+        MySQLDeleteRowsBinlogEvent result = new MySQLDeleteRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         result.setDatabaseName("");
         result.setTableName("t_order");
-        result.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         return result;
     }
     
