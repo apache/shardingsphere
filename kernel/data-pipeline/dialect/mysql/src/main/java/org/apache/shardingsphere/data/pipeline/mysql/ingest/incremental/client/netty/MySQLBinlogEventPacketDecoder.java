@@ -208,10 +208,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     private MySQLUpdateRowsBinlogEvent decodeUpdateRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
         packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
-        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent();
+        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent(packet.getRows(), packet.getRows2());
         initRowsEvent(result, binlogEventHeader, packet.getTableId());
-        result.setBeforeRows(packet.getRows());
-        result.setAfterRows(packet.getRows2());
         return result;
     }
     

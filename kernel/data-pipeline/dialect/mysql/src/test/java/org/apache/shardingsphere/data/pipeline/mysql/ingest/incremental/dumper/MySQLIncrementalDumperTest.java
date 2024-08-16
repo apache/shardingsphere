@@ -163,11 +163,9 @@ class MySQLIncrementalDumperTest {
     }
     
     private MySQLUpdateRowsBinlogEvent createUpdateRowsEvent() {
-        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent();
+        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}), Collections.singletonList(new Serializable[]{101, 1, "OK2"}));
         result.setDatabaseName("test");
         result.setTableName("t_order");
-        result.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
-        result.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK2"}));
         return result;
     }
     
