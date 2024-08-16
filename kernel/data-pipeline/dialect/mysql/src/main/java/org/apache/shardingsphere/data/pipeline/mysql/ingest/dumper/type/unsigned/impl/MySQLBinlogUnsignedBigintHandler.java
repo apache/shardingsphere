@@ -19,19 +19,17 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigne
 
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.MySQLBinlogUnsignedNumberHandler;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
  * MySQL binlog unsigned bigint handler.
  */
-public final class MySQLBinlogUnsignedBigintHandler implements MySQLBinlogUnsignedNumberHandler {
+public final class MySQLBinlogUnsignedBigintHandler implements MySQLBinlogUnsignedNumberHandler<Long> {
     
     private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
     
     @Override
-    public Serializable handle(final Serializable value) {
-        long longValue = (long) value;
-        return longValue < 0L ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
+    public Number handle(final Long value) {
+        return value < 0L ? BIGINT_MODULO.add(BigInteger.valueOf(value)) : value;
     }
 }
