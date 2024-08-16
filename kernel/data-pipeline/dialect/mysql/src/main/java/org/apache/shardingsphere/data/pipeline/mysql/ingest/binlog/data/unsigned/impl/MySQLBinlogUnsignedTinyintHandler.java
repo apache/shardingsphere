@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.impl;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.impl;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.MySQLBinlogUnsignedNumberHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.MySQLBinlogUnsignedNumberHandler;
 
 /**
- * MySQL binlog unsigned int handler.
+ * MySQL binlog unsigned tinyint handler.
  */
-public final class MySQLBinlogUnsignedIntHandler implements MySQLBinlogUnsignedNumberHandler<Integer> {
+public final class MySQLBinlogUnsignedTinyintHandler implements MySQLBinlogUnsignedNumberHandler<Byte> {
     
-    private static final long INT_MODULO = 4294967296L;
+    private static final int TINYINT_MODULO = 256;
     
     @Override
-    public Number handle(final Integer value) {
-        return value < 0 ? INT_MODULO + value : value;
+    public Number handle(final Byte value) {
+        return value < 0 ? TINYINT_MODULO + value : value;
     }
 }

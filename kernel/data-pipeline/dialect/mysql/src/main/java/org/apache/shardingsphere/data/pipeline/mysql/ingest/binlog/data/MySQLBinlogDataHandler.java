@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data;
 
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.binary.MySQLBinlogBinaryStringHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned.MySQLBinlogUnsignedNumberHandlerEngine;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.binary.MySQLBinlogBinaryStringHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.MySQLBinlogUnsignedNumberHandlerEngine;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 
 import java.io.Serializable;

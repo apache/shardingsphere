@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.binary;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.binary;
 
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;

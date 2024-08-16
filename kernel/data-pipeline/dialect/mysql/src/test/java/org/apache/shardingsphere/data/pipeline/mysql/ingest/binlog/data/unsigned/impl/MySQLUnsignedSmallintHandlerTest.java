@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.unsigned;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.unsigned.impl;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 
-/**
- * MySQL binlog unsigned number handler.
- * 
- * @param <T> type of value
- */
-public interface MySQLBinlogUnsignedNumberHandler<T extends Serializable> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class MySQLUnsignedSmallintHandlerTest {
     
-    /**
-     * Handle unsigned number value.
-     *
-     * @param value to be handled value
-     * @return handled value
-     */
-    Number handle(T value);
+    private final MySQLBinlogUnsignedSmallintHandler handler = new MySQLBinlogUnsignedSmallintHandler();
+    
+    @Test
+    void assertHandle() {
+        Serializable actual = handler.handle((short) 1);
+        assertThat(actual, is(1));
+        actual = handler.handle((short) -1);
+        assertThat(actual, is(65535));
+    }
 }

@@ -40,7 +40,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLBinlogClient;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.dumper.type.MySQLBinlogDataHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.data.MySQLBinlogDataHandler;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
