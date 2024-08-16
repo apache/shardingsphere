@@ -36,7 +36,7 @@ literals
     ;
 
 intervalLiterals
-    : INTERVAL stringLiterals intervalUnit (intervalPrecision)? (TO intervalUnit (intervalPrecision)?)?
+    : INTERVAL simpleExpr intervalUnit (intervalPrecision)? (TO intervalUnit (intervalPrecision)?)?
     ;
 
 bindLiterals

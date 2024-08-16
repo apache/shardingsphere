@@ -9498,4 +9498,61 @@
             <simple-table name="xxx" start-index="21" stop-index="23"/>
         </from>
     </select>
+
+    <select sql-case-id="select_with_nvl_function_and_interval_hour" parameters="1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" alias="t"  start-index="14" stop-index="22"/>
+        </from>
+        <where start-index="24" stop-index="111">
+            <expr>
+                <binary-operation-expression text="t.CREATE_TIME &lt;= nvl(END_TIME, sysdate) - INTERVAL ? HOUR AND t.STATUS = 'FAILURE'" literal-text="t.CREATE_TIME &lt;= nvl(END_TIME, sysdate) - INTERVAL 1 HOUR AND t.STATUS = 'FAILURE'" start-index="30" stop-index="111">
+                    <left>
+                        <binary-operation-expression text="t.CREATE_TIME &lt;= nvl(END_TIME, sysdate) - INTERVAL ? HOUR" literal-text="t.CREATE_TIME &lt;= nvl(END_TIME, sysdate) - INTERVAL 1 HOUR" start-index="30" stop-index="86">
+                            <left>
+                                <column name="CREATE_TIME" start-index="30" stop-index="42">
+                                    <owner name="t" start-index="30" stop-index="30" />
+                                </column>
+                            </left>
+                            <right>
+                                <binary-operation-expression text="nvl(END_TIME, sysdate) - INTERVAL ? HOUR" literal-text="nvl(END_TIME, sysdate) - INTERVAL 1 HOUR" start-index="47" stop-index="86">
+                                    <left>
+                                        <function start-index="47" stop-index="68" text="nvl(END_TIME, sysdate)" function-name="nvl">
+                                            <parameter>
+                                                <column name="END_TIME" start-index="51" stop-index="58" />
+                                            </parameter>
+                                            <parameter>
+                                                <column name="sysdate" start-index="61" stop-index="67" />
+                                            </parameter>
+                                        </function>
+                                    </left>
+                                    <right>
+                                        <common-expression start-index="72" stop-index="86" text="INTERVAL ? HOUR" literal-text="INTERVAL 1 HOUR" />
+                                    </right>
+                                    <operator>-</operator>
+                                </binary-operation-expression>
+                            </right>
+                            <operator>&lt;=</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <binary-operation-expression text="t.STATUS = 'FAILURE'" start-index="92" stop-index="111">
+                            <left>
+                                <column name="STATUS" start-index="92" stop-index="99">
+                                    <owner name="t" start-index="92" stop-index="92" />
+                                </column>
+                            </left>
+                            <right>
+                                <literal-expression start-index="103" stop-index="111" value="FAILURE" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
