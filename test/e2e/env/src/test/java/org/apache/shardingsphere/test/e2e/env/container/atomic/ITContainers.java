@@ -53,6 +53,7 @@ public final class ITContainers implements Startable {
     public ITContainers(final String scenario) {
         this.scenario = scenario;
         DnsCacheManipulator.setDnsCachePolicy(-1);
+        System.setProperty("socksNonProxyHosts", "localhost|127.*|[::1]|0.0.0.0|[::0]|*.host");
     }
     
     /**
