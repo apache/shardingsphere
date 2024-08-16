@@ -44,7 +44,7 @@ public final class MySQLBinlogDataHandler {
             return null;
         }
         if (value instanceof MySQLBinaryString) {
-            return MySQLBinlogBinaryStringHandler.handle(columnMetaData, value);
+            return MySQLBinlogBinaryStringHandler.handle(columnMetaData, (MySQLBinaryString) value);
         }
         Optional<Serializable> result = MySQLBinlogUnsignedNumberHandlerEngine.handle(columnMetaData, value);
         return result.orElse(value);

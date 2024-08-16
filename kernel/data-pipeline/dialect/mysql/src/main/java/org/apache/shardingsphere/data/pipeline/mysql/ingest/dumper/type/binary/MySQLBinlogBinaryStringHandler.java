@@ -38,7 +38,7 @@ public final class MySQLBinlogBinaryStringHandler {
      * @param value to be handled value
      * @return handled value
      */
-    public static Serializable handle(final PipelineColumnMetaData columnMetaData, final Serializable value) {
-        return PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType()) ? ((MySQLBinaryString) value).getBytes() : new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());
+    public static Serializable handle(final PipelineColumnMetaData columnMetaData, final MySQLBinaryString value) {
+        return PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType()) ? value.getBytes() : new String(value.getBytes(), Charset.defaultCharset());
     }
 }
