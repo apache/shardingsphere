@@ -32,8 +32,9 @@ public final class MySQLUpdateRowsBinlogEvent extends MySQLBaseRowsBinlogEvent {
     
     private final List<Serializable[]> afterRows;
     
-    public MySQLUpdateRowsBinlogEvent(final String databaseName, final String tableName, final List<Serializable[]> beforeRows, final List<Serializable[]> afterRows) {
-        super(databaseName, tableName);
+    public MySQLUpdateRowsBinlogEvent(final String fileName, final long position, final long timestamp,
+                                      final String databaseName, final String tableName, final List<Serializable[]> beforeRows, final List<Serializable[]> afterRows) {
+        super(fileName, position, timestamp, databaseName, tableName);
         this.beforeRows = beforeRows;
         this.afterRows = afterRows;
     }

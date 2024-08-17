@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.query;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 
 /**
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.e
  *
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_event_query">QUERY_EVENT</a>
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLQueryBinlogEvent extends MySQLBaseBinlogEvent {
     
@@ -42,4 +40,14 @@ public final class MySQLQueryBinlogEvent extends MySQLBaseBinlogEvent {
     private final String databaseName;
     
     private final String sql;
+    
+    public MySQLQueryBinlogEvent(final String fileName, final long position, final long timestamp,
+                                 final long threadId, final long executionTime, final int errorCode, final String databaseName, final String sql) {
+        super(fileName, position, timestamp);
+        this.threadId = threadId;
+        this.executionTime = executionTime;
+        this.errorCode = errorCode;
+        this.databaseName = databaseName;
+        this.sql = sql;
+    }
 }

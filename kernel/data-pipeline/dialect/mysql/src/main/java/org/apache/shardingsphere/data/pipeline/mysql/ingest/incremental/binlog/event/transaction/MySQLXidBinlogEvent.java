@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.transaction;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 
 /**
@@ -26,9 +25,13 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.e
  *
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_event_xid">XID_EVENT</a>
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLXidBinlogEvent extends MySQLBaseBinlogEvent {
     
     private final long xid;
+    
+    public MySQLXidBinlogEvent(final String fileName, final long position, final long timestamp, final long xid) {
+        super(fileName, position, timestamp);
+        this.xid = xid;
+    }
 }

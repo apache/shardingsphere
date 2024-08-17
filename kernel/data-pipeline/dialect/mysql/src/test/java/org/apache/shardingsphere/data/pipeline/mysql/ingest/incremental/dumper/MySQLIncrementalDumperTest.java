@@ -134,7 +134,7 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertWriteRowsEvent() throws ReflectiveOperationException {
-        List<Record> actual = getRecordsByWriteRowsEvent(new MySQLWriteRowsBinlogEvent("", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"})));
+        List<Record> actual = getRecordsByWriteRowsEvent(new MySQLWriteRowsBinlogEvent("", 0, 0L, "", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"})));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.INSERT));
@@ -148,8 +148,8 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertUpdateRowsEvent() throws ReflectiveOperationException {
-        List<Record> actual = getRecordsByUpdateRowsEvent(
-                new MySQLUpdateRowsBinlogEvent("test", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}), Collections.singletonList(new Serializable[]{101, 1, "OK2"})));
+        List<Record> actual = getRecordsByUpdateRowsEvent(new MySQLUpdateRowsBinlogEvent(
+                "", 0, 0L, "test", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}), Collections.singletonList(new Serializable[]{101, 1, "OK2"})));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.UPDATE));
@@ -163,7 +163,7 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertDeleteRowsEvent() throws ReflectiveOperationException {
-        List<Record> actual = getRecordsByDeleteRowsEvent(new MySQLDeleteRowsBinlogEvent("", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"})));
+        List<Record> actual = getRecordsByDeleteRowsEvent(new MySQLDeleteRowsBinlogEvent("", 0, 0L, "", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"})));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.DELETE));
@@ -178,14 +178,14 @@ class MySQLIncrementalDumperTest {
     @Test
     void assertPlaceholderEvent() throws ReflectiveOperationException {
         List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", MySQLBaseBinlogEvent.class),
-                incrementalDumper, new PlaceholderBinlogEvent());
+                incrementalDumper, new PlaceholderBinlogEvent("", 0, 0L));
         assertThat(actual.size(), is(1));
     }
     
     @Test
     void assertRowsEventFiltered() throws ReflectiveOperationException {
         List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", MySQLBaseBinlogEvent.class),
-                incrementalDumper, new MySQLWriteRowsBinlogEvent("test", "t_order", Collections.singletonList(new Serializable[]{1})));
+                incrementalDumper, new MySQLWriteRowsBinlogEvent("", 0, 0L, "test", "t_order", Collections.singletonList(new Serializable[]{1})));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
     }

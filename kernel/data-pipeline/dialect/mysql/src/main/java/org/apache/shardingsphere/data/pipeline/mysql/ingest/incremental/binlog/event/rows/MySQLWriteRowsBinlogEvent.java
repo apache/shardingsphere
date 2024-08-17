@@ -30,8 +30,8 @@ public final class MySQLWriteRowsBinlogEvent extends MySQLBaseRowsBinlogEvent {
     
     private final List<Serializable[]> afterRows;
     
-    public MySQLWriteRowsBinlogEvent(final String databaseName, final String tableName, final List<Serializable[]> afterRows) {
-        super(databaseName, tableName);
+    public MySQLWriteRowsBinlogEvent(final String fileName, final long position, final long timestamp, final String databaseName, final String tableName, final List<Serializable[]> afterRows) {
+        super(fileName, position, timestamp, databaseName, tableName);
         this.afterRows = afterRows;
     }
 }
