@@ -199,31 +199,32 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     private MySQLWriteRowsBinlogEvent decodeWriteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
-        packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
-        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(packet.getRows());
-        initRowsEvent(result, binlogEventHeader, packet.getTableId());
+        MySQLBinlogTableMapEventPacket tableMapEventPacket = binlogContext.getTableMapEvent(packet.getTableId());
+        packet.readRows(tableMapEventPacket, payload);
+        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(tableMapEventPacket.getSchemaName(), tableMapEventPacket.getTableName(), packet.getRows());
+        initRowsEvent(result, binlogEventHeader);
         return result;
     }
     
     private MySQLUpdateRowsBinlogEvent decodeUpdateRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
-        packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
-        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent(packet.getRows(), packet.getRows2());
-        initRowsEvent(result, binlogEventHeader, packet.getTableId());
+        MySQLBinlogTableMapEventPacket tableMapEventPacket = binlogContext.getTableMapEvent(packet.getTableId());
+        packet.readRows(tableMapEventPacket, payload);
+        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent(tableMapEventPacket.getSchemaName(), tableMapEventPacket.getTableName(), packet.getRows(), packet.getRows2());
+        initRowsEvent(result, binlogEventHeader);
         return result;
     }
     
     private MySQLDeleteRowsBinlogEvent decodeDeleteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
-        packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
-        MySQLDeleteRowsBinlogEvent result = new MySQLDeleteRowsBinlogEvent(packet.getRows());
-        initRowsEvent(result, binlogEventHeader, packet.getTableId());
+        MySQLBinlogTableMapEventPacket tableMapEventPacket = binlogContext.getTableMapEvent(packet.getTableId());
+        packet.readRows(tableMapEventPacket, payload);
+        MySQLDeleteRowsBinlogEvent result = new MySQLDeleteRowsBinlogEvent(tableMapEventPacket.getSchemaName(), tableMapEventPacket.getTableName(), packet.getRows());
+        initRowsEvent(result, binlogEventHeader);
         return result;
     }
     
-    private void initRowsEvent(final MySQLBaseRowsBinlogEvent rowsEvent, final MySQLBinlogEventHeader binlogEventHeader, final long tableId) {
-        rowsEvent.setDatabaseName(binlogContext.getTableMapEvent(tableId).getSchemaName());
-        rowsEvent.setTableName(binlogContext.getTableMapEvent(tableId).getTableName());
+    private void initRowsEvent(final MySQLBaseRowsBinlogEvent rowsEvent, final MySQLBinlogEventHeader binlogEventHeader) {
         rowsEvent.setFileName(binlogContext.getFileName());
         rowsEvent.setPosition(binlogEventHeader.getLogPos());
         rowsEvent.setTimestamp(binlogEventHeader.getTimestamp());

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,11 +25,16 @@ import java.util.List;
 /**
  * MySQL update rows binlog event.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLUpdateRowsBinlogEvent extends MySQLBaseRowsBinlogEvent {
     
     private final List<Serializable[]> beforeRows;
     
     private final List<Serializable[]> afterRows;
+    
+    public MySQLUpdateRowsBinlogEvent(final String databaseName, final String tableName, final List<Serializable[]> beforeRows, final List<Serializable[]> afterRows) {
+        super(databaseName, tableName);
+        this.beforeRows = beforeRows;
+        this.afterRows = afterRows;
+    }
 }

@@ -134,18 +134,11 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertWriteRowsEvent() throws ReflectiveOperationException {
-        List<Record> actual = getRecordsByWriteRowsEvent(createWriteRowsEvent());
+        List<Record> actual = getRecordsByWriteRowsEvent(new MySQLWriteRowsBinlogEvent("", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"})));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.INSERT));
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
-    }
-    
-    private MySQLWriteRowsBinlogEvent createWriteRowsEvent() {
-        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
-        result.setDatabaseName("");
-        result.setTableName("t_order");
-        return result;
     }
     
     private List<Record> getRecordsByWriteRowsEvent(final MySQLWriteRowsBinlogEvent rowsEvent) throws ReflectiveOperationException {
@@ -155,18 +148,12 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertUpdateRowsEvent() throws ReflectiveOperationException {
-        List<Record> actual = getRecordsByUpdateRowsEvent(createUpdateRowsEvent());
+        List<Record> actual = getRecordsByUpdateRowsEvent(
+                new MySQLUpdateRowsBinlogEvent("test", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}), Collections.singletonList(new Serializable[]{101, 1, "OK2"})));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.UPDATE));
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
-    }
-    
-    private MySQLUpdateRowsBinlogEvent createUpdateRowsEvent() {
-        MySQLUpdateRowsBinlogEvent result = new MySQLUpdateRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}), Collections.singletonList(new Serializable[]{101, 1, "OK2"}));
-        result.setDatabaseName("test");
-        result.setTableName("t_order");
-        return result;
     }
     
     private List<Record> getRecordsByUpdateRowsEvent(final MySQLUpdateRowsBinlogEvent rowsEvent) throws ReflectiveOperationException {
@@ -176,18 +163,11 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertDeleteRowsEvent() throws ReflectiveOperationException {
-        List<Record> actual = getRecordsByDeleteRowsEvent(createDeleteRowsEvent());
+        List<Record> actual = getRecordsByDeleteRowsEvent(new MySQLDeleteRowsBinlogEvent("", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"})));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.DELETE));
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
-    }
-    
-    private MySQLDeleteRowsBinlogEvent createDeleteRowsEvent() {
-        MySQLDeleteRowsBinlogEvent result = new MySQLDeleteRowsBinlogEvent(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
-        result.setDatabaseName("");
-        result.setTableName("t_order");
-        return result;
     }
     
     private List<Record> getRecordsByDeleteRowsEvent(final MySQLDeleteRowsBinlogEvent rowsEvent) throws ReflectiveOperationException {
@@ -205,15 +185,8 @@ class MySQLIncrementalDumperTest {
     @Test
     void assertRowsEventFiltered() throws ReflectiveOperationException {
         List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", MySQLBaseBinlogEvent.class),
-                incrementalDumper, getFilteredWriteRowsEvent());
+                incrementalDumper, new MySQLWriteRowsBinlogEvent("test", "t_order", Collections.singletonList(new Serializable[]{1})));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
-    }
-    
-    private MySQLWriteRowsBinlogEvent getFilteredWriteRowsEvent() {
-        MySQLWriteRowsBinlogEvent result = new MySQLWriteRowsBinlogEvent(Collections.singletonList(new Serializable[]{1}));
-        result.setDatabaseName("test");
-        result.setTableName("t_order");
-        return result;
     }
 }

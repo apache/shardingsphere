@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 
 /**
  * MySQL rows base event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public abstract class MySQLBaseRowsBinlogEvent extends MySQLBaseBinlogEvent {
     
-    private String databaseName;
+    private final String databaseName;
     
-    private String tableName;
+    private final String tableName;
 }
