@@ -30,8 +30,7 @@ public final class MySQLDeleteRowsBinlogEvent extends MySQLBaseRowsBinlogEvent {
     
     private final List<Serializable[]> beforeRows;
     
-    public MySQLDeleteRowsBinlogEvent(final String fileName, final long position, final long timestamp,
-                                      final String databaseName, final String tableName, final List<Serializable[]> beforeRows) {
+    public MySQLDeleteRowsBinlogEvent(final String fileName, final long position, final long timestamp, final String databaseName, final String tableName, final List<Serializable[]> beforeRows) {
         super(fileName, position, timestamp, databaseName, tableName);
         this.beforeRows = beforeRows;
     }
