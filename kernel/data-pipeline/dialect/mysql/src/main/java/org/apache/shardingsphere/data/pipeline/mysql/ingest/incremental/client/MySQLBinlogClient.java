@@ -221,16 +221,9 @@ public final class MySQLBinlogClient {
         channel.pipeline().remove(MySQLCommandResponseHandler.class);
         String tableKey = String.join(":", connectInfo.getHost(), String.valueOf(connectInfo.getPort()));
         channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength, GlobalTableMapEventMapping.getTableMapEventMap(tableKey), decodeWithTX));
-        channel.pipeline().addLast(new MySQLBinlogEventHandler(getLastBinlogEvent(binlogFileName, binlogPosition)));
+        channel.pipeline().addLast(new MySQLBinlogEventHandler(new PlaceholderBinlogEvent(binlogFileName, binlogPosition, 0L)));
         resetSequenceID();
         channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, connectInfo.getServerId(), binlogFileName));
-    }
-    
-    private MySQLBaseBinlogEvent getLastBinlogEvent(final String binlogFileName, final long binlogPosition) {
-        PlaceholderBinlogEvent result = new PlaceholderBinlogEvent();
-        result.setFileName(binlogFileName);
-        result.setPosition(binlogPosition);
-        return result;
     }
     
     private void resetSequenceID() {

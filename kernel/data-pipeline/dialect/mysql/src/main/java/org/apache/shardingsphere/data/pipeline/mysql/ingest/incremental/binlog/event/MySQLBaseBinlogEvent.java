@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MySQL base binlog event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public abstract class MySQLBaseBinlogEvent {
     
-    private String fileName;
+    private final String fileName;
     
-    private long position;
+    private final long position;
     
-    private long timestamp;
+    private final long timestamp;
 }

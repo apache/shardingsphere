@@ -18,17 +18,21 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.rows;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.event.MySQLBaseBinlogEvent;
 
 /**
  * MySQL rows base event.
  */
-@RequiredArgsConstructor
 @Getter
 public abstract class MySQLBaseRowsBinlogEvent extends MySQLBaseBinlogEvent {
     
     private final String databaseName;
     
     private final String tableName;
+    
+    public MySQLBaseRowsBinlogEvent(final String fileName, final long position, final long timestamp, final String databaseName, final String tableName) {
+        super(fileName, position, timestamp);
+        this.databaseName = databaseName;
+        this.tableName = tableName;
+    }
 }

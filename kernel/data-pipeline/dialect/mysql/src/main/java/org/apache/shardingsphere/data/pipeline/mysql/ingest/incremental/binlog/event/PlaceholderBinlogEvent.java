@@ -21,4 +21,8 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.
  * Placeholder binlog event, unsupported binlog event will replace it into this class.
  */
 public final class PlaceholderBinlogEvent extends MySQLBaseBinlogEvent {
+    
+    public PlaceholderBinlogEvent(final String fileName, final long position, final long timestamp) {
+        super(fileName, position, timestamp);
+    }
 }
