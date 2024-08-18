@@ -153,22 +153,6 @@ public final class AddressRepository {
     }
     
     /**
-     * delete by id.
-     *
-     * @param id id
-     * @throws SQLException SQL exception
-     */
-    public void deleteInHive(final Long id) throws SQLException {
-        String sql = "DELETE FROM t_address WHERE address_id=?";
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, id);
-            preparedStatement.executeUpdate();
-        }
-    }
-    
-    /**
      * delete by id in ClickHouse.
      *
      * @param id id

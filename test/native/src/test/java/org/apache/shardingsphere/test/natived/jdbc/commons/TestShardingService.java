@@ -220,7 +220,7 @@ public final class TestShardingService {
     public void deleteDataInHive() throws SQLException {
         long count = 1L;
         for (int i = 1; i <= 10; i++) {
-            addressRepository.deleteInHive(count++);
+            addressRepository.delete(count++);
         }
     }
     
