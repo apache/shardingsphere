@@ -29,11 +29,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLConstants {
     
-    public static final AttributeKey<AtomicInteger> MYSQL_SEQUENCE_ID = AttributeKey.valueOf("MYSQL_SEQUENCE_ID");
+    public static final AttributeKey<AtomicInteger> SEQUENCE_ID_ATTRIBUTE_KEY = AttributeKey.valueOf("MYSQL_SEQUENCE_ID");
     
-    public static final AttributeKey<MySQLCharacterSet> MYSQL_CHARACTER_SET_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCharacterSet.class.getName());
+    public static final AttributeKey<MySQLCharacterSet> CHARACTER_SET_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCharacterSet.class.getName());
     
-    public static final AttributeKey<Integer> MYSQL_OPTION_MULTI_STATEMENTS = AttributeKey.valueOf("MYSQL_OPTION_MULTI_STATEMENTS");
+    public static final AttributeKey<Integer> OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY = AttributeKey.valueOf("MYSQL_OPTION_MULTI_STATEMENTS");
     
     /**
      * Protocol version is always 0x0A.

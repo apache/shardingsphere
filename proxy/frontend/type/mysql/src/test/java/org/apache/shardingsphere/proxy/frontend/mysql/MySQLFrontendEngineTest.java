@@ -61,7 +61,7 @@ class MySQLFrontendEngineTest {
     @Test
     void assertInitChannel() {
         engine.initChannel(channel);
-        verify(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).set(any(AtomicInteger.class));
+        verify(channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).set(any(AtomicInteger.class));
         verify(channel.pipeline())
                 .addBefore(eq(FrontendChannelInboundHandler.class.getSimpleName()), eq(MySQLSequenceIdInboundHandler.class.getSimpleName()), isA(MySQLSequenceIdInboundHandler.class));
     }

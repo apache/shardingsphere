@@ -76,8 +76,8 @@ class MySQLBinlogClientTest {
             return null;
         });
         when(channel.localAddress()).thenReturn(new InetSocketAddress("host", 3306));
-        when(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).get()).thenReturn(new AtomicInteger());
+        when(channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get()).thenReturn(new AtomicInteger());
     }
     
     @Test

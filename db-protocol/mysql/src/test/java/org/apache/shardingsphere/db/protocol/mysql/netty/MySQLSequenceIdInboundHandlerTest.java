@@ -43,7 +43,7 @@ class MySQLSequenceIdInboundHandlerTest {
     void assertChannelReadWithFlowControl() {
         EmbeddedChannel channel = new EmbeddedChannel(
                 new FixtureOutboundHandler(), new ProxyFlowControlHandler(), new MySQLSequenceIdInboundHandler(mock(Channel.class, RETURNS_DEEP_STUBS)), new FixtureInboundHandler());
-        channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
+        channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).set(new AtomicInteger());
         channel.writeInbound(Unpooled.wrappedBuffer(new byte[1]), Unpooled.wrappedBuffer(new byte[1]), Unpooled.wrappedBuffer(new byte[1]));
         assertThat(channel.<ByteBuf>readOutbound().readUnsignedByte(), is((short) 1));
         assertThat(channel.<ByteBuf>readOutbound().readUnsignedByte(), is((short) 1));
@@ -54,7 +54,7 @@ class MySQLSequenceIdInboundHandlerTest {
         
         @Override
         public void write(final ChannelHandlerContext context, final Object msg, final ChannelPromise promise) {
-            byte sequenceId = (byte) context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().getAndIncrement();
+            byte sequenceId = (byte) context.channel().attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get().getAndIncrement();
             context.writeAndFlush(Unpooled.wrappedBuffer(new byte[]{sequenceId}));
         }
     }

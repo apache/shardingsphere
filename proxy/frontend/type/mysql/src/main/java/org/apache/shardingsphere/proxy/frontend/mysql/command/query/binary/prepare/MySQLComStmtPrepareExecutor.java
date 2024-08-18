@@ -95,8 +95,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private void failedIfContainsMultiStatements() {
         // TODO Multi statements should be identified by SQL Parser instead of checking if sql contains ";".
-        if (connectionSession.getAttributeMap().hasAttr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)
-                && MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON == connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).get()
+        if (connectionSession.getAttributeMap().hasAttr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)
+                && MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON == connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).get()
                 && packet.getSQL().contains(";")) {
             throw new UnsupportedPreparedStatementException();
         }
@@ -108,7 +108,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
         ShardingSpherePreconditions.checkState(parameterCount <= MAX_PARAMETER_COUNT, TooManyPlaceholdersException::new);
         result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));
-        int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
+        int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession);
         if (parameterCount > 0) {
             result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement));

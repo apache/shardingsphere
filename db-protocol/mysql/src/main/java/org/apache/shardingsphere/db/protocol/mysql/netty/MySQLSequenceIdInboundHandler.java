@@ -31,14 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class MySQLSequenceIdInboundHandler extends ChannelInboundHandlerAdapter {
     
     public MySQLSequenceIdInboundHandler(final Channel channel) {
-        channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
+        channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).set(new AtomicInteger());
     }
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object msg) {
         ByteBuf byteBuf = (ByteBuf) msg;
         short sequenceId = byteBuf.readUnsignedByte();
-        context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(sequenceId + 1);
+        context.channel().attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get().set(sequenceId + 1);
         context.fireChannelRead(byteBuf.readSlice(byteBuf.readableBytes()));
     }
 }

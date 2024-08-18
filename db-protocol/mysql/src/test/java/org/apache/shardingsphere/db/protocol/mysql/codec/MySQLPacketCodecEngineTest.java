@@ -67,7 +67,7 @@ class MySQLPacketCodecEngineTest {
     @BeforeEach
     void setup() {
         when(context.channel().attr(AttributeKey.<Charset>valueOf(Charset.class.getName())).get()).thenReturn(StandardCharsets.UTF_8);
-        when(context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get()).thenReturn(new AtomicInteger());
+        when(context.channel().attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get()).thenReturn(new AtomicInteger());
     }
     
     @Test
@@ -135,7 +135,7 @@ class MySQLPacketCodecEngineTest {
         when(byteBuf.markWriterIndex()).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(8);
         MySQLPacket actualMessage = mock(MySQLPacket.class);
-        context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(1);
+        context.channel().attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get().set(1);
         new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
         verify(byteBuf).writeInt(0);
         verify(byteBuf).markWriterIndex();
@@ -175,7 +175,7 @@ class MySQLPacketCodecEngineTest {
         RuntimeException ex = mock(RuntimeException.class);
         MySQLPacket actualMessage = mock(MySQLPacket.class);
         doThrow(ex).when(actualMessage).write(any(MySQLPacketPayload.class));
-        context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(2);
+        context.channel().attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get().set(2);
         new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
         verify(byteBuf).writeInt(0);
         verify(byteBuf).markWriterIndex();
