@@ -36,16 +36,19 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Data source check engine.
+ * Pipeline data source check engine.
  */
-public final class DataSourceCheckEngine {
+public final class PipelineDataSourceCheckEngine {
     
     private final DialectDatabaseEnvironmentChecker checker;
     
+    private final DialectPipelineDatabaseVariableChecker variableChecker;
+    
     private final PipelinePrepareSQLBuilder sqlBuilder;
     
-    public DataSourceCheckEngine(final DatabaseType databaseType) {
+    public PipelineDataSourceCheckEngine(final DatabaseType databaseType) {
         checker = DatabaseTypedSPILoader.findService(DialectDatabaseEnvironmentChecker.class, databaseType).orElse(null);
+        variableChecker = DatabaseTypedSPILoader.findService(DialectPipelineDatabaseVariableChecker.class, databaseType).orElse(null);
         sqlBuilder = new PipelinePrepareSQLBuilder(databaseType);
     }
     
@@ -72,11 +75,12 @@ public final class DataSourceCheckEngine {
      */
     public void checkSourceDataSources(final Collection<DataSource> dataSources) {
         checkConnection(dataSources);
-        if (null == checker) {
-            return;
+        if (null != checker) {
+            dataSources.forEach(each -> checker.checkPrivilege(each, PrivilegeCheckType.PIPELINE));
         }
-        dataSources.forEach(each -> checker.checkPrivilege(each, PrivilegeCheckType.PIPELINE));
-        dataSources.forEach(checker::checkVariable);
+        if (null != variableChecker) {
+            dataSources.forEach(variableChecker::check);
+        }
     }
     
     /**
