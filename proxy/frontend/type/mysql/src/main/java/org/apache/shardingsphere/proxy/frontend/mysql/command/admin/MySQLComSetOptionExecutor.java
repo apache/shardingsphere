@@ -41,7 +41,7 @@ public final class MySQLComSetOptionExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).set(packet.getValue());
+        connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).set(packet.getValue());
         return Collections.singleton(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

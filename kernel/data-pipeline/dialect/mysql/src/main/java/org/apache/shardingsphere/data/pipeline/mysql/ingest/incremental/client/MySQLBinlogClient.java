@@ -225,7 +225,7 @@ public final class MySQLBinlogClient {
     }
     
     private void resetSequenceID() {
-        channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(0);
+        channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get().set(0);
     }
     
     /**

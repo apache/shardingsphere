@@ -139,13 +139,13 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     }
     
     private void setMultiStatementsOption(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
-        context.channel().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).set(handshakeResponsePacket.getMultiStatementsOption());
+        context.channel().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).set(handshakeResponsePacket.getMultiStatementsOption());
     }
     
     private void setCharacterSet(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
         MySQLCharacterSet characterSet = MySQLCharacterSet.findById(handshakeResponsePacket.getCharacterSet());
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(characterSet.getCharset());
-        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
+        context.channel().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
     }
     
     private boolean isClientPluginAuthenticate(final MySQLHandshakeResponse41Packet packet) {
