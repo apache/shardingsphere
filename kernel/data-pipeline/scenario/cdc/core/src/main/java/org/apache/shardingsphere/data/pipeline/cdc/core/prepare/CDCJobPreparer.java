@@ -117,8 +117,9 @@ public final class CDCJobPreparer {
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         ImporterConfiguration importerConfig = taskConfig.getImporterConfig();
         TransmissionProcessContext processContext = jobItemContext.getJobProcessContext();
-        for (InventoryDumperContext each : new InventoryDumperContextSplitter(jobItemContext.getSourceDataSource(), new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext()))
-                .split(jobItemContext)) {
+        InventoryDumperContextSplitter dumperContextSplitter = new InventoryDumperContextSplitter(
+                jobItemContext.getSourceDataSource(), new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext()));
+        for (InventoryDumperContext each : dumperContextSplitter.split(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
             PipelineChannel channel = InventoryChannelCreator.create(processContext.getProcessConfiguration().getStreamChannel(), importerConfig.getBatchSize(), position);
             if (!(position.get() instanceof IngestFinishedPosition)) {
