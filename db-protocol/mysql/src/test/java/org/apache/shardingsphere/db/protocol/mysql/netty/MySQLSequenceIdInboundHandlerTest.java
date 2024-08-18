@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
@@ -33,12 +34,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
 class MySQLSequenceIdInboundHandlerTest {
     
     @Test
     void assertChannelReadWithFlowControl() {
-        EmbeddedChannel channel = new EmbeddedChannel(new FixtureOutboundHandler(), new ProxyFlowControlHandler(), new MySQLSequenceIdInboundHandler(), new FixtureInboundHandler());
+        EmbeddedChannel channel = new EmbeddedChannel(
+                new FixtureOutboundHandler(), new ProxyFlowControlHandler(), new MySQLSequenceIdInboundHandler(mock(Channel.class, RETURNS_DEEP_STUBS)), new FixtureInboundHandler());
         channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
         channel.writeInbound(Unpooled.wrappedBuffer(new byte[1]), Unpooled.wrappedBuffer(new byte[1]), Unpooled.wrappedBuffer(new byte[1]));
         assertThat(channel.<ByteBuf>readOutbound().readUnsignedByte(), is((short) 1));

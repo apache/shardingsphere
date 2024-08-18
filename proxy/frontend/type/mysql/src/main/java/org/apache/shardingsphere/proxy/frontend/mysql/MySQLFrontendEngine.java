@@ -48,7 +48,7 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     @Override
     public void initChannel(final Channel channel) {
         channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
-        channel.pipeline().addBefore(FrontendChannelInboundHandler.class.getSimpleName(), MySQLSequenceIdInboundHandler.class.getSimpleName(), new MySQLSequenceIdInboundHandler());
+        channel.pipeline().addBefore(FrontendChannelInboundHandler.class.getSimpleName(), MySQLSequenceIdInboundHandler.class.getSimpleName(), new MySQLSequenceIdInboundHandler(channel));
     }
     
     @Override
