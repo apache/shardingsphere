@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.PasswordEncryption;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.ServerInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.ServerVersion;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationPlugin;
@@ -59,7 +58,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private final Promise<Object> authResultCallback;
     
-    private ServerInfo serverInfo;
+    private ServerVersion serverVersion;
     
     private byte[] seed;
     
@@ -75,7 +74,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             handshakeResponsePacket.setCapabilityFlags(generateClientCapability());
             handshakeResponsePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
             ctx.channel().writeAndFlush(handshakeResponsePacket);
-            serverInfo = new ServerInfo(new ServerVersion(handshake.getServerVersion()));
+            serverVersion = new ServerVersion(handshake.getServerVersion());
             return;
         }
         if (msg instanceof MySQLAuthSwitchRequestPacket) {
@@ -91,7 +90,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         }
         if (msg instanceof MySQLOKPacket) {
             ctx.channel().pipeline().remove(this);
-            authResultCallback.setSuccess(serverInfo);
+            authResultCallback.setSuccess(serverVersion);
             return;
         }
         MySQLErrPacket error = (MySQLErrPacket) msg;
@@ -113,10 +112,8 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private void handleCachingSha2Auth(final ChannelHandlerContext ctx, final MySQLAuthMoreDataPacket authMoreData) {
         if (publicKeyRequested) {
-            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(
-                    PasswordEncryption.encryptWithRSAPublicKey(password, seed,
-                            serverInfo.getServerVersion().greaterThanOrEqualTo(8, 0, 5) ? "RSA/ECB/OAEPWithSHA-1AndMGF1Padding" : "RSA/ECB/PKCS1Padding",
-                            new String(authMoreData.getPluginData()))));
+            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(PasswordEncryption.encryptWithRSAPublicKey(
+                    password, seed, serverVersion.greaterThanOrEqualTo(8, 0, 5) ? "RSA/ECB/OAEPWithSHA-1AndMGF1Padding" : "RSA/ECB/PKCS1Padding", new String(authMoreData.getPluginData()))));
         } else {
             if (PERFORM_FULL_AUTHENTICATION == authMoreData.getPluginData()[0]) {
                 publicKeyRequested = true;

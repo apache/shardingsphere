@@ -85,7 +85,7 @@ public final class MySQLBinlogClient {
     
     private Promise<Object> responseCallback;
     
-    private ServerInfo serverInfo;
+    private ServerVersion serverVersion;
     
     private volatile boolean running = true;
     
@@ -114,7 +114,7 @@ public final class MySQLBinlogClient {
                         socketChannel.pipeline().addLast(new MySQLCommandResponseHandler());
                     }
                 }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
-        serverInfo = waitExpectedResponse(ServerInfo.class).orElse(null);
+        serverVersion = waitExpectedResponse(ServerVersion.class).orElse(null);
         running = true;
     }
     
@@ -184,7 +184,7 @@ public final class MySQLBinlogClient {
     }
     
     private void initDumpConnectSession() {
-        if (serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
+        if (serverVersion.greaterThanOrEqualTo(5, 6, 0)) {
             execute("SET @MASTER_BINLOG_CHECKSUM= @@GLOBAL.BINLOG_CHECKSUM");
         }
     }
@@ -200,7 +200,7 @@ public final class MySQLBinlogClient {
     }
     
     private int queryChecksumLength() {
-        if (!serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
+        if (!serverVersion.greaterThanOrEqualTo(5, 6, 0)) {
             return 0;
         }
         InternalResultSet resultSet = executeQuery("SELECT @@GLOBAL.BINLOG_CHECKSUM");
