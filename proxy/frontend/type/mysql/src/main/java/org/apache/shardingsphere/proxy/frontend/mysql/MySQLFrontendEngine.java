@@ -21,7 +21,6 @@ import io.netty.channel.Channel;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -30,8 +29,6 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.MySQLCommandExecut
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Frontend engine for MySQL.
@@ -47,8 +44,7 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     
     @Override
     public void initChannel(final Channel channel) {
-        channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
-        channel.pipeline().addBefore(FrontendChannelInboundHandler.class.getSimpleName(), MySQLSequenceIdInboundHandler.class.getSimpleName(), new MySQLSequenceIdInboundHandler());
+        channel.pipeline().addBefore(FrontendChannelInboundHandler.class.getSimpleName(), MySQLSequenceIdInboundHandler.class.getSimpleName(), new MySQLSequenceIdInboundHandler(channel));
     }
     
     @Override

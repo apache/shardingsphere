@@ -18,14 +18,21 @@
 package org.apache.shardingsphere.db.protocol.mysql.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Handle MySQL sequence ID before sending to downstream.
  */
 public final class MySQLSequenceIdInboundHandler extends ChannelInboundHandlerAdapter {
+    
+    public MySQLSequenceIdInboundHandler(final Channel channel) {
+        channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
+    }
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object msg) {
