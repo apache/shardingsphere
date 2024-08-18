@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.mysql.checker;
 
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.exception.CheckDatabaseEnvironmentFailedException;
 import org.apache.shardingsphere.infra.database.core.exception.MissingRequiredPrivilegeException;
@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * Database environment checker for MySQL.
  */
-public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnvironmentChecker {
+public final class MySQLDatabasePrivilegeChecker implements DialectDatabasePrivilegeChecker {
     
     private static final String SHOW_GRANTS_SQL = "SHOW GRANTS";
     
@@ -57,7 +57,7 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
     }
     
     @Override
-    public void checkPrivilege(final DataSource dataSource, final PrivilegeCheckType privilegeCheckType) {
+    public void check(final DataSource dataSource, final PrivilegeCheckType privilegeCheckType) {
         try (Connection connection = dataSource.getConnection()) {
             if (PrivilegeCheckType.XA == privilegeCheckType && MYSQL_MAJOR_VERSION_8 != connection.getMetaData().getDatabaseMajorVersion()) {
                 return;

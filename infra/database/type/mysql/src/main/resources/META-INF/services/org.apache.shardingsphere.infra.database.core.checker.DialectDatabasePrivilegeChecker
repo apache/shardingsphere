@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.opengauss.checker.OpenGaussDatabaseEnvironmentChecker
+org.apache.shardingsphere.infra.database.mysql.checker.MySQLDatabasePrivilegeChecker

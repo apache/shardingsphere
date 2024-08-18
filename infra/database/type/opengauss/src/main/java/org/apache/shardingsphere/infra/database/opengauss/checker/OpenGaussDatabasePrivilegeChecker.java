@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.opengauss.checker;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.exception.CheckDatabaseEnvironmentFailedException;
 import org.apache.shardingsphere.infra.database.core.exception.MissingRequiredPrivilegeException;
@@ -37,12 +37,12 @@ import java.util.Collections;
  * Database environment checker for openGauss.
  */
 @Slf4j
-public final class OpenGaussDatabaseEnvironmentChecker implements DialectDatabaseEnvironmentChecker {
+public final class OpenGaussDatabasePrivilegeChecker implements DialectDatabasePrivilegeChecker {
     
     private static final String SHOW_GRANTS_SQL = "SELECT * FROM pg_roles WHERE rolname = ?";
     
     @Override
-    public void checkPrivilege(final DataSource dataSource, final PrivilegeCheckType privilegeCheckType) {
+    public void check(final DataSource dataSource, final PrivilegeCheckType privilegeCheckType) {
         if (PrivilegeCheckType.PIPELINE != privilegeCheckType) {
             return;
         }

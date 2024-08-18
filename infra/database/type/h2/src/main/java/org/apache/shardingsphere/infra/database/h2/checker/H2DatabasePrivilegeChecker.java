@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.h2.checker;
 
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 
 import javax.sql.DataSource;
@@ -25,10 +25,10 @@ import javax.sql.DataSource;
 /**
  * Database environment checker for H2.
  */
-public final class H2DatabaseEnvironmentChecker implements DialectDatabaseEnvironmentChecker {
+public final class H2DatabasePrivilegeChecker implements DialectDatabasePrivilegeChecker {
     
     @Override
-    public void checkPrivilege(final DataSource dataSource, final PrivilegeCheckType privilegeCheckType) {
+    public void check(final DataSource dataSource, final PrivilegeCheckType privilegeCheckType) {
     }
     
     @Override

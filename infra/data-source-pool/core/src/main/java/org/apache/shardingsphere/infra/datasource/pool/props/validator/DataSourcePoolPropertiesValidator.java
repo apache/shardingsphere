@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -103,10 +103,10 @@ public final class DataSourcePoolPropertiesValidator {
     
     private static void checkPrivileges(final DataSource dataSource, final DataSourcePoolProperties props, final Collection<PrivilegeCheckType> expectedPrivileges) {
         DatabaseType databaseType = DatabaseTypeFactory.get((String) props.getConnectionPropertySynonyms().getStandardProperties().get("url"));
-        Optional<DialectDatabaseEnvironmentChecker> checker = DatabaseTypedSPILoader.findService(DialectDatabaseEnvironmentChecker.class, databaseType);
+        Optional<DialectDatabasePrivilegeChecker> checker = DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseType);
         if (checker.isPresent()) {
             for (PrivilegeCheckType each : expectedPrivileges) {
-                checker.get().checkPrivilege(dataSource, each);
+                checker.get().check(dataSource, each);
             }
         }
     }
