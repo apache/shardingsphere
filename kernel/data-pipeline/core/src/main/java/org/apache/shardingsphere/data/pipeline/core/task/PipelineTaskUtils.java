@@ -84,7 +84,6 @@ public final class PipelineTaskUtils {
      * @return created pipeline channel
      */
     public static PipelineChannel createIncrementalChannel(final AlgorithmConfiguration channelConfig, final IncrementalTaskProgress progress) {
-        PipelineChannelCreator channelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps());
-        return channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
+        return TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps()).newInstance(5, new IncrementalTaskAckCallback(progress));
     }
 }
