@@ -23,10 +23,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Server version.
+ * MySQL server version.
  */
 @Slf4j
-public final class ServerVersion {
+public final class MySQLServerVersion {
     
     private static final Pattern VERSION_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+).*");
     
@@ -36,7 +36,7 @@ public final class ServerVersion {
     
     private final int series;
     
-    public ServerVersion(final String version) {
+    public MySQLServerVersion(final String version) {
         Matcher matcher = VERSION_PATTERN.matcher(version);
         if (matcher.matches()) {
             major = Short.parseShort(matcher.group(1));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.ServerVersion;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.MySQLServerVersion;
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 
 import java.util.Properties;
@@ -48,7 +48,7 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     
     private String getZeroDateTimeBehavior() {
         // refer https://bugs.mysql.com/bug.php?id=91065
-        return null != MYSQL_CONNECTOR_VERSION && new ServerVersion(MYSQL_CONNECTOR_VERSION).greaterThanOrEqualTo(8, 0, 0) ? "CONVERT_TO_NULL" : "convertToNull";
+        return null != MYSQL_CONNECTOR_VERSION && new MySQLServerVersion(MYSQL_CONNECTOR_VERSION).greaterThanOrEqualTo(8, 0, 0) ? "CONVERT_TO_NULL" : "convertToNull";
     }
     
     private static String initMySQLConnectorVersion() {

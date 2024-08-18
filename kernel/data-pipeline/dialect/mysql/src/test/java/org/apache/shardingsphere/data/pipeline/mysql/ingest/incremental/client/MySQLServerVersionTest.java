@@ -22,11 +22,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ServerVersionTest {
+class MySQLServerVersionTest {
     
     @Test
     void assertGreaterThan() {
-        ServerVersion actual = new ServerVersion("5.7.12");
+        MySQLServerVersion actual = new MySQLServerVersion("5.7.12");
         assertTrue(actual.greaterThanOrEqualTo(4, 0, 0));
         assertTrue(actual.greaterThanOrEqualTo(5, 6, 0));
         assertTrue(actual.greaterThanOrEqualTo(5, 7, 11));
@@ -34,7 +34,7 @@ class ServerVersionTest {
     
     @Test
     void assertLowerThan() {
-        ServerVersion actual = new ServerVersion("5.6.6");
+        MySQLServerVersion actual = new MySQLServerVersion("5.6.6");
         assertFalse(actual.greaterThanOrEqualTo(8, 0, 0));
         assertFalse(actual.greaterThanOrEqualTo(5, 7, 11));
         assertFalse(actual.greaterThanOrEqualTo(5, 6, 8));
@@ -42,7 +42,7 @@ class ServerVersionTest {
     
     @Test
     void assertEqualTo() {
-        ServerVersion actual = new ServerVersion("5.6.6");
+        MySQLServerVersion actual = new MySQLServerVersion("5.6.6");
         assertTrue(actual.greaterThanOrEqualTo(5, 6, 6));
     }
 }

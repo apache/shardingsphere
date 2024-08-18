@@ -82,10 +82,10 @@ class MySQLBinlogClientTest {
     
     @Test
     void assertConnect() throws ReflectiveOperationException {
-        ServerVersion expected = new ServerVersion("5.5.0-log");
+        MySQLServerVersion expected = new MySQLServerVersion("5.5.0-log");
         mockChannelResponse(expected);
         client.connect();
-        ServerVersion actual = (ServerVersion) Plugins.getMemberAccessor().get(MySQLBinlogClient.class.getDeclaredField("serverVersion"), client);
+        MySQLServerVersion actual = (MySQLServerVersion) Plugins.getMemberAccessor().get(MySQLBinlogClient.class.getDeclaredField("serverVersion"), client);
         assertThat(actual, is(expected));
     }
     
@@ -121,7 +121,7 @@ class MySQLBinlogClientTest {
     
     @Test
     void assertSubscribeBelow56Version() throws ReflectiveOperationException {
-        ServerVersion serverInfo = new ServerVersion("5.5.0-log");
+        MySQLServerVersion serverInfo = new MySQLServerVersion("5.5.0-log");
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("serverVersion"), client, serverInfo);
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("channel"), client, channel);
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("eventLoopGroup"), client, new NioEventLoopGroup(1));
