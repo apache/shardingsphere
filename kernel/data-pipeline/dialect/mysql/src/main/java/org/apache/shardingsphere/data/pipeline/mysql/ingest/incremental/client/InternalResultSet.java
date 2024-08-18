@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Internal Result Set.
+ * Internal result set.
  */
 @RequiredArgsConstructor
 @Getter
