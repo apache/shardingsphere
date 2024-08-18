@@ -54,5 +54,6 @@ jobs:
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
+          native-image-job-reports: 'true'
       - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
-        run: ./mvnw -PnativeTestInShardingSphere -T1C -e clean test
+        run: ./mvnw -PnativeTestInShardingSphere -e clean test

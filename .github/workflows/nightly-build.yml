@@ -123,13 +123,8 @@ jobs:
           java-version: '22.0.2'
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+          cache: 'maven'
+          native-image-job-reports: 'true'
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}

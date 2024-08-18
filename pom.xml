@@ -84,7 +84,7 @@
         <json-smart.version>2.4.10</json-smart.version>
         <accessors-smart.version>2.4.9</accessors-smart.version>
         <asm.version>9.3</asm.version>
-        <groovy.version>4.0.19</groovy.version>
+        <groovy.version>4.0.22</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
         <bytebuddy.version>1.14.13</bytebuddy.version>
         
@@ -126,7 +126,7 @@
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
         <hive.version>4.0.0</hive.version>
-        <hive-server2-jdbc-driver-thin.version>1.0.0</hive-server2-jdbc-driver-thin.version>
+        <hive-server2-jdbc-driver-thin.version>1.2.0</hive-server2-jdbc-driver-thin.version>
         <presto.version>0.282</presto.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
@@ -140,7 +140,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.0</awaitility.version>
-        <testcontainers.version>1.20.0</testcontainers.version>
+        <testcontainers.version>1.20.1</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graal-sdk.version>24.0.2</graal-sdk.version>
