@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.position;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.position;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.position;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.MySQLBinlogPosition;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.position.MySQLIncrementalPositionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
