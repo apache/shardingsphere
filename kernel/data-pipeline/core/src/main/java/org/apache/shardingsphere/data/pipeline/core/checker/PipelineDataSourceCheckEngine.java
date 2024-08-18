@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.checker;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -40,14 +40,14 @@ import java.util.Collection;
  */
 public final class PipelineDataSourceCheckEngine {
     
-    private final DialectDatabaseEnvironmentChecker checker;
+    private final DialectDatabasePrivilegeChecker privilegeChecker;
     
     private final DialectPipelineDatabaseVariableChecker variableChecker;
     
     private final PipelinePrepareSQLBuilder sqlBuilder;
     
     public PipelineDataSourceCheckEngine(final DatabaseType databaseType) {
-        checker = DatabaseTypedSPILoader.findService(DialectDatabaseEnvironmentChecker.class, databaseType).orElse(null);
+        privilegeChecker = DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseType).orElse(null);
         variableChecker = DatabaseTypedSPILoader.findService(DialectPipelineDatabaseVariableChecker.class, databaseType).orElse(null);
         sqlBuilder = new PipelinePrepareSQLBuilder(databaseType);
     }
@@ -75,8 +75,8 @@ public final class PipelineDataSourceCheckEngine {
      */
     public void checkSourceDataSources(final Collection<DataSource> dataSources) {
         checkConnection(dataSources);
-        if (null != checker) {
-            dataSources.forEach(each -> checker.checkPrivilege(each, PrivilegeCheckType.PIPELINE));
+        if (null != privilegeChecker) {
+            dataSources.forEach(each -> privilegeChecker.check(each, PrivilegeCheckType.PIPELINE));
         }
         if (null != variableChecker) {
             dataSources.forEach(variableChecker::check);

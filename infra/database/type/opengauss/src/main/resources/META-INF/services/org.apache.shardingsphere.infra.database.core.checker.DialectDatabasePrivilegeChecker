@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.h2.checker.H2DatabaseEnvironmentChecker
+org.apache.shardingsphere.infra.database.opengauss.checker.OpenGaussDatabasePrivilegeChecker

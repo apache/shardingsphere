@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import javax.sql.DataSource;
 
 /**
- * Dialect database environment checker.
+ * Dialect database privilege checker.
  */
 @SingletonSPI
-public interface DialectDatabaseEnvironmentChecker extends DatabaseTypedSPI {
+public interface DialectDatabasePrivilegeChecker extends DatabaseTypedSPI {
     
     /**
      * Check user privileges.
@@ -34,5 +34,5 @@ public interface DialectDatabaseEnvironmentChecker extends DatabaseTypedSPI {
      * @param dataSource data source to be checked
      * @param privilegeCheckType privilege check type
      */
-    void checkPrivilege(DataSource dataSource, PrivilegeCheckType privilegeCheckType);
+    void check(DataSource dataSource, PrivilegeCheckType privilegeCheckType);
 }

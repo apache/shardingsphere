@@ -68,28 +68,28 @@ class PostgreSQLDatabaseEnvironmentCheckerTest {
     
     @Test
     void assertCheckRolReplication() throws SQLException {
-        PostgreSQLDatabaseEnvironmentChecker dataSourceChecker = new PostgreSQLDatabaseEnvironmentChecker();
+        PostgreSQLDatabasePrivilegeChecker dataSourceChecker = new PostgreSQLDatabasePrivilegeChecker();
         when(resultSet.getString("rolreplication")).thenReturn("t");
         when(resultSet.getString("rolsuper")).thenReturn("f");
-        dataSourceChecker.checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE);
+        dataSourceChecker.check(dataSource, PrivilegeCheckType.PIPELINE);
         verify(resultSet, atLeastOnce()).getString("rolsuper");
     }
     
     @Test
     void assertCheckRolSuper() throws SQLException {
-        PostgreSQLDatabaseEnvironmentChecker dataSourceChecker = new PostgreSQLDatabaseEnvironmentChecker();
+        PostgreSQLDatabasePrivilegeChecker dataSourceChecker = new PostgreSQLDatabasePrivilegeChecker();
         when(resultSet.getString("rolsuper")).thenReturn("t");
         when(resultSet.getString("rolreplication")).thenReturn("f");
-        dataSourceChecker.checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE);
+        dataSourceChecker.check(dataSource, PrivilegeCheckType.PIPELINE);
         verify(resultSet, atLeastOnce()).getString("rolreplication");
     }
     
     @Test
     void assertCheckNoPrivilege() throws SQLException {
-        PostgreSQLDatabaseEnvironmentChecker dataSourceChecker = new PostgreSQLDatabaseEnvironmentChecker();
+        PostgreSQLDatabasePrivilegeChecker dataSourceChecker = new PostgreSQLDatabasePrivilegeChecker();
         when(resultSet.getString("rolsuper")).thenReturn("f");
         when(resultSet.getString("rolreplication")).thenReturn("f");
-        assertThrows(MissingRequiredPrivilegeException.class, () -> dataSourceChecker.checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE));
+        assertThrows(MissingRequiredPrivilegeException.class, () -> dataSourceChecker.check(dataSource, PrivilegeCheckType.PIPELINE));
         verify(resultSet, atLeastOnce()).getString("rolreplication");
     }
 }

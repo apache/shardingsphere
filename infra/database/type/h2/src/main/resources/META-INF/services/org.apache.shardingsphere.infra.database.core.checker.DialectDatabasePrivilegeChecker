@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.postgresql.checker.PostgreSQLDatabaseEnvironmentChecker
+org.apache.shardingsphere.infra.database.h2.checker.H2DatabasePrivilegeChecker

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
+import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -60,8 +60,8 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereD
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            DatabaseTypedSPILoader.findService(DialectDatabaseEnvironmentChecker.class, databaseTypes.get(entry.getKey()))
-                    .ifPresent(optional -> optional.checkPrivilege(entry.getValue(), PrivilegeCheckType.XA));
+            DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseTypes.get(entry.getKey()))
+                    .ifPresent(optional -> optional.check(entry.getValue(), PrivilegeCheckType.XA));
         }
         xaTransactionManagerProvider = TypedSPILoader.getService(XATransactionManagerProvider.class, providerType);
         xaTransactionManagerProvider.init();
