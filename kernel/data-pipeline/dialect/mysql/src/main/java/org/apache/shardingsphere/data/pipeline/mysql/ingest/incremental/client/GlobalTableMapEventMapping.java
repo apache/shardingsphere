@@ -30,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalTableMapEventMapping {
     
-    // TODO Still save in memory, if proxy restart, the data will be lost.
     private static final Map<String, Map<Long, MySQLBinlogTableMapEventPacket>> TABLE_MAP_EVENT_MAPPING = new ConcurrentHashMap<>();
     
     /**
