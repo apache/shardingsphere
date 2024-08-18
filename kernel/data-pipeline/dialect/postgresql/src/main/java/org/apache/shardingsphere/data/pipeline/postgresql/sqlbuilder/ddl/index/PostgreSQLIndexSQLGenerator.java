@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index;
 
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.PostgreSQLDDLTemplateExecutor;
-import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
 import org.postgresql.jdbc.PgArray;
 
 import java.sql.Connection;
