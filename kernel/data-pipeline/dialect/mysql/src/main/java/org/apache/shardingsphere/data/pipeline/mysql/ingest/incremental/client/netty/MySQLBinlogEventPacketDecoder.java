@@ -192,8 +192,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeTableMapEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        MySQLBinlogTableMapEventPacket packet = new MySQLBinlogTableMapEventPacket(binlogEventHeader, payload);
-        binlogContext.putTableMapEvent(packet.getTableId(), packet);
+        binlogContext.putTableMapEvent(new MySQLBinlogTableMapEventPacket(binlogEventHeader, payload));
     }
     
     private MySQLWriteRowsBinlogEvent decodeWriteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {

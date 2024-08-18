@@ -41,11 +41,10 @@ public final class MySQLBinlogContext {
     /**
      * Cache table map event.
      *
-     * @param tableId table id
      * @param tableMapEventPacket table map event
      */
-    public void putTableMapEvent(final long tableId, final MySQLBinlogTableMapEventPacket tableMapEventPacket) {
-        tableMap.put(tableId, tableMapEventPacket);
+    public void putTableMapEvent(final MySQLBinlogTableMapEventPacket tableMapEventPacket) {
+        tableMap.put(tableMapEventPacket.getTableId(), tableMapEventPacket);
     }
     
     /**

@@ -18,45 +18,28 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class MySQLBinlogContextTest {
-    
-    private static final String TEST_SCHEMA = "test_schema";
-    
-    private static final String TEST_TABLE = "test_table";
-    
-    private static final long TEST_TABLE_ID = 1L;
-    
-    @Mock
-    private MySQLBinlogTableMapEventPacket tableMapEventPacket;
-    
-    private MySQLBinlogContext binlogContext;
-    
-    @BeforeEach
-    void setUp() {
-        binlogContext = new MySQLBinlogContext(4, new HashMap<>());
-        when(tableMapEventPacket.getSchemaName()).thenReturn(TEST_SCHEMA);
-        when(tableMapEventPacket.getTableName()).thenReturn(TEST_TABLE);
-    }
     
     @Test
     void assertGetTableMapEvent() {
-        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
-        assertThat(binlogContext.getTableMapEvent(TEST_TABLE_ID), is(tableMapEventPacket));
+        MySQLBinlogContext binlogContext = new MySQLBinlogContext(4, new HashMap<>());
+        MySQLBinlogTableMapEventPacket tableMapEventPacket = createTableMapEventPacket();
+        binlogContext.putTableMapEvent(tableMapEventPacket);
+        assertThat(binlogContext.getTableMapEvent(1L), is(tableMapEventPacket));
+    }
+    
+    private MySQLBinlogTableMapEventPacket createTableMapEventPacket() {
+        MySQLBinlogTableMapEventPacket result = mock(MySQLBinlogTableMapEventPacket.class);
+        when(result.getTableId()).thenReturn(1L);
+        return result;
     }
 }
