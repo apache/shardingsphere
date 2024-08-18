@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.inventory;
+package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.splitter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Range;
-import org.apache.shardingsphere.data.pipeline.core.channel.InventoryChannelCreator;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
-import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
@@ -41,10 +34,9 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJob
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryRecordsCountCalculator;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.IntervalToRangeIterator;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 
@@ -57,42 +49,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Inventory task splitter.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class InventoryTaskSplitter {
+public final class InventoryDumperContextSplitter {
     
     private final PipelineDataSourceWrapper sourceDataSource;
     
     private final InventoryDumperContext dumperContext;
-    
-    private final ImporterConfiguration importerConfig;
-    
-    /**
-     * Split inventory data to multi-tasks.
-     *
-     * @param jobItemContext job item context
-     * @return split inventory data task
-     */
-    public List<InventoryTask> splitInventoryData(final TransmissionJobItemContext jobItemContext) {
-        List<InventoryTask> result = new LinkedList<>();
-        long startTimeMillis = System.currentTimeMillis();
-        TransmissionProcessContext processContext = jobItemContext.getJobProcessContext();
-        for (InventoryDumperContext each : splitInventoryDumperContext(jobItemContext)) {
-            AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
-            PipelineChannel channel = InventoryChannelCreator.create(processContext.getProcessConfiguration().getStreamChannel(), importerConfig.getBatchSize(), position);
-            Dumper dumper = new InventoryDumper(each, channel, sourceDataSource, jobItemContext.getSourceMetaDataLoader());
-            Importer importer = new SingleChannelConsumerImporter(channel, importerConfig.getBatchSize(), 3000L, jobItemContext.getSink(), jobItemContext);
-            result.add(new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
-                    processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));
-        }
-        log.info("splitInventoryData cost {} ms", System.currentTimeMillis() - startTimeMillis);
-        return result;
-    }
     
     /**
      * Split inventory dumper context.
@@ -100,12 +68,8 @@ public final class InventoryTaskSplitter {
      * @param jobItemContext job item context
      * @return inventory dumper contexts
      */
-    public Collection<InventoryDumperContext> splitInventoryDumperContext(final TransmissionJobItemContext jobItemContext) {
-        Collection<InventoryDumperContext> result = new LinkedList<>();
-        for (InventoryDumperContext each : splitByTable(dumperContext)) {
-            result.addAll(splitByPrimaryKey(each, jobItemContext, sourceDataSource));
-        }
-        return result;
+    public Collection<InventoryDumperContext> split(final TransmissionJobItemContext jobItemContext) {
+        return splitByTable(dumperContext).stream().flatMap(each -> splitByPrimaryKey(each, jobItemContext, sourceDataSource).stream()).collect(Collectors.toList());
     }
     
     private Collection<InventoryDumperContext> splitByTable(final InventoryDumperContext dumperContext) {
