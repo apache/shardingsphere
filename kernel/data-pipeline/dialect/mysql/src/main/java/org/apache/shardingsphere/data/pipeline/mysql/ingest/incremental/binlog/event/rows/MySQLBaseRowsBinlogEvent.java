@@ -30,7 +30,7 @@ public abstract class MySQLBaseRowsBinlogEvent extends MySQLBaseBinlogEvent {
     
     private final String tableName;
     
-    public MySQLBaseRowsBinlogEvent(final String fileName, final long position, final long timestamp, final String databaseName, final String tableName) {
+    protected MySQLBaseRowsBinlogEvent(final String fileName, final long position, final long timestamp, final String databaseName, final String tableName) {
         super(fileName, position, timestamp);
         this.databaseName = databaseName;
         this.tableName = tableName;
