@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.position.OpenGaussIncrementalPositionManager
+org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.position.OpenGaussIncrementalPositionManager
