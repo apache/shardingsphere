@@ -393,7 +393,7 @@ ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 S
        <dependency>
           <groupId>io.github.linghengqian</groupId>
           <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-          <version>1.0.0</version>
+          <version>1.2.0</version>
           <exclusions>
              <exclusion>
                 <groupId>com.fasterxml.woodstox</groupId>
@@ -442,8 +442,7 @@ Args=--initialize-at-run-time=\
 用户应当考虑在 ShardingSphere JDBC 中仅使用支持 ACID 的表。`apache/hive` 提供了多种事务解决方案。
 
 第1种选择是使用 ACID 表，可能的建表流程如下。
-如果用户在 ACID 表上频繁更新和删除数据，用户可能不得不在 DML 语句执行前后进行等待，
-以让 HiveServer2 完成低效的 DML 操作，因为 ACID 表中数据是在文件夹级别跟踪。
+由于其过时的基于目录的表格式，用户可能不得不在 DML 语句执行前后进行等待，以让 HiveServer2 完成低效的 DML 操作。
 
 ```sql
 set metastore.compactor.initiator.on=true;
@@ -465,7 +464,9 @@ CREATE TABLE IF NOT EXISTS t_order
 ) CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true');
 ```
 
-第2种选择是使用 Iceberg 表，可能的建表流程如下。`apache/iceberg` 表格式有望在未来几年取代传统的 Hive 表格式。
+第2种选择是使用 Iceberg 表，可能的建表流程如下。
+Apache Iceberg 表格式有望在未来几年取代传统的 Hive 表格式，
+参考 https://blog.cloudera.com/from-hive-tables-to-iceberg-tables-hassle-free/ 。
 
 ```sql
 set iceberg.mr.schema.auto.conversion=true;
@@ -510,7 +511,7 @@ sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PnativeTestInShardingSphere -T1C -e clean test
+./mvnw -PnativeTestInShardingSphere -e clean test
 ```
 
 当贡献者发现缺少与 ShardingSphere 无关的第三方库的 GraalVM Reachability Metadata 时，应当在
@@ -539,5 +540,10 @@ Reachability Metadata 位于 `shardingsphere-infra-reachability-metadata` 子模
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -DskipNativeTests -e -T1C clean test native:metadata-copy
+./mvnw -PgenerateMetadata -DskipNativeTests -e clean test native:metadata-copy
 ```
+
+在使用 GraalVM Native Build Tools 的 Maven Plugin 时，
+贡献者应避免使用 Maven 的并行构建功能。
+GraalVM Native Build Tools 的 Maven Plugin并不是线程安全的，
+它与 https://cwiki.apache.org/confluence/display/MAVEN/Parallel+builds+in+Maven+3 不兼容。

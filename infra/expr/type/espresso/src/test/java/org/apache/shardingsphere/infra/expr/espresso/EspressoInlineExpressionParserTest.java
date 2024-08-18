@@ -20,9 +20,8 @@ package org.apache.shardingsphere.infra.expr.espresso;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.condition.OS;
 
 import java.util.Collections;
@@ -34,7 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@EnabledForJreRange(min = JRE.JAVA_22)
+@EnabledIfSystemProperty(named = "java.vm.vendor", matches = "GraalVM Community", disabledReason = "Github Actions device performance is too low")
 @EnabledOnOs(value = OS.LINUX, architectures = "amd64", disabledReason = "See https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too")
 class EspressoInlineExpressionParserTest {
     

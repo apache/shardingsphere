@@ -409,7 +409,7 @@ An example of a possible configuration is as follows,
        <dependency>
           <groupId>io.github.linghengqian</groupId>
           <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-          <version>1.0.0</version>
+          <version>1.2.0</version>
           <exclusions>
              <exclusion>
                 <groupId>com.fasterxml.woodstox</groupId>
@@ -459,8 +459,8 @@ In order to be able to use DML SQL statements such as `delete`, when connecting 
 users should consider using only ACID-supported tables in ShardingSphere JDBC. `apache/hive` provides a variety of transaction solutions.
 
 The first option is to use ACID tables, and the possible table creation process is as follows.
-If users frequently update and delete data on ACID tables, users may have to wait before and after the execution of DML statements,
-to allow HiveServer2 to complete inefficient DML operations, because data in ACID tables is tracked at the folder level.
+Due to its outdated catalog-based table format, 
+users may have to wait before and after DML statement execution to let HiveServer2 complete the inefficient DML operations.
 
 ```sql
 set metastore.compactor.initiator.on=true;
@@ -482,8 +482,9 @@ CREATE TABLE IF NOT EXISTS t_order
 ) CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true');
 ```
 
-The second option is to use Iceberg table. The possible table creation process is as follows. 
-The `apache/iceberg` table format is expected to replace the traditional Hive table format in the next few years.
+The second option is to use Iceberg table. The possible table creation process is as follows.
+Apache Iceberg table format is poised to replace the traditional Hive table format in the coming years, 
+see https://blog.cloudera.com/from-hive-tables-to-iceberg-tables-hassle-free/ .
 
 ```sql
 set iceberg.mr.schema.auto.conversion=true;
@@ -530,7 +531,7 @@ sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PnativeTestInShardingSphere -T1C -e clean test
+./mvnw -PnativeTestInShardingSphere -e clean test
 ```
 
 When contributors discover that GraalVM Reachability Metadata is missing for a third-party library not related to ShardingSphere, 
@@ -560,5 +561,8 @@ contributors should place it on the classpath of the `shardingsphere-test-native
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -DskipNativeTests -e -T1C clean test native:metadata-copy
+./mvnw -PgenerateMetadata -DskipNativeTests -e clean test native:metadata-copy
 ```
+
+Contributors should avoid using Maven's parallel builds feature when using the Maven Plugin for GraalVM Native Build Tools. 
+The Maven Plugin for GraalVM Native Build Tools is not thread-safe and is incompatible with https://cwiki.apache.org/confluence/display/MAVEN/Parallel+builds+in+Maven+3 .
