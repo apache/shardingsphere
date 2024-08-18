@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.position.slot;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.slot;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

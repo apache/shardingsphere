@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.position.slot;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.slot;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Replication slot info of PostgreSQL.
- */
-@RequiredArgsConstructor
-@Getter
-public final class PostgreSQLReplicationSlotInfo {
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class PostgreSQLSlotNameGeneratorTest {
     
-    private final String slotName;
-    
-    private final String databaseName;
+    @Test
+    void assertGetUniqueSlotName() throws SQLException {
+        Connection connection = mock(Connection.class);
+        when(connection.getCatalog()).thenReturn("foo_catalog");
+        assertThat(PostgreSQLSlotNameGenerator.getUniqueSlotName(connection, "foo_slot"), is("pipeline_9a2b4a79ce8b4fca2835b1e947c446eb"));
+    }
 }
