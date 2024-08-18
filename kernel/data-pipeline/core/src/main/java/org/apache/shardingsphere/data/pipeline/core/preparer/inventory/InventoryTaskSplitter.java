@@ -210,7 +210,7 @@ public final class InventoryTaskSplitter {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
-            return Range.between(resultSet.getLong(1), resultSet.getLong(2));
+            return Range.of(resultSet.getLong(1), resultSet.getLong(2));
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(dumperContext.getActualTableName(), uniqueKey, ex);
         }
