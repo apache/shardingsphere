@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.util;
+package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
