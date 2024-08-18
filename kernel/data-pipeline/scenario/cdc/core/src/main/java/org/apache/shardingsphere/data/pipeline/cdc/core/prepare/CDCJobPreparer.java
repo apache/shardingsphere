@@ -25,6 +25,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCChannelProgr
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCIncrementalTask;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCInventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.channel.IncrementalChannelCreator;
+import org.apache.shardingsphere.data.pipeline.core.channel.InventoryChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
@@ -118,7 +120,7 @@ public final class CDCJobPreparer {
         for (InventoryDumperContext each : new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext()), importerConfig)
                 .splitInventoryDumperContext(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
-            PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getProcessConfiguration().getStreamChannel(), importerConfig.getBatchSize(), position);
+            PipelineChannel channel = InventoryChannelCreator.create(processContext.getProcessConfiguration().getStreamChannel(), importerConfig.getBatchSize(), position);
             if (!(position.get() instanceof IngestFinishedPosition)) {
                 channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
             }
@@ -138,7 +140,7 @@ public final class CDCJobPreparer {
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         IncrementalDumperContext dumperContext = taskConfig.getDumperContext();
         IncrementalTaskProgress taskProgress = PipelineTaskUtils.createIncrementalTaskProgress(dumperContext.getCommonContext().getPosition(), jobItemContext.getInitProgress());
-        PipelineChannel channel = PipelineTaskUtils.createIncrementalChannel(jobItemContext.getJobProcessContext().getProcessConfiguration().getStreamChannel(), taskProgress);
+        PipelineChannel channel = IncrementalChannelCreator.create(jobItemContext.getJobProcessContext().getProcessConfiguration().getStreamChannel(), taskProgress);
         channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
         CreateIncrementalDumperParameter param = new CreateIncrementalDumperParameter(
                 dumperContext, dumperContext.getCommonContext().getPosition(), channel, jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager());

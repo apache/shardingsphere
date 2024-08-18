@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.inventory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Range;
+import org.apache.shardingsphere.data.pipeline.core.channel.InventoryChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
@@ -83,7 +84,7 @@ public final class InventoryTaskSplitter {
         TransmissionProcessContext processContext = jobItemContext.getJobProcessContext();
         for (InventoryDumperContext each : splitInventoryDumperContext(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
-            PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getProcessConfiguration().getStreamChannel(), importerConfig.getBatchSize(), position);
+            PipelineChannel channel = InventoryChannelCreator.create(processContext.getProcessConfiguration().getStreamChannel(), importerConfig.getBatchSize(), position);
             Dumper dumper = new InventoryDumper(each, channel, sourceDataSource, jobItemContext.getSourceMetaDataLoader());
             Importer importer = new SingleChannelConsumerImporter(channel, importerConfig.getBatchSize(), 3000L, jobItemContext.getSink(), jobItemContext);
             result.add(new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
@@ -209,7 +210,7 @@ public final class InventoryTaskSplitter {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
-            return Range.between(resultSet.getLong(1), resultSet.getLong(2));
+            return Range.of(resultSet.getLong(1), resultSet.getLong(2));
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(dumperContext.getActualTableName(), uniqueKey, ex);
         }

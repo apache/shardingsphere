@@ -19,17 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Pipeline task utilities.
@@ -62,29 +57,5 @@ public final class PipelineTaskUtils {
                     .ifPresent(optional -> result.setIncrementalTaskDelay(initProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
         }
         return result;
-    }
-    
-    /**
-     * Create pipeline channel for inventory task.
-     *
-     * @param channelConfig pipeline channel configuration
-     * @param importerBatchSize importer batch size
-     * @param position ingest position
-     * @return created pipeline channel
-     */
-    public static PipelineChannel createInventoryChannel(final AlgorithmConfiguration channelConfig, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
-        return TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps()).newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
-    }
-    
-    /**
-     * Create pipeline channel for incremental task.
-     *
-     * @param channelConfig pipeline channel configuration
-     * @param progress incremental task progress
-     * @return created pipeline channel
-     */
-    public static PipelineChannel createIncrementalChannel(final AlgorithmConfiguration channelConfig, final IncrementalTaskProgress progress) {
-        PipelineChannelCreator channelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps());
-        return channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
     }
 }
