@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.database.mysql.checker;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.exception.CheckDatabaseEnvironmentFailedException;
 import org.apache.shardingsphere.infra.database.core.exception.MissingRequiredPrivilegeException;
-import org.apache.shardingsphere.infra.database.core.exception.UnexpectedVariableValueException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +32,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -86,32 +84,6 @@ class MySQLDatabaseEnvironmentCheckerTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenThrow(new SQLException(""));
         assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> new MySQLDatabaseEnvironmentChecker().checkPrivilege(dataSource, PrivilegeCheckType.PIPELINE));
-    }
-    
-    @Test
-    void assertCheckVariableSuccess() throws SQLException {
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, true, false);
-        when(resultSet.getString(1)).thenReturn("LOG_BIN", "BINLOG_FORMAT", "BINLOG_ROW_IMAGE");
-        when(resultSet.getString(2)).thenReturn("ON", "ROW", "FULL");
-        assertDoesNotThrow(() -> new MySQLDatabaseEnvironmentChecker().checkVariable(dataSource));
-        verify(preparedStatement, times(1)).executeQuery();
-    }
-    
-    @Test
-    void assertCheckVariableWithWrongVariable() throws SQLException {
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString(1)).thenReturn("BINLOG_FORMAT", "LOG_BIN");
-        when(resultSet.getString(2)).thenReturn("ROW", "OFF");
-        assertThrows(UnexpectedVariableValueException.class, () -> new MySQLDatabaseEnvironmentChecker().checkVariable(dataSource));
-    }
-    
-    @Test
-    void assertCheckVariableFailure() throws SQLException {
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenThrow(new SQLException(""));
-        assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> new MySQLDatabaseEnvironmentChecker().checkVariable(dataSource));
     }
     
     @Test

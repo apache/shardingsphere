@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvi
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.exception.CheckDatabaseEnvironmentFailedException;
 import org.apache.shardingsphere.infra.database.core.exception.MissingRequiredPrivilegeException;
-import org.apache.shardingsphere.infra.database.core.exception.UnexpectedVariableValueException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -33,10 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Database environment checker for MySQL.
@@ -55,19 +50,10 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
     
     private static final Map<PrivilegeCheckType, Collection<String>> REQUIRED_PRIVILEGES_FOR_MESSAGE = new EnumMap<>(PrivilegeCheckType.class);
     
-    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1F);
-    
-    private static final String SHOW_VARIABLES_SQL;
-    
     static {
         REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.PIPELINE, Arrays.asList("REPLICATION SLAVE", "REPLICATION CLIENT"));
         REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.SELECT, Collections.singleton("SELECT ON DATABASE"));
         REQUIRED_PRIVILEGES_FOR_MESSAGE.put(PrivilegeCheckType.XA, Collections.singleton("XA_RECOVER_ADMIN"));
-        REQUIRED_VARIABLES.put("LOG_BIN", "ON");
-        REQUIRED_VARIABLES.put("BINLOG_FORMAT", "ROW");
-        // It does not exist in all versions of MySQL
-        REQUIRED_VARIABLES.put("BINLOG_ROW_IMAGE", "FULL");
-        SHOW_VARIABLES_SQL = String.format("SHOW VARIABLES WHERE Variable_name IN (%s)", REQUIRED_VARIABLES.keySet().stream().map(each -> "?").collect(Collectors.joining(",")));
     }
     
     @Override
@@ -117,29 +103,6 @@ public final class MySQLDatabaseEnvironmentChecker implements DialectDatabaseEnv
     
     private boolean matchPrivileges(final String grantedPrivileges, final String[][] requiredPrivileges) {
         return Arrays.stream(requiredPrivileges).anyMatch(each -> Arrays.stream(each).allMatch(grantedPrivileges::contains));
-    }
-    
-    @Override
-    public void checkVariable(final DataSource dataSource) {
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {
-            int parameterIndex = 1;
-            for (Entry<String, String> entry : REQUIRED_VARIABLES.entrySet()) {
-                preparedStatement.setString(parameterIndex++, entry.getKey());
-            }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    String variableName = resultSet.getString(1).toUpperCase();
-                    String expectedValue = REQUIRED_VARIABLES.get(variableName);
-                    String actualValue = resultSet.getString(2);
-                    ShardingSpherePreconditions.checkState(expectedValue.equalsIgnoreCase(actualValue),
-                            () -> new UnexpectedVariableValueException(variableName, expectedValue, actualValue));
-                }
-            }
-        } catch (final SQLException ex) {
-            throw new CheckDatabaseEnvironmentFailedException(ex);
-        }
     }
     
     @Override

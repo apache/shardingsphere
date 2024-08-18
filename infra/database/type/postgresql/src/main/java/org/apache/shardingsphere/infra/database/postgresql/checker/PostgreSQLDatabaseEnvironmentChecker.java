@@ -66,10 +66,6 @@ public final class PostgreSQLDatabaseEnvironmentChecker implements DialectDataba
     }
     
     @Override
-    public void checkVariable(final DataSource dataSource) {
-    }
-    
-    @Override
     public String getDatabaseType() {
         return "PostgreSQL";
     }

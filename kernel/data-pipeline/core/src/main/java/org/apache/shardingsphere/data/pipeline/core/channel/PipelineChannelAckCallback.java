@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * Pipeline channel acknowledged callback.
  */
+@FunctionalInterface
 public interface PipelineChannelAckCallback {
     
     /**
