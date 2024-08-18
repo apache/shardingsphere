@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.position;
+package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.position;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode.OpenGaussLogSequenceNumber;
