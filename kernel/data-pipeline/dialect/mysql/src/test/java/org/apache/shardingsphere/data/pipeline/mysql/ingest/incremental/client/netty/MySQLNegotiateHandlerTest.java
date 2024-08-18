@@ -21,7 +21,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.concurrent.Promise;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.ServerInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.ServerVersion;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
@@ -83,20 +82,20 @@ class MySQLNegotiateHandlerTest {
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
-        ServerInfo serverInfo = (ServerInfo) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler);
-        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("major"), serverInfo.getServerVersion()), is(5));
-        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("minor"), serverInfo.getServerVersion()), is(7));
-        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("series"), serverInfo.getServerVersion()), is(22));
+        ServerVersion serverVersion = (ServerVersion) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("serverVersion"), mysqlNegotiateHandler);
+        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("major"), serverVersion), is(5));
+        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("minor"), serverVersion), is(7));
+        assertThat(Plugins.getMemberAccessor().get(ServerVersion.class.getDeclaredField("series"), serverVersion), is(22));
     }
     
     @Test
     void assertChannelReadOkPacket() throws ReflectiveOperationException {
         MySQLOKPacket okPacket = new MySQLOKPacket(0);
-        ServerInfo serverInfo = new ServerInfo(new ServerVersion("5.5.0-log"));
-        Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler, serverInfo);
+        ServerVersion serverVersion = new ServerVersion("5.5.0-log");
+        Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverVersion"), mysqlNegotiateHandler, serverVersion);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, okPacket);
         verify(pipeline).remove(mysqlNegotiateHandler);
-        verify(authResultCallback).setSuccess(serverInfo);
+        verify(authResultCallback).setSuccess(serverVersion);
     }
     
     @Test
