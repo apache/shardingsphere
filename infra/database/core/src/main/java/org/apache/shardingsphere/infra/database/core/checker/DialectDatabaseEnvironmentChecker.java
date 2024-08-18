@@ -35,11 +35,4 @@ public interface DialectDatabaseEnvironmentChecker extends DatabaseTypedSPI {
      * @param privilegeCheckType privilege check type
      */
     void checkPrivilege(DataSource dataSource, PrivilegeCheckType privilegeCheckType);
-    
-    /**
-     * Check variables.
-     *
-     * @param dataSource data source to be checked
-     */
-    void checkVariable(DataSource dataSource);
 }

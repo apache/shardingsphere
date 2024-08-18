@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
+import org.apache.shardingsphere.data.pipeline.core.checker.PipelineDataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -45,12 +45,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DataSourceCheckEngineTest {
+class PipelineDataSourceCheckEngineTest {
     
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
-    private DataSourceCheckEngine dataSourceCheckEngine;
+    private PipelineDataSourceCheckEngine pipelineDataSourceCheckEngine;
     
     private Collection<DataSource> dataSources;
     
@@ -65,7 +65,7 @@ class DataSourceCheckEngineTest {
     
     @BeforeEach
     void setUp() {
-        dataSourceCheckEngine = new DataSourceCheckEngine(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        pipelineDataSourceCheckEngine = new PipelineDataSourceCheckEngine(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         dataSources = new LinkedList<>();
         dataSources.add(dataSource);
     }
@@ -73,14 +73,14 @@ class DataSourceCheckEngineTest {
     @Test
     void assertCheckConnection() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
-        dataSourceCheckEngine.checkConnection(dataSources);
+        pipelineDataSourceCheckEngine.checkConnection(dataSources);
         verify(dataSource).getConnection();
     }
     
     @Test
     void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("error"));
-        assertThrows(SQLWrapperException.class, () -> dataSourceCheckEngine.checkConnection(dataSources));
+        assertThrows(SQLWrapperException.class, () -> pipelineDataSourceCheckEngine.checkConnection(dataSources));
     }
     
     @Test
@@ -90,7 +90,7 @@ class DataSourceCheckEngineTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
         when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new CaseInsensitiveQualifiedTable(null, "t_order")));
-        dataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig);
+        pipelineDataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig);
     }
     
     @Test
@@ -101,6 +101,6 @@ class DataSourceCheckEngineTest {
         when(resultSet.next()).thenReturn(true);
         ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
         when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new CaseInsensitiveQualifiedTable(null, "t_order")));
-        assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> dataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
+        assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> pipelineDataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
     }
 }

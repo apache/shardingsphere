@@ -66,10 +66,6 @@ public final class OpenGaussDatabaseEnvironmentChecker implements DialectDatabas
     }
     
     @Override
-    public void checkVariable(final DataSource dataSource) {
-    }
-    
-    @Override
     public String getDatabaseType() {
         return "openGauss";
     }

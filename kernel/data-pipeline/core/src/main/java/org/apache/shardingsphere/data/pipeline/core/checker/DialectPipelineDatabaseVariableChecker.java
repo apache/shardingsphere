@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.h2.checker;
+package org.apache.shardingsphere.data.pipeline.core.checker;
 
-import org.apache.shardingsphere.infra.database.core.checker.DialectDatabaseEnvironmentChecker;
-import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import javax.sql.DataSource;
 
 /**
- * Database environment checker for H2.
+ * Dialect pipeline database variable checker.
  */
-public final class H2DatabaseEnvironmentChecker implements DialectDatabaseEnvironmentChecker {
+@SingletonSPI
+public interface DialectPipelineDatabaseVariableChecker extends DatabaseTypedSPI {
     
-    @Override
-    public void checkPrivilege(final DataSource dataSource, final PrivilegeCheckType privilegeCheckType) {
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "H2";
-    }
+    /**
+     * Check variables.
+     *
+     * @param dataSource data source to be checked
+     */
+    void check(DataSource dataSource);
 }
