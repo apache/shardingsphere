@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.PasswordEncryption;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.ServerVersion;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.client.MySQLServerVersion;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationPlugin;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
@@ -58,7 +58,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private final Promise<Object> authResultCallback;
     
-    private ServerVersion serverVersion;
+    private MySQLServerVersion serverVersion;
     
     private byte[] seed;
     
@@ -74,7 +74,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             handshakeResponsePacket.setCapabilityFlags(generateClientCapability());
             handshakeResponsePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
             ctx.channel().writeAndFlush(handshakeResponsePacket);
-            serverVersion = new ServerVersion(handshake.getServerVersion());
+            serverVersion = new MySQLServerVersion(handshake.getServerVersion());
             return;
         }
         if (msg instanceof MySQLAuthSwitchRequestPacket) {

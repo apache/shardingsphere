@@ -84,7 +84,7 @@ public final class MySQLBinlogClient {
     
     private Promise<Object> responseCallback;
     
-    private ServerVersion serverVersion;
+    private MySQLServerVersion serverVersion;
     
     private volatile boolean running = true;
     
@@ -112,7 +112,7 @@ public final class MySQLBinlogClient {
                         socketChannel.pipeline().addLast(new MySQLCommandResponseHandler());
                     }
                 }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
-        serverVersion = waitExpectedResponse(ServerVersion.class).orElse(null);
+        serverVersion = waitExpectedResponse(MySQLServerVersion.class).orElse(null);
         running = true;
     }
     
