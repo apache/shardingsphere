@@ -63,6 +63,5 @@ public interface PipelineChannel {
      *
      * @param records record list
      */
-    // TODO Refactor ack param
     void ack(List<Record> records);
 }
