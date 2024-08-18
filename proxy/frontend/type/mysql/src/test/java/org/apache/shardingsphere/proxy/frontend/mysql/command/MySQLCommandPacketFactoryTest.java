@@ -85,6 +85,7 @@ class MySQLCommandPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithComStmtPreparePacket() {
+        when(payload.readStringEOF()).thenReturn("");
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_PREPARE, payload, connectionSession), instanceOf(MySQLComStmtPreparePacket.class));
     }
     

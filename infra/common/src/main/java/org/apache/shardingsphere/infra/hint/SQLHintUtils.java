@@ -99,8 +99,8 @@ public final class SQLHintUtils {
     }
     
     private static boolean containsSQLHint(final String sql) {
-        return null != sql && (sql.contains(SQLHintTokenType.SQL_START_HINT_TOKEN.getKey())
-                || sql.contains(SQLHintTokenType.SQL_START_HINT_TOKEN.getAlias())) && sql.contains(SQL_COMMENT_PREFIX) && sql.contains(SQL_COMMENT_SUFFIX);
+        return (sql.contains(SQLHintTokenType.SQL_START_HINT_TOKEN.getKey()) || sql.contains(SQLHintTokenType.SQL_START_HINT_TOKEN.getAlias()))
+                && sql.contains(SQL_COMMENT_PREFIX) && sql.contains(SQL_COMMENT_SUFFIX);
     }
     
     private static Map<String, String> getSQLHintKeyValues(final String hintKeyValueText) {

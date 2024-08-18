@@ -41,6 +41,7 @@ class PostgreSQLCommandPacketFactoryTest {
     @Test
     void assertNewInstanceWithQueryComPacket() {
         when(payload.getByteBuf()).thenReturn(mock(ByteBuf.class));
+        when(payload.readStringNul()).thenReturn("");
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.SIMPLE_QUERY, payload), instanceOf(PostgreSQLComQueryPacket.class));
     }
     
