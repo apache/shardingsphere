@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.position.MySQLIncrementalPositionManager
+org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.position.MySQLIncrementalPositionManager
