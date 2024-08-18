@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog;
 
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.position.MySQLBinlogPosition;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
