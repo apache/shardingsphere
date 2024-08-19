@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Inventory task.
  */
 @RequiredArgsConstructor
-@ToString(exclude = {"inventoryDumperExecuteEngine", "inventoryImporterExecuteEngine", "dumper", "importer"})
+@ToString(of = {"taskId", "position"})
 public final class InventoryTask implements PipelineTask {
     
     @Getter
