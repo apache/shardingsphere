@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgori
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.IntervalToRangeIterator;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -67,38 +68,35 @@ public final class InventoryDumperContextSplitter {
      * @return inventory dumper contexts
      */
     public Collection<InventoryDumperContext> split(final TransmissionJobItemContext jobItemContext) {
-        return splitByTable(dumperContext).stream().flatMap(each -> splitByPrimaryKey(each, jobItemContext, sourceDataSource).stream()).collect(Collectors.toList());
+        return splitByTable().stream().flatMap(each -> splitByPrimaryKey(each, jobItemContext).stream()).collect(Collectors.toList());
     }
     
-    private Collection<InventoryDumperContext> splitByTable(final InventoryDumperContext dumperContext) {
-        Collection<InventoryDumperContext> result = new LinkedList<>();
-        dumperContext.getCommonContext().getTableNameMapper().getTableNameMap().forEach((key, value) -> {
-            InventoryDumperContext inventoryDumperContext = new InventoryDumperContext(dumperContext.getCommonContext());
-            // use original table name, for metadata loader, since some database table name case-sensitive
-            inventoryDumperContext.setActualTableName(key.toString());
-            inventoryDumperContext.setLogicTableName(value.toString());
-            inventoryDumperContext.getCommonContext().setPosition(new IngestPlaceholderPosition());
-            inventoryDumperContext.setInsertColumnNames(dumperContext.getInsertColumnNames());
-            inventoryDumperContext.setUniqueKeyColumns(dumperContext.getUniqueKeyColumns());
-            result.add(inventoryDumperContext);
-        });
+    private Collection<InventoryDumperContext> splitByTable() {
+        return dumperContext.getCommonContext().getTableNameMapper().getTableNameMap().entrySet()
+                .stream().map(entry -> createInventoryDumperContext(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+    }
+    
+    private InventoryDumperContext createInventoryDumperContext(final CaseInsensitiveIdentifier actualTableName, final CaseInsensitiveIdentifier logicTableName) {
+        InventoryDumperContext result = new InventoryDumperContext(dumperContext.getCommonContext());
+        // use original table name, for metadata loader, since some database table name case-sensitive
+        result.setActualTableName(actualTableName.toString());
+        result.setLogicTableName(logicTableName.toString());
+        result.getCommonContext().setPosition(new IngestPlaceholderPosition());
+        result.setInsertColumnNames(dumperContext.getInsertColumnNames());
+        result.setUniqueKeyColumns(dumperContext.getUniqueKeyColumns());
         return result;
     }
     
-    private Collection<InventoryDumperContext> splitByPrimaryKey(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext,
-                                                                 final PipelineDataSourceWrapper dataSource) {
+    private Collection<InventoryDumperContext> splitByPrimaryKey(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext) {
         if (null == dumperContext.getUniqueKeyColumns()) {
-            String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
-            String actualTableName = dumperContext.getActualTableName();
-            List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(schemaName, actualTableName, jobItemContext.getSourceMetaDataLoader());
-            dumperContext.setUniqueKeyColumns(uniqueKeyColumns);
+            dumperContext.setUniqueKeyColumns(getTableUniqueKeys(dumperContext, jobItemContext));
         }
         Collection<InventoryDumperContext> result = new LinkedList<>();
         TransmissionProcessContext jobProcessContext = jobItemContext.getJobProcessContext();
         PipelineReadConfiguration readConfig = jobProcessContext.getProcessConfiguration().getRead();
         int batchSize = readConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = jobProcessContext.getReadRateLimitAlgorithm();
-        Collection<IngestPosition> inventoryPositions = getInventoryPositions(dumperContext, jobItemContext, dataSource);
+        Collection<IngestPosition> inventoryPositions = getInventoryPositions(dumperContext, jobItemContext);
         int i = 0;
         for (IngestPosition each : inventoryPositions) {
             InventoryDumperContext splitDumperContext = new InventoryDumperContext(dumperContext.getCommonContext());
@@ -115,8 +113,12 @@ public final class InventoryDumperContextSplitter {
         return result;
     }
     
-    private Collection<IngestPosition> getInventoryPositions(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext,
-                                                             final PipelineDataSourceWrapper dataSource) {
+    private List<PipelineColumnMetaData> getTableUniqueKeys(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext) {
+        String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
+        return PipelineTableMetaDataUtils.getUniqueKeyColumns(schemaName, dumperContext.getActualTableName(), jobItemContext.getSourceMetaDataLoader());
+    }
+    
+    private Collection<IngestPosition> getInventoryPositions(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext) {
         TransmissionJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null != initProgress) {
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
@@ -125,7 +127,7 @@ public final class InventoryDumperContextSplitter {
                 return result;
             }
         }
-        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperContext, dataSource);
+        long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperContext, sourceDataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         if (!dumperContext.hasUniqueKey()) {
             return Collections.singleton(new UnsupportedKeyIngestPosition());
@@ -134,7 +136,7 @@ public final class InventoryDumperContextSplitter {
         if (1 == uniqueKeyColumns.size()) {
             int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
             if (PipelineJdbcUtils.isIntegerColumn(firstColumnDataType)) {
-                return getPositionByIntegerUniqueKeyRange(dumperContext, tableRecordsCount, jobItemContext, dataSource);
+                return getPositionByIntegerUniqueKeyRange(dumperContext, tableRecordsCount, jobItemContext, sourceDataSource);
             }
             if (PipelineJdbcUtils.isStringColumn(firstColumnDataType)) {
                 // TODO Support string unique key table splitting. Ascii characters ordering are different in different versions of databases.
