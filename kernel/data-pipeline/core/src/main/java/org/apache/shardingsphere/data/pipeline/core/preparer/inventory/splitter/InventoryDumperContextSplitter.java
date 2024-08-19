@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Inventory task splitter.
+ * Inventory dumper context splitter.
  */
 @RequiredArgsConstructor
 public final class InventoryDumperContextSplitter {
