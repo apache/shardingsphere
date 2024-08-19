@@ -28,9 +28,9 @@ class PipelineTaskUtilsTest {
     
     @Test
     void assertGenerateInventoryTaskId() {
-        InventoryDumperContext inventoryDumperContext = new InventoryDumperContext(new DumperCommonContext("foo_ds", null, null, null));
-        inventoryDumperContext.setActualTableName("foo_actual_tbl");
-        inventoryDumperContext.setShardingItem(1);
-        assertThat(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperContext), is("foo_ds.foo_actual_tbl#1"));
+        InventoryDumperContext dumperContext = new InventoryDumperContext(new DumperCommonContext("foo_ds", null, null, null));
+        dumperContext.setActualTableName("foo_actual_tbl");
+        dumperContext.setShardingItem(1);
+        assertThat(PipelineTaskUtils.generateInventoryTaskId(dumperContext), is("foo_ds.foo_actual_tbl#1"));
     }
 }
