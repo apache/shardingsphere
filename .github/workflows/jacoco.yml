@@ -41,7 +41,7 @@ jobs:
         run: chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh
 
       - name: Run code coverage merge script
-        run: ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh
+        run: ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
