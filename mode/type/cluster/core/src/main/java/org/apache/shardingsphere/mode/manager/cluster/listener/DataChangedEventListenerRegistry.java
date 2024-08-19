@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.listener;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.manager.cluster.event.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -37,9 +37,12 @@ public final class DataChangedEventListenerRegistry {
     
     private final Collection<String> databaseNames;
     
+    private final ContextManager contextManager;
+    
     public DataChangedEventListenerRegistry(final ContextManager contextManager, final Collection<String> databaseNames) {
         listenerManager = new DataChangedEventListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository());
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
+        this.contextManager = contextManager;
         this.databaseNames = databaseNames;
     }
     
@@ -72,6 +75,6 @@ public final class DataChangedEventListenerRegistry {
     }
     
     private void registerMetaDataChangedEventListener() {
-        databaseNames.forEach(each -> listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(each), new MetaDataChangedListener(eventBusContext)));
+        databaseNames.forEach(each -> listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(each), MetaDataChangedListenerFactory.newInstance(contextManager)));
     }
 }

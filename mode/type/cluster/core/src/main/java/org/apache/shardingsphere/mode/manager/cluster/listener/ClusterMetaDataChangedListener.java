@@ -40,7 +40,7 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropVi
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.listener.MetaDataChangedListener;
 
 import java.util.Optional;
 
@@ -48,9 +48,9 @@ import java.util.Optional;
  * Meta data changed listener.
  */
 @RequiredArgsConstructor
-public final class MetaDataChangedListener implements DataChangedEventListener {
+public final class ClusterMetaDataChangedListener implements MetaDataChangedListener {
     
-    private final EventBusContext eventBusContext;
+    private EventBusContext eventBusContext;
     
     private final RuleConfigurationEventBuilder ruleConfigurationEventBuilder = new RuleConfigurationEventBuilder();
     
@@ -170,5 +170,15 @@ public final class MetaDataChangedListener implements DataChangedEventListener {
             return Optional.of(new UnregisterStorageNodeEvent(databaseName, dataSourceNodeName.get()));
         }
         return Optional.empty();
+    }
+    
+    @Override
+    public Object getType() {
+        return "Cluster";
+    }
+    
+    @Override
+    public void init(final EventBusContext eventBusContext) {
+        this.eventBusContext = eventBusContext;
     }
 }
