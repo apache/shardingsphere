@@ -44,8 +44,8 @@ jobs:
         run: ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
-          files: ./target/mergeReport/jacoco.xml
+          files: ${{ github.workspace }}/target/mergeReport/jacoco.xml/target/mergeReport/jacoco.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
