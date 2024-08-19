@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
-import org.apache.shardingsphere.agent.plugin.core.holder.ContextManagerHolder;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceHolder;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -33,8 +34,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -47,23 +49,27 @@ class JDBCMetaDataInfoExporterTest {
     void reset() {
         MetricConfiguration config = new MetricConfiguration("jdbc_meta_data_info",
                 MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-JDBC",
-                Arrays.asList("database", "type"), Collections.emptyMap());
+                Arrays.asList("driver_instance", "database", "type"), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
-        ContextManagerHolder.remove("sharding_db");
+        ShardingSphereDataSourceHolder.remove("sharding_db");
     }
     
     @Test
     void assertExport() {
-        ContextManagerHolder.put("sharding_db", mockContextManager("sharding_db"));
+        String instanceId = UUID.randomUUID().toString();
+        ShardingSphereDataSourceHolder.put(instanceId, new ShardingSphereDataSourceContext("sharding_db", mockContextManager("sharding_db")));
         Optional<GaugeMetricFamilyMetricsCollector> collector = new JDBCMetaDataInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(collector.get().toString(), is("sharding_db=1, storage_unit_count=1"));
+        assertThat(collector.get().toString(), containsString(instanceId));
+        assertThat(collector.get().toString(), containsString("sharding_db=1"));
+        assertThat(collector.get().toString(), containsString("storage_unit_count=1"));
     }
     
     private ContextManager mockContextManager(final String databaseName) {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(databaseName);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase(databaseName)).thenReturn(database);
