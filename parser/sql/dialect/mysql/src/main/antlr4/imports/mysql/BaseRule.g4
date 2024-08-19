@@ -33,6 +33,7 @@ customKeyword
     | POSITION
     | SUBSTRING
     | SUBSTR
+    | MID
     | EXTRACT
     | TRIM
     | LAST_DAY
@@ -1113,8 +1114,8 @@ positionFunction
     ;
     
 substringFunction
-    : (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
-    | (SUBSTRING | SUBSTR) LP_ expr COMMA_ NUMBER_ (COMMA_ NUMBER_)? RP_
+    : (SUBSTRING | SUBSTR | MID) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
+    | (SUBSTRING | SUBSTR | MID) LP_ expr COMMA_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
     
 extractFunction

@@ -3020,4 +3020,168 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_md5">
+        <projections start-index="7" stop-index="20">
+            <expression-projection start-index="7" stop-index="20" text="MD5('testing')">
+                <expr>
+                    <function function-name="MD5" text="MD5('testing')" start-index="7" stop-index="20">
+                        <parameter>
+                            <literal-expression value="testing" start-index="11" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_member_of">
+        <projections start-index="7" stop-index="49">
+            <expression-projection start-index="7" stop-index="49" text="'ab' MEMBER OF('[23, &quot;abc&quot;, 17, &quot;ab&quot;, 10]')">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="49">
+                        <left>
+                            <literal-expression value="ab" start-index="7" stop-index="10" />
+                        </left>
+                        <operator>MEMBER OF</operator>
+                        <right>
+                            <expression-projection text="'[23, &quot;abc&quot;, 17, &quot;ab&quot;, 10]'" start-index="22" stop-index="48" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_microsecond">
+        <projections start-index="7" stop-index="36">
+            <expression-projection start-index="7" stop-index="36" text="MICROSECOND('12:00:00.123456')">
+                <expr>
+                    <function function-name="MICROSECOND" text="MICROSECOND('12:00:00.123456')" start-index="7" stop-index="36">
+                        <parameter>
+                            <literal-expression value="12:00:00.123456" start-index="19" stop-index="35" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mid">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="MID('foobarbar' from 4)" start-index="7" stop-index="29">
+                <expr>
+                    <function function-name="MID" start-index="7" stop-index="29" text="MID('foobarbar' from 4)" >
+                        <parameter>
+                            <literal-expression value="foobarbar" start-index="11" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="4" start-index="28" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_minute">
+        <projections start-index="7" stop-index="35">
+            <expression-projection start-index="7" stop-index="35" text="MINUTE('2008-02-03 10:05:03')">
+                <expr>
+                    <function function-name="MINUTE" text="MINUTE('2008-02-03 10:05:03')" start-index="7" stop-index="35">
+                        <parameter>
+                            <literal-expression value="2008-02-03 10:05:03" start-index="14" stop-index="34" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mod">
+        <projections start-index="7" stop-index="18">
+            <expression-projection start-index="7" stop-index="18" text="MOD(234, 10)">
+                <expr>
+                    <function function-name="MOD" text="MOD(234, 10)" start-index="7" stop-index="18">
+                        <parameter>
+                            <literal-expression value="234" start-index="11" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="10" start-index="16" stop-index="17" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_month">
+        <projections start-index="7" stop-index="25">
+            <expression-projection start-index="7" stop-index="25" text="MONTH('2008-02-03')">
+                <expr>
+                    <function function-name="MONTH" text="MONTH('2008-02-03')" start-index="7" stop-index="25">
+                        <parameter>
+                            <literal-expression value="2008-02-03" start-index="13" stop-index="24" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_monthname">
+        <projections start-index="7" stop-index="29">
+            <expression-projection start-index="7" stop-index="29" text="MONTHNAME('2008-02-03')">
+                <expr>
+                    <function function-name="MONTHNAME" text="MONTHNAME('2008-02-03')" start-index="7" stop-index="29">
+                        <parameter>
+                            <literal-expression value="2008-02-03" start-index="17" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_multilinestring">
+        <projections start-index="7" stop-index="73">
+            <expression-projection start-index="7" stop-index="73" text="ST_GeomFromText('MultiLineString((0 0, 1 1, 2 2),(3 3, 4 4, 5 5))')">
+                <expr>
+                    <function function-name="ST_GeomFromText" text="ST_GeomFromText('MultiLineString((0 0, 1 1, 2 2),(3 3, 4 4, 5 5))')" start-index="7" stop-index="73">
+                        <parameter>
+                            <literal-expression value="MultiLineString((0 0, 1 1, 2 2),(3 3, 4 4, 5 5))" start-index="23" stop-index="72" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_multipoint">
+        <projections start-index="7" stop-index="56">
+            <expression-projection start-index="7" stop-index="56" text="ST_GeomFromText('MultiPoint((1 2), (3 4), (5 6))')">
+                <expr>
+                    <function function-name="ST_GeomFromText" text="ST_GeomFromText('MultiPoint((1 2), (3 4), (5 6))')" start-index="7" stop-index="56">
+                        <parameter>
+                            <literal-expression value="MultiPoint((1 2), (3 4), (5 6))" start-index="23" stop-index="55" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_multipolygon">
+        <projections start-index="7" stop-index="94">
+            <expression-projection start-index="7" stop-index="94" text="ST_GeomFromText('MultiPolygon(((0 0, 1 0, 1 1, 0 1, 0 0)),((2 2, 3 2, 3 3, 2 3, 2 2)))')">
+                <expr>
+                    <function function-name="ST_GeomFromText" text="ST_GeomFromText('MultiPolygon(((0 0, 1 0, 1 1, 0 1, 0 0)),((2 2, 3 2, 3 3, 2 3, 2 2)))')" start-index="7" stop-index="94">
+                        <parameter>
+                            <literal-expression value="MultiPolygon(((0 0, 1 0, 1 1, 0 1, 0 0)),((2 2, 3 2, 3 3, 2 3, 2 2)))" start-index="23" stop-index="93" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
