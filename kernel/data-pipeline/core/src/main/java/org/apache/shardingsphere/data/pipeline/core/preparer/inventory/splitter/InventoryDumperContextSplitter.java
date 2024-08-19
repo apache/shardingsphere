@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.splitter;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Range;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
@@ -55,7 +54,6 @@ import java.util.stream.Collectors;
  * Inventory task splitter.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class InventoryDumperContextSplitter {
     
     private final PipelineDataSourceWrapper sourceDataSource;

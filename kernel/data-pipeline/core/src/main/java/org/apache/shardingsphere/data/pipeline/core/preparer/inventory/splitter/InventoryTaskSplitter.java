@@ -70,7 +70,7 @@ public final class InventoryTaskSplitter {
             result.add(new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(each),
                     processContext.getInventoryDumperExecuteEngine(), processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));
         }
-        log.info("splitInventoryData cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        log.info("Split inventory tasks cost {} ms", System.currentTimeMillis() - startTimeMillis);
         return result;
     }
 }
