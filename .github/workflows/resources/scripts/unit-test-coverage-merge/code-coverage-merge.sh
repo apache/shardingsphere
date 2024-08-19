@@ -1,17 +1,10 @@
 #!/bin/bash
 
-# Get file directory and output directory
-#current="${{ github.workspace }}"
-
-# Use loop to get root directory, if module doesn't change, the loop needn't change
-#for i in {1..5}; do
-#  current=$(dirname "$current")
-#done
-
+#Get project path
 project="$1"
 target="$project/target"
-
 echo $target
+
 # Create corresponding folders
 mkdir -p $target/mergeClassFile
 mkdir -p $target/mergeExecFile
