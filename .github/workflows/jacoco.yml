@@ -46,6 +46,6 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ${{ github.workspace }}/target/mergeReport/jacoco.xml/target/mergeReport/jacoco.xml
+          files: ${{ github.workspace }}/target/mergeReport/jacoco.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
