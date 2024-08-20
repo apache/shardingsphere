@@ -19,7 +19,7 @@ databaseName: db
 
 dataSources:
   ds_0:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_0
+    url: jdbc:postgresql://postgresql.db.host:5432/db_0?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -29,7 +29,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_1:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_1
+    url: jdbc:postgresql://postgresql.db.host:5432/db_1?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -39,7 +39,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_2:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_2
+    url: jdbc:postgresql://postgresql.db.host:5432/db_2?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -49,7 +49,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_3:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_3
+    url: jdbc:postgresql://postgresql.db.host:5432/db_3?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -59,7 +59,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_4:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_4
+    url: jdbc:postgresql://postgresql.db.host:5432/db_4?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -69,7 +69,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_5:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_5
+    url: jdbc:postgresql://postgresql.db.host:5432/db_5?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -79,7 +79,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_6:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_6
+    url: jdbc:postgresql://postgresql.db.host:5432/db_6?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -89,7 +89,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_7:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_7
+    url: jdbc:postgresql://postgresql.db.host:5432/db_7?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -99,7 +99,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_8:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_8
+    url: jdbc:postgresql://postgresql.db.host:5432/db_8?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -109,7 +109,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 2
   ds_9:
-    url: jdbc:postgresql://postgresql.db.host:5432/db_9
+    url: jdbc:postgresql://postgresql.db.host:5432/db_9?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

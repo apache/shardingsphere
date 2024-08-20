@@ -19,7 +19,7 @@ databaseName: passthrough
 
 dataSources:
   passthrough:
-    url: jdbc:postgresql://postgresql.passthrough.host:5432/passthrough
+    url: jdbc:postgresql://postgresql.passthrough.host:5432/passthrough?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

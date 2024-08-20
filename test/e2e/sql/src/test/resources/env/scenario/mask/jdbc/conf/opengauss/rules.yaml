@@ -19,7 +19,7 @@ databaseName: mask
 
 dataSources:
   encrypt:
-    url: jdbc:opengauss://opengauss.mask.host:5432/mask
+    url: jdbc:opengauss://opengauss.mask.host:5432/mask?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

@@ -19,7 +19,7 @@ databaseName: sharding_and_encrypt
 
 dataSources:
   encrypt_ds_0:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_0
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_0?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -29,7 +29,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_1:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_1
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_1?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -39,7 +39,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_2:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_2
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_2?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -49,7 +49,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_3:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_3
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_3?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -59,7 +59,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_4:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_4
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_4?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -69,7 +69,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_5:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_5
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_5?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -79,7 +79,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_6:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_6
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_6?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -89,7 +89,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_7:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_7
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_7?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -99,7 +99,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_8:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_8
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_8?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -109,7 +109,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_ds_9:
-    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_9
+    url: jdbc:opengauss://opengauss.sharding_and_encrypt.host:5432/encrypt_ds_9?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

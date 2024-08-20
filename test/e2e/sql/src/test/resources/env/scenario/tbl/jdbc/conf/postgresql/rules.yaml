@@ -19,7 +19,7 @@ databaseName: tbl
 
 dataSources:
   tbl:
-    url: jdbc:postgresql://postgresql.tbl.host:5432/tbl
+    url: jdbc:postgresql://postgresql.tbl.host:5432/tbl?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
