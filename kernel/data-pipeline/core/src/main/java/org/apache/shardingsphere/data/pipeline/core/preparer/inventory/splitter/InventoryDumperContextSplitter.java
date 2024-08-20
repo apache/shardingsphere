@@ -76,7 +76,6 @@ public final class InventoryDumperContextSplitter {
     
     private InventoryDumperContext createTableSpLitDumperContext(final CaseInsensitiveIdentifier actualTableName, final CaseInsensitiveIdentifier logicTableName) {
         InventoryDumperContext result = new InventoryDumperContext(dumperContext.getCommonContext());
-        // use original table name, for metadata loader, since some database table name case-sensitive
         result.setActualTableName(actualTableName.toString());
         result.setLogicTableName(logicTableName.toString());
         result.getCommonContext().setPosition(new IngestPlaceholderPosition());
