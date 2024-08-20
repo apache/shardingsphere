@@ -19,7 +19,7 @@ databaseName: distsql_rdl
 
 dataSources:
   ds_0:
-    url: jdbc:opengauss://opengauss.distsql_rdl.host:5432/rdl_ds_0
+    url: jdbc:opengauss://opengauss.distsql_rdl.host:5432/rdl_ds_0?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -29,7 +29,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_1:
-    url: jdbc:opengauss://opengauss.distsql_rdl.host:5432/rdl_ds_1
+    url: jdbc:opengauss://opengauss.distsql_rdl.host:5432/rdl_ds_1?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -39,7 +39,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_2:
-    url: jdbc:opengauss://opengauss.distsql_rdl.host:5432/rdl_ds_2
+    url: jdbc:opengauss://opengauss.distsql_rdl.host:5432/rdl_ds_2?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

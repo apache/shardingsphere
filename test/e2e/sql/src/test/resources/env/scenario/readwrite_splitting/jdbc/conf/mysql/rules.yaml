@@ -19,7 +19,7 @@ databaseName: readwrite_splitting
 
 dataSources:
   write_ds:
-    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/write_ds?useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/write_ds?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -29,7 +29,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_0:
-    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_0?useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_0?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -39,7 +39,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_1:
-    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_1?useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_1?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

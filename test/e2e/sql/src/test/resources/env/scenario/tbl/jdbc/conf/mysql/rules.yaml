@@ -19,7 +19,7 @@ databaseName: tbl
 
 dataSources:
   tbl:
-    url: jdbc:mysql://mysql.tbl.host:3306/tbl?useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.tbl.host:3306/tbl?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

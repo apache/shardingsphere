@@ -19,7 +19,7 @@ databaseName: readwrite_splitting_and_shadow
 
 dataSources:
   write_db:
-    url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/write_db
+    url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/write_db?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -29,7 +29,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   write_db_shadow:
-    url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/write_db_shadow
+    url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/write_db_shadow?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -39,7 +39,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_0:
-    url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/read_0
+    url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/read_0?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -49,7 +49,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   read_1:
-    url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/read_1
+    url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/read_1?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

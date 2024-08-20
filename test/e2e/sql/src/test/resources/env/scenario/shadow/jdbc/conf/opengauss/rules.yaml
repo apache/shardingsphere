@@ -19,7 +19,7 @@ databaseName: shadow
 
 dataSources:
   db:
-    url: jdbc:opengauss://opengauss.shadow.host:5432/db
+    url: jdbc:opengauss://opengauss.shadow.host:5432/db?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -29,7 +29,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db:
-    url: jdbc:opengauss://opengauss.shadow.host:5432/shadow_db
+    url: jdbc:opengauss://opengauss.shadow.host:5432/shadow_db?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

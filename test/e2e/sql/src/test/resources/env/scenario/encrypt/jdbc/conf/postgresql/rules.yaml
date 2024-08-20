@@ -19,7 +19,7 @@ databaseName: encrypt
 
 dataSources:
   encrypt:
-    url: jdbc:postgresql://postgresql.encrypt.host:5432/encrypt
+    url: jdbc:postgresql://postgresql.encrypt.host:5432/encrypt?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

@@ -19,7 +19,7 @@ databaseName: tbl
 
 dataSources:
   tbl:
-    url: jdbc:opengauss://opengauss.tbl.host:5432/tbl
+    url: jdbc:opengauss://opengauss.tbl.host:5432/tbl?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
