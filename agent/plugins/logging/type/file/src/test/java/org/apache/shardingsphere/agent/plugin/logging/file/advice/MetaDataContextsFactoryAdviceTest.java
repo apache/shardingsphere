@@ -21,11 +21,11 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,7 +48,7 @@ class MetaDataContextsFactoryAdviceTest {
     @Test
     void assertLog() {
         MetaDataContextsFactoryAdvice advice = new MetaDataContextsFactoryAdvice();
-        Method method = mock(Method.class);
+        TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         advice.beforeMethod(null, method, new Object[]{}, "FIXTURE");
         advice.afterMethod(null, method, new Object[]{}, null, "FIXTURE");
         List<ILoggingEvent> logsList = listAppender.list;

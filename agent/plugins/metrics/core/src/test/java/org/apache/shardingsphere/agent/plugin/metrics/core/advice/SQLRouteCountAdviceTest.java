@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateState
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -90,7 +90,7 @@ class SQLRouteCountAdviceTest {
     }
     
     void assertRoute(final QueryContext queryContext, final String expected) {
-        advice.beforeMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{new ConnectionContext(Collections::emptySet), queryContext}, "FIXTURE");
+        advice.beforeMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{new ConnectionContext(Collections::emptySet), queryContext}, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
     }
 }

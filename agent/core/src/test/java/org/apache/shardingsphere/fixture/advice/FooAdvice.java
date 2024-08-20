@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.fixture.advice;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
@@ -34,37 +34,37 @@ public final class FooAdvice implements ConstructorAdvice, InstanceMethodAdvice,
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    public void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         List<String> queue = (List<String>) args[0];
         queue.add("foo before instance method");
     }
     
     @Override
-    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final String pluginType) {
+    public void beforeMethod(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         List<String> queue = (List<String>) args[0];
         queue.add("foo before static method");
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+    public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         List<String> queue = (List<String>) args[0];
         queue.add("foo after instance method");
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result, final String pluginType) {
+    public void afterMethod(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         List<String> queue = (List<String>) args[0];
         queue.add("foo after static method");
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
         List<String> queue = (List<String>) args[0];
         queue.add("foo throw instance method exception");
     }
     
     @Override
-    public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    public void onThrowing(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
         List<String> queue = (List<String>) args[0];
         queue.add("foo throw static method exception");
     }
