@@ -120,7 +120,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
-        if (databaseType instanceof OracleDatabaseType) {
+        if (databaseType.isSubtypeOfTrunkDatabase(OracleDatabaseType.class)) {
             return String.format("jdbc:mysql://localhost:3307/%s?useSSL=false", databaseName);
         }
         return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);

@@ -209,7 +209,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             return;
         }
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-            String databaseName = databaseType instanceof OracleDatabaseType ? each.toUpperCase() : each;
+            String databaseName = databaseType.isSubtypeOfTrunkDatabase(OracleDatabaseType.class) ? each.toUpperCase() : each;
             containerComposer.cleanUpDatabase(databaseName);
         }
     }
@@ -238,7 +238,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void registerStorageUnit(final String storageUnitName) throws SQLException {
-        String username = databaseType instanceof OracleDatabaseType ? storageUnitName : getUsername();
+        String username = databaseType.isSubtypeOfTrunkDatabase(OracleDatabaseType.class) ? storageUnitName : getUsername();
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
                 .replace("${user}", username)
                 .replace("${password}", getPassword())
@@ -296,7 +296,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @return actual JDBC URL template
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
-        if (databaseType instanceof OracleDatabaseType) {
+        if (databaseType.isSubtypeOfTrunkDatabase(OracleDatabaseType.class)) {
             return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
         }
         return appendExtraParameter(getActualJdbcUrlTemplate(databaseName, isInContainer, 0));

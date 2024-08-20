@@ -53,7 +53,8 @@ public final class TableRefreshUtils {
      * @return table name
      */
     public static String getTableName(final DatabaseType databaseType, final IdentifierValue identifierValue) {
-        return databaseType instanceof OracleDatabaseType && QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? identifierValue.getValue().toUpperCase() : identifierValue.getValue();
+        return databaseType.isSubtypeOfTrunkDatabase(OracleDatabaseType.class) && QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? identifierValue.getValue().toUpperCase()
+                : identifierValue.getValue();
     }
     
     /**

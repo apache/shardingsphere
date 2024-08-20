@@ -45,6 +45,16 @@ public interface DatabaseType extends TypedSPI {
         return Optional.empty();
     }
     
+    /**
+     * Judge whether current database type is instance of trunk database type.
+     *
+     * @param databaseTypeClass database type class
+     * @return true if current database type is instance of trunk database type, otherwise false
+     */
+    default boolean isSubtypeOfTrunkDatabase(Class<? extends DatabaseType> databaseTypeClass) {
+        return databaseTypeClass.isInstance(this) || getTrunkDatabaseType().map(databaseType -> databaseType.isSubtypeOfTrunkDatabase(databaseTypeClass)).orElse(false);
+    }
+    
     @Override
     String getType();
 }
