@@ -17,34 +17,89 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineDataConsistencyCalculateSQLBuilderTest {
     
+    private static final Collection<String> COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status");
+    
+    private static final List<String> UNIQUE_KEYS = Arrays.asList("order_id", "status");
+    
+    private static final List<String> SHARDING_COLUMNS_NAMES = Collections.singletonList("user_id");
+    
     private final PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     
     @Test
-    void assertBuildQueryAllOrderingSQLFirstQuery() {
-        String actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", true);
-        assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
-        actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
+    void assertBuildQueryRangeOrderingSQLWithoutQueryCondition() {
+        String actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(1, true, 5), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(1, false, 5), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(1, false, null), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(null, false, 5), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(null, false, null), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
     }
     
     @Test
-    void assertBuildQueryAllOrderingSQLNonFirstQuery() {
-        String actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Collections.singletonList("*"), "order_id", false);
-        assertThat(actual, is("SELECT * FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
-        actual = pipelineSQLBuilder.buildQueryAllOrderingSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
+    void assertBuildQueryRangeOrderingSQLWithQueryCondition() {
+        String actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(1, true, 5), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=?"
+                + " ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(1, false, 5), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=?"
+                + " ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(1, true, null), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=?"
+                + " ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(null, true, 5), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=?"
+                + " ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+                new QueryRange(null, false, null), SHARDING_COLUMNS_NAMES);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+    }
+    
+    @Test
+    void assertBuildPointQuerySQLWithoutQueryCondition() {
+        String actual = pipelineSQLBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, null);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
+        actual = pipelineSQLBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList());
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
+        actual = pipelineSQLBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, Collections.singletonList("user_id"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=? AND user_id=?"));
+    }
+    
+    @Test
+    void assertBuildPointQuerySQLWithQueryCondition() {
+        String actual = pipelineSQLBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, null);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
+        actual = pipelineSQLBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList());
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
+        actual = pipelineSQLBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, Collections.singletonList("user_id"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=? AND user_id=?"));
     }
 }

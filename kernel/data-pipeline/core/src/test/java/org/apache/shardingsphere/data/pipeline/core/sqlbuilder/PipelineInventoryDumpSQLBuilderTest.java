@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,14 +34,18 @@ class PipelineInventoryDumpSQLBuilderTest {
     
     @Test
     void assertBuildDivisibleSQL() {
-        String actual = inventoryDumpSQLBuilder.buildDivisibleSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
+        String actual = inventoryDumpSQLBuilder.buildDivisibleSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC LIMIT ?"));
+        actual = inventoryDumpSQLBuilder.buildDivisibleSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC LIMIT ?"));
     }
     
     @Test
     void assertBuildUnlimitedDivisibleSQL() {
-        String actual = inventoryDumpSQLBuilder.buildUnlimitedDivisibleSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
+        String actual = inventoryDumpSQLBuilder.buildUnlimitedDivisibleSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC LIMIT ?"));
+        actual = inventoryDumpSQLBuilder.buildUnlimitedDivisibleSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false);
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC LIMIT ?"));
     }
     
     @Test
@@ -50,8 +55,16 @@ class PipelineInventoryDumpSQLBuilderTest {
     }
     
     @Test
+    void assertBuildPointQuerySQL() {
+        String actual = inventoryDumpSQLBuilder.buildPointQuerySQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=?"));
+    }
+    
+    @Test
     void assertBuildFetchAllSQL() {
-        String actual = inventoryDumpSQLBuilder.buildFetchAllSQL(null, "t_order");
+        String actual = inventoryDumpSQLBuilder.buildFetchAllSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order"));
+        actual = inventoryDumpSQLBuilder.buildFetchAllSQL(null, "t_order", Collections.singletonList("*"));
         assertThat(actual, is("SELECT * FROM t_order"));
     }
 }

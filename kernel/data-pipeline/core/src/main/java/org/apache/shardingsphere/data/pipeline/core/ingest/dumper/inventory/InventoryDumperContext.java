@@ -46,6 +46,8 @@ public final class InventoryDumperContext {
     
     private String querySQL;
     
+    private List<Object> queryParams;
+    
     private Integer transactionIsolation;
     
     private int shardingItem;

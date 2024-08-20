@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.Collection;
@@ -28,9 +30,12 @@ import java.util.stream.Collectors;
  */
 public final class PipelineInventoryDumpSQLBuilder {
     
+    private final DialectPipelineSQLBuilder dialectSQLBuilder;
+    
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
     public PipelineInventoryDumpSQLBuilder(final DatabaseType databaseType) {
+        dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
     }
     
@@ -41,12 +46,15 @@ public final class PipelineInventoryDumpSQLBuilder {
      * @param tableName table name
      * @param columnNames column names
      * @param uniqueKey unique key
+     * @param lowerInclusive lower inclusive or not
      * @return built SQL
      */
-    public String buildDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
+    public String buildDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey, final boolean lowerInclusive) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
         String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? AND %s<=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey, escapedUniqueKey);
+        String result = String.format("SELECT %s FROM %s WHERE %s%s? AND %s<=? ORDER BY %s ASC",
+                buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, lowerInclusive ? ">=" : ">", escapedUniqueKey, escapedUniqueKey);
+        return dialectSQLBuilder.wrapWithPageQuery(result);
     }
     
     /**
@@ -56,16 +64,19 @@ public final class PipelineInventoryDumpSQLBuilder {
      * @param tableName table name
      * @param columnNames column names
      * @param uniqueKey unique key
+     * @param lowerInclusive lower inclusive or not
      * @return built SQL
      */
-    public String buildUnlimitedDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
+    public String buildUnlimitedDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey, final boolean lowerInclusive) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
         String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey);
+        String result = String.format("SELECT %s FROM %s WHERE %s%s? ORDER BY %s ASC",
+                buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, lowerInclusive ? ">=" : ">", escapedUniqueKey);
+        return dialectSQLBuilder.wrapWithPageQuery(result);
     }
     
     /**
-     * Build indivisible inventory dump first SQL.
+     * Build indivisible inventory dump SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
@@ -84,14 +95,32 @@ public final class PipelineInventoryDumpSQLBuilder {
     }
     
     /**
+     * Build point query SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param columnNames column names
+     * @param uniqueKey unique key
+     * @return built SQL
+     */
+    public String buildPointQuerySQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
+        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        return String.format("SELECT %s FROM %s WHERE %s=?", queryColumns, qualifiedTableName, escapedUniqueKey);
+    }
+    
+    /**
      * Build fetch all inventory dump SQL.
      *
      * @param schemaName schema name
      * @param tableName tableName
+     * @param columnNames column names
      * @return built SQL
      */
-    public String buildFetchAllSQL(final String schemaName, final String tableName) {
+    public String buildFetchAllSQL(final String schemaName, final String tableName, final Collection<String> columnNames) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        return String.format("SELECT * FROM %s", qualifiedTableName);
+        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
+        return String.format("SELECT %s FROM %s", queryColumns, qualifiedTableName);
     }
 }
