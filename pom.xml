@@ -1023,6 +1023,7 @@
                             <configuration>
                                 <includes>
                                     <include>org.apache.shardingsphere.test.natived.**</include>
+                                    <include>org.apache.shardingsphere.test.e2e.**</include>
                                 </includes>
                             </configuration>
                         </plugin>
@@ -1082,6 +1083,7 @@
                             <configuration>
                                 <includes>
                                     <include>org.apache.shardingsphere.test.natived.**</include>
+                                    <include>org.apache.shardingsphere.test.e2e.**</include>
                                 </includes>
                             </configuration>
                         </plugin>

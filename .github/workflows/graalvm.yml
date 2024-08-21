@@ -55,5 +55,34 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
           native-image-job-reports: 'true'
+      - name: Run test with GraalVM Tracing Agent
+        run: |
+          ./mvnw -B clean install -am -pl test/e2e/operation/transaction -Pit.env.docker -DskipTests
+          ./mvnw -PgenerateMetadata -DskipNativeTests -e clean test native:metadata-copy -Dtransaction.it.env.type=docker -Dtransaction.it.docker.mysql.version=mysql:5.7
       - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
-        run: ./mvnw -PnativeTestInShardingSphere -e clean test
+        run: |
+          ./mvnw -PnativeTestInShardingSphere -e clean test
+      - name: Run transaction on mysql:5.7
+        run: |
+          ./mvnw -B clean install -am -pl test/e2e/operation/transaction -Pit.env.docker -DskipTests
+          ./mvnw -PnativeTestInShardingSphere -e clean test -Dtransaction.it.env.type=docker -Dtransaction.it.docker.mysql.version=mysql:5.7
+      - name: Run transaction on postgres:12-alpine
+        run: |
+          ./mvnw -B clean install -am -pl test/e2e/operation/transaction -Pit.env.docker -DskipTests
+          ./mvnw -PnativeTestInShardingSphere -e clean test -Dtransaction.it.env.type=docker -Dtransaction.it.docker.postgresql.version=postgres:12-alpine
+      - name: Run pipeline on mysql:5.7
+        run: |
+          ./mvnw -B clean install -am -pl test/e2e/operation/pipeline -Pit.env.docker -DskipTests
+          ./mvnw -PnativeTestInShardingSphere -e clean test -Dpipeline.it.env.type=docker -Dpipeline.it.docker.mysql.version=mysql:5.7
+      - name: Run pipeline on postgres:12-alpine
+        run: |
+          ./mvnw -B clean install -am -pl test/e2e/operation/pipeline -Pit.env.docker -DskipTests
+          ./mvnw -PnativeTestInShardingSphere -e clean test -Dpipeline.it.env.type=docker -Dpipeline.it.docker.postgresql.version=postgres:12-alpine
+      - name: Run pipeline on mariadb:11
+        run: |
+          ./mvnw -B clean install -am -pl test/e2e/operation/pipeline -Pit.env.docker -DskipTests
+          ./mvnw -PnativeTestInShardingSphere -e clean test -Dpipeline.it.env.type=docker -Dpipeline.it.docker.mariadb.version=mariadb:5.7
+      - name: Run showprocesslist on mysql:5.7
+        run: |
+          ./mvnw -B clean install -am -pl test/e2e/operation/showprocesslist -Pit.env.docker -DskipTests
+          ./mvnw -PnativeTestInShardingSphere -e clean test -Dshowprocesslist.it.env.type=docker -Dshowprocesslist.it.docker.mysql.version=mysql:5.7
