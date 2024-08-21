@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -53,7 +53,8 @@ public final class TableRefreshUtils {
      * @return table name
      */
     public static String getTableName(final DatabaseType databaseType, final IdentifierValue identifierValue) {
-        return databaseType instanceof OracleDatabaseType && QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? identifierValue.getValue().toUpperCase() : identifierValue.getValue();
+        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().formatTableNamePattern(identifierValue.getValue())
+                : identifierValue.getValue();
     }
     
     /**
