@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Context manager holder.
+ * ShardingSphere data source context holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereDataSourceContextHolder {
@@ -45,7 +45,7 @@ public final class ShardingSphereDataSourceContextHolder {
     /**
      * Remove.
      *
-     * @param instanceId instance Id
+     * @param instanceId instance id
      */
     public static void remove(final String instanceId) {
         DATA_SOURCE_CONTEXTS.remove(instanceId);
