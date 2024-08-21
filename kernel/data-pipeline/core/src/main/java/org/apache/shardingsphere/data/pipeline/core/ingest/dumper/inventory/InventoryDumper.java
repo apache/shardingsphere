@@ -21,11 +21,12 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -43,11 +44,12 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTable
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInventoryDumpSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,19 +58,21 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Inventory dumper.
  */
 @HighFrequencyInvocation
 @Slf4j
-public final class InventoryDumper extends AbstractPipelineLifecycleRunnable implements Dumper {
+public class InventoryDumper extends AbstractPipelineLifecycleRunnable implements Dumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperContext dumperContext;
@@ -84,6 +88,11 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     private final InventoryColumnValueReaderEngine columnValueReaderEngine;
     
     private final AtomicReference<Statement> runningStatement = new AtomicReference<>();
+    
+    private PipelineTableMetaData tableMetaData;
+    
+    // TODO now Remove
+    private List<CaseInsensitiveIdentifier> uniqueKeysNames = Collections.emptyList();
     
     public InventoryDumper(final InventoryDumperContext dumperContext, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         this.dumperContext = dumperContext;
@@ -102,29 +111,58 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
             log.info("Ignored because of already finished.");
             return;
         }
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(
-                dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName()), dumperContext.getActualTableName());
+        init();
         try (Connection connection = dataSource.getConnection()) {
-            dump(tableMetaData, connection);
-        } catch (final SQLException ex) {
-            log.error("Inventory dump, ex caught, msg={}.", ex.getMessage());
+            if (!Strings.isNullOrEmpty(dumperContext.getQuerySQL()) || !dumperContext.hasUniqueKey()
+                    || position instanceof PrimaryKeyIngestPosition && null == ((PrimaryKeyIngestPosition<?>) position).getBeginValue()
+                            && null == ((PrimaryKeyIngestPosition<?>) position).getEndValue()) {
+                dumpWithStreamingQuery(connection);
+            } else {
+                dumpPageByPage(connection);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final SQLException | RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("Inventory dump failed on {}", dumperContext.getActualTableName(), ex);
             throw new IngestException("Inventory dump failed on " + dumperContext.getActualTableName(), ex);
         }
     }
     
+    /**
+     * Initialize.
+     */
+    public void init() {
+        if (null == uniqueKeysNames) {
+            uniqueKeysNames = getUniqueKeysNames();
+        }
+        if (null == tableMetaData) {
+            tableMetaData = metaDataLoader.getTableMetaData(
+                    dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName()), dumperContext.getActualTableName());
+        }
+    }
+    
+    private List<CaseInsensitiveIdentifier> getUniqueKeysNames() {
+        if (dumperContext.hasUniqueKey()) {
+            return dumperContext.getUniqueKeyColumns().stream().map(each -> new CaseInsensitiveIdentifier(each.getName())).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+    
     @SuppressWarnings("MagicConstant")
-    private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
+    private void dumpWithStreamingQuery(final Connection connection) throws SQLException {
         int batchSize = dumperContext.getBatchSize();
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         if (null != dumperContext.getTransactionIsolation()) {
             connection.setTransactionIsolation(dumperContext.getTransactionIsolation());
         }
-        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpSQL())) {
+        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpSQLWithStreamingQuery())) {
             runningStatement.set(preparedStatement);
-            if (!(databaseType instanceof MySQLDatabaseType)) {
+            if (!DatabaseTypeUtils.isMySQL(databaseType)) {
                 preparedStatement.setFetchSize(batchSize);
             }
-            setParameters(preparedStatement);
+            PrimaryKeyIngestPosition<?> primaryPosition = (PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition();
+            InventoryQueryParameter queryParam = InventoryQueryParameter.buildForRangeQuery(new QueryRange(primaryPosition.getBeginValue(), true, primaryPosition.getEndValue()));
+            setParameters(preparedStatement, queryParam, true);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 int rowCount = 0;
                 JobRateLimitAlgorithm rateLimitAlgorithm = dumperContext.getRateLimitAlgorithm();
@@ -135,7 +173,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                         channel.push(dataRecords);
                         dataRecords = new LinkedList<>();
                     }
-                    dataRecords.add(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
+                    dataRecords.add(loadDataRecord(resultSet, resultSetMetaData));
                     ++rowCount;
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
@@ -147,72 +185,166 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                 }
                 dataRecords.add(new FinishedRecord(new IngestFinishedPosition()));
                 channel.push(dataRecords);
-                log.info("Inventory dump done, rowCount={}, dataSource={}, actualTable={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
+                log.info("Inventory dump with streaming query done, rowCount={}, dataSource={}, actualTable={}",
+                        rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
             } finally {
                 runningStatement.set(null);
             }
         }
     }
     
-    private String buildInventoryDumpSQL() {
+    private String buildInventoryDumpSQLWithStreamingQuery() {
         if (!Strings.isNullOrEmpty(dumperContext.getQuerySQL())) {
             return dumperContext.getQuerySQL();
         }
         String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
-        if (!dumperContext.hasUniqueKey()) {
-            return inventoryDumpSQLBuilder.buildFetchAllSQL(schemaName, dumperContext.getActualTableName());
-        }
-        PrimaryKeyIngestPosition<?> primaryKeyPosition = (PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition();
-        PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
-        Collection<String> columnNames = Collections.singleton("*");
-        if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) || PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
-            if (null != primaryKeyPosition.getBeginValue() && null != primaryKeyPosition.getEndValue()) {
-                return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName());
-            }
-            if (null != primaryKeyPosition.getBeginValue() && null == primaryKeyPosition.getEndValue()) {
-                return inventoryDumpSQLBuilder.buildUnlimitedDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName());
-            }
-        }
-        return inventoryDumpSQLBuilder.buildIndivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName());
+        List<String> columnNames = getQueryColumnNames();
+        return inventoryDumpSQLBuilder.buildFetchAllSQL(schemaName, dumperContext.getActualTableName(), columnNames);
     }
     
-    private void setParameters(final PreparedStatement preparedStatement) throws SQLException {
+    @SuppressWarnings("MagicConstant")
+    private void dumpPageByPage(final Connection connection) throws SQLException {
+        if (null != dumperContext.getTransactionIsolation()) {
+            connection.setTransactionIsolation(dumperContext.getTransactionIsolation());
+        }
+        boolean firstQuery = true;
+        AtomicLong rowCount = new AtomicLong();
+        IngestPosition position = dumperContext.getCommonContext().getPosition();
+        while (true) {
+            PrimaryKeyIngestPosition<?> primaryPosition = (PrimaryKeyIngestPosition<?>) position;
+            InventoryQueryParameter queryParam = InventoryQueryParameter.buildForRangeQuery(new QueryRange(primaryPosition.getBeginValue(), firstQuery, primaryPosition.getEndValue()));
+            List<Record> dataRecords = dumpPageByPage0(connection, queryParam, rowCount);
+            if (dataRecords.size() > 1 && Objects.deepEquals(getFirstUniqueKeyValue(dataRecords, 0), getFirstUniqueKeyValue(dataRecords, dataRecords.size() - 1))) {
+                queryParam = InventoryQueryParameter.buildForPointQuery(getFirstUniqueKeyValue(dataRecords, 0));
+                dataRecords = dumpPageByPage0(connection, queryParam, rowCount);
+            }
+            firstQuery = false;
+            if (dataRecords.isEmpty()) {
+                position = new IngestFinishedPosition();
+                dataRecords.add(new FinishedRecord(position));
+                log.info("Inventory dump done, rowCount={}, dataSource={}, actualTable={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
+            } else {
+                position = PrimaryKeyIngestPositionFactory.newInstance(getFirstUniqueKeyValue(dataRecords, dataRecords.size() - 1), primaryPosition.getEndValue());
+            }
+            channel.push(dataRecords);
+            dumperContext.getCommonContext().setPosition(position);
+            if (position instanceof IngestFinishedPosition) {
+                break;
+            }
+        }
+    }
+    
+    private Object getFirstUniqueKeyValue(final List<Record> dataRecords, final int index) {
+        return ((DataRecord) dataRecords.get(index)).getUniqueKeyValue().iterator().next();
+    }
+    
+    private List<Record> dumpPageByPage0(final Connection connection, final InventoryQueryParameter queryParam,
+                                         final AtomicLong rowCount) throws SQLException {
+        DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
+        int batchSize = dumperContext.getBatchSize();
+        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpPageByPageSQL(queryParam))) {
+            runningStatement.set(preparedStatement);
+            if (!DatabaseTypeUtils.isMySQL(databaseType)) {
+                preparedStatement.setFetchSize(batchSize);
+            }
+            setParameters(preparedStatement, queryParam, false);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                JobRateLimitAlgorithm rateLimitAlgorithm = dumperContext.getRateLimitAlgorithm();
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                List<Record> result = new LinkedList<>();
+                while (resultSet.next()) {
+                    if (result.size() >= batchSize) {
+                        if (!dumperContext.hasUniqueKey()) {
+                            channel.push(result);
+                        }
+                        result = new LinkedList<>();
+                    }
+                    result.add(loadDataRecord(resultSet, resultSetMetaData));
+                    rowCount.incrementAndGet();
+                    if (!isRunning()) {
+                        log.info("Broke because of inventory dump is not running.");
+                        break;
+                    }
+                    if (null != rateLimitAlgorithm && 0 == rowCount.get() % batchSize) {
+                        rateLimitAlgorithm.intercept(PipelineSQLOperationType.SELECT, 1);
+                    }
+                }
+                return result;
+            } finally {
+                runningStatement.set(null);
+            }
+        }
+    }
+    
+    private String buildInventoryDumpPageByPageSQL(final InventoryQueryParameter queryParam) {
+        String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
+        PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
+        List<String> columnNames = getQueryColumnNames();
+        if (QueryType.POINT_QUERY == queryParam.getQueryType()) {
+            return inventoryDumpSQLBuilder.buildPointQuerySQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName());
+        }
+        QueryRange queryRange = queryParam.getUniqueKeyValueRange();
+        boolean lowerInclusive = queryRange.isLowerInclusive();
+        if (null != queryRange.getLower() && null != queryRange.getUpper()) {
+            return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive);
+        }
+        if (null != queryRange.getLower()) {
+            return inventoryDumpSQLBuilder.buildUnlimitedDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive);
+        }
+        throw new PipelineInternalException("Primary key position is invalid.");
+    }
+    
+    private List<String> getQueryColumnNames() {
+        return Optional.ofNullable(dumperContext.getInsertColumnNames()).orElse(Collections.singletonList("*"));
+    }
+    
+    private void setParameters(final PreparedStatement preparedStatement, final InventoryQueryParameter queryParam, final boolean streamingQuery) throws SQLException {
+        if (!Strings.isNullOrEmpty(dumperContext.getQuerySQL())) {
+            for (int i = 0; i < dumperContext.getQueryParams().size(); i++) {
+                preparedStatement.setObject(i + 1, dumperContext.getQueryParams().get(i));
+            }
+            return;
+        }
         if (!dumperContext.hasUniqueKey()) {
             return;
         }
-        PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
-        PrimaryKeyIngestPosition<?> position = (PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition();
-        if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) && null != position.getBeginValue() && null != position.getEndValue()) {
-            preparedStatement.setObject(1, position.getBeginValue());
-            preparedStatement.setObject(2, position.getEndValue());
-            return;
-        }
-        if (PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
-            if (null != position.getBeginValue()) {
-                preparedStatement.setObject(1, position.getBeginValue());
+        int parameterIndex = 1;
+        if (QueryType.RANGE_QUERY == queryParam.getQueryType()) {
+            Object lower = queryParam.getUniqueKeyValueRange().getLower();
+            if (null != lower) {
+                preparedStatement.setObject(parameterIndex++, lower);
             }
-            if (null != position.getEndValue()) {
-                preparedStatement.setObject(2, position.getEndValue());
+            Object upper = queryParam.getUniqueKeyValueRange().getUpper();
+            if (null != upper) {
+                preparedStatement.setObject(parameterIndex++, upper);
             }
+            if (!streamingQuery) {
+                preparedStatement.setInt(parameterIndex, dumperContext.getBatchSize());
+            }
+        } else if (QueryType.POINT_QUERY == queryParam.getQueryType()) {
+            preparedStatement.setObject(parameterIndex, queryParam.getUniqueKeyValue());
+        } else {
+            throw new UnsupportedOperationException("Query type: " + queryParam.getQueryType());
         }
     }
     
-    private DataRecord loadDataRecord(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final PipelineTableMetaData tableMetaData) throws SQLException {
+    private DataRecord loadDataRecord(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();
-        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, dumperContext.getLogicTableName(), newPosition(resultSet), columnCount);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, dumperContext.getLogicTableName(), newDataRecordPosition(resultSet), columnCount);
         List<String> insertColumnNames = Optional.ofNullable(dumperContext.getInsertColumnNames()).orElse(Collections.emptyList());
         ShardingSpherePreconditions.checkState(insertColumnNames.isEmpty() || insertColumnNames.size() == resultSetMetaData.getColumnCount(),
-                () -> new PipelineInvalidParameterException("Insert colum names count not equals ResultSet column count"));
+                () -> new PipelineInvalidParameterException("Insert column names count not equals ResultSet column count"));
         for (int i = 1; i <= columnCount; i++) {
             String columnName = insertColumnNames.isEmpty() ? resultSetMetaData.getColumnName(i) : insertColumnNames.get(i - 1);
             ShardingSpherePreconditions.checkNotNull(tableMetaData.getColumnMetaData(columnName), () -> new PipelineInvalidParameterException(String.format("Column name is %s", columnName)));
             boolean isUniqueKey = tableMetaData.getColumnMetaData(columnName).isUniqueKey();
             result.addColumn(new Column(columnName, columnValueReaderEngine.read(resultSet, resultSetMetaData, i), true, isUniqueKey));
         }
+        result.setActualTableName(dumperContext.getActualTableName());
         return result;
     }
     
-    private IngestPosition newPosition(final ResultSet resultSet) throws SQLException {
+    protected IngestPosition newDataRecordPosition(final ResultSet resultSet) throws SQLException {
         return dumperContext.hasUniqueKey()
                 ? PrimaryKeyIngestPositionFactory.newInstance(
                         resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getEndValue())

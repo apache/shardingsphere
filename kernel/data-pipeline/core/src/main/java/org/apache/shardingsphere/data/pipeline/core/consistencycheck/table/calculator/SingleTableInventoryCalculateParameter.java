@@ -19,13 +19,18 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Single table inventory calculate parameter.
@@ -50,9 +55,27 @@ public final class SingleTableInventoryCalculateParameter {
      */
     private final List<PipelineColumnMetaData> uniqueKeys;
     
-    private final Object tableCheckPosition;
-    
     private final AtomicReference<AutoCloseable> calculationContext = new AtomicReference<>();
+    
+    private final AtomicReference<Collection<Object>> uniqueKeysValues = new AtomicReference<>();
+    
+    private final AtomicReference<QueryRange> uniqueKeysValuesRange = new AtomicReference<>();
+    
+    private final AtomicReference<List<String>> shardingColumnsNames = new AtomicReference<>();
+    
+    private final AtomicReference<List<Object>> shardingColumnsValues = new AtomicReference<>();
+    
+    private final QueryType queryType;
+    
+    public SingleTableInventoryCalculateParameter(final PipelineDataSourceWrapper dataSource, final CaseInsensitiveQualifiedTable table, final List<String> columnNames,
+                                                  final List<PipelineColumnMetaData> uniqueKeys, final Object tableCheckPosition) {
+        this.dataSource = dataSource;
+        this.table = table;
+        this.columnNames = columnNames;
+        this.uniqueKeys = uniqueKeys;
+        queryType = QueryType.RANGE_QUERY;
+        setQueryRange(new QueryRange(tableCheckPosition, false, null));
+    }
     
     /**
      * Get database type.
@@ -106,5 +129,86 @@ public final class SingleTableInventoryCalculateParameter {
      */
     public void setCalculationContext(final AutoCloseable calculationContext) {
         this.calculationContext.set(calculationContext);
+    }
+    
+    /**
+     * Get unique keys names.
+     *
+     * @return unique keys names
+     */
+    public List<String> getUniqueKeysNames() {
+        return uniqueKeys.stream().map(PipelineColumnMetaData::getName).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get unique keys values.
+     *
+     * @return unique keys values
+     */
+    public Collection<Object> getUniqueKeysValues() {
+        return uniqueKeysValues.get();
+    }
+    
+    /**
+     * Set unique keys values.
+     *
+     * @param uniqueKeysValues unique keys values
+     */
+    public void setUniqueKeysValues(final Collection<Object> uniqueKeysValues) {
+        this.uniqueKeysValues.set(uniqueKeysValues);
+    }
+    
+    /**
+     * Get query range.
+     *
+     * @return query range
+     */
+    public QueryRange getQueryRange() {
+        return uniqueKeysValuesRange.get();
+    }
+    
+    /**
+     * Set query range.
+     *
+     * @param queryRange query range
+     */
+    public void setQueryRange(final QueryRange queryRange) {
+        this.uniqueKeysValuesRange.set(queryRange);
+    }
+    
+    /**
+     * Get sharding columns names.
+     *
+     * @return sharding columns names
+     */
+    public @Nullable List<String> getShardingColumnsNames() {
+        return shardingColumnsNames.get();
+    }
+    
+    /**
+     * Set sharding columns names.
+     *
+     * @param shardingColumnsNames sharding columns names
+     */
+    public void setShardingColumnsNames(final List<String> shardingColumnsNames) {
+        this.shardingColumnsNames.set(shardingColumnsNames);
+    }
+    
+    /**
+     * Get sharding columns values.
+     *
+     * @return sharding columns values
+     */
+    public @Nullable List<Object> getShardingColumnsValues() {
+        return shardingColumnsValues.get();
+    }
+    
+    /**
+     * Set sharding columns values.
+     *
+     * @param shardingColumnsValues sharding columns values
+     */
+    public void setShardingColumnsValues(final List<Object> shardingColumnsValues) {
+        this.shardingColumnsValues.set(shardingColumnsValues);
     }
 }

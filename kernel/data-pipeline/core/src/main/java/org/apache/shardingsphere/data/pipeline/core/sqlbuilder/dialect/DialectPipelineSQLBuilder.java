@@ -100,4 +100,14 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     default Optional<String> buildQueryCurrentPositionSQL() {
         return Optional.empty();
     }
+    
+    /**
+     * Wrap with page query.
+     *
+     * @param sql SQL
+     * @return wrapped SQL
+     */
+    default String wrapWithPageQuery(String sql) {
+        return sql + " LIMIT ?";
+    }
 }
