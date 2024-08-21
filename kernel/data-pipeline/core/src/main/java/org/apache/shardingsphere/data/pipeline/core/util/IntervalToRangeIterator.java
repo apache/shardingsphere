@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 
 import org.apache.commons.lang3.Range;
 
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -30,11 +31,11 @@ import java.util.NoSuchElementException;
  */
 public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
     
-    private final long maximum;
+    private final BigInteger maximum;
     
-    private final long interval;
+    private final BigInteger interval;
     
-    private long current;
+    private BigInteger current;
     
     public IntervalToRangeIterator(final long minimum, final long maximum, final long interval) {
         if (minimum > maximum) {
@@ -43,14 +44,14 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
         if (interval < 0L) {
             throw new IllegalArgumentException("interval is less than zero");
         }
-        this.maximum = maximum;
-        this.interval = interval;
-        current = minimum;
+        this.maximum = BigInteger.valueOf(maximum);
+        this.interval = BigInteger.valueOf(interval);
+        this.current = BigInteger.valueOf(minimum);
     }
     
     @Override
     public boolean hasNext() {
-        return current <= maximum;
+        return current.compareTo(maximum) <= 0;
     }
     
     @Override
@@ -58,9 +59,13 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
         if (!hasNext()) {
             throw new NoSuchElementException("");
         }
-        long upperLimit = Math.min(maximum, current + interval);
-        Range<Long> result = Range.between(current, upperLimit);
-        current = upperLimit + 1L;
+        BigInteger upperLimit = min(maximum, current.add(interval));
+        Range<Long> result = Range.between(current.longValue(), upperLimit.longValue());
+        current = upperLimit.add(BigInteger.ONE);
         return result;
+    }
+    
+    private BigInteger min(final BigInteger one, final BigInteger another) {
+        return one.compareTo(another) < 0 ? one : another;
     }
 }
