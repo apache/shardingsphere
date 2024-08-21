@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContext;
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceHolder;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -34,14 +34,14 @@ public final class ShardingSphereDataSourceAdvice extends AbstractInstanceMethod
     public void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         if ("close".equals(method.getName())) {
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(target, "contextManager");
-            ShardingSphereDataSourceHolder.remove(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId());
+            ShardingSphereDataSourceContextHolder.remove(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId());
         }
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         if ("createContextManager".equals(method.getName())) {
-            ShardingSphereDataSourceHolder.put(((ContextManager) result).getComputeNodeInstanceContext().getInstance().getMetaData().getId(),
+            ShardingSphereDataSourceContextHolder.put(((ContextManager) result).getComputeNodeInstanceContext().getInstance().getMetaData().getId(),
                     new ShardingSphereDataSourceContext(AgentReflectionUtils.getFieldValue(target, "databaseName"), (ContextManager) result));
         }
     }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContext;
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceHolder;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -41,7 +41,7 @@ public final class JDBCStateExporter implements MetricsExporter {
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        for (Entry<String, ShardingSphereDataSourceContext> entry : ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().entrySet()) {
+        for (Entry<String, ShardingSphereDataSourceContext> entry : ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().entrySet()) {
             Optional.ofNullable(entry.getValue().getContextManager().getDatabase(entry.getValue().getDatabaseName()))
                     .ifPresent(optional -> result.addMetric(Arrays.asList(entry.getKey(), optional.getName()),
                             entry.getValue().getContextManager().getComputeNodeInstanceContext().getInstance().getState().getCurrentState().ordinal()));

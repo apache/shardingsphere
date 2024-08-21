@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.core.context;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceHolder;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -65,8 +65,8 @@ public final class PluginContext {
         if (isEnhancedForProxy) {
             return Optional.ofNullable(ProxyContext.getInstance().getContextManager());
         }
-        return ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().isEmpty()
+        return ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().isEmpty()
                 ? Optional.empty()
-                : Optional.of(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().values().iterator().next().getContextManager());
+                : Optional.of(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().values().iterator().next().getContextManager());
     }
 }

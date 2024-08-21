@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContext;
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceHolder;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -51,13 +51,13 @@ class JDBCMetaDataInfoExporterTest {
                 MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-JDBC",
                 Arrays.asList("driver_instance", "database", "type"), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
-        ShardingSphereDataSourceHolder.remove("sharding_db");
+        ShardingSphereDataSourceContextHolder.remove("sharding_db");
     }
     
     @Test
     void assertExport() {
         String instanceId = UUID.randomUUID().toString();
-        ShardingSphereDataSourceHolder.put(instanceId, new ShardingSphereDataSourceContext("sharding_db", mockContextManager("sharding_db")));
+        ShardingSphereDataSourceContextHolder.put(instanceId, new ShardingSphereDataSourceContext("sharding_db", mockContextManager("sharding_db")));
         Optional<GaugeMetricFamilyMetricsCollector> collector = new JDBCMetaDataInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
         assertThat(collector.get().toString(), containsString(instanceId));

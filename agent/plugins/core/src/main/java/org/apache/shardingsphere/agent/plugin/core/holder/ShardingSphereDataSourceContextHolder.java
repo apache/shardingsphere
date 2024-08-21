@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.core.holder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Context manager holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereDataSourceHolder {
+public final class ShardingSphereDataSourceContextHolder {
     
     private static final Map<String, ShardingSphereDataSourceContext> DATA_SOURCE_CONTEXTS = new ConcurrentHashMap<>();
     

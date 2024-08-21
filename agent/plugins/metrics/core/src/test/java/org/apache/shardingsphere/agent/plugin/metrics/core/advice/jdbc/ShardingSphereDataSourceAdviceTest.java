@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContext;
-import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceHolder;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -49,34 +49,34 @@ class ShardingSphereDataSourceAdviceTest {
     
     @AfterEach
     void clean() {
-        ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().clear();
+        ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().clear();
     }
     
     @Test
     void assertBeforeMethod() {
         ContextManager contextManager = mockContextManager();
         when(AgentReflectionUtils.getFieldValue(fixture, "contextManager")).thenReturn(contextManager);
-        ShardingSphereDataSourceHolder.put(instanceId, new ShardingSphereDataSourceContext(databaseName, mock(ContextManager.class, RETURNS_DEEP_STUBS)));
-        assertThat(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().size(), is(1));
+        ShardingSphereDataSourceContextHolder.put(instanceId, new ShardingSphereDataSourceContext(databaseName, mock(ContextManager.class, RETURNS_DEEP_STUBS)));
+        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().size(), is(1));
         TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         when(method.getName()).thenReturn("close");
         ShardingSphereDataSourceAdvice advice = new ShardingSphereDataSourceAdvice();
         advice.beforeMethod(fixture, method, new Object[]{}, "FIXTURE");
-        assertThat(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().size(), is(0));
+        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().size(), is(0));
     }
     
     @Test
     void assertAfterMethod() {
-        assertThat(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().size(), is(0));
+        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().size(), is(0));
         when(AgentReflectionUtils.getFieldValue(fixture, "databaseName")).thenReturn(databaseName);
         TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         when(method.getName()).thenReturn("createContextManager");
         ShardingSphereDataSourceAdvice advice = new ShardingSphereDataSourceAdvice();
         ContextManager contextManager = mockContextManager();
         advice.afterMethod(fixture, method, new Object[]{}, contextManager, "FIXTURE");
-        assertThat(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().size(), is(1));
-        assertThat(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().keySet().iterator().next(), is(instanceId));
-        assertThat(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().get(instanceId).getDatabaseName(), is(databaseName));
+        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().size(), is(1));
+        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().keySet().iterator().next(), is(instanceId));
+        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().get(instanceId).getDatabaseName(), is(databaseName));
     }
     
     private ContextManager mockContextManager() {

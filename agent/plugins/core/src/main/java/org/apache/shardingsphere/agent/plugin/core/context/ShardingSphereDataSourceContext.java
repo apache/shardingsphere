@@ -5,7 +5,7 @@
  * Proprietary and confidential
  */
 
-package org.apache.shardingsphere.agent.plugin.core.holder;
+package org.apache.shardingsphere.agent.plugin.core.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
