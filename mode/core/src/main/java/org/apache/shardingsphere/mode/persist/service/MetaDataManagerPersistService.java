@@ -138,8 +138,9 @@ public interface MetaDataManagerPersistService {
      *
      * @param databaseName database name
      * @param ruleName rule name
+     * @throws SQLException SQL exception
      */
-    void removeRuleConfiguration(String databaseName, String ruleName);
+    void removeRuleConfiguration(String databaseName, String ruleName) throws SQLException;
     
     /**
      * Alter global rule configuration.
