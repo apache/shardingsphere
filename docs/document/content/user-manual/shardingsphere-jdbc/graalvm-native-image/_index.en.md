@@ -421,7 +421,7 @@ An example of a possible configuration is as follows,
 </project>
 ```
 
-Affected by https://github.com/grpc-java/issues/10601, should users incorporate `org.apache.hive:hive-service` into their project,
+Affected by https://github.com/grpc/grpc-java/issues/10601 , should users incorporate `org.apache.hive:hive-service` into their project,
 it is imperative to create a file named `native-image.properties` within the directory `META-INF/native-image/io.grpc/grpc-netty-shaded` of the classpath,
 containing the following content,
 ```properties
