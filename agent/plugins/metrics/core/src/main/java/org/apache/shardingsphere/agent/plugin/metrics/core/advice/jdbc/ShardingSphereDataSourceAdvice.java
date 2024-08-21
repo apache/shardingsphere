@@ -42,11 +42,7 @@ public final class ShardingSphereDataSourceAdvice extends AbstractInstanceMethod
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         if ("createContextManager".equals(method.getName())) {
             ShardingSphereDataSourceHolder.put(((ContextManager) result).getComputeNodeInstanceContext().getInstance().getMetaData().getId(),
-                    new ShardingSphereDataSourceContext(getDatabaseName(target), (ContextManager) result));
+                    new ShardingSphereDataSourceContext(AgentReflectionUtils.getFieldValue(target, "databaseName"), (ContextManager) result));
         }
-    }
-    
-    private String getDatabaseName(final TargetAdviceObject target) {
-        return AgentReflectionUtils.getFieldValue(target, "databaseName");
     }
 }

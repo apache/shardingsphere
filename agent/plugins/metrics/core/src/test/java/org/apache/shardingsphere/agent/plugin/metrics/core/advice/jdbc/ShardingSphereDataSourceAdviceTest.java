@@ -18,14 +18,10 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
-import org.apache.shardingsphere.agent.plugin.core.holder.ContextManagerHolder;
 import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContext;
 import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceHolder;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -33,7 +29,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.lang.reflect.Method;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -63,9 +58,6 @@ class ShardingSphereDataSourceAdviceTest {
         when(AgentReflectionUtils.getFieldValue(fixture, "contextManager")).thenReturn(contextManager);
         ShardingSphereDataSourceHolder.put(instanceId, new ShardingSphereDataSourceContext(databaseName, mock(ContextManager.class, RETURNS_DEEP_STUBS)));
         assertThat(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().size(), is(1));
-        Method method = mock(Method.class);
-        ContextManagerHolder.put(databaseName, mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertThat(ContextManagerHolder.getDatabaseContextManager().size(), is(1));
         TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         when(method.getName()).thenReturn("close");
         ShardingSphereDataSourceAdvice advice = new ShardingSphereDataSourceAdvice();
@@ -77,8 +69,6 @@ class ShardingSphereDataSourceAdviceTest {
     void assertAfterMethod() {
         assertThat(ShardingSphereDataSourceHolder.getShardingSphereDataSourceContexts().size(), is(0));
         when(AgentReflectionUtils.getFieldValue(fixture, "databaseName")).thenReturn(databaseName);
-        Method method = mock(Method.class);
-        assertThat(ContextManagerHolder.getDatabaseContextManager().size(), is(0));
         TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         when(method.getName()).thenReturn("createContextManager");
         ShardingSphereDataSourceAdvice advice = new ShardingSphereDataSourceAdvice();
@@ -91,17 +81,7 @@ class ShardingSphereDataSourceAdviceTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
-        ComputeNodeInstance instance = mock(ComputeNodeInstance.class, RETURNS_DEEP_STUBS);
-        InstanceMetaData metaData = mock(InstanceMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getId()).thenReturn(instanceId);
-        when(instance.getMetaData()).thenReturn(metaData);
-        
-        //when(instance.getMetaData().getId()).thenReturn(instanceId);
-        when(instanceContext.getInstance()).thenReturn(instance);
-        //when(instanceContext.getInstance().getMetaData().getId()).thenReturn(instanceId);
-        when(result.getComputeNodeInstanceContext()).thenReturn(instanceContext);
-        //when(result.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn(instanceId);
+        when(result.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn(instanceId);
         return result;
     }
 }
