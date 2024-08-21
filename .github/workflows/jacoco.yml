@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,18 +36,22 @@ jobs:
           java-version: 8
           cache: 'maven'
 
-      - name: Build with Maven on Jacoco-exec
-        run: ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
+#      - name: Build with Maven on Jacoco-exec
+#        run: ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
+#
+#      - name: Make script executable
+#        run: chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh
+#
+#      - name: Run code coverage merge script
+#        run: ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
 
-      - name: Make script executable
-        run: chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh
-
-      - name: Run code coverage merge script
-        run: ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
+      - name: Build with Maven and Run Code Coverage Merge Script
+        run: |
+          ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
+          chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
+          ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
           files: ${{ github.workspace }}/target/mergeReport/jacoco.xml
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
