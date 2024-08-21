@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,7 +46,7 @@ class AbstractExecuteLatencyHistogramAdviceTest {
     void assertWithStatement() {
         StatementExecuteLatencyHistogramAdvice advice = new StatementExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
-        Method method = mock(Method.class);
+        TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
         Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
         advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
@@ -57,7 +57,7 @@ class AbstractExecuteLatencyHistogramAdviceTest {
     void assertWithPreparedStatement() {
         PreparedStatementExecuteLatencyHistogramAdvice advice = new PreparedStatementExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
-        Method method = mock(Method.class);
+        TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
         Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
         advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");

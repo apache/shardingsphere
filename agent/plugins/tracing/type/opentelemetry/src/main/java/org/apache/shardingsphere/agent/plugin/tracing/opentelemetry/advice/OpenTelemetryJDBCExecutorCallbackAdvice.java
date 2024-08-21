@@ -23,6 +23,7 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingJDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
@@ -30,8 +31,6 @@ import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.Ope
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-
-import java.lang.reflect.Method;
 
 /**
  * OpenTelemetry JDBC executor callback advice executor.
@@ -56,14 +55,14 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+    public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         Span span = (Span) target.getAttachment();
         span.setStatus(StatusCode.OK);
         span.end();
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
         Span span = (Span) target.getAttachment();
         span.setStatus(StatusCode.ERROR).recordException(throwable);
         span.end();

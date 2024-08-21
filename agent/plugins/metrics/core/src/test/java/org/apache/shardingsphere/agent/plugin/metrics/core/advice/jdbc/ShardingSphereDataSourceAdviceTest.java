@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.plugin.core.holder.ContextManagerHolder;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
@@ -27,8 +28,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,7 +57,7 @@ class ShardingSphereDataSourceAdviceTest {
     void assertBeforeMethod() {
         ContextManagerHolder.put(databaseName, mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThat(ContextManagerHolder.getDatabaseContextManager().size(), is(1));
-        Method method = mock(Method.class);
+        TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         when(method.getName()).thenReturn("close");
         ShardingSphereDataSourceAdvice advice = new ShardingSphereDataSourceAdvice();
         advice.beforeMethod(fixture, method, new Object[]{}, "FIXTURE");
@@ -68,7 +67,7 @@ class ShardingSphereDataSourceAdviceTest {
     @Test
     void assertAfterMethod() {
         assertThat(ContextManagerHolder.getDatabaseContextManager().size(), is(0));
-        Method method = mock(Method.class);
+        TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         when(method.getName()).thenReturn("createContextManager");
         ShardingSphereDataSourceAdvice advice = new ShardingSphereDataSourceAdvice();
         advice.afterMethod(fixture, method, new Object[]{}, mock(ContextManager.class, RETURNS_DEEP_STUBS), "FIXTURE");

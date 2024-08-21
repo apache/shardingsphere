@@ -27,6 +27,7 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
@@ -81,7 +82,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
                 for (StaticMethodAdvice each : entry.getValue()) {
                     if (isPluginEnabled(each)) {
-                        each.beforeMethod(klass, method, args, entry.getKey());
+                        each.beforeMethod(klass, new TargetAdviceMethod(method.getName()), args, entry.getKey());
                     }
                 }
             }
@@ -97,7 +98,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
                 for (StaticMethodAdvice each : entry.getValue()) {
                     if (isPluginEnabled(each)) {
-                        each.onThrowing(klass, method, args, ex, entry.getKey());
+                        each.onThrowing(klass, new TargetAdviceMethod(method.getName()), args, ex, entry.getKey());
                     }
                 }
             }
@@ -113,7 +114,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
                 for (StaticMethodAdvice each : entry.getValue()) {
                     if (isPluginEnabled(each)) {
-                        each.afterMethod(klass, method, args, result, entry.getKey());
+                        each.afterMethod(klass, new TargetAdviceMethod(method.getName()), args, result, entry.getKey());
                     }
                 }
             }
