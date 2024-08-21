@@ -66,15 +66,11 @@ class MySQLBinlogClientTest {
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    void setUp() throws InterruptedException {
+    void setUp() {
         client = new MySQLBinlogClient(new ConnectInfo(1, "host", 3306, "username", "password"), false);
         when(channel.pipeline()).thenReturn(pipeline);
         when(channel.isOpen()).thenReturn(true);
         when(channel.close()).thenReturn(channelFuture);
-        when(channelFuture.sync()).thenAnswer(invocation -> {
-            when(channel.isOpen()).thenReturn(false);
-            return null;
-        });
         when(channel.localAddress()).thenReturn(new InetSocketAddress("host", 3306));
         when(channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get()).thenReturn(new AtomicInteger());
@@ -152,7 +148,7 @@ class MySQLBinlogClientTest {
     }
     
     @Test
-    void assertPollFailed() throws ReflectiveOperationException {
+    void assertPollOnNotRunning() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("channel"), client, channel);
         Plugins.getMemberAccessor().set(MySQLBinlogClient.class.getDeclaredField("running"), client, false);
         assertThat(client.poll(), is(Collections.emptyList()));
