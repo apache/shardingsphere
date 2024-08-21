@@ -20,6 +20,9 @@ package org.apache.shardingsphere.agent.api.advice;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Target advice method.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class TargetAdviceMethod {
