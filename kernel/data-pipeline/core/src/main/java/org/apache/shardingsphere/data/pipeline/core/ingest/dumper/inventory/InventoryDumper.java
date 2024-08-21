@@ -115,7 +115,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         try (Connection connection = dataSource.getConnection()) {
             if (!Strings.isNullOrEmpty(dumperContext.getQuerySQL()) || !dumperContext.hasUniqueKey()
                     || position instanceof PrimaryKeyIngestPosition && null == ((PrimaryKeyIngestPosition<?>) position).getBeginValue()
-                    && null == ((PrimaryKeyIngestPosition<?>) position).getEndValue()) {
+                            && null == ((PrimaryKeyIngestPosition<?>) position).getEndValue()) {
                 dumpWithStreamingQuery(connection);
             } else {
                 dumpPageByPage(connection);
@@ -347,7 +347,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
     protected IngestPosition newDataRecordPosition(final ResultSet resultSet) throws SQLException {
         return dumperContext.hasUniqueKey()
                 ? PrimaryKeyIngestPositionFactory.newInstance(
-                resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getEndValue())
+                        resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getEndValue())
                 : new IngestPlaceholderPosition();
     }
     
