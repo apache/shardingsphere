@@ -118,7 +118,7 @@ public final class MetaDataContextsFactory {
     }
     
     private static MetaDataContexts createByRepository(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                                  final ComputeNodeInstanceContext computeNodeInstanceContext) {
+                                                       final ComputeNodeInstanceContext computeNodeInstanceContext) {
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs =
                 createEffectiveDatabaseConfigurations(getDatabaseNames(computeNodeInstanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService);
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
