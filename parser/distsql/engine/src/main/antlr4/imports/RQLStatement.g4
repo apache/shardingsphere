@@ -28,7 +28,7 @@ showRulesUsedStorageUnit
     ;
 
 showLogicalTables
-    : SHOW LOGICAL TABLES showLike? (FROM databaseName)?
+    : SHOW FULL? LOGICAL TABLES (FROM databaseName)? showLike?
     ;
 
 usageCount
