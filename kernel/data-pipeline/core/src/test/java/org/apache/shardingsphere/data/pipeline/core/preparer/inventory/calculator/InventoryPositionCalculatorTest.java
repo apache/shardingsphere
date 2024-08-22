@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.inventory;
+package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator;
 
 import org.apache.commons.lang3.Range;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeho
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.InventoryPositionCalculator;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryPositionCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryRecordsCountCalculator;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
