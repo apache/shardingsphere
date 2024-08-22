@@ -84,7 +84,7 @@ public final class MetaDataContextsFactory {
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
                                           final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         return persistService.getDatabaseMetaDataService().loadAllDatabaseNames().isEmpty() ? createByLocal(persistService, param, computeNodeInstanceContext)
-                 : createByRepository(persistService, param, computeNodeInstanceContext);
+                : createByRepository(persistService, param, computeNodeInstanceContext);
     }
     
     /**
@@ -118,7 +118,7 @@ public final class MetaDataContextsFactory {
     }
     
     private static MetaDataContexts createByRepository(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                                  final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                  final ComputeNodeInstanceContext computeNodeInstanceContext) {
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs =
                 createEffectiveDatabaseConfigurations(getDatabaseNames(computeNodeInstanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService);
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
