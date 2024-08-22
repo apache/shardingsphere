@@ -250,7 +250,7 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 String schemaName = resultSet.getString("table_schema");
-                Collection<String> viewMetaData = result.computeIfAbsent(schemaName, key -> new LinkedList<>());
+                Collection<String> viewMetaData = result.computeIfAbsent(schemaName, key -> new HashSet<>());
                 String tableName = resultSet.getString("table_name");
                 viewMetaData.add(tableName);
             }
