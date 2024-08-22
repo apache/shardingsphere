@@ -1012,73 +1012,9 @@
                 <configuration>
                     <excludes>
                         <exclude>**/groovy/**</exclude>
-                        <exclude>**/groovy/beans/**</exclude>
-                        <exclude>**/groovy/cli/**</exclude>
-                        <exclude>**/groovy/cli/internal/**</exclude>
-                        <exclude>**/groovy/grape/**</exclude>
-                        <exclude>**/groovy/inspect/**</exclude>
-                        <exclude>**/groovy/io/**</exclude>
-                        <exclude>**/groovy/lang/**</exclude>
-                        <exclude>**/groovy/lang/groovydoc/**</exclude>
-                        <exclude>**/groovy/namespace/**</exclude>
-                        <exclude>**/groovy/security/**</exclude>
-                        <exclude>**/groovy/time/**</exclude>
-                        <exclude>**/groovy/transform/**</exclude>
-                        <exclude>**/groovy/transform/builder/**</exclude>
-                        <exclude>**/groovy/transform/options/**</exclude>
-                        <exclude>**/groovy/transform/stc/**</exclude>
-                        <exclude>**/groovy/ui/**</exclude>
-                        <exclude>**/groovy/util/**</exclude>
-                        <exclude>**/groovy/util/logging/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/runtime/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/runtime/debug/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/runtime/misc/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/runtime/tree/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/analysis/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/automata/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/codegen/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/codegen/model/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/codegen/model/chunk/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/codegen/model/decl/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/codegen/target/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/gui/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/misc/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/parse/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/runtime/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/runtime/atn/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/runtime/dfa/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/runtime/misc/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/runtime/tree/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/runtime/tree/pattern/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/runtime/tree/xpath/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/semantics/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/tool/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/tool/ast/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/v4/unicode/**</exclude>
+                        <exclude>**/groovyjarjarantlr4/**</exclude>
                         <exclude>**/groovyjarjarasm/asm/**</exclude>
-                        <exclude>**/groovyjarjarasm/asm/commons/**</exclude>
-                        <exclude>**/groovyjarjarasm/asm/signature/**</exclude>
-                        <exclude>**/groovyjarjarasm/asm/tree/**</exclude>
-                        <exclude>**/groovyjarjarasm/asm/util/**</exclude>
                         <exclude>**/groovyjarjarpicocli/**</exclude>
-                        <exclude>**/jacoco-resources/**</exclude>
-                        <exclude>**/org/apache/groovy/antlr/**</exclude>
-                        <exclude>**/org/apache/groovy/ast/tools/**</exclude>
-                        <exclude>**/org/apache/groovy/internal/metaclass/**</exclude>
-                        <exclude>**/org/apache/groovy/internal/util/**</exclude>
-                        <exclude>**/org/apache/groovy/io/**</exclude>
-                        <exclude>**/org/apache/groovy/lang/**</exclude>
-                        <exclude>**/org/apache/groovy/metaclass/**</exclude>
-                        <exclude>**/org/apache/groovy/parser/antlr4/**</exclude>
-                        <exclude>**/org/apache/groovy/parser/antlr4/internal/**</exclude>
-                        <exclude>**/org/apache/groovy/parser/antlr4/internal/atnmanager/**</exclude>
-                        <exclude>**/org/apache/groovy/parser/antlr4/util/**</exclude>
-                        <exclude>**/org/apache/groovy/plugin/**</exclude>
-                        <exclude>**/org/apache/groovy/runtime/**</exclude>
-                        <exclude>**/org/apache/groovy/util/**</exclude>
-                        <exclude>**/org/apache/groovy/util/concurrent/**</exclude>
-                        <exclude>**/org/apache/groovy/util/concurrent/concurrentlinkedhashmap/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
