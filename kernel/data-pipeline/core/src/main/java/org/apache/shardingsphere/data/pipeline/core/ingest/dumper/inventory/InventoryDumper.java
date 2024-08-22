@@ -108,10 +108,10 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         }
         init();
         try (Connection connection = dataSource.getConnection()) {
-            if (!Strings.isNullOrEmpty(dumperContext.getQuerySQL()) || !dumperContext.hasUniqueKey() || isPrimaryKeyWithoutRanged(position)) {
-                dumpWithStreamingQuery(connection);
-            } else {
+            if (Strings.isNullOrEmpty(dumperContext.getQuerySQL()) && dumperContext.hasUniqueKey() && !isPrimaryKeyWithoutRange(position)) {
                 dumpPageByPage(connection);
+            } else {
+                dumpWithStreamingQuery(connection);
             }
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
@@ -121,18 +121,15 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         }
     }
     
-    private boolean isPrimaryKeyWithoutRanged(final IngestPosition position) {
-        return position instanceof PrimaryKeyIngestPosition && null == ((PrimaryKeyIngestPosition<?>) position).getBeginValue() && null == ((PrimaryKeyIngestPosition<?>) position).getEndValue();
-    }
-    
-    /**
-     * Initialize.
-     */
-    public void init() {
+    private void init() {
         if (null == tableMetaData) {
             tableMetaData = metaDataLoader.getTableMetaData(
                     dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName()), dumperContext.getActualTableName());
         }
+    }
+    
+    private boolean isPrimaryKeyWithoutRange(final IngestPosition position) {
+        return position instanceof PrimaryKeyIngestPosition && null == ((PrimaryKeyIngestPosition<?>) position).getBeginValue() && null == ((PrimaryKeyIngestPosition<?>) position).getEndValue();
     }
     
     @SuppressWarnings("MagicConstant")
