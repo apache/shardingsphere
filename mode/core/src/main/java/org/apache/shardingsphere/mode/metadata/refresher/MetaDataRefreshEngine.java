@@ -115,4 +115,14 @@ public final class MetaDataRefreshEngine {
     private Optional<FederationMetaDataRefresher> getFederationMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
         return TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass().getSuperclass());
     }
+    
+    /**
+     * Is refresh meta data required.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @return is refresh meta data required or not
+     */
+    public static boolean isRefreshMetaDataRequired(final SQLStatementContext sqlStatementContext) {
+        return DDL_STATEMENT_CLASSES.contains(sqlStatementContext.getSqlStatement().getClass().getSuperclass());
+    }
 }
