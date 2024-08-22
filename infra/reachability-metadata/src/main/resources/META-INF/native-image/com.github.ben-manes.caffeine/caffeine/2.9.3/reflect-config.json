@@ -20,9 +20,9 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-"condition":{"typeReachable":"com.github.benmanes.caffeine.cache.BBHeader$ReadAndWriteCounterRef"},
-"name":"com.github.benmanes.caffeine.cache.BBHeader$ReadAndWriteCounterRef",
-"fields":[{"name":"writeCounter"}]
+  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.BBHeader$ReadAndWriteCounterRef"},
+  "name":"com.github.benmanes.caffeine.cache.BBHeader$ReadAndWriteCounterRef",
+  "fields":[{"name":"writeCounter"}]
 },
 {
   "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.BBHeader$ReadCounterRef"},
