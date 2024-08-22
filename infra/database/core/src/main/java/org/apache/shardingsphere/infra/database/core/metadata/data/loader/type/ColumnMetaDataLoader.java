@@ -79,7 +79,9 @@ public final class ColumnMetaDataLoader {
                 }
             }
         }
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, columnNames, databaseType))) {
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, columnNames, databaseType))) {
             for (int i = 0; i < columnNames.size(); i++) {
                 boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
                 caseSensitiveFlags.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));

@@ -84,7 +84,9 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
     
     private Map<String, Multimap<String, IndexMetaData>> loadIndexMetaDataMap(final Connection connection, final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, IndexMetaData>> result = new LinkedHashMap<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(schemaNames)); ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(schemaNames));
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 String schemaName = resultSet.getString("schemaname");
                 String tableName = resultSet.getString("tablename");
@@ -93,7 +95,9 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
                 indexMetaDataMap.put(tableName, new IndexMetaData(indexName));
             }
         }
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getAdvanceIndexMetaDataSQL(schemaNames)); ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(getAdvanceIndexMetaDataSQL(schemaNames));
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 String schemaName = resultSet.getString("index_schema");
                 String tableName = resultSet.getString("table_name");
@@ -125,7 +129,9 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
     private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables,
                                                                                 final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables));
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             while (resultSet.next()) {
@@ -146,7 +152,9 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
     
     private Collection<String> loadPrimaryKeys(final Connection connection, final Collection<String> schemaNames) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(schemaNames)); ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(schemaNames));
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 String schemaName = resultSet.getString("table_schema");
                 String tableName = resultSet.getString("table_name");
