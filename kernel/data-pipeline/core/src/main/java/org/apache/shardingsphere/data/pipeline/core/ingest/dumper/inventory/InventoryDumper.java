@@ -113,9 +113,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         }
         init();
         try (Connection connection = dataSource.getConnection()) {
-            if (!Strings.isNullOrEmpty(dumperContext.getQuerySQL()) || !dumperContext.hasUniqueKey()
-                    || position instanceof PrimaryKeyIngestPosition && null == ((PrimaryKeyIngestPosition<?>) position).getBeginValue()
-                            && null == ((PrimaryKeyIngestPosition<?>) position).getEndValue()) {
+            if (!Strings.isNullOrEmpty(dumperContext.getQuerySQL()) || !dumperContext.hasUniqueKey() || isPrimaryKeyWithoutRanged(position)) {
                 dumpWithStreamingQuery(connection);
             } else {
                 dumpPageByPage(connection);
@@ -126,6 +124,10 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
             log.error("Inventory dump failed on {}", dumperContext.getActualTableName(), ex);
             throw new IngestException("Inventory dump failed on " + dumperContext.getActualTableName(), ex);
         }
+    }
+    
+    private boolean isPrimaryKeyWithoutRanged(final IngestPosition position) {
+        return position instanceof PrimaryKeyIngestPosition && null == ((PrimaryKeyIngestPosition<?>) position).getBeginValue() && null == ((PrimaryKeyIngestPosition<?>) position).getEndValue();
     }
     
     /**
