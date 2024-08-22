@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
-import org.apache.shardingsphere.agent.plugin.core.holder.ContextManagerHolder;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -36,22 +35,17 @@ import java.util.Optional;
 public final class JDBCStateExporter implements MetricsExporter {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_state", MetricCollectorType.GAUGE_METRIC_FAMILY,
-            "State of ShardingSphere-JDBC. 0 is OK; 1 is CIRCUIT BREAK", Collections.singletonList("database"));
+            "State of ShardingSphere-JDBC. 0 is OK; 1 is CIRCUIT BREAK", Arrays.asList("driver_instance", "database"));
     
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        for (Entry<String, ContextManager> entry : ContextManagerHolder.getDatabaseContextManager().entrySet()) {
-            addMetric(result, entry.getKey(), entry.getValue());
+        for (Entry<String, ShardingSphereDataSourceContext> entry : ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().entrySet()) {
+            Optional.ofNullable(entry.getValue().getContextManager().getDatabase(entry.getValue().getDatabaseName()))
+                    .ifPresent(optional -> result.addMetric(Arrays.asList(entry.getKey(), optional.getName()),
+                            entry.getValue().getContextManager().getComputeNodeInstanceContext().getInstance().getState().getCurrentState().ordinal()));
         }
         return Optional.of(result);
-    }
-    
-    private void addMetric(final GaugeMetricFamilyMetricsCollector collector, final String database, final ContextManager contextManager) {
-        ShardingSphereDatabase shardingSphereDatabase = contextManager.getDatabase(database);
-        if (null != shardingSphereDatabase) {
-            collector.addMetric(Collections.singletonList(database), contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState().ordinal());
-        }
     }
 }
