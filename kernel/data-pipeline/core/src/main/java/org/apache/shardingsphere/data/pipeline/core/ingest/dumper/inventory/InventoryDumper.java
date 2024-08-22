@@ -49,7 +49,6 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -65,7 +64,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Inventory dumper.
@@ -90,9 +88,6 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
     private final AtomicReference<Statement> runningStatement = new AtomicReference<>();
     
     private PipelineTableMetaData tableMetaData;
-    
-    // TODO now Remove
-    private List<CaseInsensitiveIdentifier> uniqueKeysNames = Collections.emptyList();
     
     public InventoryDumper(final InventoryDumperContext dumperContext, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         this.dumperContext = dumperContext;
@@ -134,20 +129,10 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
      * Initialize.
      */
     public void init() {
-        if (null == uniqueKeysNames) {
-            uniqueKeysNames = getUniqueKeysNames();
-        }
         if (null == tableMetaData) {
             tableMetaData = metaDataLoader.getTableMetaData(
                     dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName()), dumperContext.getActualTableName());
         }
-    }
-    
-    private List<CaseInsensitiveIdentifier> getUniqueKeysNames() {
-        if (dumperContext.hasUniqueKey()) {
-            return dumperContext.getUniqueKeyColumns().stream().map(each -> new CaseInsensitiveIdentifier(each.getName())).collect(Collectors.toList());
-        }
-        return Collections.emptyList();
     }
     
     @SuppressWarnings("MagicConstant")
