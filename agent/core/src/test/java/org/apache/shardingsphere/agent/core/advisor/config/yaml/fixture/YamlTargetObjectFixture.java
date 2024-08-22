@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public final class YamlTargetObjectFixture {
     
+    @SuppressWarnings("unused")
     public YamlTargetObjectFixture(final String value) {
     }
     
