@@ -22,5 +22,5 @@ package org.apache.shardingsphere.test.e2e.framework.type;
  */
 public enum SQLExecuteType {
     
-    Literal, Placeholder
+    LITERAL, PLACEHOLDER
 }

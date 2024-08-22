@@ -150,7 +150,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         try (
                 Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == context.getSqlExecuteType()) {
+            if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 assertExecuteQueryForStatementWithResultSetTypes(context, actualConnection, expectedConnection, testParam, resultSetTypes);
             } else {
                 assertExecuteQueryForPreparedStatementWithResultSetTypes(context, actualConnection, expectedConnection, testParam, resultSetTypes);
@@ -210,7 +210,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         try (
                 Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == context.getSqlExecuteType()) {
+            if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 assertExecuteForStatementWithResultSetTypes(context, actualConnection, expectedConnection, testParam, resultSetTypes);
             } else {
                 assertExecuteForPreparedStatementWithResultSetTypes(context, actualConnection, expectedConnection, testParam, resultSetTypes);

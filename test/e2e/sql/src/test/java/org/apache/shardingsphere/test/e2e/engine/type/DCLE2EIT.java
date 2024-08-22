@@ -68,7 +68,7 @@ class DCLE2EIT implements E2EEnvironmentAware {
     private void assertExecuteUpdate(final E2ETestContext context) throws SQLException {
         String sql = context.getSQL();
         try (Connection connection = this.environmentSetupEngine.getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == context.getSqlExecuteType()) {
+            if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
                 }
@@ -99,7 +99,7 @@ class DCLE2EIT implements E2EEnvironmentAware {
     private void assertExecute(final E2ETestContext context) throws SQLException {
         String sql = context.getSQL();
         try (Connection connection = environmentSetupEngine.getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == context.getSqlExecuteType()) {
+            if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);
                 }
