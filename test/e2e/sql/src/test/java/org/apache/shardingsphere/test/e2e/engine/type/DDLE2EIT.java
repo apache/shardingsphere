@@ -77,7 +77,7 @@ class DDLE2EIT implements E2EEnvironmentAware {
         E2ETestContext context = new E2ETestContext(testParam);
         init(context);
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == context.getSqlExecuteType()) {
+            if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 executeUpdateForStatement(context, connection);
             } else {
                 executeUpdateForPreparedStatement(context, connection);
@@ -112,7 +112,7 @@ class DDLE2EIT implements E2EEnvironmentAware {
         E2ETestContext context = new E2ETestContext(testParam);
         init(context);
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == context.getSqlExecuteType()) {
+            if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 executeForStatement(context, connection);
             } else {
                 executeForPreparedStatement(context, connection);

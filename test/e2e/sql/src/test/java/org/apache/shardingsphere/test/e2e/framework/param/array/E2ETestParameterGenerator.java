@@ -90,7 +90,7 @@ public final class E2ETestParameterGenerator {
                                                                          final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         for (SQLExecuteType each : SQLExecuteType.values()) {
-            if (!sqlCommandType.isLiteralOnly() || SQLExecuteType.Literal == each) {
+            if (!sqlCommandType.isLiteralOnly() || SQLExecuteType.LITERAL == each) {
                 result.addAll(getAssertionTestParameter(testCaseContext, databaseType, each, sqlCommandType));
             }
         }
