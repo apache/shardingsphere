@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.util;
+package org.apache.shardingsphere.infra.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

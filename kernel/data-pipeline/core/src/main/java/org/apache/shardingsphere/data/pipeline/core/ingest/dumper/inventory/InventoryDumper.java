@@ -44,7 +44,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTable
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInventoryDumpSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.util.DatabaseTypeUtils;
+import org.apache.shardingsphere.infra.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
