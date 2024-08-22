@@ -73,7 +73,7 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertRowDataWithLike() {
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowLogicalTablesStatement("t_order_%", null), mock(ContextManager.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowLogicalTablesStatement(false, null, "t_order_%"), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         assertThat(iterator.next().getCell(1), is("t_order_item"));

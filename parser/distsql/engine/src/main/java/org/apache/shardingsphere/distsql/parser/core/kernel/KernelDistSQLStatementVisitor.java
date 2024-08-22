@@ -237,8 +237,9 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowLogicalTables(final ShowLogicalTablesContext ctx) {
-        return new ShowLogicalTablesStatement(null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()),
-                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowLogicalTablesStatement(null != ctx.FULL(),
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()),
+                null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
     }
     
     @Override
