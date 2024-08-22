@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 class MethodTimeRecorderTest {
     
     @Test
-    void assertGetElapsedTimeAndCleanWithRecorded() throws NoSuchMethodException {
+    void assertGetElapsedTimeAndCleanWithRecorded() {
         MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
         TargetAdviceMethod method = new TargetAdviceMethod("test");
         methodTimeRecorder.recordNow(method);
@@ -40,7 +40,7 @@ class MethodTimeRecorderTest {
     }
     
     @Test
-    void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
+    void assertGetElapsedTimeAndCleanWithoutRecorded() {
         TargetAdviceMethod method = new TargetAdviceMethod("test");
         assertThat(new MethodTimeRecorder(AgentAdvice.class).getElapsedTimeAndClean(method), is(0L));
     }
