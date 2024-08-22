@@ -225,8 +225,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         return ((DataRecord) dataRecords.get(index)).getUniqueKeyValue().iterator().next();
     }
     
-    private List<Record> dumpPageByPage0(final Connection connection, final InventoryQueryParameter queryParam,
-                                         final AtomicLong rowCount) throws SQLException {
+    private List<Record> dumpPageByPage0(final Connection connection, final InventoryQueryParameter queryParam, final AtomicLong rowCount) throws SQLException {
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         int batchSize = dumperContext.getBatchSize();
         try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpPageByPageSQL(queryParam))) {
