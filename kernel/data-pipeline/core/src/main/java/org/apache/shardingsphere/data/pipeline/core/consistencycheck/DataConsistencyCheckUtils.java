@@ -23,7 +23,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.sql.Array;
 import java.sql.SQLException;
@@ -76,14 +78,11 @@ public final class DataConsistencyCheckUtils {
     @SneakyThrows(SQLException.class)
     public static boolean isMatched(final EqualsBuilder equalsBuilder, final Object thisColumnValue, final Object thatColumnValue) {
         equalsBuilder.reset();
-        if (isInteger(thisColumnValue) && isInteger(thatColumnValue)) {
-            return isIntegerEquals((Number) thisColumnValue, (Number) thatColumnValue);
+        if (thisColumnValue instanceof Number && thatColumnValue instanceof Number) {
+            return isNumberEquals((Number) thisColumnValue, (Number) thatColumnValue);
         }
         if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
             return ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
-        }
-        if (thisColumnValue instanceof BigDecimal && thatColumnValue instanceof BigDecimal) {
-            return isBigDecimalEquals((BigDecimal) thisColumnValue, (BigDecimal) thatColumnValue);
         }
         if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
             return Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
@@ -91,15 +90,37 @@ public final class DataConsistencyCheckUtils {
         return equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
     }
     
-    private static boolean isInteger(final Object value) {
-        if (!(value instanceof Number)) {
-            return false;
+    private static boolean isNumberEquals(final Number one, final Number another) {
+        if (isInteger(one) && isInteger(another)) {
+            return one.longValue() == another.longValue();
         }
+        return isBigDecimalEquals(convertToBigDecimal(one), convertToBigDecimal(another));
+    }
+    
+    private static boolean isInteger(final Number value) {
         return value instanceof Long || value instanceof Integer || value instanceof Short || value instanceof Byte;
     }
     
-    private static boolean isIntegerEquals(final Number one, final Number another) {
-        return one.longValue() == another.longValue();
+    /**
+     * Convert number to BigDecimal.
+     *
+     * @param value number
+     * @return BigDecimal
+     */
+    public static BigDecimal convertToBigDecimal(final Number value) {
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
+        if (isInteger(value)) {
+            return BigDecimal.valueOf(value.longValue());
+        }
+        if (value instanceof Float || value instanceof Double) {
+            return BigDecimal.valueOf(value.doubleValue());
+        }
+        if (value instanceof BigInteger) {
+            return new BigDecimal((BigInteger) value);
+        }
+        return new BigDecimal(value.toString());
     }
     
     /**
@@ -127,5 +148,19 @@ public final class DataConsistencyCheckUtils {
             }
         }
         return 0 == decimalOne.compareTo(decimalTwo);
+    }
+    
+    /**
+     * Get first unique key value.
+     *
+     * @param rawRecord raw record
+     * @param uniqueKey unique key
+     * @return first unique key value
+     */
+    public static Object getFirstUniqueKeyValue(final Map<String, Object> rawRecord, final @Nullable String uniqueKey) {
+        if (rawRecord.isEmpty() || null == uniqueKey) {
+            return null;
+        }
+        return rawRecord.get(uniqueKey);
     }
 }

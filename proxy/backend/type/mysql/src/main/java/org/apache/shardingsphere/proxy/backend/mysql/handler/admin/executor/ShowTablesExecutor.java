@@ -37,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,7 +53,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
-    private final ShowTablesStatement showTablesStatement;
+    private final ShowTablesStatement sqlStatement;
     
     private final DatabaseType databaseType;
     
@@ -64,7 +65,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String databaseName = showTablesStatement.getFromDatabase().map(schema -> schema.getDatabase().getIdentifier().getValue()).orElseGet(connectionSession::getUsedDatabaseName);
+        String databaseName = sqlStatement.getFromDatabase().map(schema -> schema.getDatabase().getIdentifier().getValue()).orElseGet(connectionSession::getUsedDatabaseName);
         queryResultMetaData = createQueryResultMetaData(databaseName);
         mergedResult = new TransparentMergedResult(getQueryResult(databaseName));
     }
@@ -73,7 +74,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         List<RawQueryResultColumnMetaData> columnNames = new LinkedList<>();
         String tableColumnName = String.format("Tables_in_%s", databaseName);
         columnNames.add(new RawQueryResultColumnMetaData("", tableColumnName, tableColumnName, Types.VARCHAR, "VARCHAR", 255, 0));
-        if (showTablesStatement.isContainsFull()) {
+        if (sqlStatement.isContainsFull()) {
             columnNames.add(new RawQueryResultColumnMetaData("", "Table_type", "Table_type", Types.VARCHAR, "VARCHAR", 20, 0));
         }
         return new RawQueryResultMetaData(columnNames);
@@ -84,15 +85,14 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         if (!systemDatabase.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        List<MemoryQueryResultDataRow> rows = getTables(databaseName).stream().map(each -> {
-            List<Object> rowValues = new LinkedList<>();
-            rowValues.add(each.getName());
-            if (showTablesStatement.isContainsFull()) {
-                rowValues.add(each.getType());
-            }
-            return new MemoryQueryResultDataRow(rowValues);
-        }).collect(Collectors.toList());
+        List<MemoryQueryResultDataRow> rows = getTables(databaseName).stream().map(this::getRow).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
+    }
+    
+    private MemoryQueryResultDataRow getRow(final ShardingSphereTable table) {
+        return sqlStatement.isContainsFull()
+                ? new MemoryQueryResultDataRow(Arrays.asList(table.getName(), table.getType()))
+                : new MemoryQueryResultDataRow(Collections.singletonList(table.getName()));
     }
     
     private Collection<ShardingSphereTable> getTables(final String databaseName) {
@@ -107,10 +107,10 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Optional<Pattern> getLikePattern() {
-        if (!showTablesStatement.getFilter().isPresent()) {
+        if (!sqlStatement.getFilter().isPresent()) {
             return Optional.empty();
         }
-        Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> RegexUtils.convertLikePatternToRegex(optional.getPattern()));
+        Optional<String> pattern = sqlStatement.getFilter().get().getLike().map(optional -> RegexUtils.convertLikePatternToRegex(optional.getPattern()));
         return pattern.map(optional -> Pattern.compile(RegexUtils.convertLikePatternToRegex(optional), Pattern.CASE_INSENSITIVE));
     }
 }

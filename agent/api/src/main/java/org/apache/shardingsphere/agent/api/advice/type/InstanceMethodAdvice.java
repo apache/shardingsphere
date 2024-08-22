@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.agent.api.advice.type;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-
-import java.lang.reflect.Method;
 
 /**
  * Instance method advice.
@@ -36,7 +35,7 @@ public interface InstanceMethodAdvice extends AgentAdvice {
      * @param args all method arguments
      * @param pluginType plugin type
      */
-    default void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, String pluginType) {
+    default void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, String pluginType) {
     }
     
     /**
@@ -49,7 +48,7 @@ public interface InstanceMethodAdvice extends AgentAdvice {
      * @param result original call result
      * @param pluginType plugin type
      */
-    default void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, String pluginType) {
+    default void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, String pluginType) {
     }
     
     /**
@@ -61,6 +60,6 @@ public interface InstanceMethodAdvice extends AgentAdvice {
      * @param throwable exception from target method
      * @param pluginType plugin type
      */
-    default void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, String pluginType) {
+    default void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, String pluginType) {
     }
 }

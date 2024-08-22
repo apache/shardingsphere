@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.holder.ContextManagerHolder;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.lang.reflect.Method;
 
 /**
  * ShardingSphere data source advice.
@@ -31,20 +31,18 @@ import java.lang.reflect.Method;
 public final class ShardingSphereDataSourceAdvice extends AbstractInstanceMethodAdvice {
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    public void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         if ("close".equals(method.getName())) {
-            ContextManagerHolder.remove(getDatabaseName(target));
+            ContextManager contextManager = AgentReflectionUtils.getFieldValue(target, "contextManager");
+            ShardingSphereDataSourceContextHolder.remove(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId());
         }
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+    public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         if ("createContextManager".equals(method.getName())) {
-            ContextManagerHolder.put(getDatabaseName(target), (ContextManager) result);
+            ShardingSphereDataSourceContextHolder.put(((ContextManager) result).getComputeNodeInstanceContext().getInstance().getMetaData().getId(),
+                    new ShardingSphereDataSourceContext(AgentReflectionUtils.getFieldValue(target, "databaseName"), (ContextManager) result));
         }
-    }
-    
-    private String getDatabaseName(final TargetAdviceObject target) {
-        return AgentReflectionUtils.getFieldValue(target, "databaseName");
     }
 }

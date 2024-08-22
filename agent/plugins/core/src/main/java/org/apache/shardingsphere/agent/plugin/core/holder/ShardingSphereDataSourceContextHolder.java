@@ -19,44 +19,44 @@ package org.apache.shardingsphere.agent.plugin.core.holder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Context manager holder.
+ * ShardingSphere data source context holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContextManagerHolder {
+public final class ShardingSphereDataSourceContextHolder {
     
-    private static final Map<String, ContextManager> DATABASE_CONTEXT_MANAGER_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, ShardingSphereDataSourceContext> DATA_SOURCE_CONTEXTS = new ConcurrentHashMap<>();
     
     /**
-     * put.
+     * Put.
      *
-     * @param database database
-     * @param contextManager context manager
+     * @param instanceId instance Id
+     * @param dataSourceContext sharding sphere data source context
      */
-    public static void put(final String database, final ContextManager contextManager) {
-        DATABASE_CONTEXT_MANAGER_CACHE.put(database, contextManager);
+    public static void put(final String instanceId, final ShardingSphereDataSourceContext dataSourceContext) {
+        DATA_SOURCE_CONTEXTS.put(instanceId, dataSourceContext);
     }
     
     /**
-     * remove.
+     * Remove.
      *
-     * @param database database
+     * @param instanceId instance id
      */
-    public static void remove(final String database) {
-        DATABASE_CONTEXT_MANAGER_CACHE.remove(database);
+    public static void remove(final String instanceId) {
+        DATA_SOURCE_CONTEXTS.remove(instanceId);
     }
     
     /**
-     * Get database context manager.
+     * Get sharding sphere data source contexts.
      *
-     * @return database context manager
+     * @return sharding sphere data source contexts
      */
-    public static Map<String, ContextManager> getDatabaseContextManager() {
-        return DATABASE_CONTEXT_MANAGER_CACHE;
+    public static Map<String, ShardingSphereDataSourceContext> getShardingSphereDataSourceContexts() {
+        return DATA_SOURCE_CONTEXTS;
     }
 }

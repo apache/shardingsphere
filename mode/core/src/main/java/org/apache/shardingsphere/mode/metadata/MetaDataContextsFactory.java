@@ -83,38 +83,8 @@ public final class MetaDataContextsFactory {
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
                                           final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        boolean isDatabaseMetaDataExisted = !persistService.getDatabaseMetaDataService().loadAllDatabaseNames().isEmpty();
-        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = isDatabaseMetaDataExisted
-                ? createEffectiveDatabaseConfigurations(getDatabaseNames(computeNodeInstanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService)
-                : param.getDatabaseConfigs();
-        // TODO load global data sources from persist service
-        Map<String, DataSource> globalDataSources = param.getGlobalDataSources();
-        Collection<RuleConfiguration> globalRuleConfigs;
-        if (isDatabaseMetaDataExisted) {
-            globalRuleConfigs = persistService.getGlobalRuleService().load();
-        } else if (computeNodeInstanceContext.getModeConfiguration().isCluster()) {
-            globalRuleConfigs = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext).tryRestore(param.getGlobalRuleConfigs());
-            param.getGlobalRuleConfigs().clear();
-            param.getGlobalRuleConfigs().addAll(globalRuleConfigs);
-        } else {
-            globalRuleConfigs = param.getGlobalRuleConfigs();
-        }
-        ConfigurationProperties props = isDatabaseMetaDataExisted ? new ConfigurationProperties(persistService.getPropsService().load()) : new ConfigurationProperties(param.getProps());
-        Map<String, ShardingSphereDatabase> databases = isDatabaseMetaDataExisted
-                ? InternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, computeNodeInstanceContext)
-                : ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, computeNodeInstanceContext);
-        ResourceMetaData globalResourceMetaData = new ResourceMetaData(globalDataSources);
-        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
-        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props);
-        ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
-        MetaDataContexts result = new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
-        if (isDatabaseMetaDataExisted) {
-            restoreRules(result, computeNodeInstanceContext);
-        } else {
-            persistDatabaseConfigurations(result, param, persistService, computeNodeInstanceContext);
-            persistMetaData(result, persistService);
-        }
-        return result;
+        return persistService.getDatabaseMetaDataService().loadAllDatabaseNames().isEmpty() ? createByLocal(persistService, param, computeNodeInstanceContext)
+                : createByRepository(persistService, param, computeNodeInstanceContext);
     }
     
     /**
@@ -126,6 +96,48 @@ public final class MetaDataContextsFactory {
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
         return new MetaDataContexts(metaData, initStatistics(persistService, metaData));
+    }
+    
+    private static MetaDataContexts createByLocal(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
+                                                  final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = param.getDatabaseConfigs();
+        Collection<RuleConfiguration> globalRuleConfigs;
+        if (computeNodeInstanceContext.getModeConfiguration().isCluster()) {
+            globalRuleConfigs = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext).tryRestore(param.getGlobalRuleConfigs());
+            param.getGlobalRuleConfigs().clear();
+            param.getGlobalRuleConfigs().addAll(globalRuleConfigs);
+        } else {
+            globalRuleConfigs = param.getGlobalRuleConfigs();
+        }
+        ConfigurationProperties props = new ConfigurationProperties(param.getProps());
+        Map<String, ShardingSphereDatabase> databases = ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, computeNodeInstanceContext);
+        MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
+        persistDatabaseConfigurations(result, param, persistService, computeNodeInstanceContext);
+        persistMetaData(result, persistService);
+        return result;
+    }
+    
+    private static MetaDataContexts createByRepository(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
+                                                       final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs =
+                createEffectiveDatabaseConfigurations(getDatabaseNames(computeNodeInstanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService);
+        Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
+        ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
+        Map<String, ShardingSphereDatabase> databases = InternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, computeNodeInstanceContext);
+        MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
+        restoreRules(result, computeNodeInstanceContext);
+        return result;
+    }
+    
+    private static MetaDataContexts newMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
+                                                        final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereDatabase> databases,
+                                                        final ConfigurationProperties props) {
+        // TODO load global data sources from persist service
+        ResourceMetaData globalResourceMetaData = new ResourceMetaData(param.getGlobalDataSources());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
+        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props);
+        ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
+        return new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
     }
     
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext computeNodeInstanceContext,

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
@@ -25,8 +26,6 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-
-import java.lang.reflect.Method;
 
 /**
  * Tracing JDBC executor callback advice executor.
@@ -38,7 +37,7 @@ public abstract class TracingJDBCExecutorCallbackAdvice<T> extends AbstractInsta
     protected static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
-    public final void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    public final void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         ResourceMetaData resourceMetaData = AgentReflectionUtils.getFieldValue(target, "resourceMetaData");
         ConnectionProperties connectionProps = resourceMetaData.getStorageUnits().get(executionUnit.getExecutionUnit().getDataSourceName()).getConnectionProperties();

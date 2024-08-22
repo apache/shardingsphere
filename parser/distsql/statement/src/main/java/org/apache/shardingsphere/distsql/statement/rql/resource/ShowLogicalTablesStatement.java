@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.distsql.statement.rql.resource;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 
 /**
  * Show logical tables statement.
  */
+@Getter
 public final class ShowLogicalTablesStatement extends ShowTablesStatement {
     
-    public ShowLogicalTablesStatement(final String likePattern, final DatabaseSegment database) {
+    private final boolean containsFull;
+    
+    public ShowLogicalTablesStatement(final boolean containsFull, final DatabaseSegment database, final String likePattern) {
         super(likePattern, database);
+        this.containsFull = containsFull;
     }
 }

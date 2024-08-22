@@ -19,7 +19,7 @@ databaseName: encrypt_and_readwrite_splitting
 
 dataSources:
   encrypt_write_ds:
-    url: jdbc:opengauss://opengauss.encrypt_and_readwrite_splitting.host:5432/encrypt_write_ds
+    url: jdbc:opengauss://opengauss.encrypt_and_readwrite_splitting.host:5432/encrypt_write_ds?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123
@@ -29,7 +29,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds:
-    url: jdbc:opengauss://opengauss.encrypt_and_readwrite_splitting.host:5432/encrypt_read_ds
+    url: jdbc:opengauss://opengauss.encrypt_and_readwrite_splitting.host:5432/encrypt_read_ds?batchMode=OFF
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@123

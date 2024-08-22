@@ -57,7 +57,7 @@ public class E2ETestContext {
      * @return SQL
      */
     public String getSQL() {
-        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(sql) : sql;
+        return sqlExecuteType == SQLExecuteType.LITERAL ? getLiteralSQL(sql) : sql;
     }
     
     private String getLiteralSQL(final String sql) {

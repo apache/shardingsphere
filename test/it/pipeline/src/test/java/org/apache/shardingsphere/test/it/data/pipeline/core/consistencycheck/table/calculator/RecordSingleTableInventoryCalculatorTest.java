@@ -19,13 +19,16 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.consistencycheck.ta
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,8 +38,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -72,16 +78,27 @@ class RecordSingleTableInventoryCalculatorTest {
     
     private static void createTableAndInitData(final PipelineDataSourceWrapper dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(12))";
+            String sql = "CREATE TABLE t_order (user_id INT NOT NULL, order_id INT, status VARCHAR(12), PRIMARY KEY (user_id, order_id))";
             connection.createStatement().execute(sql);
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)");
-            for (int i = 0; i < 10; i++) {
-                preparedStatement.setInt(1, i + 1);
-                preparedStatement.setInt(2, i + 1);
-                preparedStatement.setString(3, "test");
-                preparedStatement.execute();
-            }
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (user_id, order_id, status) VALUES (?, ?, ?)");
+            insertRecord(preparedStatement, 1, 1);
+            insertRecord(preparedStatement, 2, 2);
+            insertRecord(preparedStatement, 3, 3);
+            insertRecord(preparedStatement, 3, 4);
+            insertRecord(preparedStatement, 3, 5);
+            insertRecord(preparedStatement, 3, 6);
+            insertRecord(preparedStatement, 3, 7);
+            insertRecord(preparedStatement, 4, 8);
+            insertRecord(preparedStatement, 5, 9);
+            insertRecord(preparedStatement, 6, 10);
         }
+    }
+    
+    private static void insertRecord(final PreparedStatement preparedStatement, final int userId, final int orderId) throws SQLException {
+        preparedStatement.setInt(1, userId);
+        preparedStatement.setInt(2, orderId);
+        preparedStatement.setString(3, "OK");
+        preparedStatement.executeUpdate();
     }
     
     @Test
@@ -92,7 +109,7 @@ class RecordSingleTableInventoryCalculatorTest {
         assertTrue(calculateResult.isPresent());
         SingleTableInventoryCalculatedResult actual = calculateResult.get();
         assertTrue(actual.getMaxUniqueKeyValue().isPresent());
-        assertThat(actual.getMaxUniqueKeyValue().get(), is(5));
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(4));
     }
     
     @Test
@@ -103,11 +120,85 @@ class RecordSingleTableInventoryCalculatorTest {
         assertTrue(calculateResult.isPresent());
         SingleTableInventoryCalculatedResult actual = calculateResult.get();
         assertTrue(actual.getMaxUniqueKeyValue().isPresent());
-        assertThat(actual.getMaxUniqueKeyValue().get(), is(10));
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(9));
     }
     
     private SingleTableInventoryCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final Object dataCheckPosition) {
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true));
         return new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"), Collections.emptyList(), uniqueKeys, dataCheckPosition);
+    }
+    
+    @Test
+    void assertCalculateOfRangeQuery() {
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(1000);
+        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"),
+                Collections.emptyList(), buildUniqueKeys(), QueryType.RANGE_QUERY);
+        param.setQueryRange(new QueryRange(3, true, 7));
+        Optional<SingleTableInventoryCalculatedResult> calculatedResult = calculator.calculateChunk(param);
+        assertTrue(calculatedResult.isPresent());
+        SingleTableInventoryCalculatedResult actual = calculatedResult.get();
+        assertThat(actual.getRecordsCount(), is(8));
+        assertTrue(actual.getMaxUniqueKeyValue().isPresent());
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(6));
+    }
+    
+    @Test
+    void assertCalculateOfRangeQueryAll() {
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(3);
+        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"),
+                Collections.emptyList(), buildUniqueKeys(), QueryType.RANGE_QUERY);
+        param.setQueryRange(new QueryRange(null, false, null));
+        Iterator<SingleTableInventoryCalculatedResult> resultIterator = calculator.calculate(param).iterator();
+        RecordSingleTableInventoryCalculatedResult actual = (RecordSingleTableInventoryCalculatedResult) resultIterator.next();
+        assertThat(actual.getRecordsCount(), is(2));
+        assertRecord(actual.getRecords().get(0), 1, 1);
+        assertRecord(actual.getRecords().get(1), 2, 2);
+        assertTrue(actual.getMaxUniqueKeyValue().isPresent());
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(2));
+        actual = (RecordSingleTableInventoryCalculatedResult) resultIterator.next();
+        assertThat(actual.getRecordsCount(), is(5));
+        assertRecord(actual.getRecords().get(0), 3, 3);
+        assertRecord(actual.getRecords().get(1), 3, 4);
+        assertRecord(actual.getRecords().get(2), 3, 5);
+        assertRecord(actual.getRecords().get(3), 3, 6);
+        assertRecord(actual.getRecords().get(4), 3, 7);
+        assertTrue(actual.getMaxUniqueKeyValue().isPresent());
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(3));
+        actual = (RecordSingleTableInventoryCalculatedResult) resultIterator.next();
+        assertThat(actual.getRecordsCount(), is(2));
+        assertRecord(actual.getRecords().get(0), 4, 8);
+        assertRecord(actual.getRecords().get(1), 5, 9);
+        assertTrue(actual.getMaxUniqueKeyValue().isPresent());
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(5));
+        actual = (RecordSingleTableInventoryCalculatedResult) resultIterator.next();
+        assertThat(actual.getRecordsCount(), is(1));
+        assertRecord(actual.getRecords().get(0), 6, 10);
+        assertTrue(actual.getMaxUniqueKeyValue().isPresent());
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(6));
+    }
+    
+    private void assertRecord(final Map<String, Object> record, final int userId, final int orderId) {
+        assertThat(record.get("user_id"), is(userId));
+        assertThat(record.get("order_id"), is(orderId));
+    }
+    
+    @Test
+    void assertCalculateOfPointQuery() {
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(3);
+        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"),
+                Collections.emptyList(), buildUniqueKeys(), QueryType.POINT_QUERY);
+        param.setUniqueKeysValues(Arrays.asList(3, 3));
+        Optional<SingleTableInventoryCalculatedResult> calculatedResult = calculator.calculateChunk(param);
+        assertTrue(calculatedResult.isPresent());
+        SingleTableInventoryCalculatedResult actual = calculatedResult.get();
+        assertThat(actual.getRecordsCount(), is(1));
+        assertTrue(actual.getMaxUniqueKeyValue().isPresent());
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(3));
+    }
+    
+    private List<PipelineColumnMetaData> buildUniqueKeys() {
+        return Arrays.asList(
+                new PipelineColumnMetaData(1, "user_id", Types.INTEGER, "integer", false, true, true),
+                new PipelineColumnMetaData(2, "order_id", Types.INTEGER, "integer", false, true, true));
     }
 }

@@ -33,9 +33,9 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.database.postgresql
 @Getter
 public enum TransactionTestCaseRegistry {
     
-    MySQL_JDBC_IT(MySQLJdbcTransactionE2ETT.class, TransactionTestConstants.MYSQL, AdapterType.JDBC.getValue()),
+    MYSQL_JDBC_IT(MySQLJdbcTransactionE2ETT.class, TransactionTestConstants.MYSQL, AdapterType.JDBC.getValue()),
     
-    MySQL_PROXY_IT(MySQLProxyTransactionE2EIT.class, TransactionTestConstants.MYSQL, AdapterType.PROXY.getValue()),
+    MYSQL_PROXY_IT(MySQLProxyTransactionE2EIT.class, TransactionTestConstants.MYSQL, AdapterType.PROXY.getValue()),
     
     OPENGAUSS_JDBC_IT(OpenGaussJdbcTransactionE2EIT.class, TransactionTestConstants.OPENGAUSS, AdapterType.JDBC.getValue()),
     

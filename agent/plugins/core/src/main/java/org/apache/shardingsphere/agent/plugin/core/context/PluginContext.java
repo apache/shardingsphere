@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.core.context;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.agent.plugin.core.holder.ContextManagerHolder;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -61,17 +61,12 @@ public final class PluginContext {
         return null == contextManager || contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED);
     }
     
-    /**
-     * Get context manager.
-     *
-     * @return context manager
-     */
-    public Optional<ContextManager> getContextManager() {
+    private Optional<ContextManager> getContextManager() {
         if (isEnhancedForProxy) {
             return Optional.ofNullable(ProxyContext.getInstance().getContextManager());
         }
-        return ContextManagerHolder.getDatabaseContextManager().isEmpty()
+        return ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().isEmpty()
                 ? Optional.empty()
-                : Optional.of(ContextManagerHolder.getDatabaseContextManager().values().iterator().next());
+                : Optional.of(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().values().iterator().next().getContextManager());
     }
 }

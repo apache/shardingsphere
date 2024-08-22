@@ -33,14 +33,13 @@ import java.util.Optional;
 public final class PipelineTaskUtils {
     
     /**
-     * Generate inventory task id.
+     * Generate inventory task ID.
      *
-     * @param inventoryDumperContext inventory dumper context
-     * @return inventory task id
+     * @param dumperContext inventory dumper context
+     * @return generated ID
      */
-    public static String generateInventoryTaskId(final InventoryDumperContext inventoryDumperContext) {
-        String result = String.format("%s.%s", inventoryDumperContext.getCommonContext().getDataSourceName(), inventoryDumperContext.getActualTableName());
-        return result + "#" + inventoryDumperContext.getShardingItem();
+    public static String generateInventoryTaskId(final InventoryDumperContext dumperContext) {
+        return String.format("%s.%s#%s", dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName(), dumperContext.getShardingItem());
     }
     
     /**

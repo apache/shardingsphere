@@ -21,6 +21,7 @@ import com.alibaba.dcm.DnsCacheManipulator;
 import com.github.dockerjava.api.model.ContainerNetwork;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * IT containers.
  */
+@Slf4j
 public final class ITContainers implements Startable {
     
     private final String scenario;
@@ -101,6 +103,7 @@ public final class ITContainers implements Startable {
     }
     
     private void start(final DockerITContainer dockerITContainer) {
+        log.info("Starting container {}...", dockerITContainer.getName());
         dockerITContainer.start();
         dockerITContainer.getNetworkAliases().forEach(each -> DnsCacheManipulator.setDnsCache(each,
                 dockerITContainer.getContainerInfo().getNetworkSettings().getNetworks().values().stream().map(ContainerNetwork::getIpAddress).collect(Collectors.toList()).toArray(new String[0])));

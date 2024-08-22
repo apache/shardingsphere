@@ -48,7 +48,6 @@
             <groupId>com.alibaba</groupId>
             <artifactId>dns-cache-manipulator</artifactId>
             <version>1.8.2</version>
-            <scope>test-jar</scope>
         </dependency>
     </dependencies>
     

@@ -127,6 +127,10 @@ DATABASE
     : D A T A B A S E
     ;
 
+FULL
+    : F U L L
+    ;
+
 LOGICAL
     : L O G I C A L
     ;

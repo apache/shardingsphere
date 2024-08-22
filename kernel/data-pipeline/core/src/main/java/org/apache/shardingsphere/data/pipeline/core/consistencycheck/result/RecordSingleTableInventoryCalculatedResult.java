@@ -67,8 +67,9 @@ public final class RecordSingleTableInventoryCalculatedResult implements SingleT
         final RecordSingleTableInventoryCalculatedResult that = (RecordSingleTableInventoryCalculatedResult) o;
         EqualsBuilder equalsBuilder = new EqualsBuilder();
         if (recordsCount != that.recordsCount || !DataConsistencyCheckUtils.isMatched(equalsBuilder, maxUniqueKeyValue, that.maxUniqueKeyValue)) {
-            log.warn("Record count or max unique key value not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}.",
-                    recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);
+            log.warn("Record count or max unique key value not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}, value1.class={}, value2.class={}.",
+                    recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue,
+                    null == maxUniqueKeyValue ? "" : maxUniqueKeyValue.getClass().getName(), null == that.maxUniqueKeyValue ? "" : that.maxUniqueKeyValue.getClass().getName());
             return false;
         }
         Iterator<Map<String, Object>> thisRecordsIterator = records.iterator();

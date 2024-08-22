@@ -25,11 +25,15 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -43,7 +47,9 @@ public final class ShowLogicalTableExecutor implements DistSQLQueryExecutor<Show
     
     @Override
     public Collection<String> getColumnNames(final ShowLogicalTablesStatement sqlStatement) {
-        return Collections.singleton("table_name");
+        return sqlStatement.isContainsFull()
+                ? Arrays.asList(String.format("Tables_in_%s", database.getName()), "Table_type")
+                : Collections.singleton(String.format("Tables_in_%s", database.getName()));
     }
     
     @Override
@@ -53,12 +59,30 @@ public final class ShowLogicalTableExecutor implements DistSQLQueryExecutor<Show
         if (null == database.getSchema(schemaName)) {
             return Collections.emptyList();
         }
-        Collection<String> tables = database.getSchema(schemaName).getAllTableNames();
-        if (sqlStatement.getLikePattern().isPresent()) {
-            String pattern = RegexUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
-            tables = tables.stream().filter(each -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(each).matches()).collect(Collectors.toList());
+        return getTables(schemaName, sqlStatement).stream().map(each -> getRow(each, sqlStatement)).collect(Collectors.toList());
+    }
+    
+    private LocalDataQueryResultRow getRow(final ShardingSphereTable table, final ShowLogicalTablesStatement sqlStatement) {
+        return sqlStatement.isContainsFull() ? new LocalDataQueryResultRow(table.getName(), table.getType()) : new LocalDataQueryResultRow(table.getName());
+    }
+    
+    private Collection<ShardingSphereTable> getTables(final String schemaName, final ShowLogicalTablesStatement sqlStatement) {
+        Collection<ShardingSphereTable> tables = database.getSchema(schemaName).getTables().values();
+        Collection<ShardingSphereTable> filteredTables = filterByLike(tables, sqlStatement);
+        return filteredTables.stream().sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList());
+    }
+    
+    private Collection<ShardingSphereTable> filterByLike(final Collection<ShardingSphereTable> tables, final ShowLogicalTablesStatement sqlStatement) {
+        Optional<Pattern> likePattern = getLikePattern(sqlStatement);
+        return likePattern.isPresent() ? tables.stream().filter(each -> likePattern.get().matcher(each.getName()).matches()).collect(Collectors.toList()) : tables;
+    }
+    
+    private Optional<Pattern> getLikePattern(final ShowLogicalTablesStatement sqlStatement) {
+        if (!sqlStatement.getLikePattern().isPresent()) {
+            return Optional.empty();
         }
-        return tables.stream().map(LocalDataQueryResultRow::new).collect(Collectors.toList());
+        Optional<String> pattern = sqlStatement.getLikePattern().map(RegexUtils::convertLikePatternToRegex);
+        return pattern.map(optional -> Pattern.compile(RegexUtils.convertLikePatternToRegex(optional), Pattern.CASE_INSENSITIVE));
     }
     
     @Override
