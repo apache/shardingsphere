@@ -103,7 +103,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Collection<ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
-        Map<String, Collection<ConstraintMetaData>> result = new LinkedHashMap<>();
+        Map<String, Collection<ConstraintMetaData>> result = new LinkedHashMap<>(tables.size(), 1F);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getConstraintMetaDataSQL(tables))) {
@@ -127,7 +127,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
-        Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
+        Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1F);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
@@ -167,7 +167,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
-        Map<String, Map<String, IndexMetaData>> tableToIndex = new HashMap<>();
+        Map<String, Map<String, IndexMetaData>> tableToIndex = new HashMap<>(tableNames.size(), 1F);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
