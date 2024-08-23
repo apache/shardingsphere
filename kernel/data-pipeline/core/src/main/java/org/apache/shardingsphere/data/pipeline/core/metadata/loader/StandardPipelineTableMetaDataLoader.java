@@ -20,13 +20,13 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -91,13 +91,13 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         }
         Map<CaseInsensitiveIdentifier, PipelineTableMetaData> result = new LinkedHashMap<>(tableNames.size(), 1F);
         for (String each : tableNames) {
-            Set<String> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
-            Map<String, Collection<String>> uniqueKeys = loadUniqueIndexesOfTable(connection, schemaName, each);
-            Map<String, PipelineColumnMetaData> columnMetaDataMap = new LinkedHashMap<>();
+            Set<CaseInsensitiveIdentifier> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
+            Map<CaseInsensitiveIdentifier, Collection<CaseInsensitiveIdentifier>> uniqueKeys = loadUniqueIndexesOfTable(connection, schemaName, each);
+            Map<CaseInsensitiveIdentifier, PipelineColumnMetaData> columnMetaDataMap = new LinkedHashMap<>();
             try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), schemaName, each, "%")) {
                 while (resultSet.next()) {
                     int ordinalPosition = resultSet.getInt("ORDINAL_POSITION");
-                    String columnName = resultSet.getString("COLUMN_NAME");
+                    CaseInsensitiveIdentifier columnName = new CaseInsensitiveIdentifier(resultSet.getString("COLUMN_NAME"));
                     if (columnMetaDataMap.containsKey(columnName)) {
                         continue;
                     }
@@ -106,43 +106,44 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                     boolean primaryKey = primaryKeys.contains(columnName);
                     boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
                     boolean isUniqueKey = uniqueKeys.values().stream().anyMatch(names -> names.contains(columnName));
-                    PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, isNullable, primaryKey, isUniqueKey);
+                    PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName.toString(), dataType, dataTypeName, isNullable, primaryKey, isUniqueKey);
                     columnMetaDataMap.put(columnName, columnMetaData);
                 }
             }
             Collection<PipelineIndexMetaData> uniqueIndexMetaData = uniqueKeys.entrySet().stream()
                     .map(entry -> new PipelineIndexMetaData(entry.getKey(), entry.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
-            result.put(new CaseInsensitiveIdentifier(each), new PipelineTableMetaData(each,
-                    columnMetaDataMap.entrySet().stream().collect(Collectors.toMap(entry -> new CaseInsensitiveIdentifier(entry.getKey()), Entry::getValue)), uniqueIndexMetaData));
+            result.put(new CaseInsensitiveIdentifier(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
         }
         return result;
     }
     
-    private Map<String, Collection<String>> loadUniqueIndexesOfTable(final Connection connection, final String schemaName, final String tableName) throws SQLException {
-        Map<String, SortedMap<Short, String>> orderedColumnsOfIndexes = new LinkedHashMap<>();
+    private Map<CaseInsensitiveIdentifier, Collection<CaseInsensitiveIdentifier>> loadUniqueIndexesOfTable(final Connection connection,
+                                                                                                           final String schemaName, final String tableName) throws SQLException {
+        Map<String, SortedMap<Short, CaseInsensitiveIdentifier>> orderedColumnsOfIndexes = new LinkedHashMap<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString("INDEX_NAME");
                 if (null == indexName) {
                     continue;
                 }
-                orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), resultSet.getString("COLUMN_NAME"));
+                orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(
+                        resultSet.getShort("ORDINAL_POSITION"), new CaseInsensitiveIdentifier(resultSet.getString("COLUMN_NAME")));
             }
         }
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (Entry<String, SortedMap<Short, String>> entry : orderedColumnsOfIndexes.entrySet()) {
-            Collection<String> columnNames = result.computeIfAbsent(entry.getKey(), unused -> new LinkedList<>());
+        Map<CaseInsensitiveIdentifier, Collection<CaseInsensitiveIdentifier>> result = new LinkedHashMap<>();
+        for (Entry<String, SortedMap<Short, CaseInsensitiveIdentifier>> entry : orderedColumnsOfIndexes.entrySet()) {
+            Collection<CaseInsensitiveIdentifier> columnNames = result.computeIfAbsent(new CaseInsensitiveIdentifier(entry.getKey()), unused -> new LinkedList<>());
             columnNames.addAll(entry.getValue().values());
         }
         return result;
     }
     
-    private Set<String> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
-        Set<String> result = new LinkedHashSet<>();
+    private Set<CaseInsensitiveIdentifier> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
+        Set<CaseInsensitiveIdentifier> result = new LinkedHashSet<>();
         // TODO order primary keys
         try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), schemaName, tableName)) {
             while (resultSet.next()) {
-                result.add(resultSet.getString("COLUMN_NAME"));
+                result.add(new CaseInsensitiveIdentifier(resultSet.getString("COLUMN_NAME")));
             }
         }
         return result;
