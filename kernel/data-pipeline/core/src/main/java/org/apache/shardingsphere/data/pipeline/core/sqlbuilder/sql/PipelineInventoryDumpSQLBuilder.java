@@ -47,32 +47,19 @@ public final class PipelineInventoryDumpSQLBuilder {
      * @param columnNames column names
      * @param uniqueKey unique key
      * @param lowerInclusive lower inclusive or not
+     * @param limited is value limited
      * @return built SQL
      */
-    public String buildDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey, final boolean lowerInclusive) {
+    public String buildDivisibleSQL(final String schemaName, final String tableName,
+                                    final Collection<String> columnNames, final String uniqueKey, final boolean lowerInclusive, final boolean limited) {
+        String queryColumns = buildQueryColumns(columnNames);
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
         String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        String result = String.format("SELECT %s FROM %s WHERE %s%s? AND %s<=? ORDER BY %s ASC",
-                buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, lowerInclusive ? ">=" : ">", escapedUniqueKey, escapedUniqueKey);
-        return dialectSQLBuilder.wrapWithPageQuery(result);
-    }
-    
-    /**
-     * Build divisible inventory dump SQL with unlimited value.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @param lowerInclusive lower inclusive or not
-     * @return built SQL
-     */
-    public String buildUnlimitedDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey, final boolean lowerInclusive) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        String result = String.format("SELECT %s FROM %s WHERE %s%s? ORDER BY %s ASC",
-                buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, lowerInclusive ? ">=" : ">", escapedUniqueKey);
-        return dialectSQLBuilder.wrapWithPageQuery(result);
+        String operator = lowerInclusive ? ">=" : ">";
+        String sql = limited
+                ? String.format("SELECT %s FROM %s WHERE %s%s? AND %s<=? ORDER BY %s ASC", queryColumns, qualifiedTableName, escapedUniqueKey, operator, escapedUniqueKey, escapedUniqueKey)
+                : String.format("SELECT %s FROM %s WHERE %s%s? ORDER BY %s ASC", queryColumns, qualifiedTableName, escapedUniqueKey, operator, escapedUniqueKey);
+        return dialectSQLBuilder.wrapWithPageQuery(sql);
     }
     
     /**

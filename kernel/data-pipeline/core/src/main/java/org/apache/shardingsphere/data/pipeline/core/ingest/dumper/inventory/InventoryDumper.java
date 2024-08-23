@@ -269,10 +269,10 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         QueryRange queryRange = queryParam.getUniqueKeyValueRange();
         boolean lowerInclusive = queryRange.isLowerInclusive();
         if (null != queryRange.getLower() && null != queryRange.getUpper()) {
-            return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive);
+            return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive, true);
         }
         if (null != queryRange.getLower()) {
-            return inventoryDumpSQLBuilder.buildUnlimitedDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive);
+            return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive, false);
         }
         throw new PipelineInternalException("Primary key position is invalid.");
     }
