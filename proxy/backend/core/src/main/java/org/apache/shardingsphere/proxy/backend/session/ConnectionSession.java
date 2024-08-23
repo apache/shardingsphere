@@ -21,7 +21,6 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -120,12 +119,7 @@ public final class ConnectionSession {
      * @return used database name
      */
     public String getUsedDatabaseName() {
-        if (null == queryContext) {
-            return currentDatabaseName;
-        }
-        return queryContext.getSqlStatementContext() instanceof TableAvailable
-                ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getDatabaseName().orElse(currentDatabaseName)
-                : currentDatabaseName;
+        return null == queryContext ? currentDatabaseName : queryContext.getUsedDatabaseName();
     }
     
     /**
