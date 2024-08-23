@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCheckUtils;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
@@ -33,11 +34,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -91,7 +90,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         }
         Map<CaseInsensitiveIdentifier, PipelineTableMetaData> result = new LinkedHashMap<>(tableNames.size(), 1F);
         for (String each : tableNames) {
-            Set<CaseInsensitiveIdentifier> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
+            Collection<CaseInsensitiveIdentifier> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
             Map<CaseInsensitiveIdentifier, Collection<CaseInsensitiveIdentifier>> uniqueKeys = loadUniqueIndexesOfTable(connection, schemaName, each);
             Map<CaseInsensitiveIdentifier, PipelineColumnMetaData> columnMetaDataMap = new LinkedHashMap<>();
             try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), schemaName, each, "%")) {
@@ -111,7 +110,9 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                 }
             }
             Collection<PipelineIndexMetaData> uniqueIndexMetaData = uniqueKeys.entrySet().stream()
-                    .map(entry -> new PipelineIndexMetaData(entry.getKey(), entry.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
+                    .map(entry -> new PipelineIndexMetaData(entry.getKey(), entry.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()),
+                            DataConsistencyCheckUtils.compareLists(primaryKeys, entry.getValue())))
+                    .collect(Collectors.toList());
             result.put(new CaseInsensitiveIdentifier(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
         }
         return result;
@@ -138,14 +139,13 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         return result;
     }
     
-    private Set<CaseInsensitiveIdentifier> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
-        Set<CaseInsensitiveIdentifier> result = new LinkedHashSet<>();
-        // TODO order primary keys
+    private Collection<CaseInsensitiveIdentifier> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
+        SortedMap<Short, CaseInsensitiveIdentifier> result = new TreeMap<>();
         try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), schemaName, tableName)) {
             while (resultSet.next()) {
-                result.add(new CaseInsensitiveIdentifier(resultSet.getString("COLUMN_NAME")));
+                result.put(resultSet.getShort("KEY_SEQ"), new CaseInsensitiveIdentifier(resultSet.getString("COLUMN_NAME")));
             }
         }
-        return result;
+        return result.values();
     }
 }

@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -62,8 +63,10 @@ public final class PipelineTableMetaData {
         List<PipelineColumnMetaData> columnMetaDataList = new ArrayList<>(columnMetaDataMap.values());
         Collections.sort(columnMetaDataList);
         columnNames = Collections.unmodifiableList(columnMetaDataList.stream().map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
-        primaryKeyColumns = Collections.unmodifiableList(columnMetaDataList.stream().filter(PipelineColumnMetaData::isPrimaryKey)
-                .map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
+        Optional<PipelineIndexMetaData> primaryKeyMetaData = uniqueIndexes.stream().filter(PipelineIndexMetaData::isPrimaryKey).findFirst();
+        primaryKeyColumns = primaryKeyMetaData.map(each -> each.getColumns().stream().map(PipelineColumnMetaData::getName).collect(Collectors.toList()))
+                .orElseGet(() -> Collections.unmodifiableList(columnMetaDataList.stream().filter(PipelineColumnMetaData::isPrimaryKey)
+                        .map(PipelineColumnMetaData::getName).collect(Collectors.toList())));
         this.uniqueIndexes = Collections.unmodifiableCollection(uniqueIndexes);
     }
     
