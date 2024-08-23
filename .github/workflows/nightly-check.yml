@@ -215,23 +215,19 @@ jobs:
           sed -i '/<requireMavenVersion>/i \                                    <dependencyConvergence/>' pom.xml
           ./mvnw clean install -DskipTests -T1C -Dmaven.enforcer.fail=true
 
-  codecov-jacoco:
+  check-and-report-jacoco:
     if: github.repository == 'apache/shardingsphere'
-    name: Check - JacocoReport to CodeCov
+    name: Check - Jacoco
     needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
       - name: Setup JDK 11
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 11
-
       - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
@@ -239,24 +235,20 @@ jobs:
           restore-keys: |
             shardingsphere-maven-third-party-e2e-cache-
             shardingsphere-maven-third-party-
-
       - name: Install Project
         run: ./mvnw clean install -T1C
-
       - name: Set up JDK 8 for Jacoco
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 8
           cache: 'maven'
-
-      - name: Build with Maven and Run Code Coverage Merge Script
+      - name: Build with maven and execute jacoco aggregation script
         run: |
           ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
-
-      - name: Upload coverage reports to Codecov
+      - name: Upload coverage reports to codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
