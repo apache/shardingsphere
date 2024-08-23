@@ -35,4 +35,6 @@ public final class PipelineIndexMetaData {
     private final CaseInsensitiveIdentifier name;
     
     private final List<PipelineColumnMetaData> columns;
+    
+    private final boolean primaryKey;
 }

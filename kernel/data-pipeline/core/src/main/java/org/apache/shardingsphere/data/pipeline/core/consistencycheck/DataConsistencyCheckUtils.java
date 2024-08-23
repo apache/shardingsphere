@@ -30,6 +30,7 @@ import java.math.RoundingMode;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -148,6 +149,33 @@ public final class DataConsistencyCheckUtils {
             }
         }
         return 0 == decimalOne.compareTo(decimalTwo);
+    }
+    
+    /**
+     * Compare lists.
+     *
+     * @param thisList this list
+     * @param thatList that list
+     * @return true if lists equals, otherwise false
+     */
+    public static boolean compareLists(final @Nullable Collection<?> thisList, final @Nullable Collection<?> thatList) {
+        if (null == thisList && null == thatList) {
+            return true;
+        }
+        if (null == thisList || null == thatList) {
+            return false;
+        }
+        if (thisList.size() != thatList.size()) {
+            return false;
+        }
+        Iterator<?> thisIterator = thisList.iterator();
+        Iterator<?> thatIterator = thatList.iterator();
+        while (thisIterator.hasNext() && thatIterator.hasNext()) {
+            if (!Objects.deepEquals(thisIterator.next(), thatIterator.next())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
