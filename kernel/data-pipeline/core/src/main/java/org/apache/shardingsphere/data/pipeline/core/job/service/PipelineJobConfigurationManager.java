@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.execute.ShardingTotalCountUsageJobExecutorServiceHandler;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
@@ -65,6 +66,7 @@ public final class PipelineJobConfigurationManager {
         result.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
         result.getProps().setProperty("run_count", "1");
         result.setJobListenerTypes(Collections.singletonList(PipelineElasticJobListener.class.getName()));
+        result.setJobExecutorServiceHandlerType(ShardingTotalCountUsageJobExecutorServiceHandler.TYPE);
         return result;
     }
 }
