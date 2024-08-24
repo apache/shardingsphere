@@ -111,7 +111,8 @@ class TableMetaDataLoaderTest {
     
     @Test
     void assertLoadWithExistedTable() throws SQLException {
-        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(new MetaDataLoaderMaterial(Collections.singleton(TEST_TABLE), dataSource, databaseType, "sharding_db")));
+        Map<String, SchemaMetaData> actual = MetaDataLoader.load(
+                Collections.singleton(new MetaDataLoaderMaterial(Collections.singleton(TEST_TABLE), "foo_ds", dataSource, databaseType, "sharding_db")));
         TableMetaData tableMetaData = actual.get("sharding_db").getTables().iterator().next();
         Collection<ColumnMetaData> columns = tableMetaData.getColumns();
         assertThat(columns.size(), is(2));
@@ -133,7 +134,8 @@ class TableMetaDataLoaderTest {
     
     @Test
     void assertLoadWithNotExistedTable() throws SQLException {
-        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(new MetaDataLoaderMaterial(Collections.singleton(NOT_EXISTED_TABLE), dataSource, databaseType, "sharding_db")));
+        Map<String, SchemaMetaData> actual = MetaDataLoader.load(
+                Collections.singleton(new MetaDataLoaderMaterial(Collections.singleton(NOT_EXISTED_TABLE), "foo_ds", dataSource, databaseType, "sharding_db")));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         assertTrue(actual.get("sharding_db").getTables().isEmpty());

@@ -67,7 +67,7 @@ class H2MetaDataLoaderTest {
                 "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
                         + " INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?")
                 .executeQuery()).thenReturn(generatedInfo);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), dataSource, new H2DatabaseType(), "sharding_db")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, new H2DatabaseType(), "sharding_db")));
     }
     
     @Test
@@ -91,7 +91,7 @@ class H2MetaDataLoaderTest {
                 "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
                         + " RIGHT JOIN INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND C.TABLE_NAME IN ('tbl')")
                 .executeQuery()).thenReturn(generatedInfo);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), dataSource, new H2DatabaseType(), "sharding_db")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, new H2DatabaseType(), "sharding_db")));
     }
     
     private DataSource mockDataSource() throws SQLException {

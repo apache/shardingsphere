@@ -91,7 +91,7 @@ class PostgreSQLMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), dataSource, new PostgreSQLDatabaseType(), "sharding_db")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, new PostgreSQLDatabaseType(), "sharding_db")));
     }
     
     private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
@@ -118,7 +118,7 @@ class PostgreSQLMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), dataSource, new PostgreSQLDatabaseType(), "sharding_db")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, new PostgreSQLDatabaseType(), "sharding_db")));
     }
     
     private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
