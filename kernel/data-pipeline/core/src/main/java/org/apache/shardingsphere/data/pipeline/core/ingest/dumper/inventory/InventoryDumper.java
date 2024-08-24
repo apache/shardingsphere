@@ -43,6 +43,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColum
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.BuildDivisibleSQLParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInventoryDumpSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -259,10 +260,12 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         QueryRange queryRange = queryParam.getUniqueKeyValueRange();
         boolean lowerInclusive = queryRange.isLowerInclusive();
         if (null != queryRange.getLower() && null != queryRange.getUpper()) {
-            return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive, true);
+            return inventoryDumpSQLBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(
+                    schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive, true));
         }
         if (null != queryRange.getLower()) {
-            return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive, false);
+            return inventoryDumpSQLBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(
+                    schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive, false));
         }
         throw new PipelineInternalException("Primary key position is invalid.");
     }

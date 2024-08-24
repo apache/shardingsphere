@@ -177,9 +177,9 @@ class RecordSingleTableInventoryCalculatorTest {
         assertThat(actual.getMaxUniqueKeyValue().get(), is(6));
     }
     
-    private void assertRecord(final Map<String, Object> record, final int userId, final int orderId) {
-        assertThat(record.get("user_id"), is(userId));
-        assertThat(record.get("order_id"), is(orderId));
+    private void assertRecord(final Map<String, Object> recordMap, final int userId, final int orderId) {
+        assertThat(recordMap.get("user_id"), is(userId));
+        assertThat(recordMap.get("order_id"), is(orderId));
     }
     
     @Test
