@@ -49,14 +49,14 @@ class RecordSingleTableInventoryCalculatedResultTest {
     @Test
     void assertFullTypeRecordsEqualsWithDifferentDecimalScale() {
         RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
-        Map<String, Object> record = buildFixedFullTypeRecord();
-        record.forEach((key, value) -> {
+        Map<String, Object> recordMap = buildFixedFullTypeRecord();
+        recordMap.forEach((key, value) -> {
             if (value instanceof BigDecimal) {
                 BigDecimal decimal = (BigDecimal) value;
-                record.put(key, decimal.setScale(decimal.scale() + 1, RoundingMode.CEILING));
+                recordMap.put(key, decimal.setScale(decimal.scale() + 1, RoundingMode.CEILING));
             }
         });
-        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(record));
+        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(recordMap));
         assertThat(actual, is(expected));
     }
     
