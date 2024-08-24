@@ -40,7 +40,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class SPIMatchedCheckIT {
     
@@ -49,7 +48,7 @@ class SPIMatchedCheckIT {
     private static final Collection<String> SPI_PACKAGE_PREFIXES = Collections.singleton("org.apache.shardingsphere.");
     
     @Test
-    void assertSPIConfigMatched() throws IOException, URISyntaxException {
+    void assertSPIConfigMatched() throws IOException, URISyntaxException, ReflectiveOperationException {
         int spiCount = 0;
         Enumeration<URL> spiURLs = getClass().getClassLoader().getResources(SERVICES_PATH);
         while (spiURLs.hasMoreElements()) {
@@ -96,20 +95,10 @@ class SPIMatchedCheckIT {
         return result;
     }
     
-    private void assertSPIImplNameMatchInterface(final Path spiDefinePath, final String spiImplName) {
+    private void assertSPIImplNameMatchInterface(final Path spiDefinePath, final String spiImplName) throws ReflectiveOperationException {
         String spiName = getSPIName(spiDefinePath);
-        Class<?> interfaceClazz = null;
-        try {
-            interfaceClazz = Class.forName(spiName);
-        } catch (final ClassNotFoundException ignored) {
-            fail(String.format("SPI interface `%s` not found, define path: %s", spiName, spiDefinePath));
-        }
-        Class<?> implClazz = null;
-        try {
-            implClazz = Class.forName(spiImplName);
-        } catch (final ClassNotFoundException ignored) {
-            fail(String.format("SPI impl `%s` not found, define path: %s", spiImplName, spiDefinePath));
-        }
+        Class<?> interfaceClazz = Class.forName(spiName);
+        Class<?> implClazz = Class.forName(spiImplName);
         assertTrue(interfaceClazz.isAssignableFrom(implClazz), String.format("SPI impl `%s` does not match interface `%s`, define path: %s", spiImplName, spiName, spiDefinePath));
     }
 }
