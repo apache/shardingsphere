@@ -42,13 +42,14 @@ public final class JDBCStreamQueryBuilder {
      * @param connection connection
      * @param databaseType database type
      * @param sql SQL to be queried
+     * @param batchSize batch size
      * @return built prepared statement
      * @throws SQLException SQL exception
      */
-    public static PreparedStatement build(final DatabaseType databaseType, final Connection connection, final String sql) throws SQLException {
+    public static PreparedStatement build(final DatabaseType databaseType, final Connection connection, final String sql, final int batchSize) throws SQLException {
         Optional<DialectJDBCStreamQueryBuilder> dialectBuilder = DatabaseTypedSPILoader.findService(DialectJDBCStreamQueryBuilder.class, databaseType);
         if (dialectBuilder.isPresent()) {
-            return dialectBuilder.get().build(databaseType, connection, sql);
+            return dialectBuilder.get().build(connection, sql, batchSize);
         }
         log.warn("not support {} streaming query now, pay attention to memory usage", databaseType.getType());
         return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);

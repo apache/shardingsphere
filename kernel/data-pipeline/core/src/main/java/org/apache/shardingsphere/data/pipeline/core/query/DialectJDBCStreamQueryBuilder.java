@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.query;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.Connection;
@@ -35,10 +34,10 @@ public interface DialectJDBCStreamQueryBuilder extends DatabaseTypedSPI {
      * Build streamed prepared statement.
      *
      * @param connection connection
-     * @param databaseType database type
      * @param sql SQL to be queried
+     * @param batchSize batch size
      * @return built prepared statement
      * @throws SQLException SQL exception
      */
-    PreparedStatement build(DatabaseType databaseType, Connection connection, String sql) throws SQLException;
+    PreparedStatement build(Connection connection, String sql, int batchSize) throws SQLException;
 }

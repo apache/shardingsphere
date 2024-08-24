@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.mysql.query;
 
 import org.apache.shardingsphere.data.pipeline.core.query.DialectJDBCStreamQueryBuilder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,7 +30,7 @@ import java.sql.SQLException;
 public final class MySQLJDBCStreamQueryBuilder implements DialectJDBCStreamQueryBuilder {
     
     @Override
-    public PreparedStatement build(final DatabaseType databaseType, final Connection connection, final String sql) throws SQLException {
+    public PreparedStatement build(final Connection connection, final String sql, final int batchSize) throws SQLException {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         result.setFetchSize(Integer.MIN_VALUE);
         return result;

@@ -47,9 +47,7 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInven
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.DatabaseTypeUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -168,11 +166,8 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
     private List<Record> dumpPageByPage(final Connection connection, final InventoryQueryParameter queryParam, final AtomicLong rowCount) throws SQLException {
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         int batchSize = dumperContext.getBatchSize();
-        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpPageByPageSQL(queryParam))) {
+        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpPageByPageSQL(queryParam), batchSize)) {
             runningStatement.set(preparedStatement);
-            if (!(DatabaseTypeUtils.getTrunkDatabaseType(databaseType) instanceof MySQLDatabaseType)) {
-                preparedStatement.setFetchSize(batchSize);
-            }
             setParameters(preparedStatement, queryParam, false);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 JobRateLimitAlgorithm rateLimitAlgorithm = dumperContext.getRateLimitAlgorithm();
@@ -287,11 +282,8 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         if (null != dumperContext.getTransactionIsolation()) {
             connection.setTransactionIsolation(dumperContext.getTransactionIsolation());
         }
-        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpSQLWithStreamingQuery())) {
+        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpSQLWithStreamingQuery(), batchSize)) {
             runningStatement.set(preparedStatement);
-            if (!(DatabaseTypeUtils.getTrunkDatabaseType(databaseType) instanceof MySQLDatabaseType)) {
-                preparedStatement.setFetchSize(batchSize);
-            }
             PrimaryKeyIngestPosition<?> primaryPosition = (PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition();
             InventoryQueryParameter queryParam = InventoryQueryParameter.buildForRangeQuery(new QueryRange(primaryPosition.getBeginValue(), true, primaryPosition.getEndValue()));
             setParameters(preparedStatement, queryParam, true);

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.colu
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
@@ -142,11 +141,8 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     
     private void fulfillCalculationContext(final CalculationContext calculationContext, final SingleTableInventoryCalculateParameter param) throws SQLException {
         String sql = getQuerySQL(param);
-        PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(param.getDatabaseType(), calculationContext.getConnection(), sql);
+        PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(param.getDatabaseType(), calculationContext.getConnection(), sql, chunkSize);
         setCurrentStatement(preparedStatement);
-        if (!(param.getDatabaseType() instanceof MySQLDatabaseType)) {
-            preparedStatement.setFetchSize(chunkSize);
-        }
         calculationContext.setPreparedStatement(preparedStatement);
         setParameters(preparedStatement, param);
         ResultSet resultSet = preparedStatement.executeQuery();
