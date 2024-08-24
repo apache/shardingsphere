@@ -33,6 +33,8 @@ public final class MetaDataLoaderMaterial {
     
     private final Collection<String> actualTableNames;
     
+    private final String storageUnitName;
+    
     private final DataSource dataSource;
     
     private final DatabaseType storageType;

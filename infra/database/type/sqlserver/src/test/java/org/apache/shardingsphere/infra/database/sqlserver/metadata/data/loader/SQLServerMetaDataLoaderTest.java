@@ -89,7 +89,8 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), dataSource, new SQLServerDatabaseType(), "sharding_db"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
+                new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, new SQLServerDatabaseType(), "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -107,7 +108,8 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), dataSource, new SQLServerDatabaseType(), "sharding_db"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
+                new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, new SQLServerDatabaseType(), "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -124,7 +126,8 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), dataSource, new SQLServerDatabaseType(), "sharding_db"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
+                new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, new SQLServerDatabaseType(), "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -141,7 +144,8 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), dataSource, new SQLServerDatabaseType(), "sharding_db"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
+                new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, new SQLServerDatabaseType(), "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
