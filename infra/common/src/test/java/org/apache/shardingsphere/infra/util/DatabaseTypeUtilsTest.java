@@ -21,18 +21,16 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class DatabaseTypeUtilsTest {
     
     @Test
-    void assertIsMySQL() {
-        DatabaseType actual = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        assertTrue(DatabaseTypeUtils.isMySQL(actual));
-        actual = TypedSPILoader.getService(DatabaseType.class, "MariaDB");
-        assertTrue(DatabaseTypeUtils.isMySQL(actual));
-        actual = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        assertFalse(DatabaseTypeUtils.isMySQL(actual));
+    void assertGetTrunkDatabaseType() {
+        assertThat(DatabaseTypeUtils.getTrunkDatabaseType(TypedSPILoader.getService(DatabaseType.class, "MySQL")), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
+        assertThat(DatabaseTypeUtils.getTrunkDatabaseType(TypedSPILoader.getService(DatabaseType.class, "MariaDB")), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
+        assertThat(DatabaseTypeUtils.getTrunkDatabaseType(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), not(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
 }
