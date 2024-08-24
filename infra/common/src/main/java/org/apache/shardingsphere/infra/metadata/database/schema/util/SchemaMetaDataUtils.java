@@ -68,7 +68,8 @@ public final class SchemaMetaDataUtils {
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageTypes().get(entry.getKey());
             String defaultSchemaName = getDefaultSchemaNameByStorageType(storageType, material.getDefaultSchemaName());
-            result.add(new MetaDataLoaderMaterial(entry.getValue(), getDataSource(material, entry.getKey()), storageType, defaultSchemaName));
+            MetaDataLoaderMaterial metaDataLoaderMaterial = new MetaDataLoaderMaterial(entry.getValue(), getDataSource(material, entry.getKey()), storageType, defaultSchemaName);
+            result.add(metaDataLoaderMaterial);
         }
         return result;
     }
