@@ -33,7 +33,9 @@ public final class PostgreSQLJDBCStreamQueryBuilder implements DialectJDBCStream
     public PreparedStatement build(final Connection connection, final String sql, final int batchSize) throws SQLException {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
         connection.setAutoCommit(false);
-        result.setFetchSize(batchSize);
+        if (batchSize > 0) {
+            result.setFetchSize(batchSize);
+        }
         return result;
     }
     
