@@ -19,60 +19,97 @@ package org.apache.shardingsphere.test.it.spi;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.util.Arrays;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class SPIMatchedCheckIT {
+    
+    private static final String SERVICES_PATH = "META-INF/services/";
     
     private static final Collection<String> SPI_PACKAGE_PREFIXES = Collections.singleton("org.apache.shardingsphere.");
     
     @Test
-    void assertSPIServiceNameMatchInterface() throws IOException, ClassNotFoundException {
-        // int spiCount = 0;
-        Enumeration<URL> spiURLs = getClass().getClassLoader().getResources("META-INF/services/");
+    void assertSPIConfigMatched() throws IOException, URISyntaxException {
+        int spiCount = 0;
+        Enumeration<URL> spiURLs = getClass().getClassLoader().getResources(SERVICES_PATH);
         while (spiURLs.hasMoreElements()) {
             URL url = spiURLs.nextElement();
-            for (File each : listSPIs(url)) {
-                for (String serviceFullName : parseServiceFullNames(each)) {
-                    // TODO check why test fixture can not loaded @hongsheng
-                    if (!serviceFullName.contains(".test.")) {
-                        assertSPIServiceNameMatchInterface(each, serviceFullName);
-                        // spiCount++;
+            for (Entry<Path, Collection<String>> entry : listAndParseSPIs(url.toURI()).entrySet()) {
+                for (String each : entry.getValue()) {
+                    if (getSPIName(entry.getKey()).contains(".test.")) {
+                        continue;
                     }
+                    assertSPIImplNameMatchInterface(entry.getKey(), each);
+                    spiCount++;
                 }
             }
         }
-        // TODO check why using maven install can not load all SPIs @hongsheng
-        // assertThat("The count of SPIs is too low, please check if the loading is correct.", spiCount, greaterThan(500));
+        assertThat("The count of SPIs is too low, please check if the loading is correct.", spiCount, greaterThan(500));
     }
     
-    private void assertSPIServiceNameMatchInterface(final File spiFile, final String serviceFullName) throws ClassNotFoundException {
-        Class<?> interfaceClass = Class.forName(spiFile.getName());
-        Class<?> serviceClass = Class.forName(serviceFullName);
-        assertTrue(interfaceClass.isAssignableFrom(serviceClass), String.format("Service: %s does not match interface: %s", new File(spiFile, serviceFullName).getAbsolutePath(), spiFile.getName()));
-    }
-    
-    private Collection<File> listSPIs(final URL url) {
-        if (!"file".equalsIgnoreCase(url.getProtocol())) {
-            return Collections.emptyList();
+    private Map<Path, Collection<String>> listAndParseSPIs(final URI servicesURI) throws IOException {
+        if (servicesURI.getScheme().equals("jar")) {
+            try (FileSystem fileSystem = FileSystems.newFileSystem(servicesURI, Collections.emptyMap())) {
+                return parseSPIImplNames(listSPIDefinePaths(fileSystem.getPath(SERVICES_PATH)));
+            }
+        } else {
+            return parseSPIImplNames(listSPIDefinePaths(Paths.get(servicesURI)));
         }
-        File[] files = new File(url.getPath()).listFiles();
-        if (null == files) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(files).filter(each -> SPI_PACKAGE_PREFIXES.stream().anyMatch(each.getName()::startsWith)).collect(Collectors.toList());
     }
     
-    private Collection<String> parseServiceFullNames(final File file) throws IOException {
-        return Files.readAllLines(file.toPath()).stream().filter(each -> !each.startsWith("#") && !each.trim().isEmpty()).collect(Collectors.toList());
+    private Collection<Path> listSPIDefinePaths(final Path servicesPath) throws IOException {
+        try (Stream<Path> pathStream = Files.list(servicesPath)) {
+            return pathStream.filter(each -> SPI_PACKAGE_PREFIXES.stream().anyMatch(getSPIName(each)::startsWith)).collect(Collectors.toList());
+        }
+    }
+    
+    private String getSPIName(final Path spiDefinePath) {
+        return spiDefinePath.getFileName().toString();
+    }
+    
+    private Map<Path, Collection<String>> parseSPIImplNames(final Collection<Path> spiDefinePaths) throws IOException {
+        Map<Path, Collection<String>> result = new LinkedHashMap<>();
+        for (Path each : spiDefinePaths) {
+            Collection<String> spiImplNames = Files.readAllLines(each).stream().filter(lineText -> !lineText.startsWith("#") && !lineText.trim().isEmpty()).collect(Collectors.toList());
+            result.put(each, spiImplNames);
+        }
+        return result;
+    }
+    
+    private void assertSPIImplNameMatchInterface(final Path spiDefinePath, final String spiImplName) {
+        String spiName = getSPIName(spiDefinePath);
+        Class<?> interfaceClazz = null;
+        try {
+            interfaceClazz = Class.forName(spiName);
+        } catch (final ClassNotFoundException ignored) {
+            fail(String.format("SPI interface `%s` not found, define path: %s", spiName, spiDefinePath));
+        }
+        Class<?> implClazz = null;
+        try {
+            implClazz = Class.forName(spiImplName);
+        } catch (final ClassNotFoundException ignored) {
+            fail(String.format("SPI impl `%s` not found, define path: %s", spiImplName, spiDefinePath));
+        }
+        assertTrue(interfaceClazz.isAssignableFrom(implClazz), String.format("SPI impl `%s` does not match interface `%s`, define path: %s", spiImplName, spiName, spiDefinePath));
     }
 }
