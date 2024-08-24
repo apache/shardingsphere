@@ -37,8 +37,9 @@ public interface DialectJDBCStreamQueryBuilder extends DatabaseTypedSPI {
      * @param connection connection
      * @param databaseType database type
      * @param sql SQL to be queried
+     * @param batchSize batch size
      * @return built prepared statement
      * @throws SQLException SQL exception
      */
-    PreparedStatement build(DatabaseType databaseType, Connection connection, String sql) throws SQLException;
+    PreparedStatement build(DatabaseType databaseType, Connection connection, String sql, int batchSize) throws SQLException;
 }
