@@ -51,8 +51,7 @@ public final class SchemaMetaDataUtils {
      * @param checkMetaDataEnable check meta data enable config
      * @return meta data loader materials
      */
-    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames,
-                                                                                final GenericSchemaBuilderMaterial material, final boolean checkMetaDataEnable) {
+    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         Collection<DatabaseType> unsupportedThreeTierStorageStructureDatabaseTypes = getUnsupportedThreeTierStorageStructureDatabaseTypes(material.getStorageTypes().values());
         DataNodes dataNodes = new DataNodes(material.getRules());
