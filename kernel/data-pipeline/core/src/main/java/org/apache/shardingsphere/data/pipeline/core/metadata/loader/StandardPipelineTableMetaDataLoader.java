@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class StandardPipelineTableMetaDataLoader implements PipelineTableMetaDataLoader {
     
-    // It doesn't support ShardingSphereDataSource
     private final PipelineDataSourceWrapper dataSource;
     
     private final Map<CaseInsensitiveIdentifier, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
