@@ -20,23 +20,12 @@ package org.apache.shardingsphere.infra.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 
 /**
  * Database type utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeUtils {
-    
-    /**
-     * Check whether database type is MySQL, include trunk database type.
-     *
-     * @param databaseType database type
-     * @return is MySQL or not
-     */
-    public static boolean isMySQL(final DatabaseType databaseType) {
-        return getTrunkDatabaseType(databaseType) instanceof MySQLDatabaseType;
-    }
     
     /**
      * Get trunk database type.

@@ -44,11 +44,12 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTable
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInventoryDumpSQLBuilder;
-import org.apache.shardingsphere.infra.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.DatabaseTypeUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -169,7 +170,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         int batchSize = dumperContext.getBatchSize();
         try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpPageByPageSQL(queryParam))) {
             runningStatement.set(preparedStatement);
-            if (!DatabaseTypeUtils.isMySQL(databaseType)) {
+            if (!(DatabaseTypeUtils.getTrunkDatabaseType(databaseType) instanceof MySQLDatabaseType)) {
                 preparedStatement.setFetchSize(batchSize);
             }
             setParameters(preparedStatement, queryParam, false);
@@ -288,7 +289,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         }
         try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpSQLWithStreamingQuery())) {
             runningStatement.set(preparedStatement);
-            if (!DatabaseTypeUtils.isMySQL(databaseType)) {
+            if (!(DatabaseTypeUtils.getTrunkDatabaseType(databaseType) instanceof MySQLDatabaseType)) {
                 preparedStatement.setFetchSize(batchSize);
             }
             PrimaryKeyIngestPosition<?> primaryPosition = (PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition();
