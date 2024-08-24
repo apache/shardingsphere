@@ -42,21 +42,15 @@ public final class PipelineInventoryDumpSQLBuilder {
     /**
      * Build divisible inventory dump SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @param lowerInclusive lower inclusive or not
-     * @param limited is value limited
+     * @param param parameter
      * @return built SQL
      */
-    public String buildDivisibleSQL(final String schemaName, final String tableName,
-                                    final Collection<String> columnNames, final String uniqueKey, final boolean lowerInclusive, final boolean limited) {
-        String queryColumns = buildQueryColumns(columnNames);
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        String operator = lowerInclusive ? ">=" : ">";
-        String sql = limited
+    public String buildDivisibleSQL(final BuildDivisibleSQLParameter param) {
+        String queryColumns = buildQueryColumns(param.getColumnNames());
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(param.getSchemaName(), param.getTableName());
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(param.getUniqueKey());
+        String operator = param.isLowerInclusive() ? ">=" : ">";
+        String sql = param.isLimited()
                 ? String.format("SELECT %s FROM %s WHERE %s%s? AND %s<=? ORDER BY %s ASC", queryColumns, qualifiedTableName, escapedUniqueKey, operator, escapedUniqueKey, escapedUniqueKey)
                 : String.format("SELECT %s FROM %s WHERE %s%s? ORDER BY %s ASC", queryColumns, qualifiedTableName, escapedUniqueKey, operator, escapedUniqueKey);
         return dialectSQLBuilder.wrapWithPageQuery(sql);
