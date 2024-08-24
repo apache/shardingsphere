@@ -78,7 +78,8 @@ public final class DistSQLUpdateExecuteEngine {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void executeNormalUpdate() throws SQLException {
-        DistSQLUpdateExecutor executor = TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
+        Optional<AdvancedDistSQLUpdateExecutor> advancedExecutor = TypedSPILoader.findService(AdvancedDistSQLUpdateExecutor.class, sqlStatement.getClass());
+        DistSQLUpdateExecutor executor = advancedExecutor.isPresent() ? advancedExecutor.get() : TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
         ShardingSphereDatabase database = null == databaseName ? null : contextManager.getDatabase(databaseName);
         new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null, sqlStatement);
         new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
