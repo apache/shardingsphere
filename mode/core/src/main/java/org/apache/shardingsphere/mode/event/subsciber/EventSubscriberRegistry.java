@@ -17,13 +17,26 @@
 
 package org.apache.shardingsphere.mode.event.subsciber;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+
+import java.util.Collection;
+
 /**
  * Event subscriber registry.
  */
-public interface EventSubscriberRegistry {
+@RequiredArgsConstructor
+public final class EventSubscriberRegistry {
+    
+    private final EventBusContext eventBusContext;
     
     /**
      * Register subscribers.
+     *
+     * @param subscribers to be registered subscribers
      */
-    void register();
+    public void register(final Collection<EventSubscriber> subscribers) {
+        subscribers.forEach(eventBusContext::register);
+    }
 }

@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.subsciber.EventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.deliver.DeliverQualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -30,21 +29,12 @@ import java.util.Collections;
 /**
  * Cluster deliver event subscriber registry.
  */
-public final class ClusterDeliverEventSubscriberRegistry implements EventSubscriberRegistry {
-    
-    private final EventBusContext eventBusContext;
+@Getter
+public final class ClusterDeliverEventSubscriberRegistry {
     
     private final Collection<EventSubscriber> subscribers;
     
     public ClusterDeliverEventSubscriberRegistry(final ContextManager contextManager) {
-        eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
         subscribers = Collections.singleton(new DeliverQualifiedDataSourceSubscriber((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()));
-    }
-    
-    /**
-     * Register subscribers.
-     */
-    public void register() {
-        subscribers.forEach(eventBusContext::register);
     }
 }
