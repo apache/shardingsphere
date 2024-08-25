@@ -55,7 +55,7 @@ class UnsupportedOperationStatementTest {
                         new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap()),
                         new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        shardingSphereStatement = new ShardingSphereStatement(connection);
+        shardingSphereStatement = new ShardingSphereStatement(connection, null);
     }
     
     @Test

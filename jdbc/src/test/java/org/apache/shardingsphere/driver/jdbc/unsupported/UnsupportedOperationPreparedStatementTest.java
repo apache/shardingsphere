@@ -58,7 +58,7 @@ class UnsupportedOperationPreparedStatementTest {
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(
                 connection.getCurrentDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
+        shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1", null);
     }
     
     @Test
