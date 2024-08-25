@@ -17,17 +17,34 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry;
 
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.mode.event.subsciber.EventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.deliver.DeliverQualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.event.subsciber.DeliverEventSubscriberRegistry;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Cluster deliver event subscriber registry.
  */
-public final class ClusterDeliverEventSubscriberRegistry extends DeliverEventSubscriberRegistry {
+public final class ClusterDeliverEventSubscriberRegistry implements EventSubscriberRegistry {
+    
+    private final EventBusContext eventBusContext;
+    
+    private final Collection<EventSubscriber> subscribers;
     
     public ClusterDeliverEventSubscriberRegistry(final ContextManager contextManager) {
-        super(contextManager, new DeliverQualifiedDataSourceSubscriber((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()));
+        eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
+        subscribers = Collections.singleton(new DeliverQualifiedDataSourceSubscriber((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()));
+    }
+    
+    /**
+     * Register subscribers.
+     */
+    public void register() {
+        subscribers.forEach(eventBusContext::register);
     }
 }
