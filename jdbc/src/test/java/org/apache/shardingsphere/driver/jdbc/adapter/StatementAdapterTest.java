@@ -242,7 +242,7 @@ class StatementAdapterTest {
         when(connection.getCurrentDatabaseName()).thenReturn("db");
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
-        ShardingSphereStatement result = new ShardingSphereStatement(connection);
+        ShardingSphereStatement result = new ShardingSphereStatement(connection, null);
         result.getRoutedStatements().addAll(Arrays.asList(statements));
         return result;
     }
@@ -260,7 +260,7 @@ class StatementAdapterTest {
                 new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        ShardingSphereStatement result = new ShardingSphereStatement(connection);
+        ShardingSphereStatement result = new ShardingSphereStatement(connection, null);
         result.getRoutedStatements().addAll(Arrays.asList(statements));
         setExecutionContext(result);
         return result;
