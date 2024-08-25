@@ -33,7 +33,7 @@ public final class EventSubscriberRegistry {
     
     /**
      * Register subscribers.
-     * 
+     *
      * @param subscribers to be registered subscribers
      */
     public void register(final Collection<EventSubscriber> subscribers) {
