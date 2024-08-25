@@ -100,7 +100,9 @@ public final class DriverExecuteExecutor {
             metaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return true;
         }
-        return executePushDown(database, queryContext, prepareEngine, executeCallback, addCallback, replayCallback);
+        ExecutionContext executionContext =
+                new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+        return executePushDown(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
     }
     
     private MetaDataRefreshEngine getMetaDataRefreshEngine(final ShardingSphereDatabase database) {
@@ -108,10 +110,8 @@ public final class DriverExecuteExecutor {
     }
     
     @SuppressWarnings("rawtypes")
-    private boolean executePushDown(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+    private boolean executePushDown(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                     final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        ExecutionContext executionContext =
-                new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         if (database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
             executeType = ExecuteType.JDBC_PUSH_DOWN;
             return jdbcPushDownExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
