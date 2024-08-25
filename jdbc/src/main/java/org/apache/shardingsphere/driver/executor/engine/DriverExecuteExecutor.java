@@ -100,6 +100,16 @@ public final class DriverExecuteExecutor {
             metaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return true;
         }
+        return executePushDown(database, queryContext, prepareEngine, executeCallback, addCallback, replayCallback);
+    }
+    
+    private MetaDataRefreshEngine getMetaDataRefreshEngine(final ShardingSphereDatabase database) {
+        return new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps());
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private boolean executePushDown(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                    final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         ExecutionContext executionContext =
                 new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
         if (database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
@@ -108,10 +118,6 @@ public final class DriverExecuteExecutor {
         }
         executeType = ExecuteType.RAW_PUSH_DOWN;
         return rawPushDownExecutor.execute(database, executionContext);
-    }
-    
-    private MetaDataRefreshEngine getMetaDataRefreshEngine(final ShardingSphereDatabase database) {
-        return new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps());
     }
     
     /**
