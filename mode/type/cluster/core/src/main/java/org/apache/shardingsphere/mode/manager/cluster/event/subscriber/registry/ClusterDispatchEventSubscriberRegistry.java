@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.registry;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.subsciber.EventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.CacheEvictedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ComputeNodeOnlineSubscriber;
@@ -40,14 +39,12 @@ import java.util.Collection;
 /**
  * Cluster dispatch event subscriber registry.
  */
-public final class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRegistry {
-    
-    private final EventBusContext eventBusContext;
+@Getter
+public final class ClusterDispatchEventSubscriberRegistry {
     
     private final Collection<EventSubscriber> subscribers;
     
     public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager) {
-        eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
                 new ResourceMetaDataChangedSubscriber(contextManager),
                 new ListenerAssistedSubscriber(contextManager),
@@ -60,10 +57,5 @@ public final class ClusterDispatchEventSubscriberRegistry implements EventSubscr
                 new StorageUnitEventSubscriber(contextManager),
                 new PropertiesEventSubscriber(contextManager),
                 new GlobalRuleConfigurationEventSubscriber(contextManager));
-    }
-    
-    @Override
-    public void register() {
-        subscribers.forEach(eventBusContext::register);
     }
 }
