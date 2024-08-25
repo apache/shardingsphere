@@ -64,7 +64,6 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
     
     @Override
     public void register() {
-        // TODO use call subscruber instead of event bus
         subscribers.forEach(eventBusContext::register);
     }
 }
