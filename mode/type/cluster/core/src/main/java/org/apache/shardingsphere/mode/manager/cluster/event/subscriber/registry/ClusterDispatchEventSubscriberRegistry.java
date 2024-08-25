@@ -40,7 +40,7 @@ import java.util.Collection;
 /**
  * Cluster dispatch event subscriber registry.
  */
-public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRegistry {
+public final class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRegistry {
     
     private final EventBusContext eventBusContext;
     
@@ -58,8 +58,8 @@ public class ClusterDispatchEventSubscriberRegistry implements EventSubscriberRe
                 new ComputeNodeOnlineSubscriber(contextManager),
                 new QualifiedDataSourceSubscriber(contextManager),
                 new StorageUnitEventSubscriber(contextManager),
-                new GlobalRuleConfigurationEventSubscriber(contextManager),
-                new PropertiesEventSubscriber(contextManager));
+                new PropertiesEventSubscriber(contextManager),
+                new GlobalRuleConfigurationEventSubscriber(contextManager));
     }
     
     @Override
