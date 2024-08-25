@@ -31,7 +31,7 @@ public interface DriverExecutorFacadeFactory extends TypedSPI {
     
     /**
      * Create new instance of driver executor facade.
-     * 
+     *
      * @param connection connection
      * @param statementOption statement option
      * @param statementManager statement manager
