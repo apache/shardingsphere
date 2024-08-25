@@ -164,35 +164,27 @@ class SubqueryExtractUtilsTest {
     @Test
     void assertGetSubquerySegmentsWithMultiNestedSubquery() {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        SubquerySegment subquerySelect = createSubquerySegmentForFrom();
+        SubquerySegment subquerySelect = createSubquerySegment();
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 0, subquerySelect)));
         Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(actual.size(), is(2));
-    }
-    
-    private SubquerySegment createSubquerySegmentForFrom() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 0, new InExpression(0, 0,
-                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")), false))));
-        return new SubquerySegment(0, 0, selectStatement, "");
     }
     
     @Test
     void assertGetSubquerySegmentsWithCombineSegment() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         SubquerySegment left = new SubquerySegment(0, 0, mock(SelectStatement.class), "");
-        SubquerySegment right = createSelectStatementForCombineSegment();
+        SubquerySegment right = createSubquerySegment();
         when(selectStatement.getCombine()).thenReturn(Optional.of(new CombineSegment(0, 0, left, CombineType.UNION, right)));
         Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(actual.size(), is(3));
     }
     
-    private SubquerySegment createSelectStatementForCombineSegment() {
+    private SubquerySegment createSubquerySegment() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        when(selectStatement.getWhere())
-                .thenReturn(Optional.of(new WhereSegment(0, 0, new InExpression(0, 0, left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")), false))));
+        when(selectStatement.getWhere()).thenReturn(
+                Optional.of(new WhereSegment(0, 0, new InExpression(0, 0, left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")), false))));
         return new SubquerySegment(0, 0, selectStatement, "");
     }
     
