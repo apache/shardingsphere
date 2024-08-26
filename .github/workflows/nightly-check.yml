@@ -236,19 +236,24 @@ jobs:
             shardingsphere-maven-third-party-e2e-cache-
             shardingsphere-maven-third-party-
       - name: Install Project
-        run: ./mvnw clean install -T1C
+        run: ./mvnw clean install -DskipTests -T1C
       - name: Set up JDK 8 for Jacoco
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 8
-          cache: 'maven'
       - name: Build with maven and execute jacoco aggregation script
         run: |
           ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
-          ./mvnw -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/target/mergeReport/jacoco.xml sonar:sonar -Pcoverage
+      - name: Set up JDK 11 for sonar plugin
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Upload jacoco report to sonar
+        run: ./mvnw -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/target/mergeReport/jacoco.xml sonar:sonar
       - name: Upload coverage reports to codecov
         uses: codecov/codecov-action@v4
         with:
