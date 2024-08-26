@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
@@ -104,9 +105,11 @@ public final class ProxySQLExecutor {
         regularExecutor = new ProxyJDBCExecutor(type, databaseConnectionManager.getConnectionSession(), databaseConnector, jdbcExecutor);
         rawExecutor = new RawExecutor(executorEngine, connectionContext);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String usedDatabaseName = databaseConnectionManager.getConnectionSession().getUsedDatabaseName();
-        String usedSchemaName = getSchemaName(queryContext.getSqlStatementContext(), metaDataContexts.getMetaData().getDatabase(usedDatabaseName));
-        sqlFederationEngine = new SQLFederationEngine(usedDatabaseName, usedSchemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
+        String currentDatabaseName =
+                Strings.isNullOrEmpty(databaseConnectionManager.getConnectionSession().getCurrentDatabaseName()) ? databaseConnectionManager.getConnectionSession().getUsedDatabaseName()
+                        : databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
+        String currentSchemaName = getSchemaName(queryContext.getSqlStatementContext(), metaDataContexts.getMetaData().getDatabase(currentDatabaseName));
+        sqlFederationEngine = new SQLFederationEngine(currentDatabaseName, currentSchemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
