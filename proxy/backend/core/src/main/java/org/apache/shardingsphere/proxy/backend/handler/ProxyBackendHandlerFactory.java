@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -41,11 +42,9 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
-import org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.extra.ExtraProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionalErrorAllowedSQLStatementHandler;
@@ -130,10 +129,6 @@ public final class ProxyBackendHandlerFactory {
         if (backendHandler.isPresent()) {
             return backendHandler.get();
         }
-        Optional<ExtraProxyBackendHandler> extraHandler = findExtraProxyBackendHandler(sqlStatement);
-        if (extraHandler.isPresent()) {
-            return extraHandler.get();
-        }
         Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateBackendHandler(sqlStatement, connectionSession);
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
@@ -177,15 +172,6 @@ public final class ProxyBackendHandlerFactory {
         if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
             connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         }
-    }
-    
-    private static Optional<ExtraProxyBackendHandler> findExtraProxyBackendHandler(final SQLStatement sqlStatement) {
-        for (ExtraProxyBackendHandler each : ShardingSphereServiceLoader.getServiceInstances(ExtraProxyBackendHandler.class)) {
-            if (each.accept(sqlStatement)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
     
     private static Optional<ProxyBackendHandler> findDatabaseOperateBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
