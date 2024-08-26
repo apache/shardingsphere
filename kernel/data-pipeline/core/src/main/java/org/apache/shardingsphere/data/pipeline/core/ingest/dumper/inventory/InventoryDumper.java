@@ -169,7 +169,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     private List<Record> dumpPageByPage(final Connection connection, final InventoryQueryParameter queryParam, final AtomicLong rowCount) throws SQLException {
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         int batchSize = dumperContext.getBatchSize();
-        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpPageByPageSQL(queryParam), batchSize)) {
+        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildDumpPageByPageSQL(queryParam), batchSize)) {
             runningStatement.set(preparedStatement);
             setParameters(preparedStatement, queryParam, false);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -246,7 +246,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         return result;
     }
     
-    private String buildInventoryDumpPageByPageSQL(final InventoryQueryParameter queryParam) {
+    private String buildDumpPageByPageSQL(final InventoryQueryParameter queryParam) {
         String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
         PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
         List<String> columnNames = dumperContext.getQueryColumnNames();
@@ -275,7 +275,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         if (null != dumperContext.getTransactionIsolation()) {
             connection.setTransactionIsolation(dumperContext.getTransactionIsolation());
         }
-        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpSQLWithStreamingQuery(), batchSize)) {
+        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildDumpSQLWithStreamingQuery(), batchSize)) {
             runningStatement.set(preparedStatement);
             PrimaryKeyIngestPosition<?> primaryPosition = (PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition();
             InventoryQueryParameter queryParam = InventoryQueryParameter.buildForRangeQuery(new QueryRange(primaryPosition.getBeginValue(), true, primaryPosition.getEndValue()));
@@ -310,7 +310,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         }
     }
     
-    private String buildInventoryDumpSQLWithStreamingQuery() {
+    private String buildDumpSQLWithStreamingQuery() {
         if (!Strings.isNullOrEmpty(dumperContext.getQuerySQL())) {
             return dumperContext.getQuerySQL();
         }
