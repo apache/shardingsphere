@@ -123,8 +123,9 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
     
     private void init() {
         if (null == tableMetaData) {
-            tableMetaData = metaDataLoader.getTableMetaData(
-                    dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName()), dumperContext.getActualTableName());
+            String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
+            String tableName = dumperContext.getActualTableName();
+            tableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
         }
     }
     
