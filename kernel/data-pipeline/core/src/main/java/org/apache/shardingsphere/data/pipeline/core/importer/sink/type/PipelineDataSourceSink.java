@@ -206,7 +206,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
             // TODO if table without unique key the conditionColumns before values is null, so update will fail at PostgreSQL
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
-                log.warn("execute update failed, update count: {}, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}",
+                log.warn("Update failed, update count: {}, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}",
                         updateCount, sql, setColumns, JsonUtils.toJsonString(shardingColumns), JsonUtils.toJsonString(conditionColumns));
             }
         } catch (final SQLException ex) {
