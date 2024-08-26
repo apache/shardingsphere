@@ -253,7 +253,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
     private String buildInventoryDumpPageByPageSQL(final InventoryQueryParameter queryParam) {
         String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
         PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
-        List<String> columnNames = getQueryColumnNames();
+        List<String> columnNames = dumperContext.getQueryColumnNames();
         if (QueryType.POINT_QUERY == queryParam.getQueryType()) {
             return inventoryDumpSQLBuilder.buildPointQuerySQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName());
         }
@@ -268,10 +268,6 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
                     schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName(), lowerInclusive, false));
         }
         throw new PipelineInternalException("Primary key position is invalid.");
-    }
-    
-    private List<String> getQueryColumnNames() {
-        return Optional.ofNullable(dumperContext.getInsertColumnNames()).orElse(Collections.singletonList("*"));
     }
     
     private Object getFirstUniqueKeyValue(final List<Record> dataRecords, final int index) {
@@ -325,7 +321,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
             return dumperContext.getQuerySQL();
         }
         String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
-        List<String> columnNames = getQueryColumnNames();
+        List<String> columnNames = dumperContext.getQueryColumnNames();
         return inventoryDumpSQLBuilder.buildFetchAllSQL(schemaName, dumperContext.getActualTableName(), columnNames);
     }
     

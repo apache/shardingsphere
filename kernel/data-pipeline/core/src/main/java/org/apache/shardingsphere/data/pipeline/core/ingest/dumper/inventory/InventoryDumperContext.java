@@ -24,7 +24,9 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonCo
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Inventory dumper context.
@@ -68,5 +70,14 @@ public final class InventoryDumperContext {
      */
     public boolean hasUniqueKey() {
         return null != uniqueKeyColumns && !uniqueKeyColumns.isEmpty();
+    }
+    
+    /**
+     * Get query column names.
+     *
+     * @return query column names
+     */
+    public List<String> getQueryColumnNames() {
+        return Optional.ofNullable(insertColumnNames).orElse(Collections.singletonList("*"));
     }
 }
