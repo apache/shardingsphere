@@ -60,6 +60,10 @@ SUBSTR
     : S U B S T R
     ;
 
+MID
+    : M I D
+    ;
+
 EXTRACT
     : E X T R A C T
     ;
