@@ -98,7 +98,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithMySQLShowFunctionStatus() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowFunctionStatusStatement());
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext);
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowFunctionStatusExecutor.class));
     }
@@ -106,7 +106,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithShowProcedureStatus() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowProcedureStatusStatement());
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext);
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowProcedureStatusExecutor.class));
     }
@@ -114,7 +114,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithShowTables() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowTablesStatement());
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext);
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowTablesExecutor.class));
     }
