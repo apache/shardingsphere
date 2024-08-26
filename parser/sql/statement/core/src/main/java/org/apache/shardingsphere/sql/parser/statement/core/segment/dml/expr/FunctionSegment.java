@@ -40,9 +40,9 @@ public final class FunctionSegment implements ComplexExpressionSegment {
     
     private final String functionName;
     
-    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
-    
     private final String text;
+    
+    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
     @Setter
     private OwnerSegment owner;
