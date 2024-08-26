@@ -27,11 +27,11 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.position.InventoryDataRecordPositionCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
@@ -68,7 +68,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @HighFrequencyInvocation
 @Slf4j
-public class InventoryDumper extends AbstractPipelineLifecycleRunnable implements Dumper {
+public final class InventoryDumper extends AbstractPipelineLifecycleRunnable implements Dumper {
     
     private final InventoryDumperContext dumperContext;
     
@@ -78,6 +78,8 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
+    private final InventoryDataRecordPositionCreator positionCreator;
+    
     private final PipelineInventoryDumpSQLBuilder sqlBuilder;
     
     private final InventoryColumnValueReaderEngine columnValueReaderEngine;
@@ -86,11 +88,13 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
     
     private PipelineTableMetaData tableMetaData;
     
-    public InventoryDumper(final InventoryDumperContext dumperContext, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
+    public InventoryDumper(final InventoryDumperContext dumperContext, final PipelineChannel channel, final DataSource dataSource,
+                           final PipelineTableMetaDataLoader metaDataLoader, final InventoryDataRecordPositionCreator positionCreator) {
         this.dumperContext = dumperContext;
         this.channel = channel;
         this.dataSource = dataSource;
         this.metaDataLoader = metaDataLoader;
+        this.positionCreator = positionCreator;
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         sqlBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
         columnValueReaderEngine = new InventoryColumnValueReaderEngine(databaseType);
@@ -229,7 +233,7 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
     private DataRecord loadDataRecord(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();
         String tableName = dumperContext.getLogicTableName();
-        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, tableName, newDataRecordPosition(resultSet), columnCount);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, tableName, positionCreator.create(dumperContext, resultSet), columnCount);
         List<String> insertColumnNames = Optional.ofNullable(dumperContext.getInsertColumnNames()).orElse(Collections.emptyList());
         ShardingSpherePreconditions.checkState(insertColumnNames.isEmpty() || insertColumnNames.size() == resultSetMetaData.getColumnCount(),
                 () -> new PipelineInvalidParameterException("Insert column names count not equals ResultSet column count"));
@@ -240,13 +244,6 @@ public class InventoryDumper extends AbstractPipelineLifecycleRunnable implement
         }
         result.setActualTableName(dumperContext.getActualTableName());
         return result;
-    }
-    
-    protected IngestPosition newDataRecordPosition(final ResultSet resultSet) throws SQLException {
-        return dumperContext.hasUniqueKey()
-                ? PrimaryKeyIngestPositionFactory.newInstance(
-                        resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getEndValue())
-                : new IngestPlaceholderPosition();
     }
     
     private String buildInventoryDumpPageByPageSQL(final InventoryQueryParameter queryParam) {
