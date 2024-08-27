@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,6 +15,12 @@
   ~ limitations under the License.
   -->
 
-<e2e-test-cases>
-    <test-case sql="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_boxmv" db-types="PostgreSQL" />
-</e2e-test-cases>
+<dataset>
+    <metadata>
+        <column name="View" />
+        <column name="Create View" />
+        <column name="character_set_client" />
+        <column name="collation_connection" />
+    </metadata>
+    <row values="t_order_sharding_view | CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `sharding_view` AS select `o`.`order_id` AS `order_id`,`o`.`user_id` AS `user_id`,`o`.`status` AS `status`,`o`.`merchant_id` AS `merchant_id`,`o`.`remark` AS `remark`,`o`.`creation_date` AS `creation_date` from (`t_order` `o` join `t_order_item` `i` on((`o`.`order_id` = `i`.`order_id`))) where (`o`.`order_id` = 1) | utf8mb4 | utf8mb4_0900_ai_ci" />
+</dataset>

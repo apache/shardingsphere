@@ -16,12 +16,12 @@
   -->
 
 <dataset>
-    <metadata table-name="t_order_sharding_view" data-nodes="ds_${0..9}.t_order_sharding_view">
-        <column name="item_id" type="numeric" />
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="product_id" type="numeric" />
-        <column name="quantity" type="numeric" />
-        <column name="creation_date" type="datetime" />
+    <metadata table-name="t_order_sharding_view" data-nodes="db_${0..9}.t_order_sharding_view">
+        <column name="item_id" type="bigint" />
+        <column name="order_id" type="bigint" />
+        <column name="user_id" type="int" />
+        <column name="product_id" type="int" />
+        <column name="quantity" type="int" />
+        <column name="creation_date" type="date" />
     </metadata>
 </dataset>

@@ -17,12 +17,10 @@
 
 <dataset>
     <metadata>
-        <column name="database" />
+        <column name="View" />
+        <column name="Create View" />
+        <column name="character_set_client" />
+        <column name="collation_connection" />
     </metadata>
-    <row values="db" />
-    <row values="information_schema" />
-    <row values="mysql" />
-    <row values="performance_schema" />
-    <row values="shardingsphere" />
-    <row values="sys" />
+    <row values="t_order_sharding_view, CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `sharding_view` AS select `o`.`order_id` AS `order_id`,`o`.`user_id` AS `user_id`,`o`.`status` AS `status`,`o`.`merchant_id` AS `merchant_id`,`o`.`remark` AS `remark`,`o`.`creation_date` AS `creation_date` from (`t_order` `o` join `t_order_item` `i` on((`o`.`order_id` = `i`.`order_id`))) where (`o`.`order_id` = 1), utf8mb4, utf8mb4_0900_ai_ci" />
 </dataset>
