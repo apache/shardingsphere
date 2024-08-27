@@ -53,6 +53,12 @@ rules:
         auditorNames:
           - auditor_constant
         allowHintDisable: true
+    t_order_sharding_view:
+      actualDataNodes: tbl.t_order_sharding_view_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: it_standard_fixture
     t_order_details:
       actualDataNodes: tbl.t_order_details_${0..9}
       tableStrategy:
@@ -65,7 +71,7 @@ rules:
         hint:
           shardingAlgorithmName: t_product_hint_inline
   bindingTables:
-    - ref_0:t_order,t_order_item,t_order_details
+    - ref_0:t_order,t_order_item,t_order_sharding_view,t_order_details
 
   shardingAlgorithms:
     it_standard_fixture:

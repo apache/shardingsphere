@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -104,5 +105,23 @@ public abstract class ShardingDDLStatementValidator implements ShardingStatement
      */
     protected boolean isSchemaContainsIndex(final ShardingSphereSchema schema, final IndexSegment index) {
         return schema.getAllTableNames().stream().anyMatch(each -> schema.getTable(each).containsIndex(index.getIndexName().getIdentifier().getValue()));
+    }
+    
+    /**
+     * Judge whether sharding tables not binding with view.
+     *
+     * @param tableSegments table segments
+     * @param shardingRule sharding rule
+     * @param viewName view name
+     * @return sharding tables not binding with view or not
+     */
+    protected boolean isShardingTablesNotBindingWithView(final Collection<SimpleTableSegment> tableSegments, final ShardingRule shardingRule, final String viewName) {
+        for (SimpleTableSegment each : tableSegments) {
+            String logicTable = each.getTableName().getIdentifier().getValue();
+            if (shardingRule.isShardingTable(logicTable) && !shardingRule.isAllBindingTables(Arrays.asList(viewName, logicTable))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
