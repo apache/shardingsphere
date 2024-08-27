@@ -247,15 +247,15 @@ jobs:
           ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
-      - name: Set up JDK 11 for sonar plugin
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 11
-      - name: Upload jacoco report to sonar
-        run: ./mvnw -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/target/mergeReport/jacoco.xml sonar:sonar
       - name: Upload coverage reports to codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ github.workspace }}/target/mergeReport/jacoco.xml
+      - name: Set up JDK 17 for sonar plugin
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Upload jacoco report to sonar
+        run: ./mvnw -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/target/mergeReport/jacoco.xml sonar:sonar
