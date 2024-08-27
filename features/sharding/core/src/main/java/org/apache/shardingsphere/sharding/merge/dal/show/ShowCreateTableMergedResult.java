@@ -71,7 +71,7 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
         }
     }
     
-    private static void setViewCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName, final ShardingRule shardingRule) {
+    private void setViewCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName, final ShardingRule shardingRule) {
         Optional<ShardingTable> shardingTable = shardingRule.findShardingTable(logicTableName);
         Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
         if (shardingTable.isPresent() && bindingTableRule.isPresent()) {
