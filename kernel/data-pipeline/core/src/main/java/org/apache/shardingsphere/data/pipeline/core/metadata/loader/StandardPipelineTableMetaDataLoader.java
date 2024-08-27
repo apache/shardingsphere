@@ -120,6 +120,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     private Map<CaseInsensitiveIdentifier, Collection<CaseInsensitiveIdentifier>> loadUniqueIndexesOfTable(final Connection connection,
                                                                                                            final String schemaName, final String tableName) throws SQLException {
         Map<String, SortedMap<Short, CaseInsensitiveIdentifier>> orderedColumnsOfIndexes = new LinkedHashMap<>();
+        // Set approximate=true to avoid Oracle driver 19 run `analyze table`
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, true)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString("INDEX_NAME");
