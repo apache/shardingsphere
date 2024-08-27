@@ -22,7 +22,11 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -38,6 +42,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -48,9 +53,9 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ComputeNodeOnlineSubscriberTest {
+class ComputeNodeStateSubscriberTest {
     
-    private ComputeNodeOnlineSubscriber subscriber;
+    private ComputeNodeStateSubscriber subscriber;
     
     private ContextManager contextManager;
     
@@ -59,7 +64,7 @@ class ComputeNodeOnlineSubscriberTest {
         EventBusContext eventBusContext = new EventBusContext();
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), eventBusContext);
         contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), mock(ShardingSphereMetaData.class)));
-        subscriber = new ComputeNodeOnlineSubscriber(contextManager);
+        subscriber = new ComputeNodeStateSubscriber(contextManager);
     }
     
     @Test
@@ -90,5 +95,26 @@ class ComputeNodeOnlineSubscriberTest {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
                 new Properties(), Collections.emptyList(), instanceMetaData, false);
+    }
+    
+    @Test
+    void assertRenewInstanceState() {
+        ComputeNodeInstanceStateChangedEvent event = new ComputeNodeInstanceStateChangedEvent(
+                contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), InstanceState.OK.name());
+        subscriber.renew(event);
+        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
+    }
+    
+    @Test
+    void assertRenewInstanceWorkerIdEvent() {
+        subscriber.renew(new WorkerIdEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), 0));
+        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getWorkerId(), is(0));
+    }
+    
+    @Test
+    void assertRenewInstanceLabels() {
+        Collection<String> labels = Collections.singletonList("test");
+        subscriber.renew(new LabelsEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), labels));
+        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getLabels(), is(labels));
     }
 }

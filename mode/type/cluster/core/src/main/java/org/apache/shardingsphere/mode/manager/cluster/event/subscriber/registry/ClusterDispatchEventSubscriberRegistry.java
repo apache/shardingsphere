@@ -21,14 +21,14 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.CacheEvictedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ComputeNodeOnlineSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.DatabaseChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ComputeNodeStateSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.DatabaseDataChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.GlobalRuleConfigurationEventSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ListenerAssistedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ProcessListChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.PropertiesEventSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.QualifiedDataSourceSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.ResourceMetaDataChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.MetaDataChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.RuleItemChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StateChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StorageUnitEventSubscriber;
@@ -46,13 +46,13 @@ public final class ClusterDispatchEventSubscriberRegistry {
     
     public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager) {
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
-                new ResourceMetaDataChangedSubscriber(contextManager),
+                new MetaDataChangedSubscriber(contextManager),
                 new ListenerAssistedSubscriber(contextManager),
                 new StateChangedSubscriber(contextManager),
-                new DatabaseChangedSubscriber(contextManager),
+                new DatabaseDataChangedSubscriber(contextManager),
                 new ProcessListChangedSubscriber(contextManager),
                 new CacheEvictedSubscriber(),
-                new ComputeNodeOnlineSubscriber(contextManager),
+                new ComputeNodeStateSubscriber(contextManager),
                 new QualifiedDataSourceSubscriber(contextManager),
                 new StorageUnitEventSubscriber(contextManager),
                 new PropertiesEventSubscriber(contextManager),
