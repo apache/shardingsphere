@@ -103,8 +103,8 @@ Support MySQL `LOAD DATA` and `LOAD XML` statements to load data to single table
 
 1. Support create, alter and drop view based on a single table or multiple single tables on the same storage node;
 2. Support create, alter and drop view based on any broadcast table;
-3. Support create, alter and drop view based on any sharding table. The view must be configured with the same sharding rules as the sharding table, and the view and sharding table must be in a binding table rule;
-4. Support create, alter and drop view based on broadcast tables and sharding tables. The sharding table rules are the same as create view using sharding tables alone;
+3. Support create, alter and drop view based on any sharding table. The view must be configured with same sharding rules as sharding table, the view and sharding table must be in same binding table rule;
+4. Support create, alter and drop view based on broadcast tables and sharding tables. The sharding table rules are same as create view using sharding tables alone;
 5. Support create, alter and drop view based on broadcast tables and single tables;
 6. Support MySQL `SHOW CREATE TABLE viewName` to show create statement of the view.
 
