@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -75,10 +76,8 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final CreateOrAlterTableEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
+        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
         Map<String, ShardingSphereTable> tables = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
                 .getTableMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
@@ -104,10 +103,8 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final CreateOrAlterViewEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
+        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
         Map<String, ShardingSphereView> views = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
                 .getViewMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),

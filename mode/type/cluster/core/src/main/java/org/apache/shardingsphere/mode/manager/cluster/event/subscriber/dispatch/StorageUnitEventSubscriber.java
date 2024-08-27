@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
@@ -40,10 +41,8 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final RegisterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
+        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
         contextManager.getMetaDataContextManager().getStorageUnitManager().registerStorageUnit(event.getDatabaseName(),
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
@@ -55,10 +54,8 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterStorageUnitEvent event) {
-        if (!event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
+        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
         contextManager.getMetaDataContextManager().getStorageUnitManager().alterStorageUnit(
                 event.getDatabaseName(), contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
@@ -70,9 +67,8 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final UnregisterStorageUnitEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
-            return;
-        }
+        Preconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName()),
+                "No database '%s' exists.", event.getDatabaseName());
         contextManager.getMetaDataContextManager().getStorageUnitManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
 }

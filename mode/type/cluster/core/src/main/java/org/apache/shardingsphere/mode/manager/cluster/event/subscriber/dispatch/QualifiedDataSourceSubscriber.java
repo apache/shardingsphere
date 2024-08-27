@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -42,9 +43,8 @@ public class QualifiedDataSourceSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final QualifiedDataSourceStateEvent event) {
         QualifiedDataSource qualifiedDataSource = event.getQualifiedDataSource();
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(qualifiedDataSource.getDatabaseName())) {
-            return;
-        }
+        Preconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(qualifiedDataSource.getDatabaseName()),
+                "No database '%s' exists.", qualifiedDataSource.getDatabaseName());
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDataSource.getDatabaseName());
         for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
             each.updateStatus(qualifiedDataSource, event.getStatus().getState());
