@@ -45,6 +45,16 @@
     <row values=" | db |         t_order_item |         ds_7 |         t_order_item | |     " />
     <row values=" | db |         t_order_item |         ds_8 |         t_order_item | |     " />
     <row values=" | db |         t_order_item |         ds_9 |         t_order_item | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_0 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_1 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_2 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_3 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_4 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_5 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_6 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_7 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_8 |         t_order_sharding_view | |     " />
+    <row values=" | db |         t_order_sharding_view |         ds_9 |         t_order_sharding_view | |     " />
     <row values=" | db |         t_order_details|         ds_0 |         t_order_details| |     " />
     <row values=" | db |         t_order_details|         ds_1 |         t_order_details| |     " />
     <row values=" | db |         t_order_details|         ds_2 |         t_order_details| |     " />

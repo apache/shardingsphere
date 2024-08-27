@@ -134,6 +134,12 @@ rules:
         auditorNames:
           - auditor_constant
         allowHintDisable: true
+    t_order_sharding_view:
+      actualDataNodes: ds_${0..9}.t_order_sharding_view
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: it_standard_fixture
     t_order_details:
       actualDataNodes: ds_${0..9}.t_order_details
       databaseStrategy:
@@ -141,7 +147,7 @@ rules:
           shardingColumn: user_id
           shardingAlgorithmName: it_standard_fixture
   bindingTables:
-    - ref_0:t_order,t_order_item,t_order_details
+    - ref_0:t_order,t_order_item,t_order_sharding_view,t_order_details
   shardingAlgorithms:
     it_standard_fixture:
       type: IT.STANDARD.FIXTURE

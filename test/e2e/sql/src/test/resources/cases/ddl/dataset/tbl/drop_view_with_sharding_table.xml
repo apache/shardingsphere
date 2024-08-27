@@ -16,12 +16,5 @@
   -->
 
 <dataset>
-    <metadata>
-        <column name="type" />
-        <column name="name" />
-    </metadata>
-    <row values="table| t_order" />
-    <row values="table| t_order_item" />
-    <row values="table| t_order_sharding_view" />
-    <row values="table| t_order_details" />
+    <metadata table-name="t_order_sharding_view" data-nodes="tbl.t_order_sharding_view_${0..9}" />
 </dataset>

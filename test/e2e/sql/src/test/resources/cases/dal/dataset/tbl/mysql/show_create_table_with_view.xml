@@ -17,11 +17,10 @@
 
 <dataset>
     <metadata>
-        <column name="type" />
-        <column name="name" />
+        <column name="View" />
+        <column name="Create View" />
+        <column name="character_set_client" />
+        <column name="collation_connection" />
     </metadata>
-    <row values="table| t_order" />
-    <row values="table| t_order_item" />
-    <row values="table| t_order_sharding_view" />
-    <row values="table| t_order_details" />
+    <row values="t_order_sharding_view, CREATE ALGORITHM=UNDEFINED DEFINER=`test_user`@`%` SQL SECURITY DEFINER VIEW `t_order_sharding_view` AS select `o`.`order_id` AS `order_id`,`o`.`user_id` AS `user_id`,`o`.`status` AS `status`,`o`.`merchant_id` AS `merchant_id`,`o`.`remark` AS `remark`,`o`.`creation_date` AS `creation_date` from (`t_order` `o` join `t_order_item` `i` on((`o`.`order_id` = `i`.`order_id`))), utf8mb4, utf8mb4_0900_ai_ci" />
 </dataset>

@@ -22,5 +22,6 @@
     </metadata>
     <row values="table| t_order" />
     <row values="table| t_order_item" />
+    <row values="table| t_order_sharding_view" />
     <row values="table| t_order_details" />
 </dataset>

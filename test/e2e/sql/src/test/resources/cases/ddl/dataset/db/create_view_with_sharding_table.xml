@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,6 +15,13 @@
   ~ limitations under the License.
   -->
 
-<e2e-test-cases>
-    <test-case sql="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_boxmv" db-types="PostgreSQL" />
-</e2e-test-cases>
+<dataset>
+    <metadata table-name="t_order_sharding_view" data-nodes="db_${0..9}.t_order_sharding_view">
+        <column name="order_id" type="bigint" />
+        <column name="user_id" type="int" />
+        <column name="status" type="varchar" />
+        <column name="merchant_id" type="int" />
+        <column name="remark" type="varchar" />
+        <column name="creation_date" type="date" />
+    </metadata>
+</dataset>

@@ -22,5 +22,6 @@
     </metadata>
     <row values="t_order| ds_0.t_order, ds_1.t_order, ds_2.t_order, ds_3.t_order, ds_4.t_order, ds_5.t_order, ds_6.t_order, ds_7.t_order, ds_8.t_order, ds_9.t_order" />
     <row values="t_order_item| ds_0.t_order_item, ds_1.t_order_item, ds_2.t_order_item, ds_3.t_order_item, ds_4.t_order_item, ds_5.t_order_item, ds_6.t_order_item, ds_7.t_order_item, ds_8.t_order_item, ds_9.t_order_item" />
+    <row values="t_order_sharding_view| ds_0.t_order_sharding_view, ds_1.t_order_sharding_view, ds_2.t_order_sharding_view, ds_3.t_order_sharding_view, ds_4.t_order_sharding_view, ds_5.t_order_sharding_view, ds_6.t_order_sharding_view, ds_7.t_order_sharding_view, ds_8.t_order_sharding_view, ds_9.t_order_sharding_view" />
     <row values="t_order_details| ds_0.t_order_details, ds_1.t_order_details, ds_2.t_order_details, ds_3.t_order_details, ds_4.t_order_details, ds_5.t_order_details, ds_6.t_order_details, ds_7.t_order_details, ds_8.t_order_details, ds_9.t_order_details" />
 </dataset>

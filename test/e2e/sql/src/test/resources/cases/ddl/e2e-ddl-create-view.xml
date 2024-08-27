@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,13 +16,11 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata>
-        <column name="type" />
-        <column name="name" />
-    </metadata>
-    <row values="table| t_order" />
-    <row values="table| t_order_item" />
-    <row values="table| t_order_sharding_view" />
-    <row values="table| t_order_details" />
-</dataset>
+<e2e-test-cases>
+    <test-case sql="CREATE VIEW t_order_sharding_view AS SELECT o.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id" scenario-types="db,tbl" db-types="MySQL">
+        <assertion expected-data-file="create_view_with_sharding_table.xml">
+            <initial-sql affected-table="t_order_sharding_view" />
+            <destroy-sql sql="DROP VIEW t_order_sharding_view" />
+        </assertion>
+    </test-case>
+</e2e-test-cases>

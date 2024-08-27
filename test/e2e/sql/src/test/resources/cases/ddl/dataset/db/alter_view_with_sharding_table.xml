@@ -16,12 +16,12 @@
   -->
 
 <dataset>
-    <metadata>
-        <column name="type" />
-        <column name="name" />
+    <metadata table-name="t_order_sharding_view" data-nodes="db_${0..9}.t_order_sharding_view">
+        <column name="item_id" type="bigint" />
+        <column name="order_id" type="bigint" />
+        <column name="user_id" type="int" />
+        <column name="product_id" type="int" />
+        <column name="quantity" type="int" />
+        <column name="creation_date" type="date" />
     </metadata>
-    <row values="table| t_order" />
-    <row values="table| t_order_item" />
-    <row values="table| t_order_sharding_view" />
-    <row values="table| t_order_details" />
 </dataset>
