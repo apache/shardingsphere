@@ -57,9 +57,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ResourceMetaDataChangedSubscriberTest {
+class MetaDataChangedSubscriberTest {
     
-    private ResourceMetaDataChangedSubscriber subscriber;
+    private MetaDataChangedSubscriber subscriber;
     
     private ContextManager contextManager;
     
@@ -72,7 +72,7 @@ class ResourceMetaDataChangedSubscriberTest {
         contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
-        subscriber = new ResourceMetaDataChangedSubscriber(contextManager);
+        subscriber = new MetaDataChangedSubscriber(contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {

@@ -30,11 +30,11 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSpher
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.TableDataChangedEvent;
 
 /**
- * Database changed subscriber.
+ * Database data changed subscriber.
  */
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
-public final class DatabaseChangedSubscriber implements EventSubscriber {
+public final class DatabaseDataChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     

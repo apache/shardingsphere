@@ -28,15 +28,11 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
-import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +45,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -100,26 +95,5 @@ class StateChangedSubscriberTest {
         ClusterStateEvent mockClusterStateEvent = new ClusterStateEvent(ClusterState.READ_ONLY);
         subscriber.renew(mockClusterStateEvent);
         assertThat(contextManager.getStateContext().getClusterState(), is(ClusterState.READ_ONLY));
-    }
-    
-    @Test
-    void assertRenewInstanceState() {
-        ComputeNodeInstanceStateChangedEvent event = new ComputeNodeInstanceStateChangedEvent(
-                contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), InstanceState.OK.name());
-        subscriber.renew(event);
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
-    }
-    
-    @Test
-    void assertRenewInstanceWorkerIdEvent() {
-        subscriber.renew(new WorkerIdEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), 0));
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getWorkerId(), is(0));
-    }
-    
-    @Test
-    void assertRenewInstanceLabels() {
-        Collection<String> labels = Collections.singletonList("test");
-        subscriber.renew(new LabelsEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), labels));
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getLabels(), is(labels));
     }
 }

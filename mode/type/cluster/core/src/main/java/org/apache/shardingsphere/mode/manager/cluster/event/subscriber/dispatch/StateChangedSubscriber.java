@@ -19,11 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * State changed subscriber.
@@ -45,36 +42,5 @@ public final class StateChangedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final ClusterStateEvent event) {
         contextManager.getStateContext().switchClusterState(event.getClusterState());
-    }
-    
-    /**
-     * Renew compute node instance state.
-     *
-     * @param event compute node instance state changed event
-     */
-    @Subscribe
-    public synchronized void renew(final ComputeNodeInstanceStateChangedEvent event) {
-        contextManager.getComputeNodeInstanceContext().updateStatus(event.getInstanceId(), event.getStatus());
-    }
-    
-    /**
-     * Renew instance worker id.
-     *
-     * @param event worker id event
-     */
-    @Subscribe
-    public synchronized void renew(final WorkerIdEvent event) {
-        contextManager.getComputeNodeInstanceContext().updateWorkerId(event.getInstanceId(), event.getWorkerId());
-    }
-    
-    /**
-     * Renew instance labels.
-     *
-     * @param event label event
-     */
-    @Subscribe
-    public synchronized void renew(final LabelsEvent event) {
-        // TODO labels may be empty
-        contextManager.getComputeNodeInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
     }
 }

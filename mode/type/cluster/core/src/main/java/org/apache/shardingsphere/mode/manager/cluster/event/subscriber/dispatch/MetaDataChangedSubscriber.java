@@ -38,11 +38,11 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import java.util.Map;
 
 /**
- * Resource meta data changed subscriber.
+ * Meta data changed subscriber.
  */
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
-public final class ResourceMetaDataChangedSubscriber implements EventSubscriber {
+public final class MetaDataChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
