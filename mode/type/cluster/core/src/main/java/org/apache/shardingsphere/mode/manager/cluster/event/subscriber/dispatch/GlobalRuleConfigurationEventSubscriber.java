@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -44,14 +45,10 @@ public final class GlobalRuleConfigurationEventSubscriber implements EventSubscr
     @SuppressWarnings("unchecked")
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
-        if (!event.getActiveVersion().equals(
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
+        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
         Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(event.getRuleSimpleName());
-        if (!ruleConfig.isPresent()) {
-            return;
-        }
+        Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", event.getRuleSimpleName());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(
                 TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, ruleConfig.getClass()).map(optional -> optional.restore(ruleConfig.get())).orElse(ruleConfig.get()));
     }

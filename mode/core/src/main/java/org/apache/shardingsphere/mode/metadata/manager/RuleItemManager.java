@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
@@ -54,10 +55,8 @@ public class RuleItemManager {
      */
     @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     public void alterRuleItem(final AlterRuleItemEvent event) throws SQLException {
-        if (!event.getActiveVersion().equals(metaDataPersistService.getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey()))) {
-            return;
-        }
+        Preconditions.checkArgument(event.getActiveVersion().equals(metaDataPersistService.getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: {} of key: {}", event.getActiveVersion(), event.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
         String yamlContent = metaDataPersistService.getMetaDataVersionPersistService()
                 .getVersionPathByActiveVersion(event.getActiveVersionKey(), event.getActiveVersion());
@@ -78,9 +77,7 @@ public class RuleItemManager {
     @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     public void dropRuleItem(final DropRuleItemEvent event) throws SQLException {
         String databaseName = event.getDatabaseName();
-        if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName)) {
-            return;
-        }
+        Preconditions.checkState(metaDataContexts.get().getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));
         synchronized (this) {
