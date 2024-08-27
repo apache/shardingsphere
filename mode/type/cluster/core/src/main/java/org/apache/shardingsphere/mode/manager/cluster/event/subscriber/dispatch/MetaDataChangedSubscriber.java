@@ -80,8 +80,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
                 .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
         Map<String, ShardingSphereTable> tables = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
                 .getTableMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
-                tables.values().iterator().next(), null);
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), tables.values().iterator().next(), null);
         refreshShardingSphereStatisticsData();
     }
     
