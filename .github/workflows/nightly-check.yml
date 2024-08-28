@@ -258,4 +258,6 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Upload jacoco report to sonar
-        run: ./mvnw -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/target/mergeReport/jacoco.xml sonar:sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/target/mergeReport/jacoco.xml
