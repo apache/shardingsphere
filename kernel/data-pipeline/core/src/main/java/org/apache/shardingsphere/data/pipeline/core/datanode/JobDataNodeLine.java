@@ -45,8 +45,8 @@ public final class JobDataNodeLine {
     /**
      * Unmarshal from text.
      *
-     * @param text marshalled line
-     * @return line
+     * @param text marshaled line
+     * @return unmarshalled job data node line
      */
     public static JobDataNodeLine unmarshal(final String text) {
         return new JobDataNodeLine(Splitter.on('|').omitEmptyStrings().splitToList(text).stream().map(JobDataNodeEntry::unmarshal).collect(Collectors.toList()));
