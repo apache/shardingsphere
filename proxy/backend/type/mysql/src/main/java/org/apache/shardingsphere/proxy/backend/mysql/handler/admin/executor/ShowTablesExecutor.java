@@ -110,7 +110,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         if (!sqlStatement.getFilter().isPresent()) {
             return Optional.empty();
         }
-        Optional<String> pattern = sqlStatement.getFilter().get().getLike().map(optional -> RegexUtils.convertLikePatternToRegex(optional.getPattern()));
-        return pattern.map(optional -> Pattern.compile(RegexUtils.convertLikePatternToRegex(optional), Pattern.CASE_INSENSITIVE));
+        Optional<String> regex = sqlStatement.getFilter().get().getLike().map(optional -> RegexUtils.convertLikePatternToRegex(optional.getPattern()));
+        return regex.map(optional -> Pattern.compile(optional, Pattern.CASE_INSENSITIVE));
     }
 }
