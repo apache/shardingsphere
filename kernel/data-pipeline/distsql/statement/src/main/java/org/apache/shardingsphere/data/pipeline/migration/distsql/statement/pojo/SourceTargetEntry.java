@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 @EqualsAndHashCode(of = {"source", "targetTableName"})
 public final class SourceTargetEntry {
     
-    // TODO Remove targetDatabaseName, or keep it but rebuild it
     private final String targetDatabaseName;
     
     private final DataNode source;

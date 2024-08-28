@@ -126,7 +126,6 @@ public final class InventoryDumperContextSplitter {
                 return InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
             }
             if (PipelineJdbcUtils.isStringColumn(firstColumnDataType)) {
-                // TODO Support string unique key table splitting. Ascii characters ordering are different in different versions of databases.
                 return Collections.singleton(new StringPrimaryKeyIngestPosition(null, null));
             }
         }

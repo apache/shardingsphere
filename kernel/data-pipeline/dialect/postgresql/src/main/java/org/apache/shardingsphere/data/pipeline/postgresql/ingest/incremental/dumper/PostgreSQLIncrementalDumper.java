@@ -108,7 +108,6 @@ public final class PostgreSQLIncrementalDumper extends AbstractPipelineLifecycle
     
     @SneakyThrows(InterruptedException.class)
     private void dump() throws SQLException {
-        // TODO use unified PgConnection
         try (
                 Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig());
                 PGReplicationStream stream = logicalReplication.createReplicationStream(

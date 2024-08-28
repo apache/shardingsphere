@@ -61,7 +61,6 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
         if (null == yamlProgress) {
             return new JobItemIncrementalTasksProgress(null);
         }
-        // TODO consider to remove parameter databaseType
         DialectIncrementalPositionManager positionInitializer = DatabaseTypedSPILoader.getService(DialectIncrementalPositionManager.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
         IncrementalTaskProgress taskProgress = new IncrementalTaskProgress(positionInitializer.init(yamlProgress.getPosition()));
         taskProgress.setIncrementalTaskDelay(yamlProgress.getDelay());

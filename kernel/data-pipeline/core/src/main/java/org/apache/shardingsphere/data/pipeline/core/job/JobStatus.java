@@ -47,7 +47,6 @@ public enum JobStatus {
      */
     EXECUTE_INCREMENTAL_TASK(true),
     
-    // TODO rename to SUCCESS
     /**
      * Job is finished.
      */

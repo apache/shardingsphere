@@ -76,7 +76,6 @@ public final class PipelineTableMetaData {
      * @param columnIndex the first column is 1, the second is 2, ...
      * @return column meta data
      */
-    // TODO Remove it. Get column meta data by column name for incremental dumper, since columns ordering might be changed.
     public PipelineColumnMetaData getColumnMetaData(final int columnIndex) {
         return getColumnMetaData(columnNames.get(columnIndex - 1));
     }
