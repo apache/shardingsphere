@@ -82,7 +82,7 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     }
     
     @Override
-    public String wrapWithPageQuery(String sql) {
+    public String wrapWithPageQuery(final String sql) {
         return sql + " LIMIT ?";
     }
     

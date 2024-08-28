@@ -78,7 +78,7 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     }
     
     @Override
-    public String wrapWithPageQuery(String sql) {
+    public String wrapWithPageQuery(final String sql) {
         return sql + " LIMIT ?";
     }
     

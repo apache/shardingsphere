@@ -43,7 +43,7 @@ public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     }
     
     @Override
-    public String wrapWithPageQuery(String sql) {
+    public String wrapWithPageQuery(final String sql) {
         return sql + " LIMIT ?";
     }
     

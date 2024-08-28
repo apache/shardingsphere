@@ -127,7 +127,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     }
     
     @Override
-    public String wrapWithPageQuery(String sql) {
+    public String wrapWithPageQuery(final String sql) {
         return sql + " LIMIT ?";
     }
     
