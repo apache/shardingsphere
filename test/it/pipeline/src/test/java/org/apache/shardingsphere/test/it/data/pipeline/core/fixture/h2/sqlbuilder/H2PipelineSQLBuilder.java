@@ -43,6 +43,11 @@ public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     }
     
     @Override
+    public String wrapWithPageQuery(final String sql) {
+        return sql + " LIMIT ?";
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "H2";
     }

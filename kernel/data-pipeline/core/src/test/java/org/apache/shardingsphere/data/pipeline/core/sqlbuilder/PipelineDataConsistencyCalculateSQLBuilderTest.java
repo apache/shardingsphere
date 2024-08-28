@@ -45,19 +45,19 @@ class PipelineDataConsistencyCalculateSQLBuilderTest {
     void assertBuildQueryRangeOrderingSQLWithoutQueryCondition() {
         String actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(1, true, 5), SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(1, false, 5), SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(1, false, null), SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(null, false, 5), SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
         actual = pipelineSQLBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(null, false, null), SHARDING_COLUMNS_NAMES);
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC"));
     }
     
     @Test

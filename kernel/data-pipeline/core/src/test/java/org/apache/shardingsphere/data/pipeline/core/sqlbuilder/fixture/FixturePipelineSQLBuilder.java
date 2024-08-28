@@ -42,6 +42,11 @@ public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilde
     }
     
     @Override
+    public String wrapWithPageQuery(final String sql) {
+        return sql;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "FIXTURE";
     }

@@ -36,17 +36,17 @@ class PipelineInventoryDumpSQLBuilderTest {
     @Test
     void assertBuildDivisibleSQL() {
         String actual = inventoryDumpSQLBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true, true));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC"));
         actual = inventoryDumpSQLBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false, true));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC"));
     }
     
     @Test
     void assertBuildUnlimitedDivisibleSQL() {
         String actual = inventoryDumpSQLBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", true, false));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? ORDER BY order_id ASC"));
         actual = inventoryDumpSQLBuilder.buildDivisibleSQL(new BuildDivisibleSQLParameter(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id", false, false));
-        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC LIMIT ?"));
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC"));
     }
     
     @Test
