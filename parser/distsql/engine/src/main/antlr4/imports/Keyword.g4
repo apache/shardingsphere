@@ -111,10 +111,6 @@ DISABLE
     : D I S A B L E
     ;
 
-INSTANCE
-    : I N S T A N C E
-    ;
-
 IGNORE
     : I G N O R E
     ;
@@ -231,10 +227,6 @@ WITH
     : W I T H
     ;
 
-UNUSED
-    : U N U S E D
-    ;
-
 INFO
     : I N F O
     ;
@@ -269,10 +261,6 @@ NODE
 
 NODES
     : N O D E S
-    ;
-
-USAGE_COUNT
-    : U S A G E UL_ C O U N T
     ;
 
 REGISTER

@@ -97,7 +97,7 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseRQL() {
-        assertParse(new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null, null), "RQL=1");
+        assertParse(new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null), "RQL=1");
     }
     
     @Test
