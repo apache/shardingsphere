@@ -123,8 +123,12 @@ public interface PipelineJobType extends TypedSPI {
      * @param processContext process context
      * @param progressContext consistency check job item progress context
      * @return all logic tables check result
+     * @throws UnsupportedOperationException unsupported operation exception
      */
-    PipelineDataConsistencyChecker buildDataConsistencyChecker(PipelineJobConfiguration jobConfig, TransmissionProcessContext processContext, ConsistencyCheckJobItemProgressContext progressContext);
+    default PipelineDataConsistencyChecker buildDataConsistencyChecker(PipelineJobConfiguration jobConfig,
+                                                                       TransmissionProcessContext processContext, ConsistencyCheckJobItemProgressContext progressContext) {
+        throw new UnsupportedOperationException("Build data consistency checker is not supported.");
+    }
     
     @Override
     String getType();
