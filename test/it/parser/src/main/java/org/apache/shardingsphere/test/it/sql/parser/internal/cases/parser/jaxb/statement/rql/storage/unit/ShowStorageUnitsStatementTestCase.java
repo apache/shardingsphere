@@ -32,7 +32,4 @@ public final class ShowStorageUnitsStatementTestCase extends DatabaseContainedTe
     
     @XmlAttribute(name = "like-pattern")
     private String likePattern;
-    
-    @XmlAttribute(name = "usage-count")
-    private Integer usageCount;
 }

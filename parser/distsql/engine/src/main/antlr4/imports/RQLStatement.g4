@@ -20,7 +20,7 @@ grammar RQLStatement;
 import BaseRule;
 
 showStorageUnits
-    : SHOW STORAGE UNITS (FROM databaseName)? showLike? (WHERE USAGE_COUNT EQ_ usageCount)?
+    : SHOW STORAGE UNITS (FROM databaseName)? showLike?
     ;
 
 showRulesUsedStorageUnit
@@ -29,10 +29,6 @@ showRulesUsedStorageUnit
 
 showLogicalTables
     : SHOW FULL? LOGICAL TABLES (FROM databaseName)? showLike?
-    ;
-
-usageCount
-    : INT_
     ;
 
 showLike

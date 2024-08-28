@@ -181,10 +181,6 @@
         <database name="sharding_db" start-index="24" stop-index="34" />
     </show-storage-units>
     
-    <show-storage-units sql-case-id="show-storage-units-where-usage-count" usage-count="0">
-        <database name="sharding_db" start-index="24" stop-index="34" />
-    </show-storage-units>
-    
     <show-logical-tables sql-case-id="show-logical-tables" />
     
     <show-logical-tables sql-case-id="show-logical-tables-from">

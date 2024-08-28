@@ -56,7 +56,6 @@
     <sql-case id="show-storage-units" value="SHOW STORAGE UNITS" db-types="ShardingSphere" />
     <sql-case id="show-storage-units-from" value="SHOW STORAGE UNITS FROM sharding_db" db-types="ShardingSphere" />
     <sql-case id="show-storage-units-like" value="SHOW STORAGE UNITS FROM sharding_db LIKE 'ds_%'" db-types="ShardingSphere" />
-    <sql-case id="show-storage-units-where-usage-count" value="SHOW STORAGE UNITS FROM sharding_db WHERE USAGE_COUNT = 0" db-types="ShardingSphere" />
     <sql-case id="show-logical-tables" value="SHOW LOGICAL TABLES" db-types="ShardingSphere" />
     <sql-case id="show-logical-tables-from" value="SHOW LOGICAL TABLES FROM sharding_db" db-types="ShardingSphere" />
     <sql-case id="show-logical-tables-like" value="SHOW LOGICAL TABLES FROM sharding_db LIKE 't_%' " db-types="ShardingSphere" />
