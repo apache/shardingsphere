@@ -61,7 +61,7 @@ public interface PipelineChannel {
     /**
      * Ack the last batch.
      *
-     * @param records record list
+     * @param records data records
      */
     void ack(List<Record> records);
 }
