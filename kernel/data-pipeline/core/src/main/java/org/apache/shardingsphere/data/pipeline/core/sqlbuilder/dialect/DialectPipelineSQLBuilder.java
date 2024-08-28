@@ -107,7 +107,5 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * @param sql SQL
      * @return wrapped SQL
      */
-    default String wrapWithPageQuery(String sql) {
-        return sql + " LIMIT ?";
-    }
+    String wrapWithPageQuery(String sql);
 }

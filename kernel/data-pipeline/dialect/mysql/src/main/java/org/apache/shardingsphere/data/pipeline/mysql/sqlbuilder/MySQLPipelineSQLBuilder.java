@@ -78,6 +78,11 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     }
     
     @Override
+    public String wrapWithPageQuery(String sql) {
+        return sql + " LIMIT ?";
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "MySQL";
     }
