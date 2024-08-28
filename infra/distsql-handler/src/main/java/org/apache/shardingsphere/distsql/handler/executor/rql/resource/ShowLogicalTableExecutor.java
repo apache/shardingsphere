@@ -78,11 +78,7 @@ public final class ShowLogicalTableExecutor implements DistSQLQueryExecutor<Show
     }
     
     private Optional<Pattern> getLikePattern(final ShowLogicalTablesStatement sqlStatement) {
-        if (!sqlStatement.getLikePattern().isPresent()) {
-            return Optional.empty();
-        }
-        Optional<String> pattern = sqlStatement.getLikePattern().map(RegexUtils::convertLikePatternToRegex);
-        return pattern.map(optional -> Pattern.compile(RegexUtils.convertLikePatternToRegex(optional), Pattern.CASE_INSENSITIVE));
+        return sqlStatement.getLikePattern().map(optional -> Pattern.compile(RegexUtils.convertLikePatternToRegex(optional), Pattern.CASE_INSENSITIVE));
     }
     
     @Override
