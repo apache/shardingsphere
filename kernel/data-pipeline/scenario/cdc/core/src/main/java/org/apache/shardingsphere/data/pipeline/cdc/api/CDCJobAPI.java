@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSour
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
-import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;

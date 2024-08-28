@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.config.task;
+package org.apache.shardingsphere.data.pipeline.cdc.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
