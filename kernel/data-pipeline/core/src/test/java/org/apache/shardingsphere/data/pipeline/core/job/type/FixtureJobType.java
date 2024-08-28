@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.type;
 
-import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.swapper.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlPipelineJobItemProgressConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
@@ -56,12 +53,6 @@ public final class FixtureJobType implements PipelineJobType {
     
     @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
-        return null;
-    }
-    
-    @Override
-    public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig,
-                                                                      final TransmissionProcessContext processContext, final ConsistencyCheckJobItemProgressContext progressContext) {
         return null;
     }
     
