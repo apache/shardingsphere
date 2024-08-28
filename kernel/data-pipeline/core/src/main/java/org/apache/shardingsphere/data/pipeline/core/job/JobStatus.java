@@ -55,23 +55,7 @@ public enum JobStatus {
     /**
      * Consistency check job execute failed.
      */
-    CONSISTENCY_CHECK_FAILURE(false),
+    CONSISTENCY_CHECK_FAILURE(false);
     
-    /**
-     * Task has stopped by failing to prepare work.
-     */
-    PREPARING_FAILURE(false),
-    
-    /**
-     * Task has stopped by failing to execute inventory task.
-     */
-    EXECUTE_INVENTORY_TASK_FAILURE(false),
-    
-    /**
-     * Task has stopped by failing to execute incremental task.
-     */
-    EXECUTE_INCREMENTAL_TASK_FAILURE(false);
-    
-    // TODO Remove unused field; Remove unused enum
     private final boolean running;
 }
