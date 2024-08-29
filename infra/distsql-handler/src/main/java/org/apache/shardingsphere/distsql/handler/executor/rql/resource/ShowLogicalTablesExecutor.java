@@ -38,10 +38,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Show logical table executor.
+ * Show logical tables executor.
  */
 @Setter
-public final class ShowLogicalTableExecutor implements DistSQLQueryExecutor<ShowLogicalTablesStatement>, DistSQLExecutorDatabaseAware {
+public final class ShowLogicalTablesExecutor implements DistSQLQueryExecutor<ShowLogicalTablesStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     

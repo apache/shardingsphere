@@ -23,8 +23,8 @@ showDefaultSingleTableStorageUnit
     : SHOW DEFAULT SINGLE TABLE STORAGE UNIT (FROM databaseName)?
     ;
 
-showSingleTable
-    : SHOW SINGLE (TABLES showLike? | TABLE tableName) (FROM databaseName)?
+showSingleTables
+    : SHOW SINGLE TABLES (FROM databaseName)? showLike?
     ;
 
 showUnloadedSingleTables

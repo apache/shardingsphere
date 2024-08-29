@@ -46,9 +46,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ShowLogicalTableExecutorTest {
+class ShowLogicalTablesExecutorTest {
     
-    private final ShowLogicalTableExecutor executor = new ShowLogicalTableExecutor();
+    private final ShowLogicalTablesExecutor executor = new ShowLogicalTablesExecutor();
     
     @Mock
     private ShardingSphereDatabase database;

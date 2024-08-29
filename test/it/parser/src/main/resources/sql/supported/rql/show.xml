@@ -31,9 +31,8 @@
     <sql-case id="show-shadow-table-rules" value="SHOW SHADOW TABLE RULES FROM shadow_db" db-types="ShardingSphere" />
     <sql-case id="show-shadow-algorithms" value="SHOW SHADOW ALGORITHMS FROM shadow_db" db-types="ShardingSphere" />
     <sql-case id="show-default-shadow-algorithm" value="SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db" db-types="ShardingSphere" />
-    <sql-case id="show-single-table" value="SHOW SINGLE TABLE t_order FROM single_table_db" db-types="ShardingSphere" />
     <sql-case id="show-single-tables" value="SHOW SINGLE TABLES FROM single_table_db" db-types="ShardingSphere" />
-    <sql-case id="show-single-tables-like" value="SHOW SINGLE TABLES LIKE 't_%' FROM single_table_db" db-types="ShardingSphere" />
+    <sql-case id="show-single-tables-like" value="SHOW SINGLE TABLES FROM single_table_db LIKE 't_%'" db-types="ShardingSphere" />
     <sql-case id="show-default-single-table-storage-unit" value="SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM single_table_db" db-types="ShardingSphere" />
     <sql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" db-types="ShardingSphere" />
     <sql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" db-types="ShardingSphere" />

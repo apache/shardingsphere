@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
+import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTablesStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Arrays;
@@ -37,28 +37,28 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Show single table executor.
+ * Show single tables executor.
  */
 @Setter
-public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowSingleTableStatement>, DistSQLExecutorRuleAware<SingleRule> {
+public final class ShowSingleTablesExecutor implements DistSQLQueryExecutor<ShowSingleTablesStatement>, DistSQLExecutorRuleAware<SingleRule> {
     
     private SingleRule rule;
     
     @Override
-    public Collection<String> getColumnNames(final ShowSingleTableStatement sqlStatement) {
+    public Collection<String> getColumnNames(final ShowSingleTablesStatement sqlStatement) {
         return Arrays.asList("table_name", "storage_unit_name");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSingleTableStatement sqlStatement, final ContextManager contextManager) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSingleTablesStatement sqlStatement, final ContextManager contextManager) {
         Collection<DataNode> resultDataNodes = getPattern(sqlStatement)
                 .map(optional -> getDataNodesWithLikePattern(rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes(), optional))
-                .orElseGet(() -> getDataNodes(rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes(), sqlStatement));
+                .orElseGet(() -> getDataNodes(rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes()));
         Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
         return sortedDataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }
     
-    private Optional<Pattern> getPattern(final ShowSingleTableStatement sqlStatement) {
+    private Optional<Pattern> getPattern(final ShowSingleTablesStatement sqlStatement) {
         return sqlStatement.getLikePattern().isPresent()
                 ? Optional.of(Pattern.compile(RegexUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get()), Pattern.CASE_INSENSITIVE))
                 : Optional.empty();
@@ -68,9 +68,8 @@ public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowS
         return singleTableNodes.entrySet().stream().filter(entry -> pattern.matcher(entry.getKey()).matches()).map(entry -> entry.getValue().iterator().next()).collect(Collectors.toList());
     }
     
-    private Collection<DataNode> getDataNodes(final Map<String, Collection<DataNode>> singleTableNodes, final ShowSingleTableStatement sqlStatement) {
-        return singleTableNodes.entrySet().stream().filter(entry -> !sqlStatement.getTableName().isPresent() || sqlStatement.getTableName().get().equalsIgnoreCase(entry.getKey()))
-                .map(entry -> entry.getValue().iterator().next()).collect(Collectors.toList());
+    private Collection<DataNode> getDataNodes(final Map<String, Collection<DataNode>> singleTableNodes) {
+        return singleTableNodes.values().stream().map(each -> each.iterator().next()).collect(Collectors.toList());
     }
     
     @Override
@@ -79,7 +78,7 @@ public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowS
     }
     
     @Override
-    public Class<ShowSingleTableStatement> getType() {
-        return ShowSingleTableStatement.class;
+    public Class<ShowSingleTablesStatement> getType() {
+        return ShowSingleTablesStatement.class;
     }
 }

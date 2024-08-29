@@ -20,39 +20,12 @@ package org.apache.shardingsphere.single.distsql.statement.rql;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 
-import java.util.Optional;
-
 /**
- * Show unloaded single table statement.
+ * Show single tables statement.
  */
-public final class ShowUnloadedSingleTableStatement extends ShowTablesStatement {
+public final class ShowSingleTablesStatement extends ShowTablesStatement {
     
-    private final String storageUnitName;
-    
-    private final String schemaName;
-    
-    public ShowUnloadedSingleTableStatement(final String storageUnitName, final String schemaName, final DatabaseSegment database) {
-        // TODO support like later
-        super(null, database);
-        this.storageUnitName = storageUnitName;
-        this.schemaName = schemaName;
-    }
-    
-    /**
-     * Get storage unit name.
-     *
-     * @return storage unit name
-     */
-    public Optional<String> getStorageUnitName() {
-        return Optional.ofNullable(storageUnitName);
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @return schema name
-     */
-    public Optional<String> getSchemaName() {
-        return Optional.ofNullable(schemaName);
+    public ShowSingleTablesStatement(final DatabaseSegment database, final String likePattern) {
+        super(database, likePattern);
     }
 }
