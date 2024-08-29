@@ -50,7 +50,7 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         ShardingSpherePreconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(targetDatabaseName),
                 () -> new MissingRequiredTargetDatabaseException(sqlStatement.getTargetDatabaseName()));
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobAPI.start(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
+        jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
     }
     
     @Override
