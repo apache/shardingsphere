@@ -430,8 +430,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.translator.ShowSQLTranslatorRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.storage.unit.ShowRulesUsedStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.storage.unit.ShowStorageUnitsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.table.ShowLogicalTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.table.ShowSingleTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.table.ShowTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.FormatSQLStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.ParseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.PreviewStatementTestCase;
@@ -1153,11 +1152,11 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "show-storage-units")
     private final List<ShowStorageUnitsStatementTestCase> showStorageUnitsTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-single-table")
-    private final List<ShowSingleTableStatementTestCase> showSingleTableTestCases = new LinkedList<>();
+    @XmlElement(name = "show-single-tables")
+    private final List<ShowTableStatementTestCase> showSingleTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-logical-tables")
-    private final List<ShowLogicalTableStatementTestCase> showLogicalTableTestCases = new LinkedList<>();
+    private final List<ShowTableStatementTestCase> showLogicalTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-default-single-table-storage-unit")
     private final List<ShowDefaultSingleTableStorageUnitStatementTestCase> showDefaultSingleTableStorageUnitTestCases = new LinkedList<>();

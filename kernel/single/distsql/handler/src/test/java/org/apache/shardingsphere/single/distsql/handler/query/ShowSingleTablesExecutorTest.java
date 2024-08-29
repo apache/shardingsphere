@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
+import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTablesStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
@@ -43,11 +43,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShowSingleTableExecutorTest {
+class ShowSingleTablesExecutorTest {
     
     private DistSQLQueryExecuteEngine engine;
     
-    DistSQLQueryExecuteEngine setUp(final ShowSingleTableStatement statement) {
+    DistSQLQueryExecuteEngine setUp(final ShowSingleTablesStatement statement) {
         return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
@@ -62,7 +62,7 @@ class ShowSingleTableExecutorTest {
     
     @Test
     void assertGetRowData() throws SQLException {
-        engine = setUp(mock(ShowSingleTableStatement.class));
+        engine = setUp(mock(ShowSingleTablesStatement.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(2));
@@ -77,7 +77,7 @@ class ShowSingleTableExecutorTest {
     
     @Test
     void assertGetSingleTableWithLikeLiteral() throws SQLException {
-        engine = setUp(new ShowSingleTableStatement(null, "%item", null));
+        engine = setUp(new ShowSingleTablesStatement(null, "%item"));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));

@@ -20,10 +20,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowTablesStatement;
-import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.table.ShowSingleTablesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.table.ShowTableStatementTestCase;
 
@@ -49,9 +47,6 @@ public final class ShowTablesStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTablesStatement actual, final SQLParserTestCase expected) {
         assertThat("Expected value should be ShowTableStatementTestCase", expected, instanceOf(ShowTableStatementTestCase.class));
         assertIs(assertContext, actual, (ShowTableStatementTestCase) expected);
-        if (actual instanceof ShowSingleTableStatement) {
-            ShowSingleTablesStatementAssert.assertIs(assertContext, (ShowSingleTableStatement) actual, expected);
-        }
     }
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final ShowTablesStatement actual, final ShowTableStatementTestCase expected) {

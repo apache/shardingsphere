@@ -29,7 +29,7 @@ public final class ShowLogicalTablesStatement extends ShowTablesStatement {
     private final boolean containsFull;
     
     public ShowLogicalTablesStatement(final boolean containsFull, final DatabaseSegment database, final String likePattern) {
-        super(likePattern, database);
+        super(database, likePattern);
         this.containsFull = containsFull;
     }
 }

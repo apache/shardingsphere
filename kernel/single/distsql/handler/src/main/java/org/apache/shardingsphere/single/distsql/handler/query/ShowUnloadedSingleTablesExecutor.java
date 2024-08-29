@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
-import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTableStatement;
+import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTablesStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
@@ -41,22 +41,22 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Show unloaded single table executor.
+ * Show unloaded single tables executor.
  */
 @Setter
-public final class ShowUnloadedSingleTableExecutor implements DistSQLQueryExecutor<ShowUnloadedSingleTableStatement>, DistSQLExecutorDatabaseAware, DistSQLExecutorRuleAware<SingleRule> {
+public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecutor<ShowUnloadedSingleTablesStatement>, DistSQLExecutorDatabaseAware, DistSQLExecutorRuleAware<SingleRule> {
     
     private ShardingSphereDatabase database;
     
     private SingleRule rule;
     
     @Override
-    public Collection<String> getColumnNames(final ShowUnloadedSingleTableStatement sqlStatement) {
+    public Collection<String> getColumnNames(final ShowUnloadedSingleTablesStatement sqlStatement) {
         return Arrays.asList("table_name", "storage_unit_name");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowUnloadedSingleTableStatement sqlStatement, final ContextManager contextManager) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnloadedSingleTablesStatement sqlStatement, final ContextManager contextManager) {
         Map<String, Collection<DataNode>> actualDataNodes = getActualDataNodes(database);
         for (String each : rule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames()) {
             actualDataNodes.remove(each.toLowerCase());
@@ -80,7 +80,7 @@ public final class ShowUnloadedSingleTableExecutor implements DistSQLQueryExecut
     }
     
     @Override
-    public Class<ShowUnloadedSingleTableStatement> getType() {
-        return ShowUnloadedSingleTableStatement.class;
+    public Class<ShowUnloadedSingleTablesStatement> getType() {
+        return ShowUnloadedSingleTablesStatement.class;
     }
 }

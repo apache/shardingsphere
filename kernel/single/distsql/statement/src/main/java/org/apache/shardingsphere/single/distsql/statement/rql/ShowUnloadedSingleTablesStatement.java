@@ -23,23 +23,36 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Datab
 import java.util.Optional;
 
 /**
- * Show single table statement.
+ * Show unloaded single tables statement.
  */
-public final class ShowSingleTableStatement extends ShowTablesStatement {
+public final class ShowUnloadedSingleTablesStatement extends ShowTablesStatement {
     
-    private final String tableName;
+    private final String storageUnitName;
     
-    public ShowSingleTableStatement(final String tableName, final String likePattern, final DatabaseSegment database) {
-        super(likePattern, database);
-        this.tableName = tableName;
+    private final String schemaName;
+    
+    public ShowUnloadedSingleTablesStatement(final DatabaseSegment database, final String storageUnitName, final String schemaName) {
+        // TODO support like later
+        super(database, null);
+        this.storageUnitName = storageUnitName;
+        this.schemaName = schemaName;
     }
     
     /**
-     * Get table name.
+     * Get storage unit name.
      *
-     * @return table name
+     * @return storage unit name
      */
-    public Optional<String> getTableName() {
-        return Optional.ofNullable(tableName);
+    public Optional<String> getStorageUnitName() {
+        return Optional.ofNullable(storageUnitName);
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    public Optional<String> getSchemaName() {
+        return Optional.ofNullable(schemaName);
     }
 }

@@ -29,18 +29,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class ShowTablesStatement extends ResourceQueryStatement implements FromDatabaseAvailable {
     
-    private final String likePattern;
-    
     private final DatabaseSegment database;
     
-    /**
-     * Get like pattern.
-     *
-     * @return like pattern
-     */
-    public Optional<String> getLikePattern() {
-        return Optional.ofNullable(likePattern);
-    }
+    private final String likePattern;
     
     /**
      * Get database.
@@ -50,5 +41,14 @@ public abstract class ShowTablesStatement extends ResourceQueryStatement impleme
     @Override
     public final Optional<DatabaseSegment> getDatabase() {
         return Optional.ofNullable(database);
+    }
+    
+    /**
+     * Get like pattern.
+     *
+     * @return like pattern
+     */
+    public Optional<String> getLikePattern() {
+        return Optional.ofNullable(likePattern);
     }
 }
