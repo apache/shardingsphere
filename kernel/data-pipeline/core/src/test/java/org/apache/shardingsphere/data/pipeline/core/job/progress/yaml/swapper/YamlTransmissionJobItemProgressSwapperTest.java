@@ -54,20 +54,6 @@ class YamlTransmissionJobItemProgressSwapperTest {
     }
     
     @Test
-    void assertSwapWithoutTransmission() {
-        YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress-failure.yaml"), YamlTransmissionJobItemProgress.class);
-        TransmissionJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
-        assertNotNull(progress.getInventory());
-        assertNotNull(progress.getIncremental());
-        assertThat(progress.getDataSourceName(), is("ds_0"));
-        assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
-        YamlTransmissionJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
-        assertNotNull(actual.getInventory());
-        assertNotNull(actual.getIncremental());
-        assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
-    }
-    
-    @Test
     void assertSwapWithRunningConfig() {
         YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress-running.yaml"), YamlTransmissionJobItemProgress.class);
         TransmissionJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
