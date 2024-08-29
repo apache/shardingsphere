@@ -117,7 +117,7 @@ class RuleConfigurationEventBuilderTest {
                     Arguments.of("PathNotFound", "/metadata/fixture/rules/fixture/versions/0", "foo", Type.ADDED, false, null),
                     Arguments.of("AddEventWithNamedRuleItemNodePath", "/metadata/fixture/rules/fixture/named/xxx/active_version", "foo", Type.ADDED, true, AlterNamedRuleItemEvent.class),
                     Arguments.of("UpdateEventWithNamedRuleItemNodePath", "/metadata/fixture/rules/fixture/named/xxx/active_version", "foo", Type.UPDATED, true, AlterNamedRuleItemEvent.class),
-                    Arguments.of("DeleteEventWithNamedRuleItemNodePath", "/metadata/fixture/rules/fixture/named/xxx/active_version", "foo", Type.DELETED, true, DropNamedRuleItemEvent.class),
+                    Arguments.of("DeleteEventWithNamedRuleItemNodePath", "/metadata/fixture/rules/fixture/named/xxx", "foo", Type.DELETED, true, DropNamedRuleItemEvent.class),
                     Arguments.of("AddEventWithUniqueRuleItemNodePath", "/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.ADDED, true, AlterUniqueRuleItemEvent.class),
                     Arguments.of("UpdateEventWithUniqueRuleItemNodePath", "/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.UPDATED, true, AlterUniqueRuleItemEvent.class),
                     Arguments.of("DeleteEventWithUniqueRuleItemNodePath", "/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.DELETED, true, DropUniqueRuleItemEvent.class));

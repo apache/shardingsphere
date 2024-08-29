@@ -62,7 +62,12 @@ public final class RuleConfigurationEventBuilder {
             return Optional.empty();
         }
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName = entry.getValue().getNameByActiveVersion(event.getKey());
+            Optional<String> itemName;
+            if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+                itemName = entry.getValue().getNameByActiveVersion(event.getKey());
+            } else {
+                itemName = entry.getValue().getNameByItemPath(event.getKey());
+            }
             if (itemName.isPresent()) {
                 return Optional.of(create(databaseName, itemName.get(), event, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }

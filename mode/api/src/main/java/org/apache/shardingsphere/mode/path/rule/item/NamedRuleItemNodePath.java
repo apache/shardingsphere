@@ -38,10 +38,13 @@ public final class NamedRuleItemNodePath {
     
     private final Pattern activeVersionPathPattern;
     
+    private final Pattern itemPathPattern;
+    
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
         namePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + NAME);
         activeVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + ACTIVE_VERSION);
+        itemPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + "/([\\w\\-]+)$");
     }
     
     /**
@@ -73,6 +76,17 @@ public final class NamedRuleItemNodePath {
      */
     public Optional<String> getNameByActiveVersion(final String path) {
         Matcher matcher = activeVersionPathPattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get rule item name by item path.
+     *
+     * @param path path
+     * @return got rule item name
+     */
+    public Optional<String> getNameByItemPath(final String path) {
+        Matcher matcher = itemPathPattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }
