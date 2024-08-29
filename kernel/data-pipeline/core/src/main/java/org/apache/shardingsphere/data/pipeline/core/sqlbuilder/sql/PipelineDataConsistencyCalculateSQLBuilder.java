@@ -112,7 +112,6 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
         if (null == shardingColumnsNames || shardingColumnsNames.isEmpty()) {
             return uniqueKeys;
         }
-        // TODO Avoid new list creation
         List<String> result = new ArrayList<>(uniqueKeys.size() + shardingColumnsNames.size());
         result.addAll(uniqueKeys);
         result.addAll(shardingColumnsNames);

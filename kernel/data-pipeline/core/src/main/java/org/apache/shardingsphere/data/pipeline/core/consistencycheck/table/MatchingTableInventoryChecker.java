@@ -61,7 +61,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     
     @Override
     public TableDataConsistencyCheckResult checkSingleTableInventoryData() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(param.getJobId()) + "-matching-check-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build(param.getJobId() + "-matching-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60L, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         try {
             return checkSingleTableInventoryData(param, executor);
@@ -124,11 +124,6 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
             return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
         }
         return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
-    }
-    
-    // TODO use digest (crc32, murmurhash)
-    private String getJobIdDigest(final String jobId) {
-        return jobId.length() <= 6 ? jobId : jobId.substring(0, 6);
     }
     
     private <T> T waitFuture(final Future<T> future) {
