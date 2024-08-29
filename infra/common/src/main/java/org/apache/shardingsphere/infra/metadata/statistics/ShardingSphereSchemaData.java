@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -28,7 +28,7 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereSchemaData {
     
-    private final Map<String, ShardingSphereTableData> tableData = new LinkedHashMap<>();
+    private final Map<String, ShardingSphereTableData> tableData = new CaseInsensitiveMap<>();
     
     /**
      * Get ShardingSphere table meta data via table name.
@@ -37,7 +37,7 @@ public final class ShardingSphereSchemaData {
      * @return ShardingSphere table data
      */
     public ShardingSphereTableData getTable(final String tableName) {
-        return tableData.get(tableName.toLowerCase());
+        return tableData.get(tableName);
     }
     
     /**
@@ -47,7 +47,7 @@ public final class ShardingSphereSchemaData {
      * @param table ShardingSphere table data
      */
     public void putTable(final String tableName, final ShardingSphereTableData table) {
-        tableData.put(tableName.toLowerCase(), table);
+        tableData.put(tableName, table);
     }
     
     /**
@@ -56,7 +56,7 @@ public final class ShardingSphereSchemaData {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
-        tableData.remove(tableName.toLowerCase());
+        tableData.remove(tableName);
     }
     
     /**
@@ -66,6 +66,6 @@ public final class ShardingSphereSchemaData {
      * @return contains ShardingSphere table from table metadata or not
      */
     public boolean containsTable(final String tableName) {
-        return tableData.containsKey(tableName.toLowerCase());
+        return tableData.containsKey(tableName);
     }
 }

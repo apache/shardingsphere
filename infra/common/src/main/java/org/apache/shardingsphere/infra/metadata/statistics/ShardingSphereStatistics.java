@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -28,7 +28,7 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereStatistics {
     
-    private final Map<String, ShardingSphereDatabaseData> databaseData = new LinkedHashMap<>();
+    private final Map<String, ShardingSphereDatabaseData> databaseData = new CaseInsensitiveMap<>();
     
     /**
      * Get ShardingSphere database.
@@ -37,7 +37,7 @@ public final class ShardingSphereStatistics {
      * @return ShardingSphere database data
      */
     public ShardingSphereDatabaseData getDatabase(final String databaseName) {
-        return databaseData.get(databaseName.toLowerCase());
+        return databaseData.get(databaseName);
     }
     
     /**
@@ -47,7 +47,7 @@ public final class ShardingSphereStatistics {
      * @param database ShardingSphere database
      */
     public void putDatabase(final String databaseName, final ShardingSphereDatabaseData database) {
-        databaseData.put(databaseName.toLowerCase(), database);
+        databaseData.put(databaseName, database);
     }
     
     /**
@@ -56,7 +56,7 @@ public final class ShardingSphereStatistics {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        databaseData.remove(databaseName.toLowerCase());
+        databaseData.remove(databaseName);
     }
     
     /**
@@ -66,6 +66,6 @@ public final class ShardingSphereStatistics {
      * @return contains ShardingSphere database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return databaseData.containsKey(databaseName.toLowerCase());
+        return databaseData.containsKey(databaseName);
     }
 }
