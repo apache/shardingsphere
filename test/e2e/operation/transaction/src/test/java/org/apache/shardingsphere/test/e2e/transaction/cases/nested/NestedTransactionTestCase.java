@@ -42,13 +42,13 @@ public final class NestedTransactionTestCase extends BaseTransactionTestCase {
     
     @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        assertOutCommitAndInnerRollback();
-        assertOutRollbackAndInnerRollback();
-        assertOutCommitAndInnerCommit();
-        assertOutRollbackAndInnerCommit();
+        assertOuterCommitAndInnerRollback();
+        assertOuterRollbackAndInnerRollback();
+        assertOuterCommitAndInnerCommit();
+        assertOuterRollbackAndInnerCommit();
     }
     
-    private void assertOutCommitAndInnerRollback() throws SQLException {
+    private void assertOuterCommitAndInnerRollback() throws SQLException {
         try (
                 ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
                 Connection queryConnection = getDataSource().getConnection()) {
@@ -66,7 +66,7 @@ public final class NestedTransactionTestCase extends BaseTransactionTestCase {
         }
     }
     
-    private void assertOutRollbackAndInnerRollback() throws SQLException {
+    private void assertOuterRollbackAndInnerRollback() throws SQLException {
         try (
                 ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
                 Connection queryConnection = getDataSource().getConnection()) {
@@ -84,7 +84,7 @@ public final class NestedTransactionTestCase extends BaseTransactionTestCase {
         }
     }
     
-    private void assertOutCommitAndInnerCommit() throws SQLException {
+    private void assertOuterCommitAndInnerCommit() throws SQLException {
         try (
                 ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
                 Connection queryConnection = getDataSource().getConnection()) {
@@ -102,7 +102,7 @@ public final class NestedTransactionTestCase extends BaseTransactionTestCase {
         }
     }
     
-    private void assertOutRollbackAndInnerCommit() throws SQLException {
+    private void assertOuterRollbackAndInnerCommit() throws SQLException {
         try (
                 ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
                 Connection queryConnection = getDataSource().getConnection()) {
