@@ -105,13 +105,13 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     /**
-     * Start migration job.
+     * Schedule migration job.
      *
      * @param contextKey context key
      * @param param create migration job parameter
      * @return job id
      */
-    public String start(final PipelineContextKey contextKey, final MigrateTableStatement param) {
+    public String schedule(final PipelineContextKey contextKey, final MigrateTableStatement param) {
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, param));
         jobManager.start(jobConfig);
         return jobConfig.getJobId();
