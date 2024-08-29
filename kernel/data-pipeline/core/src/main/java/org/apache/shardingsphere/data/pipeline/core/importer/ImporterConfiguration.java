@@ -45,7 +45,6 @@ public final class ImporterConfiguration {
     
     private final PipelineDataSourceConfiguration dataSourceConfig;
     
-    // TODO columnName case-insensitive?
     private final Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap;
     
     private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
@@ -56,7 +55,6 @@ public final class ImporterConfiguration {
     
     private final int retryTimes;
     
-    // TODO Remove concurrency
     private final int concurrency;
     
     /**

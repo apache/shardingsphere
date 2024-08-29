@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.task;
 
+import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -65,7 +64,6 @@ class IncrementalTaskTest {
     }
     
     @Test
-    @Disabled("H2 doesn't support incremental")
     void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("ds_0"));

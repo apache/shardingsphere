@@ -113,7 +113,6 @@ public final class CRC32SingleTableInventoryCalculator extends AbstractSingleTab
             return result;
         }
         
-        // TODO not support now
         @Override
         public Optional<Object> getMaxUniqueKeyValue() {
             return Optional.empty();

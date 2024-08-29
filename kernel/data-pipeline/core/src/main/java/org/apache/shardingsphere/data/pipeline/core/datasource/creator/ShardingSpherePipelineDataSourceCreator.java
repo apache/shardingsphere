@@ -81,7 +81,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     private void updateConfigurationProperties(final YamlRootConfiguration yamlRootConfig) {
         Properties newProps = new Properties();
         newProps.put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
-        // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
         // Set a large enough value to enable ConnectionMode.MEMORY_STRICTLY, make sure streaming query work.
         newProps.put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
         yamlRootConfig.setProps(newProps);
