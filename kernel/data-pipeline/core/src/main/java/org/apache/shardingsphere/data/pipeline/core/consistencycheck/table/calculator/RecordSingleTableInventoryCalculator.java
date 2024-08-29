@@ -221,11 +221,10 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         return Optional.of(new RecordSingleTableInventoryCalculatedResult(maxUniqueKeyValue, records));
     }
     
-    private SingleTableInventoryCalculateParameter buildNewCalculateParameter(final SingleTableInventoryCalculateParameter param, final Object maxUniqueKeyValue) {
+    private SingleTableInventoryCalculateParameter buildNewCalculateParameter(final SingleTableInventoryCalculateParameter param, final Object minUniqueKeyValue) {
         SingleTableInventoryCalculateParameter result = new SingleTableInventoryCalculateParameter(param.getDataSource(), param.getTable(), param.getColumnNames(),
                 Collections.singletonList(param.getFirstUniqueKey()), QueryType.POINT_QUERY);
-        result.setUniqueKeysValues(Collections.singletonList(maxUniqueKeyValue));
-        result.setQueryRange(param.getQueryRange());
+        result.setUniqueKeysValues(Collections.singletonList(minUniqueKeyValue));
         result.setShardingColumnsNames(param.getShardingColumnsNames());
         result.setShardingColumnsValues(param.getShardingColumnsValues());
         return result;
