@@ -66,7 +66,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
     }
     
     private TransmissionProcessContext createTransmissionProcessContext(final String jobId) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
                 processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobId), PipelineJobIdUtils.parseJobType(jobId).getType()));
         return new TransmissionProcessContext(jobId, processConfig);
     }

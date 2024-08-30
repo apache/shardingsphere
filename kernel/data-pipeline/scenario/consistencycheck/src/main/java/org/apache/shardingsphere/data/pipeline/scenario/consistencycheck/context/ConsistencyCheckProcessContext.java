@@ -46,7 +46,7 @@ public final class ConsistencyCheckProcessContext implements PipelineProcessCont
     
     @Override
     public PipelineProcessConfiguration getProcessConfiguration() {
-        return PipelineProcessConfigurationUtils.convertWithDefaultValue(null);
+        return PipelineProcessConfigurationUtils.fillInDefaultValue(null);
     }
     
     /**

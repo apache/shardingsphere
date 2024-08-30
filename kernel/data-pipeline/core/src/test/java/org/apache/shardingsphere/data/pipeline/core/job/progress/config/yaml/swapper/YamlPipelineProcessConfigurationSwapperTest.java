@@ -54,14 +54,14 @@ class YamlPipelineProcessConfigurationSwapperTest {
     }
     
     private YamlPipelineProcessConfiguration createYamlConfiguration() {
-        YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
+        YamlPipelineReadConfiguration yamlReadConfig = new YamlPipelineReadConfiguration();
         YamlAlgorithmConfiguration yamlReadRateLimiterConfig = new YamlAlgorithmConfiguration();
         yamlReadRateLimiterConfig.setType("INPUT");
         yamlReadRateLimiterConfig.setProps(PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("qps", "500")));
         yamlReadConfig.setRateLimiter(yamlReadRateLimiterConfig);
         YamlPipelineProcessConfiguration result = new YamlPipelineProcessConfiguration();
         result.setRead(yamlReadConfig);
-        YamlPipelineWriteConfiguration yamlWriteConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
+        YamlPipelineWriteConfiguration yamlWriteConfig = new YamlPipelineWriteConfiguration();
         YamlAlgorithmConfiguration yamlWriteRateLimiterConfig = new YamlAlgorithmConfiguration();
         yamlWriteRateLimiterConfig.setType("OUTPUT");
         yamlWriteRateLimiterConfig.setProps(PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("tps", "2000")));

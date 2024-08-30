@@ -42,11 +42,10 @@ class PipelineProcessConfigurationPersistServiceTest {
     @Test
     void assertLoadAndPersist() {
         YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
-        YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
-        yamlReadConfig.fillInNullFieldsWithDefaultValue();
+        YamlPipelineReadConfiguration yamlReadConfig = new YamlPipelineReadConfiguration();
         yamlReadConfig.setShardingSize(10);
         yamlProcessConfig.setRead(yamlReadConfig);
-        YamlPipelineWriteConfiguration yamlWriteConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
+        YamlPipelineWriteConfiguration yamlWriteConfig = new YamlPipelineWriteConfiguration();
         yamlProcessConfig.setWrite(yamlWriteConfig);
         YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration();
         yamlStreamChannel.setType("MEMORY");

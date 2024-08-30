@@ -29,45 +29,11 @@ import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigur
 @Setter
 public final class YamlPipelineReadConfiguration implements YamlConfiguration {
     
-    private static final Integer DEFAULT_WORKER_THREAD = 20;
+    private int workerThread = 20;
     
-    private static final Integer DEFAULT_BATCH_SIZE = 1000;
+    private int batchSize = 1000;
     
-    private static final Integer DEFAULT_SHARDING_SIZE = 10000000;
-    
-    private Integer workerThread;
-    
-    private Integer batchSize;
-    
-    private Integer shardingSize;
+    private int shardingSize = 10000000;
     
     private YamlAlgorithmConfiguration rateLimiter;
-    
-    /**
-     * Build with default value.
-     *
-     * @return read configuration
-     */
-    public static YamlPipelineReadConfiguration buildWithDefaultValue() {
-        YamlPipelineReadConfiguration result = new YamlPipelineReadConfiguration();
-        result.workerThread = DEFAULT_WORKER_THREAD;
-        result.batchSize = DEFAULT_BATCH_SIZE;
-        result.shardingSize = DEFAULT_SHARDING_SIZE;
-        return result;
-    }
-    
-    /**
-     * Fill in null fields with default value.
-     */
-    public void fillInNullFieldsWithDefaultValue() {
-        if (null == workerThread) {
-            workerThread = DEFAULT_WORKER_THREAD;
-        }
-        if (null == batchSize) {
-            batchSize = DEFAULT_BATCH_SIZE;
-        }
-        if (null == shardingSize) {
-            shardingSize = DEFAULT_SHARDING_SIZE;
-        }
-    }
 }

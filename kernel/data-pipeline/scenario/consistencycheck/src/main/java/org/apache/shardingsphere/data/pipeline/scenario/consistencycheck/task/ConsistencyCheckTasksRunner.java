@@ -109,7 +109,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             PipelineJobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(parentJobId);
             try {
-                PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(
+                PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
                         processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(parentJobConfig.getJobId()), jobType.getType()));
                 PipelineDataConsistencyChecker checker = jobType.buildDataConsistencyChecker(
                         parentJobConfig, new TransmissionProcessContext(parentJobConfig.getJobId(), processConfig), jobItemContext.getProgressContext());
