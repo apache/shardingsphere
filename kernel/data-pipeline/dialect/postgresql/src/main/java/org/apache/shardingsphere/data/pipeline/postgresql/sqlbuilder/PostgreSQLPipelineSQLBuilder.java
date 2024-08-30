@@ -72,7 +72,12 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
     }
     
-    // TODO support partitions etc.
+    // TODO support partitions etc. If user use partition table, after sharding, the partition definition will not be needed. So we need to remove it after supported.
+    @Override
+    public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
+        return Optional.of(String.format("SELECT pg_catalog.pg_checksum_table('%s', true)", qualifiedTableName));
+    }
+    
     @Override
     public Collection<String> buildCreateTableSQLs(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
@@ -81,7 +86,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
             Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
             String tableSQL = generateCreateTableSQL(majorVersion, minorVersion, materials);
             String indexSQL = generateCreateIndexSQL(connection, majorVersion, minorVersion, materials);
-            // TODO use ";" to split is not always correct
+            // TODO use ";" to split is not always correct if return value's comments contains ";"
             return Arrays.asList((tableSQL + System.lineSeparator() + indexSQL).trim().split(";"));
         }
     }

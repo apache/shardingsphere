@@ -285,7 +285,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private void refreshTableMetadata(final String jobId, final String databaseName) {
-        // TODO use origin database name now, wait reloadDatabaseMetaData fix case-sensitive problem
+        // TODO use origin database name for now. It can be reduce metadata refresh scope after reloadDatabaseMetaData case-sensitive problem fixed.
         ContextManager contextManager = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager();
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         contextManager.getMetaDataContextManager().refreshTableMetaData(database);
