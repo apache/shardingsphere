@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -41,9 +42,11 @@ public final class GlobalRuleDefinitionExecuteEngine {
     
     /**
      * Execute update.
+     *
+     * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public void executeUpdate() {
+    public void executeUpdate() throws SQLException {
         ShardingSphereRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass());
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
