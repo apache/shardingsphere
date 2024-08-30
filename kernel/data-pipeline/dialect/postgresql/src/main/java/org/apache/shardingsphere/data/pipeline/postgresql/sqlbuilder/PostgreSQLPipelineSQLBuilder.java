@@ -77,6 +77,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
         return Optional.of(String.format("SELECT pg_catalog.pg_checksum_table('%s', true)", qualifiedTableName));
     }
+    
     @Override
     public Collection<String> buildCreateTableSQLs(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
