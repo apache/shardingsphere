@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,7 +109,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
-            InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
+            InsertValue insertValueToken = new InsertValue(new LinkedList<>(each.getValueExpressions()));
             encryptToken(insertValueToken, schemaName, encryptTable, insertStatementContext, each);
             result.getInsertValues().add(insertValueToken);
         }
