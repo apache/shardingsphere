@@ -46,10 +46,10 @@ import java.sql.SQLException;
  * @param <I> type of pipeline job item context
  * @param <P> type of pipeline job item progress
  */
-@Getter
 @Slf4j
 public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfiguration, I extends PipelineJobItemContext, P extends PipelineJobItemProgress> implements PipelineJob {
     
+    @Getter
     private final PipelineJobRunnerManager jobRunnerManager;
     
     private final TransmissionProcessContext jobProcessContext;
