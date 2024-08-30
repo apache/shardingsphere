@@ -124,7 +124,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
     
     protected abstract PipelineTasksRunner buildTasksRunner(I jobItemContext);
     
-    private void prepare(final I jobItemContext) {
+    protected final void prepare(final I jobItemContext) {
         try {
             doPrepare(jobItemContext);
             // CHECKSTYLE:OFF

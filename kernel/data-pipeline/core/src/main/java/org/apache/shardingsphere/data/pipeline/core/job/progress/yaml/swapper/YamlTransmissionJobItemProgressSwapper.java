@@ -47,12 +47,14 @@ public final class YamlTransmissionJobItemProgressSwapper implements YamlPipelin
     
     @Override
     public TransmissionJobItemProgress swapToObject(final YamlTransmissionJobItemProgress yamlProgress) {
-        TransmissionJobItemProgress result = new TransmissionJobItemProgress(
-                TypedSPILoader.getService(DatabaseType.class, yamlProgress.getSourceDatabaseType()),
-                yamlProgress.getDataSourceName(), inventoryTasksProgressSwapper.swapToObject(yamlProgress.getInventory()),
-                incrementalTasksProgressSwapper.swapToObject(yamlProgress.getSourceDatabaseType(), yamlProgress.getIncremental()),
-                yamlProgress.getInventoryRecordsCount(), yamlProgress.getProcessedRecordsCount());
+        TransmissionJobItemProgress result = new TransmissionJobItemProgress();
         result.setStatus(JobStatus.valueOf(yamlProgress.getStatus()));
+        result.setSourceDatabaseType(TypedSPILoader.getService(DatabaseType.class, yamlProgress.getSourceDatabaseType()));
+        result.setDataSourceName(yamlProgress.getDataSourceName());
+        result.setInventory(inventoryTasksProgressSwapper.swapToObject(yamlProgress.getInventory()));
+        result.setIncremental(incrementalTasksProgressSwapper.swapToObject(yamlProgress.getSourceDatabaseType(), yamlProgress.getIncremental()));
+        result.setProcessedRecordsCount(yamlProgress.getProcessedRecordsCount());
+        result.setInventoryRecordsCount(yamlProgress.getInventoryRecordsCount());
         return result;
     }
     

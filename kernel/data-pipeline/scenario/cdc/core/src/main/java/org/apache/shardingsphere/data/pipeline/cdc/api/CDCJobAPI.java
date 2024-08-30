@@ -207,10 +207,13 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     
     private TransmissionJobItemProgress getTransmissionJobItemProgress(final CDCJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager,
                                                                        final IncrementalDumperContext incrementalDumperContext) throws SQLException {
+        TransmissionJobItemProgress result = new TransmissionJobItemProgress();
+        result.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
+        result.setDataSourceName(incrementalDumperContext.getCommonContext().getDataSourceName());
         IncrementalTaskPositionManager positionManager = new IncrementalTaskPositionManager(incrementalDumperContext.getCommonContext().getDataSourceConfig().getDatabaseType());
         IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(positionManager.getPosition(null, incrementalDumperContext, dataSourceManager));
-        return new TransmissionJobItemProgress(jobConfig.getSourceDatabaseType(), incrementalDumperContext.getCommonContext().getDataSourceName(), null,
-                new JobItemIncrementalTasksProgress(incrementalTaskProgress), 0L, 0L);
+        result.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
+        return result;
     }
     
     /**
