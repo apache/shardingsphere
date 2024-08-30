@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.executor.utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
@@ -80,7 +81,7 @@ public final class EnumeratorUtils {
     private static Object convertValue(final Object[] rows, final Map<Integer, Class<?>> columnTypes, final int index) {
         try {
             return ResultSetUtils.convertValue(rows[index], columnTypes.get(index));
-        } catch (final SQLFeatureNotSupportedException ex) {
+        } catch (final SQLFeatureNotSupportedException | UnsupportedDataTypeConversionException ex) {
             return rows[index];
         }
     }
