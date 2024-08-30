@@ -51,7 +51,7 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
     private final PipelineLazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
     public TransmissionProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        processConfiguration = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
+        processConfiguration = PipelineProcessConfigurationUtils.fillInDefaultValue(originalProcessConfig);
         PipelineReadConfiguration readConfig = processConfiguration.getRead();
         AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
         readRateLimitAlgorithm = null == readRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, readRateLimiter.getType(), readRateLimiter.getProps());

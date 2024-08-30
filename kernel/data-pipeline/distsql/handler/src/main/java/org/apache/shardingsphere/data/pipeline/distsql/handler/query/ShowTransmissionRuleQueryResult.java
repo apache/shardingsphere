@@ -46,7 +46,7 @@ public final class ShowTransmissionRuleQueryResult {
      * @return query result row
      */
     public Collection<LocalDataQueryResultRow> getRows() {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(persistService.load(new PipelineContextKey(InstanceType.PROXY), jobType));
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(persistService.load(new PipelineContextKey(InstanceType.PROXY), jobType));
         return Collections.singleton(new LocalDataQueryResultRow(getString(processConfig.getRead()), getString(processConfig.getWrite()), getString(processConfig.getStreamChannel())));
     }
     

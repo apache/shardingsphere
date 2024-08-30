@@ -195,7 +195,7 @@ class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         initTableData(jobConfig);
         jobManager.start(jobConfig);
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
                 new PipelineProcessConfigurationPersistService().load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), jobType.getType()));
         TransmissionProcessContext processContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
         Map<String, TableDataConsistencyCheckResult> checkResultMap = jobType.buildDataConsistencyChecker(

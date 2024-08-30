@@ -29,14 +29,14 @@ import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigur
 @Setter
 public final class YamlPipelineProcessConfiguration implements YamlConfiguration {
     
-    private YamlPipelineReadConfiguration read;
+    private YamlPipelineReadConfiguration read = new YamlPipelineReadConfiguration();
     
-    private YamlPipelineWriteConfiguration write;
+    private YamlPipelineWriteConfiguration write = new YamlPipelineWriteConfiguration();
     
     private YamlAlgorithmConfiguration streamChannel;
     
     @Override
     public boolean isEmpty() {
-        return null == read && null == write && null == streamChannel;
+        return null == streamChannel;
     }
 }

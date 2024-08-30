@@ -200,11 +200,11 @@ public final class PipelineContextUtils {
     }
     
     private static PipelineProcessConfiguration mockPipelineProcessConfiguration() {
-        YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
+        YamlPipelineReadConfiguration yamlReadConfig = new YamlPipelineReadConfiguration();
         yamlReadConfig.setShardingSize(10);
         YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
         yamlProcessConfig.setRead(yamlReadConfig);
-        PipelineProcessConfigurationUtils.fillInDefaultValue(yamlProcessConfig);
+        PipelineProcessConfigurationUtils.fillInDefaultValue(new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig));
         return new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
     }
     
