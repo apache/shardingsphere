@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.Collection;
@@ -34,22 +34,22 @@ import java.util.Map;
 /**
  * Transmission job item progress.
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class TransmissionJobItemProgress implements PipelineJobItemProgress {
     
-    private DatabaseType sourceDatabaseType;
+    private final DatabaseType sourceDatabaseType;
     
-    private String dataSourceName;
+    private final String dataSourceName;
     
-    private JobItemInventoryTasksProgress inventory;
+    private final JobItemInventoryTasksProgress inventory;
     
-    private JobItemIncrementalTasksProgress incremental;
+    private final JobItemIncrementalTasksProgress incremental;
     
-    private long inventoryRecordsCount;
+    private final long inventoryRecordsCount;
     
-    private long processedRecordsCount;
+    private final long processedRecordsCount;
     
     private boolean active;
     

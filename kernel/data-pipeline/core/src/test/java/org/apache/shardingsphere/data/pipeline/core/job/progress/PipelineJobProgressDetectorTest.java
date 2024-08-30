@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PipelineJobProgressDetectorTest {
     
@@ -67,31 +68,30 @@ class PipelineJobProgressDetectorTest {
     
     @Test
     void assertIsInventoryFinishedWhenJobCountDoesNotMatchJobItemProgresses() {
-        TransmissionJobItemProgress transmissionJobItemProgress = new TransmissionJobItemProgress();
-        assertFalse(PipelineJobProgressDetector.isInventoryFinished(2, Collections.singleton(transmissionJobItemProgress)));
+        assertFalse(PipelineJobProgressDetector.isInventoryFinished(2, Collections.singleton(mock(TransmissionJobItemProgress.class))));
     }
     
     @Test
     void assertIsInventoryFinishedWhenInventoryTaskProgressHasEmptyMap() {
         JobItemInventoryTasksProgress jobItemInventoryTasksProgress = new JobItemInventoryTasksProgress(Collections.emptyMap());
-        TransmissionJobItemProgress transmissionJobItemProgress = new TransmissionJobItemProgress();
-        transmissionJobItemProgress.setInventory(jobItemInventoryTasksProgress);
+        TransmissionJobItemProgress transmissionJobItemProgress = mock(TransmissionJobItemProgress.class);
+        when(transmissionJobItemProgress.getInventory()).thenReturn(jobItemInventoryTasksProgress);
         assertFalse(PipelineJobProgressDetector.isInventoryFinished(1, Collections.singleton(transmissionJobItemProgress)));
     }
     
     @Test
     void assertIsInventoryFinishedWhenNotAllInventoryTasksCompleted() {
         JobItemInventoryTasksProgress inventoryTasksProgress = new JobItemInventoryTasksProgress(Collections.singletonMap("TEST", new InventoryTaskProgress(new IngestPlaceholderPosition())));
-        TransmissionJobItemProgress transmissionJobItemProgress = new TransmissionJobItemProgress();
-        transmissionJobItemProgress.setInventory(inventoryTasksProgress);
+        TransmissionJobItemProgress transmissionJobItemProgress = mock(TransmissionJobItemProgress.class);
+        when(transmissionJobItemProgress.getInventory()).thenReturn(inventoryTasksProgress);
         assertFalse(PipelineJobProgressDetector.isInventoryFinished(1, Collections.singleton(transmissionJobItemProgress)));
     }
     
     @Test
     void assertIsInventoryFinished() {
         JobItemInventoryTasksProgress inventoryTasksProgress = new JobItemInventoryTasksProgress(Collections.singletonMap("TEST", new InventoryTaskProgress(new IngestFinishedPosition())));
-        TransmissionJobItemProgress transmissionJobItemProgress = new TransmissionJobItemProgress();
-        transmissionJobItemProgress.setInventory(inventoryTasksProgress);
+        TransmissionJobItemProgress transmissionJobItemProgress = mock(TransmissionJobItemProgress.class);
+        when(transmissionJobItemProgress.getInventory()).thenReturn(inventoryTasksProgress);
         assertTrue(PipelineJobProgressDetector.isInventoryFinished(1, Collections.singleton(transmissionJobItemProgress)));
     }
 }
