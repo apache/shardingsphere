@@ -75,9 +75,9 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
     public final void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         int shardingItem = shardingContext.getShardingItem();
-        log.info("Execute job {}-{}", jobId, shardingItem);
+        log.info("Execute job {}-{}.", jobId, shardingItem);
         if (jobRunnerManager.isStopping()) {
-            log.info("Stopping true, ignore");
+            log.info("Job is stopping, ignore.");
             return;
         }
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
@@ -115,7 +115,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         String jobId = jobItemContext.getJobId();
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
         prepare(jobItemContext);
-        log.info("Start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
+        log.info("Start tasks runner, jobId={}, shardingItem={}.", jobId, shardingItem);
         tasksRunner.start();
         return true;
     }
