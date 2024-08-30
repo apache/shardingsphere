@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset;
 
+import org.apache.calcite.avatica.SqlType;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeFactoryImpl.JavaType;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.SQLFederationColumnTypeConverter;
 
+import java.math.BigInteger;
 import java.sql.ResultSetMetaData;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +151,12 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnType(final int column) {
-        int jdbcType = resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
+        RelDataType relDataType = resultColumnType.getFieldList().get(column - 1).getType();
+        // TODO remove this logic when calcite supports BigInteger type
+        if (relDataType instanceof JavaType && BigInteger.class.isAssignableFrom(((JavaType) relDataType).getJavaClass())) {
+            return SqlType.BIGINT.id;
+        }
+        int jdbcType = relDataType.getSqlTypeName().getJdbcOrdinal();
         return columnTypeConverter.convertColumnType(jdbcType);
     }
     
