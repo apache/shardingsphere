@@ -72,9 +72,12 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     }
     
     private void updateSingleRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
+        Optional<YamlSingleRuleConfiguration> originalSingleRuleConfig =
+                yamlRootConfig.getRules().stream().filter(YamlSingleRuleConfiguration.class::isInstance).map(YamlSingleRuleConfiguration.class::cast).findFirst();
         yamlRootConfig.getRules().removeIf(YamlSingleRuleConfiguration.class::isInstance);
         YamlSingleRuleConfiguration singleRuleConfig = new YamlSingleRuleConfiguration();
         singleRuleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_TABLES));
+        originalSingleRuleConfig.ifPresent(optional -> singleRuleConfig.setDefaultDataSource(optional.getDefaultDataSource()));
         yamlRootConfig.getRules().add(singleRuleConfig);
     }
     
