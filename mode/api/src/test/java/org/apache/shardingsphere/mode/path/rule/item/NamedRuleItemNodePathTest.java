@@ -62,7 +62,7 @@ class NamedRuleItemNodePathTest {
     }
     
     @Test
-    public void assertGetNameByItemPath() {
+    void assertGetNameByItemPath() {
         Optional<String> actual = converter.getNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_table");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
