@@ -67,13 +67,15 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
         importDatabase(exportedMetaData);
     }
     
-    private void importServerConfiguration(final ContextManager contextManager, final ExportedMetaData exportedMetaData) {
+    private void importServerConfiguration(final ContextManager contextManager, final ExportedMetaData exportedMetaData) throws SQLException {
         YamlProxyServerConfiguration yamlServerConfig = YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
         if (null == yamlServerConfig) {
             return;
         }
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
-        rules.forEach(each -> contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(each));
+        for (RuleConfiguration each : rules) {
+            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(each);
+        }
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(yamlServerConfig.getProps());
     }
     

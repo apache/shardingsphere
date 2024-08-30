@@ -146,15 +146,17 @@ public interface MetaDataManagerPersistService {
      * Alter global rule configuration.
      *
      * @param globalRuleConfig global rule config
+     * @throws SQLException SQL exception
      */
-    void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig);
+    void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) throws SQLException;
     
     /**
      * Alter properties.
      *
      * @param props pros
+     * @throws SQLException SQL exception
      */
-    void alterProperties(Properties props);
+    void alterProperties(Properties props) throws SQLException;
     
     /**
      * Create table.
