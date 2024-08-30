@@ -69,7 +69,7 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(String.format("SELECT * FROM pg_get_tabledef('%s.%s')", schemaName, tableName))) {
             if (resultSet.next()) {
-                // TODO use ";" to split is not always correct
+                // TODO use ";" to split is not always correct if return value's comments contains ";"
                 return Arrays.asList(resultSet.getString("pg_get_tabledef").split(";"));
             }
         }
