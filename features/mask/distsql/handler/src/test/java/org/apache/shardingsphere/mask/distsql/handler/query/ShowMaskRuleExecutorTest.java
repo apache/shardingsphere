@@ -67,7 +67,7 @@ class ShowMaskRuleExecutorTest {
         assertThat(row.getCell(3), is("md5"));
         assertThat(row.getCell(4), is(""));
     }
-
+    
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
