@@ -46,6 +46,11 @@ public final class MigrationJobType implements PipelineJobType {
         return "01";
     }
     
+    @Override
+    public boolean isTransmissionJob() {
+        return true;
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public YamlMigrationJobConfigurationSwapper getYamlJobConfigurationSwapper() {

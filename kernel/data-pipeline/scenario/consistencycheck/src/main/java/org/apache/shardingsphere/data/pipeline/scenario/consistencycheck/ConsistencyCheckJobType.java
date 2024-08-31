@@ -32,6 +32,11 @@ public final class ConsistencyCheckJobType implements PipelineJobType {
         return "02";
     }
     
+    @Override
+    public boolean isTransmissionJob() {
+        return false;
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public YamlConsistencyCheckJobConfigurationSwapper getYamlJobConfigurationSwapper() {
