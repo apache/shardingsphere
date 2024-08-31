@@ -58,14 +58,14 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
     public final void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         log.info("Execute job {}", jobId);
+        if (jobRunnerManager.isStopping()) {
+            log.info("Job is stopping, ignore.");
+            return;
+        }
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
         T jobConfig = (T) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         Collection<I> jobItemContexts = new LinkedList<>();
         for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
-            if (jobRunnerManager.isStopping()) {
-                log.info("Job is stopping, ignore.");
-                return;
-            }
             I jobItemContext = buildJobItemContext(jobConfig, shardingItem);
             if (!jobRunnerManager.addTasksRunner(shardingItem, buildTasksRunner(jobItemContext))) {
                 continue;
