@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItem
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
@@ -58,6 +57,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         jobRunnerManager = new PipelineJobRunnerManager();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public final void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
@@ -68,12 +68,11 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
             return;
         }
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
-        PipelineJobConfigurationManager jobConfigManager = new PipelineJobConfigurationManager(jobType);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
-        T jobConfig = jobConfigManager.getJobConfiguration(jobId);
-        TransmissionProcessContext jobProcessContext = createTransmissionProcessContext(jobId, jobType, contextKey);
+        T jobConfig = (T) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         PipelineJobItemManager<P> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
         P jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
+        TransmissionProcessContext jobProcessContext = createTransmissionProcessContext(jobId, jobType, contextKey);
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
         boolean started = false;
         try {
