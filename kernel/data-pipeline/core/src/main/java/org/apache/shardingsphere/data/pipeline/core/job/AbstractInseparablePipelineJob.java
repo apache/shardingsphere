@@ -29,9 +29,9 @@ import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
@@ -65,20 +65,21 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
         T jobConfig = (T) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         Collection<I> jobItemContexts = new LinkedList<>();
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId));
         for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
             I jobItemContext = buildJobItemContext(jobConfig, shardingItem);
             if (!jobRunnerManager.addTasksRunner(shardingItem, buildTasksRunner(jobItemContext))) {
                 continue;
             }
             jobItemContexts.add(jobItemContext);
-            PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
-            log.info("Start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
+            governanceFacade.getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
+            log.info("Start tasks runner, jobId={}, shardingItem={}.", jobId, shardingItem);
         }
         if (jobItemContexts.isEmpty()) {
-            log.warn("Job item contexts is empty, ignore");
+            log.warn("Job item contexts are empty, ignore.");
             return;
         }
-        prepare(jobItemContexts);
+        prepare(jobItemContexts, governanceFacade);
         executeInventoryTasks(jobType, jobItemContexts);
         executeIncrementalTasks(jobType, jobItemContexts);
     }
@@ -87,14 +88,14 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
     
     protected abstract PipelineTasksRunner buildTasksRunner(I jobItemContext);
     
-    private void prepare(final Collection<I> jobItemContexts) {
+    private void prepare(final Collection<I> jobItemContexts, final PipelineGovernanceFacade governanceFacade) {
         try {
             doPrepare(jobItemContexts);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             for (PipelineJobItemContext each : jobItemContexts) {
-                processFailed(each.getJobId(), each.getShardingItem(), ex);
+                processFailed(each.getJobId(), each.getShardingItem(), ex, governanceFacade);
             }
             throw ex;
         }
@@ -102,9 +103,9 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
     
     protected abstract void doPrepare(Collection<I> jobItemContexts);
     
-    private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
-        log.error("Job execution failed, {}-{}", jobId, shardingItem, ex);
-        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
+    private void processFailed(final String jobId, final int shardingItem, final Exception ex, final PipelineGovernanceFacade governanceFacade) {
+        log.error("Job {}-{} execution failed.", jobId, shardingItem, ex);
+        governanceFacade.getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
         PipelineJobRegistry.stop(jobId);
         processFailed(jobId);
     }
@@ -132,7 +133,7 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (I each : jobItemContexts) {
             if (JobStatus.EXECUTE_INCREMENTAL_TASK == each.getStatus()) {
-                log.info("job status already EXECUTE_INCREMENTAL_TASK, ignore");
+                log.info("Job status has already EXECUTE_INCREMENTAL_TASK, ignore.");
                 return;
             }
             updateJobItemStatus(each, jobType, JobStatus.EXECUTE_INCREMENTAL_TASK);
@@ -148,8 +149,7 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
     
     private void updateJobItemStatus(final I jobItemContext, final PipelineJobType jobType, final JobStatus jobStatus) {
         jobItemContext.setStatus(jobStatus);
-        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
-        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
+        new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper()).updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     protected abstract ExecuteCallback buildExecuteCallback(String identifier, I jobItemContext);
