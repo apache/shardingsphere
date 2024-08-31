@@ -75,8 +75,8 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobConfigura
     @Getter
     private final PipelineSink sink;
     
-    public CDCJob(final String jobId, final PipelineSink sink) {
-        super(jobId, new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink)));
+    public CDCJob(final PipelineSink sink) {
+        super(new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink)));
         this.sink = sink;
     }
     

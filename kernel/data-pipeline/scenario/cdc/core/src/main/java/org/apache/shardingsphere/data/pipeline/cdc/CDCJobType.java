@@ -36,6 +36,11 @@ public final class CDCJobType implements PipelineJobType {
         return "03";
     }
     
+    @Override
+    public boolean isTransmissionJob() {
+        return true;
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public YamlCDCJobConfigurationSwapper getYamlJobConfigurationSwapper() {

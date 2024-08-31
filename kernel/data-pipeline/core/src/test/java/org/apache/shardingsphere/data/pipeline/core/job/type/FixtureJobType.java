@@ -37,6 +37,11 @@ public final class FixtureJobType implements PipelineJobType {
     }
     
     @Override
+    public boolean isTransmissionJob() {
+        return true;
+    }
+    
+    @Override
     public <Y extends YamlConfiguration, T extends PipelineJobConfiguration> YamlPipelineJobConfigurationSwapper<Y, T> getYamlJobConfigurationSwapper() {
         return null;
     }

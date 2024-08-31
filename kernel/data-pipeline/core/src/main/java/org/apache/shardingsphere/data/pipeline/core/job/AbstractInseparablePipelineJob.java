@@ -59,19 +59,6 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
     
     private final PipelineJobRunnerManager jobRunnerManager;
     
-    private final TransmissionProcessContext jobProcessContext;
-    
-    protected AbstractInseparablePipelineJob(final String jobId, final PipelineJobRunnerManager jobRunnerManager) {
-        this.jobRunnerManager = jobRunnerManager;
-        jobProcessContext = createTransmissionProcessContext(jobId);
-    }
-    
-    private TransmissionProcessContext createTransmissionProcessContext(final String jobId) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
-                new PipelineProcessConfigurationPersistService().load(PipelineJobIdUtils.parseContextKey(jobId), PipelineJobIdUtils.parseJobType(jobId).getType()));
-        return new TransmissionProcessContext(jobId, processConfig);
-    }
-    
     @SuppressWarnings("unchecked")
     @Override
     public final void execute(final ShardingContext shardingContext) {
@@ -79,6 +66,7 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         log.info("Execute job {}", jobId);
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
         T jobConfig = (T) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
+        TransmissionProcessContext jobProcessContext = jobType.isTransmissionJob() ? createTransmissionProcessContext(jobId) : null;
         Collection<I> jobItemContexts = new LinkedList<>();
         PipelineJobItemManager<P> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId));
@@ -103,6 +91,12 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         prepare(jobItemContexts, governanceFacade);
         executeInventoryTasks(jobItemContexts, jobItemManager);
         executeIncrementalTasks(jobItemContexts, jobItemManager);
+    }
+    
+    private TransmissionProcessContext createTransmissionProcessContext(final String jobId) {
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
+                new PipelineProcessConfigurationPersistService().load(PipelineJobIdUtils.parseContextKey(jobId), PipelineJobIdUtils.parseJobType(jobId).getType()));
+        return new TransmissionProcessContext(jobId, processConfig);
     }
     
     protected abstract I buildJobItemContext(T jobConfig, int shardingItem, P jobItemProgress, TransmissionProcessContext jobProcessContext);

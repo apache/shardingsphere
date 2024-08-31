@@ -49,6 +49,13 @@ public interface PipelineJobType extends TypedSPI {
     String getCode();
     
     /**
+     * Is transmission job.
+     *
+     * @return is transmission job or not
+     */
+    boolean isTransmissionJob();
+    
+    /**
      * Get YAML pipeline job configuration swapper.
      *
      * @param <T> type of YAML configuration

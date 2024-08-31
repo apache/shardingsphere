@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
@@ -46,28 +47,12 @@ import java.sql.SQLException;
  * @param <I> type of pipeline job item context
  * @param <P> type of pipeline job item progress
  */
+@RequiredArgsConstructor
+@Getter
 @Slf4j
 public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfiguration, I extends PipelineJobItemContext, P extends PipelineJobItemProgress> implements PipelineJob {
     
-    @Getter
     private final PipelineJobRunnerManager jobRunnerManager;
-    
-    private final TransmissionProcessContext jobProcessContext;
-    
-    protected AbstractSeparablePipelineJob(final String jobId) {
-        this(jobId, true);
-    }
-    
-    protected AbstractSeparablePipelineJob(final String jobId, final boolean isTransmissionProcessContextNeeded) {
-        jobRunnerManager = new PipelineJobRunnerManager();
-        jobProcessContext = isTransmissionProcessContextNeeded ? createTransmissionProcessContext(jobId) : null;
-    }
-    
-    private TransmissionProcessContext createTransmissionProcessContext(final String jobId) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
-                new PipelineProcessConfigurationPersistService().load(PipelineJobIdUtils.parseContextKey(jobId), PipelineJobIdUtils.parseJobType(jobId).getType()));
-        return new TransmissionProcessContext(jobId, processConfig);
-    }
     
     @Override
     public final void execute(final ShardingContext shardingContext) {
@@ -81,6 +66,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
         PipelineJobConfigurationManager jobConfigManager = new PipelineJobConfigurationManager(jobType);
         T jobConfig = jobConfigManager.getJobConfiguration(jobId);
+        TransmissionProcessContext jobProcessContext = jobType.isTransmissionJob() ? createTransmissionProcessContext(jobId) : null;
         PipelineJobItemManager<P> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
         P jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
         boolean started = false;
@@ -116,6 +102,12 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         log.info("Start tasks runner, jobId={}, shardingItem={}.", jobId, shardingItem);
         tasksRunner.start();
         return true;
+    }
+    
+    private TransmissionProcessContext createTransmissionProcessContext(final String jobId) {
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
+                new PipelineProcessConfigurationPersistService().load(PipelineJobIdUtils.parseContextKey(jobId), PipelineJobIdUtils.parseJobType(jobId).getType()));
+        return new TransmissionProcessContext(jobId, processConfig);
     }
     
     protected abstract I buildJobItemContext(T jobConfig, int shardingItem, P jobItemProgress, TransmissionProcessContext jobProcessContext);
