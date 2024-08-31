@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
@@ -45,11 +46,12 @@ import java.util.concurrent.CompletableFuture;
  *
  * @param <T> type of pipeline job configuration
  * @param <I> type of pipeline job item context
+ * @param <P> type of pipeline job item progress
  */
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfiguration, I extends PipelineJobItemContext> implements PipelineJob {
+public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfiguration, I extends PipelineJobItemContext, P extends PipelineJobItemProgress> implements PipelineJob {
     
     private final PipelineJobRunnerManager jobRunnerManager;
     
@@ -65,9 +67,11 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
         T jobConfig = (T) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         Collection<I> jobItemContexts = new LinkedList<>();
+        PipelineJobItemManager<P> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId));
         for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
-            I jobItemContext = buildJobItemContext(jobConfig, shardingItem);
+            P jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
+            I jobItemContext = buildJobItemContext(jobConfig, shardingItem, jobItemProgress);
             if (!jobRunnerManager.addTasksRunner(shardingItem, buildTasksRunner(jobItemContext))) {
                 continue;
             }
@@ -80,11 +84,11 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
             return;
         }
         prepare(jobItemContexts, governanceFacade);
-        executeInventoryTasks(jobType, jobItemContexts);
-        executeIncrementalTasks(jobType, jobItemContexts);
+        executeInventoryTasks(jobItemContexts, jobItemManager);
+        executeIncrementalTasks(jobItemContexts, jobItemManager);
     }
     
-    protected abstract I buildJobItemContext(T jobConfig, int shardingItem);
+    protected abstract I buildJobItemContext(T jobConfig, int shardingItem, P jobItemProgress);
     
     protected abstract PipelineTasksRunner buildTasksRunner(I jobItemContext);
     
@@ -112,10 +116,10 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
     
     protected abstract void processFailed(String jobId);
     
-    private void executeInventoryTasks(final PipelineJobType jobType, final Collection<I> jobItemContexts) {
+    private void executeInventoryTasks(final Collection<I> jobItemContexts, final PipelineJobItemManager<P> jobItemManager) {
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (I each : jobItemContexts) {
-            updateJobItemStatus(each, jobType, JobStatus.EXECUTE_INVENTORY_TASK);
+            updateJobItemStatus(each, JobStatus.EXECUTE_INVENTORY_TASK, jobItemManager);
             for (PipelineTask task : ((TransmissionJobItemContext) each).getInventoryTasks()) {
                 if (task.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
                     continue;
@@ -129,14 +133,14 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         ExecuteEngine.trigger(futures, buildExecuteCallback("inventory", jobItemContexts.iterator().next()));
     }
     
-    private void executeIncrementalTasks(final PipelineJobType jobType, final Collection<I> jobItemContexts) {
+    private void executeIncrementalTasks(final Collection<I> jobItemContexts, final PipelineJobItemManager<P> jobItemManager) {
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (I each : jobItemContexts) {
             if (JobStatus.EXECUTE_INCREMENTAL_TASK == each.getStatus()) {
                 log.info("Job status has already EXECUTE_INCREMENTAL_TASK, ignore.");
                 return;
             }
-            updateJobItemStatus(each, jobType, JobStatus.EXECUTE_INCREMENTAL_TASK);
+            updateJobItemStatus(each, JobStatus.EXECUTE_INCREMENTAL_TASK, jobItemManager);
             for (PipelineTask task : ((TransmissionJobItemContext) each).getIncrementalTasks()) {
                 if (task.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
                     continue;
@@ -147,9 +151,9 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         ExecuteEngine.trigger(futures, buildExecuteCallback("incremental", jobItemContexts.iterator().next()));
     }
     
-    private void updateJobItemStatus(final I jobItemContext, final PipelineJobType jobType, final JobStatus jobStatus) {
+    private void updateJobItemStatus(final I jobItemContext, final JobStatus jobStatus, final PipelineJobItemManager<P> jobItemManager) {
         jobItemContext.setStatus(jobStatus);
-        new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper()).updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
+        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     protected abstract ExecuteCallback buildExecuteCallback(String identifier, I jobItemContext);
