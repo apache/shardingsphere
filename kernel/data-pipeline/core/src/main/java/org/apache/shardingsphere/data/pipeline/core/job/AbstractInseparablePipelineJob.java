@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finishe
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner.PipelineJobRunnerCleaner;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
@@ -52,12 +52,15 @@ import java.util.concurrent.CompletableFuture;
  * @param <I> type of pipeline job item context
  * @param <P> type of pipeline job item progress
  */
-@RequiredArgsConstructor
 @Getter
 @Slf4j
 public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfiguration, I extends PipelineJobItemContext, P extends PipelineJobItemProgress> implements PipelineJob {
     
     private final PipelineJobRunnerManager jobRunnerManager;
+    
+    protected AbstractInseparablePipelineJob(final PipelineJobRunnerCleaner cleaner) {
+        jobRunnerManager = new PipelineJobRunnerManager(cleaner);
+    }
     
     @SuppressWarnings("unchecked")
     @Override

@@ -45,7 +45,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.AbstractInseparablePipel
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
@@ -76,7 +75,7 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobConfigura
     private final PipelineSink sink;
     
     public CDCJob(final PipelineSink sink) {
-        super(new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink)));
+        super(new CDCJobRunnerCleaner(sink));
         this.sink = sink;
     }
     
