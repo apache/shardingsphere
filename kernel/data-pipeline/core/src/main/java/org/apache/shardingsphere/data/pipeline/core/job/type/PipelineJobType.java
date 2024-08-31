@@ -50,7 +50,7 @@ public interface PipelineJobType extends TypedSPI {
     
     /**
      * Is transmission job.
-     * 
+     *
      * @return is transmission job or not
      */
     boolean isTransmissionJob();
