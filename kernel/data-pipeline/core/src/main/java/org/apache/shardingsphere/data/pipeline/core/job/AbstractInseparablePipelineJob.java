@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
@@ -68,11 +69,12 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         String jobId = shardingContext.getJobName();
         log.info("Execute job {}", jobId);
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
+        PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
         T jobConfig = (T) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        TransmissionProcessContext jobProcessContext = jobType.isTransmissionJob() ? createTransmissionProcessContext(jobId) : null;
-        Collection<I> jobItemContexts = new LinkedList<>();
         PipelineJobItemManager<P> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
-        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId));
+        TransmissionProcessContext jobProcessContext = createTransmissionProcessContext(jobId, jobType, contextKey);
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
+        Collection<I> jobItemContexts = new LinkedList<>();
         for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
             if (jobRunnerManager.isStopping()) {
                 log.info("Job is stopping, ignore.");
@@ -96,9 +98,11 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         executeIncrementalTasks(jobItemContexts, jobItemManager);
     }
     
-    private TransmissionProcessContext createTransmissionProcessContext(final String jobId) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
-                new PipelineProcessConfigurationPersistService().load(PipelineJobIdUtils.parseContextKey(jobId), PipelineJobIdUtils.parseJobType(jobId).getType()));
+    private TransmissionProcessContext createTransmissionProcessContext(final String jobId, final PipelineJobType jobType, final PipelineContextKey contextKey) {
+        if (!jobType.isTransmissionJob()) {
+            return null;
+        }
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(new PipelineProcessConfigurationPersistService().load(contextKey, jobType.getType()));
         return new TransmissionProcessContext(jobId, processConfig);
     }
     
