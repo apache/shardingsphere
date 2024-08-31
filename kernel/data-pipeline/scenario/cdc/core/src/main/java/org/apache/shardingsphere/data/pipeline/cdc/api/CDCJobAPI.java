@@ -223,7 +223,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      * @param sink sink
      */
     public void start(final String jobId, final PipelineSink sink) {
-        CDCJob job = new CDCJob(sink);
+        CDCJob job = new CDCJob(jobId, sink);
         PipelineJobRegistry.add(jobId, job);
         enable(jobId);
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);

@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
@@ -30,8 +31,11 @@ import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfig
 import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -55,6 +59,19 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
     
     private final PipelineJobRunnerManager jobRunnerManager;
     
+    private final TransmissionProcessContext jobProcessContext;
+    
+    protected AbstractInseparablePipelineJob(final String jobId, final PipelineJobRunnerManager jobRunnerManager) {
+        this.jobRunnerManager = jobRunnerManager;
+        jobProcessContext = createTransmissionProcessContext(jobId);
+    }
+    
+    private TransmissionProcessContext createTransmissionProcessContext(final String jobId) {
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
+                new PipelineProcessConfigurationPersistService().load(PipelineJobIdUtils.parseContextKey(jobId), PipelineJobIdUtils.parseJobType(jobId).getType()));
+        return new TransmissionProcessContext(jobId, processConfig);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public final void execute(final ShardingContext shardingContext) {
@@ -71,7 +88,7 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
                 return;
             }
             P jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
-            I jobItemContext = buildJobItemContext(jobConfig, shardingItem, jobItemProgress);
+            I jobItemContext = buildJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext);
             if (!jobRunnerManager.addTasksRunner(shardingItem, buildTasksRunner(jobItemContext))) {
                 continue;
             }
@@ -88,7 +105,7 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobConfig
         executeIncrementalTasks(jobItemContexts, jobItemManager);
     }
     
-    protected abstract I buildJobItemContext(T jobConfig, int shardingItem, P jobItemProgress);
+    protected abstract I buildJobItemContext(T jobConfig, int shardingItem, P jobItemProgress, TransmissionProcessContext jobProcessContext);
     
     protected abstract PipelineTasksRunner buildTasksRunner(I jobItemContext);
     
