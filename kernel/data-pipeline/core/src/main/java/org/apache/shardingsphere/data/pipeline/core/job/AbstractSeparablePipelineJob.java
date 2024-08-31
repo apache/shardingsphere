@@ -95,7 +95,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             if (!jobRunnerManager.isStopping()) {
-                log.error("Job execution failed, {}-{}", jobId, shardingItem, ex);
+                log.error("Job {}-{} execution failed.", jobId, shardingItem, ex);
                 PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
                 throw ex;
             }
