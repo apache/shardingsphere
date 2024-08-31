@@ -110,7 +110,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         return true;
     }
     
-    private TransmissionProcessContext createTransmissionProcessContext(final String jobId, PipelineJobType jobType, final PipelineContextKey contextKey) {
+    private TransmissionProcessContext createTransmissionProcessContext(final String jobId, final PipelineJobType jobType, final PipelineContextKey contextKey) {
         if (!jobType.isTransmissionJob()) {
             return null;
         }
