@@ -25,11 +25,8 @@ import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfigurati
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -42,6 +39,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.ingest.dumper.
 import org.apache.shardingsphere.data.pipeline.scenario.migration.preparer.MigrationJobPreparer;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -55,10 +54,6 @@ import java.util.stream.Collectors;
 public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJobConfiguration, MigrationJobItemContext, TransmissionJobItemProgress> {
     
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
-    
-    public MigrationJob() {
-        super(new PipelineJobRunnerManager());
-    }
     
     @Override
     protected MigrationJobItemContext buildJobItemContext(final MigrationJobConfiguration jobConfig,

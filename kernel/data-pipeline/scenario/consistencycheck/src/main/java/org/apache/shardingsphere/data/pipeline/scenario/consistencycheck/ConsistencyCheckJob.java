@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
@@ -31,10 +30,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.task.Co
  * Consistency check job.
  */
 public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<ConsistencyCheckJobConfiguration, ConsistencyCheckJobItemContext, ConsistencyCheckJobItemProgress> {
-    
-    public ConsistencyCheckJob() {
-        super(new PipelineJobRunnerManager());
-    }
     
     @Override
     public ConsistencyCheckJobItemContext buildJobItemContext(final ConsistencyCheckJobConfiguration jobConfig,
