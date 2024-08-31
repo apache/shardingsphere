@@ -49,9 +49,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunner
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.util.ShardingColumnsExtractor;
@@ -72,23 +70,19 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobConfigura
     
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
-    private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
-    
     private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
     
     @Getter
     private final PipelineSink sink;
     
-    public CDCJob(final PipelineSink sink) {
-        super(new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink)));
+    public CDCJob(final String jobId, final PipelineSink sink) {
+        super(jobId, new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink)));
         this.sink = sink;
     }
     
     @Override
-    protected CDCJobItemContext buildJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem, final TransmissionJobItemProgress jobItemProgress) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.fillInDefaultValue(
-                processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), "STREAMING"));
-        TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
+    protected CDCJobItemContext buildJobItemContext(final CDCJobConfiguration jobConfig,
+                                                    final int shardingItem, final TransmissionJobItemProgress jobItemProgress, final TransmissionProcessContext jobProcessContext) {
         CDCTaskConfiguration taskConfig = buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getProcessConfiguration());
         return new CDCJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext, taskConfig, getJobRunnerManager().getDataSourceManager(), sink);
     }
