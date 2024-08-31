@@ -48,7 +48,7 @@ public final class ShowMaskRuleExecutor implements DistSQLQueryExecutor<ShowMask
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMaskRulesStatement sqlStatement, final ContextManager contextManager) {
-        return rule.getConfiguration().getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
+        return rule.getConfiguration().getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equalsIgnoreCase(sqlStatement.getTableName()))
                 .map(each -> buildColumnData(each, rule.getConfiguration().getMaskAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
