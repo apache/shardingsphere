@@ -126,7 +126,7 @@ public final class CDCJob implements PipelineJob {
             log.warn("Job item contexts are empty, ignore.");
             return;
         }
-        prepare(jobItemContexts, governanceFacade);
+        initTasks(jobItemContexts, governanceFacade);
         executeInventoryTasks(jobItemContexts, jobItemManager);
         executeIncrementalTasks(jobItemContexts, jobItemManager);
     }
@@ -158,20 +158,20 @@ public final class CDCJob implements PipelineJob {
         return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, mapper, write.getBatchSize(), writeRateLimitAlgorithm, 0, 1);
     }
     
-    private void prepare(final Collection<CDCJobItemContext> jobItemContexts, final PipelineGovernanceFacade governanceFacade) {
+    private void initTasks(final Collection<CDCJobItemContext> jobItemContexts, final PipelineGovernanceFacade governanceFacade) {
         try {
             new CDCJobPreparer().initTasks(jobItemContexts);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             for (PipelineJobItemContext each : jobItemContexts) {
-                prepareFailed(each.getJobId(), each.getShardingItem(), ex, governanceFacade);
+                initTasksFailed(each.getJobId(), each.getShardingItem(), ex, governanceFacade);
             }
             throw ex;
         }
     }
     
-    private void prepareFailed(final String jobId, final int shardingItem, final Exception ex, final PipelineGovernanceFacade governanceFacade) {
+    private void initTasksFailed(final String jobId, final int shardingItem, final Exception ex, final PipelineGovernanceFacade governanceFacade) {
         log.error("Job {}-{} execution failed.", jobId, shardingItem, ex);
         governanceFacade.getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
         PipelineJobRegistry.stop(jobId);
