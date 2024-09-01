@@ -31,59 +31,104 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.engine.CDCJobRunnerCleaner;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractInseparablePipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.util.ShardingColumnsExtractor;
+import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
  * CDC job.
  */
 @Slf4j
-public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobConfiguration, CDCJobItemContext, TransmissionJobItemProgress> {
+public final class CDCJob implements PipelineJob {
+    
+    @Getter
+    private final PipelineJobRunnerManager jobRunnerManager;
     
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
-    
-    private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
     
     @Getter
     private final PipelineSink sink;
     
     public CDCJob(final PipelineSink sink) {
-        super(new CDCJobRunnerCleaner(sink));
+        jobRunnerManager = new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink));
         this.sink = sink;
     }
     
     @Override
-    protected CDCJobItemContext buildJobItemContext(final CDCJobConfiguration jobConfig,
-                                                    final int shardingItem, final TransmissionJobItemProgress jobItemProgress, final TransmissionProcessContext jobProcessContext) {
-        CDCTaskConfiguration taskConfig = buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getProcessConfiguration());
-        return new CDCJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext, taskConfig, getJobRunnerManager().getDataSourceManager(), sink);
+    public void execute(final ShardingContext shardingContext) {
+        String jobId = shardingContext.getJobName();
+        log.info("Execute job {}", jobId);
+        PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
+        PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
+        CDCJobConfiguration jobConfig = (CDCJobConfiguration) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
+        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(
+                jobId, PipelineProcessConfigurationUtils.fillInDefaultValue(new PipelineProcessConfigurationPersistService().load(contextKey, jobType.getType())));
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
+        Collection<CDCJobItemContext> jobItemContexts = new LinkedList<>();
+        for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
+            if (jobRunnerManager.isStopping()) {
+                log.info("Job is stopping, ignore.");
+                return;
+            }
+            TransmissionJobItemProgress jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
+            CDCTaskConfiguration taskConfig = buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getProcessConfiguration());
+            CDCJobItemContext jobItemContext = new CDCJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext, taskConfig, getJobRunnerManager().getDataSourceManager(), sink);
+            if (!jobRunnerManager.addTasksRunner(shardingItem, new CDCTasksRunner(jobItemContext))) {
+                continue;
+            }
+            jobItemContexts.add(jobItemContext);
+            governanceFacade.getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
+            log.info("Start tasks runner, jobId={}, shardingItem={}.", jobId, shardingItem);
+        }
+        if (jobItemContexts.isEmpty()) {
+            log.warn("Job item contexts are empty, ignore.");
+            return;
+        }
+        prepare(jobItemContexts, governanceFacade);
+        executeInventoryTasks(jobItemContexts, jobItemManager);
+        executeIncrementalTasks(jobItemContexts, jobItemManager);
     }
     
     private CDCTaskConfiguration buildTaskConfiguration(final CDCJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig) {
@@ -113,24 +158,64 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobConfigura
         return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, mapper, write.getBatchSize(), writeRateLimitAlgorithm, 0, 1);
     }
     
-    @Override
-    protected PipelineTasksRunner buildTasksRunner(final CDCJobItemContext jobItemContext) {
-        return new CDCTasksRunner(jobItemContext);
+    private void prepare(final Collection<CDCJobItemContext> jobItemContexts, final PipelineGovernanceFacade governanceFacade) {
+        try {
+            new CDCJobPreparer().initTasks(jobItemContexts);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            for (PipelineJobItemContext each : jobItemContexts) {
+                prepareFailed(each.getJobId(), each.getShardingItem(), ex, governanceFacade);
+            }
+            throw ex;
+        }
     }
     
-    @Override
-    protected void doPrepare(final Collection<CDCJobItemContext> jobItemContexts) {
-        jobPreparer.initTasks(jobItemContexts);
-    }
-    
-    @Override
-    protected void processFailed(final String jobId) {
+    private void prepareFailed(final String jobId, final int shardingItem, final Exception ex, final PipelineGovernanceFacade governanceFacade) {
+        log.error("Job {}-{} execution failed.", jobId, shardingItem, ex);
+        governanceFacade.getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
+        PipelineJobRegistry.stop(jobId);
         jobAPI.disable(jobId);
     }
     
-    @Override
-    protected ExecuteCallback buildExecuteCallback(final String identifier, final CDCJobItemContext jobItemContext) {
-        return new CDCExecuteCallback(identifier, jobItemContext);
+    private void executeInventoryTasks(final Collection<CDCJobItemContext> jobItemContexts, final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager) {
+        Collection<CompletableFuture<?>> futures = new LinkedList<>();
+        for (CDCJobItemContext each : jobItemContexts) {
+            updateJobItemStatus(each, JobStatus.EXECUTE_INVENTORY_TASK, jobItemManager);
+            for (PipelineTask task : ((TransmissionJobItemContext) each).getInventoryTasks()) {
+                if (task.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
+                    continue;
+                }
+                futures.addAll(task.start());
+            }
+        }
+        if (futures.isEmpty()) {
+            return;
+        }
+        ExecuteEngine.trigger(futures, new CDCExecuteCallback("inventory", jobItemContexts.iterator().next()));
+    }
+    
+    private void executeIncrementalTasks(final Collection<CDCJobItemContext> jobItemContexts, final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager) {
+        Collection<CompletableFuture<?>> futures = new LinkedList<>();
+        for (CDCJobItemContext each : jobItemContexts) {
+            if (JobStatus.EXECUTE_INCREMENTAL_TASK == each.getStatus()) {
+                log.info("Job status has already EXECUTE_INCREMENTAL_TASK, ignore.");
+                return;
+            }
+            updateJobItemStatus(each, JobStatus.EXECUTE_INCREMENTAL_TASK, jobItemManager);
+            for (PipelineTask task : ((TransmissionJobItemContext) each).getIncrementalTasks()) {
+                if (task.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
+                    continue;
+                }
+                futures.addAll(task.start());
+            }
+        }
+        ExecuteEngine.trigger(futures, new CDCExecuteCallback("incremental", jobItemContexts.iterator().next()));
+    }
+    
+    private void updateJobItemStatus(final CDCJobItemContext jobItemContext, final JobStatus jobStatus, final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager) {
+        jobItemContext.setStatus(jobStatus);
+        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     @RequiredArgsConstructor
