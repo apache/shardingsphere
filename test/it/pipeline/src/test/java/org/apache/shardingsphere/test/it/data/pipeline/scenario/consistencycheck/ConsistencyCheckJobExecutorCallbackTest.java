@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobExecutorCallback;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
@@ -45,7 +45,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ConsistencyCheckJobTest {
+class ConsistencyCheckJobExecutorCallbackTest {
     
     @BeforeAll
     static void beforeClass() {
@@ -59,11 +59,11 @@ class ConsistencyCheckJobTest {
         Map<String, Object> expectTableCheckPosition = Collections.singletonMap("t_order", 100);
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey()).getJobItemFacade().getProcess().persist(checkJobId, 0,
                 YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));
-        ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob();
+        ConsistencyCheckJobExecutorCallback callback = new ConsistencyCheckJobExecutorCallback();
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(createYamlConsistencyCheckJobConfiguration(checkJobId));
         PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new ConsistencyCheckJobType().getYamlJobItemProgressSwapper());
         Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobConfig.getJobId(), 0);
-        ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildJobItemContext(jobConfig, 0, jobItemProgress.orElse(null), null);
+        ConsistencyCheckJobItemContext actual = callback.buildJobItemContext(jobConfig, 0, jobItemProgress.orElse(null), null, null);
         assertThat(actual.getProgressContext().getSourceTableCheckPositions(), is(expectTableCheckPosition));
         assertThat(actual.getProgressContext().getTargetTableCheckPositions(), is(expectTableCheckPosition));
     }
