@@ -927,7 +927,7 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) string_
-    | path (RETURNING dataType)? onEmptyError? 
+    | path (RETURNING dataType)? onEmpty? onError?
     | matchExpression
     | caseExpression
     | intervalExpression
@@ -937,8 +937,12 @@ path
     : string_
     ;
 
-onEmptyError
-    : (NULL | ERROR | DEFAULT literals) ON (EMPTY | ERROR)
+onEmpty
+    : (NULL | ERROR | DEFAULT literals) ON EMPTY
+    ;
+
+onError
+    : (NULL | ERROR | DEFAULT literals) ON ERROR
     ;
     
 columnRef
@@ -977,9 +981,17 @@ jsonTableColumns
 
 jsonTableColumn
     : name FOR ORDINALITY
-    | name dataType PATH path (NULL | DEFAULT string_ | ERROR) ON (EMPTY | ERROR)
+    | name dataType PATH path jsonTableColumnOnEmpty? jsonTableColumnOnError?
     | name dataType EXISTS PATH string_ path
     | NESTED PATH? path COLUMNS
+    ;
+
+jsonTableColumnOnEmpty
+    : (NULL | DEFAULT string_ | ERROR) ON EMPTY
+    ;
+
+jsonTableColumnOnError
+    : (NULL | DEFAULT string_ | ERROR) ON ERROR
     ;
 
 jsonFunctionName
@@ -997,7 +1009,7 @@ aggregationFunctionName
 distinct
     : DISTINCT
     ;
-    
+
 overClause
     : OVER (windowSpecification | identifier)
     ;
@@ -1062,7 +1074,7 @@ windowFunction
     | funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? windowingClause
     | funcName = NTH_VALUE LP_ expr COMMA_ simpleExpr RP_ (FROM (FIRST | LAST))? nullTreatment? windowingClause
     ;
-    
+
 windowingClause
     : OVER (windowName=identifier | windowSpecification)
     ;

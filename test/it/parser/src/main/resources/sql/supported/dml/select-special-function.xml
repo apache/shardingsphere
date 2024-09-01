@@ -180,15 +180,32 @@
     <sql-case id="select_roles_graphml" value="SELECT ROLES_GRAPHML()" db-types="MySQL" />
     <sql-case id="select_round" value="SELECT ROUND(1.58)" db-types="MySQL" />
     <sql-case id="select_row_count" value="SELECT ROW_COUNT()" db-types="MySQL" />
-    <sql-case id="select_md5" value="SELECT MD5('testing')" db-types="MySQL" />
+    <sql-case id="select_md5" value="SELECT MD5('testing')" db-types="MySQL,Doris" />
     <sql-case id="select_member_of" value="SELECT 'ab' MEMBER OF('[23, &quot;abc&quot;, 17, &quot;ab&quot;, 10]')" db-types="MySQL" />
     <sql-case id="select_microsecond" value="SELECT MICROSECOND('12:00:00.123456')" db-types="MySQL" />
     <sql-case id="select_mid" value="SELECT MID('foobarbar' from 4)" db-types="MySQL" />
-    <sql-case id="select_minute" value="SELECT MINUTE('2008-02-03 10:05:03')" db-types="MySQL" />
-    <sql-case id="select_mod" value="SELECT MOD(234, 10)" db-types="MySQL" />
-    <sql-case id="select_month" value="SELECT MONTH('2008-02-03')" db-types="MySQL" />
-    <sql-case id="select_monthname" value="SELECT MONTHNAME('2008-02-03')" db-types="MySQL" />
+    <sql-case id="select_minute" value="SELECT MINUTE('2008-02-03 10:05:03')" db-types="MySQL,Doris" />
+    <sql-case id="select_mod" value="SELECT MOD(234, 10)" db-types="MySQL,Doris" />
+    <sql-case id="select_month" value="SELECT MONTH('2008-02-03')" db-types="MySQL,Doris" />
+    <sql-case id="select_monthname" value="SELECT MONTHNAME('2008-02-03')" db-types="MySQL,Doris" />
     <sql-case id="select_multilinestring" value="SELECT MultiLineString(ST_GeomFromText('LineString(1 1, 2 2)'),ST_GeomFromText('LineString(1 1, 2 2)'))" db-types="MySQL" />
     <sql-case id="select_multipoint" value="SELECT MultiPoint(point(1,1),point(1,1))" db-types="MySQL" />
     <sql-case id="select_multipolygon" value="SELECT MultiPolygon(ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'),ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'))" db-types="MySQL" />
+    <sql-case id="select_json_objectagg" value="SELECT JSON_OBJECTAGG(attribute, value) FROM t GROUP BY id" db-types="MySQL" />
+    <sql-case id="select_json_overlaps" value="SELECT JSON_OVERLAPS(&quot;[1,3,5,7]&quot;, &quot;[2,5,7]&quot;)" db-types="MySQL" />
+    <sql-case id="select_json_pretty" value="SELECT JSON_PRETTY('123')" db-types="MySQL" />
+    <sql-case id="select_json_quote" value="SELECT JSON_QUOTE('a')" db-types="MySQL,Doris" />
+    <sql-case id="select_json_remove" value="SELECT JSON_REMOVE('[&quot;a&quot;, &quot;b&quot;, &quot;d&quot;]', '$[0]')" db-types="MySQL" />
+    <sql-case id="select_json_replace" value="SELECT JSON_REPLACE('{ &quot;a&quot;: 1, &quot;b&quot;: &quot;2&quot;}', '$.a', 10)" db-types="MySQL" />
+    <sql-case id="select_json_schema_valid" value="SELECT JSON_SCHEMA_VALID('{&quot;type&quot;:&quot;object&quot;,&quot;required&quot;:[&quot;name&quot;,&quot;value&quot;]}','{&quot;name&quot;:&quot;a&quot;,&quot;value&quot;:10}')" db-types="MySQL" />
+    <sql-case id="select_json_schema_validation_report" value="SELECT JSON_SCHEMA_VALIDATION_REPORT('{&quot;type&quot;:&quot;object&quot;,&quot;required&quot;:[&quot;name&quot;,&quot;value&quot;]}','{&quot;name&quot;:&quot;a&quot;,&quot;value&quot;:10}')" db-types="MySQL" />
+    <sql-case id="select_json_search" value="SELECT JSON_SEARCH('[&quot;abc&quot;,{&quot;x&quot;:&quot;abc&quot;}]', 'one', 'abc')" db-types="MySQL" />
+    <sql-case id="select_json_set" value="SELECT JSON_SET('{&quot;a&quot;:1,&quot;b&quot;:[2,3]}','$.c',10)" db-types="MySQL" />
+    <sql-case id="select_json_storage_free" value="SELECT JSON_STORAGE_FREE(json_col) FROM t" db-types="MySQL" />
+    <sql-case id="select_json_storage_size" value="SELECT JSON_STORAGE_SIZE(json_col) FROM t" db-types="MySQL" />
+    <sql-case id="select_json_table" value="SELECT * FROM JSON_TABLE('[{&quot;name&quot;: 2}]','$[*]' COLUMNS( name INT PATH '$.name' error on empty)) as t" db-types="MySQL" />
+    <sql-case id="select_json_type" value="SELECT JSON_TYPE('[1,2,3]')" db-types="MySQL" />
+    <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
+    <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />
+    <sql-case id="select_json_value" value="SELECT JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)" db-types="MySQL" />
 </sql-cases>
