@@ -17,32 +17,29 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.task.ConsistencyCheckTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
+import org.apache.shardingsphere.data.pipeline.core.job.executor.DistributedPipelineJobExecutor;
+import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 
 /**
  * Consistency check job.
  */
-public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<ConsistencyCheckJobConfiguration, ConsistencyCheckJobItemContext, ConsistencyCheckJobItemProgress> {
+public final class ConsistencyCheckJob implements PipelineJob {
     
-    @Override
-    public ConsistencyCheckJobItemContext buildJobItemContext(final ConsistencyCheckJobConfiguration jobConfig,
-                                                              final int shardingItem, final ConsistencyCheckJobItemProgress jobItemProgress, final TransmissionProcessContext jobProcessContext) {
-        return new ConsistencyCheckJobItemContext(jobConfig, shardingItem, JobStatus.RUNNING, jobItemProgress);
+    private final DistributedPipelineJobExecutor executor;
+    
+    public ConsistencyCheckJob() {
+        executor = new DistributedPipelineJobExecutor(new ConsistencyCheckJobExecutorCallback());
     }
     
     @Override
-    protected PipelineTasksRunner buildTasksRunner(final ConsistencyCheckJobItemContext jobItemContext) {
-        return new ConsistencyCheckTasksRunner(jobItemContext);
+    public PipelineJobRunnerManager getJobRunnerManager() {
+        return executor.getJobRunnerManager();
     }
     
     @Override
-    protected void doPrepare(final ConsistencyCheckJobItemContext jobItemContext) {
+    public void execute(final ShardingContext shardingContext) {
+        executor.execute(shardingContext);
     }
 }

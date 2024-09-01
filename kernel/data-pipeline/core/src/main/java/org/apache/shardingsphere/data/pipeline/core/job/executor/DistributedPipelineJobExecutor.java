@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.data.pipeline.core.job.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
@@ -41,25 +42,25 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import java.sql.SQLException;
 
 /**
- * Abstract separable pipeline job.
- * 
- * @param <T> type of pipeline job configuration
- * @param <I> type of pipeline job item context
- * @param <P> type of pipeline job item progress
+ * Distributed pipeline job executor.
  */
-@Getter
+@RequiredArgsConstructor
 @Slf4j
-public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfiguration, I extends PipelineJobItemContext, P extends PipelineJobItemProgress> implements PipelineJob {
+public final class DistributedPipelineJobExecutor {
     
-    private final PipelineJobRunnerManager jobRunnerManager;
+    @SuppressWarnings("rawtypes")
+    private final DistributedPipelineJobExecutorCallback callback;
     
-    protected AbstractSeparablePipelineJob() {
-        jobRunnerManager = new PipelineJobRunnerManager();
-    }
+    @Getter
+    private final PipelineJobRunnerManager jobRunnerManager = new PipelineJobRunnerManager();
     
+    /**
+     * Execute job.
+     *
+     * @param shardingContext sharding context
+     */
     @SuppressWarnings("unchecked")
-    @Override
-    public final void execute(final ShardingContext shardingContext) {
+    public void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         int shardingItem = shardingContext.getShardingItem();
         log.info("Execute job {}-{}.", jobId, shardingItem);
@@ -69,14 +70,14 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         }
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
-        T jobConfig = (T) jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        PipelineJobItemManager<P> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
-        P jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
+        PipelineJobConfiguration jobConfig = jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
+        PipelineJobItemManager<PipelineJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        PipelineJobItemProgress jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
         TransmissionProcessContext jobProcessContext = createTransmissionProcessContext(jobId, jobType, contextKey);
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
         boolean started = false;
         try {
-            started = execute(buildJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext), governanceFacade);
+            started = execute(callback.buildJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext, jobRunnerManager.getDataSourceManager()), governanceFacade);
             if (started) {
                 PipelineJobProgressPersistService.persistNow(jobId, shardingItem);
             }
@@ -95,9 +96,10 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         }
     }
     
-    private boolean execute(final I jobItemContext, final PipelineGovernanceFacade governanceFacade) {
+    @SuppressWarnings("unchecked")
+    private boolean execute(final PipelineJobItemContext jobItemContext, final PipelineGovernanceFacade governanceFacade) {
         int shardingItem = jobItemContext.getShardingItem();
-        PipelineTasksRunner tasksRunner = buildTasksRunner(jobItemContext);
+        PipelineTasksRunner tasksRunner = callback.buildTasksRunner(jobItemContext);
         if (!jobRunnerManager.addTasksRunner(shardingItem, tasksRunner)) {
             return false;
         }
@@ -117,19 +119,14 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         return new TransmissionProcessContext(jobId, processConfig);
     }
     
-    protected abstract I buildJobItemContext(T jobConfig, int shardingItem, P jobItemProgress, TransmissionProcessContext jobProcessContext);
-    
-    protected abstract PipelineTasksRunner buildTasksRunner(I jobItemContext);
-    
-    protected final void prepare(final I jobItemContext) {
+    @SuppressWarnings("unchecked")
+    private void prepare(final PipelineJobItemContext jobItemContext) {
         try {
-            doPrepare(jobItemContext);
+            callback.prepare(jobItemContext);
             // CHECKSTYLE:OFF
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
             throw new PipelineInternalException(ex);
         }
     }
-    
-    protected abstract void doPrepare(I jobItemContext) throws SQLException;
 }
