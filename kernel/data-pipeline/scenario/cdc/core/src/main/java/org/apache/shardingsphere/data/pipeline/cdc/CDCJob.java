@@ -146,8 +146,8 @@ public final class CDCJob implements PipelineJob {
         return new IncrementalDumperContext(dumperCommonContext, jobConfig.getJobId(), jobConfig.isDecodeWithTX());
     }
     
-    private ImporterConfiguration buildImporterConfiguration(final CDCJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig, final Collection<String> schemaTableNames,
-                                                             final TableAndSchemaNameMapper mapper) {
+    private ImporterConfiguration buildImporterConfiguration(final CDCJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
+                                                             final Collection<String> schemaTableNames, final TableAndSchemaNameMapper mapper) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getDataSourceConfig().getType(), jobConfig.getDataSourceConfig().getParameter());
         Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor()
