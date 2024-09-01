@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.preparer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.channel.IncrementalChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
@@ -41,6 +40,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.preparer.PipelineJobPreparer;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
@@ -74,38 +74,25 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map.Entry;
 
 /**
  * Migration job preparer.
  */
 @Slf4j
-public final class MigrationJobPreparer {
+public final class MigrationJobPreparer implements PipelineJobPreparer<MigrationJobItemContext> {
     
-    private final MigrationJobType jobType = new MigrationJobType();
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getYamlJobItemProgressSwapper());
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
-    
-    /**
-     * Do prepare work.
-     *
-     * @param jobItemContext job item context
-     * @throws SQLException SQL exception
-     * @throws PipelineJobCancelingException pipeline job canceled exception
-     */
-    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException, PipelineJobCancelingException {
+    @Override
+    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
-                () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration"));
+                () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration."));
         DatabaseType sourceDatabaseType = jobItemContext.getJobConfig().getSourceDatabaseType();
         new PipelineDataSourceCheckEngine(sourceDatabaseType).checkSourceDataSources(Collections.singleton(jobItemContext.getSourceDataSource()));
-        if (jobItemContext.isStopping()) {
-            throw new PipelineJobCancelingException();
-        }
+        ShardingSpherePreconditions.checkState(!jobItemContext.isStopping(), PipelineJobCancelingException::new);
         prepareAndCheckTargetWithLock(jobItemContext);
-        if (jobItemContext.isStopping()) {
-            throw new PipelineJobCancelingException();
-        }
+        ShardingSpherePreconditions.checkState(!jobItemContext.isStopping(), PipelineJobCancelingException::new);
         boolean isIncrementalSupported = DatabaseTypedSPILoader.findService(DialectIncrementalDumperCreator.class, sourceDatabaseType).isPresent();
         if (isIncrementalSupported) {
             prepareIncremental(jobItemContext);
@@ -113,11 +100,9 @@ public final class MigrationJobPreparer {
         initInventoryTasks(jobItemContext);
         if (isIncrementalSupported) {
             initIncrementalTasks(jobItemContext);
-            if (jobItemContext.isStopping()) {
-                throw new PipelineJobCancelingException();
-            }
+            ShardingSpherePreconditions.checkState(!jobItemContext.isStopping(), PipelineJobCancelingException::new);
         }
-        log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
+        log.info("Prepare job, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
                 jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
     }
     
@@ -142,11 +127,11 @@ public final class MigrationJobPreparer {
                     PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobFacade().getOffset().persist(jobId, new JobOffsetInfo(true));
                 }
             } finally {
-                log.info("unlock, jobId={}, shardingItem={}, cost {} ms", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
+                log.info("Unlock, jobId={}, shardingItem={}, cost {} ms", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
                 lockContext.unlock(lockDefinition);
             }
         } else {
-            log.warn("try lock failed, jobId={}, shardingItem={}", jobId, jobItemContext.getShardingItem());
+            log.warn("Try lock failed, jobId={}, shardingItem={}", jobId, jobItemContext.getShardingItem());
         }
     }
     
@@ -203,20 +188,5 @@ public final class MigrationJobPreparer {
         Collection<Importer> importers = Collections.singletonList(new SingleChannelConsumerImporter(channel, 1, 5L, jobItemContext.getSink(), jobItemContext));
         PipelineTask incrementalTask = new IncrementalTask(dumperContext.getCommonContext().getDataSourceName(), incrementalExecuteEngine, dumper, importers, taskProgress);
         jobItemContext.getIncrementalTasks().add(incrementalTask);
-    }
-    
-    /**
-     * Do cleanup work.
-     *
-     * @param jobConfig job configuration
-     */
-    public void cleanup(final MigrationJobConfiguration jobConfig) {
-        for (Entry<String, PipelineDataSourceConfiguration> entry : jobConfig.getSources().entrySet()) {
-            try {
-                new IncrementalTaskPositionManager(entry.getValue().getDatabaseType()).destroyPosition(jobConfig.getJobId(), entry.getValue());
-            } catch (final SQLException ex) {
-                log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), entry.getKey(), ex);
-            }
-        }
     }
 }
