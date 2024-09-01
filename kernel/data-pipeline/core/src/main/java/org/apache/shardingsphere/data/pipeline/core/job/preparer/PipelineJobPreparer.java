@@ -30,7 +30,7 @@ public interface PipelineJobPreparer<T extends PipelineJobItemContext> {
     
     /**
      * Prepare before job execution.
-     * 
+     *
      * @param jobItemContext job item context
      * @throws SQLException SQL exception
      */
