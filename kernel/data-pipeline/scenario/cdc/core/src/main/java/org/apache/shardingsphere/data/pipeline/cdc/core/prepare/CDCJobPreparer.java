@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.prepare;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCChannelProgressPair;
@@ -65,13 +65,14 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * CDC job preparer.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class CDCJobPreparer {
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
     /**
-     * Do prepare work.
+     * Prepare.
      *
      * @param jobItemContexts job item contexts
      */
@@ -82,12 +83,12 @@ public final class CDCJobPreparer {
         AtomicBoolean incrementalImporterUsed = new AtomicBoolean();
         List<CDCChannelProgressPair> incrementalChannelProgressPairs = new CopyOnWriteArrayList<>();
         for (CDCJobItemContext each : jobItemContexts) {
-            initTasks0(each, inventoryImporterUsed, inventoryChannelProgressPairs, incrementalImporterUsed, incrementalChannelProgressPairs);
+            initTasks(each, inventoryImporterUsed, inventoryChannelProgressPairs, incrementalImporterUsed, incrementalChannelProgressPairs);
         }
     }
     
-    private void initTasks0(final CDCJobItemContext jobItemContext, final AtomicBoolean inventoryImporterUsed, final List<CDCChannelProgressPair> inventoryChannelProgressPairs,
-                            final AtomicBoolean incrementalImporterUsed, final List<CDCChannelProgressPair> incrementalChannelProgressPairs) {
+    private void initTasks(final CDCJobItemContext jobItemContext, final AtomicBoolean inventoryImporterUsed, final List<CDCChannelProgressPair> inventoryChannelProgressPairs,
+                           final AtomicBoolean incrementalImporterUsed, final List<CDCChannelProgressPair> incrementalChannelProgressPairs) {
         Optional<TransmissionJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         if (!jobItemProgress.isPresent()) {
             jobItemManager.persistProgress(jobItemContext);
@@ -138,7 +139,7 @@ public final class CDCJobPreparer {
                 importerUsed.set(true);
             }
         }
-        log.info("initInventoryTasks cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        log.info("Init inventory tasks cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     private void initIncrementalTask(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<CDCChannelProgressPair> channelProgressPairs) {

@@ -126,7 +126,7 @@ public final class CDCJob implements PipelineJob {
             log.warn("Job item contexts are empty, ignore.");
             return;
         }
-        initTasks(jobItemContexts, governanceFacade);
+        initTasks(jobItemContexts, governanceFacade, jobItemManager);
         executeInventoryTasks(jobItemContexts, jobItemManager);
         executeIncrementalTasks(jobItemContexts, jobItemManager);
     }
@@ -158,9 +158,10 @@ public final class CDCJob implements PipelineJob {
         return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, mapper, write.getBatchSize(), writeRateLimitAlgorithm, 0, 1);
     }
     
-    private void initTasks(final Collection<CDCJobItemContext> jobItemContexts, final PipelineGovernanceFacade governanceFacade) {
+    private void initTasks(final Collection<CDCJobItemContext> jobItemContexts,
+                           final PipelineGovernanceFacade governanceFacade, final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager) {
         try {
-            new CDCJobPreparer().initTasks(jobItemContexts);
+            new CDCJobPreparer(jobItemManager).initTasks(jobItemContexts);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
