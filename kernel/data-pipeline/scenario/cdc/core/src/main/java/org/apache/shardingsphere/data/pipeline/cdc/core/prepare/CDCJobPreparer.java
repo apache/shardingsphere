@@ -72,7 +72,7 @@ public final class CDCJobPreparer {
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
     /**
-     * Prepare.
+     * Init tasks.
      *
      * @param jobItemContexts job item contexts
      */
