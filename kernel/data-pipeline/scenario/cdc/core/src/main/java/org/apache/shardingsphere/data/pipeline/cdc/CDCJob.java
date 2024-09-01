@@ -228,15 +228,15 @@ public final class CDCJob implements PipelineJob {
         @Override
         public void onSuccess() {
             if (jobItemContext.isStopping()) {
-                log.info("onSuccess, stopping true, ignore.");
+                log.info("Job is stopping, ignore.");
                 return;
             }
-            log.info("onSuccess, all {} tasks finished.", identifier);
+            log.info("All {} tasks finished successful.", identifier);
         }
         
         @Override
         public void onFailure(final Throwable throwable) {
-            log.error("onFailure, {} task execute failed.", identifier, throwable);
+            log.error("Task {} execute failed.", identifier, throwable);
             String jobId = jobItemContext.getJobId();
             PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
             if (jobItemContext.getSink() instanceof PipelineCDCSocketSink) {
