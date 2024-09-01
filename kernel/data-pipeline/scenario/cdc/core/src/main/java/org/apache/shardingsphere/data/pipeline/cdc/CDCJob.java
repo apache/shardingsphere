@@ -228,7 +228,7 @@ public final class CDCJob implements PipelineJob {
         @Override
         public void onSuccess() {
             if (jobItemContext.isStopping()) {
-                log.info("onSuccess, stopping true, ignore");
+                log.info("onSuccess, stopping true, ignore.");
                 return;
             }
             log.info("onSuccess, all {} tasks finished.", identifier);
