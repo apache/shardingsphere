@@ -37,7 +37,7 @@ public interface DistributedPipelineJobExecutorCallback<T extends PipelineJobCon
     
     /**
      * Build job item context.
-     * 
+     *
      * @param jobConfig job configuration
      * @param shardingItem sharding item
      * @param jobItemProgress job item progress
@@ -49,7 +49,7 @@ public interface DistributedPipelineJobExecutorCallback<T extends PipelineJobCon
     
     /**
      * Build tasks runner.
-     * 
+     *
      * @param jobItemContext job item context
      * @return built tasks runner
      */
@@ -57,7 +57,7 @@ public interface DistributedPipelineJobExecutorCallback<T extends PipelineJobCon
     
     /**
      * Prepare.
-     * 
+     *
      * @param jobItemContext job item context
      * @throws SQLException SQL exception
      */

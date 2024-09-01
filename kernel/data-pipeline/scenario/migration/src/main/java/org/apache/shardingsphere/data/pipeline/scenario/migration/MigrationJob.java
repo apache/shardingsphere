@@ -28,7 +28,7 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 public final class MigrationJob implements PipelineJob {
     
     private final DistributedPipelineJobExecutor executor;
-   
+    
     public MigrationJob() {
         executor = new DistributedPipelineJobExecutor(new MigrationJobExecutorCallback());
     }

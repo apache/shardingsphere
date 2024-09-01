@@ -30,7 +30,9 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.task.Co
 /**
  * Consistency check job executor callback.
  */
-public final class ConsistencyCheckJobExecutorCallback implements DistributedPipelineJobExecutorCallback<ConsistencyCheckJobConfiguration, ConsistencyCheckJobItemContext, ConsistencyCheckJobItemProgress> {
+public final class ConsistencyCheckJobExecutorCallback
+        implements
+            DistributedPipelineJobExecutorCallback<ConsistencyCheckJobConfiguration, ConsistencyCheckJobItemContext, ConsistencyCheckJobItemProgress> {
     
     @Override
     public ConsistencyCheckJobItemContext buildJobItemContext(final ConsistencyCheckJobConfiguration jobConfig, final int shardingItem,
