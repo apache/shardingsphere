@@ -44,11 +44,11 @@ public final class IncrementalTaskPositionManager {
     
     private final DatabaseType databaseType;
     
-    private final DialectIncrementalPositionManager positionInitializer;
+    private final DialectIncrementalPositionManager dialectPositionManager;
     
     public IncrementalTaskPositionManager(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        positionInitializer = DatabaseTypedSPILoader.getService(DialectIncrementalPositionManager.class, databaseType);
+        dialectPositionManager = DatabaseTypedSPILoader.getService(DialectIncrementalPositionManager.class, databaseType);
     }
     
     /**
@@ -68,7 +68,7 @@ public final class IncrementalTaskPositionManager {
                 return position.get();
             }
         }
-        return positionInitializer.init(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig()), dumperContext.getJobId());
+        return dialectPositionManager.init(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig()), dumperContext.getJobId());
     }
     
     /**
@@ -82,11 +82,11 @@ public final class IncrementalTaskPositionManager {
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup position, database type: {}, pipeline data source type: {}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
-            destroyPosition(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig, positionInitializer);
+            destroyPosition(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig, dialectPositionManager);
         } else if (pipelineDataSourceConfig instanceof StandardPipelineDataSourceConfiguration) {
-            destroyPosition(jobId, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig, positionInitializer);
+            destroyPosition(jobId, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig, dialectPositionManager);
         }
-        log.info("destroyPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        log.info("Destroy position cost {} ms.", System.currentTimeMillis() - startTimeMillis);
     }
     
     private void destroyPosition(final String jobId,
