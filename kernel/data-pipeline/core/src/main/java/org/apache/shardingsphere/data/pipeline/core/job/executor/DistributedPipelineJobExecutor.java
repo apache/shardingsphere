@@ -54,6 +54,11 @@ public final class DistributedPipelineJobExecutor {
     @Getter
     private final PipelineJobRunnerManager jobRunnerManager = new PipelineJobRunnerManager();
     
+    /**
+     * Execute job.
+     * 
+     * @param shardingContext sharding context
+     */
     @SuppressWarnings("unchecked")
     public void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
