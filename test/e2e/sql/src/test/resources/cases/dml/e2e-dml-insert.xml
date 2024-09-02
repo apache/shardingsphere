@@ -233,4 +233,28 @@
     <test-case sql="/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=encrypt_ds_0 */INSERT INTO t_order_0 values (1, 1, 'ok', 1, 'mark', '2021-01-01')" db-types="MySQL,PostgreSQL" scenario-types="sharding_and_encrypt">
         <assertion expected-data-file="insert_into_t_order_0.xml" />
     </test-case>
+    
+    <test-case sql="INSERT INTO t_single values (?, ?)" db-types="MySQL" scenario-types="db">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_single_with_generate_key_column.xml" >
+            <destroy-sql sql="DELETE FROM t_single WHERE id = 1" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="INSERT INTO t_single(Id, Name) values (?, ?)" db-types="MySQL" scenario-types="db">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_single_with_generate_key_column.xml" >
+            <destroy-sql sql="DELETE FROM t_single WHERE id = 1" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="INSERT INTO t_single(id, name) values (?, ?)" db-types="MySQL" scenario-types="db">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_single_with_generate_key_column.xml" >
+            <destroy-sql sql="DELETE FROM t_single WHERE id = 1" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="INSERT INTO t_single(ID, NAME) values (?, ?)" db-types="MySQL" scenario-types="db">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_single_with_generate_key_column.xml" >
+            <destroy-sql sql="DELETE FROM t_single WHERE id = 1" />
+        </assertion>
+    </test-case>
 </e2e-test-cases>

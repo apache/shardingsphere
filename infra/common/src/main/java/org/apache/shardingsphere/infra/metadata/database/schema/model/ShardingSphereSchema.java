@@ -203,6 +203,16 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Get visible column names and indexes via table.
+     *
+     * @param tableName table name
+     * @return visible column names and indexes
+     */
+    public Map<String, Integer> getVisibleColumnNamesAndIndexes(final String tableName) {
+        return containsTable(tableName) ? getTable(tableName).getVisibleColumnsAndIndexes() : Collections.emptyMap();
+    }
+    
+    /**
      *  Schema is empty or not.
      * @return true if tables and views are all empty, else false
      */

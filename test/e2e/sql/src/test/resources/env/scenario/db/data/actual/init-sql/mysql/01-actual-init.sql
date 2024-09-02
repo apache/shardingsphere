@@ -46,6 +46,7 @@ CREATE TABLE db_0.t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) NOT NUL
 CREATE TABLE db_0.t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE db_0.t_product_category (category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level TINYINT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE db_0.t_country (country_id SMALLINT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
+CREATE TABLE db_0.t_single (ID BIGINT PRIMARY KEY, NAME VARCHAR(50));
 CREATE INDEX order_index ON db_0.t_order (order_id);
 
 CREATE TABLE db_1.t_order (order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
