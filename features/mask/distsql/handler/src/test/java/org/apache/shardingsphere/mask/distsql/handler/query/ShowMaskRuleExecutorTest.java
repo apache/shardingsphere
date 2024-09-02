@@ -50,17 +50,9 @@ class ShowMaskRuleExecutorTest {
     
     @BeforeEach
     void setUp() {
-        engine = new DistSQLQueryExecuteEngine(mock(ShowMaskRulesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        MaskRule rule = mock(MaskRule.class);
-        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(rule));
-        return result;
+        ShowMaskRulesStatement showMaskRulesStatement = mock(ShowMaskRulesStatement.class);
+        when(showMaskRulesStatement.getTableName()).thenReturn("T_MASK");
+        engine = new DistSQLQueryExecuteEngine(showMaskRulesStatement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
     @Test
@@ -74,6 +66,16 @@ class ShowMaskRuleExecutorTest {
         assertThat(row.getCell(2), is("user_id"));
         assertThat(row.getCell(3), is("md5"));
         assertThat(row.getCell(4), is(""));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
+        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(rule));
+        return result;
     }
     
     private MaskRuleConfiguration getRuleConfiguration() {

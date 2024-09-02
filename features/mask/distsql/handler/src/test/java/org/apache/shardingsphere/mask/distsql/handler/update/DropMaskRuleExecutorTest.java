@@ -61,14 +61,14 @@ class DropMaskRuleExecutorTest {
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        MaskRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement(false, "t_mask"));
+        MaskRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement(false, "T_MASK"));
         assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
         assertTrue(toBeDroppedRuleConfig.getMaskAlgorithms().isEmpty());
     }
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithIfExists() {
-        DropMaskRuleStatement statement = createSQLStatement(true, "t_user");
+        DropMaskRuleStatement statement = createSQLStatement(true, "T_USER");
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         executor.setRule(rule);

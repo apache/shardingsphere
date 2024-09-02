@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
@@ -57,14 +58,15 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     }
     
     private void checkToBeDroppedMaskTableNames(final DropMaskRuleStatement sqlStatement) {
-        Collection<String> currentMaskTableNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> currentMaskTableNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkMustEmpty(notExistedTableNames, () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedTableNames));
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropMaskRuleStatement sqlStatement) {
-        return !Collections.disjoint(rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables());
+        return !Collections.disjoint(
+                rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new)), sqlStatement.getTables());
     }
     
     @Override
@@ -80,7 +82,7 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     }
     
     private void dropRule(final String ruleName) {
-        Optional<MaskTableRuleConfiguration> maskTableRuleConfig = rule.getConfiguration().getTables().stream().filter(each -> each.getName().equals(ruleName)).findAny();
+        Optional<MaskTableRuleConfiguration> maskTableRuleConfig = rule.getConfiguration().getTables().stream().filter(each -> each.getName().equalsIgnoreCase(ruleName)).findAny();
         maskTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(maskTableRuleConfig.get()));
     }
     
