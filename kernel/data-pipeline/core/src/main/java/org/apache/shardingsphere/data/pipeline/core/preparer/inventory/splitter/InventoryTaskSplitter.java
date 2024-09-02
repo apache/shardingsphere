@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.channel.InventoryChannelCrea
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class InventoryTaskSplitter {
     
-    private final PipelineDataSourceWrapper sourceDataSource;
+    private final PipelineDataSource sourceDataSource;
     
     private final InventoryDumperContext dumperContext;
     

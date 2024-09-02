@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.common.metadata.loader;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
@@ -42,11 +42,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StandardPipelineTableMetaDataLoaderTest {
     
-    private PipelineDataSourceWrapper dataSource;
+    private PipelineDataSource dataSource;
     
     @BeforeEach
     void setUp() {
-        dataSource = new PipelineDataSourceWrapper(createHikariDataSource(), TypedSPILoader.getService(DatabaseType.class, "H2"));
+        dataSource = new PipelineDataSource(createHikariDataSource(), TypedSPILoader.getService(DatabaseType.class, "H2"));
     }
     
     private HikariDataSource createHikariDataSource() {

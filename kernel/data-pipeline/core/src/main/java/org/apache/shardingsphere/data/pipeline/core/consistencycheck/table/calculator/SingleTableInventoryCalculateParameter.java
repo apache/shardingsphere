@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
@@ -43,7 +43,7 @@ public final class SingleTableInventoryCalculateParameter {
      * Data source of source side or target side.
      * Do not close it, it will be reused later.
      */
-    private final PipelineDataSourceWrapper dataSource;
+    private final PipelineDataSource dataSource;
     
     private final CaseInsensitiveQualifiedTable table;
     
@@ -67,7 +67,7 @@ public final class SingleTableInventoryCalculateParameter {
     
     private final QueryType queryType;
     
-    public SingleTableInventoryCalculateParameter(final PipelineDataSourceWrapper dataSource, final CaseInsensitiveQualifiedTable table, final List<String> columnNames,
+    public SingleTableInventoryCalculateParameter(final PipelineDataSource dataSource, final CaseInsensitiveQualifiedTable table, final List<String> columnNames,
                                                   final List<PipelineColumnMetaData> uniqueKeys, final Object tableCheckPosition) {
         this.dataSource = dataSource;
         this.table = table;

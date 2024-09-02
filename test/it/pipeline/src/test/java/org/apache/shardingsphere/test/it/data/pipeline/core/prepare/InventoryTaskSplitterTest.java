@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonCo
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
@@ -124,7 +124,7 @@ class InventoryTaskSplitterTest {
     @Test
     void assertSplitWithMultipleColumnsKey() throws SQLException {
         initUnionPrimaryEnvironment(dumperContext.getCommonContext());
-        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())) {
+        try (PipelineDataSource dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())) {
             List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
             dumperContext.setUniqueKeyColumns(uniqueKeyColumns);
             List<InventoryTask> actual = inventoryTaskSplitter.split(jobItemContext);
@@ -135,7 +135,7 @@ class InventoryTaskSplitterTest {
     @Test
     void assertSplitWithoutPrimaryAndUniqueIndex() throws SQLException {
         initNoPrimaryEnvironment(dumperContext.getCommonContext());
-        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())) {
+        try (PipelineDataSource dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())) {
             List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
             assertTrue(uniqueKeyColumns.isEmpty());
             List<InventoryTask> inventoryTasks = inventoryTaskSplitter.split(jobItemContext);

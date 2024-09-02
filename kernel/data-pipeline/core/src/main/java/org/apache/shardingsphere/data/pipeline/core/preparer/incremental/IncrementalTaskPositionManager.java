@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfigurati
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
@@ -92,7 +92,7 @@ public final class IncrementalTaskPositionManager {
     private void destroyPosition(final String jobId,
                                  final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig, final DialectIncrementalPositionManager positionInitializer) throws SQLException {
         for (DataSourcePoolProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(pipelineDataSourceConfig.getRootConfig()).values()) {
-            try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(each), databaseType)) {
+            try (PipelineDataSource dataSource = new PipelineDataSource(DataSourcePoolCreator.create(each), databaseType)) {
                 positionInitializer.destroy(dataSource, jobId);
             }
         }
@@ -101,7 +101,7 @@ public final class IncrementalTaskPositionManager {
     private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig,
                                  final DialectIncrementalPositionManager positionInitializer) throws SQLException {
         try (
-                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
+                PipelineDataSource dataSource = new PipelineDataSource(
                         DataSourcePoolCreator.create((DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration()), databaseType)) {
             positionInitializer.destroy(dataSource, jobId);
         }

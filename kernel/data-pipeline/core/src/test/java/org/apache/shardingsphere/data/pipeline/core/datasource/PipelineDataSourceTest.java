@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class PipelineDataSourceWrapperTest {
+class PipelineDataSourceTest {
     
     private static final String CLIENT_USERNAME = "username";
     
@@ -74,7 +74,7 @@ class PipelineDataSourceWrapperTest {
     
     @Test
     void assertGetConnection() throws SQLException {
-        PipelineDataSourceWrapper dataSourceWrapper = new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        PipelineDataSource dataSourceWrapper = new PipelineDataSource(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         assertThat(dataSourceWrapper.getConnection(), is(connection));
         assertThat(dataSourceWrapper.getConnection(CLIENT_USERNAME, CLIENT_PASSWORD), is(connection));
         assertGetLogWriter(dataSourceWrapper.getLogWriter());
@@ -102,12 +102,12 @@ class PipelineDataSourceWrapperTest {
     @Test
     void assertSetLoginTimeoutFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLoginTimeout(LOGIN_TIMEOUT);
-        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).setLoginTimeout(LOGIN_TIMEOUT));
+        assertThrows(SQLException.class, () -> new PipelineDataSource(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).setLoginTimeout(LOGIN_TIMEOUT));
     }
     
     @Test
     void assertSetLogWriterFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLogWriter(printWriter);
-        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).setLogWriter(printWriter));
+        assertThrows(SQLException.class, () -> new PipelineDataSource(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).setLogWriter(printWriter));
     }
 }

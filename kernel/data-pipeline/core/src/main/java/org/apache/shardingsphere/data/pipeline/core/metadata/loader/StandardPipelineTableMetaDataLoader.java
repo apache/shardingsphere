@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCheckUtils;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class StandardPipelineTableMetaDataLoader implements PipelineTableMetaDataLoader {
     
-    private final PipelineDataSourceWrapper dataSource;
+    private final PipelineDataSource dataSource;
     
     private final Map<CaseInsensitiveIdentifier, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.DataChangeType;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.MetaData;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
@@ -59,7 +59,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     
     public DataSourceRecordConsumer(final DataSource dataSource, final DatabaseType databaseType) {
         this.dataSource = dataSource;
-        loader = new StandardPipelineTableMetaDataLoader(new PipelineDataSourceWrapper(dataSource, databaseType));
+        loader = new StandardPipelineTableMetaDataLoader(new PipelineDataSource(dataSource, databaseType));
     }
     
     @Override
