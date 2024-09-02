@@ -68,6 +68,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     private final List<String> insertColumnNames;
     
+    private final Map<String, Integer> insertColumnNamesAndIndexes;
+    
     private final List<List<ExpressionSegment>> valueExpressions;
     
     @Getter
@@ -75,8 +77,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     @Getter
     private final List<String> columnNames;
-    
-    private final Map<String, Integer> columnNamesAndIndexes;
     
     @Getter
     private List<InsertValueContext> insertValueContexts;
@@ -103,11 +103,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
         columnNames = containsInsertColumns() ? insertColumnNames
                 : Optional.ofNullable(sqlStatement.getTable()).map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
-        columnNamesAndIndexes = createColumnNamesAndIndexes(sqlStatement, schema, insertColumnNames);
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(columnNamesAndIndexes, insertValueContexts, params).orElse(null);
+        insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(sqlStatement, schema, insertColumnNames);
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
     }
     
-    private Map<String, Integer> createColumnNamesAndIndexes(final InsertStatement sqlStatement, final ShardingSphereSchema schema, final List<String> insertColumnNames) {
+    private Map<String, Integer> createInsertColumnNamesAndIndexes(final InsertStatement sqlStatement, final ShardingSphereSchema schema, final List<String> insertColumnNames) {
         if (containsInsertColumns()) {
             Map<String, Integer> result = new CaseInsensitiveMap<>(insertColumnNames.size(), 1F);
             int index = 0;
@@ -116,7 +116,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
             }
             return result;
         }
-        return null == sqlStatement.getTable() ? Collections.emptyMap() : schema.getVisibleColumnNamesAndIndexes(sqlStatement.getTable().getTableName().getIdentifier().getValue());
+        return Collections.emptyMap();
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> params, final AtomicInteger paramsOffset, final List<List<ExpressionSegment>> valueExpressions) {
@@ -290,6 +290,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         insertSelectContext = getInsertSelectContext(metaData, params, parametersOffset, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
         ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
-        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(columnNamesAndIndexes, insertValueContexts, params).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
     }
 }
