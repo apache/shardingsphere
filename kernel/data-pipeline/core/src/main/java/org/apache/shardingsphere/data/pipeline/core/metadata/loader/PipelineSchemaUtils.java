@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -42,7 +42,7 @@ public final class PipelineSchemaUtils {
      */
     @SneakyThrows(SQLException.class)
     public static String getDefaultSchema(final PipelineDataSourceConfiguration dataSourceConfig) {
-        try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(dataSourceConfig)) {
+        try (PipelineDataSource dataSource = new PipelineDataSource(dataSourceConfig)) {
             try (Connection connection = dataSource.getConnection()) {
                 String result = connection.getSchema();
                 log.info("get default schema {}", result);

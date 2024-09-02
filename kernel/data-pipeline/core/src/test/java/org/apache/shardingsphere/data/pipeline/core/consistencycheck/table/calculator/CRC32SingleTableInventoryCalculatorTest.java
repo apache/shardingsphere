@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 
 import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -56,7 +56,7 @@ class CRC32SingleTableInventoryCalculatorTest {
     private SingleTableInventoryCalculateParameter parameter;
     
     @Mock
-    private PipelineDataSourceWrapper pipelineDataSource;
+    private PipelineDataSource pipelineDataSource;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Connection connection;

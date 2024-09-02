@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.common;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
@@ -56,7 +56,7 @@ class PipelineDataSourceManagerTest {
         try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
             DataSource actual = dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
-            assertThat(actual, instanceOf(PipelineDataSourceWrapper.class));
+            assertThat(actual, instanceOf(PipelineDataSource.class));
         }
     }
     

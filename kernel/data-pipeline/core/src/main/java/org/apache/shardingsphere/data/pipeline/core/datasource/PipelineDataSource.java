@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class PipelineDataSourceWrapper implements DataSource, AutoCloseable {
+public final class PipelineDataSource implements DataSource, AutoCloseable {
     
     private final DataSource dataSource;
     
@@ -50,7 +50,7 @@ public final class PipelineDataSourceWrapper implements DataSource, AutoCloseabl
     private final AtomicBoolean closed = new AtomicBoolean(false);
     
     @SneakyThrows(SQLException.class)
-    public PipelineDataSourceWrapper(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
+    public PipelineDataSource(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
         dataSource = TypedSPILoader.getService(PipelineDataSourceCreator.class, pipelineDataSourceConfig.getType()).create(pipelineDataSourceConfig.getDataSourceConfiguration());
         databaseType = pipelineDataSourceConfig.getDatabaseType();
     }

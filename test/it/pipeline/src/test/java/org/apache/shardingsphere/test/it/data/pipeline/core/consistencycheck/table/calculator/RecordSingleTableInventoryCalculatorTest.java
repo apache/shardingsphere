@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Reco
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
@@ -51,11 +51,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RecordSingleTableInventoryCalculatorTest {
     
-    private static PipelineDataSourceWrapper dataSource;
+    private static PipelineDataSource dataSource;
     
     @BeforeAll
     static void setUp() throws Exception {
-        dataSource = new PipelineDataSourceWrapper(createHikariDataSource("calc_" + RandomStringUtils.randomAlphanumeric(9)), TypedSPILoader.getService(DatabaseType.class, "H2"));
+        dataSource = new PipelineDataSource(createHikariDataSource("calc_" + RandomStringUtils.randomAlphanumeric(9)), TypedSPILoader.getService(DatabaseType.class, "H2"));
         createTableAndInitData(dataSource);
     }
     
@@ -76,7 +76,7 @@ class RecordSingleTableInventoryCalculatorTest {
         return result;
     }
     
-    private static void createTableAndInitData(final PipelineDataSourceWrapper dataSource) throws SQLException {
+    private static void createTableAndInitData(final PipelineDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "CREATE TABLE t_order (user_id INT NOT NULL, order_id INT, status VARCHAR(12), PRIMARY KEY (user_id, order_id))";
             connection.createStatement().execute(sql);
@@ -123,7 +123,7 @@ class RecordSingleTableInventoryCalculatorTest {
         assertThat(actual.getMaxUniqueKeyValue().get(), is(9));
     }
     
-    private SingleTableInventoryCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final Object dataCheckPosition) {
+    private SingleTableInventoryCalculateParameter generateParameter(final PipelineDataSource dataSource, final Object dataCheckPosition) {
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true));
         return new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"), Collections.emptyList(), uniqueKeys, dataCheckPosition);
     }
