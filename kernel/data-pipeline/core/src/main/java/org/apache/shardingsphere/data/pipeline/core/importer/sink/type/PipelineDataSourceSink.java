@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.DataRecordGroupEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.GroupedDataRecord;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -73,17 +73,17 @@ public final class PipelineDataSourceSink implements PipelineSink {
     }
     
     @Override
-    public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
+    public PipelineJobUpdateProgress write(final String ackId, final Collection<Record> records) {
         List<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
         if (dataRecords.isEmpty()) {
-            return new PipelineJobProgressUpdatedParameter(0);
+            return new PipelineJobUpdateProgress(0);
         }
         for (GroupedDataRecord each : groupEngine.group(dataRecords)) {
             batchWrite(each.getDeleteDataRecords());
             batchWrite(each.getInsertDataRecords());
             batchWrite(each.getUpdateDataRecords());
         }
-        return new PipelineJobProgressUpdatedParameter((int) dataRecords.stream().filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count());
+        return new PipelineJobUpdateProgress((int) dataRecords.stream().filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count());
     }
     
     @SuppressWarnings("BusyWait")

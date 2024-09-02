@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Pipeline job process update parameter.
+ * Pipeline job update progress.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PipelineJobProgressUpdatedParameter {
+public final class PipelineJobUpdateProgress {
     
     private final int processedRecordsCount;
 }
