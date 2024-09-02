@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc;
 
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -31,7 +32,7 @@ class CDCJobIdTest {
     
     @Test
     void assertParseJobType() {
-        String jobId = PipelineJobIdUtils.marshal(new CDCJobId(new PipelineContextKey("sharding_db", InstanceType.PROXY), Collections.singletonList("foo"), true));
+        String jobId = PipelineJobIdUtils.marshal(new CDCJobId(new PipelineContextKey("sharding_db", InstanceType.PROXY), Collections.singletonList("foo"), true, CDCSinkType.SOCKET));
         assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(CDCJobType.class));
     }
 }

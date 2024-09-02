@@ -105,7 +105,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     private long getRecordsCount() {
         Map<Integer, TransmissionJobItemProgress> jobProgress = new TransmissionJobManager(new MigrationJobType()).getJobProgress(jobConfig);
-        return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(TransmissionJobItemProgress::getProcessedRecordsCount).sum();
+        return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(TransmissionJobItemProgress::getInventoryRecordsCount).sum();
     }
     
     private boolean checkTableInventoryDataUnmatchedAndBreak(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,

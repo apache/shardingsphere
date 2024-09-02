@@ -103,7 +103,7 @@ public final class ConsistencyCheckDataBuilder {
             return new Date(((Date) value).getTime() - 1L);
         }
         if (value instanceof Timestamp) {
-            return new Timestamp(((Timestamp) value).getTime() - 1L);
+            return new Timestamp(((Timestamp) value).getTime() - 1000L);
         }
         if (value instanceof int[]) {
             int[] result = ((int[]) value).clone();

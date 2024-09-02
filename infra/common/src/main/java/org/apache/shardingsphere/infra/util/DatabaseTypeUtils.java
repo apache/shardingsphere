@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc;
+package org.apache.shardingsphere.infra.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
- * CDC job id.
+ * Database type utility class.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CDCJobId implements PipelineJobId {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseTypeUtils {
     
-    private final PipelineJobType jobType = new CDCJobType();
-    
-    private final PipelineContextKey contextKey;
-    
-    private final List<String> schemaTableNames;
-    
-    private final boolean full;
-    
-    private final CDCSinkType sinkType;
+    /**
+     * Get trunk database type.
+     *
+     * @param databaseType database type
+     * @return trunk database type
+     */
+    public static DatabaseType getTrunkDatabaseType(final DatabaseType databaseType) {
+        return databaseType.getTrunkDatabaseType().orElse(databaseType);
+    }
 }

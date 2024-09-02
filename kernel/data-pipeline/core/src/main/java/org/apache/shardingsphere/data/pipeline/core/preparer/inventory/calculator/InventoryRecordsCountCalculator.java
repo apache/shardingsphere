@@ -20,14 +20,15 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculat
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mariadb.type.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.DatabaseTypeUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -57,7 +58,7 @@ public final class InventoryRecordsCountCalculator {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType());
         Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
         try {
-            if (sql.isPresent()) {
+            if (sql.isPresent() && dumperContext.getCommonContext().getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration) {
                 DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, dataSource.getDatabaseType().getType());
                 long result = getEstimatedCount(databaseType, dataSource, sql.get());
                 return result > 0L ? result : getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
@@ -73,7 +74,7 @@ public final class InventoryRecordsCountCalculator {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(estimatedCountSQL)) {
-            if (databaseType instanceof MySQLDatabaseType || databaseType instanceof MariaDBDatabaseType) {
+            if (DatabaseTypeUtils.getTrunkDatabaseType(databaseType) instanceof MySQLDatabaseType) {
                 preparedStatement.setString(1, connection.getCatalog());
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
