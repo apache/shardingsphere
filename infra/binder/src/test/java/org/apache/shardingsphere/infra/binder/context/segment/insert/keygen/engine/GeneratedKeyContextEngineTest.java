@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.engine;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
@@ -141,7 +142,7 @@ class GeneratedKeyContextEngineTest {
         InsertValueContext insertValueContext = new InsertValueContext(expressionSegments, Collections.emptyList(), 0);
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, expressionSegments));
         Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schema)
-                .createGenerateKeyContext(Collections.singletonMap("id", 0), Collections.singletonList(insertValueContext), Collections.singletonList(1));
+                .createGenerateKeyContext(new CaseInsensitiveMap<>(Collections.singletonMap("id", 0)), Collections.singletonList(insertValueContext), Collections.singletonList(1));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
     }
