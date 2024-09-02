@@ -146,7 +146,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         YamlCDCJobConfiguration result = new YamlCDCJobConfiguration();
         List<String> schemaTableNames = param.getSchemaTableNames();
         Collections.sort(schemaTableNames);
-        result.setJobId(PipelineJobIdUtils.marshal(new CDCJobId(contextKey, schemaTableNames, param.isFull())));
+        result.setJobId(PipelineJobIdUtils.marshal(new CDCJobId(contextKey, schemaTableNames, param.isFull(), sinkType)));
         result.setDatabaseName(param.getDatabaseName());
         result.setSchemaTableNames(schemaTableNames);
         result.setFull(param.isFull());
