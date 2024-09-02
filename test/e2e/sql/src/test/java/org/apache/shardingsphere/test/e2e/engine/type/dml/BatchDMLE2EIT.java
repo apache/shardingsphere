@@ -49,12 +49,15 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
             return;
         }
         init(testParam);
-        int[] actualUpdateCounts;
-        try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
-            actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
+        try {
+            int[] actualUpdateCounts;
+            try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+                actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
+            }
+            assertDataSet(actualUpdateCounts, testParam);
+        } finally {
+            tearDown(testParam);
         }
-        assertDataSet(actualUpdateCounts, testParam);
-        tearDown(testParam);
     }
     
     void init(final CaseTestParameter testParam) throws SQLException, IOException, JAXBException {
@@ -112,8 +115,9 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
             }
             preparedStatement.clearBatch();
             assertThat(preparedStatement.executeBatch().length, is(0));
+        } finally {
+            tearDown(testParam);
         }
-        tearDown(testParam);
     }
     
     private static boolean isEnabled() {

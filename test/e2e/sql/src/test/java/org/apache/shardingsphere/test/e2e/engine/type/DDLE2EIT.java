@@ -83,8 +83,9 @@ class DDLE2EIT implements E2EEnvironmentAware {
                 executeUpdateForPreparedStatement(context, connection);
             }
             assertTableMetaData(testParam, context);
+        } finally {
+            tearDown(context);
         }
-        tearDown(context);
     }
     
     private void executeUpdateForStatement(final E2ETestContext context, final Connection connection) throws SQLException {
@@ -118,8 +119,9 @@ class DDLE2EIT implements E2EEnvironmentAware {
                 executeForPreparedStatement(context, connection);
             }
             assertTableMetaData(testParam, context);
+        } finally {
+            tearDown(context);
         }
-        tearDown(context);
     }
     
     private void executeForStatement(final E2ETestContext context, final Connection connection) throws SQLException {

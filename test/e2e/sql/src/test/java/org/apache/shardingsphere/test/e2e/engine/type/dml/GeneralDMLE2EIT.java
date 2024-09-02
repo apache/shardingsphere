@@ -51,14 +51,17 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         }
         E2ETestContext context = new E2ETestContext(testParam);
         init(testParam);
-        int actualUpdateCount;
-        try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLExecuteType.LITERAL == context.getSqlExecuteType()
-                    ? executeUpdateForStatement(context, connection)
-                    : executeUpdateForPreparedStatement(context, connection);
+        try {
+            int actualUpdateCount;
+            try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+                actualUpdateCount = SQLExecuteType.LITERAL == context.getSqlExecuteType()
+                        ? executeUpdateForStatement(context, connection)
+                        : executeUpdateForPreparedStatement(context, connection);
+            }
+            assertDataSet(context, actualUpdateCount, testParam);
+        } finally {
+            tearDown(context);
         }
-        assertDataSet(context, actualUpdateCount, testParam);
-        tearDown(context);
     }
     
     void init(final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
@@ -96,14 +99,17 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         }
         E2ETestContext context = new E2ETestContext(testParam);
         init(testParam);
-        int actualUpdateCount;
-        try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLExecuteType.LITERAL == context.getSqlExecuteType()
-                    ? executeForStatement(context, connection)
-                    : executeForPreparedStatement(context, connection);
+        try {
+            int actualUpdateCount;
+            try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
+                actualUpdateCount = SQLExecuteType.LITERAL == context.getSqlExecuteType()
+                        ? executeForStatement(context, connection)
+                        : executeForPreparedStatement(context, connection);
+            }
+            assertDataSet(context, actualUpdateCount, testParam);
+        } finally {
+            tearDown(context);
         }
-        assertDataSet(context, actualUpdateCount, testParam);
-        tearDown(context);
     }
     
     private int executeForStatement(final E2ETestContext context, final Connection connection) throws SQLException {

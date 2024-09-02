@@ -70,8 +70,11 @@ class RALE2EIT implements E2EEnvironmentAware {
         }
         E2ETestContext context = new E2ETestContext(testParam);
         init(context);
-        assertExecute(context);
-        tearDown(context);
+        try {
+            assertExecute(context);
+        } finally {
+            tearDown(context);
+        }
     }
     
     private void assertExecute(final E2ETestContext context) throws SQLException {
