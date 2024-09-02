@@ -46,7 +46,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class TransmissionTasksRunner implements PipelineTasksRunner {
+public final class TransmissionTasksRunner implements PipelineTasksRunner {
     
     @Getter
     private final TransmissionJobItemContext jobItemContext;
