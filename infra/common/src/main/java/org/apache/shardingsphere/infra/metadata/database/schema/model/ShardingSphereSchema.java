@@ -208,7 +208,7 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      * @return visible column names and indexes
      */
-    public Map<String, Integer> getVisibleColumnNamesAndIndex(final String tableName) {
+    public Map<String, Integer> getVisibleColumnNamesAndIndexes(final String tableName) {
         return containsTable(tableName) ? getTable(tableName).getVisibleColumnsAndIndexes() : Collections.emptyMap();
     }
     
