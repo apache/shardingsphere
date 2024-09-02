@@ -109,7 +109,7 @@ public final class GeneratedKeyContextEngine {
     }
     
     private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
-        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnNamesAndIndex(insertStatement.getTable().getTableName().getIdentifier().getValue()).get(generateKeyColumnName)
+        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnNamesAndIndexes(insertStatement.getTable().getTableName().getIdentifier().getValue()).get(generateKeyColumnName)
                 : insertColumnNamesAndIndexes.get(generateKeyColumnName);
     }
 }

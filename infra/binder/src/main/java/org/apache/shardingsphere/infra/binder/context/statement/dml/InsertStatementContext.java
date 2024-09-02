@@ -116,7 +116,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
             }
             return result;
         }
-        return null == sqlStatement.getTable() ? Collections.emptyMap() : schema.getVisibleColumnNamesAndIndex(sqlStatement.getTable().getTableName().getIdentifier().getValue());
+        return null == sqlStatement.getTable() ? Collections.emptyMap() : schema.getVisibleColumnNamesAndIndexes(sqlStatement.getTable().getTableName().getIdentifier().getValue());
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> params, final AtomicInteger paramsOffset, final List<List<ExpressionSegment>> valueExpressions) {

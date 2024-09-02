@@ -96,7 +96,7 @@ class GeneratedKeyContextEngineTest {
     private void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl1"))));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
-        assertFalse(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyList(),
+        assertFalse(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyMap(),
                 Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
     
@@ -141,7 +141,7 @@ class GeneratedKeyContextEngineTest {
         InsertValueContext insertValueContext = new InsertValueContext(expressionSegments, Collections.emptyList(), 0);
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, expressionSegments));
         Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schema)
-                .createGenerateKeyContext(Collections.singletonList("id"), Collections.singletonList(insertValueContext), Collections.singletonList(1));
+                .createGenerateKeyContext(Collections.singletonMap("id", 0), Collections.singletonList(insertValueContext), Collections.singletonList(1));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
     }
@@ -181,13 +181,13 @@ class GeneratedKeyContextEngineTest {
         List<InsertValueContext> insertValueContexts = insertStatement.getValues().stream()
                 .map(each -> new InsertValueContext(each.getValues(), Collections.emptyList(), 0)).collect(Collectors.toList());
         Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schema)
-                .createGenerateKeyContext(Collections.singletonList("id"), insertValueContexts, Collections.singletonList(1));
+                .createGenerateKeyContext(Collections.singletonMap("id", 0), insertValueContexts, Collections.singletonList(1));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
         Iterator<Comparable<?>> generatedValuesIterator = actual.get().getGeneratedValues().iterator();
         assertThat(generatedValuesIterator.next(), is(1));
         assertThat(generatedValuesIterator.next(), is(100));
         assertThat(generatedValuesIterator.next(), is("value"));
-        assertTrue(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyList(), Collections.emptyList(), Collections.singletonList(1)).isPresent());
+        assertTrue(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyMap(), Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
 }
