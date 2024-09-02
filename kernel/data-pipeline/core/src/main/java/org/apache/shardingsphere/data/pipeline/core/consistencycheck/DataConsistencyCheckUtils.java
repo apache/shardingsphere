@@ -86,7 +86,10 @@ public final class DataConsistencyCheckUtils {
         if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
             return ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
         }
-        // TODO Use different match strategy for heterogeneous database or not
+        /*
+         * TODO To avoid precision inconsistency issues, the current comparison of Timestamp columns across heterogeneous databases ignores `milliseconds` precision. In the future, different
+         * strategies with different database types could be considered.
+         */
         if (thisColumnValue instanceof Timestamp && thatColumnValue instanceof Timestamp) {
             return ((Timestamp) thisColumnValue).getTime() / 1000L * 1000L == ((Timestamp) thatColumnValue).getTime() / 1000L * 1000L;
         }
