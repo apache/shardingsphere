@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.type.PipelineDataSourceSink;
@@ -140,8 +140,8 @@ public final class MigrationJobItemContext implements TransmissionJobItemContext
     }
     
     @Override
-    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
-        processedRecordsCount.addAndGet(param.getProcessedRecordsCount());
+    public void onProgressUpdated(final PipelineJobUpdateProgress updateProgress) {
+        processedRecordsCount.addAndGet(updateProgress.getProcessedRecordsCount());
         PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
     }
     

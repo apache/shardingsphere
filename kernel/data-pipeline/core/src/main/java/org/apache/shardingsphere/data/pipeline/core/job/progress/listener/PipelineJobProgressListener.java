@@ -23,9 +23,9 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.listener;
 public interface PipelineJobProgressListener {
     
     /**
-     * Emit on progress updated.
+     * Emit on pipeline job progress updated.
      *
-     * @param param process update parameter
+     * @param updateProgress pipeline job update process
      */
-    void onProgressUpdated(PipelineJobProgressUpdatedParameter param);
+    void onProgressUpdated(PipelineJobUpdateProgress updateProgress);
 }

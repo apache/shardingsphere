@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 
 import java.util.Collection;
@@ -61,8 +61,8 @@ public final class ConsistencyCheckJobItemProgressContext implements PipelineJob
     private final String sourceDatabaseType;
     
     @Override
-    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
-        checkedRecordsCount.addAndGet(param.getProcessedRecordsCount());
+    public void onProgressUpdated(final PipelineJobUpdateProgress updateProgress) {
+        checkedRecordsCount.addAndGet(updateProgress.getProcessedRecordsCount());
         PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
     }
 }

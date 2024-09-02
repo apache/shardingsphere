@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.util.List;
@@ -52,9 +52,9 @@ public final class SingleChannelConsumerImporter extends AbstractPipelineLifecyc
             if (records.isEmpty()) {
                 continue;
             }
-            PipelineJobProgressUpdatedParameter updatedParam = sink.write("", records);
+            PipelineJobUpdateProgress updateProgress = sink.write("", records);
             channel.ack(records);
-            jobProgressListener.onProgressUpdated(updatedParam);
+            jobProgressListener.onProgressUpdated(updateProgress);
             if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                 break;
             }

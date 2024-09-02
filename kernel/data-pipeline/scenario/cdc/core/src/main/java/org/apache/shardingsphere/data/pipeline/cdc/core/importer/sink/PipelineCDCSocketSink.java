@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertU
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -70,20 +70,20 @@ public final class PipelineCDCSocketSink implements PipelineSink {
     }
     
     @Override
-    public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
+    public PipelineJobUpdateProgress write(final String ackId, final Collection<Record> records) {
         if (records.isEmpty()) {
-            return new PipelineJobProgressUpdatedParameter(0);
+            return new PipelineJobUpdateProgress(0);
         }
         while (!channel.isWritable() && channel.isActive()) {
             doAwait();
         }
         if (!channel.isActive()) {
-            return new PipelineJobProgressUpdatedParameter(0);
+            return new PipelineJobUpdateProgress(0);
         }
         Collection<DataRecordResult.Record> resultRecords = getResultRecords(records);
         DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(resultRecords).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseUtils.succeed("", ResponseCase.DATA_RECORD_RESULT, dataRecordResult));
-        return new PipelineJobProgressUpdatedParameter(resultRecords.size());
+        return new PipelineJobUpdateProgress(resultRecords.size());
     }
     
     @SneakyThrows(InterruptedException.class)

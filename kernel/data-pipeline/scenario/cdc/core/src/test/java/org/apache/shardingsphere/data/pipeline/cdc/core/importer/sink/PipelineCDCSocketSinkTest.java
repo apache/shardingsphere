@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +44,7 @@ class PipelineCDCSocketSinkTest {
         ShardingSphereDatabase mockDatabase = mock(ShardingSphereDatabase.class);
         when(mockDatabase.getName()).thenReturn("test");
         try (PipelineCDCSocketSink sink = new PipelineCDCSocketSink(mockChannel, mockDatabase, Collections.singletonList("test.t_order"))) {
-            PipelineJobProgressUpdatedParameter actual = sink.write("ack", Collections.singletonList(new FinishedRecord(new IngestPlaceholderPosition())));
+            PipelineJobUpdateProgress actual = sink.write("ack", Collections.singletonList(new FinishedRecord(new IngestPlaceholderPosition())));
             assertThat(actual.getProcessedRecordsCount(), is(0));
             actual = sink.write("ack", Collections.singletonList(new DataRecord(PipelineSQLOperationType.DELETE, "t_order", new IngestPlaceholderPosition(), 1)));
             assertThat(actual.getProcessedRecordsCount(), is(1));
