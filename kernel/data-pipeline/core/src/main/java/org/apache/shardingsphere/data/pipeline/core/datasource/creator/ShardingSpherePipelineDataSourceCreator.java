@@ -42,6 +42,7 @@ import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigura
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -83,6 +84,12 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     
     private void updateConfigurationProperties(final YamlRootConfiguration yamlRootConfig) {
         Properties newProps = new Properties();
+        for (String each : Arrays.asList(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), ConfigurationPropertyKey.SQL_SHOW.getKey())) {
+            Object value = yamlRootConfig.getProps().get(each);
+            if (null != value) {
+                newProps.put(each, value);
+            }
+        }
         newProps.put(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), String.valueOf(Boolean.FALSE));
         // Set a large enough value to enable ConnectionMode.MEMORY_STRICTLY, make sure streaming query work.
         newProps.put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
