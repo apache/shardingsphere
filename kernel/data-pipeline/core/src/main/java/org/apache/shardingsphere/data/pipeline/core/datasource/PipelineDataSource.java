@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
- * Pipeline data source wrapper.
+ * Pipeline data source.
  */
 @RequiredArgsConstructor
 @Slf4j
