@@ -31,9 +31,9 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProg
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
@@ -57,8 +57,6 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
     
     private final PipelineJobType jobType;
     
-    private final PipelineJobManager jobManager;
-    
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
     public TransmissionTasksRunner(final TransmissionJobItemContext jobItemContext) {
@@ -66,8 +64,57 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         inventoryTasks = jobItemContext.getInventoryTasks();
         incrementalTasks = jobItemContext.getIncrementalTasks();
         jobType = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType());
-        jobManager = new PipelineJobManager(jobType);
         jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+    }
+    
+    @Override
+    public void start() {
+        ShardingSpherePreconditions.checkState(!jobItemContext.isStopping(), PipelineJobCancelingException::new);
+        jobItemManager.persistProgress(jobItemContext);
+        if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
+            log.info("All inventory tasks finished.");
+            executeIncrementalTasks();
+        } else {
+            executeInventoryTasks();
+        }
+    }
+    
+    private synchronized void executeInventoryTasks() {
+        updateJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
+        Collection<CompletableFuture<?>> futures = new LinkedList<>();
+        for (PipelineTask each : inventoryTasks) {
+            if (each.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
+                continue;
+            }
+            futures.addAll(each.start());
+        }
+        ExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
+    }
+    
+    private synchronized void executeIncrementalTasks() {
+        ShardingSpherePreconditions.checkState(!jobItemContext.isStopping(), PipelineJobCancelingException::new);
+        if (incrementalTasks.isEmpty()) {
+            log.info("Incremental tasks are empty, ignore.");
+            return;
+        }
+        if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemContext.getStatus()) {
+            log.info("Incremental tasks had already run, ignore.");
+            return;
+        }
+        updateJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
+        Collection<CompletableFuture<?>> futures = new LinkedList<>();
+        for (PipelineTask each : incrementalTasks) {
+            if (each.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
+                continue;
+            }
+            futures.addAll(each.start());
+        }
+        ExecuteEngine.trigger(futures, new IncrementalExecuteCallback());
+    }
+    
+    private void updateJobItemStatus(final JobStatus jobStatus) {
+        jobItemContext.setStatus(jobStatus);
+        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     @Override
@@ -83,79 +130,18 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         }
     }
     
-    @Override
-    public void start() {
-        if (jobItemContext.isStopping()) {
-            throw new PipelineJobCancelingException();
-        }
-        new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
-                .getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
-        if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
-            log.info("All inventory tasks finished.");
-            executeIncrementalTask();
-        } else {
-            executeInventoryTask();
-        }
-    }
-    
-    private synchronized void executeInventoryTask() {
-        updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
-        Collection<CompletableFuture<?>> futures = new LinkedList<>();
-        for (PipelineTask each : inventoryTasks) {
-            if (each.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
-                continue;
-            }
-            futures.addAll(each.start());
-        }
-        ExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
-    }
-    
-    private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
-        jobItemContext.setStatus(jobStatus);
-        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
-    }
-    
-    private synchronized void executeIncrementalTask() {
-        if (jobItemContext.isStopping()) {
-            throw new PipelineJobCancelingException();
-        }
-        if (incrementalTasks.isEmpty()) {
-            log.info("incrementalTasks empty, ignore");
-            return;
-        }
-        if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemContext.getStatus()) {
-            log.info("job status already EXECUTE_INCREMENTAL_TASK, ignore");
-            return;
-        }
-        updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
-        Collection<CompletableFuture<?>> futures = new LinkedList<>();
-        for (PipelineTask each : incrementalTasks) {
-            if (each.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
-                continue;
-            }
-            futures.addAll(each.start());
-        }
-        ExecuteEngine.trigger(futures, new IncrementalExecuteCallback());
-    }
-    
-    protected void inventorySuccessCallback() {
-        if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
-            log.info("onSuccess, all inventory tasks finished.");
-            PipelineJobProgressPersistService.persistNow(jobItemContext.getJobId(), jobItemContext.getShardingItem());
-            executeIncrementalTask();
-        } else {
-            log.info("onSuccess, inventory tasks not finished");
-        }
-    }
-    
     private final class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {
-            if (jobItemContext.isStopping()) {
-                throw new PipelineJobCancelingException();
+            ShardingSpherePreconditions.checkState(!jobItemContext.isStopping(), PipelineJobCancelingException::new);
+            if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
+                log.info("onSuccess, all inventory tasks finished.");
+                PipelineJobProgressPersistService.persistNow(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+                executeIncrementalTasks();
+            } else {
+                log.info("onSuccess, inventory tasks did not finish.");
             }
-            inventorySuccessCallback();
         }
         
         @Override
@@ -163,7 +149,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         }
     }
     
-    private final class IncrementalExecuteCallback implements ExecuteCallback {
+    private static final class IncrementalExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {
