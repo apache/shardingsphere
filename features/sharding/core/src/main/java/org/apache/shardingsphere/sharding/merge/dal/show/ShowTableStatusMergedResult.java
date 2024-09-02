@@ -75,14 +75,14 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
     
     private BigInteger sum(final Object num1, final Object num2) {
         if (num1 == null || num2 == null){
-            return BigInteger.ZERO;
+            return null;
         }
         return ((BigInteger) num1).add((BigInteger) num2);
     }
     
     private BigInteger avg(final Object sum, final Object number) {
         if (sum == null || number == null){
-            return BigInteger.ZERO;
+            return null;
         }
         return BigInteger.ZERO.equals(number) ? BigInteger.ZERO : ((BigInteger) sum).divide((BigInteger) number);
     }
