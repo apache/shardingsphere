@@ -55,19 +55,6 @@ class ShowMaskRuleExecutorTest {
         engine = new DistSQLQueryExecuteEngine(showMaskRulesStatement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
-    @Test
-    void assertGetRowData() throws SQLException {
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("t_mask"));
-        assertThat(row.getCell(2), is("user_id"));
-        assertThat(row.getCell(3), is("md5"));
-        assertThat(row.getCell(4), is(""));
-    }
-    
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -83,5 +70,18 @@ class ShowMaskRuleExecutorTest {
         MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("t_mask", Collections.singleton(maskColumnRuleConfig));
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
         return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
+    }
+    
+    @Test
+    void assertGetRowData() throws SQLException {
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("t_mask"));
+        assertThat(row.getCell(2), is("user_id"));
+        assertThat(row.getCell(3), is("md5"));
+        assertThat(row.getCell(4), is(""));
     }
 }
