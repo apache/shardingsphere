@@ -208,4 +208,21 @@
     <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
     <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />
     <sql-case id="select_json_value" value="SELECT JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)" db-types="MySQL" />
+    <sql-case id="select_st_difference" value="SELECT ST_Difference(Point(1,1), Point(2,2))" db-types="MySQL" />
+    <sql-case id="select_st_dimension" value="SELECT ST_Dimension(ST_GeomFromText('LineString(1 1,2 2)'))" db-types="MySQL" />
+    <sql-case id="select_st_disjoint" value="SELECT ST_Disjoint(Point(1,1),Point(2,2))" db-types="MySQL" />
+    <sql-case id="select_st_distance" value="SELECT ST_Distance(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(1 1)'))" db-types="MySQL" />
+    <sql-case id="select_st_distance_sphere" value="SELECT ST_Distance_Sphere(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(1 1)'))" db-types="MySQL" />
+    <sql-case id="doris_select_st_distance_sphere" value="select st_distance_sphere(116, 39, 116, 40)" db-types="Doris" />
+    <sql-case id="select_st_endpoint" value="SELECT ST_EndPoint(ST_GeomFromText('LineString(1 1,2 2)'))" db-types="MySQL" />
+    <sql-case id="select_st_envelope" value="SELECT ST_Envelope(ST_GeomFromText('LineString(1 1,2 2)'))" db-types="MySQL" />
+    <sql-case id="select_st_equals" value="SELECT ST_Equals(Point(1,1), Point(2,2))" db-types="MySQL" />
+    <sql-case id="select_st_exteriorring" value="SELECT ST_ExteriorRing(ST_GeomFromText('Polygon((0 0,0 3,3 3,3 0,0 0),(1 1,1 2,2 2,2 1,1 1))'))" db-types="MySQL" />
+    <sql-case id="select_st_frechetdistance" value="SELECT ST_FrechetDistance(ST_GeomFromText('LINESTRING(0 0,0 0,0 0,0 0)'), ST_GeomFromText('LINESTRING(2 2,2 2,2 2,2 2)'))" db-types="MySQL" />
+    <sql-case id="select_st_geohash" value="SELECT ST_GeoHash(180,0,10)" db-types="MySQL" />
+    <sql-case id="select_st_geomcollfromtext" value="SELECT ST_GeomCollFromText('MULTILINESTRING((10 10, 11 11), (9 9, 10 10))')" db-types="MySQL" />
+    <sql-case id="select_st_geometrycollectionfromwkb" value="SELECT ST_GeometryCollectionFromWKB(0x0107000000020000000103000000010000000400000000000000000014400000000000001440000000000000244000000000000014400000000000002440000000000000244000000000000014400000000000001440010100000000000000000024400000000000002440)" db-types="MySQL" />
+    <sql-case id="select_st_geometryn" value="SELECT ST_GeometryN(ST_GeomFromText('GeometryCollection(Point(1 1),LineString(2 2, 3 3))'),1)" db-types="MySQL" />
+    <sql-case id="select_st_geometrytype" value="SELECT ST_GeometryType(ST_GeomFromText('POINT(1 1)'))" db-types="MySQL" />
+    <sql-case id="select_st_geomfromgeojson" value="SELECT ST_GeomFromGeoJSON('{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[102.0, 0.0]}')" db-types="MySQL" />
 </sql-cases>
