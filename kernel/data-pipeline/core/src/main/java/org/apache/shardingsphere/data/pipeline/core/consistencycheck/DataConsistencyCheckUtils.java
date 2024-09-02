@@ -30,6 +30,7 @@ import java.math.RoundingMode;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -84,6 +85,10 @@ public final class DataConsistencyCheckUtils {
         }
         if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
             return ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
+        }
+        // TODO Use different match strategy for heterogeneous database or not
+        if (thisColumnValue instanceof Timestamp && thatColumnValue instanceof Timestamp) {
+            return ((Timestamp) thisColumnValue).getTime() / 1000L * 1000L == ((Timestamp) thatColumnValue).getTime() / 1000L * 1000L;
         }
         if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
             return Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
