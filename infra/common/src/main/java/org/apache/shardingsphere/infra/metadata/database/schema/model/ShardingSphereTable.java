@@ -49,6 +49,8 @@ public final class ShardingSphereTable {
     
     private final List<String> visibleColumns = new ArrayList<>();
     
+    private final Map<String, Integer> visibleColumnsAndIndexes = new CaseInsensitiveMap<>();
+    
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     private final TableType type;
@@ -77,6 +79,7 @@ public final class ShardingSphereTable {
     
     private Map<String, ShardingSphereColumn> createColumns(final Collection<ShardingSphereColumn> columns) {
         Map<String, ShardingSphereColumn> result = new CaseInsensitiveMap<>(columns.size(), 1F);
+        int index = 0;
         for (ShardingSphereColumn each : columns) {
             result.put(each.getName(), each);
             columnNames.add(each.getName());
@@ -85,6 +88,7 @@ public final class ShardingSphereTable {
             }
             if (each.isVisible()) {
                 visibleColumns.add(each.getName());
+                visibleColumnsAndIndexes.put(each.getName(), index++);
             }
         }
         return result;
