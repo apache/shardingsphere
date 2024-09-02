@@ -70,8 +70,11 @@ class RDLE2EIT implements E2EEnvironmentAware {
         }
         E2ETestContext context = new E2ETestContext(testParam);
         init(context);
-        assertExecute(testParam, context);
-        tearDown(context);
+        try {
+            assertExecute(testParam, context);
+        } finally {
+            tearDown(context);
+        }
     }
     
     private void assertExecute(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException {
