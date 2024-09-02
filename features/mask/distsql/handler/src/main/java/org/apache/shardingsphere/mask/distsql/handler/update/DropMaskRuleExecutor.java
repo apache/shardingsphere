@@ -58,15 +58,15 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     }
     
     private void checkToBeDroppedMaskTableNames(final DropMaskRuleStatement sqlStatement) {
-        Collection<String> currentMaskTableNames = new CaseInsensitiveSet<>(rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList()));
+        Collection<String> currentMaskTableNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkMustEmpty(notExistedTableNames, () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedTableNames));
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropMaskRuleStatement sqlStatement) {
-        return !Collections.disjoint(new CaseInsensitiveSet<>(rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet())),
-                sqlStatement.getTables());
+        return !Collections.disjoint(
+                rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new)), sqlStatement.getTables());
     }
     
     @Override
