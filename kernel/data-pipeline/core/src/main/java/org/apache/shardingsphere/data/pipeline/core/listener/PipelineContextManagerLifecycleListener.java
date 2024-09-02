@@ -54,7 +54,6 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
             return;
         }
         String preSelectedDatabaseName = contextManager.getPreSelectedDatabaseName();
-        // TODO When StandalonePersistRepository is equivalent with ClusterPersistRepository, use STANDALONE mode in pipeline IT and remove this check.
         if (DefaultDatabase.LOGIC_NAME.equals(preSelectedDatabaseName)) {
             return;
         }
