@@ -87,7 +87,7 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
         BigInteger numberBigInteger = getNonNullBigInteger(number);
         return BigInteger.ZERO.equals(numberBigInteger) ? BigInteger.ZERO : getNonNullBigInteger(sum).divide(numberBigInteger);
     }
-
+    
     private BigInteger getNonNullBigInteger(final Object value) {
         return Optional.ofNullable(value)
                 .filter(BigInteger.class::isInstance)
