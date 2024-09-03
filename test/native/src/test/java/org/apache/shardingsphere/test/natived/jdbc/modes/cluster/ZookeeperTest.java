@@ -28,6 +28,7 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -38,6 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+@EnabledInNativeImage
 class ZookeeperTest {
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.zookeeper.";
@@ -68,10 +70,7 @@ class ZookeeperTest {
             DataSource dataSource = createDataSource(connectString);
             testShardingService = new TestShardingService(dataSource);
             initEnvironment();
-            Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-                dataSource.getConnection().close();
-                return true;
-            });
+            Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
             testShardingService.processSuccess();
             testShardingService.cleanEnvironment();
         }

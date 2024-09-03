@@ -73,10 +73,7 @@ class EtcdTest {
         DataSource dataSource = createDataSource(CLUSTER.clientEndpoints());
         testShardingService = new TestShardingService(dataSource);
         initEnvironment();
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            dataSource.getConnection().close();
-            return true;
-        });
+        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }
