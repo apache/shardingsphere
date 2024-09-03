@@ -58,6 +58,7 @@ public final class InventoryRecordsCountCalculator {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(dataSource.getDatabaseType());
         Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
         try {
+            // TODO Get estimate count from meta table, native DataSource is ok, but ShardingSphereDataSource has problem
             if (sql.isPresent() && dumperContext.getCommonContext().getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration) {
                 DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, dataSource.getDatabaseType().getType());
                 long result = getEstimatedCount(databaseType, dataSource, sql.get());
