@@ -100,12 +100,10 @@ jobs:
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Set Swap Space
-        run: size="10G" && file_swap=/swapfile_$size.img && sudo touch $file_swap && sudo chmod 600 $file_swap && sudo fallocate -l $size /$file_swap && sudo mkswap /$file_swap && sudo swapon -p 20 /$file_swap
       - name: Aggregate checkstyle report
         run: |
           export MAVEN_OPTS='-Xmx6g -Xms6g'
-          ./mvnw clean verify checkstyle:checkstyle-aggregate
+          ./mvnw clean checkstyle:checkstyle-aggregate -Pcheck -Drat.skip=true -T1C
       - name: Upload checkstyle report to SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
