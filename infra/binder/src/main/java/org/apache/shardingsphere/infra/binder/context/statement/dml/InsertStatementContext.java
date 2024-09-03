@@ -103,11 +103,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
         columnNames = containsInsertColumns() ? insertColumnNames
                 : Optional.ofNullable(sqlStatement.getTable()).map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
-        insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(sqlStatement, schema, insertColumnNames);
+        insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(insertColumnNames);
         generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
     }
     
-    private Map<String, Integer> createInsertColumnNamesAndIndexes(final InsertStatement sqlStatement, final ShardingSphereSchema schema, final List<String> insertColumnNames) {
+    private Map<String, Integer> createInsertColumnNamesAndIndexes(final List<String> insertColumnNames) {
         if (containsInsertColumns()) {
             Map<String, Integer> result = new CaseInsensitiveMap<>(insertColumnNames.size(), 1F);
             int index = 0;
