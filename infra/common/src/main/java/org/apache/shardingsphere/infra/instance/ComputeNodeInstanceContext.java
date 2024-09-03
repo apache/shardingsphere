@@ -193,7 +193,7 @@ public final class ComputeNodeInstanceContext {
     public Map<String, InstanceMetaData> getAllClusterInstances(final InstanceType instanceType, final Collection<String> labels) {
         Map<String, InstanceMetaData> result = new LinkedHashMap<>(allClusterInstances.size(), 1F);
         for (ComputeNodeInstance each : allClusterInstances) {
-            if (each.getMetaData().getType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
+            if (each.getMetaData().getType() == instanceType && labels.stream().anyMatch(each.getLabels()::contains)) {
                 result.put(each.getMetaData().getId(), each.getMetaData());
             }
         }
