@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
-import com.google.common.base.MoreObjects;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
@@ -89,7 +88,7 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
         return BigInteger.ZERO.equals(numberBigInteger) ? BigInteger.ZERO : getNonNullBigInteger(sum).divide(numberBigInteger);
     }
 
-    private static BigInteger getNonNullBigInteger(Object value) {
+    private static BigInteger getNonNullBigInteger(final Object value) {
         return Optional.ofNullable(value)
                 .filter(BigInteger.class::isInstance)
                 .map(BigInteger.class::cast)
