@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
+import com.google.common.base.MoreObjects;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
@@ -74,16 +75,24 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
     }
     
     private BigInteger sum(final Object num1, final Object num2) {
-        if (num1 == null || num2 == null) {
+        if (num1 == null && num2 == null) {
             return null;
         }
-        return ((BigInteger) num1).add((BigInteger) num2);
+        return getNonNullBigInteger(num1).add(getNonNullBigInteger(num2));
     }
     
     private BigInteger avg(final Object sum, final Object number) {
-        if (sum == null || number == null) {
+        if (sum == null && number == null) {
             return null;
         }
-        return BigInteger.ZERO.equals(number) ? BigInteger.ZERO : ((BigInteger) sum).divide((BigInteger) number);
+        BigInteger numberBigInteger = getNonNullBigInteger(number);
+        return BigInteger.ZERO.equals(numberBigInteger) ? BigInteger.ZERO : getNonNullBigInteger(sum).divide(numberBigInteger);
+    }
+
+    private static BigInteger getNonNullBigInteger(Object value) {
+        return Optional.ofNullable(value)
+                .filter(BigInteger.class::isInstance)
+                .map(BigInteger.class::cast)
+                .orElse(BigInteger.ZERO);
     }
 }
