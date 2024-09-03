@@ -746,7 +746,7 @@ NVARCHAR2
 LONG
     : L O N G
     ;
-    
+
 BLOB
     : B L O B
     ;

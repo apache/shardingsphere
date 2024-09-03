@@ -184,7 +184,7 @@ dropPackage
 dropTrigger
     : DROP TRIGGER triggerName
     ;
- 
+
 dropIndex
     : DROP INDEX indexName ONLINE? FORCE? invalidationSpecification? (ON tableName)?
     ;
@@ -595,7 +595,7 @@ bitmapJoinIndexClause
 columnSortsClause_
     : LP_? columnSortClause_ (COMMA_ columnSortClause_)* RP_?
     ;
-    
+
 columnSortClause_
     : (tableName | alias)? columnName (ASC | DESC)?
     ;
@@ -1817,7 +1817,7 @@ alterDatabaseDictionary
     | DELETE CREDENTIALS KEY
     )
     ;
-    
+
 alterDatabase
     : ALTER databaseClauses
     ( startupClauses
@@ -2636,7 +2636,7 @@ createDatabaseLink
     : CREATE SHARED? PUBLIC? DATABASE LINK dbLink 
     (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
-    
+
 alterDatabaseLink
     : ALTER SHARED? PUBLIC? DATABASE LINK dbLink (
     | CONNECT TO username IDENTIFIED BY password dbLinkAuthentication?
@@ -2996,7 +2996,7 @@ createRestorePoint
 dropRestorePoint
     : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
     ;
-    
+
 dropOperator
     : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
     ;
