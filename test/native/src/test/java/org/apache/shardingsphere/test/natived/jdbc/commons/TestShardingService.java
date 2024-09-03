@@ -24,10 +24,12 @@ import org.apache.shardingsphere.test.natived.jdbc.commons.entity.OrderItem;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.AddressRepository;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderRepository;
+import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -88,6 +90,8 @@ public final class TestShardingService {
     
     /**
      * Process success in ClickHouse.
+     * TODO On low-performance devices like Github Actions, it takes longer to execute DELETE statements,
+     *  which leads to the use of {@code org.awaitility.Awaitility.await()} here. Maybe there is room for improvement in Clickhouse JDBC Driver.
      * ClickHouse has not fully supported transactions. Refer to <a href="https://github.com/ClickHouse/clickhouse-docs/issues/2300">ClickHouse/clickhouse-docs#2300</a>.
      * So ShardingSphere should not use {@link OrderItemRepository#assertRollbackWithTransactions()} in the method here.
      *
@@ -114,6 +118,7 @@ public final class TestShardingService {
         assertThat(addressRepository.selectAll(),
                 equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
         deleteDataInClickHouse(orderIds);
+        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
         assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
