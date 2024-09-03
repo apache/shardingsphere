@@ -82,7 +82,7 @@ jobs:
     name: Checkstyle - SonarCloud
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 100
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -102,8 +102,8 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Aggregate checkstyle report
         run: |
-          export MAVEN_OPTS='-Xmx6g -Xms6g'
-          ./mvnw clean checkstyle:checkstyle-aggregate -Pcheck -Drat.skip=true -T1C
+          ./mvnw clean install -DskipTests -T1C
+          ./mvnw checkstyle:checkstyle-aggregate -Pcheck -T1C
       - name: Upload checkstyle report to SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
