@@ -3895,7 +3895,7 @@
         <projections start-index="7" stop-index="22">
             <expression-projection start-index="7" stop-index="22" text="SOUNDEX('Hello')">
                 <expr>
-                    <function  start-index="7" stop-index="22" function-name="SOUNDEX" text="SOUNDEX('Hello')">
+                    <function start-index="7" stop-index="22" function-name="SOUNDEX" text="SOUNDEX('Hello')">
                         <parameter>
                             <literal-expression start-index="15" stop-index="21" value="Hello" />
                         </parameter>
@@ -3971,7 +3971,7 @@
             </expression-projection>
         </projections>
     </select>
-    <sql-case id="select_st_asgeojson" value="SELECT ST_AsGeoJSON(ST_GeomFromText('POINT(11.11111 12.22222)'),2)" db-types="MySQL" />
+
     <select sql-case-id="select_st_asgeojson">
         <projections start-index="7" stop-index="65">
             <expression-projection start-index="7" stop-index="65" text="ST_AsGeoJSON(ST_GeomFromText('POINT(11.11111 12.22222)'),2)">
