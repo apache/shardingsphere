@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -80,8 +81,8 @@ public final class MetaDataRefreshEngine {
         if (schemaRefresher.isPresent()) {
             Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
             String schemaName = sqlStatementContext instanceof TableAvailable ? getSchemaName(sqlStatementContext) : null;
-            schemaRefresher.get().refresh(
-                    metaDataManagerPersistService, database, logicDataSourceNames, schemaName, sqlStatementContext.getDatabaseType(), sqlStatementContext.getSqlStatement(), props);
+            schemaRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName,
+                    findStorageUnitDatabaseType(routeUnits).orElseGet(sqlStatementContext::getDatabaseType), sqlStatementContext.getSqlStatement(), props);
         }
     }
     
@@ -94,6 +95,16 @@ public final class MetaDataRefreshEngine {
     public void refresh(final SQLStatementContext sqlStatementContext) {
         getFederationMetaDataRefresher(sqlStatementContext).ifPresent(optional -> optional.refresh(
                 metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getDatabaseType(), sqlStatementContext.getSqlStatement()));
+    }
+    
+    private Optional<DatabaseType> findStorageUnitDatabaseType(final Collection<RouteUnit> routeUnits) {
+        for (RouteUnit each : routeUnits) {
+            String storageUnitName = each.getDataSourceMapper().getActualName();
+            if (database.getResourceMetaData().getStorageUnits().containsKey(storageUnitName)) {
+                return Optional.of(database.getResourceMetaData().getStorageUnits().get(storageUnitName).getStorageType());
+            }
+        }
+        return Optional.empty();
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext) {
