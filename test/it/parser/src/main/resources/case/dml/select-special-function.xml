@@ -2322,7 +2322,6 @@
         </projections>
     </select>
 
-    // <sql-case id="select_export_set" value="SELECT EXPORT_SET(5,'Y','N',',',4)" db-types="MySQL" />
     <select sql-case-id="select_export_set">
         <projections start-index="7" stop-index="33">
             <expression-projection start-index="7" stop-index="33" text="EXPORT_SET(5,'Y','N',',',4)">
@@ -2402,7 +2401,7 @@
             </expression-projection>
         </projections>
     </select>
-    <sql-case id="select_first_value" value="SELECT FIRST_VALUE(name) OVER (ORDER BY id) FROM t_order" db-types="MySQL" />
+
     <select sql-case-id="select_first_value">
         <projections start-index="7" stop-index="42">
             <expression-projection start-index="7" stop-index="42" text="FIRST_VALUE(name) OVER (ORDER BY id)">
@@ -3884,6 +3883,247 @@
                     <function  start-index="7" stop-index="71" function-name="ST_GeomFromGeoJSON" text="ST_GeomFromGeoJSON('{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[102.0, 0.0]}')">
                         <parameter>
                            <literal-expression start-index="26" stop-index="70" value="{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[102.0, 0.0]}" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_soundex">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="SOUNDEX('Hello')">
+                <expr>
+                    <function start-index="7" stop-index="22" function-name="SOUNDEX" text="SOUNDEX('Hello')">
+                        <parameter>
+                            <literal-expression start-index="15" stop-index="21" value="Hello" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_space">
+        <projections start-index="7" stop-index="14">
+            <expression-projection start-index="7" stop-index="14" text="SPACE(6)">
+                <expr>
+                    <function  start-index="7" stop-index="14" function-name="SPACE" text="SPACE(6)">
+                        <parameter>
+                            <literal-expression start-index="13" stop-index="13" value="6" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_sqrt">
+        <projections start-index="7" stop-index="13">
+            <expression-projection start-index="7" stop-index="13" text="SQRT(4)">
+                <expr>
+                    <function  start-index="7" stop-index="13" function-name="SQRT" text="SQRT(4)">
+                        <parameter>
+                            <literal-expression start-index="12" stop-index="12" value="4" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_area">
+        <projections start-index="7" stop-index="78">
+            <expression-projection start-index="7" stop-index="78" text="ST_Area(ST_GeomFromText('Polygon((0 0,0 3,3 0,0 0),(1 1,1 2,2 1,1 1))'))">
+                <expr>
+                    <function  start-index="7" stop-index="78" function-name="ST_Area" text="ST_Area(ST_GeomFromText('Polygon((0 0,0 3,3 0,0 0),(1 1,1 2,2 1,1 1))'))">
+                        <parameter>
+                            <function start-index="15" stop-index="77" function-name="ST_GeomFromText" text="ST_GeomFromText('Polygon((0 0,0 3,3 0,0 0),(1 1,1 2,2 1,1 1))')" >
+                                <parameter>
+                                    <literal-expression start-index="31" stop-index="76" value="Polygon((0 0,0 3,3 0,0 0),(1 1,1 2,2 1,1 1))" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_asbinary">
+        <projections start-index="7" stop-index="30">
+            <expression-projection start-index="7" stop-index="30" text="ST_AsBinary(POINT(1, 1))">
+                <expr>
+                    <function start-index="7" stop-index="30" function-name="ST_AsBinary" text="ST_AsBinary(POINT(1, 1))">
+                        <parameter>
+                            <function start-index="19" stop-index="29" function-name="POINT" text="POINT(1, 1)" >
+                                <parameter>
+                                    <literal-expression start-index="25" stop-index="25" value="1"/>
+                                </parameter>
+                                <parameter>
+                                    <literal-expression start-index="28" stop-index="28" value="1"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_asgeojson">
+        <projections start-index="7" stop-index="65">
+            <expression-projection start-index="7" stop-index="65" text="ST_AsGeoJSON(ST_GeomFromText('POINT(11.11111 12.22222)'),2)">
+                <expr>
+                    <function start-index="7" stop-index="65" function-name="ST_AsGeoJSON" text="ST_AsGeoJSON(ST_GeomFromText('POINT(11.11111 12.22222)'),2)">
+                        <parameter>
+                            <function start-index="20" stop-index="62" function-name="ST_GeomFromText" text="ST_GeomFromText('POINT(11.11111 12.22222)')" >
+                                <parameter>
+                                    <literal-expression start-index="36" stop-index="61" value="POINT(11.11111 12.22222)"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="64" stop-index="64" value="2"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_astext">
+        <projections start-index="7" stop-index="59">
+            <expression-projection start-index="7" stop-index="59" text="ST_AsText(ST_GeomFromText('LineString(1 1,2 2,3 3)'))">
+                <expr>
+                    <function start-index="7" stop-index="59" function-name="ST_AsText" text="ST_AsText(ST_GeomFromText('LineString(1 1,2 2,3 3)'))">
+                        <parameter>
+                            <function start-index="17" stop-index="58" function-name="ST_GeomFromText" text="ST_GeomFromText('LineString(1 1,2 2,3 3)')" >
+                                <parameter>
+                                    <literal-expression start-index="33" stop-index="57" value="LineString(1 1,2 2,3 3)"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_buffer">
+        <projections start-index="7" stop-index="49">
+            <expression-projection start-index="7" stop-index="49" text="ST_Buffer(ST_GeomFromText('POINT(0 0)'), 0)">
+                <expr>
+                    <function start-index="7" stop-index="49" function-name="ST_Buffer" text="ST_Buffer(ST_GeomFromText('POINT(0 0)'), 0)">
+                        <parameter>
+                            <function start-index="17" stop-index="45" function-name="ST_GeomFromText" text="ST_GeomFromText('POINT(0 0)')" >
+                                <parameter>
+                                    <literal-expression start-index="33" stop-index="44" value="POINT(0 0)"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="48" stop-index="48" value="0"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_buffer_strategy">
+        <projections start-index="7" stop-index="36">
+            <expression-projection start-index="7" stop-index="36" text="ST_Buffer_Strategy('end_flat')">
+                <expr>
+                    <function start-index="7" stop-index="36" function-name="ST_Buffer_Strategy" text="ST_Buffer_Strategy('end_flat')">
+                        <parameter>
+                            <literal-expression start-index="26" stop-index="35" value="end_flat"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_centroid">
+        <projections start-index="7" stop-index="68">
+            <expression-projection start-index="7" stop-index="68" text="ST_Centroid(ST_GeomFromText('POLYGON((0 0,0 3,3 3,3 0,0 0))'))">
+                <expr>
+                    <function start-index="7" stop-index="68" function-name="ST_Centroid" text="ST_Centroid(ST_GeomFromText('POLYGON((0 0,0 3,3 3,3 0,0 0))'))">
+                        <parameter>
+                            <function start-index="19" stop-index="67" function-name="ST_GeomFromText" text="ST_GeomFromText('POLYGON((0 0,0 3,3 3,3 0,0 0))')" >
+                                <parameter>
+                                    <literal-expression start-index="35" stop-index="66" value="POLYGON((0 0,0 3,3 3,3 0,0 0))"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_contains">
+        <projections start-index="7" stop-index="79">
+            <expression-projection start-index="7" stop-index="79" text="ST_Contains(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 1)'))">
+                <expr>
+                    <function start-index="7" stop-index="79" function-name="ST_Contains" text="ST_Contains(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 1)'))">
+                        <parameter>
+                            <function start-index="19" stop-index="47" function-name="ST_GeomFromText" text="ST_GeomFromText('POINT(1 1)')" >
+                                <parameter>
+                                    <literal-expression start-index="35" stop-index="46" value="POINT(1 1)"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <function start-index="50" stop-index="78" function-name="ST_GeomFromText" text="ST_GeomFromText('POINT(2 1)')" >
+                                <parameter>
+                                    <literal-expression start-index="66" stop-index="77" value="POINT(2 1)"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_convexhull">
+        <projections start-index="7" stop-index="72">
+            <expression-projection start-index="7" stop-index="72" text="ST_ConvexHull(ST_GeomFromText('MULTIPOINT(5 0,25 0,15 10,15 25)'))">
+                <expr>
+                    <function start-index="7" stop-index="72" function-name="ST_ConvexHull" text="ST_ConvexHull(ST_GeomFromText('MULTIPOINT(5 0,25 0,15 10,15 25)'))">
+                        <parameter>
+                            <function start-index="21" stop-index="71" function-name="ST_GeomFromText" text="ST_GeomFromText('MULTIPOINT(5 0,25 0,15 10,15 25)')" >
+                                <parameter>
+                                    <literal-expression start-index="37" stop-index="70" value="MULTIPOINT(5 0,25 0,15 10,15 25)"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_st_crosses">
+        <projections start-index="7" stop-index="78">
+            <expression-projection start-index="7" stop-index="78" text="ST_Crosses(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 2)'))">
+                <expr>
+                    <function start-index="7" stop-index="78" function-name="ST_Crosses" text="ST_Crosses(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 2)'))">
+                        <parameter>
+                            <function start-index="18" stop-index="46" function-name="ST_GeomFromText" text="ST_GeomFromText('POINT(1 1)')" >
+                                <parameter>
+                                    <literal-expression start-index="34" stop-index="45" value="POINT(1 1)"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <function start-index="49" stop-index="77" function-name="ST_GeomFromText" text="ST_GeomFromText('POINT(2 2)')" >
+                                <parameter>
+                                    <literal-expression start-index="65" stop-index="76" value="POINT(2 2)"/>
+                                </parameter>
+                            </function>
                         </parameter>
                     </function>
                 </expr>

@@ -225,4 +225,17 @@
     <sql-case id="select_st_geometryn" value="SELECT ST_GeometryN(ST_GeomFromText('GeometryCollection(Point(1 1),LineString(2 2, 3 3))'),1)" db-types="MySQL" />
     <sql-case id="select_st_geometrytype" value="SELECT ST_GeometryType(ST_GeomFromText('POINT(1 1)'))" db-types="MySQL" />
     <sql-case id="select_st_geomfromgeojson" value="SELECT ST_GeomFromGeoJSON('{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[102.0, 0.0]}')" db-types="MySQL" />
+    <sql-case id="select_soundex" value="SELECT SOUNDEX('Hello')" db-types="MySQL,Doris" />
+    <sql-case id="select_space" value="SELECT SPACE(6)" db-types="MySQL,Doris" />
+    <sql-case id="select_sqrt" value="SELECT SQRT(4)" db-types="MySQL,Doris" />
+    <sql-case id="select_st_area" value="SELECT ST_Area(ST_GeomFromText('Polygon((0 0,0 3,3 0,0 0),(1 1,1 2,2 1,1 1))'))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_asbinary" value="SELECT ST_AsBinary(POINT(1, 1))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_asgeojson" value="SELECT ST_AsGeoJSON(ST_GeomFromText('POINT(11.11111 12.22222)'),2)" db-types="MySQL,Doris" />
+    <sql-case id="select_st_astext" value="SELECT ST_AsText(ST_GeomFromText('LineString(1 1,2 2,3 3)'))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_buffer" value="SELECT ST_Buffer(ST_GeomFromText('POINT(0 0)'), 0)" db-types="MySQL,Doris" />
+    <sql-case id="select_st_buffer_strategy" value="SELECT ST_Buffer_Strategy('end_flat')" db-types="MySQL,Doris" />
+    <sql-case id="select_st_centroid" value="SELECT ST_Centroid(ST_GeomFromText('POLYGON((0 0,0 3,3 3,3 0,0 0))'))" db-types="MySQ,Doris" />
+    <sql-case id="select_st_contains" value="SELECT ST_Contains(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 1)'))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_convexhull" value="SELECT ST_ConvexHull(ST_GeomFromText('MULTIPOINT(5 0,25 0,15 10,15 25)'))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_crosses" value="SELECT ST_Crosses(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 2)'))" db-types="MySQL,Doris" />
 </sql-cases>
