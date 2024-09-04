@@ -74,10 +74,24 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
     }
     
     private BigInteger sum(final Object num1, final Object num2) {
-        return ((BigInteger) num1).add((BigInteger) num2);
+        if (num1 == null && num2 == null) {
+            return null;
+        }
+        return getNonNullBigInteger(num1).add(getNonNullBigInteger(num2));
     }
     
     private BigInteger avg(final Object sum, final Object number) {
-        return BigInteger.ZERO.equals(number) ? BigInteger.ZERO : ((BigInteger) sum).divide((BigInteger) number);
+        if (sum == null && number == null) {
+            return null;
+        }
+        BigInteger numberBigInteger = getNonNullBigInteger(number);
+        return BigInteger.ZERO.equals(numberBigInteger) ? BigInteger.ZERO : getNonNullBigInteger(sum).divide(numberBigInteger);
+    }
+    
+    private BigInteger getNonNullBigInteger(final Object value) {
+        return Optional.ofNullable(value)
+                .filter(BigInteger.class::isInstance)
+                .map(BigInteger.class::cast)
+                .orElse(BigInteger.ZERO);
     }
 }
