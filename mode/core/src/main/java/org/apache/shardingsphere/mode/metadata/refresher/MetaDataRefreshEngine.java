@@ -83,8 +83,9 @@ public final class MetaDataRefreshEngine {
         if (schemaRefresher.isPresent()) {
             Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
             String schemaName = sqlStatementContext instanceof TableAvailable ? getSchemaName(sqlStatementContext) : null;
-            schemaRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName,
-                    findStorageUnitDatabaseType(routeUnits).orElseGet(sqlStatementContext::getDatabaseType), sqlStatementContext.getSqlStatement(), props);
+            DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
+                    .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(sqlStatementContext::getDatabaseType);
+            schemaRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
         }
     }
     
@@ -97,11 +98,6 @@ public final class MetaDataRefreshEngine {
     public void refresh(final SQLStatementContext sqlStatementContext) {
         getFederationMetaDataRefresher(sqlStatementContext).ifPresent(optional -> optional.refresh(
                 metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getDatabaseType(), sqlStatementContext.getSqlStatement()));
-    }
-    
-    private Optional<DatabaseType> findStorageUnitDatabaseType(final Collection<RouteUnit> routeUnits) {
-        return routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
-                .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType);
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext) {
