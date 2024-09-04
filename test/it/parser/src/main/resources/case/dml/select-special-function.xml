@@ -2322,7 +2322,6 @@
         </projections>
     </select>
 
-    // <sql-case id="select_export_set" value="SELECT EXPORT_SET(5,'Y','N',',',4)" db-types="MySQL" />
     <select sql-case-id="select_export_set">
         <projections start-index="7" stop-index="33">
             <expression-projection start-index="7" stop-index="33" text="EXPORT_SET(5,'Y','N',',',4)">
@@ -2402,7 +2401,7 @@
             </expression-projection>
         </projections>
     </select>
-    <sql-case id="select_first_value" value="SELECT FIRST_VALUE(name) OVER (ORDER BY id) FROM t_order" db-types="MySQL" />
+
     <select sql-case-id="select_first_value">
         <projections start-index="7" stop-index="42">
             <expression-projection start-index="7" stop-index="42" text="FIRST_VALUE(name) OVER (ORDER BY id)">
@@ -3918,7 +3917,7 @@
             </expression-projection>
         </projections>
     </select>
-    <sql-case id="select_sqrt" value="SELECT SQRT(4)" db-types="MySQL" />
+
     <select sql-case-id="select_sqrt">
         <projections start-index="7" stop-index="13">
             <expression-projection start-index="7" stop-index="13" text="SQRT(4)">
