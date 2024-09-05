@@ -127,7 +127,7 @@
         <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
         <hive.version>4.0.0</hive.version>
         <hive-server2-jdbc-driver-thin.version>1.2.0</hive-server2-jdbc-driver-thin.version>
-        <presto.version>0.282</presto.version>
+        <presto.version>0.288.1</presto.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         
