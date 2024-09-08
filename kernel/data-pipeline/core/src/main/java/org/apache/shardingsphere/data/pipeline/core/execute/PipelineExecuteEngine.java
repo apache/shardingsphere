@@ -33,10 +33,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiConsumer;
 
 /**
- * Executor engine.
+ * Pipeline executor engine.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecuteEngine {
+public final class PipelineExecuteEngine {
     
     private static final String THREAD_PREFIX = "pipeline-";
     
@@ -52,9 +52,9 @@ public final class ExecuteEngine {
      * @param threadName thread name
      * @return task execute engine instance
      */
-    public static ExecuteEngine newCachedThreadInstance(final String threadName) {
+    public static PipelineExecuteEngine newCachedThreadInstance(final String threadName) {
         String threadNameFormat = THREAD_PREFIX + threadName + THREAD_SUFFIX;
-        return new ExecuteEngine(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(threadNameFormat)));
+        return new PipelineExecuteEngine(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(threadNameFormat)));
     }
     
     /**
@@ -64,9 +64,9 @@ public final class ExecuteEngine {
      * @param threadName thread name
      * @return task execute engine instance
      */
-    public static ExecuteEngine newFixedThreadInstance(final int threadNumber, final String threadName) {
+    public static PipelineExecuteEngine newFixedThreadInstance(final int threadNumber, final String threadName) {
         String threadNameFormat = THREAD_PREFIX + threadName + THREAD_SUFFIX;
-        return new ExecuteEngine(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(threadNameFormat)));
+        return new PipelineExecuteEngine(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(threadNameFormat)));
     }
     
     /**

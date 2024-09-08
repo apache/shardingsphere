@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
@@ -88,7 +88,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
             }
             futures.addAll(each.start());
         }
-        ExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
+        PipelineExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
     }
     
     private synchronized void executeIncrementalTasks() {
@@ -109,7 +109,7 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
             }
             futures.addAll(each.start());
         }
-        ExecuteEngine.trigger(futures, new IncrementalExecuteCallback());
+        PipelineExecuteEngine.trigger(futures, new IncrementalExecuteCallback());
     }
     
     private void updateJobItemStatus(final JobStatus jobStatus) {

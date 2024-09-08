@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -46,9 +46,9 @@ public final class CDCInventoryTask implements PipelineTask {
     @Getter
     private final String taskId;
     
-    private final ExecuteEngine inventoryDumperExecuteEngine;
+    private final PipelineExecuteEngine inventoryDumperExecuteEngine;
     
-    private final ExecuteEngine inventoryImporterExecuteEngine;
+    private final PipelineExecuteEngine inventoryImporterExecuteEngine;
     
     private final Dumper dumper;
     
