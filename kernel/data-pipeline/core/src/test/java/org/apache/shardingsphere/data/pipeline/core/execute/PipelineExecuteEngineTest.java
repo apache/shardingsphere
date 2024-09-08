@@ -40,13 +40,13 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-class ExecuteEngineTest {
+class PipelineExecuteEngineTest {
     
     @Test
     void assertSubmitAndTaskSucceeded() {
         PipelineLifecycleRunnable pipelineLifecycleRunnable = mock(PipelineLifecycleRunnable.class);
         ExecuteCallback callback = mock(ExecuteCallback.class);
-        ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
+        PipelineExecuteEngine executeEngine = PipelineExecuteEngine.newCachedThreadInstance(PipelineExecuteEngineTest.class.getSimpleName());
         Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
         assertTimeout(Duration.ofSeconds(30L), () -> future.get());
         shutdownAndAwaitTerminal(executeEngine);
@@ -60,7 +60,7 @@ class ExecuteEngineTest {
         RuntimeException expectedException = new RuntimeException("Expected");
         doThrow(expectedException).when(pipelineLifecycleRunnable).run();
         ExecuteCallback callback = mock(ExecuteCallback.class);
-        ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
+        PipelineExecuteEngine executeEngine = PipelineExecuteEngine.newCachedThreadInstance(PipelineExecuteEngineTest.class.getSimpleName());
         Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
         Optional<Throwable> actualCause = assertTimeout(Duration.ofSeconds(30L), () -> execute(future));
         assertTrue(actualCause.isPresent());
@@ -79,8 +79,8 @@ class ExecuteEngineTest {
     }
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
-    private void shutdownAndAwaitTerminal(final ExecuteEngine executeEngine) {
-        ExecutorService executorService = (ExecutorService) Plugins.getMemberAccessor().get(ExecuteEngine.class.getDeclaredField("executorService"), executeEngine);
+    private void shutdownAndAwaitTerminal(final PipelineExecuteEngine executeEngine) {
+        ExecutorService executorService = (ExecutorService) Plugins.getMemberAccessor().get(PipelineExecuteEngine.class.getDeclaredField("executorService"), executeEngine);
         executorService.shutdown();
         executorService.awaitTermination(30L, TimeUnit.SECONDS);
     }
@@ -90,7 +90,7 @@ class ExecuteEngineTest {
         CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
         CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(true));
         FixtureExecuteCallback executeCallback = new FixtureExecuteCallback();
-        ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
+        PipelineExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
         assertThat(executeCallback.successCount.get(), is(1));
         assertThat(executeCallback.failureCount.get(), is(0));
     }
@@ -101,7 +101,7 @@ class ExecuteEngineTest {
         CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(false));
         FixtureExecuteCallback executeCallback = new FixtureExecuteCallback();
         try {
-            ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
+            PipelineExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ignored) {
             // CHECKSTYLE:ON

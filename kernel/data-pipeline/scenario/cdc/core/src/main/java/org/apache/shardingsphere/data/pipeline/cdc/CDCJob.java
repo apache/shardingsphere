@@ -39,7 +39,7 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
@@ -193,7 +193,7 @@ public final class CDCJob implements PipelineJob {
         if (futures.isEmpty()) {
             return;
         }
-        ExecuteEngine.trigger(futures, new CDCExecuteCallback("inventory", jobItemContexts.iterator().next()));
+        PipelineExecuteEngine.trigger(futures, new CDCExecuteCallback("inventory", jobItemContexts.iterator().next()));
     }
     
     private void executeIncrementalTasks(final Collection<CDCJobItemContext> jobItemContexts, final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager) {
@@ -211,7 +211,7 @@ public final class CDCJob implements PipelineJob {
                 futures.addAll(task.start());
             }
         }
-        ExecuteEngine.trigger(futures, new CDCExecuteCallback("incremental", jobItemContexts.iterator().next()));
+        PipelineExecuteEngine.trigger(futures, new CDCExecuteCallback("incremental", jobItemContexts.iterator().next()));
     }
     
     private void updateJobItemStatus(final CDCJobItemContext jobItemContext, final JobStatus jobStatus, final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager) {

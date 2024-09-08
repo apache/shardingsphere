@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManag
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
@@ -92,7 +92,7 @@ public final class PipelineContextUtils {
     
     private static final PipelineContextKey CONTEXT_KEY = new PipelineContextKey(InstanceType.PROXY);
     
-    private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance(PipelineContextUtils.class.getSimpleName());
+    private static final PipelineExecuteEngine EXECUTE_ENGINE = PipelineExecuteEngine.newCachedThreadInstance(PipelineContextUtils.class.getSimpleName());
     
     /**
      * Mock mode configuration and context manager.
@@ -181,7 +181,7 @@ public final class PipelineContextUtils {
      *
      * @return execute engine
      */
-    public static ExecuteEngine getExecuteEngine() {
+    public static PipelineExecuteEngine getExecuteEngine() {
         return EXECUTE_ENGINE;
     }
     
