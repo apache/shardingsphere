@@ -40,6 +40,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
@@ -97,7 +98,7 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertGet() throws SQLException {
+    void assertQuery() throws SQLException {
         String key = "key";
         String value = "value";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
@@ -110,12 +111,37 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertGetFailure() throws SQLException {
+    void assertQueryWithoutValue() throws SQLException {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
         String actual = repository.query("key");
         assertThat(actual, is(""));
+    }
+    
+    @Test
+    void assertQueryFailed() throws SQLException {
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenThrow(new SQLException(""));
+        String actual = repository.query("key");
+        assertThat(actual, is(""));
+    }
+    
+    @Test
+    void assertIsExisted() throws SQLException {
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        assertTrue(repository.isExisted("key"));
+    }
+    
+    @Test
+    void assertIsExistedFailed() throws SQLException {
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenThrow(new SQLException(""));
+        assertFalse(repository.isExisted("key"));
     }
     
     @Test
@@ -131,10 +157,10 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertPersistAndGetChildrenKeysFailure() throws SQLException {
+    void assertPersistAndGetChildrenKeysFailed() throws SQLException {
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByParentKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-        when(mockResultSet.next()).thenReturn(false);
+        when(mockResultSet.next()).thenThrow(new SQLException(""));
         List<String> actual = repository.getChildrenKeys("key");
         assertTrue(actual.isEmpty());
     }
@@ -231,6 +257,26 @@ class JDBCRepositoryTest {
     }
     
     @Test
+    void assertUpdate() throws SQLException {
+        String key = "key";
+        String value = "value";
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatement);
+        repository.update(key, value);
+        verify(mockPreparedStatement).setString(1, value);
+        verify(mockPreparedStatement).setString(2, key);
+        verify(mockPreparedStatement).executeUpdate();
+    }
+    
+    @Test
+    void assertUpdateFailed() throws SQLException {
+        String key = "key";
+        String value = "value";
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenThrow(new SQLException(""));
+        repository.update(key, value);
+        verify(mockPreparedStatement, times(0)).executeUpdate();
+    }
+    
+    @Test
     void assertDelete() throws SQLException {
         String key = "key";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenReturn(mockPreparedStatement);
@@ -240,9 +286,9 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertDeleteFailure() throws SQLException {
+    void assertDeleteFailed() throws SQLException {
         String key = "key";
-        when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenReturn(mockPreparedStatementForPersist);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenThrow(new SQLException(""));
         repository.delete(key);
         verify(mockPreparedStatement, times(0)).executeUpdate();
     }

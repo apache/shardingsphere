@@ -132,7 +132,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
         } catch (final SQLException ex) {
             log.error("Check existence of {} data by key: {} failed", getType(), key, ex);
         }
-        return Boolean.FALSE;
+        return false;
     }
     
     @Override
