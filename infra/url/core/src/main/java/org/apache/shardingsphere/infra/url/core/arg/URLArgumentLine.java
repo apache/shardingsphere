@@ -68,9 +68,16 @@ public final class URLArgumentLine {
             placeholderMatcher.appendReplacement(result, argumentValue);
         }
         placeholderMatcher.appendTail(result);
+        return rightTrim(result);
+    }
+
+    private String rightTrim(StringBuffer result) {
+        while (result.length() > 0 && Character.isWhitespace(result.charAt(result.length() - 1))) {
+            result.deleteCharAt(result.length() - 1);
+        }
         return result.toString();
     }
-    
+
     private String getArgumentValue(final String argName, final URLArgumentPlaceholderType type) {
         if (URLArgumentPlaceholderType.ENVIRONMENT == type) {
             return System.getenv(argName);
