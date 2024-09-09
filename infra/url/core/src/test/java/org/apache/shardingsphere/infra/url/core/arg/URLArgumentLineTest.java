@@ -29,14 +29,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class URLArgumentLineTest {
     
     private final String line = "key=$${value::default_value}";
+    
     private final String lineMultiple1 = "key1=$${value1::default_value1}:key2=$${value2::default_value2}:tail";
+    
     private final String lineMultiple2 = "key1=$${value1::}:key2=$${value2::}:tail";
-
+    
     @Test
     void assertParseWithInvalidPattern() {
         assertFalse(URLArgumentLine.parse("invalid").isPresent());
     }
-
+    
     @Test
     void assertReplaceArgumentWithNone() {
         Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line);
@@ -49,7 +51,7 @@ class URLArgumentLineTest {
         assertThat(argLineMultiple1.get().replaceArgument(URLArgumentPlaceholderType.NONE), is("key1=default_value1:key2=default_value2:tail"));
         assertThat(argLineMultiple2.get().replaceArgument(URLArgumentPlaceholderType.NONE), is("key1=:key2=:tail"));
     }
-
+    
     @Test
     void assertReplaceArgumentWithEnvironment() {
         Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line);
@@ -62,7 +64,7 @@ class URLArgumentLineTest {
         assertThat(argLineMultiple1.get().replaceArgument(URLArgumentPlaceholderType.ENVIRONMENT), is("key1=default_value1:key2=default_value2:tail"));
         assertThat(argLineMultiple2.get().replaceArgument(URLArgumentPlaceholderType.ENVIRONMENT), is("key1=:key2=:tail"));
     }
-
+    
     @Test
     void assertReplaceArgumentWithSystemProperty() {
         System.setProperty("value", "props_value");

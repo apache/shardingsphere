@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class URLArgumentLine {
-
+    
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.*?)::(.*?)}");
     
     private final Matcher placeholderMatcher;
@@ -70,14 +70,14 @@ public final class URLArgumentLine {
         placeholderMatcher.appendTail(result);
         return rightTrim(result);
     }
-
-    private String rightTrim(StringBuffer result) {
+    
+    private String rightTrim(final StringBuffer result) {
         while (result.length() > 0 && Character.isWhitespace(result.charAt(result.length() - 1))) {
             result.deleteCharAt(result.length() - 1);
         }
         return result.toString();
     }
-
+    
     private String getArgumentValue(final String argName, final URLArgumentPlaceholderType type) {
         if (URLArgumentPlaceholderType.ENVIRONMENT == type) {
             return System.getenv(argName);
