@@ -33,7 +33,7 @@ public final class ClickHouseDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return NullsOrderType.LOW;
     }
     
     @Override

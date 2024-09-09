@@ -30,7 +30,7 @@ public final class BranchDialectDatabaseMetaData implements DialectDatabaseMetaD
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return NullsOrderType.LOW;
     }
     
     @Override

@@ -30,7 +30,7 @@ public final class DialectDatabaseMetaDataFixture implements DialectDatabaseMeta
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return NullsOrderType.LOW;
     }
     
     @Override
