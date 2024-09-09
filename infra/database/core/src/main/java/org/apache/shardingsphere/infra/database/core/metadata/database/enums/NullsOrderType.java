@@ -23,6 +23,16 @@ package org.apache.shardingsphere.infra.database.core.metadata.database.enums;
 public enum NullsOrderType {
     
     /**
+     * Nulls first for DESC, nulls last for ASC.
+     */
+    HIGH,
+    
+    /**
+     * Nulls last for DESC, nulls first for ASC.
+     */
+    LOW,
+    
+    /**
      * Nulls first.
      */
     FIRST,
@@ -33,11 +43,18 @@ public enum NullsOrderType {
     LAST;
     
     /**
-     * Get reversed order type.
+     * Get resolved order type.
      *
-     * @return reversed order type
+     * @param orderDirection order direction
+     * @return resolved order type
      */
-    public NullsOrderType getReversedOrderType() {
-        return this == FIRST ? LAST : FIRST;
+    public NullsOrderType getResolvedOrderType(final String orderDirection) {
+        if (HIGH == this) {
+            return "DESC".equalsIgnoreCase(orderDirection) ? FIRST : LAST;
+        }
+        if (LOW == this) {
+            return "DESC".equalsIgnoreCase(orderDirection) ? LAST : FIRST;
+        }
+        return this;
     }
 }

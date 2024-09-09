@@ -26,8 +26,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class NullsOrderTypeTest {
     
     @Test
-    void assertGetReversedOrderType() {
-        assertThat(NullsOrderType.FIRST.getReversedOrderType(), CoreMatchers.is(NullsOrderType.LAST));
-        assertThat(NullsOrderType.LAST.getReversedOrderType(), CoreMatchers.is(NullsOrderType.FIRST));
+    void assertGetResolvedOrderType() {
+        assertThat(NullsOrderType.HIGH.getResolvedOrderType("DESC"), CoreMatchers.is(NullsOrderType.FIRST));
+        assertThat(NullsOrderType.HIGH.getResolvedOrderType("ASC"), CoreMatchers.is(NullsOrderType.LAST));
+        assertThat(NullsOrderType.LOW.getResolvedOrderType("DESC"), CoreMatchers.is(NullsOrderType.LAST));
+        assertThat(NullsOrderType.LOW.getResolvedOrderType("ASC"), CoreMatchers.is(NullsOrderType.FIRST));
     }
 }
