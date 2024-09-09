@@ -226,7 +226,7 @@ ELSE
 END
     : E N D
     ;
-    
+
 ENGINE
     : E N G I N E
     ;
@@ -262,7 +262,7 @@ FINAL
 FIRST
     : F I R S T
     ;
-    
+
 FLUSH
     : F L U S H
     ;
@@ -480,7 +480,7 @@ NOT
 NULL_SQL
     : N U L L
     ;
-    
+
 NULLS
     : N U L L S
     ;

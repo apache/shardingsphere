@@ -63,7 +63,7 @@ fragment IdentifierChar
    : StrictIdentifierChar
    | DOLLAR_
    ;
-   
+
 fragment StrictIdentifierChar
    : IdentifierStartChar
    | [0-9]

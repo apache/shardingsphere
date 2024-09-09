@@ -256,7 +256,7 @@ createDatabaseSpecification_
     | defaultCollation
     | defaultEncryption
     ;
-    
+
 alterDatabaseSpecification_
     : createDatabaseSpecification_ 
     | READ ONLY EQ_? (DEFAULT | NUMBER_)
@@ -698,11 +698,11 @@ procedureParameter
 fileSizeLiteral
     : FILESIZE_LITERAL | numberLiterals
     ; 
-    
+
 simpleStatement
     : validStatement
     ;
-    
+
 compoundStatement
     : beginStatement
     ;
@@ -725,21 +725,21 @@ declareStatement
 flowControlStatement
     : caseStatement | ifStatement | iterateStatement | leaveStatement | loopStatement | repeatStatement | returnStatement | whileStatement
     ;
-    
+
 caseStatement
     : CASE expr? 
       (WHEN expr THEN validStatement+)+ 
       (ELSE validStatement+)? 
       END CASE
     ;
-    
+
 ifStatement
     : IF expr THEN validStatement+
       (ELSEIF expr THEN validStatement+)*
       (ELSE validStatement+)?
       END IF
     ;
-    
+
 iterateStatement
     : ITERATE labelName
     ;
@@ -747,58 +747,58 @@ iterateStatement
 leaveStatement
     : LEAVE labelName
     ;
-    
+
 loopStatement
     : (labelName COLON_)? LOOP
       validStatement+
       END LOOP labelName?
     ;
-    
+
 repeatStatement
     : (labelName COLON_)? REPEAT
       validStatement+
       UNTIL expr
       END REPEAT labelName?
     ;
-    
+
 returnStatement
     : RETURN expr
     ;   
-    
+
 whileStatement
     : (labelName COLON_)? WHILE expr DO
       validStatement+
       END WHILE labelName?
     ;
-    
+
 cursorStatement
     : cursorCloseStatement | cursorDeclareStatement | cursorFetchStatement | cursorOpenStatement 
     ;
-    
+
 cursorCloseStatement
     : CLOSE cursorName
     ;
-    
+
 cursorDeclareStatement
     : DECLARE cursorName CURSOR FOR select
     ;
-    
+
 cursorFetchStatement
     : FETCH ((NEXT)? FROM)? cursorName INTO variable (COMMA_ variable)*
     ;
-    
+
 cursorOpenStatement
     : OPEN cursorName
     ;
-    
+
 conditionHandlingStatement
     : declareConditionStatement | declareHandlerStatement | getDiagnosticsStatement | resignalStatement | signalStatement 
     ;
-    
+
 declareConditionStatement
     : DECLARE conditionName CONDITION FOR conditionValue
     ;
-    
+
 declareHandlerStatement
     : DECLARE handlerAction HANDLER FOR conditionValue (COMMA_ conditionValue)* validStatement
     ;
@@ -813,11 +813,11 @@ getDiagnosticsStatement
 statementInformationItem
     : variable EQ_ statementInformationItemName
     ;
-    
+
 conditionInformationItem
     : variable EQ_ conditionInformationItemName
     ;
-    
+
 conditionNumber
     : variable | numberLiterals 
     ;
@@ -826,7 +826,7 @@ statementInformationItemName
     : NUMBER
     | ROW_COUNT
     ;
-    
+
 conditionInformationItemName
     : CLASS_ORIGIN
     | SUBCLASS_ORIGIN
@@ -842,41 +842,41 @@ conditionInformationItemName
     | COLUMN_NAME
     | CURSOR_NAME
     ;
-    
+
 handlerAction
     : CONTINUE | EXIT | UNDO
     ;
-    
+
 conditionValue
     : numberLiterals | SQLSTATE (VALUE)? stringLiterals | conditionName | SQLWARNING | NOT FOUND | SQLEXCEPTION
     ;
-    
+
 resignalStatement
     : RESIGNAL conditionValue?
       (SET signalInformationItem (COMMA_ signalInformationItem)*)?
     ;
-    
+
 signalStatement
     : SIGNAL conditionValue
       (SET signalInformationItem (COMMA_ signalInformationItem)*)?
     ;
-    
+
 signalInformationItem
     : conditionInformationItemName EQ_ expr
     ;
-    
+
 prepare
     : PREPARE identifier FROM (stringLiterals | userVariable)
     ;
-    
+
 executeStmt
     : EXECUTE identifier (USING executeVarList)?
     ;
-    
+
 executeVarList
     : userVariable (COMMA_ userVariable)*
     ;
-    
+
 deallocate
     : (DEALLOCATE | DROP) PREPARE identifier
     ;

@@ -73,7 +73,7 @@ hexadecimalLiterals
 bitValueLiterals
     : BIT_NUM_
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -884,7 +884,7 @@ charSet
     : NCHAR_CS
     | ignoredIdentifier
     ;
-    
+
 extractFunction
     : EXTRACT LP_ (YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | TIMEZONE_HOUR | TIMEZONE_MINUTE | TIMEZONE_REGION | TIMEZONE_ABBR) FROM expr RP_
     ;
@@ -972,7 +972,7 @@ dataTypeName
 datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
     ;
-    
+
 typeAttribute
     : (variableName | objectName) MOD_ TYPE
     ;
@@ -1804,7 +1804,7 @@ attributeDimensionName
 sequenceName
     : identifier
     ;
-    
+
 spfileName
     : STRING_
     ;

@@ -399,7 +399,7 @@ innerJoinType
 outerJoinType
     : (FULL | LEFT | RIGHT) OUTER? JOIN
     ;
-    
+
 naturalJoinType
     : NATURAL INNER? JOIN
     | NATURAL (FULL | LEFT | RIGHT) OUTER? JOIN

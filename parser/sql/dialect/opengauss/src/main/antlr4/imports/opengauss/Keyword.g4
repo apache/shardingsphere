@@ -599,7 +599,7 @@ EXCEPT
 PACKAGE
     : P A C K A G E
     ;
-    
+
 MINUS
     : M I N U S
     ;

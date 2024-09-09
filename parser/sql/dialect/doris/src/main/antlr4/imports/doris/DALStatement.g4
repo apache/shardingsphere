@@ -33,7 +33,7 @@ explain
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
     | ANALYZE (FORMAT EQ_ TREE)? (select | delete | update | insert))
     ;
-    
+
 fromDatabase
     : (FROM | IN) databaseName
     ;
@@ -77,7 +77,7 @@ optionValueNoOptionType
 equal
     : EQ_ | ASSIGNMENT_
     ;
-    
+
 optionValue
     : optionType internalVariableName EQ_ setExprOrDefault | optionValueNoOptionType
     ;
@@ -418,7 +418,7 @@ shutdown
 explainType
     : (FORMAT EQ_ formatName | EXTENDED | PARTITIONS)
     ;
-    
+
 explainableStatement
     : select | delete | insert | replace | update
     ;
@@ -430,7 +430,7 @@ formatName
 delimiter
     : DELIMITER delimiterName
     ;
-    
+
 show
     : showDatabases
     | showTables

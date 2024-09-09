@@ -182,7 +182,7 @@ password
 registerMigrationSourceStorageUnit
     : REGISTER MIGRATION SOURCE STORAGE UNIT storageUnitDefinition (COMMA_ storageUnitDefinition)*
     ;
-    
+
 unregisterMigrationSourceStorageUnit
     : UNREGISTER MIGRATION SOURCE STORAGE UNIT storageUnitName (COMMA_ storageUnitName)*
     ;
