@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,10 +60,10 @@ class StandaloneProcessPersistServiceTest {
     }
     
     @Test
-    void assertKillProcessWithNotExistedProcessId() throws SQLException {
+    void assertKillProcessWithNotExistedProcessId() {
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
         when(processRegistry.get("foo_id")).thenReturn(null);
-        processPersistService.killProcess("foo_id");
+        assertDoesNotThrow(() -> processPersistService.killProcess("foo_id"));
     }
 }
