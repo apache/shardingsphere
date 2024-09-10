@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.standalone.persist;
 
 import lombok.SneakyThrows;
+import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
@@ -227,6 +229,20 @@ class StandaloneMetaDataManagerPersistServiceTest {
         metaDataManagerPersistService.alterProperties(props);
         verify(metaDataContextManager.getGlobalConfigurationManager()).alterProperties(props);
         verify(metaDataPersistService.getPropsService()).persist(props);
+    }
+    
+    @Test
+    void assertCreateTable() {
+        ShardingSphereTable table = new ShardingSphereTable();
+        metaDataManagerPersistService.createTable("foo_db", "foo_schema", table, "foo_ds");
+        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).persist("foo_db", "foo_schema", Maps.of("", table));
+    }
+    
+    @Test
+    void assertDropTables() {
+        ShardingSphereTable table = new ShardingSphereTable();
+        metaDataManagerPersistService.dropTables("foo_db", "foo_schema", Collections.singleton("foo_tbl"));
+        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).delete("foo_db", "foo_schema", "foo_tbl");
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
