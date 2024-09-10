@@ -236,9 +236,7 @@ public final class TableExtractor {
      * @param insertStatement insert statement
      */
     public void extractTablesFromInsert(final InsertStatement insertStatement) {
-        if (null != insertStatement.getTable()) {
-            extractTablesFromTableSegment(insertStatement.getTable());
-        }
+        insertStatement.getTable().ifPresent(this::extractTablesFromTableSegment);
         if (!insertStatement.getColumns().isEmpty()) {
             for (ColumnSegment each : insertStatement.getColumns()) {
                 extractTablesFromExpression(each);

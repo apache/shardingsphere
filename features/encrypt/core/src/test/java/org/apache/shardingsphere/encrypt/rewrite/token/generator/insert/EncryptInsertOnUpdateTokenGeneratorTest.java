@@ -107,7 +107,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("db_test"));
         MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class, RETURNS_DEEP_STUBS);
-        when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t_user");
+        when(insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue())).thenReturn(Optional.of("t_user"));
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = mock(OnDuplicateKeyColumnsSegment.class);
         when(onDuplicateKeyColumnsSegment.getColumns()).thenReturn(buildAssignmentSegment());
         when(insertStatement.getOnDuplicateKeyColumns()).thenReturn(Optional.of(onDuplicateKeyColumnsSegment));

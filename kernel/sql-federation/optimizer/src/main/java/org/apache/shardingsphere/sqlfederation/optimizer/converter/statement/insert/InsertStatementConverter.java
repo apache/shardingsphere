@@ -51,7 +51,7 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     }
     
     private SqlInsert convertInsert(final InsertStatement insertStatement) {
-        SqlNode table = TableConverter.convert(insertStatement.getTable()).orElseThrow(IllegalStateException::new);
+        SqlNode table = insertStatement.getTable().flatMap(TableConverter::convert).orElseThrow(IllegalStateException::new);
         SqlNodeList keywords = new SqlNodeList(SqlParserPos.ZERO);
         SqlNode source = convertSource(insertStatement);
         SqlNodeList columnList = convertColumn(insertStatement.getColumns());

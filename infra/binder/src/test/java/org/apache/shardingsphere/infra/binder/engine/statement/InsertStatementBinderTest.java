@@ -64,7 +64,9 @@ class InsertStatementBinderTest {
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(insertStatement));
-        assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
+        assertTrue(actual.getTable().isPresent());
+        assertTrue(insertStatement.getTable().isPresent());
+        assertThat(actual.getTable().get().getTableName(), not(insertStatement.getTable().get().getTableName()));
         assertTrue(actual.getInsertColumns().isPresent());
         assertInsertColumns(actual.getInsertColumns().get().getColumns());
     }
@@ -107,7 +109,9 @@ class InsertStatementBinderTest {
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(insertStatement));
-        assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
+        assertTrue(actual.getTable().isPresent());
+        assertTrue(insertStatement.getTable().isPresent());
+        assertThat(actual.getTable().get().getTableName(), not(insertStatement.getTable().get().getTableName()));
         assertTrue(actual.getInsertColumns().isPresent());
         assertInsertColumns(actual.getInsertColumns().get().getColumns());
         assertInsertSelect(actual);
@@ -129,7 +133,9 @@ class InsertStatementBinderTest {
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME));
         assertThat(actual, not(insertStatement));
-        assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
+        assertTrue(actual.getTable().isPresent());
+        assertTrue(insertStatement.getTable().isPresent());
+        assertThat(actual.getTable().get().getTableName(), not(insertStatement.getTable().get().getTableName()));
         assertInsertColumns(actual.getDerivedInsertColumns());
         assertInsertSelect(actual);
     }
