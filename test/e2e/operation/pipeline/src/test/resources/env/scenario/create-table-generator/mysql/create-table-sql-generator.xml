@@ -29,7 +29,7 @@
                 `user_id` int(11) NOT NULL,
                 `status` varchar(45) DEFAULT NULL,
                 PRIMARY KEY (`order_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=latin1
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             </sql>
         </output>
         <output version="8">
@@ -59,7 +59,7 @@
                 `status` varchar(45) DEFAULT NULL,
                 `creation_date` date DEFAULT NULL,
                 PRIMARY KEY (`item_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=latin1
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             </sql>
         </output>
         <output version="8">
