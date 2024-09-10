@@ -263,5 +263,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: ${{ github.workspace }}/target/mergeReport/jacoco/index.html
+          path: ${{ github.workspace }}/target/mergeReport/jacoco
 
