@@ -18,17 +18,26 @@
 package org.apache.shardingsphere.mode.manager.standalone.persist;
 
 import lombok.SneakyThrows;
+import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,10 +46,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -120,5 +136,119 @@ class StandaloneMetaDataManagerPersistServiceTest {
         verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
         verify(databaseMetaDataService.getViewMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
         verify(databaseMetaDataService).dropSchema("foo_db", "foo_schema");
+    }
+    
+    @Test
+    void assertDropSchema() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
+        metaDataManagerPersistService.dropSchema("foo_db", Collections.singleton("foo_schema"));
+        verify(database).dropSchema(any());
+    }
+    
+    @Test
+    void assertAlterSchemaMetaData() {
+        DatabaseMetaDataPersistService databaseMetaDataService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
+        when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataService);
+        metaDataManagerPersistService.alterSchemaMetaData(new AlterSchemaMetaDataPOJO("foo_db", "foo_schema", Collections.singleton("foo_ds")));
+        verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "foo_schema", new HashMap<>());
+        verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "foo_schema", new HashMap<>());
+    }
+    
+    @Test
+    void assertAlterSingleRuleConfiguration() throws SQLException {
+        RuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
+        metaDataManagerPersistService.alterSingleRuleConfiguration("foo_db", new LinkedList<>(Arrays.asList(singleRuleConfig, mock(RuleConfiguration.class))));
+        verify(metaDataPersistService.getMetaDataVersionPersistService()).switchActiveVersion(any());
+        verify(metaDataContextManager.getDatabaseRuleConfigurationManager()).alterRuleConfiguration("foo_db", singleRuleConfig);
+    }
+    
+    @Test
+    void assertAlterNullRuleConfiguration() throws SQLException {
+        metaDataManagerPersistService.alterRuleConfiguration("foo_db", null);
+        verify(metaDataPersistService, times(0)).getMetaDataVersionPersistService();
+    }
+    
+    @Test
+    void assertAlterRuleConfiguration() throws SQLException {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
+        Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
+        when(metaDataPersistService.getDatabaseRulePersistService().persistConfigurations("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
+        AlterRuleItemEvent event = mock(AlterRuleItemEvent.class);
+        RuleConfigurationEventBuilder ruleConfigurationEventBuilder = mock(RuleConfigurationEventBuilder.class);
+        when(ruleConfigurationEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
+        setRuleConfigurationEventBuilder(ruleConfigurationEventBuilder);
+        metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
+        verify(metaDataPersistService.getMetaDataVersionPersistService()).switchActiveVersion(metaDataVersion);
+        verify(metaDataContextManager.getRuleItemManager()).alterRuleItem(event);
+    }
+    
+    @Test
+    void assertRemoveNullRuleConfigurationItem() throws SQLException {
+        metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", null);
+        verify(metaDataPersistService, times(0)).getMetaDataVersionPersistService();
+    }
+    
+    @Test
+    void assertRemoveRuleConfigurationItem() throws SQLException {
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
+        Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
+        when(metaDataPersistService.getDatabaseRulePersistService().deleteConfigurations("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
+        RuleConfigurationEventBuilder ruleConfigurationEventBuilder = mock(RuleConfigurationEventBuilder.class);
+        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
+        when(ruleConfigurationEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
+        setRuleConfigurationEventBuilder(ruleConfigurationEventBuilder);
+        metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
+        verify(metaDataContextManager.getRuleItemManager()).dropRuleItem(event);
+    }
+    
+    @Test
+    void assertRemoveRuleConfiguration() {
+        metaDataManagerPersistService.removeRuleConfiguration("foo_db", "foo_rule");
+        verify(metaDataPersistService.getDatabaseRulePersistService()).delete("foo_db", "foo_rule");
+    }
+    
+    @Test
+    void assertAlterGlobalRuleConfiguration() {
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        metaDataManagerPersistService.alterGlobalRuleConfiguration(ruleConfig);
+        verify(metaDataContextManager.getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
+        verify(metaDataPersistService.getGlobalRuleService()).persist(Collections.singleton(ruleConfig));
+    }
+    
+    @Test
+    void assertAlterProperties() {
+        Properties props = new Properties();
+        metaDataManagerPersistService.alterProperties(props);
+        verify(metaDataContextManager.getGlobalConfigurationManager()).alterProperties(props);
+        verify(metaDataPersistService.getPropsService()).persist(props);
+    }
+    
+    @Test
+    void assertCreateTable() {
+        ShardingSphereTable table = new ShardingSphereTable();
+        metaDataManagerPersistService.createTable("foo_db", "foo_schema", table, "foo_ds");
+        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).persist("foo_db", "foo_schema", Maps.of("", table));
+    }
+    
+    @Test
+    void assertDropTables() {
+        metaDataManagerPersistService.dropTables("foo_db", "foo_schema", Collections.singleton("foo_tbl"));
+        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).delete("foo_db", "foo_schema", "foo_tbl");
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setRuleConfigurationEventBuilder(final RuleConfigurationEventBuilder ruleConfigurationEventBuilder) {
+        Field field = metaDataManagerPersistService.getClass().getDeclaredField("ruleConfigurationEventBuilder");
+        field.setAccessible(true);
+        field.set(metaDataManagerPersistService, ruleConfigurationEventBuilder);
+        field.setAccessible(false);
     }
 }

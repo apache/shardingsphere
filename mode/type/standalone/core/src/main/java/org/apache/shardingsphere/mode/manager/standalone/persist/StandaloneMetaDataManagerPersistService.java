@@ -291,18 +291,20 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) throws SQLException {
-        if (null != toBeAlteredRuleConfig) {
-            Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
-                    .persistConfigurations(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), Collections.singletonList(toBeAlteredRuleConfig));
-            metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
-            for (MetaDataVersion each : metaDataVersions) {
-                Optional<DispatchEvent> ruleItemEvent = buildAlterRuleItemEvent(databaseName, each, Type.UPDATED);
-                if (ruleItemEvent.isPresent() && ruleItemEvent.get() instanceof AlterRuleItemEvent) {
-                    metaDataContextManager.getRuleItemManager().alterRuleItem((AlterRuleItemEvent) ruleItemEvent.get());
-                }
-            }
-            clearServiceCache();
+        if (null == toBeAlteredRuleConfig) {
+            return;
         }
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
+                .persistConfigurations(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), Collections.singleton(toBeAlteredRuleConfig));
+        metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
+        for (MetaDataVersion each : metaDataVersions) {
+            // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
+            Optional<DispatchEvent> ruleItemEvent = buildAlterRuleItemEvent(databaseName, each, Type.UPDATED);
+            if (ruleItemEvent.isPresent() && ruleItemEvent.get() instanceof AlterRuleItemEvent) {
+                metaDataContextManager.getRuleItemManager().alterRuleItem((AlterRuleItemEvent) ruleItemEvent.get());
+            }
+        }
+        clearServiceCache();
     }
     
     private Optional<DispatchEvent> buildAlterRuleItemEvent(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {
@@ -311,17 +313,18 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) throws SQLException {
-        if (null != toBeRemovedRuleConfig) {
-            Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
-                    .deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig));
-            for (MetaDataVersion metaDataVersion : metaDataVersions) {
-                Optional<DispatchEvent> ruleItemEvent = buildAlterRuleItemEvent(databaseName, metaDataVersion, Type.DELETED);
-                if (ruleItemEvent.isPresent() && ruleItemEvent.get() instanceof DropRuleItemEvent) {
-                    metaDataContextManager.getRuleItemManager().dropRuleItem((DropRuleItemEvent) ruleItemEvent.get());
-                }
-            }
-            clearServiceCache();
+        if (null == toBeRemovedRuleConfig) {
+            return;
         }
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+        for (MetaDataVersion metaDataVersion : metaDataVersions) {
+            Optional<DispatchEvent> ruleItemEvent = buildAlterRuleItemEvent(databaseName, metaDataVersion, Type.DELETED);
+            // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
+            if (ruleItemEvent.isPresent() && ruleItemEvent.get() instanceof DropRuleItemEvent) {
+                metaDataContextManager.getRuleItemManager().dropRuleItem((DropRuleItemEvent) ruleItemEvent.get());
+            }
+        }
+        clearServiceCache();
     }
     
     @Override
