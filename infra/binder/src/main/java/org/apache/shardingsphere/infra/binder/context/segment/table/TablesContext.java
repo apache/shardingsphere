@@ -84,7 +84,7 @@ public final class TablesContext {
         }
         this.tables.addAll(tables);
         for (TableSegment each : tables) {
-            if (each instanceof SimpleTableSegment) {
+            if (each instanceof SimpleTableSegment && !"DUAL".equalsIgnoreCase(((SimpleTableSegment) each).getTableName().getIdentifier().getValue())) {
                 SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
                 simpleTables.add(simpleTableSegment);
                 tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
