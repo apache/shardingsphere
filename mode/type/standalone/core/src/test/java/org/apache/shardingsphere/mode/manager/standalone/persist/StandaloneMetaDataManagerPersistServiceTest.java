@@ -217,7 +217,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterGlobalRuleConfiguration() {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);    
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         metaDataManagerPersistService.alterGlobalRuleConfiguration(ruleConfig);
         verify(metaDataContextManager.getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
         verify(metaDataPersistService.getGlobalRuleService()).persist(Collections.singleton(ruleConfig));
@@ -240,7 +240,6 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertDropTables() {
-        ShardingSphereTable table = new ShardingSphereTable();
         metaDataManagerPersistService.dropTables("foo_db", "foo_schema", Collections.singleton("foo_tbl"));
         verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).delete("foo_db", "foo_schema", "foo_tbl");
     }
