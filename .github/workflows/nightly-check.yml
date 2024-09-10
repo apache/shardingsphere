@@ -216,7 +216,6 @@ jobs:
           ./mvnw clean install -DskipTests -T1C -Dmaven.enforcer.fail=true
 
   check-and-report-jacoco:
-    if: github.repository == 'apache/shardingsphere'
     name: Check - Jacoco
     needs: global-environment
     runs-on: ubuntu-latest
@@ -261,3 +260,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/target/mergeReport/jacoco.xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: ${{ github.workspace }}/target/mergeReport/jacoco/index.html
+
