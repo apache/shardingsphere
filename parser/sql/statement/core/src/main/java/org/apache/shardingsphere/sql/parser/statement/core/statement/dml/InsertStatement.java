@@ -61,6 +61,15 @@ public abstract class InsertStatement extends AbstractSQLStatement implements DM
     private final Collection<ColumnSegment> derivedInsertColumns = new LinkedList<>();
     
     /**
+     * Get table.
+     *
+     * @return simple table segment
+     */
+    public Optional<SimpleTableSegment> getTable() {
+        return Optional.ofNullable(table);
+    }
+    
+    /**
      * Get insert columns segment.
      *
      * @return insert columns segment

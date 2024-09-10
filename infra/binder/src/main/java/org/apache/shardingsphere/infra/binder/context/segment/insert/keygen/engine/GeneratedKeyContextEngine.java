@@ -52,7 +52,7 @@ public final class GeneratedKeyContextEngine {
      */
     public Optional<GeneratedKeyContext> createGenerateKeyContext(final Map<String, Integer> insertColumnNamesAndIndexes, final List<InsertValueContext> insertValueContexts,
                                                                   final List<Object> params) {
-        String tableName = Optional.ofNullable(insertStatement.getTable()).map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNamesAndIndexes, optional)
                 ? findGeneratedKey(insertColumnNamesAndIndexes, insertValueContexts, params, optional)
                 : new GeneratedKeyContext(optional, true));
@@ -71,8 +71,8 @@ public final class GeneratedKeyContextEngine {
     }
     
     private boolean containsGenerateKey(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
-        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == getValueCountForPerGroup()
-                : insertColumnNamesAndIndexes.containsKey(generateKeyColumnName);
+        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnNames(tableName).size() == getValueCountForPerGroup() : insertColumnNamesAndIndexes.containsKey(generateKeyColumnName);
     }
     
     private int getValueCountForPerGroup() {
@@ -109,7 +109,8 @@ public final class GeneratedKeyContextEngine {
     }
     
     private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
-        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnNamesAndIndexes(insertStatement.getTable().getTableName().getIdentifier().getValue()).get(generateKeyColumnName)
+        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnNamesAndIndexes(tableName).get(generateKeyColumnName)
                 : insertColumnNamesAndIndexes.get(generateKeyColumnName);
     }
 }

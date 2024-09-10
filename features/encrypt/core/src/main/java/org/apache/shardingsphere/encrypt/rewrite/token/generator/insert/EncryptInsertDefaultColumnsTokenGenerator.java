@@ -62,7 +62,7 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
     
     @Override
     public UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext) {
-        String tableName = Optional.ofNullable(insertStatementContext.getSqlStatement().getTable()).map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+        String tableName = insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         Optional<UseDefaultInsertColumnsToken> previousSQLToken = findInsertColumnsToken();
         if (previousSQLToken.isPresent()) {
             processPreviousSQLToken(previousSQLToken.get(), insertStatementContext, tableName);
