@@ -110,6 +110,41 @@ java -javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar -jar t
 + 3 访问启动的服务
 + 4 查看对应的插件是否生效
 
+### 夜间构建
+
+ShardingSphere Agent 在 https://github.com/orgs/apache/packages?repo_name=shardingsphere 存在夜间构建的 Docker Image。
+可通过类似如下的 `Dockerfile` 来为类似 `example.jar` 的 JAR 使用此 Docker Image 中的 ShardingSphere Agent。
+假设 `example.jar` 是一个即将使用 ShardingSphere Agent 的 Spring Boot 的 Uber JAR，
+且 `custom-agent.yaml` 包含 ShardingSphere Agent 的配置。
+
+```dockerfile
+FROM ghcr.io/apache/shardingsphere-agent:latest
+COPY ./example.jar /example.jar
+COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
+ENTRYPOINT java \
+    -javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar
+    -jar \
+    /example.jar
+```
+
+`custom-agent.yaml` 的内容可能如下，
+`http://localhost:4318` 指向本地部署的 `otel/opentelemetry-collector-contrib:0.108.0` 的 Docker Container。
+
+```yaml
+plugins:
+  tracing:
+    OpenTelemetry:
+      props:
+        otel.service.name: "example"
+        otel.exporter.otlp.traces.endpoint: "http://localhost:4318"
+```
+
+或者在 `Dockerfile` 中添加以下语句，这会将 Agent 的目录复制到 `/shardingsphere-agent/` 。
+
+```dockerfile
+COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
+```
+
 ## Metrics
 
 | 指标名称                                 | 指标类型    | 指标描述                                                                                       |

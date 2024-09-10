@@ -112,6 +112,43 @@ java -javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar -jar t
 + 3 Access to started service
 + 4 Check whether the corresponding plug-in is effective
 
+### Nightly Builds
+
+A nightly built Docker Image of ShardingSphere Agent exists at https://github.com/orgs/apache/packages?repo_name=shardingsphere .
+
+You can use ShardingSphere Agent in this Docker Image for a JAR like `example.jar` by using a `Dockerfile` like the following.
+
+Assume `example.jar` is an Uber JAR of Spring Boot that will use ShardingSphere Agent,
+and `custom-agent.yaml` contains the configuration of ShardingSphere Agent.
+
+```dockerfile
+FROM ghcr.io/apache/shardingsphere-agent:latest
+COPY ./example.jar /example.jar
+COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
+ENTRYPOINT java \
+    -javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar
+    -jar \
+    /example.jar
+```
+
+The content of `custom-agent.yaml` may be as follows,
+`http://localhost:4318` points to the locally deployed `otel/opentelemetry-collector-contrib:0.108.0` Docker Container.
+
+```yaml
+plugins:
+  tracing:
+    OpenTelemetry:
+      props:
+        otel.service.name: "example"
+        otel.exporter.otlp.traces.endpoint: "http://localhost:4318"
+```
+
+Or add the following statement in `Dockerfile`, which will copy the Agent directory to `/shardingsphere-agent/`.
+
+```dockerfile
+COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
+```
+
 ## Metrics
 
 | Name                                  | Type      | Description                                                                                            |
