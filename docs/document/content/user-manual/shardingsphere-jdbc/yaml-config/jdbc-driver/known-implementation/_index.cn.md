@@ -175,6 +175,39 @@ public class ExampleUtils {
 - `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=system_props`
 
+### 多个动态占位符
+
+在配置 YAML 属性值的时候，如果 YAML 属性值的部分需要动态替换，可以通过配置多个动态占位符的方式来实现
+
+假设存在以下一组环境变量或系统属性，
+
+1. 存在环境变量或系统属性 `FIXTURE_HOST` 为 `127.0.0.1`。
+2. 存在环境变量或系统属性 `FIXTURE_PORT` 为 `3306`。
+3. 存在环境变量或系统属性 `FIXTURE_DATABASE` 为 `test`。
+4. 存在环境变量或系统属性 `FIXTURE_USERNAME` 为 `sa`。
+
+则对于以下 YAML 文件的截取片段，
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::com.mysql.cj.jdbc.Driver}
+  jdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?useUnicode=true&characterEncoding=UTF-8
+  username: $${FIXTURE_USERNAME::}
+  password: $${FIXTURE_PASSWORD::}
+```
+
+此 YAML 截取片段将被解析为，
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: com.mysql.cj.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8
+  username: sa
+  password:
+```
+
 ## 其他实现
 
 具体可参考 https://github.com/apache/shardingsphere-plugin 。
