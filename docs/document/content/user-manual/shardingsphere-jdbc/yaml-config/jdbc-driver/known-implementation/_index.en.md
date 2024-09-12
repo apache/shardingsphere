@@ -193,6 +193,39 @@ Example:
 - `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=system_props`
 
+### multiple dynamic placeholders
+
+When configuring the value of a YAML attribute, if part of the value of the YAML attribute needs to be replaced dynamically, you can implement this by configuring multiple dynamic placeholders.
+
+Assume the following set of environment variables or system properties exists,
+
+1. The existing environment variable or system property `FIXTURE_HOST` is `127.0.0.1`。
+2. The existing environment variable or system property `FIXTURE_PORT` is `3306`。
+3. The existing environment variable or system property `FIXTURE_DATABASE` is `test`。
+4. The existing environment variable or system property `FIXTURE_USERNAME` is `sa`。
+
+Then for the intercepted fragment of the following YAML file,
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::com.mysql.cj.jdbc.Driver}
+  jdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?useUnicode=true&characterEncoding=UTF-8
+  username: $${FIXTURE_USERNAME::}
+  password: $${FIXTURE_PASSWORD::}
+```
+
+This YAML snippet will be parsed as,
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: com.mysql.cj.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8
+  username: sa
+  password:
+```
+
 ## Other implementations
 
 For details, please refer to https://github.com/apache/shardingsphere-plugin.
