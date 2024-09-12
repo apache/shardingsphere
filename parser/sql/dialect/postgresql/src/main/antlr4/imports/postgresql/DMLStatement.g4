@@ -157,12 +157,11 @@ optTempTableName
     ;
 
 cteList
-    : commonTableExpr
-    | cteList COMMA_ commonTableExpr
+    : commonTableExpr (COMMA_ commonTableExpr)*
     ;
 
 commonTableExpr
-    :  name optNameList AS optMaterialized LP_ preparableStmt RP_
+    :  alias optNameList AS optMaterialized LP_ preparableStmt RP_
     ;
 
 optMaterialized

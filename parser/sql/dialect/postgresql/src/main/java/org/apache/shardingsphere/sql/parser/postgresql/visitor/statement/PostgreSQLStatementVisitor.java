@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AexprConstContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnyNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AscDescContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommonTableExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeLengthContext;
@@ -112,6 +114,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wh
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -141,6 +144,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -175,6 +179,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -916,7 +921,32 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             LockSegment lockSegment = (LockSegment) visit(ctx.forLockingClause());
             result.setLock(lockSegment);
         }
+        if (null != ctx.withClause()) {
+            WithSegment withSegment = (WithSegment) visit(ctx.withClause());
+            result.setWithSegment(withSegment);
+        }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitWithClause(final WithClauseContext ctx) {
+        Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
+        for (CommonTableExprContext each : ctx.cteList().commonTableExpr()) {
+            commonTableExpressions.add((CommonTableExpressionSegment) visit(each));
+        }
+        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions, null != ctx.RECURSIVE());
+    }
+    
+    @Override
+    public ASTNode visitCommonTableExpr(final CommonTableExprContext ctx) {
+        return new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
+                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (PostgreSQLSelectStatement) visit(ctx.preparableStmt().select()),
+                        getOriginalText(ctx.preparableStmt().select())));
+    }
+    
+    @Override
+    public ASTNode visitAlias(final AliasContext ctx) {
+        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText()));
     }
     
     @Override
