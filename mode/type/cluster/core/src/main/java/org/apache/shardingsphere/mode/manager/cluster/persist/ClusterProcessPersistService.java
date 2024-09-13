@@ -75,10 +75,6 @@ public final class ClusterProcessPersistService implements ProcessPersistService
                 .collect(Collectors.toList());
     }
     
-    private boolean isReady(final Collection<String> paths) {
-        return paths.stream().noneMatch(each -> null != repository.query(each));
-    }
-    
     @Override
     public void killProcess(final String processId) {
         Collection<String> triggerPaths = getKillProcessTriggerPaths(processId);
@@ -97,5 +93,9 @@ public final class ClusterProcessPersistService implements ProcessPersistService
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessKillInstanceIdNodePath(onlinePath, processId)))
                 .collect(Collectors.toList());
+    }
+    
+    private boolean isReady(final Collection<String> paths) {
+        return paths.stream().noneMatch(each -> null != repository.query(each));
     }
 }
