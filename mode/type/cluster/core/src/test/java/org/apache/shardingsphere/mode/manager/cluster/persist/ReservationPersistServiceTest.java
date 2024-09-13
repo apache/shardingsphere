@@ -18,7 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
@@ -26,16 +31,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ReservationPersistServiceTest {
     
-    private final ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
+    @Mock
+    private ClusterPersistRepository repository;
+    
+    private ReservationPersistService reservationPersistService;
+    
+    @BeforeEach
+    void setUp() {
+        reservationPersistService = new ReservationPersistService(repository);
+    }
     
     @Test
     void assertReserveExistedWorkerId() {
-        ReservationPersistService reservationPersistService = new ReservationPersistService(repository);
         when(repository.persistExclusiveEphemeral("/reservation/worker_id/1", "foo_id")).thenReturn(true);
         Optional<Integer> actual = reservationPersistService.reserveWorkerId(1, "foo_id");
         assertTrue(actual.isPresent());
@@ -44,7 +56,12 @@ class ReservationPersistServiceTest {
     
     @Test
     void assertReserveNotExistedWorkerId() {
-        ReservationPersistService reservationPersistService = new ReservationPersistService(repository);
+        assertFalse(reservationPersistService.reserveWorkerId(1, "foo_id").isPresent());
+    }
+    
+    @Test
+    void assertReserveWorkerIdWithClusterRepositoryPersistException() {
+        when(repository.persistExclusiveEphemeral("/reservation/worker_id/1", "foo_id")).thenThrow(ClusterRepositoryPersistException.class);
         assertFalse(reservationPersistService.reserveWorkerId(1, "foo_id").isPresent());
     }
 }
