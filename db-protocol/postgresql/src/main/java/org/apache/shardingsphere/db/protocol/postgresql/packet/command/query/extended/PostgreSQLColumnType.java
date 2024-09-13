@@ -32,9 +32,11 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLJsonValueParser;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLLongValueParser;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLNumericValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTextArrayValueParser;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTimeValueParser;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLTimestampValueParser;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLUnspecifiedValueParser;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLVarcharArrayValueParser;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLVarcharValueParser;
 
 import java.sql.Types;
@@ -64,7 +66,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     
     TEXT(25, new PostgreSQLVarcharValueParser()),
     
-    TEXT_ARRAY(1009, new PostgreSQLVarcharValueParser()),
+    TEXT_ARRAY(1009, new PostgreSQLTextArrayValueParser()),
     
     NUMERIC(1700, new PostgreSQLNumericValueParser()),
     
@@ -108,7 +110,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     
     VARCHAR(1043, new PostgreSQLVarcharValueParser()),
     
-    VARCHAR_ARRAY(1015, new PostgreSQLVarcharValueParser()),
+    VARCHAR_ARRAY(1015, new PostgreSQLVarcharArrayValueParser()),
     
     OID(26, new PostgreSQLVarcharValueParser()),
     
@@ -195,6 +197,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, BOOL);
         // TODO Temporary solution for https://github.com/apache/shardingsphere/issues/22522
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.STRUCT, VARCHAR);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.ARRAY, TEXT_ARRAY);
     }
     
     /**
