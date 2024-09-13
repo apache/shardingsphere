@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.Shar
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 
 /**
  * Adapter container factory.
@@ -42,11 +43,12 @@ public final class AdapterContainerFactory {
      * @param databaseType database type
      * @param scenario scenario
      * @param containerConfig adaptor container configuration
+     * @param storageContainer storage container
      * @return created instance
      * @throws RuntimeException runtime exception
      */
     public static AdapterContainer newInstance(final AdapterMode mode, final AdapterType adapter, final DatabaseType databaseType,
-                                               final String scenario, final AdaptorContainerConfiguration containerConfig) {
+                                               final String scenario, final AdaptorContainerConfiguration containerConfig, final StorageContainer storageContainer) {
         switch (adapter) {
             case PROXY:
                 return AdapterMode.CLUSTER == mode
@@ -55,7 +57,7 @@ public final class AdapterContainerFactory {
             case PROXY_RANDOM:
                 return new ShardingSphereMultiProxyClusterContainer(databaseType, containerConfig);
             case JDBC:
-                return new ShardingSphereJdbcContainer(scenario, databaseType);
+                return new ShardingSphereJdbcContainer(scenario, databaseType, storageContainer);
             default:
                 throw new RuntimeException(String.format("Unknown adapter `%s`.", adapter));
         }

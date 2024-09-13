@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic;
 
-import com.alibaba.dcm.DnsCacheManipulator;
-import com.github.dockerjava.api.model.ContainerNetwork;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * IT containers.
@@ -54,8 +51,6 @@ public final class ITContainers implements Startable {
     
     public ITContainers(final String scenario) {
         this.scenario = scenario;
-        DnsCacheManipulator.setDnsCachePolicy(-1);
-        System.setProperty("socksNonProxyHosts", "localhost|127.*|[::1]|0.0.0.0|[::0]|*.host");
     }
     
     /**
@@ -105,8 +100,6 @@ public final class ITContainers implements Startable {
     private void start(final DockerITContainer dockerITContainer) {
         log.info("Starting container {}...", dockerITContainer.getName());
         dockerITContainer.start();
-        dockerITContainer.getNetworkAliases().forEach(each -> DnsCacheManipulator.setDnsCache(each,
-                dockerITContainer.getContainerInfo().getNetworkSettings().getNetworks().values().stream().map(ContainerNetwork::getIpAddress).collect(Collectors.toList()).toArray(new String[0])));
     }
     
     private void waitUntilReady() {
@@ -132,6 +125,5 @@ public final class ITContainers implements Startable {
         embeddedContainers.forEach(Startable::close);
         dockerContainers.forEach(Startable::close);
         network.close();
-        DnsCacheManipulator.clearDnsCache();
     }
 }
