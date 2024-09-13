@@ -32,6 +32,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.util.Objects;
+
 /**
  * Migrate table executor.
  */
@@ -43,9 +45,13 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
     
     @Override
     public void executeUpdate(final MigrateTableStatement sqlStatement, final ContextManager contextManager) {
-        String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
-        ShardingSpherePreconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(targetDatabaseName),
-                () -> new MissingRequiredTargetDatabaseException(sqlStatement.getTargetDatabaseName()));
+        String targetDatabaseName = sqlStatement.getTargetDatabaseName();
+        if (Objects.nonNull(targetDatabaseName)) {
+            ShardingSpherePreconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(targetDatabaseName),
+                    () -> new MissingRequiredTargetDatabaseException(sqlStatement.getTargetDatabaseName()));
+        } else {
+            targetDatabaseName = database.getName();
+        }
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
         jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
     }
