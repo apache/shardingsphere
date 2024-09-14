@@ -54,6 +54,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         setStringArrayBinaryProtocolValue();
         setByteaBinaryProtocolValue();
         setUUIDBinaryProtocolValue();
+        setBoolBinaryProtocolValue();
     }
     
     private static void setUnspecifiedBinaryProtocolValue() {
@@ -143,6 +144,10 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     
     private static void setUUIDBinaryProtocolValue() {
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.UUID, new PostgreSQLUUIDBinaryProtocolValue());
+    }
+    
+    private static void setBoolBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.BOOL, new PostgreSQLBoolBinaryProtocolValue());
     }
     
     /**
