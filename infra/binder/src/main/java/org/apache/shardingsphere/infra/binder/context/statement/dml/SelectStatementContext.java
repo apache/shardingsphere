@@ -377,7 +377,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return Optional.empty();
     }
     
-    
     /**
      * Judge whether sql statement contains table subquery segment or not.
      *
