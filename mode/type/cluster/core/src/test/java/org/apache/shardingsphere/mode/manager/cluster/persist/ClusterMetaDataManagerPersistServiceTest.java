@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist;
 
 import lombok.SneakyThrows;
+import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.service.ListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,9 +37,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -116,5 +128,81 @@ class ClusterMetaDataManagerPersistServiceTest {
     void assertDropSchema() {
         metaDataManagerPersistService.dropSchema("foo_db", Collections.singleton("foo_schema"));
         verify(metaDataPersistService.getDatabaseMetaDataService()).dropSchema("foo_db", "foo_schema");
+    }
+    
+    @Test
+    void assertAlterSchemaMetaData() {
+        metaDataManagerPersistService.alterSchemaMetaData(new AlterSchemaMetaDataPOJO("foo_db", "foo_schema", Collections.singleton("foo_ds")));
+        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).persist("foo_db", "foo_schema", Collections.emptyMap());
+        verify(metaDataPersistService.getDatabaseMetaDataService().getViewMetaDataPersistService()).persist("foo_db", "foo_schema", Collections.emptyMap());
+    }
+    
+    @Test
+    void assertAlterSingleRuleConfiguration() {
+        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(Arrays.asList(new SingleRuleConfiguration(), mock(RuleConfiguration.class)));
+        when(metaDataPersistService.getDatabaseRulePersistService().persistConfigurations("foo_db", ruleConfigs)).thenReturn(Collections.emptyList());
+        metaDataManagerPersistService.alterSingleRuleConfiguration("foo_db", ruleConfigs);
+        assertThat(ruleConfigs.size(), is(1));
+        verify(metaDataPersistService.getMetaDataVersionPersistService()).switchActiveVersion(Collections.emptyList());
+    }
+    
+    @Test
+    void assertAlterNullRuleConfiguration() {
+        metaDataManagerPersistService.alterRuleConfiguration("foo_db", null);
+        verify(metaDataPersistService.getDatabaseRulePersistService(), times(0)).persistConfigurations(eq("foo_db"), any());
+    }
+    
+    @Test
+    void assertAlterRuleConfiguration() {
+        RuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
+        verify(metaDataPersistService.getDatabaseRulePersistService()).persistConfigurations("foo_db", Collections.singleton(ruleConfig));
+    }
+    
+    @Test
+    void assertRemoveNullRuleConfigurationItem() {
+        metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", null);
+        verify(metaDataPersistService.getDatabaseRulePersistService(), times(0)).deleteConfigurations(eq("foo_db"), any());
+    }
+    
+    @Test
+    void assertRemoveRuleConfigurationItem() {
+        RuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
+        verify(metaDataPersistService.getDatabaseRulePersistService()).deleteConfigurations("foo_db", Collections.singleton(ruleConfig));
+    }
+    
+    @Test
+    void assertRemoveRuleConfiguration() {
+        metaDataManagerPersistService.removeRuleConfiguration("foo_db", "fixtureRule");
+        verify(metaDataPersistService.getDatabaseRulePersistService()).delete("foo_db", "fixtureRule");
+    }
+    
+    @Test
+    void assertAlterGlobalRuleConfiguration() {
+        RuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        metaDataManagerPersistService.alterGlobalRuleConfiguration(ruleConfig);
+        verify(metaDataPersistService.getGlobalRuleService()).persist(Collections.singleton(ruleConfig));
+    }
+    
+    @Test
+    void assertAlterProperties() {
+        Properties props = new Properties();
+        metaDataManagerPersistService.alterProperties(props);
+        verify(metaDataPersistService.getPropsService()).persist(props);
+    }
+    
+    @Test
+    void assertCreateTable() {
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getName()).thenReturn("foo_tbl");
+        metaDataManagerPersistService.createTable("foo_db", "foo_schema", table, "foo_ds");
+        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).persist("foo_db", "foo_schema", Maps.of("foo_tbl", table));
+    }
+    
+    @Test
+    void assertDropTables() {
+        metaDataManagerPersistService.dropTables("foo_db", "foo_schema", Collections.singleton("foo_tbl"));
+        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).delete("foo_db", "foo_schema", "foo_tbl");
     }
 }
