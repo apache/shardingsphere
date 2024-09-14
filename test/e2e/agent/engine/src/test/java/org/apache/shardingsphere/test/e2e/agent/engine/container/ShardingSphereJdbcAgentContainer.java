@@ -31,8 +31,7 @@ import java.util.function.Consumer;
 /**
  * ShardingSphere jdbc container.
  */
-// TODO Merge test container: merge with org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcContainer
-public final class ShardingSphereJdbcContainer extends DockerITContainer {
+public final class ShardingSphereJdbcAgentContainer extends DockerITContainer {
     
     private static final String CONFIG_PATH_IN_CONTAINER = "/opt/shardingsphere-jdbc-app/";
     
@@ -40,8 +39,8 @@ public final class ShardingSphereJdbcContainer extends DockerITContainer {
     
     private final Consumer<OutputFrame> consumer;
     
-    public ShardingSphereJdbcContainer(final String image, final String plugin, final Consumer<OutputFrame> consumer) {
-        super("jdbc", image);
+    public ShardingSphereJdbcAgentContainer(final String image, final String plugin, final Consumer<OutputFrame> consumer) {
+        super("jdbc-agent", image);
         this.consumer = consumer;
         this.plugin = plugin;
     }
@@ -64,6 +63,6 @@ public final class ShardingSphereJdbcContainer extends DockerITContainer {
     
     @Override
     public String getAbbreviation() {
-        return "jdbc";
+        return "jdbc-agent";
     }
 }

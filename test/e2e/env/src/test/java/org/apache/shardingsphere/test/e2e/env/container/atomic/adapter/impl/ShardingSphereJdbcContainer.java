@@ -19,12 +19,10 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -42,17 +40,14 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, AdapterContainer {
     
-    private final ScenarioCommonPath scenarioCommonPath;
-    
-    private final DatabaseType databaseType;
-    
     private final StorageContainer storageContainer;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereJdbcContainer(final String scenario, final DatabaseType databaseType, final StorageContainer storageContainer) {
-        scenarioCommonPath = new ScenarioCommonPath(scenario);
-        this.databaseType = databaseType;
+    private final String configPath;
+    
+    public ShardingSphereJdbcContainer(final StorageContainer storageContainer, final String configPath) {
+        this.configPath = configPath;
         this.storageContainer = storageContainer;
     }
     
@@ -73,7 +68,7 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
     private DataSource createTargetDataSource() {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(scenarioCommonPath.getRuleConfigurationFile(databaseType), getLinkReplacements()));
+        result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, getLinkReplacements()));
         result.setUsername("root");
         result.setPassword("Root@123");
         result.setMaximumPoolSize(2);

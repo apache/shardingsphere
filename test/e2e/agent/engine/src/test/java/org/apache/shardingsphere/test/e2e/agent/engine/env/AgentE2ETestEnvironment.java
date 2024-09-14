@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.ITContainers;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.agent.engine.container.ShardingSphereJdbcContainer;
+import org.apache.shardingsphere.test.e2e.agent.engine.container.ShardingSphereJdbcAgentContainer;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginHTTPEndpointProvider;
@@ -126,13 +126,13 @@ public final class AgentE2ETestEnvironment {
     private void createJDBCEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
         containers = new ITContainers();
         MySQLContainer storageContainer = new MySQLContainer(imageConfig.getMysqlImage());
-        ShardingSphereJdbcContainer jdbcContainer = new ShardingSphereJdbcContainer(
+        ShardingSphereJdbcAgentContainer jdbcAgentContainer = new ShardingSphereJdbcAgentContainer(
                 imageConfig.getJdbcProjectImage(), testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
-        jdbcContainer.dependsOn(storageContainer);
-        agentPluginContainer.ifPresent(jdbcContainer::dependsOn);
+        jdbcAgentContainer.dependsOn(storageContainer);
+        agentPluginContainer.ifPresent(jdbcAgentContainer::dependsOn);
         agentPluginContainer.ifPresent(optional -> containers.registerContainer(optional));
         containers.registerContainer(storageContainer);
-        containers.registerContainer(jdbcContainer);
+        containers.registerContainer(jdbcAgentContainer);
         containers.start();
     }
     
