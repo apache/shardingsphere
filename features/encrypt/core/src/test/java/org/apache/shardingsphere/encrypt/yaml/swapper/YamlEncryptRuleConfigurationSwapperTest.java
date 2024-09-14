@@ -34,6 +34,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class YamlEncryptRuleConfigurationSwapperTest {
@@ -42,12 +43,16 @@ class YamlEncryptRuleConfigurationSwapperTest {
     void assertSwapToYamlConfiguration() {
         YamlEncryptRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().get("tbl").getName(), is("tbl"));
+        assertTrue(actual.getTables().get("tbl").getColumns().isEmpty());
         assertThat(actual.getEncryptors().size(), is(1));
+        assertThat(actual.getEncryptors().get("foo_encryptor").getType(), is("CORE.FIXTURE"));
+        assertThat(actual.getEncryptors().get("foo_encryptor").getProps(), is(new Properties()));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singleton(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
-        Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("myEncryptor", new AlgorithmConfiguration("FIXTURE", new Properties()));
+        Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("foo_encryptor", new AlgorithmConfiguration("CORE.FIXTURE", new Properties()));
         return new EncryptRuleConfiguration(tables, encryptors);
     }
     
@@ -55,17 +60,21 @@ class YamlEncryptRuleConfigurationSwapperTest {
     void assertSwapToObject() {
         EncryptRuleConfiguration actual = getSwapper().swapToObject(createYamlEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getName(), is("tbl"));
+        assertTrue(actual.getTables().iterator().next().getColumns().isEmpty());
         assertThat(actual.getEncryptors().size(), is(1));
+        assertThat(actual.getEncryptors().get("foo_encryptor").getType(), is("CORE.FIXTURE"));
+        assertThat(actual.getEncryptors().get("foo_encryptor").getProps(), is(new Properties()));
     }
     
     private YamlEncryptRuleConfiguration createYamlEncryptRuleConfiguration() {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
         YamlEncryptTableRuleConfiguration tableRuleConfig = new YamlEncryptTableRuleConfiguration();
-        tableRuleConfig.setName("t_encrypt");
-        result.getTables().put("t_encrypt", tableRuleConfig);
+        tableRuleConfig.setName("tbl");
+        result.getTables().put("tbl", tableRuleConfig);
         YamlAlgorithmConfiguration algorithmConfig = new YamlAlgorithmConfiguration();
         algorithmConfig.setType("CORE.FIXTURE");
-        result.getEncryptors().put("fixture_encryptor", algorithmConfig);
+        result.getEncryptors().put("foo_encryptor", algorithmConfig);
         return result;
     }
     
