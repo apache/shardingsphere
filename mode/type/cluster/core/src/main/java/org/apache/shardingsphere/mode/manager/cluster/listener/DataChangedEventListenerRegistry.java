@@ -47,7 +47,7 @@ public final class DataChangedEventListenerRegistry {
      * Register data changed event listeners.
      */
     public void register() {
-        registerDatabaseRequiredListeners();
+        registerMetaDataChangedEventListeners();
         for (DispatchEventBuilder<?> each : ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class)) {
             register(each);
         }
@@ -67,11 +67,7 @@ public final class DataChangedEventListenerRegistry {
         });
     }
     
-    private void registerDatabaseRequiredListeners() {
-        registerMetaDataChangedEventListener();
-    }
-    
-    private void registerMetaDataChangedEventListener() {
+    private void registerMetaDataChangedEventListeners() {
         databaseNames.forEach(each -> listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(each), new MetaDataChangedListener(eventBusContext)));
     }
 }
