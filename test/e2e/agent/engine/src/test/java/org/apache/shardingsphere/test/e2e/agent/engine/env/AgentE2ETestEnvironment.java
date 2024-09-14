@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.agent.engine.container.ITContainers;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.ShardingSphereJdbcAgentContainer;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginContainerFactory;
 import org.apache.shardingsphere.test.e2e.agent.engine.container.plugin.AgentPluginHTTPEndpointProvider;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestCon
 import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestImageConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.fixture.proxy.ProxyRequestExecutor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
@@ -134,6 +134,7 @@ public final class AgentE2ETestEnvironment {
     private static StorageContainerConfiguration getStorageContainerConfiguration() {
         Map<String, String> containerEnvironments = new HashMap<>(3, 1F);
         containerEnvironments.put("LANG", "C.UTF-8");
+        containerEnvironments.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         Map<String, String> mountedResources = new HashMap<>();
         mountedResources.put("/env/mysql/init.sql", "/docker-entrypoint-initdb.d/init.sql");
         return new StorageContainerConfiguration("--sql_mode= --default-authentication-plugin=mysql_native_password", containerEnvironments,

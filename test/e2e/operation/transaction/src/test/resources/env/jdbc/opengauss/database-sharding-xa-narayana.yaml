@@ -16,12 +16,45 @@
 #
 
 ######################################################################################################
-# 
+#
 # If you want to configure governance, authorization and proxy properties, please refer to this file.
-# 
+#
 ######################################################################################################
 
 databaseName: sharding_db
+
+dataSources:
+  ds_0:
+    url: jdbc:opengauss://opengauss.default.host:5432/ds_0?batchMode=OFF
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 2
+  ds_1:
+    url: jdbc:opengauss://opengauss.default.host:5432/ds_1?batchMode=OFF
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 2
+  ds_2:
+    url: jdbc:opengauss://opengauss.default.host:5432/ds_2?batchMode=OFF
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 2
+
 rules:
   - !SHARDING
     tables:
@@ -64,7 +97,7 @@ rules:
         shardingAlgorithmName: database_inline
     defaultTableStrategy:
       none:
-    
+
     shardingAlgorithms:
       database_inline:
         type: INLINE
@@ -86,11 +119,11 @@ rules:
         type: INLINE
         props:
           algorithm-expression: account_${id % 2}
-    
+
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
-        
+
   - !BROADCAST
     tables:
       - t_address

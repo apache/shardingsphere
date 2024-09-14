@@ -62,7 +62,7 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
                         // CHECKSTYLE:OFF
                     } catch (final Exception ex) {
                         // CHECKSTYLE:ON
-                        log.info("Failed to check container {} healthy.", each.getName(), ex);
+                        log.info("Failed to check container {} healthy.", each.getName());
                         return false;
                     }
                 })
