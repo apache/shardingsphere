@@ -128,6 +128,33 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         containsEnhancedTable = isContainsEnhancedTable(metaData, tablesContext.getDatabaseNames(), currentDatabaseName);
     }
     
+    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
+        selectStatement.getWhere().ifPresent(whereSegments::add);
+        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(selectStatement));
+    }
+    
+    private Collection<TableSegment> getAllTableSegments(final Collection<TableSegment> inheritedTables) {
+        TableExtractor tableExtractor = new TableExtractor();
+        appendInheritedSimpleTables(inheritedTables, tableExtractor);
+        tableExtractor.extractTablesFromSelect(getSqlStatement());
+        Collection<TableSegment> result = new LinkedList<>(tableExtractor.getRewriteTables());
+        for (TableSegment each : tableExtractor.getTableContext()) {
+            if (each instanceof SubqueryTableSegment) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private void appendInheritedSimpleTables(final Collection<TableSegment> inheritedTables, final TableExtractor tableExtractor) {
+        for (TableSegment each : inheritedTables) {
+            if (each instanceof SimpleTableSegment) {
+                tableExtractor.getTableContext().add(each);
+            }
+        }
+    }
+    
     private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final Collection<String> databaseNames, final String currentDatabaseName) {
         for (String each : databaseNames) {
             if (isContainsEnhancedTable(metaData, each, getTablesContext().getTableNames())) {
@@ -350,6 +377,24 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return Optional.empty();
     }
     
+    /**
+     * Judge whether sql statement contains table subquery segment or not.
+     *
+     * @return whether sql statement contains table subquery segment or not
+     */
+    public boolean containsTableSubquery() {
+        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWithSegment().isPresent();
+    }
+    
+    /**
+     * Judge whether contains derived projections.
+     *
+     * @return contains derived projections or not
+     */
+    public boolean containsDerivedProjections() {
+        return containsEnhancedTable && !projectionsContext.getExpandProjections().isEmpty();
+    }
+    
     @Override
     public SelectStatement getSqlStatement() {
         return (SelectStatement) super.getSqlStatement();
@@ -368,51 +413,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return joinConditions;
-    }
-    
-    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
-        selectStatement.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(selectStatement));
-        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(selectStatement));
-    }
-    
-    private Collection<TableSegment> getAllTableSegments(final Collection<TableSegment> inheritedTables) {
-        TableExtractor tableExtractor = new TableExtractor();
-        appendInheritedSimpleTables(inheritedTables, tableExtractor);
-        tableExtractor.extractTablesFromSelect(getSqlStatement());
-        Collection<TableSegment> result = new LinkedList<>(tableExtractor.getRewriteTables());
-        for (TableSegment each : tableExtractor.getTableContext()) {
-            if (each instanceof SubqueryTableSegment) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    private void appendInheritedSimpleTables(final Collection<TableSegment> inheritedTables, final TableExtractor tableExtractor) {
-        for (TableSegment each : inheritedTables) {
-            if (each instanceof SimpleTableSegment) {
-                tableExtractor.getTableContext().add(each);
-            }
-        }
-    }
-    
-    /**
-     * Judge whether sql statement contains table subquery segment or not.
-     *
-     * @return whether sql statement contains table subquery segment or not
-     */
-    public boolean containsTableSubquery() {
-        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWithSegment().isPresent();
-    }
-    
-    /**
-     * Judge whether contains derived projections.
-     *
-     * @return contains derived projections or not
-     */
-    public boolean containsDerivedProjections() {
-        return containsEnhancedTable && !projectionsContext.getExpandProjections().isEmpty();
     }
     
     @Override
