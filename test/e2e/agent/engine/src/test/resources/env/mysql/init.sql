@@ -15,10 +15,6 @@
 -- limitations under the License.
 --
 
-CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '123456';
-GRANT All PRIVILEGES ON *.* TO 'root'@'%';
-FLUSH PRIVILEGES;
-
 SET character_set_database='utf8';
 SET character_set_server='utf8';
 
@@ -33,3 +29,8 @@ CREATE TABLE demo_ds_0.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, s
 
 CREATE TABLE demo_ds_1.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE demo_ds_1.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+
+CREATE USER IF NOT EXISTS 'test_user'@'%' IDENTIFIED BY 'Test@123';
+GRANT ALL ON *.* TO 'test_user'@'%';
+
+CREATE USER IF NOT EXISTS 'ready_user'@'%' IDENTIFIED BY 'Ready@123';
