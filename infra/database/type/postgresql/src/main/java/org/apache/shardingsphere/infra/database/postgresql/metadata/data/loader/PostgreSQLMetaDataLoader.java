@@ -36,6 +36,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -219,7 +220,11 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
         // TODO user defined collation which deterministic is false
         boolean caseSensitive = true;
         boolean isNullable = "YES".equals(resultSet.getString("is_nullable"));
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive, true, false, isNullable);
+        return new ColumnMetaData(columnName, getDataType(dataTypeMap, dataType), isPrimaryKey, generated, caseSensitive, true, false, isNullable);
+    }
+    
+    private Integer getDataType(final Map<String, Integer> dataTypeMap, final String dataTypeName) {
+        return "bool".equals(dataTypeName) ? Types.BOOLEAN : dataTypeMap.get(dataTypeName);
     }
     
     private Map<String, Multimap<String, ConstraintMetaData>> loadConstraintMetaDataMap(final Connection connection, final Collection<String> schemaNames) throws SQLException {
