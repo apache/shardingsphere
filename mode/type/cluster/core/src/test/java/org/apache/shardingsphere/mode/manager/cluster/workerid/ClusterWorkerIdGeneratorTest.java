@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
@@ -47,49 +48,55 @@ class ClusterWorkerIdGeneratorTest {
     
     private ClusterWorkerIdGenerator workerIdGenerator;
     
+    @Mock
+    private ComputeNodePersistService computeNodePersistService;
+    
+    @Mock
+    private ReservationPersistService reservationPersistService;
+    
     @BeforeEach
     void setUp() {
         workerIdGenerator = new ClusterWorkerIdGenerator(mock(ClusterPersistRepository.class), "foo_id");
+        setComputeNodePersistService();
+        setReservationPersistService();
     }
     
     @Test
     void assertGenerateWithExistedWorkerId() {
-        ComputeNodePersistService computeNodePersistService = mock(ComputeNodePersistService.class);
         when(computeNodePersistService.loadInstanceWorkerId("foo_id")).thenReturn(Optional.of(10));
-        setField("computeNodePersistService", computeNodePersistService);
         assertThat(workerIdGenerator.generate(new Properties()), is(10));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     void assertGenerateWithoutExistedWorkerId() {
-        ComputeNodePersistService computeNodePersistService = mock(ComputeNodePersistService.class);
         when(computeNodePersistService.getAssignedWorkerIds()).thenReturn(Collections.singleton(0));
-        setField("computeNodePersistService", computeNodePersistService);
-        ReservationPersistService reservationPersistService = mock(ReservationPersistService.class);
         when(reservationPersistService.reserveWorkerId(1, "foo_id")).thenReturn(Optional.empty(), Optional.of(1));
-        setField("reservationPersistService", reservationPersistService);
         assertThat(workerIdGenerator.generate(new Properties()), is(1));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     void assertGenerateWithoutExistedWorkerIdFailed() {
-        ComputeNodePersistService computeNodePersistService = mock(ComputeNodePersistService.class);
         Collection<Integer> mockedAssignedWorkerIds = mock(Collection.class);
         when(mockedAssignedWorkerIds.size()).thenReturn(Integer.MAX_VALUE);
         when(computeNodePersistService.getAssignedWorkerIds()).thenReturn(mockedAssignedWorkerIds);
-        setField("computeNodePersistService", computeNodePersistService);
         assertThrows(WorkerIdAssignedException.class, () -> workerIdGenerator.generate(new Properties()));
     }
     
     @Test
     void assertGenerateWorkerIdWithWarnLog() {
-        ComputeNodePersistService computeNodePersistService = mock(ComputeNodePersistService.class);
         when(computeNodePersistService.loadInstanceWorkerId("foo_id")).thenReturn(Optional.of(10));
+        assertThat(workerIdGenerator.generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "100"))), is(10));
+        assertThat(workerIdGenerator.generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "100"))), is(10));
+    }
+    
+    private void setComputeNodePersistService() {
         setField("computeNodePersistService", computeNodePersistService);
-        assertThat(workerIdGenerator.generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "100"))), is(10));
-        assertThat(workerIdGenerator.generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "100"))), is(10));
+    }
+    
+    private void setReservationPersistService() {
+        setField("reservationPersistService", reservationPersistService);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
