@@ -47,16 +47,16 @@ public final class DataChangedEventListenerRegistry {
      * Register data changed event listeners.
      */
     public void register() {
-        registerDatabaseRequiredListeners();
-        for (DispatchEventBuilder<?> each : ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class)) {
-            register(each);
-        }
+        databaseNames.forEach(this::register);
+        ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class).forEach(this::register);
+    }
+    
+    private void register(final String databaseName) {
+        listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new MetaDataChangedListener(eventBusContext));
     }
     
     private void register(final DispatchEventBuilder<?> builder) {
-        for (String each : builder.getSubscribedKeys()) {
-            register(each, builder);
-        }
+        builder.getSubscribedKeys().forEach(each -> register(each, builder));
     }
     
     private void register(final String subscribedKey, final DispatchEventBuilder<?> builder) {
@@ -65,13 +65,5 @@ public final class DataChangedEventListenerRegistry {
                 builder.build(dataChangedEvent).ifPresent(eventBusContext::post);
             }
         });
-    }
-    
-    private void registerDatabaseRequiredListeners() {
-        registerMetaDataChangedEventListener();
-    }
-    
-    private void registerMetaDataChangedEventListener() {
-        databaseNames.forEach(each -> listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(each), new MetaDataChangedListener(eventBusContext)));
     }
 }
