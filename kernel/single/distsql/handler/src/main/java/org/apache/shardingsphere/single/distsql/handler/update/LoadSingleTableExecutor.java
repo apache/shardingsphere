@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.InvalidStorageUnitStatusException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -51,8 +52,8 @@ import java.util.stream.Collectors;
 /**
  * Load single table statement executor.
  */
-@Slf4j
 @Setter
+@Slf4j
 public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRule, SingleRuleConfiguration> {
     
     private ShardingSphereDatabase database;
@@ -115,6 +116,9 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         ResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(
                 resourceMetaData.getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource())), database.getRuleMetaData().getRules());
+        Collection<String> invalidDataSources = requiredDataSources.stream().filter(each -> !aggregateDataSourceMap.containsKey(each)).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkState(invalidDataSources.isEmpty(), () -> new InvalidStorageUnitStatusException(String.format("`%s` is invalid, please use `%s`",
+                String.join(",", invalidDataSources), String.join(",", aggregateDataSourceMap.keySet()))));
         Map<String, Map<String, Collection<String>>> actualTableNodes = getActualTableNodes(requiredDataSources, aggregateDataSourceMap);
         for (SingleTableSegment each : sqlStatement.getTables()) {
             String tableName = each.getTableName();
