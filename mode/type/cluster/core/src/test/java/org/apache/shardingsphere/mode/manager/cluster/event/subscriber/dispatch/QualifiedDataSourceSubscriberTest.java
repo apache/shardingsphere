@@ -55,7 +55,7 @@ class QualifiedDataSourceSubscriberTest {
         StaticDataSourceRuleAttribute staticDataSourceRuleAttribute = mock(StaticDataSourceRuleAttribute.class);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class))
                 .thenReturn(Collections.singleton(staticDataSourceRuleAttribute));
-        QualifiedDataSource qualifiedDataSource = new QualifiedDataSource("foo_db.readwrite_ds.ds_0");
+        QualifiedDataSource qualifiedDataSource = new QualifiedDataSource("foo_db.foo_group.foo_ds");
         subscriber.renew(new QualifiedDataSourceStateEvent(qualifiedDataSource, new QualifiedDataSourceState(DataSourceState.DISABLED)));
         verify(staticDataSourceRuleAttribute).updateStatus(qualifiedDataSource, DataSourceState.DISABLED);
     }

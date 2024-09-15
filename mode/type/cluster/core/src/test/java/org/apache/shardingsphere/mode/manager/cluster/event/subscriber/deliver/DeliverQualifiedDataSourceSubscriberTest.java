@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.deliver;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
 import org.apache.shardingsphere.mode.event.deliver.datasource.qualified.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -29,18 +29,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class QualifiedDataSourceStateSubscriberTest {
+class DeliverQualifiedDataSourceSubscriberTest {
+    
+    private DeliverQualifiedDataSourceSubscriber subscriber;
     
     @Mock
     private ClusterPersistRepository repository;
     
+    @BeforeEach
+    void setUp() {
+        subscriber = new DeliverQualifiedDataSourceSubscriber(repository);
+    }
+    
     @Test
     void assertDeleteStorageNodeDataSourceDataSourceState() {
-        String databaseName = "replica_query_db";
-        String groupName = "readwrite_ds";
-        String dataSourceName = "replica_ds_0";
-        QualifiedDataSourceDeletedEvent event = new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, groupName, dataSourceName));
-        new DeliverQualifiedDataSourceSubscriber(repository).delete(event);
-        verify(repository).delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, dataSourceName)));
+        subscriber.delete(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db", "foo_group", "foo_ds")));
+        verify(repository).delete("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds");
     }
 }
