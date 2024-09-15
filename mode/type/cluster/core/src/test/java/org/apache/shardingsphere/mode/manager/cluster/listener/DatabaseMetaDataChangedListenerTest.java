@@ -128,8 +128,7 @@ class DatabaseMetaDataChangedListenerTest {
                     Arguments.of("invalidUnregisterStorageNode", "/metadata/foo_db/data_sources/nodes/foo_node/active_version/0", Type.DELETED, null),
                     Arguments.of("ignoreChangeStorageNode", "/metadata/foo_db/data_sources/nodes/foo_node", Type.IGNORED, null),
                     Arguments.of("invalidChangeDataSource", "/metadata/foo_db/data_sources/other", Type.ADDED, null),
-                    Arguments.of("changeRule", "/metadata/foo_db/schemas/foo_schema/rule/", Type.ADDED, AlterUniqueRuleItemEvent.class)
-            );
+                    Arguments.of("changeRule", "/metadata/foo_db/schemas/foo_schema/rule/", Type.ADDED, AlterUniqueRuleItemEvent.class));
         }
     }
 }
