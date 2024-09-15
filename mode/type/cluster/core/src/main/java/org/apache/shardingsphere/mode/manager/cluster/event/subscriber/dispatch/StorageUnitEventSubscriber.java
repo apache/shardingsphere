@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
  * Storage unit event subscriber.
  */
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class StorageUnitEventSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;

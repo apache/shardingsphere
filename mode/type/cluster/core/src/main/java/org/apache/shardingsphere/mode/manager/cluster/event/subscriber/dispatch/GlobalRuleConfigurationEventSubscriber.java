@@ -32,8 +32,8 @@ import java.util.Optional;
 /**
  * Global rule configuration event subscriber.
  */
-@SuppressWarnings("unused")
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class GlobalRuleConfigurationEventSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
