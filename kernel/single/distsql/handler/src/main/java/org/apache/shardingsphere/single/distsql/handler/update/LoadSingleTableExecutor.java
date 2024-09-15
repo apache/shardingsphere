@@ -52,8 +52,8 @@ import java.util.stream.Collectors;
 /**
  * Load single table statement executor.
  */
-@Slf4j
 @Setter
+@Slf4j
 public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRule, SingleRuleConfiguration> {
     
     private ShardingSphereDatabase database;
