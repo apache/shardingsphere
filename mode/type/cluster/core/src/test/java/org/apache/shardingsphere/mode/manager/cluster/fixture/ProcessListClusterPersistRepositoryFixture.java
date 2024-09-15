@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
+package org.apache.shardingsphere.mode.manager.cluster.fixture;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -25,10 +25,14 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.holder.Distributed
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
-public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
+public final class ProcessListClusterPersistRepositoryFixture implements ClusterPersistRepository {
+    
+    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
@@ -36,12 +40,12 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public String query(final String key) {
-        return "";
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
+        return Collections.singletonList("db");
     }
     
     @Override
@@ -51,10 +55,16 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void persist(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void update(final String key, final String value) {
+    }
+    
+    @Override
+    public void persistEphemeral(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
@@ -69,6 +79,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void delete(final String key) {
+        REGISTRY_DATA.remove(key);
     }
     
     @Override
@@ -81,10 +92,11 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void close() {
+        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "PROCESS_FIXTURE";
     }
 }

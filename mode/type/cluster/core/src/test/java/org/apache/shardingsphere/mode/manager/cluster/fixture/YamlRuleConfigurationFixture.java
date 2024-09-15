@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
+package org.apache.shardingsphere.mode.manager.cluster.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
