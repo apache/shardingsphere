@@ -56,6 +56,6 @@ public final class DataChangedEventListenerRegistry {
     }
     
     private void registerGlobalListeners(final DispatchEventBuilder<?> builder) {
-        builder.getSubscribedKeys().forEach(each -> repository.watch(each, new GlobalMetaDataChangedListener(eventBusContext, builder)));
+        repository.watch(builder.getSubscribedKey(), new GlobalMetaDataChangedListener(eventBusContext, builder));
     }
 }
