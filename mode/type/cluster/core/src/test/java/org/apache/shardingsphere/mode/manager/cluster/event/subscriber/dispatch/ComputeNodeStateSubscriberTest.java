@@ -17,104 +17,71 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.state.instance.InstanceState;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ComputeNodeStateSubscriberTest {
     
     private ComputeNodeStateSubscriber subscriber;
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
     @BeforeEach
-    void setUp() throws SQLException {
-        EventBusContext eventBusContext = new EventBusContext();
-        contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), eventBusContext);
-        contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), mock(ShardingSphereMetaData.class)));
+    void setUp() {
         subscriber = new ComputeNodeStateSubscriber(contextManager);
     }
     
     @Test
-    void assertRenewInstanceOfflineEvent() {
-        subscriber.renew(new InstanceOfflineEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData()));
-        assertThat(((ProxyInstanceMetaData) contextManager.getComputeNodeInstanceContext().getInstance().getMetaData()).getPort(), is(3307));
+    void assertRenewWithInstanceOnlineEvent() {
+        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
+        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
+        when(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(instanceMetaData)).thenReturn(computeNodeInstance);
+        subscriber.renew(new InstanceOnlineEvent(instanceMetaData));
+        verify(contextManager.getComputeNodeInstanceContext()).addComputeNodeInstance(computeNodeInstance);
     }
     
     @Test
-    void assertRenewInstanceOnlineEvent() {
-        InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
-        InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
-        subscriber.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(1));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(0).getMetaData(), is(instanceMetaData1));
-        InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("foo_instance_3308", 3308);
-        InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceMetaData2);
-        subscriber.renew(instanceOnlineEvent2);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(2));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData2));
-        subscriber.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getComputeNodeInstanceContext().getAllClusterInstances().size(), is(2));
-        assertThat(((CopyOnWriteArrayList<ComputeNodeInstance>) contextManager.getComputeNodeInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData1));
-    }
-    
-    private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()));
-        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
-        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
-                new Properties(), Collections.emptyList(), instanceMetaData, false);
+    void assertRenewWithInstanceOfflineEvent() {
+        subscriber.renew(new InstanceOfflineEvent(mock(InstanceMetaData.class)));
+        verify(contextManager.getComputeNodeInstanceContext()).deleteComputeNodeInstance(any());
     }
     
     @Test
-    void assertRenewInstanceState() {
-        ComputeNodeInstanceStateChangedEvent event = new ComputeNodeInstanceStateChangedEvent(
-                contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), InstanceState.OK.name());
-        subscriber.renew(event);
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
+    void assertRenewWithComputeNodeInstanceStateChangedEvent() {
+        subscriber.renew(new ComputeNodeInstanceStateChangedEvent("foo_instance_id", "OK"));
+        verify(contextManager.getComputeNodeInstanceContext()).updateStatus("foo_instance_id", "OK");
     }
     
     @Test
-    void assertRenewInstanceWorkerIdEvent() {
-        subscriber.renew(new WorkerIdEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), 0));
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getWorkerId(), is(0));
+    void assertRenewWithWorkerIdEvent() {
+        subscriber.renew(new WorkerIdEvent("foo_instance_id", 1));
+        verify(contextManager.getComputeNodeInstanceContext()).updateWorkerId("foo_instance_id", 1);
     }
     
     @Test
-    void assertRenewInstanceLabels() {
-        Collection<String> labels = Collections.singletonList("test");
-        subscriber.renew(new LabelsEvent(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId(), labels));
-        assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getLabels(), is(labels));
+    void assertRenewWithLabelsEvent() {
+        subscriber.renew(new LabelsEvent("foo_instance_id", Collections.emptyList()));
+        verify(contextManager.getComputeNodeInstanceContext()).updateLabel("foo_instance_id", Collections.emptyList());
     }
 }
