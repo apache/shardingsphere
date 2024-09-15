@@ -49,7 +49,7 @@ public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEven
     
     @Override
     public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
+        return Arrays.asList(Type.ADDED, Type.DELETED);
     }
     
     @Override
@@ -59,16 +59,17 @@ public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEven
     
     private Optional<DispatchEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = getInstanceOnlinePathMatcher(event.getKey());
-        if (matcher.find()) {
-            ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
-            InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(matcher.group(2),
-                    InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion());
-            if (Type.ADDED == event.getType()) {
-                return Optional.of(new InstanceOnlineEvent(instanceMetaData));
-            }
-            if (Type.DELETED == event.getType()) {
-                return Optional.of(new InstanceOfflineEvent(instanceMetaData));
-            }
+        if (!matcher.find()) {
+            return Optional.empty();
+        }
+        ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
+        InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(
+                matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion());
+        if (Type.ADDED == event.getType()) {
+            return Optional.of(new InstanceOnlineEvent(instanceMetaData));
+        }
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new InstanceOfflineEvent(instanceMetaData));
         }
         return Optional.empty();
     }

@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ComputeNodeOnlineDispatchEventBuilderTest {
@@ -36,7 +37,17 @@ class ComputeNodeOnlineDispatchEventBuilderTest {
     private final ComputeNodeOnlineDispatchEventBuilder builder = new ComputeNodeOnlineDispatchEventBuilder();
     
     @Test
-    void assertComputeNodeOnline() {
+    void assertGetSubscribedKey() {
+        assertThat(builder.getSubscribedKey(), is("/nodes/compute_nodes/online"));
+    }
+    
+    @Test
+    void assertBuildWithInvalidInstanceOnlinePath() {
+        assertFalse(builder.build(new DataChangedEvent("/nodes/compute_nodes/online/foo", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED)).isPresent());
+    }
+    
+    @Test
+    void assertBuildComputeNodeOnlineEvent() {
         Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
         assertTrue(actual.isPresent());
         InstanceOnlineEvent event = (InstanceOnlineEvent) actual.get();
@@ -48,7 +59,7 @@ class ComputeNodeOnlineDispatchEventBuilderTest {
     }
     
     @Test
-    void assertComputeNodeOffline() {
+    void assertBuildWithComputeNodeOfflineEvent() {
         Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.DELETED));
         assertTrue(actual.isPresent());
         InstanceOfflineEvent event = (InstanceOfflineEvent) actual.get();
@@ -57,5 +68,10 @@ class ComputeNodeOnlineDispatchEventBuilderTest {
         assertThat(event.getInstanceMetaData().getType(), is(InstanceType.PROXY));
         assertThat(event.getInstanceMetaData().getVersion(), is("1"));
         assertThat(event.getInstanceMetaData().getAttributes(), is("127.0.0.1@3307"));
+    }
+    
+    @Test
+    void assertBuildWithInvalidOperationType() {
+        assertFalse(builder.build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.UPDATED)).isPresent());
     }
 }

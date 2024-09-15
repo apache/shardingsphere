@@ -36,6 +36,11 @@ class ClusterStateDispatchEventBuilderTest {
     private final ClusterStateDispatchEventBuilder builder = new ClusterStateDispatchEventBuilder();
     
     @Test
+    void assertGetSubscribedKey() {
+        assertThat(builder.getSubscribedKey(), is("/nodes/compute_nodes/status"));
+    }
+    
+    @Test
     void assertBuildEventWhenDelete() {
         assertFalse(builder.build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.DELETED)).isPresent());
     }
