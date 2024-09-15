@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -41,11 +40,17 @@ import java.util.Map;
 /**
  * Meta data changed subscriber.
  */
-@RequiredArgsConstructor
 @SuppressWarnings("unused")
 public final class MetaDataChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
+    
+    private final ClusterPersistRepository repository;
+    
+    public MetaDataChangedSubscriber(final ContextManager contextManager) {
+        this.contextManager = contextManager;
+        repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
+    }
     
     /**
      * Renew to added schema.
@@ -76,10 +81,11 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final CreateOrAlterTableEvent event) {
-        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
-        Map<String, ShardingSphereTable> tables = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
-                .getTableMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
+        Preconditions.checkArgument(event.getActiveVersion().equals(
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
+                "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
+        Map<String, ShardingSphereTable> tables = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().getTableMetaDataPersistService()
+                .load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), tables.values().iterator().next(), null);
         refreshShardingSphereStatisticsData();
     }
@@ -102,12 +108,12 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final CreateOrAlterViewEvent event) {
-        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
-        Map<String, ShardingSphereView> views = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService()
-                .getViewMetaDataPersistService().load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(),
-                null, views.values().iterator().next());
+        Preconditions.checkArgument(event.getActiveVersion().equals(
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
+                "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
+        Map<String, ShardingSphereView> views = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService()
+                .load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, views.values().iterator().next());
         refreshShardingSphereStatisticsData();
     }
     
@@ -125,8 +131,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
     private void refreshShardingSphereStatisticsData() {
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
                 && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager,
-                    new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()))).asyncRefresh();
+            new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService(repository))).asyncRefresh();
         }
     }
 }
