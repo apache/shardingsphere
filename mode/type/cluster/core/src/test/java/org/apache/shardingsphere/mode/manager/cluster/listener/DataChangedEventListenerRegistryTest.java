@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.listener;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,19 +37,11 @@ class DataChangedEventListenerRegistryTest {
     @Test
     void assertRegister() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(mock(ClusterPersistRepository.class));
-        DataChangedEventListenerManager listenerManager = mock(DataChangedEventListenerManager.class);
+        ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
+        when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
         DataChangedEventListenerRegistry registry = new DataChangedEventListenerRegistry(contextManager, Collections.singleton("foo_db"));
-        setDataChangedEventListenerManager(registry, listenerManager);
         registry.register();
-        verify(listenerManager).addListener(eq("/metadata/foo_db"), any());
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setDataChangedEventListenerManager(final DataChangedEventListenerRegistry registry, final DataChangedEventListenerManager listenerManager) {
-        Field field = DataChangedEventListenerRegistry.class.getDeclaredField("listenerManager");
-        field.setAccessible(true);
-        field.set(registry, listenerManager);
-        field.setAccessible(false);
+        verify(repository).watch(eq("/metadata/foo_db"), any(DatabaseMetaDataChangedListener.class));
+        verify(repository, atLeastOnce()).watch(anyString(), any(GlobalMetaDataChangedListener.class));
     }
 }
