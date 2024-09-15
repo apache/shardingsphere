@@ -55,10 +55,7 @@ public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEven
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
-            return createInstanceEvent(event);
-        }
-        return Optional.empty();
+        return event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath()) ? createInstanceEvent(event) : Optional.empty();
     }
     
     private Optional<DispatchEvent> createInstanceEvent(final DataChangedEvent event) {

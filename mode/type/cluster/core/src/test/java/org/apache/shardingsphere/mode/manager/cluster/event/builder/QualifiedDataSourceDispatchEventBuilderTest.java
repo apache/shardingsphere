@@ -33,10 +33,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QualifiedDataSourceDispatchEventBuilderTest {
     
+    private final QualifiedDataSourceDispatchEventBuilder builder = new QualifiedDataSourceDispatchEventBuilder();
+    
     @Test
     void assertCreateEnabledQualifiedDataSourceChangedEvent() {
-        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
-                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: ENABLED\n", Type.ADDED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
@@ -47,8 +48,7 @@ class QualifiedDataSourceDispatchEventBuilderTest {
     
     @Test
     void assertCreateDisabledQualifiedDataSourceChangedEvent() {
-        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
-                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: DISABLED\n", Type.DELETED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
         QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
         assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
@@ -59,8 +59,7 @@ class QualifiedDataSourceDispatchEventBuilderTest {
     
     @Test
     void assertCreateEmptyEvent() {
-        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
-                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }
 }

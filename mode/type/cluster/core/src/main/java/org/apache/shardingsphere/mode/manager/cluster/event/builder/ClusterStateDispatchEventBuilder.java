@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 
 import java.util.Arrays;
@@ -47,10 +46,7 @@ public final class ClusterStateDispatchEventBuilder implements DispatchEventBuil
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        String clusterStatePath = ComputeNode.getClusterStateNodePath();
-        return Strings.isNullOrEmpty(clusterStatePath) || Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStateNodePath())
-                ? Optional.empty()
-                : Optional.of(new ClusterStateEvent(getClusterState(event)));
+        return Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStateNodePath()) ? Optional.empty() : Optional.of(new ClusterStateEvent(getClusterState(event)));
     }
     
     private ClusterState getClusterState(final DataChangedEvent event) {
