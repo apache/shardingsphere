@@ -58,7 +58,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.plugins.MemberAccessor;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
@@ -100,8 +99,7 @@ class MySQLComQueryPacketExecutorTest {
     @Test
     void assertIsQueryResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), mysqlComQueryPacketExecutor, proxyBackendHandler);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), mysqlComQueryPacketExecutor, proxyBackendHandler);
         QueryHeader queryHeader = mock(QueryHeader.class);
         when(queryHeader.getColumnTypeName()).thenReturn("VARCHAR");
         when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(queryHeader)));
@@ -112,8 +110,7 @@ class MySQLComQueryPacketExecutorTest {
     @Test
     void assertIsUpdateResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), mysqlComQueryPacketExecutor, proxyBackendHandler);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), mysqlComQueryPacketExecutor, proxyBackendHandler);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         mysqlComQueryPacketExecutor.execute();
         assertThat(mysqlComQueryPacketExecutor.getResponseType(), is(ResponseType.UPDATE));
@@ -130,8 +127,7 @@ class MySQLComQueryPacketExecutorTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         Collection<DatabasePacket> actualPackets = actual.execute();
         assertThat(actualPackets.size(), is(1));
@@ -163,8 +159,7 @@ class MySQLComQueryPacketExecutorTest {
     @Test
     void assertNext() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
         when(proxyBackendHandler.next()).thenReturn(true, false);
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -178,8 +173,7 @@ class MySQLComQueryPacketExecutorTest {
     @Test
     void assertClose() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
+        Plugins.getMemberAccessor().set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
         actual.close();
         verify(proxyBackendHandler).close();
     }

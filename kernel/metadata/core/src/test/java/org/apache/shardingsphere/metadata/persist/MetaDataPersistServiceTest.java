@@ -59,7 +59,7 @@ class MetaDataPersistServiceTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Plugins.getMemberAccessor().set(metaDataPersistService.getClass().getDeclaredField(name), metaDataPersistService, value);
+        Plugins.getMemberAccessor().set(MetaDataPersistService.class.getDeclaredField(name), metaDataPersistService, value);
     }
     
     @Test

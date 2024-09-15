@@ -132,7 +132,7 @@ class ProxyDatabaseConnectionManagerTest {
     
     @AfterEach
     void clean() throws ReflectiveOperationException {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
+        Field field = ProxyContext.class.getDeclaredField("backendDataSource");
         Object datasource = field.getType().getDeclaredConstructor().newInstance();
         Plugins.getMemberAccessor().set(field, ProxyContext.getInstance(), datasource);
     }

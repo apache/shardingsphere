@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
@@ -32,14 +33,15 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessCompletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ReportLocalProcessesEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.awaitility.Awaitility;
@@ -50,7 +52,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.plugins.MemberAccessor;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -81,15 +82,15 @@ class ProcessListChangedSubscriberTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @BeforeEach
-    void setUp() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void setUp() throws SQLException {
         EventBusContext eventBusContext = new EventBusContext();
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter(), eventBusContext);
         contextManager.renewMetaDataContexts(MetaDataContextsFactory.create(contextManager.getPersistServiceFacade().getMetaDataPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalResourceMetaData(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
                 new ConfigurationProperties(new Properties()))));
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(contextManager.getPersistServiceFacade().getClass().getDeclaredField("repository"), contextManager.getPersistServiceFacade(), repository);
+        Plugins.getMemberAccessor().set(PersistServiceFacade.class.getDeclaredField("repository"), contextManager.getPersistServiceFacade(), repository);
         subscriber = new ProcessListChangedSubscriber(contextManager);
     }
     

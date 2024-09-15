@@ -137,13 +137,13 @@ class XAShardingSphereTransactionManagerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, XATransactionDataSource> getCachedDataSources() {
-        return (Map<String, XATransactionDataSource>) Plugins.getMemberAccessor().get(xaTransactionManager.getClass().getDeclaredField("cachedDataSources"), xaTransactionManager);
+        return (Map<String, XATransactionDataSource>) Plugins.getMemberAccessor().get(XAShardingSphereTransactionManager.class.getDeclaredField("cachedDataSources"), xaTransactionManager);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private ThreadLocal<Map<Transaction, Connection>> getEnlistedTransactions(final XATransactionDataSource transactionDataSource) {
-        return (ThreadLocal<Map<Transaction, Connection>>) Plugins.getMemberAccessor().get(transactionDataSource.getClass().getDeclaredField("enlistedTransactions"), transactionDataSource);
+        return (ThreadLocal<Map<Transaction, Connection>>) Plugins.getMemberAccessor().get(XATransactionDataSource.class.getDeclaredField("enlistedTransactions"), transactionDataSource);
     }
     
     private Map<String, DataSource> createDataSources(final DatabaseType databaseType) {

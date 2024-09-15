@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -54,30 +54,24 @@ class ReadwriteSplittingDataSourceRouterTest {
     @Mock
     private HintValueContext hintValueContext;
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @Test
     void assertRouteWithQualifiedRouters() {
         ReadwriteSplittingDataSourceRouter router = new ReadwriteSplittingDataSourceRouter(rule, mock(ConnectionContext.class));
         QualifiedReadwriteSplittingDataSourceRouter qualifiedRouter = mock(QualifiedReadwriteSplittingDataSourceRouter.class);
         when(qualifiedRouter.isQualified(sqlStatementContext, rule, hintValueContext)).thenReturn(true);
         when(qualifiedRouter.route(rule)).thenReturn("qualified_ds");
-        setQualifiedRouters(router, qualifiedRouter);
+        Plugins.getMemberAccessor().set(ReadwriteSplittingDataSourceRouter.class.getDeclaredField("qualifiedRouters"), router, qualifiedRouter);
         assertThat(router.route(sqlStatementContext, hintValueContext), is("qualified_ds"));
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @Test
     void assertRouteWithStandardRouters() {
         when(rule.getLoadBalancer().getTargetName(any(), any())).thenReturn("standard_ds");
         ReadwriteSplittingDataSourceRouter router = new ReadwriteSplittingDataSourceRouter(rule, mock(ConnectionContext.class));
-        setQualifiedRouters(router, mock(QualifiedReadwriteSplittingDataSourceRouter.class));
+        Plugins.getMemberAccessor().set(ReadwriteSplittingDataSourceRouter.class.getDeclaredField("qualifiedRouters"), router, mock(QualifiedReadwriteSplittingDataSourceRouter.class));
         when(ShardingSphereServiceLoader.getServiceInstances(ReadDataSourcesFilter.class)).thenReturn(Collections.emptyList());
         assertThat(router.route(sqlStatementContext, hintValueContext), is("standard_ds"));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setQualifiedRouters(final ReadwriteSplittingDataSourceRouter router, final QualifiedReadwriteSplittingDataSourceRouter qualifiedRouter) {
-        Field field = router.getClass().getDeclaredField("qualifiedRouters");
-        field.setAccessible(true);
-        field.set(router, Collections.singleton(qualifiedRouter));
-        field.setAccessible(false);
     }
 }

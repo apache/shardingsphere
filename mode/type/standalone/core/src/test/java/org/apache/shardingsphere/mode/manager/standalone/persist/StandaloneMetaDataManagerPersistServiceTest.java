@@ -43,9 +43,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -78,10 +78,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @SneakyThrows(ReflectiveOperationException.class)
     void setUp() {
         metaDataManagerPersistService = new StandaloneMetaDataManagerPersistService(mock(PersistRepository.class), metaDataContextManager);
-        Field field = metaDataManagerPersistService.getClass().getDeclaredField("metaDataPersistService");
-        field.setAccessible(true);
-        field.set(metaDataManagerPersistService, metaDataPersistService);
-        field.setAccessible(false);
+        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("metaDataPersistService"), metaDataManagerPersistService, metaDataPersistService);
     }
     
     @Test
@@ -246,9 +243,6 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setRuleConfigurationEventBuilder(final RuleConfigurationEventBuilder ruleConfigurationEventBuilder) {
-        Field field = metaDataManagerPersistService.getClass().getDeclaredField("ruleConfigurationEventBuilder");
-        field.setAccessible(true);
-        field.set(metaDataManagerPersistService, ruleConfigurationEventBuilder);
-        field.setAccessible(false);
+        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleConfigurationEventBuilder"), metaDataManagerPersistService, ruleConfigurationEventBuilder);
     }
 }
