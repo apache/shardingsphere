@@ -45,10 +45,10 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.util.Optional;
 
 /**
- * Meta data changed listener.
+ * Database meta data changed listener.
  */
 @RequiredArgsConstructor
-public final class MetaDataChangedListener implements DataChangedEventListener {
+public final class DatabaseMetaDataChangedListener implements DataChangedEventListener {
     
     private final EventBusContext eventBusContext;
     

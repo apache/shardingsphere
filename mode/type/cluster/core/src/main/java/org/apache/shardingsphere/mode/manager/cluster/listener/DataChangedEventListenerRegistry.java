@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.listener;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.manager.cluster.event.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -47,23 +47,15 @@ public final class DataChangedEventListenerRegistry {
      * Register data changed event listeners.
      */
     public void register() {
-        databaseNames.forEach(this::register);
-        ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class).forEach(this::register);
+        databaseNames.forEach(this::registerDatabaseListeners);
+        ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class).forEach(this::registerGlobalListeners);
     }
     
-    private void register(final String databaseName) {
-        listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new MetaDataChangedListener(eventBusContext));
+    private void registerDatabaseListeners(final String databaseName) {
+        listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new DatabaseMetaDataChangedListener(eventBusContext));
     }
     
-    private void register(final DispatchEventBuilder<?> builder) {
-        builder.getSubscribedKeys().forEach(each -> register(each, builder));
-    }
-    
-    private void register(final String subscribedKey, final DispatchEventBuilder<?> builder) {
-        listenerManager.addListener(subscribedKey, dataChangedEvent -> {
-            if (builder.getSubscribedTypes().contains(dataChangedEvent.getType())) {
-                builder.build(dataChangedEvent).ifPresent(eventBusContext::post);
-            }
-        });
+    private void registerGlobalListeners(final DispatchEventBuilder<?> builder) {
+        builder.getSubscribedKeys().forEach(each -> listenerManager.addListener(each, new GlobalMetaDataChangedListener(eventBusContext, builder)));
     }
 }
