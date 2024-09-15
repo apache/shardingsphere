@@ -28,30 +28,28 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClusterStateDispatchEventBuilderTest {
     
+    private final ClusterStateDispatchEventBuilder builder = new ClusterStateDispatchEventBuilder();
+    
     @Test
-    void assertCreateEventWhenReadOnly() {
-        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.UPDATED));
+    void assertBuildEventWhenDelete() {
+        assertFalse(builder.build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.DELETED)).isPresent());
+    }
+    
+    @Test
+    void assertBuildEventWithValidClusterState() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.READ_ONLY));
     }
     
     @Test
-    void assertCreateEventWhenUnavailable() {
-        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.UNAVAILABLE.name(), Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.UNAVAILABLE));
-    }
-    
-    @Test
-    void assertCreateEventWhenEnabled() {
-        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.OK.name(), Type.UPDATED));
+    void assertBuildEventWithInvalidClusterState() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status", "INVALID", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.OK));
     }
