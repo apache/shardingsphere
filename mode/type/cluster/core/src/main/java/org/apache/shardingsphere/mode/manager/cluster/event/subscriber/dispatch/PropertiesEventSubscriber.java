@@ -39,8 +39,9 @@ public final class PropertiesEventSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterPropertiesEvent event) {
-        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
+        Preconditions.checkArgument(event.getActiveVersion().equals(
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
+                "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }
