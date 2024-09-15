@@ -43,8 +43,8 @@ public final class ComputeNodeStateSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(contextManager.getPersistServiceFacade()
-                .getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
+        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(
+                contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**
