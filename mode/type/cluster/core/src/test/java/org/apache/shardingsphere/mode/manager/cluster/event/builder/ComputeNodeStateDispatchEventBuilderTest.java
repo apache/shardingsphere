@@ -35,10 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ComputeNodeStateDispatchEventBuilderTest {
     
+    private final ComputeNodeStateDispatchEventBuilder builder = new ComputeNodeStateDispatchEventBuilder();
+    
     @Test
     void assertCreateEventWhenDisabled() {
-        Optional<DispatchEvent> actual = new ComputeNodeStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus(), is(InstanceState.CIRCUIT_BREAK.name()));
         assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
@@ -46,8 +47,7 @@ class ComputeNodeStateDispatchEventBuilderTest {
     
     @Test
     void assertCreateEventWhenEnabled() {
-        Optional<DispatchEvent> actual = new ComputeNodeStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus().isEmpty());
         assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
@@ -55,9 +55,7 @@ class ComputeNodeStateDispatchEventBuilderTest {
     
     @Test
     void assertCreateAddLabelEvent() {
-        Optional<DispatchEvent> actual = new ComputeNodeStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
-                        YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id", YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
         assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
@@ -65,9 +63,7 @@ class ComputeNodeStateDispatchEventBuilderTest {
     
     @Test
     void assertCreateUpdateLabelsEvent() {
-        Optional<DispatchEvent> actual = new ComputeNodeStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
-                        YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id", YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
         assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
