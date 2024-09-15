@@ -22,6 +22,8 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.DatabaseDataAddedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.DatabaseDataDeletedEvent;
@@ -30,12 +32,9 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.data.SchemaDataDel
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSphereRowDataChangedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSphereRowDataDeletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.TableDataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -44,8 +43,8 @@ import java.util.Optional;
 public final class ShardingSphereDataDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ShardingSphereDataNode.getShardingSphereDataNodePath());
+    public String getSubscribedKey() {
+        return ShardingSphereDataNode.getShardingSphereDataNodePath();
     }
     
     @Override

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessCompletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessEvent;
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,8 +44,8 @@ import java.util.regex.Pattern;
 public final class ComputeNodeStateDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ComputeNode.getComputeNodePath());
+    public String getSubscribedKey() {
+        return ComputeNode.getComputeNodePath();
     }
     
     @Override

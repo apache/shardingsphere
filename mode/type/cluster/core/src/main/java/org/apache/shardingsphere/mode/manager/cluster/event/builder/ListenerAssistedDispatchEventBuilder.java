@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -37,8 +36,8 @@ import java.util.Optional;
 public final class ListenerAssistedDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ListenerAssistedNodePath.getRootNodePath());
+    public String getSubscribedKey() {
+        return ListenerAssistedNodePath.getRootNodePath();
     }
     
     @Override

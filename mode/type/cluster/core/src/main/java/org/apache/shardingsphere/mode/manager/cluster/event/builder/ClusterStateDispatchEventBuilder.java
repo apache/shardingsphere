@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateE
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -35,8 +34,8 @@ import java.util.Optional;
 public final class ClusterStateDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ComputeNode.getClusterStateNodePath());
+    public String getSubscribedKey() {
+        return ComputeNode.getClusterStateNodePath();
     }
     
     @Override
