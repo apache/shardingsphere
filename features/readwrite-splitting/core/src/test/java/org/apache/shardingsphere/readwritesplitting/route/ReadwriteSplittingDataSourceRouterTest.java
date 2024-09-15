@@ -75,6 +75,6 @@ class ReadwriteSplittingDataSourceRouterTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setQualifiedRouters(final ReadwriteSplittingDataSourceRouter router, final QualifiedReadwriteSplittingDataSourceRouter qualifiedRouter) {
-        Plugins.getMemberAccessor().set(router.getClass().getDeclaredField("qualifiedRouters"), router, qualifiedRouter);
+        Plugins.getMemberAccessor().set(router.getClass().getDeclaredField("qualifiedRouters"), router, Collections.singleton(qualifiedRouter));
     }
 }
