@@ -100,6 +100,13 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
+    void assertKillLocalProcessWithoutExistedProcess() throws SQLException {
+        when(ProcessRegistry.getInstance().get("foo_pid")).thenReturn(null);
+        subscriber.killLocalProcess(new KillLocalProcessEvent("foo_instance_id", "foo_pid"));
+        verify(contextManager.getPersistServiceFacade().getRepository()).delete("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid");
+    }
+    
+    @Test
     void assertKillLocalProcessWithExistedProcess() throws SQLException {
         Process process = mock(Process.class, RETURNS_DEEP_STUBS);
         Statement statement = mock(Statement.class);
