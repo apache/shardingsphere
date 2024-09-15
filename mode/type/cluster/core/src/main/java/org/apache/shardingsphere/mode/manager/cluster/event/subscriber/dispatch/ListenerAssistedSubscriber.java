@@ -34,8 +34,8 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 /**
  * Listener assisted subscriber.
  */
-@SuppressWarnings("unused")
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class ListenerAssistedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.Inst
  * Compute node state subscriber.
  */
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class ComputeNodeStateSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
