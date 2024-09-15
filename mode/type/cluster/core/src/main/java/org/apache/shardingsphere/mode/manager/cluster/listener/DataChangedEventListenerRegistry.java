@@ -31,14 +31,14 @@ import java.util.Collection;
  */
 public final class DataChangedEventListenerRegistry {
     
-    private final DataChangedEventListenerManager listenerManager;
+    private final ClusterPersistRepository repository;
     
     private final EventBusContext eventBusContext;
     
     private final Collection<String> databaseNames;
     
     public DataChangedEventListenerRegistry(final ContextManager contextManager, final Collection<String> databaseNames) {
-        listenerManager = new DataChangedEventListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository());
+        repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
         this.databaseNames = databaseNames;
     }
@@ -52,10 +52,10 @@ public final class DataChangedEventListenerRegistry {
     }
     
     private void registerDatabaseListeners(final String databaseName) {
-        listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new DatabaseMetaDataChangedListener(eventBusContext));
+        repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new DatabaseMetaDataChangedListener(eventBusContext));
     }
     
     private void registerGlobalListeners(final DispatchEventBuilder<?> builder) {
-        builder.getSubscribedKeys().forEach(each -> listenerManager.addListener(each, new GlobalMetaDataChangedListener(eventBusContext, builder)));
+        builder.getSubscribedKeys().forEach(each -> repository.watch(each, new GlobalMetaDataChangedListener(eventBusContext, builder)));
     }
 }
