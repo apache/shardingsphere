@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListen
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.listener.DataChangedEventListenerManager;
-import org.apache.shardingsphere.mode.manager.cluster.listener.MetaDataChangedListener;
+import org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.manager.cluster.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -55,7 +55,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final CreateDatabaseListenerAssistedEvent event) {
         listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()),
-                new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
+                new DatabaseMetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
         refreshShardingSphereStatisticsData();
