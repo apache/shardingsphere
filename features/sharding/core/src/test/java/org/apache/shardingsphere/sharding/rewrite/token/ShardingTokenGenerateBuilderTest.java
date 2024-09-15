@@ -82,6 +82,6 @@ class ShardingTokenGenerateBuilderTest {
     }
     
     private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws Exception {
-        assertThat(Plugins.getMemberAccessor().get(SQLTokenGenerator.class.getDeclaredField(fieldName), sqlTokenGenerator), is(filedInstance));
+        assertThat(Plugins.getMemberAccessor().get(sqlTokenGenerator.getClass().getDeclaredField(fieldName), sqlTokenGenerator), is(filedInstance));
     }
 }

@@ -54,24 +54,27 @@ class ReadwriteSplittingDataSourceRouterTest {
     @Mock
     private HintValueContext hintValueContext;
     
-    @SneakyThrows(ReflectiveOperationException.class)
     @Test
     void assertRouteWithQualifiedRouters() {
         ReadwriteSplittingDataSourceRouter router = new ReadwriteSplittingDataSourceRouter(rule, mock(ConnectionContext.class));
         QualifiedReadwriteSplittingDataSourceRouter qualifiedRouter = mock(QualifiedReadwriteSplittingDataSourceRouter.class);
         when(qualifiedRouter.isQualified(sqlStatementContext, rule, hintValueContext)).thenReturn(true);
         when(qualifiedRouter.route(rule)).thenReturn("qualified_ds");
-        Plugins.getMemberAccessor().set(ReadwriteSplittingDataSourceRouter.class.getDeclaredField("qualifiedRouters"), router, qualifiedRouter);
+        setQualifiedRouters(router, qualifiedRouter);
         assertThat(router.route(sqlStatementContext, hintValueContext), is("qualified_ds"));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     @Test
     void assertRouteWithStandardRouters() {
         when(rule.getLoadBalancer().getTargetName(any(), any())).thenReturn("standard_ds");
         ReadwriteSplittingDataSourceRouter router = new ReadwriteSplittingDataSourceRouter(rule, mock(ConnectionContext.class));
-        Plugins.getMemberAccessor().set(ReadwriteSplittingDataSourceRouter.class.getDeclaredField("qualifiedRouters"), router, mock(QualifiedReadwriteSplittingDataSourceRouter.class));
+        setQualifiedRouters(router, mock(QualifiedReadwriteSplittingDataSourceRouter.class));
         when(ShardingSphereServiceLoader.getServiceInstances(ReadDataSourcesFilter.class)).thenReturn(Collections.emptyList());
         assertThat(router.route(sqlStatementContext, hintValueContext), is("standard_ds"));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setQualifiedRouters(final ReadwriteSplittingDataSourceRouter router, final QualifiedReadwriteSplittingDataSourceRouter qualifiedRouter) {
+        Plugins.getMemberAccessor().set(ReadwriteSplittingDataSourceRouter.class.getDeclaredField("qualifiedRouters"), router, Collections.singleton(qualifiedRouter));
     }
 }
