@@ -191,7 +191,7 @@ class SeataATShardingSphereTransactionManagerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap() {
-        return (Map<String, DataSource>) Plugins.getMemberAccessor().get(SeataATShardingSphereTransactionManager.class.getDeclaredField("dataSourceMap"), seataTransactionManager);
+        return (Map<String, DataSource>) Plugins.getMemberAccessor().get(seataTransactionManager.getClass().getDeclaredField("dataSourceMap"), seataTransactionManager);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -202,9 +202,9 @@ class SeataATShardingSphereTransactionManagerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void releaseRpcClient() {
-        Plugins.getMemberAccessor().set(TmNettyRemotingClient.class.getDeclaredField("initialized"), TmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
-        Plugins.getMemberAccessor().set(TmNettyRemotingClient.class.getDeclaredField("instance"), TmNettyRemotingClient.getInstance(), null);
-        Plugins.getMemberAccessor().set(TmNettyRemotingClient.class.getDeclaredField("initialized"), RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
-        Plugins.getMemberAccessor().set(TmNettyRemotingClient.class.getDeclaredField("instance"), RmNettyRemotingClient.getInstance(), null);
+        Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), TmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), TmNettyRemotingClient.getInstance(), null);
+        Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), RmNettyRemotingClient.getInstance(), null);
     }
 }
