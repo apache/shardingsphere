@@ -118,9 +118,9 @@ class ImportMetaDataExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);
         YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
-        Plugins.getMemberAccessor().set(executor.getClass().getDeclaredField("databaseConfigImportExecutor"), executor, databaseConfigImportExecutor);
-        Plugins.getMemberAccessor().set(databaseConfigImportExecutor.getClass().getDeclaredField("validateHandler"), databaseConfigImportExecutor,
-                mock(DistSQLDataSourcePoolPropertiesValidator.class));
+        Plugins.getMemberAccessor().set(ImportMetaDataExecutor.class.getDeclaredField("databaseConfigImportExecutor"), executor, databaseConfigImportExecutor);
+        Plugins.getMemberAccessor().set(
+                YamlDatabaseConfigurationImportExecutor.class.getDeclaredField("validateHandler"), databaseConfigImportExecutor, mock(DistSQLDataSourcePoolPropertiesValidator.class));
     }
     
     private ContextManager mockContextManager(final String feature) {

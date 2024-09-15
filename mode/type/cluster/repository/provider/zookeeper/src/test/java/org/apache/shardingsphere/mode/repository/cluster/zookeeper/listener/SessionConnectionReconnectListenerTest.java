@@ -27,9 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -78,10 +78,7 @@ class SessionConnectionReconnectListenerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private SessionConnectionReconnectListener getSessionConnectionReconnectListener(final ComputeNodePersistService computeNodePersistService) {
         SessionConnectionReconnectListener result = new SessionConnectionReconnectListener(computeNodeInstanceContext, repository);
-        Field field = result.getClass().getDeclaredField("computeNodePersistService");
-        field.setAccessible(true);
-        field.set(result, computeNodePersistService);
-        field.setAccessible(false);
+        Plugins.getMemberAccessor().set(SessionConnectionReconnectListener.class.getDeclaredField("computeNodePersistService"), result, computeNodePersistService);
         return result;
     }
 }

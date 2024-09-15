@@ -42,7 +42,7 @@ class SQLParserExecutorTest {
         when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseASTNode.class));
         CacheOption cacheOption = new CacheOption(128, 1024L);
         SQLParserEngine sqlParserEngine = new SQLParserEngine("FIXTURE", cacheOption);
-        Plugins.getMemberAccessor().set(sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor"), sqlParserEngine, sqlParserExecutor);
+        Plugins.getMemberAccessor().set(SQLParserEngine.class.getDeclaredField("sqlParserExecutor"), sqlParserEngine, sqlParserExecutor);
         LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues().initialCapacity(128)
                 .maximumSize(1024L).build(new CacheLoader<String, ParseASTNode>() {
                     
@@ -52,7 +52,7 @@ class SQLParserExecutorTest {
                         return sqlParserExecutor.parse(sql);
                     }
                 });
-        Plugins.getMemberAccessor().set(sqlParserEngine.getClass().getDeclaredField("parseTreeCache"), sqlParserEngine, parseTreeCache);
+        Plugins.getMemberAccessor().set(SQLParserEngine.class.getDeclaredField("parseTreeCache"), sqlParserEngine, parseTreeCache);
         sqlParserEngine.parse(SQL, true);
         verify(sqlParserExecutor).parse(SQL);
         sqlParserEngine.parse(SQL, true);

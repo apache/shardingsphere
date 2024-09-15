@@ -268,6 +268,6 @@ class StatementAdapterTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setExecutionContext(final ShardingSphereStatement statement) {
-        Plugins.getMemberAccessor().set(statement.getClass().getDeclaredField("sqlStatementContext"), statement, mock(SQLStatementContext.class));
+        Plugins.getMemberAccessor().set(ShardingSphereStatement.class.getDeclaredField("sqlStatementContext"), statement, mock(SQLStatementContext.class));
     }
 }

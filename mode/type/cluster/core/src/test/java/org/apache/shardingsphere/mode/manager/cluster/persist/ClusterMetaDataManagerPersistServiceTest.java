@@ -34,9 +34,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,19 +66,12 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContextManager metaDataContextManager;
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @BeforeEach
     void setUp() {
         metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(mock(PersistRepository.class), metaDataContextManager);
-        setField("metaDataPersistService", metaDataPersistService);
-        setField("listenerAssistedPersistService", listenerAssistedPersistService);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    void setField(final String filedName, final Object fieldValue) {
-        Field field = metaDataManagerPersistService.getClass().getDeclaredField(filedName);
-        field.setAccessible(true);
-        field.set(metaDataManagerPersistService, fieldValue);
-        field.setAccessible(false);
+        Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("metaDataPersistService"), metaDataManagerPersistService, metaDataPersistService);
+        Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("listenerAssistedPersistService"), metaDataManagerPersistService, listenerAssistedPersistService);
     }
     
     @Test

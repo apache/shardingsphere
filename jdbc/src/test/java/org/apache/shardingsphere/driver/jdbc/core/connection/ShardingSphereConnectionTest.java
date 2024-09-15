@@ -136,7 +136,7 @@ class ShardingSphereConnectionTest {
         DriverDatabaseConnectionManager result = mock(DriverDatabaseConnectionManager.class);
         when(result.getConnectionTransaction()).thenReturn(connectionTransaction);
         when(result.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptySet));
-        Plugins.getMemberAccessor().set(connection.getClass().getDeclaredField("databaseConnectionManager"), connection, result);
+        Plugins.getMemberAccessor().set(ShardingSphereConnection.class.getDeclaredField("databaseConnectionManager"), connection, result);
         return result;
     }
     

@@ -130,6 +130,6 @@ class TransactionBackendHandlerFactoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private BackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
-        return (BackendTransactionManager) Plugins.getMemberAccessor().get(transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager"), transactionBackendHandler);
+        return (BackendTransactionManager) Plugins.getMemberAccessor().get(TransactionBackendHandler.class.getDeclaredField("backendTransactionManager"), transactionBackendHandler);
     }
 }

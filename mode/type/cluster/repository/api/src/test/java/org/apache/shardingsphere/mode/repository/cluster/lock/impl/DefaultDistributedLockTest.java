@@ -27,9 +27,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -101,10 +101,6 @@ class DefaultDistributedLockTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Map<Thread, ?> getThreadData() {
-        Field field = distributedLock.getClass().getDeclaredField("threadData");
-        field.setAccessible(true);
-        Map<Thread, ?> result = (Map<Thread, ?>) field.get(distributedLock);
-        field.setAccessible(false);
-        return result;
+        return (Map<Thread, ?>) Plugins.getMemberAccessor().get(DefaultDistributedLock.class.getDeclaredField("threadData"), distributedLock);
     }
 }

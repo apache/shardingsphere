@@ -29,9 +29,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -54,11 +54,12 @@ class ClusterWorkerIdGeneratorTest {
     @Mock
     private ReservationPersistService reservationPersistService;
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @BeforeEach
     void setUp() {
         workerIdGenerator = new ClusterWorkerIdGenerator(mock(ClusterPersistRepository.class), "foo_id");
-        setComputeNodePersistService();
-        setReservationPersistService();
+        Plugins.getMemberAccessor().set(ClusterWorkerIdGenerator.class.getDeclaredField("computeNodePersistService"), workerIdGenerator, computeNodePersistService);
+        Plugins.getMemberAccessor().set(ClusterWorkerIdGenerator.class.getDeclaredField("reservationPersistService"), workerIdGenerator, reservationPersistService);
     }
     
     @Test
@@ -89,21 +90,5 @@ class ClusterWorkerIdGeneratorTest {
         when(computeNodePersistService.loadInstanceWorkerId("foo_id")).thenReturn(Optional.of(10));
         assertThat(workerIdGenerator.generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "100"))), is(10));
         assertThat(workerIdGenerator.generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "100"))), is(10));
-    }
-    
-    private void setComputeNodePersistService() {
-        setField("computeNodePersistService", computeNodePersistService);
-    }
-    
-    private void setReservationPersistService() {
-        setField("reservationPersistService", reservationPersistService);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setField(final String fieldName, final Object fieldValue) {
-        Field field = workerIdGenerator.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(workerIdGenerator, fieldValue);
-        field.setAccessible(false);
     }
 }

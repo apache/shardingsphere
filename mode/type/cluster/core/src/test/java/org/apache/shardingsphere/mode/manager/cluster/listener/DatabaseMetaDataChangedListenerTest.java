@@ -44,11 +44,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -71,17 +71,14 @@ class DatabaseMetaDataChangedListenerTest {
     @BeforeEach
     void setUp() {
         listener = new DatabaseMetaDataChangedListener(eventBusContext);
-        RuleConfigurationEventBuilder builder = mock(RuleConfigurationEventBuilder.class);
-        when(builder.build(eq("foo_db"), any(DataChangedEvent.class))).thenReturn(Optional.of(new AlterUniqueRuleItemEvent("foo_db", "key", "value", "type")));
-        setField(builder);
+        setMockedBuilder();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setField(final RuleConfigurationEventBuilder builder) {
-        Field field = DatabaseMetaDataChangedListener.class.getDeclaredField("builder");
-        field.setAccessible(true);
-        field.set(listener, builder);
-        field.setAccessible(false);
+    private void setMockedBuilder() {
+        RuleConfigurationEventBuilder builder = mock(RuleConfigurationEventBuilder.class);
+        when(builder.build(eq("foo_db"), any(DataChangedEvent.class))).thenReturn(Optional.of(new AlterUniqueRuleItemEvent("foo_db", "key", "value", "type")));
+        Plugins.getMemberAccessor().set(DatabaseMetaDataChangedListener.class.getDeclaredField("builder"), listener, builder);
     }
     
     @ParameterizedTest(name = "{0}")
