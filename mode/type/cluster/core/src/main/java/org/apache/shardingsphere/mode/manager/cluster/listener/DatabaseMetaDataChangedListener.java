@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.listener;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNode;
@@ -27,19 +26,20 @@ import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNod
 import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.node.AlterStorageNodeEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.node.RegisterStorageNodeEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.node.UnregisterStorageNodeEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.AlterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.RegisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.CreateOrAlterTableEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.DropTableEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.CreateOrAlterViewEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropViewEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Optional;
@@ -52,7 +52,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     private final EventBusContext eventBusContext;
     
-    private final RuleConfigurationEventBuilder ruleConfigurationEventBuilder = new RuleConfigurationEventBuilder();
+    private final RuleConfigurationEventBuilder builder = new RuleConfigurationEventBuilder();
     
     @Override
     public void onChange(final DataChangedEvent event) {
@@ -62,68 +62,70 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     private Optional<DispatchEvent> createDispatchEvent(final DataChangedEvent event) {
         String key = event.getKey();
         Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
+        if (!databaseName.isPresent()) {
+            return Optional.empty();
+        }
         Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(key);
-        if (databaseName.isPresent() && schemaName.isPresent()) {
+        if (schemaName.isPresent()) {
             return createSchemaChangedEvent(databaseName.get(), schemaName.get(), event);
         }
         schemaName = DatabaseMetaDataNode.getSchemaNameByTableNode(key);
-        if (databaseName.isPresent() && schemaName.isPresent() && tableMetaDataChanged(event.getKey())) {
+        if (schemaName.isPresent() && tableMetaDataChanged(event.getKey())) {
             return createTableChangedEvent(databaseName.get(), schemaName.get(), event);
         }
-        if (databaseName.isPresent() && schemaName.isPresent() && viewMetaDataChanged(event.getKey())) {
+        if (schemaName.isPresent() && viewMetaDataChanged(event.getKey())) {
             return createViewChangedEvent(databaseName.get(), schemaName.get(), event);
-        }
-        if (!databaseName.isPresent()) {
-            return Optional.empty();
         }
         if (DataSourceMetaDataNode.isDataSourcesNode(key)) {
             return createDataSourceEvent(databaseName.get(), event);
         }
-        return ruleConfigurationEventBuilder.build(databaseName.get(), event);
+        return builder.build(databaseName.get(), event);
     }
     
     private Optional<DispatchEvent> createSchemaChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new SchemaAddedEvent(databaseName, schemaName));
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                return Optional.of(new SchemaAddedEvent(databaseName, schemaName));
+            case DELETED:
+                return Optional.of(new SchemaDeletedEvent(databaseName, schemaName));
+            default:
+                return Optional.empty();
         }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new SchemaDeletedEvent(databaseName, schemaName));
-        }
-        return Optional.empty();
     }
     
     private boolean tableMetaDataChanged(final String key) {
         return TableMetaDataNode.isTableActiveVersionNode(key) || TableMetaDataNode.isTableNode(key);
     }
     
-    private boolean viewMetaDataChanged(final String key) {
-        return ViewMetaDataNode.isViewActiveVersionNode(key) || ViewMetaDataNode.isViewNode(key);
-    }
-    
     private Optional<DispatchEvent> createTableChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if (Type.DELETED == event.getType() && TableMetaDataNode.isTableNode(event.getKey())) {
-            Optional<String> tableName = TableMetaDataNode.getTableName(event.getKey());
-            Preconditions.checkState(tableName.isPresent(), "Not found table name.");
-            return Optional.of(new DropTableEvent(databaseName, schemaName, tableName.get()));
-        }
         if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNode.isTableActiveVersionNode(event.getKey())) {
             Optional<String> tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey());
             Preconditions.checkState(tableName.isPresent(), "Not found table name.");
             return Optional.of(new CreateOrAlterTableEvent(databaseName, schemaName, tableName.get(), event.getKey(), event.getValue()));
         }
+        if (Type.DELETED == event.getType() && TableMetaDataNode.isTableNode(event.getKey())) {
+            Optional<String> tableName = TableMetaDataNode.getTableName(event.getKey());
+            Preconditions.checkState(tableName.isPresent(), "Not found table name.");
+            return Optional.of(new DropTableEvent(databaseName, schemaName, tableName.get()));
+        }
         return Optional.empty();
     }
     
+    private boolean viewMetaDataChanged(final String key) {
+        return ViewMetaDataNode.isViewActiveVersionNode(key) || ViewMetaDataNode.isViewNode(key);
+    }
+    
     private Optional<DispatchEvent> createViewChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if (Type.DELETED == event.getType() && ViewMetaDataNode.isViewNode(event.getKey())) {
-            Optional<String> viewName = ViewMetaDataNode.getViewName(event.getKey());
-            Preconditions.checkState(viewName.isPresent(), "Not found view name.");
-            return Optional.of(new DropViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
-        }
         if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNode.isViewActiveVersionNode(event.getKey())) {
             Optional<String> viewName = ViewMetaDataNode.getViewNameByActiveVersionNode(event.getKey());
             Preconditions.checkState(viewName.isPresent(), "Not found view name.");
             return Optional.of(new CreateOrAlterViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
+        }
+        if (Type.DELETED == event.getType() && ViewMetaDataNode.isViewNode(event.getKey())) {
+            Optional<String> viewName = ViewMetaDataNode.getViewName(event.getKey());
+            Preconditions.checkState(viewName.isPresent(), "Not found view name.");
+            return Optional.of(new DropViewEvent(databaseName, schemaName, viewName.get(), event.getKey(), event.getValue()));
         }
         return Optional.empty();
     }
