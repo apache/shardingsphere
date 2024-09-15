@@ -32,6 +32,7 @@ import java.util.Optional;
 /**
  * Global rule configuration event subscriber.
  */
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 public final class GlobalRuleConfigurationEventSubscriber implements EventSubscriber {
     
@@ -42,7 +43,7 @@ public final class GlobalRuleConfigurationEventSubscriber implements EventSubscr
      *
      * @param event global rule alter event
      */
-    @SuppressWarnings({"unchecked", "unused"})
+    @SuppressWarnings("unchecked")
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
         Preconditions.checkArgument(event.getActiveVersion().equals(

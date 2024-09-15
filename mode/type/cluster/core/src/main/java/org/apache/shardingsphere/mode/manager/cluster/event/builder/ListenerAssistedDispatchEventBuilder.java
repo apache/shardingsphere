@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
+import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,12 +52,13 @@ public final class ListenerAssistedDispatchEventBuilder implements DispatchEvent
         if (!databaseName.isPresent()) {
             return Optional.empty();
         }
-        ListenerAssisted data = YamlEngine.unmarshal(event.getValue(), ListenerAssisted.class);
-        if (ListenerAssistedType.CREATE_DATABASE == data.getListenerAssistedType()) {
-            return Optional.of(new CreateDatabaseListenerAssistedEvent(databaseName.get()));
+        switch (YamlEngine.unmarshal(event.getValue(), ListenerAssisted.class).getListenerAssistedType()) {
+            case CREATE_DATABASE:
+                return Optional.of(new CreateDatabaseListenerAssistedEvent(databaseName.get()));
+            case DROP_DATABASE:
+                return Optional.of(new DropDatabaseListenerAssistedEvent(databaseName.get()));
+            default:
+                return Optional.empty();
         }
-        return ListenerAssistedType.DROP_DATABASE == data.getListenerAssistedType()
-                ? Optional.of(new DropDatabaseListenerAssistedEvent(databaseName.get()))
-                : Optional.empty();
     }
 }

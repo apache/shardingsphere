@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 /**
  * Listener assisted subscriber.
  */
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 public final class ListenerAssistedSubscriber implements EventSubscriber {
     
@@ -75,8 +76,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
     private void refreshShardingSphereStatisticsData() {
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
                 && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager,
-                    new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()))).asyncRefresh();
+            new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService(repository))).asyncRefresh();
         }
     }
 }
