@@ -17,33 +17,38 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
+import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 
-/**
- * Properties dispatch event builder.
- */
-public final class PropertiesDispatchEventBuilder implements DispatchEventBuilder<AlterPropertiesEvent> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class PropertiesDispatchEventBuilderTest {
     
-    @Override
-    public String getSubscribedKey() {
-        return GlobalNode.getPropsRootNode();
+    private final PropertiesDispatchEventBuilder builder = new PropertiesDispatchEventBuilder();
+    
+    @Test
+    void assertGetSubscribedKey() {
+        assertThat(builder.getSubscribedKey(), is("/props"));
     }
     
-    @Override
-    public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED);
+    @Test
+    void assertBuildAlterPropertiesEvent() {
+        Optional<AlterPropertiesEvent> actual = builder.build(new DataChangedEvent("/props/active_version", "key=value", Type.ADDED));
+        assertTrue(actual.isPresent());
+        assertThat((actual.get()).getActiveVersionKey(), is("/props/active_version"));
+        assertThat((actual.get()).getActiveVersion(), is("key=value"));
     }
     
-    @Override
-    public Optional<AlterPropertiesEvent> build(final DataChangedEvent event) {
-        return GlobalNodePath.isPropsActiveVersionPath(event.getKey()) ? Optional.of(new AlterPropertiesEvent(event.getKey(), event.getValue())) : Optional.empty();
+    @Test
+    void assertBuildWithInvalidEventKey() {
+        Optional<AlterPropertiesEvent> actual = builder.build(new DataChangedEvent("/props/xxx", "key=value", Type.ADDED));
+        assertFalse(actual.isPresent());
     }
 }
