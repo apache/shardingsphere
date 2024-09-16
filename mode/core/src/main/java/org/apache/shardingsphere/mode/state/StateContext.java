@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,15 +24,12 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * State context.
  */
-@Slf4j
 public final class StateContext {
     
-    private final AtomicReference<ClusterState> clusterState = new AtomicReference<>(ClusterState.OK);
+    private final AtomicReference<ClusterState> clusterState;
     
-    public StateContext(final ClusterState repositoryClusterState) {
-        if (clusterState.get() != repositoryClusterState) {
-            switchClusterState(repositoryClusterState);
-        }
+    public StateContext(final ClusterState clusterState) {
+        this.clusterState = new AtomicReference<>(clusterState);
     }
     
     /**
