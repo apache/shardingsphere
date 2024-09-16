@@ -40,12 +40,12 @@ public final class ClusterStateDispatchEventBuilder implements DispatchEventBuil
     
     @Override
     public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        return Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStateNodePath()) ? Optional.empty() : Optional.of(new ClusterStateEvent(getClusterState(event)));
+        return event.getKey().equals(ComputeNode.getClusterStateNodePath()) ? Optional.of(new ClusterStateEvent(getClusterState(event))) : Optional.empty();
     }
     
     private ClusterState getClusterState(final DataChangedEvent event) {
