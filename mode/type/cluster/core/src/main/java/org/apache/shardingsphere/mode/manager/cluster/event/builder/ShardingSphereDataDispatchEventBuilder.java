@@ -91,8 +91,9 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
                 return Optional.of(new DatabaseDataAddedEvent(databaseName));
             case DELETED:
                 return Optional.of(new DatabaseDataDeletedEvent(databaseName));
+            default:
+                return Optional.empty();
         }
-        return Optional.empty();
     }
     
     private Optional<DispatchEvent> createSchemaChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
