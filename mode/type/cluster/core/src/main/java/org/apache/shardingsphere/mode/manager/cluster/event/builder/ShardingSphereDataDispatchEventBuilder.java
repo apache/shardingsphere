@@ -102,8 +102,9 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
                 return Optional.of(new SchemaDataAddedEvent(databaseName, schemaName));
             case DELETED:
                 return Optional.of(new SchemaDataDeletedEvent(databaseName, schemaName));
+            default:
+                return Optional.empty();
         }
-        return Optional.empty();
     }
     
     private Optional<DispatchEvent> createTableChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName, final String tableName) {
@@ -113,8 +114,9 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
                 return Optional.of(new TableDataChangedEvent(databaseName, schemaName, tableName, null));
             case DELETED:
                 return Optional.of(new TableDataChangedEvent(databaseName, schemaName, null, tableName));
+            default:
+                return Optional.empty();
         }
-        return Optional.empty();
     }
     
     private Optional<DispatchEvent> createRowDataChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName, final String tableName, final String rowPath) {
