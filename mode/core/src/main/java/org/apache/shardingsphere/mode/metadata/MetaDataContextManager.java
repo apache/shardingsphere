@@ -74,8 +74,7 @@ public class MetaDataContextManager {
     
     private final RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine;
     
-    public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                  final PersistRepository repository) {
+    public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         resourceSwitchManager = new ResourceSwitchManager();

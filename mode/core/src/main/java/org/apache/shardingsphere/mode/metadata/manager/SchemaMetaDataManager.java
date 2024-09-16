@@ -55,7 +55,7 @@ public final class SchemaMetaDataManager {
     /**
      * Add database.
      *
-     * @param databaseName database name
+     * @param databaseName to be added database name
      */
     public synchronized void addDatabase(final String databaseName) {
         if (metaDataContexts.get().getMetaData().containsDatabase(databaseName)) {
@@ -69,7 +69,7 @@ public final class SchemaMetaDataManager {
     /**
      * Drop database.
      *
-     * @param databaseName database name
+     * @param databaseName to be dropped database name
      */
     public synchronized void dropDatabase(final String databaseName) {
         if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName)) {
@@ -81,8 +81,8 @@ public final class SchemaMetaDataManager {
     /**
      * Add schema.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
+     * @param databaseName to be added database name
+     * @param schemaName to be added schema name
      */
     public synchronized void addSchema(final String databaseName, final String schemaName) {
         ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
@@ -97,14 +97,11 @@ public final class SchemaMetaDataManager {
     /**
      * Drop schema.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
+     * @param databaseName to be dropped database name
+     * @param schemaName to be dropped schema name
      */
     public synchronized void dropSchema(final String databaseName, final String schemaName) {
         ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
-        if (!metaData.containsDatabase(databaseName)) {
-            return;
-        }
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         if (!database.containsSchema(schemaName)) {
             return;
@@ -118,32 +115,12 @@ public final class SchemaMetaDataManager {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param toBeDeletedTableName to be deleted table name
-     * @param toBeDeletedViewName to be deleted view name
-     */
-    public synchronized void alterSchema(final String databaseName, final String schemaName, final String toBeDeletedTableName, final String toBeDeletedViewName) {
-        ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
-        if (!metaData.containsDatabase(databaseName) || !metaData.getDatabase(databaseName).containsSchema(schemaName)) {
-            return;
-        }
-        Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
-        Optional.ofNullable(toBeDeletedViewName).ifPresent(optional -> dropView(databaseName, schemaName, optional));
-        if (!Strings.isNullOrEmpty(toBeDeletedTableName) || !Strings.isNullOrEmpty(toBeDeletedViewName)) {
-            metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        }
-    }
-    
-    /**
-     * Alter schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
      * @param toBeChangedTable to be changed table
      * @param toBeChangedView to be changed view
      */
     public synchronized void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable toBeChangedTable, final ShardingSphereView toBeChangedView) {
         ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
-        if (!metaData.containsDatabase(databaseName) || !metaData.getDatabase(databaseName).containsSchema(schemaName)) {
+        if (!metaData.getDatabase(databaseName).containsSchema(schemaName)) {
             return;
         }
         Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
@@ -153,16 +130,24 @@ public final class SchemaMetaDataManager {
         }
     }
     
-    private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).removeTable(toBeDeletedTableName);
-        metaDataContexts.get().getMetaData().getDatabase(databaseName)
-                .getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, toBeDeletedTableName));
-    }
-    
-    private void dropView(final String databaseName, final String schemaName, final String toBeDeletedViewName) {
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).removeView(toBeDeletedViewName);
-        metaDataContexts.get().getMetaData().getDatabase(databaseName)
-                .getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, toBeDeletedViewName));
+    /**
+     * Alter schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param toBeDeletedTableName to be deleted table name
+     * @param toBeDeletedViewName to be deleted view name
+     */
+    public synchronized void alterSchema(final String databaseName, final String schemaName, final String toBeDeletedTableName, final String toBeDeletedViewName) {
+        ShardingSphereMetaData metaData = metaDataContexts.get().getMetaData();
+        if (!metaData.getDatabase(databaseName).containsSchema(schemaName)) {
+            return;
+        }
+        Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
+        Optional.ofNullable(toBeDeletedViewName).ifPresent(optional -> dropView(databaseName, schemaName, optional));
+        if (!Strings.isNullOrEmpty(toBeDeletedTableName) || !Strings.isNullOrEmpty(toBeDeletedViewName)) {
+            metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        }
     }
     
     private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
@@ -179,5 +164,17 @@ public final class SchemaMetaDataManager {
             database.reloadRules();
         }
         database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
+    }
+    
+    private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
+        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).removeTable(toBeDeletedTableName);
+        metaDataContexts.get().getMetaData().getDatabase(databaseName)
+                .getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, toBeDeletedTableName));
+    }
+    
+    private void dropView(final String databaseName, final String schemaName, final String toBeDeletedViewName) {
+        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).removeView(toBeDeletedViewName);
+        metaDataContexts.get().getMetaData().getDatabase(databaseName)
+                .getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, toBeDeletedViewName));
     }
 }
