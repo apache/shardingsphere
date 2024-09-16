@@ -130,22 +130,6 @@ public final class SchemaMetaDataManager {
         }
     }
     
-    private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        if (TableRefreshUtils.isSingleTable(beBoChangedTable.getName(), database)) {
-            database.reloadRules();
-        }
-        database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
-    }
-    
-    private void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
-        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        if (TableRefreshUtils.isSingleTable(beBoChangedView.getName(), database)) {
-            database.reloadRules();
-        }
-        database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
-    }
-    
     /**
      * Alter schema.
      *
@@ -164,6 +148,22 @@ public final class SchemaMetaDataManager {
         if (!Strings.isNullOrEmpty(toBeDeletedTableName) || !Strings.isNullOrEmpty(toBeDeletedViewName)) {
             metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         }
+    }
+    
+    private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        if (TableRefreshUtils.isSingleTable(beBoChangedTable.getName(), database)) {
+            database.reloadRules();
+        }
+        database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
+    }
+    
+    private void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
+        if (TableRefreshUtils.isSingleTable(beBoChangedView.getName(), database)) {
+            database.reloadRules();
+        }
+        database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
     }
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
