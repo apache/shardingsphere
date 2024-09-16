@@ -38,6 +38,5 @@ public interface ContextManagerLifecycleListener {
      *
      * @param contextManager context manager
      */
-    default void onDestroyed(ContextManager contextManager) {
-    }
+    void onDestroyed(ContextManager contextManager);
 }
