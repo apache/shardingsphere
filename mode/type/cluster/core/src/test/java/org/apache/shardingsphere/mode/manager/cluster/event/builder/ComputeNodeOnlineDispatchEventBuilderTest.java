@@ -47,6 +47,11 @@ class ComputeNodeOnlineDispatchEventBuilderTest {
     }
     
     @Test
+    void assertBuildWithInvalidOperationType() {
+        assertFalse(builder.build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.UPDATED)).isPresent());
+    }
+    
+    @Test
     void assertBuildComputeNodeOnlineEvent() {
         Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
         assertTrue(actual.isPresent());
@@ -59,7 +64,7 @@ class ComputeNodeOnlineDispatchEventBuilderTest {
     }
     
     @Test
-    void assertBuildWithComputeNodeOfflineEvent() {
+    void assertBuildComputeNodeOfflineEvent() {
         Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.DELETED));
         assertTrue(actual.isPresent());
         InstanceOfflineEvent event = (InstanceOfflineEvent) actual.get();
@@ -68,10 +73,5 @@ class ComputeNodeOnlineDispatchEventBuilderTest {
         assertThat(event.getInstanceMetaData().getType(), is(InstanceType.PROXY));
         assertThat(event.getInstanceMetaData().getVersion(), is("1"));
         assertThat(event.getInstanceMetaData().getAttributes(), is("127.0.0.1@3307"));
-    }
-    
-    @Test
-    void assertBuildWithInvalidOperationType() {
-        assertFalse(builder.build(new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.UPDATED)).isPresent());
     }
 }
