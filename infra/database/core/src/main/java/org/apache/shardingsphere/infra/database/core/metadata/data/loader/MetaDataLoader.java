@@ -95,7 +95,7 @@ public final class MetaDataLoader {
         for (String each : material.getActualTableNames()) {
             TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
         }
-        return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
+        return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
     }
     
     private static void merge(final Map<String, SchemaMetaData> schemaMetaDataMap, final Collection<SchemaMetaData> addedSchemaMetaDataList) {
