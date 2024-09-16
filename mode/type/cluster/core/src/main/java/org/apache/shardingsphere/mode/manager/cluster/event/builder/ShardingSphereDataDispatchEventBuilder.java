@@ -58,18 +58,27 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
             return createDatabaseChangedEvent(event, databaseName.get());
         }
         databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
+        if (!databaseName.isPresent()) {
+            return Optional.empty();
+        }
         Optional<String> schemaName = ShardingSphereDataNode.getSchemaName(event.getKey());
-        if (databaseName.isPresent() && schemaName.isPresent()) {
+        if (schemaName.isPresent()) {
             return createSchemaChangedEvent(event, databaseName.get(), schemaName.get());
         }
         schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
+        if (!schemaName.isPresent()) {
+            return Optional.empty();
+        }
         Optional<String> tableName = ShardingSphereDataNode.getTableName(event.getKey());
-        if (databaseName.isPresent() && schemaName.isPresent() && tableName.isPresent()) {
+        if (tableName.isPresent()) {
             return createTableChangedEvent(event, databaseName.get(), schemaName.get(), tableName.get());
         }
         tableName = ShardingSphereDataNode.getTableNameByRowPath(event.getKey());
+        if (!tableName.isPresent()) {
+            return Optional.empty();
+        }
         Optional<String> rowPath = ShardingSphereDataNode.getRowUniqueKey(event.getKey());
-        if (databaseName.isPresent() && schemaName.isPresent() && tableName.isPresent() && rowPath.isPresent()) {
+        if (rowPath.isPresent()) {
             return createRowDataChangedEvent(event, databaseName.get(), schemaName.get(), tableName.get(), rowPath.get());
         }
         return Optional.empty();

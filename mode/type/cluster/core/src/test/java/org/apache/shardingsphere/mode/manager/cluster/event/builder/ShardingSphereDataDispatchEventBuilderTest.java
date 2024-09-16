@@ -176,8 +176,26 @@ class ShardingSphereDataDispatchEventBuilderTest {
     }
     
     @Test
-    void assertBuildWithInvalidEventKey() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/", "", Type.ADDED));
+    void assertBuildWithMissedDatabaseNameEventKey() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases", "", Type.ADDED));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertBuildWithMissedSchemaNameEventKey() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas", "", Type.ADDED));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertBuildWithMissedTableNameEventKey() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables", "", Type.ADDED));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertBuildWithMissedRowEventKey() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }
 }
