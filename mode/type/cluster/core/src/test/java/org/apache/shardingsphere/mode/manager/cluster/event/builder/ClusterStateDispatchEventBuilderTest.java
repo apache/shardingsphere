@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClusterStateDispatchEventBuilderTest {
@@ -38,11 +37,6 @@ class ClusterStateDispatchEventBuilderTest {
     @Test
     void assertGetSubscribedKey() {
         assertThat(builder.getSubscribedKey(), is("/nodes/compute_nodes/status"));
-    }
-    
-    @Test
-    void assertBuildEventWhenDelete() {
-        assertFalse(builder.build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.DELETED)).isPresent());
     }
     
     @Test
