@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-import java.util.Optional;
-
 /**
  * State persist service.
  */
@@ -36,19 +34,19 @@ public final class StatePersistService {
     /**
      * Update cluster state.
      *
-     * @param state cluster state
+     * @param state to be updated cluster state
      */
-    public void updateClusterState(final ClusterState state) {
+    public void update(final ClusterState state) {
         repository.persist(ComputeNode.getClusterStateNodePath(), state.name());
     }
     
     /**
      * Load cluster state.
      *
-     * @return cluster state
+     * @return loaded cluster state
      */
-    public Optional<ClusterState> loadClusterState() {
+    public ClusterState load() {
         String value = repository.query(ComputeNode.getClusterStateNodePath());
-        return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(ClusterState.valueOf(value));
+        return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
     }
 }
