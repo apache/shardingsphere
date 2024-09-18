@@ -23,11 +23,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessCompletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ReportLocalProcessesCompletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ReportLocalProcessesEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
 import org.junit.jupiter.api.Test;
 
@@ -105,59 +101,5 @@ class ComputeNodeStateDispatchEventBuilderTest {
         assertTrue(actual.isPresent());
         assertThat(((WorkerIdEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
         assertNull(((WorkerIdEvent) actual.get()).getWorkerId());
-    }
-    
-    @Test
-    void assertBuildReportLocalProcessesEvent() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id", "", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertThat(((ReportLocalProcessesEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
-        assertThat(((ReportLocalProcessesEvent) actual.get()).getTaskId(), is("foo_task_id"));
-    }
-    
-    @Test
-    void assertBuildReportLocalProcessesCompletedEvent() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id", "", Type.DELETED));
-        assertTrue(actual.isPresent());
-        assertThat(((ReportLocalProcessesCompletedEvent) actual.get()).getTaskId(), is("foo_task_id"));
-    }
-    
-    @Test
-    void assertBuildWithUpdateReportLocalProcessesCompletedEvent() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id", "", Type.UPDATED));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertBuildWithInvalidShowProcessListTriggerEventKey() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", "", Type.ADDED));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertBuildKillLocalProcessEvent() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid", "", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertThat(((KillLocalProcessEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
-        assertThat(((KillLocalProcessEvent) actual.get()).getProcessId(), is("foo_pid"));
-    }
-    
-    @Test
-    void assertBuildReportKillLocalProcessCompletedEvent() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid", "", Type.DELETED));
-        assertTrue(actual.isPresent());
-        assertThat(((KillLocalProcessCompletedEvent) actual.get()).getProcessId(), is("foo_pid"));
-    }
-    
-    @Test
-    void assertBuildWithUpdateReportKillLocalProcessCompletedEvent() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid", "", Type.UPDATED));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertBuildWithInvalidKillProcessListTriggerEventKey() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", "", Type.ADDED));
-        assertFalse(actual.isPresent());
     }
 }
