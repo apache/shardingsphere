@@ -15,40 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.path;
+package org.apache.shardingsphere.metadata.persist.node;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ListenerAssistedNodePathTest {
+class StatesNodeTest {
     
     @Test
-    void assertRooPath() {
-        assertThat(ListenerAssistedNodePath.getRootNodePath(), is("/listener_assisted"));
+    void assertGetClusterStateNodePath() {
+        assertThat(StatesNode.getClusterStateNodePath(), is("/states/cluster_state"));
     }
     
     @Test
-    void assertGetDatabaseName() {
-        Optional<String> actual = ListenerAssistedNodePath.getDatabaseName("/listener_assisted/foo_db");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), Matchers.is("foo_db"));
+    void assertGetListenerAssistedNodePath() {
+        assertThat(StatesNode.getListenerAssistedNodePath(), is("/states/listener_assisted"));
     }
     
     @Test
-    void assertGetDatabaseNameWhenNotFound() {
-        Optional<String> actual = ListenerAssistedNodePath.getDatabaseName("/invalid/foo_db");
-        assertFalse(actual.isPresent());
+    void assertGetDatabaseNameByListenerAssistedNodePath() {
+        assertTrue(StatesNode.getDatabaseNameByListenerAssistedNodePath("/states/listener_assisted/foo_db").isPresent());
     }
     
     @Test
-    void assertGetDatabaseNameNodePath() {
-        assertThat(ListenerAssistedNodePath.getDatabaseNameNodePath("foo_db"), is("/listener_assisted/foo_db"));
+    void assertGetDatabaseNameListenerAssistedNodePath() {
+        assertThat(StatesNode.getDatabaseNameListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
     }
 }

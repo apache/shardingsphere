@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.persist.service;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.StatesNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
@@ -37,7 +37,7 @@ public final class StatePersistService {
      * @param state to be updated cluster state
      */
     public void update(final ClusterState state) {
-        repository.persist(ComputeNode.getClusterStateNodePath(), state.name());
+        repository.persist(StatesNode.getClusterStateNodePath(), state.name());
     }
     
     /**
@@ -46,7 +46,7 @@ public final class StatePersistService {
      * @return loaded cluster state
      */
     public ClusterState load() {
-        String value = repository.query(ComputeNode.getClusterStateNodePath());
+        String value = repository.query(StatesNode.getClusterStateNodePath());
         return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
     }
 }

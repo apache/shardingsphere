@@ -36,19 +36,19 @@ class ClusterStateDispatchEventBuilderTest {
     
     @Test
     void assertGetSubscribedKey() {
-        assertThat(builder.getSubscribedKey(), is("/nodes/compute_nodes/status"));
+        assertThat(builder.getSubscribedKey(), is("/states/cluster_state"));
     }
     
     @Test
     void assertBuildEventWithValidClusterState() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.UPDATED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/states/cluster_state", ClusterState.READ_ONLY.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.READ_ONLY));
     }
     
     @Test
     void assertBuildEventWithInvalidClusterState() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status", "INVALID", Type.UPDATED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/states/cluster_state", "INVALID", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.OK));
     }

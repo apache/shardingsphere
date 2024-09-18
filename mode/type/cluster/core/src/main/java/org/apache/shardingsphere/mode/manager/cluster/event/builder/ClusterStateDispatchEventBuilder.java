@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.StatesNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
@@ -35,7 +35,7 @@ public final class ClusterStateDispatchEventBuilder implements DispatchEventBuil
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNode.getClusterStateNodePath();
+        return StatesNode.getClusterStateNodePath();
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class ClusterStateDispatchEventBuilder implements DispatchEventBuil
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        return event.getKey().equals(ComputeNode.getClusterStateNodePath()) ? Optional.of(new ClusterStateEvent(getClusterState(event))) : Optional.empty();
+        return event.getKey().equals(StatesNode.getClusterStateNodePath()) ? Optional.of(new ClusterStateEvent(getClusterState(event))) : Optional.empty();
     }
     
     private ClusterState getClusterState(final DataChangedEvent event) {
