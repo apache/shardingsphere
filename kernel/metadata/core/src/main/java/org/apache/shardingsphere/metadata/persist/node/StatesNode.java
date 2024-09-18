@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.path;
+package org.apache.shardingsphere.metadata.persist.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,41 +25,54 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Listener assisted node path.
+ * States node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ListenerAssistedNodePath {
+public final class StatesNode {
     
-    private static final String ROOT_NODE = "listener_assisted";
+    private static final String ROOT_NODE = "states";
+    
+    private static final String CLUSTER_STATE_NODE = "cluster_state";
+    
+    private static final String LISTENER_ASSISTED_NODE = "listener_assisted";
     
     /**
-     * Get root node path.
+     * Get cluster state node path.
      *
-     * @return root node path
+     * @return cluster state node path
      */
-    public static String getRootNodePath() {
-        return String.join("/", "", ROOT_NODE);
+    public static String getClusterStateNodePath() {
+        return String.join("/", "", ROOT_NODE, CLUSTER_STATE_NODE);
     }
     
     /**
-     * Get database name by node path.
+     * Get listener assisted node path.
+     *
+     * @return listener assisted node path
+     */
+    public static String getListenerAssistedNodePath() {
+        return String.join("/", "", ROOT_NODE, LISTENER_ASSISTED_NODE);
+    }
+    
+    /**
+     * Get database name by listener assisted node path.
      *
      * @param nodePath node path
      * @return database name
      */
-    public static Optional<String> getDatabaseName(final String nodePath) {
-        Pattern pattern = Pattern.compile(getRootNodePath() + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getDatabaseNameByListenerAssistedNodePath(final String nodePath) {
+        Pattern pattern = Pattern.compile(getListenerAssistedNodePath() + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
-     * Get database base name node path.
+     * Get database name listener assisted node path.
      *
      * @param databaseName database name
-     * @return database name node path
+     * @return database name listener assisted node path
      */
-    public static String getDatabaseNameNodePath(final String databaseName) {
-        return String.join("/", "", ROOT_NODE, databaseName);
+    public static String getDatabaseNameListenerAssistedNodePath(final String databaseName) {
+        return String.join("/", "", ROOT_NODE, LISTENER_ASSISTED_NODE, databaseName);
     }
 }

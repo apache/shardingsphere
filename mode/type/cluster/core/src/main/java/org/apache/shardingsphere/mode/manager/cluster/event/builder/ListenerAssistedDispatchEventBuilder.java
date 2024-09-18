@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.metadata.persist.node.StatesNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
 import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
 import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
 
@@ -38,7 +38,7 @@ public final class ListenerAssistedDispatchEventBuilder implements DispatchEvent
     
     @Override
     public String getSubscribedKey() {
-        return ListenerAssistedNodePath.getRootNodePath();
+        return StatesNode.getListenerAssistedNodePath();
     }
     
     @Override
@@ -48,7 +48,7 @@ public final class ListenerAssistedDispatchEventBuilder implements DispatchEvent
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        Optional<String> databaseName = ListenerAssistedNodePath.getDatabaseName(event.getKey());
+        Optional<String> databaseName = StatesNode.getDatabaseNameByListenerAssistedNodePath(event.getKey());
         if (!databaseName.isPresent()) {
             return Optional.empty();
         }

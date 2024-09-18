@@ -46,18 +46,18 @@ class StatePersistServiceTest {
     @Test
     void assertUpdate() {
         statePersistService.update(ClusterState.OK);
-        verify(repository).persist("/nodes/compute_nodes/status", ClusterState.OK.name());
+        verify(repository).persist("/states/cluster_state", ClusterState.OK.name());
     }
     
     @Test
     void assertLoad() {
-        when(repository.query("/nodes/compute_nodes/status")).thenReturn(ClusterState.READ_ONLY.name());
+        when(repository.query("/states/cluster_state")).thenReturn(ClusterState.READ_ONLY.name());
         assertThat(statePersistService.load(), is(ClusterState.READ_ONLY));
     }
     
     @Test
     void assertLoadWithEmptyState() {
-        when(repository.query("/nodes/compute_nodes/status")).thenReturn("");
+        when(repository.query("/states/cluster_state")).thenReturn("");
         assertThat(statePersistService.load(), is(ClusterState.OK));
     }
 }
