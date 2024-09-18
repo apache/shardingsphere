@@ -112,7 +112,7 @@ public final class DatabaseMetaDataPersistService {
         }
         Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
         tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
-        GenericSchemaManager.getToBeDeletedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
+        GenericSchemaManager.getToBeDroppedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
     /**

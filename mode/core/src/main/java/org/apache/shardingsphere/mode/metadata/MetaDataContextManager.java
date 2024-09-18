@@ -89,15 +89,15 @@ public class MetaDataContextManager {
     }
     
     /**
-     * Delete schema names.
+     * Drop schemas.
      *
      * @param databaseName database name
      * @param reloadDatabase reload database
      * @param currentDatabase current database
      */
-    public void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        GenericSchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
-                .forEach(each -> metaDataPersistService.getDatabaseMetaDataService().dropSchema(databaseName, each));
+    public void dropSchemas(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        GenericSchemaManager.getToBeDroppedSchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas())
+                .keySet().forEach(each -> metaDataPersistService.getDatabaseMetaDataService().dropSchema(databaseName, each));
     }
     
     /**
@@ -138,7 +138,7 @@ public class MetaDataContextManager {
     public void refreshTableMetaData(final ShardingSphereDatabase database) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
-            deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
+            dropSchemas(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
             metaDataContexts.set(reloadedMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
                     .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
