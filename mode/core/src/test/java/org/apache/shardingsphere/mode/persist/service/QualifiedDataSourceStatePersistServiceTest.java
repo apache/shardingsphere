@@ -48,7 +48,7 @@ class QualifiedDataSourceStatePersistServiceTest {
     }
     
     @Test
-    void assertLoadStatus() {
+    void assertLoad() {
         when(repository.getChildrenKeys("/nodes/qualified_data_sources")).thenReturn(Arrays.asList("foo_db.foo_group.foo_ds", "bar_db.bar_group.bar_ds"));
         when(repository.query("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds")).thenReturn("state: ENABLED");
         Map<String, QualifiedDataSourceState> actual = qualifiedDataSourceStatePersistService.load();
@@ -57,7 +57,7 @@ class QualifiedDataSourceStatePersistServiceTest {
     }
     
     @Test
-    void assertUpdateStatus() {
+    void assertUpdate() {
         qualifiedDataSourceStatePersistService.update("foo_db", "foo_group", "foo_ds", DataSourceState.ENABLED);
         verify(repository).persist("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "state: ENABLED\n");
     }
