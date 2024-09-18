@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -42,7 +41,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Database rule configuration manager.
  */
-@Slf4j
 public final class DatabaseRuleConfigurationManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
@@ -75,8 +73,8 @@ public final class DatabaseRuleConfigurationManager {
             return;
         }
         rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-        rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(),
-                ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
+        rules.addAll(DatabaseRulesBuilder.build(
+                databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
         refreshMetadata(databaseName, database, rules);
     }
     
