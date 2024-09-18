@@ -272,7 +272,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 metaDataContextManager.getMetaDataContexts().get(), metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
         metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName));
-        metaDataContextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+        metaDataContextManager.dropSchemas(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName));
         metaDataContextManager.renewMetaDataContexts(reloadMetaDataContexts);
         switchingResource.closeStaleDataSources();
