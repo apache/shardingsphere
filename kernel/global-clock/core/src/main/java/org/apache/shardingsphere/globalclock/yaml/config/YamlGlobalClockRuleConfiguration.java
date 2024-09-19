@@ -39,7 +39,7 @@ public final class YamlGlobalClockRuleConfiguration implements YamlGlobalRuleCon
     
     private boolean enabled;
     
-    private Properties props;
+    private Properties props = new Properties();
     
     @Override
     public Class<GlobalClockRuleConfiguration> getRuleConfigurationType() {
