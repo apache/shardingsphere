@@ -28,14 +28,18 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSpher
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSphereRowDataDeletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.TableDataChangedEvent;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingSphereDataDispatchEventBuilderTest {
     
@@ -46,156 +50,122 @@ class ShardingSphereDataDispatchEventBuilderTest {
         assertThat(builder.getSubscribedKey(), is("/statistics/databases"));
     }
     
-    @Test
-    void assertBuildDatabaseDataChangedEventWithAdd() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db", "", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertThat(((DatabaseDataAddedEvent) actual.get()).getDatabaseName(), is("foo_db"));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertBuild(final String name, final String eventKey, final String eventValue, final DataChangedEvent.Type type, final boolean isEventPresent, final Consumer<DispatchEvent> consumer) {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent(eventKey, eventValue, type));
+        assertThat(actual.isPresent(), is(isEventPresent));
+        if (actual.isPresent() && consumer != null) {
+            consumer.accept(actual.get());
+        }
     }
     
-    @Test
-    void assertBuildDatabaseDataChangedEventWithUpdate() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db", "", Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertThat(((DatabaseDataAddedEvent) actual.get()).getDatabaseName(), is("foo_db"));
+    static void assertBuildDatabaseDataChangedEventWithAdd(final DispatchEvent actual) {
+        assertThat(((DatabaseDataAddedEvent) actual).getDatabaseName(), is("foo_db"));
     }
     
-    @Test
-    void assertBuildDatabaseDataChangedEventWithDelete() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db", "", Type.DELETED));
-        assertTrue(actual.isPresent());
-        assertThat(((DatabaseDataDeletedEvent) actual.get()).getDatabaseName(), is("foo_db"));
+    static void assertBuildDatabaseDataChangedEventWithUpdate(final DispatchEvent actual) {
+        assertThat(((DatabaseDataAddedEvent) actual).getDatabaseName(), is("foo_db"));
     }
     
-    @Test
-    void assertBuildDatabaseDataChangedEventWithIgnore() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db", "", Type.IGNORED));
-        assertFalse(actual.isPresent());
+    static void assertBuildDatabaseDataChangedEventWithDelete(final DispatchEvent actual) {
+        assertThat(((DatabaseDataDeletedEvent) actual).getDatabaseName(), is("foo_db"));
     }
     
-    @Test
-    void assertBuildSchemaDataChangedEventWithAdd() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema", "", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertThat(((SchemaDataAddedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((SchemaDataAddedEvent) actual.get()).getSchemaName(), is("foo_schema"));
+    static void assertBuildSchemaDataChangedEventWithAdd(final DispatchEvent actual) {
+        assertThat(((SchemaDataAddedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((SchemaDataAddedEvent) actual).getSchemaName(), is("foo_schema"));
     }
     
-    @Test
-    void assertBuildSchemaDataChangedEventWithUpdate() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema", "", Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertThat(((SchemaDataAddedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((SchemaDataAddedEvent) actual.get()).getSchemaName(), is("foo_schema"));
+    static void assertBuildSchemaDataChangedEventWithUpdate(final DispatchEvent actual) {
+        assertThat(((SchemaDataAddedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((SchemaDataAddedEvent) actual).getSchemaName(), is("foo_schema"));
     }
     
-    @Test
-    void assertBuildSchemaDataChangedEventWithDelete() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema", "", Type.DELETED));
-        assertTrue(actual.isPresent());
-        assertThat(((SchemaDataDeletedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((SchemaDataDeletedEvent) actual.get()).getSchemaName(), is("foo_schema"));
+    static void assertBuildSchemaDataChangedEventWithDelete(final DispatchEvent actual) {
+        assertThat(((SchemaDataDeletedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((SchemaDataDeletedEvent) actual).getSchemaName(), is("foo_schema"));
     }
     
-    @Test
-    void assertBuildSchemaDataChangedEventWithIgnore() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema", "", Type.IGNORED));
-        assertFalse(actual.isPresent());
+    static void assertBuildRowDataChangedEventWithDelete(final DispatchEvent actual) {
+        assertThat(((ShardingSphereRowDataDeletedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((ShardingSphereRowDataDeletedEvent) actual).getSchemaName(), is("foo_schema"));
+        assertThat(((ShardingSphereRowDataDeletedEvent) actual).getTableName(), is("foo_tbl"));
+        assertThat(((ShardingSphereRowDataDeletedEvent) actual).getUniqueKey(), is("1"));
     }
     
-    @Test
-    void assertBuildTableDataChangedEventWithAdd() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertThat(((TableDataChangedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((TableDataChangedEvent) actual.get()).getSchemaName(), is("foo_schema"));
-        assertThat(((TableDataChangedEvent) actual.get()).getAddedTable(), is("foo_tbl"));
-        assertNull(((TableDataChangedEvent) actual.get()).getDeletedTable());
+    static void assertBuildRowDataChangedEventWithUpdate(final DispatchEvent actual) {
+        assertThat(((ShardingSphereRowDataChangedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((ShardingSphereRowDataChangedEvent) actual).getSchemaName(), is("foo_schema"));
+        assertThat(((ShardingSphereRowDataChangedEvent) actual).getTableName(), is("foo_tbl"));
+        assertThat(((ShardingSphereRowDataChangedEvent) actual).getYamlRowData().getUniqueKey(), is("1"));
     }
     
-    @Test
-    void assertBuildTableDataChangedEventWithUpdate() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertThat(((TableDataChangedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((TableDataChangedEvent) actual.get()).getSchemaName(), is("foo_schema"));
-        assertThat(((TableDataChangedEvent) actual.get()).getAddedTable(), is("foo_tbl"));
-        assertNull(((TableDataChangedEvent) actual.get()).getDeletedTable());
+    static void assertBuildRowDataChangedEventWithAdd(final DispatchEvent actual) {
+        assertThat(((ShardingSphereRowDataChangedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((ShardingSphereRowDataChangedEvent) actual).getSchemaName(), is("foo_schema"));
+        assertThat(((ShardingSphereRowDataChangedEvent) actual).getTableName(), is("foo_tbl"));
+        assertThat(((ShardingSphereRowDataChangedEvent) actual).getYamlRowData().getUniqueKey(), is("1"));
     }
     
-    @Test
-    void assertBuildTableDataChangedEventWithDelete() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED));
-        assertTrue(actual.isPresent());
-        assertThat(((TableDataChangedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((TableDataChangedEvent) actual.get()).getSchemaName(), is("foo_schema"));
-        assertNull(((TableDataChangedEvent) actual.get()).getAddedTable());
-        assertThat(((TableDataChangedEvent) actual.get()).getDeletedTable(), is("foo_tbl"));
+    static void assertBuildTableDataChangedEventWithDelete(final DispatchEvent actual) {
+        assertThat(((TableDataChangedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((TableDataChangedEvent) actual).getSchemaName(), is("foo_schema"));
+        assertNull(((TableDataChangedEvent) actual).getAddedTable());
+        assertThat(((TableDataChangedEvent) actual).getDeletedTable(), is("foo_tbl"));
     }
     
-    @Test
-    void assertBuildTableDataChangedEventWithIgnore() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.IGNORED));
-        assertFalse(actual.isPresent());
+    static void assertBuildTableDataChangedEventWithUpdate(final DispatchEvent actual) {
+        assertThat(((TableDataChangedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((TableDataChangedEvent) actual).getSchemaName(), is("foo_schema"));
+        assertThat(((TableDataChangedEvent) actual).getAddedTable(), is("foo_tbl"));
+        assertNull(((TableDataChangedEvent) actual).getDeletedTable());
     }
     
-    @Test
-    void assertBuildRowDataChangedEventWithAdd() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/xxx", "{uniqueKey: 1}", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertThat(((ShardingSphereRowDataChangedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((ShardingSphereRowDataChangedEvent) actual.get()).getSchemaName(), is("foo_schema"));
-        assertThat(((ShardingSphereRowDataChangedEvent) actual.get()).getTableName(), is("foo_tbl"));
-        assertThat(((ShardingSphereRowDataChangedEvent) actual.get()).getYamlRowData().getUniqueKey(), is("1"));
+    static void assertBuildTableDataChangedEventWithAdd(final DispatchEvent actual) {
+        assertThat(((TableDataChangedEvent) actual).getDatabaseName(), is("foo_db"));
+        assertThat(((TableDataChangedEvent) actual).getSchemaName(), is("foo_schema"));
+        assertThat(((TableDataChangedEvent) actual).getAddedTable(), is("foo_tbl"));
+        assertNull(((TableDataChangedEvent) actual).getDeletedTable());
     }
     
-    @Test
-    void assertBuildRowDataChangedEventWithUpdate() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertThat(((ShardingSphereRowDataChangedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((ShardingSphereRowDataChangedEvent) actual.get()).getSchemaName(), is("foo_schema"));
-        assertThat(((ShardingSphereRowDataChangedEvent) actual.get()).getTableName(), is("foo_tbl"));
-        assertThat(((ShardingSphereRowDataChangedEvent) actual.get()).getYamlRowData().getUniqueKey(), is("1"));
-    }
-    
-    @Test
-    void assertBuildRowDataChangedEventWithDelete() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "", Type.DELETED));
-        assertTrue(actual.isPresent());
-        assertThat(((ShardingSphereRowDataDeletedEvent) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((ShardingSphereRowDataDeletedEvent) actual.get()).getSchemaName(), is("foo_schema"));
-        assertThat(((ShardingSphereRowDataDeletedEvent) actual.get()).getTableName(), is("foo_tbl"));
-        assertThat(((ShardingSphereRowDataDeletedEvent) actual.get()).getUniqueKey(), is("1"));
-    }
-    
-    @Test
-    void assertBuildRowDataChangedEventWithAddNullValue() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "", Type.ADDED));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertBuildWithMissedDatabaseNameEventKey() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases", "", Type.ADDED));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertBuildWithMissedSchemaNameEventKey() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas", "", Type.ADDED));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertBuildWithMissedTableNameEventKey() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables", "", Type.ADDED));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertBuildWithMissedRowEventKey() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/", "", Type.ADDED));
-        assertFalse(actual.isPresent());
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("assertBuildDatabaseDataChangedEventWithAdd", "/statistics/databases/foo_db", "", Type.ADDED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithAdd),
+                    Arguments.of("assertBuildDatabaseDataChangedEventWithUpdate", "/statistics/databases/foo_db", "", Type.UPDATED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithUpdate),
+                    Arguments.of("assertBuildDatabaseDataChangedEventWithDelete", "/statistics/databases/foo_db", "", Type.DELETED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithDelete),
+                    Arguments.of("assertBuildSchemaDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.ADDED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithAdd),
+                    Arguments.of("assertBuildSchemaDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.UPDATED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithUpdate),
+                    Arguments.of("assertBuildSchemaDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.DELETED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithDelete),
+                    Arguments.of("assertBuildRowDataChangedEventWithAddNullValue", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "", Type.ADDED, false, null),
+                    Arguments.of("assertBuildWithMissedDatabaseNameEventKey", "/statistics/databases", "", Type.ADDED, false, null),
+                    Arguments.of("assertBuildWithMissedSchemaNameEventKey", "/statistics/databases/foo_db/schemas", "", Type.ADDED, false, null),
+                    Arguments.of("assertBuildWithMissedTableNameEventKey", "/statistics/databases/foo_db/schemas/foo_schema/tables", "", Type.ADDED, false, null),
+                    Arguments.of("assertBuildDatabaseDataChangedEventWithIgnore", "/statistics/databases/foo_db", "", Type.IGNORED, false, null),
+                    Arguments.of("assertBuildTableDataChangedEventWithIgnore", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.IGNORED, false, null),
+                    Arguments.of("assertBuildSchemaDataChangedEventWithIgnore", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.IGNORED, false, null),
+                    Arguments.of("assertBuildWithMissedRowEventKey", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/", "", Type.UPDATED, false, null),
+                    Arguments.of("assertBuildRowDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "", Type.DELETED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithDelete),
+                    Arguments.of("assertBuildRowDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.UPDATED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithUpdate),
+                    Arguments.of("assertBuildRowDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/xxx", "{uniqueKey: 1}", Type.ADDED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithAdd),
+                    Arguments.of("assertBuildTableDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithDelete),
+                    Arguments.of("assertBuildTableDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.UPDATED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithUpdate),
+                    Arguments.of("assertBuildTableDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.ADDED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithAdd));
+        }
     }
 }
