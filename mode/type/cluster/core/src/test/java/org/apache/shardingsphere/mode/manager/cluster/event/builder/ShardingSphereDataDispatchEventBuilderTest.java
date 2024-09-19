@@ -130,6 +130,7 @@ class ShardingSphereDataDispatchEventBuilderTest {
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
