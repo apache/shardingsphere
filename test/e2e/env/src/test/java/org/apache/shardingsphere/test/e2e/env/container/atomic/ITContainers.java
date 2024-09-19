@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
@@ -30,7 +31,9 @@ import org.testcontainers.shaded.org.awaitility.Awaitility;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * IT containers.
@@ -48,6 +51,10 @@ public final class ITContainers implements Startable {
     private final Collection<DockerITContainer> dockerContainers = new LinkedList<>();
     
     private volatile boolean started;
+    
+    public ITContainers() {
+        this.scenario = null;
+    }
     
     public ITContainers(final String scenario) {
         this.scenario = scenario;
@@ -70,7 +77,7 @@ public final class ITContainers implements Startable {
             dockerContainer.setNetwork(network);
             String networkAlias = getNetworkAlias(container);
             dockerContainer.setNetworkAliases(Collections.singletonList(networkAlias));
-            String loggerName = String.join(":", scenario, dockerContainer.getName());
+            String loggerName = Lists.newArrayList(scenario, dockerContainer.getName()).stream().filter(Objects::nonNull).collect(Collectors.joining(":"));
             dockerContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), false));
             dockerContainers.add(dockerContainer);
         }
