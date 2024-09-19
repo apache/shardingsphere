@@ -60,46 +60,6 @@ class ShardingSphereDataDispatchEventBuilderTest {
         }
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(
-                    Arguments.of("assertBuildDatabaseDataChangedEventWithAdd", "/statistics/databases/foo_db", "", Type.ADDED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithAdd),
-                    Arguments.of("assertBuildDatabaseDataChangedEventWithUpdate", "/statistics/databases/foo_db", "", Type.UPDATED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithUpdate),
-                    Arguments.of("assertBuildDatabaseDataChangedEventWithDelete", "/statistics/databases/foo_db", "", Type.DELETED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithDelete),
-                    Arguments.of("assertBuildSchemaDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.ADDED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithAdd),
-                    Arguments.of("assertBuildSchemaDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.UPDATED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithUpdate),
-                    Arguments.of("assertBuildSchemaDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.DELETED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithDelete),
-                    Arguments.of("assertBuildRowDataChangedEventWithAddNullValue", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "", Type.ADDED, false, null),
-                    Arguments.of("assertBuildWithMissedDatabaseNameEventKey", "/statistics/databases", "", Type.ADDED, false, null),
-                    Arguments.of("assertBuildWithMissedSchemaNameEventKey", "/statistics/databases/foo_db/schemas", "", Type.ADDED, false, null),
-                    Arguments.of("assertBuildWithMissedTableNameEventKey", "/statistics/databases/foo_db/schemas/foo_schema/tables", "", Type.ADDED, false, null),
-                    Arguments.of("assertBuildDatabaseDataChangedEventWithIgnore", "/statistics/databases/foo_db", "", Type.IGNORED, false, null),
-                    Arguments.of("assertBuildTableDataChangedEventWithIgnore", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.IGNORED, false, null),
-                    Arguments.of("assertBuildSchemaDataChangedEventWithIgnore", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.IGNORED, false, null),
-                    Arguments.of("assertBuildWithMissedRowEventKey", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/", "", Type.UPDATED, false, null),
-                    Arguments.of("assertBuildRowDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "", Type.DELETED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithDelete),
-                    Arguments.of("assertBuildRowDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.UPDATED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithUpdate),
-                    Arguments.of("assertBuildRowDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/xxx", "{uniqueKey: 1}", Type.ADDED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithAdd),
-                    Arguments.of("assertBuildTableDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithDelete),
-                    Arguments.of("assertBuildTableDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.UPDATED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithUpdate),
-                    Arguments.of("assertBuildTableDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.ADDED, true,
-                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithAdd));
-        }
-    }
-    
     static void assertBuildDatabaseDataChangedEventWithAdd(final DispatchEvent actual) {
         assertThat(((DatabaseDataAddedEvent) actual).getDatabaseName(), is("foo_db"));
     }
@@ -167,5 +127,44 @@ class ShardingSphereDataDispatchEventBuilderTest {
         assertThat(((TableDataChangedEvent) actual).getSchemaName(), is("foo_schema"));
         assertThat(((TableDataChangedEvent) actual).getAddedTable(), is("foo_tbl"));
         assertNull(((TableDataChangedEvent) actual).getDeletedTable());
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("assertBuildDatabaseDataChangedEventWithAdd", "/statistics/databases/foo_db", "", Type.ADDED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithAdd),
+                    Arguments.of("assertBuildDatabaseDataChangedEventWithUpdate", "/statistics/databases/foo_db", "", Type.UPDATED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithUpdate),
+                    Arguments.of("assertBuildDatabaseDataChangedEventWithDelete", "/statistics/databases/foo_db", "", Type.DELETED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildDatabaseDataChangedEventWithDelete),
+                    Arguments.of("assertBuildSchemaDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.ADDED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithAdd),
+                    Arguments.of("assertBuildSchemaDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.UPDATED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithUpdate),
+                    Arguments.of("assertBuildSchemaDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.DELETED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildSchemaDataChangedEventWithDelete),
+                    Arguments.of("assertBuildRowDataChangedEventWithAddNullValue", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "", Type.ADDED, false, null),
+                    Arguments.of("assertBuildWithMissedDatabaseNameEventKey", "/statistics/databases", "", Type.ADDED, false, null),
+                    Arguments.of("assertBuildWithMissedSchemaNameEventKey", "/statistics/databases/foo_db/schemas", "", Type.ADDED, false, null),
+                    Arguments.of("assertBuildWithMissedTableNameEventKey", "/statistics/databases/foo_db/schemas/foo_schema/tables", "", Type.ADDED, false, null),
+                    Arguments.of("assertBuildDatabaseDataChangedEventWithIgnore", "/statistics/databases/foo_db", "", Type.IGNORED, false, null),
+                    Arguments.of("assertBuildTableDataChangedEventWithIgnore", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.IGNORED, false, null),
+                    Arguments.of("assertBuildSchemaDataChangedEventWithIgnore", "/statistics/databases/foo_db/schemas/foo_schema", "", Type.IGNORED, false, null),
+                    Arguments.of("assertBuildWithMissedRowEventKey", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/", "", Type.UPDATED, false, null),
+                    Arguments.of("assertBuildRowDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "", Type.DELETED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithDelete),
+                    Arguments.of("assertBuildRowDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.UPDATED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithUpdate),
+                    Arguments.of("assertBuildRowDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/xxx", "{uniqueKey: 1}", Type.ADDED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildRowDataChangedEventWithAdd),
+                    Arguments.of("assertBuildTableDataChangedEventWithDelete", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithDelete),
+                    Arguments.of("assertBuildTableDataChangedEventWithUpdate", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.UPDATED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithUpdate),
+                    Arguments.of("assertBuildTableDataChangedEventWithAdd", "/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.ADDED, true,
+                            (Consumer<DispatchEvent>) ShardingSphereDataDispatchEventBuilderTest::assertBuildTableDataChangedEventWithAdd));
+        }
     }
 }
