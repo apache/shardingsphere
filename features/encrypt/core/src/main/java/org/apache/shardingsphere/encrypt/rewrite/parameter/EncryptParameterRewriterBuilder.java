@@ -26,6 +26,7 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptAssig
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -59,6 +60,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         Collection<ParameterRewriter> result = new LinkedList<>();
         addParameterRewriter(result, new EncryptAssignmentParameterRewriter(encryptRule));
         addParameterRewriter(result, new EncryptPredicateParameterRewriter(encryptRule));
+        addParameterRewriter(result, new EncryptInsertPredicateParameterRewriter(encryptRule));
         addParameterRewriter(result, new EncryptInsertValueParameterRewriter(encryptRule));
         addParameterRewriter(result, new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter(encryptRule));
         return result;
