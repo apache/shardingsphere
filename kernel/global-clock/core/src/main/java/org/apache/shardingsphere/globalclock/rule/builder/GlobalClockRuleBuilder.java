@@ -33,7 +33,7 @@ public final class GlobalClockRuleBuilder implements GlobalRuleBuilder<GlobalClo
     
     @Override
     public GlobalClockRule build(final GlobalClockRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
-        return new GlobalClockRule(ruleConfig, databases);
+        return new GlobalClockRule(ruleConfig);
     }
     
     @Override
