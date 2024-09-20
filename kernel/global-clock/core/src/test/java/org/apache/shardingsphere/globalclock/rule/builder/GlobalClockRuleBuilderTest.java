@@ -33,7 +33,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class GlobalClockRuleBuilderTest {
     
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
