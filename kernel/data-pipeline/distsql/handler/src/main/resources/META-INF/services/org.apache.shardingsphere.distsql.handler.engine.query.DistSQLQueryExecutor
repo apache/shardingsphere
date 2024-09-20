@@ -15,11 +15,11 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query.ShowMigrationRuleExecutor
-org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query.ShowMigrationListExecutor
-org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query.ShowMigrationJobStatusExecutor
-org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query.ShowMigrationCheckStatusExecutor
-org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query.ShowMigrationSourceStorageUnitsExecutor
-org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query.ShowStreamingListExecutor
-org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query.ShowStreamingJobStatusExecutor
-org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query.ShowStreamingRuleExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationRuleExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationListExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationJobStatusExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationCheckStatusExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationSourceStorageUnitsExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingListExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingJobStatusExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingRuleExecutor
