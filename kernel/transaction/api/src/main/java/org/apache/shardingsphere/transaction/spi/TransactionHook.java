@@ -76,7 +76,8 @@ public interface TransactionHook<T extends ShardingSphereRule> extends OrderedSP
      * @param isolationLevel isolation level
      * @throws SQLException SQL exception
      */
-    void beforeExecuteSQL(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext, TransactionIsolationLevel isolationLevel) throws SQLException;
+    void beforeExecuteSQL(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext,
+                          TransactionIsolationLevel isolationLevel) throws SQLException;
     
     /**
      * Process before committing the transaction.

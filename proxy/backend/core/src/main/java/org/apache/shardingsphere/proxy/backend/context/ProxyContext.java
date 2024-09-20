@@ -93,7 +93,7 @@ public final class ProxyContext {
     
     /**
      * Get database type.
-     * 
+     *
      * @return database type
      */
     public DatabaseType getDatabaseType() {

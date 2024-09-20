@@ -44,7 +44,7 @@ public final class GlobalClockRule implements GlobalRule {
     
     /**
      * Get global clock provider.
-     * 
+     *
      * @return global clock provider
      */
     public Optional<GlobalClockProvider> getGlobalClockProvider() {

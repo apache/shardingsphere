@@ -110,8 +110,8 @@ public final class ProxySQLExecutor {
         rawExecutor = new RawExecutor(executorEngine, connectionContext);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String currentDatabaseName = Strings.isNullOrEmpty(databaseConnectionManager.getConnectionSession().getCurrentDatabaseName())
-                        ? databaseConnectionManager.getConnectionSession().getUsedDatabaseName()
-                        : databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
+                ? databaseConnectionManager.getConnectionSession().getUsedDatabaseName()
+                : databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
         String currentSchemaName = getSchemaName(queryContext.getSqlStatementContext(), metaDataContexts.getMetaData().getDatabase(currentDatabaseName));
         sqlFederationEngine = new SQLFederationEngine(currentDatabaseName, currentSchemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
     }

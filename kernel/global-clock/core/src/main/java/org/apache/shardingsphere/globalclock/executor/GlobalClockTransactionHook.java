@@ -52,7 +52,8 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    public void afterCreateConnections(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
+    public void afterCreateConnections(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
+                                       final TransactionConnectionContext transactionContext) throws SQLException {
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
@@ -63,7 +64,8 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    public void beforeExecuteSQL(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext connectionContext, final TransactionIsolationLevel isolationLevel) throws SQLException {
+    public void beforeExecuteSQL(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext connectionContext,
+                                 final TransactionIsolationLevel isolationLevel) throws SQLException {
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
@@ -78,7 +80,8 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void beforeCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext, final LockContext lockContext) throws SQLException {
+    public void beforeCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
+                             final LockContext lockContext) throws SQLException {
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
@@ -93,7 +96,8 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void afterCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext, final LockContext lockContext) {
+    public void afterCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
+                            final LockContext lockContext) {
         Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
         if (!globalClockProvider.isPresent()) {
             return;
@@ -106,11 +110,13 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    public void beforeRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
+    public void beforeRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
+                               final TransactionConnectionContext transactionContext) throws SQLException {
     }
     
     @Override
-    public void afterRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
+    public void afterRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
+                              final TransactionConnectionContext transactionContext) throws SQLException {
     }
     
     @Override
