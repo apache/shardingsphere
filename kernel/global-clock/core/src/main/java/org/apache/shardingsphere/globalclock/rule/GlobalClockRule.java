@@ -28,9 +28,9 @@ import java.util.Optional;
 /**
  * Global clock rule.
  */
+@Getter
 public final class GlobalClockRule implements GlobalRule {
     
-    @Getter
     private final GlobalClockRuleConfiguration configuration;
     
     private final GlobalClockProvider globalClockProvider;
@@ -40,15 +40,6 @@ public final class GlobalClockRule implements GlobalRule {
         globalClockProvider = ruleConfig.isEnabled()
                 ? TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", ruleConfig.getType(), ruleConfig.getProvider()), configuration.getProps())
                 : null;
-    }
-    
-    /**
-     * Get current timestamp.
-     *
-     * @return current timestamp
-     */
-    public long getCurrentTimestamp() {
-        return null == globalClockProvider ? 0L : globalClockProvider.getCurrentTimestamp();
     }
     
     /**
