@@ -195,7 +195,7 @@ class BackendTransactionManagerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setTransactionHooks() {
-        Plugins.getMemberAccessor().set(BackendTransactionManager.class.getDeclaredField("transactionHooks"), backendTransactionManager, Collections.emptyList());
+        Plugins.getMemberAccessor().set(BackendTransactionManager.class.getDeclaredField("transactionHooks"), backendTransactionManager, Collections.emptyMap());
     }
     
     private ContextManager mockContextManager(final TransactionType transactionType) {

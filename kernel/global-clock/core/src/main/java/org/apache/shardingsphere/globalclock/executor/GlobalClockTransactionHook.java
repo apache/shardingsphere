@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.globalclock.executor;
 
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
+import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
+import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -33,97 +34,98 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Global clock transaction hook.
  */
-public final class GlobalClockTransactionHook implements TransactionHook {
+public final class GlobalClockTransactionHook implements TransactionHook<GlobalClockRule> {
     
     private final LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.GLOBAL_LOCK.getLockName());
     
-    private boolean enabled;
-    
-    private GlobalClockTransactionExecutor globalClockTransactionExecutor;
-    
-    private GlobalClockProvider globalClockProvider;
+    @Override
+    public void beforeBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
+    }
     
     @Override
-    public void init(final Properties props) {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, props.getProperty("trunkType"));
+    public void afterBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
+        rule.getGlobalClockProvider().ifPresent(optional -> transactionContext.setBeginMills(optional.getCurrentTimestamp()));
+    }
+    
+    @Override
+    public void afterCreateConnections(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
+                                       final TransactionConnectionContext transactionContext) throws SQLException {
+        if (!rule.getConfiguration().isEnabled()) {
+            return;
+        }
         Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
-        if (!globalClockTransactionExecutor.isPresent()) {
-            return;
+        if (globalClockTransactionExecutor.isPresent()) {
+            globalClockTransactionExecutor.get().sendSnapshotTimestamp(connections, transactionContext.getBeginMills());
         }
-        enabled = true;
-        this.globalClockTransactionExecutor = globalClockTransactionExecutor.get();
-        globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", props.getProperty("type"), props.getProperty("provider")));
     }
     
     @Override
-    public void beforeBegin(final TransactionConnectionContext transactionContext) {
-    }
-    
-    @Override
-    public void afterBegin(final TransactionConnectionContext transactionContext) {
-        if (!enabled) {
-            return;
-        }
-        transactionContext.setBeginMills(globalClockProvider.getCurrentTimestamp());
-    }
-    
-    @Override
-    public void afterCreateConnections(final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
-        if (!enabled) {
-            return;
-        }
-        globalClockTransactionExecutor.sendSnapshotTimestamp(connections, transactionContext.getBeginMills());
-    }
-    
-    @Override
-    public void beforeExecuteSQL(final Collection<Connection> connections, final TransactionConnectionContext connectionContext, final TransactionIsolationLevel isolationLevel) throws SQLException {
-        if (!enabled) {
+    public void beforeExecuteSQL(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext connectionContext,
+                                 final TransactionIsolationLevel isolationLevel) throws SQLException {
+        if (!rule.getConfiguration().isEnabled()) {
             return;
         }
         if (null == isolationLevel || TransactionIsolationLevel.READ_COMMITTED == isolationLevel) {
-            globalClockTransactionExecutor.sendSnapshotTimestamp(connections, globalClockProvider.getCurrentTimestamp());
+            Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
+            Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+            if (globalClockTransactionExecutor.isPresent() && globalClockProvider.isPresent()) {
+                globalClockTransactionExecutor.get().sendSnapshotTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
+            }
         }
     }
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void beforeCommit(final Collection<Connection> connections, final TransactionConnectionContext transactionContext, final LockContext lockContext) throws SQLException {
-        if (!enabled) {
+    public void beforeCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
+                             final LockContext lockContext) throws SQLException {
+        if (!rule.getConfiguration().isEnabled()) {
             return;
         }
         if (lockContext.tryLock(lockDefinition, 200L)) {
-            globalClockTransactionExecutor.sendCommitTimestamp(connections, globalClockProvider.getCurrentTimestamp());
+            Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
+            Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+            if (globalClockTransactionExecutor.isPresent() && globalClockProvider.isPresent()) {
+                globalClockTransactionExecutor.get().sendCommitTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
+            }
         }
     }
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void afterCommit(final Collection<Connection> connections, final TransactionConnectionContext transactionContext, final LockContext lockContext) {
-        if (!enabled) {
+    public void afterCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
+                            final LockContext lockContext) {
+        Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+        if (!globalClockProvider.isPresent()) {
             return;
         }
         try {
-            globalClockProvider.getNextTimestamp();
+            globalClockProvider.get().getNextTimestamp();
         } finally {
             lockContext.unlock(lockDefinition);
         }
     }
     
     @Override
-    public void beforeRollback(final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
+    public void beforeRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
+                               final TransactionConnectionContext transactionContext) throws SQLException {
     }
     
     @Override
-    public void afterRollback(final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
+    public void afterRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
+                              final TransactionConnectionContext transactionContext) throws SQLException {
     }
     
     @Override
-    public String getType() {
-        return "GLOBAL_CLOCK";
+    public int getOrder() {
+        return GlobalClockOrder.ORDER;
+    }
+    
+    @Override
+    public Class<GlobalClockRule> getTypeClass() {
+        return GlobalClockRule.class;
     }
 }

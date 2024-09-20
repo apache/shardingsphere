@@ -20,7 +20,10 @@ package org.apache.shardingsphere.proxy.backend.context;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
@@ -86,5 +89,16 @@ public final class ProxyContext {
      */
     public Optional<InstanceStateContext> getInstanceStateContext() {
         return null == contextManager.getComputeNodeInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getComputeNodeInstanceContext().getInstance().getState());
+    }
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    public DatabaseType getDatabaseType() {
+        Collection<ShardingSphereDatabase> databases = contextManager.getMetaDataContexts().getMetaData().getDatabases().values();
+        return databases.stream().flatMap(each -> each.getResourceMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType)
+                .orElseGet(DatabaseTypeEngine::getDefaultStorageType);
     }
 }

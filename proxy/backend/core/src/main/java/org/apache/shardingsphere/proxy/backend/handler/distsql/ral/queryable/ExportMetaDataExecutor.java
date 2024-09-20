@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportMetaDataStatement;
+import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -128,7 +129,7 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
         GlobalClockRule globalClockRule = metaData.getGlobalRuleMetaData().getSingleRule(GlobalClockRule.class);
         if (globalClockRule.getConfiguration().isEnabled()) {
             ExportedSnapshotInfo snapshotInfo = new ExportedSnapshotInfo();
-            snapshotInfo.setCsn(String.valueOf(globalClockRule.getCurrentTimestamp()));
+            snapshotInfo.setCsn(String.valueOf(globalClockRule.getGlobalClockProvider().map(GlobalClockProvider::getCurrentTimestamp).orElse(0L)));
             snapshotInfo.setCreateTime(LocalDateTime.now());
             exportedClusterInfo.setSnapshotInfo(snapshotInfo);
         }
