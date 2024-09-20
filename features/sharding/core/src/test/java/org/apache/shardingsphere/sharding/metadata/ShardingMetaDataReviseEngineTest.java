@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaData
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -51,15 +52,19 @@ class ShardingMetaDataReviseEngineTest {
         Map<String, SchemaMetaData> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule())).revise(Collections.singletonMap("sharding_db",
                 new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material);
         Iterator<ColumnMetaData> columns = actual.get("sharding_db").getTables().iterator().next().getColumns().iterator();
+        assertFalse(columns.next().isGenerated());
+        assertFalse(columns.next().isGenerated());
         assertTrue(columns.next().isGenerated());
-        assertFalse(columns.next().isGenerated());
-        assertFalse(columns.next().isGenerated());
     }
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(shardingTable.getGenerateKeyColumn()).thenReturn(Optional.of("product_id"));
+        when(result.getShardingTable("t_order")).thenReturn(shardingTable);
+        when(result.findShardingTableByActualTable("t_order")).thenReturn(Optional.of(shardingTable));
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
