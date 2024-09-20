@@ -36,40 +36,46 @@ import java.util.Properties;
 /**
  * Global clock rule.
  */
-@Getter
 public final class GlobalClockRule implements GlobalRule {
     
+    @Getter
     private final GlobalClockRuleConfiguration configuration;
+    
+    private final GlobalClockProvider provider;
     
     public GlobalClockRule(final GlobalClockRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         if (ruleConfig.isEnabled()) {
-            TypedSPILoader.getService(GlobalClockProvider.class, getGlobalClockProviderType(), configuration.getProps());
+            provider = TypedSPILoader.getService(GlobalClockProvider.class, getGlobalClockProviderType(), configuration.getProps());
             TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", createProperties(databases));
+        } else {
+            provider = null;
         }
+    }
+    
+    private String getGlobalClockProviderType() {
+        return String.join(".", configuration.getType(), configuration.getProvider());
     }
     
     private Properties createProperties(final Map<String, ShardingSphereDatabase> databases) {
         Properties result = new Properties();
         DatabaseType storageType = findStorageType(databases.values()).orElseGet(DatabaseTypeEngine::getDefaultStorageType);
         result.setProperty("trunkType", storageType.getTrunkDatabaseType().orElse(storageType).getType());
-        result.setProperty("enabled", String.valueOf(configuration.isEnabled()));
         result.setProperty("type", configuration.getType());
         result.setProperty("provider", configuration.getProvider());
         return result;
     }
     
     private Optional<DatabaseType> findStorageType(final Collection<ShardingSphereDatabase> databases) {
-        return databases.stream()
-                .flatMap(each -> each.getResourceMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType);
+        return databases.stream().flatMap(each -> each.getResourceMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType);
     }
     
     /**
-     * Get global clock provider type.
+     * Get current timestamp.
      *
-     * @return global clock provider type
+     * @return current timestamp
      */
-    public String getGlobalClockProviderType() {
-        return String.join(".", configuration.getType(), configuration.getProvider());
+    public long getCurrentTimestamp() {
+        return null == provider ? 0L : provider.getCurrentTimestamp();
     }
 }
