@@ -50,20 +50,14 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
     
     @Override
     public void init(final Properties props) {
-        if (!Boolean.parseBoolean(props.getProperty("enabled"))) {
-            enabled = false;
-            return;
-        }
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, props.getProperty("trunkType"));
         Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
         if (!globalClockTransactionExecutor.isPresent()) {
-            enabled = false;
             return;
         }
         enabled = true;
         this.globalClockTransactionExecutor = globalClockTransactionExecutor.get();
         globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", props.getProperty("type"), props.getProperty("provider")));
-        
     }
     
     @Override

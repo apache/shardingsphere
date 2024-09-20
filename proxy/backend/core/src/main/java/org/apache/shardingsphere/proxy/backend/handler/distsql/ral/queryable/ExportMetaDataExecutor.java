@@ -20,14 +20,12 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportMetaDataStatement;
-import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
@@ -129,11 +127,8 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
     private void generateSnapshotInfo(final ShardingSphereMetaData metaData, final ExportedClusterInfo exportedClusterInfo) {
         GlobalClockRule globalClockRule = metaData.getGlobalRuleMetaData().getSingleRule(GlobalClockRule.class);
         if (globalClockRule.getConfiguration().isEnabled()) {
-            GlobalClockProvider globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class,
-                    globalClockRule.getGlobalClockProviderType(), globalClockRule.getConfiguration().getProps());
-            long csn = globalClockProvider.getCurrentTimestamp();
             ExportedSnapshotInfo snapshotInfo = new ExportedSnapshotInfo();
-            snapshotInfo.setCsn(String.valueOf(csn));
+            snapshotInfo.setCsn(String.valueOf(globalClockRule.getCurrentTimestamp()));
             snapshotInfo.setCreateTime(LocalDateTime.now());
             exportedClusterInfo.setSnapshotInfo(snapshotInfo);
         }
