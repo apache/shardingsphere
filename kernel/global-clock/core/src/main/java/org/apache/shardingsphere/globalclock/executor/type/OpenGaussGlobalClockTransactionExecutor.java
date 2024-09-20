@@ -25,7 +25,7 @@ import java.sql.Statement;
 import java.util.Collection;
 
 /**
- * OpenGauss global clock transaction executor.
+ * Global clock transaction executor for openGauss.
  */
 public final class OpenGaussGlobalClockTransactionExecutor implements GlobalClockTransactionExecutor {
     

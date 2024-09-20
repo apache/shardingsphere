@@ -69,12 +69,13 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
-        if (null == isolationLevel || TransactionIsolationLevel.READ_COMMITTED == isolationLevel) {
-            Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
-            Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
-            if (globalClockTransactionExecutor.isPresent() && globalClockProvider.isPresent()) {
-                globalClockTransactionExecutor.get().sendSnapshotTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
-            }
+        if (null != isolationLevel && TransactionIsolationLevel.READ_COMMITTED != isolationLevel) {
+            return;
+        }
+        Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
+        Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+        if (globalClockTransactionExecutor.isPresent() && globalClockProvider.isPresent()) {
+            globalClockTransactionExecutor.get().sendSnapshotTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
         }
     }
     
@@ -110,13 +111,11 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    public void beforeRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
-                               final TransactionConnectionContext transactionContext) {
+    public void beforeRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext) {
     }
     
     @Override
-    public void afterRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
-                              final TransactionConnectionContext transactionContext) {
+    public void afterRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext) {
     }
     
     @Override
