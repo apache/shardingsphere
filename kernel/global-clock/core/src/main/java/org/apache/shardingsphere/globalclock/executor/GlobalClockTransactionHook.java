@@ -111,12 +111,12 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     
     @Override
     public void beforeRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
-                               final TransactionConnectionContext transactionContext) throws SQLException {
+                               final TransactionConnectionContext transactionContext) {
     }
     
     @Override
     public void afterRollback(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
-                              final TransactionConnectionContext transactionContext) throws SQLException {
+                              final TransactionConnectionContext transactionContext) {
     }
     
     @Override
