@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.globalclock.executor;
 
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.transaction.spi.TransactionHookAdapter;
+import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * Global clock transaction hook.
  */
-public final class GlobalClockTransactionHook extends TransactionHookAdapter {
+public final class GlobalClockTransactionHook implements TransactionHook {
     
     private final LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.GLOBAL_LOCK.getLockName());
     
@@ -58,6 +58,10 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         enabled = true;
         this.globalClockTransactionExecutor = globalClockTransactionExecutor.get();
         globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", props.getProperty("type"), props.getProperty("provider")));
+    }
+    
+    @Override
+    public void beforeBegin(final TransactionConnectionContext transactionContext) {
     }
     
     @Override
@@ -108,6 +112,14 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         } finally {
             lockContext.unlock(lockDefinition);
         }
+    }
+    
+    @Override
+    public void beforeRollback(final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
+    }
+    
+    @Override
+    public void afterRollback(final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
     }
     
     @Override

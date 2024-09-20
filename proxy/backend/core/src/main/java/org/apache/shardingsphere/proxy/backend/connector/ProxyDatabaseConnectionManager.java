@@ -106,10 +106,10 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         return databaseName.toLowerCase() + "." + dataSourceName;
     }
     
-    private void executeTransactionHooksAfterCreateConnections(final List<Connection> result) throws SQLException {
+    private void executeTransactionHooksAfterCreateConnections(final List<Connection> connections) throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
             for (TransactionHook each : transactionHooks) {
-                each.afterCreateConnections(result, connectionSession.getConnectionContext().getTransactionContext());
+                each.afterCreateConnections(connections, connectionSession.getConnectionContext().getTransactionContext());
             }
         }
     }
