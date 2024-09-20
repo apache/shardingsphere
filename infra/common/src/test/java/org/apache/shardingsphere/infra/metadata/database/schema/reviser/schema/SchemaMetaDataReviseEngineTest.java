@@ -32,6 +32,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
@@ -56,7 +57,19 @@ class SchemaMetaDataReviseEngineTest {
         SchemaMetaData actual = new SchemaMetaDataReviseEngine(
                 Collections.singleton(new FixtureGlobalRule()), new ConfigurationProperties(new Properties()), mock(DatabaseType.class), mock(DataSource.class)).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
-        assertThat(actual.getTables(), is(schemaMetaData.getTables()));
+        assertThat(actual.getTables().size(), is(schemaMetaData.getTables().size()));
+        TableMetaData actualTableMetaData = actual.getTables().iterator().next();
+        TableMetaData expectedTableMetaData = schemaMetaData.getTables().iterator().next();
+        assertThat(actualTableMetaData.getName(), is(expectedTableMetaData.getName()));
+        assertThat(actualTableMetaData.getType(), is(expectedTableMetaData.getType()));
+        assertThat(actualTableMetaData.getIndexes(), is(expectedTableMetaData.getIndexes()));
+        assertThat(actualTableMetaData.getConstraints(), is(expectedTableMetaData.getConstraints()));
+        assertThat(actualTableMetaData.getColumns().size(), is(expectedTableMetaData.getColumns().size()));
+        Iterator<ColumnMetaData> actualColumnIterator = actualTableMetaData.getColumns().iterator();
+        Iterator<ColumnMetaData> expectedColumnIterator = expectedTableMetaData.getColumns().iterator();
+        while (actualColumnIterator.hasNext() && expectedColumnIterator.hasNext()) {
+            assertColumnMetaData(actualColumnIterator.next(), expectedColumnIterator.next());
+        }
     }
     
     private TableMetaData createTableMetaData() {
@@ -68,4 +81,14 @@ class SchemaMetaDataReviseEngineTest {
         return new TableMetaData("table_name", columns, Collections.singletonList(indexMetaData), Collections.singleton(constraintMetaData));
     }
     
+    private void assertColumnMetaData(final ColumnMetaData actualColumnMetaData, final ColumnMetaData expectedColumnMetaData) {
+        assertThat(actualColumnMetaData.getName(), is(expectedColumnMetaData.getName()));
+        assertThat(actualColumnMetaData.getDataType(), is(expectedColumnMetaData.getDataType()));
+        assertThat(actualColumnMetaData.isPrimaryKey(), is(expectedColumnMetaData.isPrimaryKey()));
+        assertThat(actualColumnMetaData.isGenerated(), is(false));
+        assertThat(actualColumnMetaData.isCaseSensitive(), is(expectedColumnMetaData.isCaseSensitive()));
+        assertThat(actualColumnMetaData.isVisible(), is(expectedColumnMetaData.isVisible()));
+        assertThat(actualColumnMetaData.isUnsigned(), is(expectedColumnMetaData.isUnsigned()));
+        assertThat(actualColumnMetaData.isNullable(), is(expectedColumnMetaData.isNullable()));
+    }
 }
