@@ -98,7 +98,8 @@ public final class GeneratedKeyContextEngine {
                 if (params.isEmpty()) {
                     continue;
                 }
-                if (null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
+                if (params.size() > ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()
+                        && null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
                     result.getGeneratedValues().add((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
                 }
             } else if (expression instanceof LiteralExpressionSegment) {
