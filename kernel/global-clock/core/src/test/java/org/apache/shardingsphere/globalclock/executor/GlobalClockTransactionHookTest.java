@@ -21,6 +21,7 @@ import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -40,6 +41,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -127,16 +129,9 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertBeforeExecuteSQLWhenGlobalClockTransactionExecutorAbsent() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
+        when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.READ_COMMITTED);
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
-        verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
-    }
-    
-    @Test
-    void assertBeforeExecuteSQLWhenGlobalClockProviderAbsent() throws SQLException {
-        when(rule.getConfiguration().isEnabled()).thenReturn(true);
-        transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.READ_COMMITTED);
-        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
         verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
     }
     
@@ -148,5 +143,69 @@ class GlobalClockTransactionHookTest {
         when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, null);
         verify(globalClockTransactionExecutor).sendSnapshotTimestamp(Collections.emptyList(), 10L);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    void assertBeforeCommitWhenDisabledGlobalClockRule() throws SQLException {
+        LockContext lockContext = mock(LockContext.class);
+        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
+        verify(lockContext, times(0)).tryLock(any(), anyLong());
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Test
+    void assertBeforeCommitWhenTryLockFailed() throws SQLException {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
+        LockContext lockContext = mock(LockContext.class);
+        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
+        verify(globalClockTransactionExecutor, times(0)).sendCommitTimestamp(any(), anyLong());
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    void assertBeforeCommitWhenGlobalClockTransactionExecutorAbsent() throws SQLException {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
+        LockContext lockContext = mock(LockContext.class);
+        when(lockContext.tryLock(any(), anyLong())).thenReturn(true);
+        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
+        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
+        verify(globalClockTransactionExecutor, times(0)).sendCommitTimestamp(any(), anyLong());
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    void assertBeforeCommit() throws SQLException {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
+        when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
+        when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
+        LockContext lockContext = mock(LockContext.class);
+        when(lockContext.tryLock(any(), anyLong())).thenReturn(true);
+        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
+        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
+        verify(globalClockTransactionExecutor).sendCommitTimestamp(Collections.emptyList(), 10L);
+    }
+    
+    @Test
+    void assertAfterCommitWhenGlobalClockProviderAbsent() {
+        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext, mock(LockContext.class));
+        verify(globalClockProvider, times(0)).getNextTimestamp();
+    }
+    
+    @Test
+    void assertAfterCommitWhenGlobalClockProviderPresent() {
+        when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
+        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext, mock(LockContext.class));
+        verify(globalClockProvider).getNextTimestamp();
+    }
+    
+    @Test
+    void assertBeforeRollback() {
+        assertDoesNotThrow(() -> transactionHook.beforeRollback(rule, databaseType, Collections.emptyList(), transactionContext));
+    }
+    
+    @Test
+    void assertAfterRollback() {
+        assertDoesNotThrow(() -> transactionHook.afterRollback(rule, databaseType, Collections.emptyList(), transactionContext));
     }
 }
