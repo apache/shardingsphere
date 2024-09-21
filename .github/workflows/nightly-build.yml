@@ -159,7 +159,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
         run: |
-          ./mvnw -am -pl distribution/agent -Prelease,docker.buildx.push -B -T1C -DskipTests -Dproxy.image.repository=${{ env.AGENT }} -Dproxy.image.tag=${{ github.sha }} clean package
+          ./mvnw -am -pl distribution/agent -Prelease,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.sha }} clean package
   build-cache:
     if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: Build Project

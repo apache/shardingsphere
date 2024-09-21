@@ -112,27 +112,54 @@ java -javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar -jar t
 + 3 Access to started service
 + 4 Check whether the corresponding plug-in is effective
 
-### Nightly Builds
+### Docker
 
-A nightly built Docker Image of ShardingSphere Agent exists at https://github.com/orgs/apache/packages?repo_name=shardingsphere .
+#### Local Build
 
-You can use ShardingSphere Agent in this Docker Image for a JAR like `example.jar` by using a `Dockerfile` like the following.
+ShardingSphere Agent has a `Dockerfile` available for easy distribution. You can execute the following command to build a Docker Image,
 
-Assume `example.jar` is an Uber JAR of Spring Boot that will use ShardingSphere Agent,
-and `custom-agent.yaml` contains the configuration of ShardingSphere Agent.
-
-```dockerfile
-FROM ghcr.io/apache/shardingsphere-agent:latest
-COPY ./example.jar /example.jar
-COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
-ENTRYPOINT java \
-    -javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar
-    -jar \
-    /example.jar
+```shell
+git clone git@github.com:apache/shardingsphere.git
+cd ./shardingsphere/
+./mvnw -am -pl distribution/agent -Prelease,docker -T1C -DskipTests clean package
 ```
 
-The content of `custom-agent.yaml` may be as follows,
-`http://localhost:4318` points to the locally deployed `otel/opentelemetry-collector-contrib:0.108.0` Docker Container.
+If you add the following statement in your custom `Dockerfile`, it will copy the ShardingSphere Agent directory to `/shardingsphere-agent/`.
+
+```dockerfile
+COPY --from=apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
+```
+
+#### Nightly Build
+
+ShardingSphere Agent has a nightly built Docker Image at https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-agent .
+
+If you add the following statement in your custom `Dockerfile`, it will copy the ShardingSphere Agent directory to `/shardingsphere-agent/`.
+
+```dockerfile
+COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
+```
+
+#### Using Dockerfile
+
+Introduce a typical scenario,
+
+1. Assume that the Jaeger All in One Docker Container is deployed through the following Bash command,
+
+```shell
+docker network create example-net
+docker run --rm -d \
+  --name jaeger \
+  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
+  -p 16686:16686 \
+  -p 4317:4317 \
+  -p 4318:4318 \
+  -p 9411:9411 \
+  --network example-net \
+  jaegertracing/all-in-one:1.60.0
+```
+
+2. Assume `./custom-agent.yaml` contains the configuration of ShardingSphere Agent, and the content may be as follows,
 
 ```yaml
 plugins:
@@ -140,13 +167,33 @@ plugins:
     OpenTelemetry:
       props:
         otel.service.name: "example"
-        otel.exporter.otlp.traces.endpoint: "http://localhost:4318"
+        otel.exporter.otlp.traces.endpoint: "http://jaeger:4318"
 ```
 
-Or add the following statement in `Dockerfile`, which will copy the Agent directory to `/shardingsphere-agent/`.
+3. Assuming `./target/example.jar` is an Uber JAR of Spring Boot that will use ShardingSphere Agent, 
+you can use the ShardingSphere Agent in the nightly built Docker Image for a JAR like `example.jar` through a `Dockerfile` like the following.
+
+```dockerfile 
+FROM ghcr.io/apache/shardingsphere-agent:latest 
+COPY ./target/example.jar /app.jar 
+COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml 
+ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar","-jar","/app.jar "] 
+```
+
+If you build the Docker Image of `apache/shardingsphere-agent:latest` locally, the `Dockerfile` may be as follows,
 
 ```dockerfile
-COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
+FROM apache/shardingsphere-agent:latest
+COPY ./target/example.jar /app.jar
+COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
+ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar","-jar","/app.jar"]
+```
+
+4. Enjoy it, 
+
+```shell 
+docker build -t example/gs-spring-boot-docker:latest . 
+docker run --network example-net example/gs-spring-boot-docker:latest 
 ```
 
 ## Metrics

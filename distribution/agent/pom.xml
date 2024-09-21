@@ -101,11 +101,44 @@
             </build>
         </profile>
         <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>build</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>APP_NAME=apache-shardingsphere-${project.version}-shardingsphere-agent-bin</argument>
+                                        <argument>.</argument>
+                                        <argument>-t</argument>
+                                        <argument>apache/shardingsphere-agent:${project.version}</argument>
+                                        <argument>-t</argument>
+                                        <argument>apache/shardingsphere-agent:latest</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>docker.buildx.push</id>
             <properties>
-                <proxy.image.platform>linux/amd64,linux/arm64</proxy.image.platform>
-                <proxy.image.repository>apache/shardingsphere-agent</proxy.image.repository>
-                <proxy.image.tag>${project.version}</proxy.image.tag>
+                <agent.image.repository>apache/shardingsphere-agent</agent.image.repository>
+                <agent.image.tag>${project.version}</agent.image.tag>
             </properties>
             <build>
                 <plugins>
@@ -125,13 +158,12 @@
                                     <arguments>
                                         <argument>buildx</argument>
                                         <argument>create</argument>
-                                        <argument>--use</argument>
                                         <argument>--driver</argument>
                                         <argument>docker-container</argument>
                                         <argument>--name</argument>
                                         <argument>shardingsphere-builder</argument>
                                         <argument>--platform</argument>
-                                        <argument>${proxy.image.platform}</argument>
+                                        <argument>linux/amd64,linux/arm64</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -146,17 +178,18 @@
                                     <arguments>
                                         <argument>buildx</argument>
                                         <argument>build</argument>
-                                        <argument>--pull</argument>
                                         <argument>--push</argument>
+                                        <argument>--builder</argument>
+                                        <argument>shardingsphere-builder</argument>
                                         <argument>--platform</argument>
-                                        <argument>${proxy.image.platform}</argument>
+                                        <argument>linux/amd64,linux/arm64</argument>
                                         <argument>--build-arg</argument>
                                         <argument>APP_NAME=apache-shardingsphere-${project.version}-shardingsphere-agent-bin</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
-                                        <argument>${proxy.image.repository}:${proxy.image.tag}</argument>
+                                        <argument>${agent.image.repository}:${agent.image.tag}</argument>
                                         <argument>-t</argument>
-                                        <argument>${proxy.image.repository}:latest</argument>
+                                        <argument>${agent.image.repository}:latest</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
