@@ -41,25 +41,25 @@ public final class RedisTSOProvider implements TSOProvider {
     
     private JedisPool jedisPool;
     
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
         if (initialized.compareAndSet(false, true)) {
-            createJedisPool();
+            createJedisPool(props);
             checkJedisPool();
             initCSN();
         }
     }
     
-    private void createJedisPool() {
+    private void createJedisPool(final Properties props) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxIdle(Integer.parseInt(getValue(props, RedisTSOPropertyKey.MAX_IDLE)));
         config.setMaxTotal(Integer.parseInt(getValue(props, RedisTSOPropertyKey.MAX_TOTAL)));
-        jedisPool = new JedisPool(config, getValue(props, RedisTSOPropertyKey.HOST),
-                Integer.parseInt(getValue(props, RedisTSOPropertyKey.PORT)), Integer.parseInt(getValue(props, RedisTSOPropertyKey.TIMEOUT_INTERVAL)),
-                getValue(props, RedisTSOPropertyKey.PASSWORD));
+        jedisPool = new JedisPool(config, getValue(props, RedisTSOPropertyKey.HOST), Integer.parseInt(getValue(props, RedisTSOPropertyKey.PORT)),
+                Integer.parseInt(getValue(props, RedisTSOPropertyKey.TIMEOUT_INTERVAL)), getValue(props, RedisTSOPropertyKey.PASSWORD));
+    }
+    
+    private String getValue(final Properties props, final RedisTSOPropertyKey propertyKey) {
+        return props.containsKey(propertyKey.getKey()) ? props.getProperty(propertyKey.getKey()) : propertyKey.getDefaultValue();
     }
     
     private void checkJedisPool() {
@@ -75,10 +75,6 @@ public final class RedisTSOProvider implements TSOProvider {
                 jedis.set(CSN_KEY, String.valueOf(INIT_CSN));
             }
         }
-    }
-    
-    private String getValue(final Properties props, final RedisTSOPropertyKey propertyKey) {
-        return props.containsKey(propertyKey.getKey()) ? props.getProperty(propertyKey.getKey()) : propertyKey.getDefaultValue();
     }
     
     @Override
