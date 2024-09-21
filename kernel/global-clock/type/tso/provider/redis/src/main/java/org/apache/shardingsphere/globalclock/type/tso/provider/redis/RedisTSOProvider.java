@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.type.tso.provider;
+package org.apache.shardingsphere.globalclock.type.tso.provider.redis;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.globalclock.type.tso.provider.TSOProvider;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -26,7 +27,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Redis timestamp oracle provider.
+ * Redis TSO provider.
  */
 public final class RedisTSOProvider implements TSOProvider {
     

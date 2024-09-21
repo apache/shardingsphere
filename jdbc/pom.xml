@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-global-clock-tso-core</artifactId>
+            <artifactId>shardingsphere-global-clock-tso-provider-local</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

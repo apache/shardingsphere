@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.globalclock.type.tso.provider.RedisTSOProvider
+org.apache.shardingsphere.globalclock.type.tso.provider.redis.RedisTSOProvider

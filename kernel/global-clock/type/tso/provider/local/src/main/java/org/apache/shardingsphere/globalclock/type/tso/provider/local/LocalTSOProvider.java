@@ -15,34 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.type.tso.provider;
+package org.apache.shardingsphere.globalclock.type.tso.provider.local;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.props.TypedPropertyKey;
+import org.apache.shardingsphere.globalclock.type.tso.provider.TSOProvider;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Property key of redis timestamp oracle provider.
+ * Local TSO provider.
  */
-@RequiredArgsConstructor
-@Getter
-public enum RedisTSOPropertyKey implements TypedPropertyKey {
+public final class LocalTSOProvider implements TSOProvider {
     
-    HOST("host", "127.0.0.1", String.class),
+    private final AtomicLong localClock = new AtomicLong();
     
-    PORT("port", "6379", int.class),
+    @Override
+    public long getCurrentTimestamp() {
+        return localClock.get();
+    }
     
-    PASSWORD("password", null, String.class),
+    @Override
+    public long getNextTimestamp() {
+        return localClock.incrementAndGet();
+    }
     
-    TIMEOUT_INTERVAL("timeoutInterval", "40000", int.class),
+    @Override
+    public String getType() {
+        return "TSO.local";
+    }
     
-    MAX_IDLE("maxIdle", "8", int.class),
-    
-    MAX_TOTAL("maxTotal", "18", int.class);
-    
-    private final String key;
-    
-    private final String defaultValue;
-    
-    private final Class<?> type;
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
