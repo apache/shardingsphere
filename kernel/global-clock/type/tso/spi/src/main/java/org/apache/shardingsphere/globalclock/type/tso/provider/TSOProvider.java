@@ -20,7 +20,7 @@ package org.apache.shardingsphere.globalclock.type.tso.provider;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 
 /**
- * Timestamp oracle provider.
+ * TSO provider.
  */
 public interface TSOProvider extends GlobalClockProvider {
 }
