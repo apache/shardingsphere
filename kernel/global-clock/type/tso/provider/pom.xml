@@ -28,6 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>local</module>
         <module>redis</module>
     </modules>
 </project>
