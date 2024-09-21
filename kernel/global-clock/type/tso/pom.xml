@@ -29,7 +29,6 @@
     
     <modules>
         <module>spi</module>
-        <module>core</module>
         <module>provider</module>
     </modules>
 </project>
