@@ -47,7 +47,7 @@ public final class SingleTableSegment implements DistSQLSegment {
     
     /**
      * Get storage unit name.
-     * 
+     *
      * @return storage unit name
      */
     public String getStorageUnitName() {
@@ -56,7 +56,7 @@ public final class SingleTableSegment implements DistSQLSegment {
     
     /**
      * Get table name.
-     * 
+     *
      * @return table name
      */
     public String getTableName() {
