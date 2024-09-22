@@ -20,7 +20,6 @@ package org.apache.shardingsphere.single.distsql.segment;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,54 +33,12 @@ class SingleTableSegmentTest {
     
     @Test
     void assertDoesNotContainSchema() {
-        assertFalse(new SingleTableSegment("foo_ds", null, "foo_tbl").containsSchema());
-    }
-    
-    @Test
-    void assertEqualsWithSelf() {
-        SingleTableSegment segment = new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl");
-        assertThat(segment, is(segment));
-    }
-    
-    @Test
-    void assertEqualsWithoutSchemaName() {
-        assertThat(new SingleTableSegment("foo_ds", null, "foo_tbl"), is(new SingleTableSegment("FOO_DS", null, "FOO_TBL")));
-    }
-    
-    @Test
-    void assertEqualsWithSchemaName() {
-        assertThat(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl"), is(new SingleTableSegment("FOO_DS", "FOO_SCHEMA", "FOO_TBL")));
-    }
-    
-    @SuppressWarnings("ConstantValue")
-    @Test
-    void assertNotEqualsWithNull() {
-        assertFalse(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl").equals(null));
-    }
-    
-    @Test
-    void assertNotEqualsWithOtherType() {
-        assertThat(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl"), not(new Object()));
-    }
-    
-    @Test
-    void assertNotEqualsWithDifferentStorageUnitName() {
-        assertThat(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl"), not(new SingleTableSegment("BAR_DS", "FOO_SCHEMA", "FOO_TBL")));
-    }
-    
-    @Test
-    void assertNotEqualsWithDifferentSchemaName() {
-        assertThat(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl"), not(new SingleTableSegment("FOO_DS", "BAR_SCHEMA", "FOO_TBL")));
-    }
-    
-    @Test
-    void assertNotEqualsWithDifferentTableName() {
-        assertThat(new SingleTableSegment("foo_ds", null, "foo_tbl"), not(new SingleTableSegment("FOO_DS", null, "BAR_TBL")));
+        assertFalse(new SingleTableSegment("foo_ds", "foo_tbl").containsSchema());
     }
     
     @Test
     void assertToStringWithoutSchemaName() {
-        assertThat(new SingleTableSegment("foo_ds", null, "foo_tbl").toString(), is("foo_ds.foo_tbl"));
+        assertThat(new SingleTableSegment("foo_ds", "foo_tbl").toString(), is("foo_ds.foo_tbl"));
     }
     
     @Test
