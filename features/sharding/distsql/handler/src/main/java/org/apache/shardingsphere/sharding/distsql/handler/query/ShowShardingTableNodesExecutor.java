@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
@@ -49,12 +48,12 @@ public final class ShowShardingTableNodesExecutor implements DistSQLQueryExecuto
     public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableNodesStatement sqlStatement, final ContextManager contextManager) {
         String tableName = sqlStatement.getTableName();
         return null == tableName
-                ? rule.getShardingTables().entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue()))).collect(Collectors.toList())
-                : Collections.singleton(new LocalDataQueryResultRow(tableName, getTableNodes(rule.getShardingTable(tableName))));
+                ? rule.getShardingTables().entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), getTableNodes(sqlStatement, entry.getValue()))).collect(Collectors.toList())
+                : Collections.singleton(new LocalDataQueryResultRow(tableName, getTableNodes(sqlStatement, rule.getShardingTable(tableName))));
     }
     
-    private String getTableNodes(final ShardingTable shardingTable) {
-        return shardingTable.getActualDataNodes().stream().map(DataNode::format).collect(Collectors.joining(", "));
+    private String getTableNodes(final ShowShardingTableNodesStatement sqlStatement, final ShardingTable shardingTable) {
+        return shardingTable.getActualDataNodes().stream().map(each -> each.format(sqlStatement.getDatabaseType())).collect(Collectors.joining(", "));
     }
     
     @Override
