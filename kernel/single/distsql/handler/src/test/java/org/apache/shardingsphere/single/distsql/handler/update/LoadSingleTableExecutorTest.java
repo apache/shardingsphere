@@ -71,7 +71,7 @@ class LoadSingleTableExecutorTest {
         when(database.getName()).thenReturn("foo_db");
         when(schema.containsTable("foo")).thenReturn(true);
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", null, "foo")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", "foo")));
         executor.setDatabase(database);
         assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
@@ -81,7 +81,7 @@ class LoadSingleTableExecutorTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.getResourceMetaData().getStorageUnits().isEmpty()).thenReturn(true);
         executor.setDatabase(database);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", null, "*")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", "*")));
         assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
@@ -89,13 +89,13 @@ class LoadSingleTableExecutorTest {
     void assertCheckWithInvalidStorageUnit() {
         when(database.getName()).thenReturn("foo_db");
         executor.setDatabase(database);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", null, "foo")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", "foo")));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
     void assertBuild() {
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", "foo")));
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
         executor.setRule(rule);
@@ -107,7 +107,7 @@ class LoadSingleTableExecutorTest {
     void assertUpdate() {
         Collection<String> currentTables = new LinkedList<>(Collections.singletonList("ds_0.foo"));
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "bar")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", "bar")));
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
