@@ -20,23 +20,19 @@ package org.apache.shardingsphere.infra.datanode;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 
 import java.util.List;
 
 /**
  * Data node.
  */
-@RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public final class DataNode {
     
@@ -50,11 +46,6 @@ public final class DataNode {
     
     private final String tableName;
     
-    /**
-     * Constructs a data node with well-formatted string.
-     *
-     * @param dataNode string of data node. use {@code .} to split data source name and table name.
-     */
     public DataNode(final String dataNode) {
         // TODO remove duplicated splitting?
         boolean isIncludeInstance = isActualDataNodesIncludedDataSourceInstance(dataNode);
@@ -70,13 +61,6 @@ public final class DataNode {
         tableName = segments.get(isIncludeInstance ? 2 : 1);
     }
     
-    /**
-     * Constructs a data node with well-formatted string.
-     *
-     * @param databaseName database name
-     * @param databaseType database type
-     * @param dataNode string of data node. use {@code .} to split data source name and table name
-     */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
         boolean containsSchema = isValidDataNode(dataNode, 3);
@@ -84,6 +68,12 @@ public final class DataNode {
         dataSourceName = segments.get(0);
         schemaName = getSchemaName(databaseName, databaseType, containsSchema, segments);
         tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
+    }
+    
+    public DataNode(final String databaseName, final String tableName) {
+        this.dataSourceName = databaseName;
+        schemaName = null;
+        this.tableName = tableName;
     }
     
     private String getSchemaName(final String databaseName, final DatabaseType databaseType, final boolean containsSchema, final List<String> segments) {
