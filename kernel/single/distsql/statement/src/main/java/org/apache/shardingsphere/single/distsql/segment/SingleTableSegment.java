@@ -17,56 +17,63 @@
 
 package org.apache.shardingsphere.single.distsql.segment;
 
-import com.google.common.base.Objects;
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 
 /**
  * Single table segment.
  */
 @RequiredArgsConstructor
-@Getter
+@EqualsAndHashCode
 public final class SingleTableSegment implements DistSQLSegment {
     
-    private final String storageUnitName;
+    private final CaseInsensitiveIdentifier storageUnitName;
     
-    private final String schemaName;
+    private final CaseInsensitiveIdentifier schemaName;
     
-    private final String tableName;
+    private final CaseInsensitiveIdentifier tableName;
+    
+    public SingleTableSegment(final String storageUnitName, final String tableName) {
+        this(storageUnitName, null, tableName);
+    }
+    
+    public SingleTableSegment(final String storageUnitName, final String schemaName, final String tableName) {
+        this.storageUnitName = new CaseInsensitiveIdentifier(storageUnitName);
+        this.schemaName = null == schemaName ? null : new CaseInsensitiveIdentifier(schemaName);
+        this.tableName = new CaseInsensitiveIdentifier(tableName);
+    }
     
     /**
-     * Get schema name.
+     * Get storage unit name.
      *
-     * @return schema name
+     * @return storage unit name
      */
-    public Optional<String> getSchemaName() {
-        return Optional.ofNullable(schemaName);
+    public String getStorageUnitName() {
+        return storageUnitName.toString();
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    public String getTableName() {
+        return tableName.toString();
+    }
+    
+    /**
+     * Whether to contain schema.
+     *
+     * @return contains schema or not
+     */
+    public boolean containsSchema() {
+        return null != schemaName;
     }
     
     @Override
     public String toString() {
-        return null == schemaName ? storageUnitName + "." + tableName : storageUnitName + "." + schemaName + "." + tableName;
-    }
-    
-    @Override
-    public boolean equals(final Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (null == object || getClass() != object.getClass()) {
-            return false;
-        }
-        SingleTableSegment segment = (SingleTableSegment) object;
-        return Objects.equal(storageUnitName.toUpperCase(), segment.storageUnitName.toUpperCase())
-                && Objects.equal(tableName.toUpperCase(), segment.tableName.toUpperCase())
-                && Objects.equal(null == schemaName ? null : schemaName.toUpperCase(), null == segment.schemaName ? null : segment.schemaName.toUpperCase());
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(storageUnitName.toUpperCase(), tableName.toUpperCase(), null == schemaName ? null : schemaName.toUpperCase());
+        return null == schemaName ? String.join(".", getStorageUnitName(), getTableName()) : String.join(".", getStorageUnitName(), schemaName.toString(), getTableName());
     }
 }
