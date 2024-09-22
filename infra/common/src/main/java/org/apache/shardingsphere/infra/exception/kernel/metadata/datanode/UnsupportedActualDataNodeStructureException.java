@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.kernel.metadata.datanode;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -29,7 +28,7 @@ public final class UnsupportedActualDataNodeStructureException extends DataNodeD
     
     private static final long serialVersionUID = -8921823916974492519L;
     
-    public UnsupportedActualDataNodeStructureException(final DataNode dataNode, final Collection<String> jdbcUrlPrefixes) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 1, "Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.", dataNode.format(), jdbcUrlPrefixes);
+    public UnsupportedActualDataNodeStructureException(final String dataSourceName, final String tableName, final Collection<String> jdbcUrlPrefixes) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 1, "Can not support 3-tier structure for actual data node '%s.%s' with JDBC '%s'.", dataSourceName, tableName, jdbcUrlPrefixes);
     }
 }
