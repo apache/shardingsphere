@@ -87,10 +87,10 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
             return;
         }
         if (isSchemaSupportedDatabaseType) {
-            ShardingSpherePreconditions.checkState(singleTableSegment.getSchemaName().isPresent(),
+            ShardingSpherePreconditions.checkState(singleTableSegment.containsSchema(),
                     () -> new InvalidDataNodeFormatException(singleTableSegment.toString(), "Current database is schema required, please use format `db.schema.table`"));
         } else {
-            ShardingSpherePreconditions.checkState(!singleTableSegment.getSchemaName().isPresent(),
+            ShardingSpherePreconditions.checkState(!singleTableSegment.containsSchema(),
                     () -> new InvalidDataNodeFormatException(singleTableSegment.toString(), "Current database does not support schema, please use format `db.table`"));
         }
     }

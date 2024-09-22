@@ -22,33 +22,27 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
-import java.util.Optional;
-
 /**
  * Single table segment.
  */
 @RequiredArgsConstructor
-@Getter
 public final class SingleTableSegment implements DistSQLSegment {
     
+    @Getter
     private final String storageUnitName;
     
     private final String schemaName;
     
+    @Getter
     private final String tableName;
     
     /**
-     * Get schema name.
+     * Whether to contain schema.
      *
-     * @return schema name
+     * @return contains schema or not
      */
-    public Optional<String> getSchemaName() {
-        return Optional.ofNullable(schemaName);
-    }
-    
-    @Override
-    public String toString() {
-        return null == schemaName ? storageUnitName + "." + tableName : storageUnitName + "." + schemaName + "." + tableName;
+    public boolean containsSchema() {
+        return null != schemaName;
     }
     
     @Override
@@ -61,12 +55,17 @@ public final class SingleTableSegment implements DistSQLSegment {
         }
         SingleTableSegment segment = (SingleTableSegment) object;
         return Objects.equal(storageUnitName.toUpperCase(), segment.storageUnitName.toUpperCase())
-                && Objects.equal(tableName.toUpperCase(), segment.tableName.toUpperCase())
-                && Objects.equal(null == schemaName ? null : schemaName.toUpperCase(), null == segment.schemaName ? null : segment.schemaName.toUpperCase());
+                && Objects.equal(null == schemaName ? null : schemaName.toUpperCase(), null == segment.schemaName ? null : segment.schemaName.toUpperCase())
+                && Objects.equal(tableName.toUpperCase(), segment.tableName.toUpperCase());
     }
     
     @Override
     public int hashCode() {
         return Objects.hashCode(storageUnitName.toUpperCase(), tableName.toUpperCase(), null == schemaName ? null : schemaName.toUpperCase());
+    }
+    
+    @Override
+    public String toString() {
+        return null == schemaName ? storageUnitName + "." + tableName : storageUnitName + "." + schemaName + "." + tableName;
     }
 }
