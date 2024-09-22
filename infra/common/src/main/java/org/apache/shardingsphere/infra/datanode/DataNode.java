@@ -46,10 +46,9 @@ public final class DataNode {
     
     private final String dataSourceName;
     
-    private final String tableName;
+    private final String schemaName;
     
-    // TODO add final for schemaName
-    private String schemaName;
+    private final String tableName;
     
     /**
      * Constructs a data node with well-formatted string.
@@ -67,6 +66,7 @@ public final class DataNode {
         }
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
+        schemaName = null;
         tableName = segments.get(isIncludeInstance ? 2 : 1);
     }
     
@@ -87,11 +87,7 @@ public final class DataNode {
     }
     
     private String getSchemaName(final String databaseName, final DatabaseType databaseType, final boolean containsSchema, final List<String> segments) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
-            return containsSchema ? segments.get(1) : ASTERISK;
-        }
-        return databaseName;
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultSchema().isPresent() ? containsSchema ? segments.get(1) : ASTERISK : databaseName;
     }
     
     private boolean isValidDataNode(final String dataNodeStr, final Integer tier) {
@@ -100,15 +96,6 @@ public final class DataNode {
     
     private boolean isActualDataNodesIncludedDataSourceInstance(final String actualDataNodes) {
         return isValidDataNode(actualDataNodes, 3);
-    }
-    
-    /**
-     * Format data node as string.
-     *
-     * @return formatted data node
-     */
-    public String format() {
-        return dataSourceName + DELIMITER + tableName;
     }
     
     /**
