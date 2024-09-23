@@ -100,13 +100,13 @@ public final class MetaDataPersistService {
      * Persist configurations.
      *
      * @param databaseName database name
-     * @param databaseConfigs database configuration
+     * @param databaseConfig database configuration
      * @param dataSources data sources
      * @param rules rules
      */
-    public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
-        Map<String, DataSourcePoolProperties> propsMap = getDataSourcePoolPropertiesMap(databaseConfigs);
-        if (propsMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
+    public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfig, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
+        Map<String, DataSourcePoolProperties> propsMap = getDataSourcePoolPropertiesMap(databaseConfig);
+        if (propsMap.isEmpty() && databaseConfig.getRuleConfigurations().isEmpty()) {
             databaseMetaDataService.addDatabase(databaseName);
         } else {
             dataSourceUnitService.persist(databaseName, propsMap);
@@ -125,8 +125,8 @@ public final class MetaDataPersistService {
         return result;
     }
     
-    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfigs) {
-        return databaseConfigs.getStorageUnits().entrySet().stream()
+    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfig) {
+        return databaseConfig.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
