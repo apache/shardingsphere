@@ -54,12 +54,13 @@ public final class MySQLNotFunction extends SqlUserDefinedFunction {
      * @param value value
      * @return not operator result
      */
+    @SuppressWarnings("unused")
     public static Long not(final Object value) {
         if (null == value) {
             return null;
         }
         if (value instanceof Number) {
-            return ((Number) value).longValue() == 0 ? 1L : 0L;
+            return 0 == ((Number) value).longValue() ? 1L : 0L;
         }
         if (value instanceof Boolean) {
             return ((Boolean) value) ? 0L : 1L;
