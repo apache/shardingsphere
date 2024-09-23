@@ -55,6 +55,9 @@ public final class MySQLNotFunction extends SqlUserDefinedFunction {
         if (value instanceof Number) {
             return ((Number) value).longValue() == 0 ? 1L : 0L;
         }
+        if (value instanceof Boolean) {
+            return ((Boolean) value) ? 0L : 1L;
+        }
         return null;
     }
 }
