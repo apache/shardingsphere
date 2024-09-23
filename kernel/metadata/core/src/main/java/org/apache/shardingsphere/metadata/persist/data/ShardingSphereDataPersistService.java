@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.metadata.persist.data;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere data persist service.
  */
-@Getter
 public final class ShardingSphereDataPersistService {
     
     private final PersistRepository repository;
@@ -88,7 +86,7 @@ public final class ShardingSphereDataPersistService {
     
     /**
      * Persist.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param schemaData schema data
