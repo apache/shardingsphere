@@ -48,6 +48,12 @@ public final class MySQLNotFunction extends SqlUserDefinedFunction {
         return SqlSyntax.PREFIX;
     }
     
+    /**
+     * not.
+     *
+     * @param value value
+     * @return not operator result
+     */
     public static Long not(final Object value) {
         if (null == value) {
             return null;
