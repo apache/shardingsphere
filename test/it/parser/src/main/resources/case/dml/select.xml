@@ -9555,4 +9555,59 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_with_not_operator_number">
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="NOT 0" start-index="7" stop-index="11">
+                <expr>
+                    <not-expression start-index="7" stop-index="11">
+                        <expr>
+                            <literal-expression value="0" start-index="11" stop-index="11" />
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="NOT 1" start-index="14" stop-index="18">
+                <expr>
+                    <not-expression start-index="14" stop-index="18">
+                        <expr>
+                            <literal-expression value="1" start-index="18" stop-index="18" />
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="NOT 2" start-index="21" stop-index="25">
+                <expr>
+                    <not-expression start-index="21" stop-index="25">
+                        <expr>
+                            <literal-expression value="2" start-index="25" stop-index="25" />
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_not_operator_boolean">
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="NOT TRUE" start-index="7" stop-index="14">
+                <expr>
+                    <not-expression start-index="7" stop-index="14">
+                        <expr>
+                            <literal-expression value="true" start-index="11" stop-index="14" />
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="NOT FALSE" start-index="17" stop-index="25">
+                <expr>
+                    <not-expression start-index="17" stop-index="25">
+                        <expr>
+                            <literal-expression value="false" start-index="21" stop-index="25" />
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

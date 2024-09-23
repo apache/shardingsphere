@@ -386,4 +386,20 @@
     <test-case sql="SELECT BIN(NULL), BIN(''), BIN(' ')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT NOT 1, not 0, NOT null" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT NOT order_id FROM t_order" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT NOT (t1.order_id + t2.order_id) FROM t_order t1 INNER JOIN t_order_item t2 ON t1.order_id = t2.order_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT BIN(NOT 1), NOT BIT_COUNT(0)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

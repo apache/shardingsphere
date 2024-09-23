@@ -76,6 +76,9 @@ public final class LiteralExpressionConverter {
         if (segment.getLiterals() instanceof String) {
             return Optional.of(SqlLiteral.createCharString(literalValue, SqlParserPos.ZERO));
         }
+        if (segment.getLiterals() instanceof Boolean) {
+            return Optional.of(SqlLiteral.createBoolean(Boolean.parseBoolean(literalValue), SqlParserPos.ZERO));
+        }
         return Optional.empty();
     }
 }
