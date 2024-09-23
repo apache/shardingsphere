@@ -110,7 +110,7 @@ public final class DataNode {
      */
     public String format(final DatabaseType databaseType) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
+        return dialectDatabaseMetaData.getDefaultSchema().isPresent() && schemaName != null ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
     }
     
     @Override
