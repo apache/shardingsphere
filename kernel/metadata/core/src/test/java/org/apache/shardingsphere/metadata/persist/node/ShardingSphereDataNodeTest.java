@@ -130,4 +130,9 @@ class ShardingSphereDataNodeTest {
     void assertGetRowUniqueKeyUniqueKeyNotFoundScenario() {
         assertThat(ShardingSphereDataNode.getRowUniqueKey("/statistics/databases/db_name/schemas/db_schema/tables/tbl_name"), is(Optional.empty()));
     }
+    
+    @Test
+    void assertGetJobPath() {
+        assertThat(ShardingSphereDataNode.getJobPath(), is("statistics/job"));
+    }
 }
