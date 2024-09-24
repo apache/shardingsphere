@@ -59,6 +59,6 @@ class QualifiedDataSourceStatePersistServiceTest {
     @Test
     void assertUpdate() {
         qualifiedDataSourceStatePersistService.update("foo_db", "foo_group", "foo_ds", DataSourceState.ENABLED);
-        verify(repository).persist("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "state: ENABLED\n");
+        verify(repository).persist("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "state: ENABLED" + System.lineSeparator());
     }
 }
