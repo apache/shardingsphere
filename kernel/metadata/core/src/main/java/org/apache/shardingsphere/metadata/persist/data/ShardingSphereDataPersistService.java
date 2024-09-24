@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -87,27 +86,26 @@ public final class ShardingSphereDataPersistService {
     /**
      * Persist.
      *
-     * @param databaseName database name
+     * @param database database
      * @param schemaName schema name
      * @param schemaData schema data
-     * @param databases databases
      */
-    public void persist(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData, final Map<String, ShardingSphereDatabase> databases) {
+    public void persist(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereSchemaData schemaData) {
         if (schemaData.getTableData().isEmpty()) {
-            persistSchema(databaseName, schemaName);
+            persistSchema(database.getName(), schemaName);
         }
-        persistTableData(databaseName, schemaName, schemaData, databases);
+        persistTableData(database, schemaName, schemaData);
     }
     
     private void persistSchema(final String databaseName, final String schemaName) {
         repository.persist(ShardingSphereDataNode.getSchemaDataPath(databaseName, schemaName), "");
     }
     
-    private void persistTableData(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData, final Map<String, ShardingSphereDatabase> databases) {
+    private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereSchemaData schemaData) {
         schemaData.getTableData().values().forEach(each -> {
             YamlShardingSphereRowDataSwapper swapper =
-                    new YamlShardingSphereRowDataSwapper(new ArrayList<>(databases.get(databaseName.toLowerCase()).getSchema(schemaName).getTable(each.getName()).getColumnValues()));
-            persistTableData(databaseName, schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
+                    new YamlShardingSphereRowDataSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getColumnValues()));
+            persistTableData(database.getName(), schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
         });
     }
     

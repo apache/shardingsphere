@@ -86,7 +86,9 @@ class ShardingSphereDataPersistServiceTest {
     
     @Test
     void assertPersistWithEmptyTableData() {
-        persistService.persist("foo_db", "foo_schema", mock(ShardingSphereSchemaData.class), Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class)));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        persistService.persist(database, "foo_schema", mock(ShardingSphereSchemaData.class));
         verify(repository).persist("/statistics/databases/foo_db/schemas/foo_schema", "");
     }
     
@@ -98,8 +100,9 @@ class ShardingSphereDataPersistServiceTest {
         when(tableData.getName()).thenReturn("foo_tbl");
         when(schemaData.getTableData().values()).thenReturn(Collections.singleton(tableData));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_schema").getTable("foo_tbl").getColumnValues()).thenReturn(Collections.singleton(mock(ShardingSphereColumn.class)));
-        persistService.persist("foo_db", "foo_schema", schemaData, Collections.singletonMap("foo_db", database));
+        persistService.persist(database, "foo_schema", schemaData);
         verify(tableRowDataPersistService).persist("foo_db", "foo_schema", "foo_tbl", Collections.emptyList());
     }
     
