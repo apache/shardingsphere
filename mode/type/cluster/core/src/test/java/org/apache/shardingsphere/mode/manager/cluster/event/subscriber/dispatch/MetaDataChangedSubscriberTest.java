@@ -38,8 +38,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.Collections;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,7 +78,7 @@ class MetaDataChangedSubscriberTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().getTableMetaDataPersistService().load("foo_db", "foo_schema", "foo_tbl"))
-                .thenReturn(Collections.singletonMap("foo_tbl", table));
+                .thenReturn(table);
         subscriber.renew(new CreateOrAlterTableEvent("foo_db", "foo_schema", "foo_tbl", "key", "value"));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
     }
@@ -96,7 +94,7 @@ class MetaDataChangedSubscriberTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load("foo_db", "foo_schema", "foo_view"))
-                .thenReturn(Collections.singletonMap("foo_view", view));
+                .thenReturn(view);
         subscriber.renew(new CreateOrAlterViewEvent("foo_db", "foo_schema", "foo_view", "key", "value"));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
     }
