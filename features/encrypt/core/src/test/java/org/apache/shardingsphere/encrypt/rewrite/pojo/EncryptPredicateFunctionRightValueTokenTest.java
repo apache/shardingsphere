@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.pojo;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateFunctionRightValueToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -31,13 +32,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class EncryptPredicateFunctionRightValueTokenTest {
     
     @Test
-    void assertToStringWithoutPlaceholderWithoutTableOwnerWithFunction() {
+    void assertToStringWithSimpleFunction() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>(3, 1F);
         indexValues.put(0, "%");
         indexValues.put(1, "abc");
         indexValues.put(2, "%");
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "CONCAT", "('%','abc','%')");
-        EncryptPredicateFunctionRightValueToken actual = new EncryptPredicateFunctionRightValueToken(0, 0, functionSegment.getFunctionName(), indexValues, Collections.emptyList());
+        functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "%"));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "abc"));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "%"));
+        EncryptPredicateFunctionRightValueToken actual =
+                new EncryptPredicateFunctionRightValueToken(0, 0, functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues, Collections.emptyList());
         assertThat(actual.toString(), is("CONCAT ('%', 'abc', '%')"));
+    }
+    
+    @Test
+    void assertToStringWithNestedFunction() {
+        Map<Integer, Object> indexValues = new LinkedHashMap<>(3, 1F);
+        indexValues.put(0, "%");
+        indexValues.put(1, "abc");
+        indexValues.put(2, "%");
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "CONCAT", "('%',CONCAT('abc','%'))");
+        functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "%"));
+        FunctionSegment nestedFunctionSegment = new FunctionSegment(0, 0, "CONCAT", "('abc','%')");
+        nestedFunctionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "abc"));
+        nestedFunctionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "%"));
+        functionSegment.getParameters().add(nestedFunctionSegment);
+        EncryptPredicateFunctionRightValueToken actual =
+                new EncryptPredicateFunctionRightValueToken(0, 0, functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues, Collections.emptyList());
+        assertThat(actual.toString(), is("CONCAT ('%', CONCAT ('abc', '%'))"));
     }
 }
