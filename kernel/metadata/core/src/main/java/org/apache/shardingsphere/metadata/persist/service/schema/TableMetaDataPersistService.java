@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.service.schema;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersio
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,13 +41,19 @@ import java.util.Optional;
  * Table meta data persist service.
  */
 @RequiredArgsConstructor
-public final class TableMetaDataPersistService implements SchemaMetaDataPersistService<Map<String, ShardingSphereTable>> {
+public final class TableMetaDataPersistService {
     
     private final PersistRepository repository;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
-    @Override
+    /**
+     * Persist tables.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tables tables
+     */
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
@@ -70,7 +76,13 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
         return repository.query(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName));
     }
     
-    @Override
+    /**
+     * Load tables.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return loaded tables
+     */
     public Map<String, ShardingSphereTable> load(final String databaseName, final String schemaName) {
         List<String> tableNames = repository.getChildrenKeys(TableMetaDataNode.getMetaDataTablesNode(databaseName, schemaName));
         Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableNames.size(), 1F);
@@ -80,9 +92,18 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
         return result;
     }
     
-    @Override
-    public Map<String, ShardingSphereTable> load(final String databaseName, final String schemaName, final String tableName) {
-        return getTableMetaData(databaseName, schemaName, tableName).map(optional -> Collections.singletonMap(tableName.toLowerCase(), optional)).orElse(Collections.emptyMap());
+    /**
+     * Load table.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return loaded table
+     */
+    public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
+        Optional<ShardingSphereTable> result = getTableMetaData(databaseName, schemaName, tableName);
+        Preconditions.checkState(result.isPresent());
+        return result.get();
     }
     
     private Optional<ShardingSphereTable> getTableMetaData(final String databaseName, final String schemaName, final String tableName) {
@@ -91,7 +112,13 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
         return Strings.isNullOrEmpty(tableContent) ? Optional.empty() : Optional.of(new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class)));
     }
     
-    @Override
+    /**
+     * Delete table.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     */
     public void delete(final String databaseName, final String schemaName, final String tableName) {
         repository.delete(TableMetaDataNode.getTableNode(databaseName, schemaName, tableName.toLowerCase()));
     }

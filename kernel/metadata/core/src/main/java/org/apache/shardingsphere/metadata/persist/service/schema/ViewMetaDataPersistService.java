@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.service.schema;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -29,24 +30,30 @@ import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersio
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * View meta data persist service.
  */
 @RequiredArgsConstructor
-public final class ViewMetaDataPersistService implements SchemaMetaDataPersistService<Map<String, ShardingSphereView>> {
+public final class ViewMetaDataPersistService {
     
     private final PersistRepository repository;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
-    @Override
+    /**
+     * Persist views.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param views views
+     */
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> views) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
@@ -67,30 +74,49 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
         return repository.query(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName));
     }
     
-    @Override
+    /**
+     * Load views.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return loaded views
+     */
     public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName) {
-        Collection<String> viewNames = repository.getChildrenKeys(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName));
-        return viewNames.isEmpty() ? Collections.emptyMap() : getViewMetaDataByViewNames(databaseName, schemaName, viewNames);
-    }
-    
-    @Override
-    public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName, final String viewName) {
-        return getViewMetaDataByViewNames(databaseName, schemaName, Collections.singletonList(viewName));
-    }
-    
-    private Map<String, ShardingSphereView> getViewMetaDataByViewNames(final String databaseName, final String schemaName, final Collection<String> viewNames) {
+        List<String> viewNames = repository.getChildrenKeys(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName));
         Map<String, ShardingSphereView> result = new LinkedHashMap<>(viewNames.size(), 1F);
-        viewNames.forEach(each -> {
-            String view = repository.query(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, each,
-                    repository.query(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, each))));
-            if (!Strings.isNullOrEmpty(view)) {
-                result.put(each.toLowerCase(), new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class)));
-            }
-        });
+        for (String each : viewNames) {
+            getViewMetaData(databaseName, schemaName, each).ifPresent(optional -> result.put(each.toLowerCase(), optional));
+        }
         return result;
     }
     
-    @Override
+    /**
+     * Load view.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     * @return loaded view
+     */
+    public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
+        Optional<ShardingSphereView> result = getViewMetaData(databaseName, schemaName, viewName);
+        Preconditions.checkState(result.isPresent());
+        return result.get();
+    }
+    
+    private Optional<ShardingSphereView> getViewMetaData(final String databaseName, final String schemaName, final String viewName) {
+        String view = repository.query(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName,
+                repository.query(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName))));
+        return Strings.isNullOrEmpty(view) ? Optional.empty() : Optional.of(new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class)));
+    }
+    
+    /**
+     * Delete view.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     */
     public void delete(final String databaseName, final String schemaName, final String viewName) {
         repository.delete(ViewMetaDataNode.getViewNode(databaseName, schemaName, viewName.toLowerCase()));
     }
