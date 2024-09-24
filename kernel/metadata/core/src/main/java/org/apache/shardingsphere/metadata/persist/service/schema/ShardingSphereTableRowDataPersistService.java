@@ -49,13 +49,10 @@ public final class ShardingSphereTableRowDataPersistService implements TableRowD
     @Override
     public void persist(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
         if (rows.isEmpty()) {
-            persistTable(databaseName, schemaName, tableName);
+            repository.persist(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName.toLowerCase()), "");
+        } else {
+            rows.forEach(each -> repository.persist(ShardingSphereDataNode.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey()), YamlEngine.marshal(each)));
         }
-        rows.forEach(each -> repository.persist(ShardingSphereDataNode.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey()), YamlEngine.marshal(each)));
-    }
-    
-    private void persistTable(final String databaseName, final String schemaName, final String tableName) {
-        repository.persist(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName.toLowerCase()), "");
     }
     
     /**
