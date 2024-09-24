@@ -23,15 +23,41 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseMetaDataNodeTest {
+    
+    @Test
+    void assertGetDatabaseNamePath() {
+        assertThat(DatabaseMetaDataNode.getDatabaseNamePath("foo_db"), is("/metadata/foo_db"));
+    }
+    
+    @Test
+    void assertGetMetaDataSchemaPath() {
+        assertThat(DatabaseMetaDataNode.getMetaDataSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+    }
+    
+    @Test
+    void assertGetMetaDataSchemasPath() {
+        assertThat(DatabaseMetaDataNode.getMetaDataSchemasPath("foo_db"), is("/metadata/foo_db/schemas"));
+    }
+    
+    @Test
+    void assertGetMetaDataTablesPath() {
+        assertThat(DatabaseMetaDataNode.getMetaDataTablesPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+    }
     
     @Test
     void assertGetDatabaseName() {
         Optional<String> actual = DatabaseMetaDataNode.getDatabaseName("/metadata/foo_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_db"));
+    }
+    
+    @Test
+    void assertGetDatabaseNameIfNotFound() {
+        assertFalse(DatabaseMetaDataNode.getDatabaseName("/metadata").isPresent());
     }
     
     @Test
@@ -42,6 +68,11 @@ class DatabaseMetaDataNodeTest {
     }
     
     @Test
+    void assertGetDatabaseNameBySchemaNodeIfNotFound() {
+        assertFalse(DatabaseMetaDataNode.getDatabaseNameBySchemaNode("/xxx/foo_db").isPresent());
+    }
+    
+    @Test
     void assertGetSchemaName() {
         Optional<String> actual = DatabaseMetaDataNode.getSchemaName("/metadata/foo_db/schemas/foo_schema");
         assertTrue(actual.isPresent());
@@ -49,9 +80,29 @@ class DatabaseMetaDataNodeTest {
     }
     
     @Test
+    void assertGetSchemaNameIfNotFound() {
+        assertFalse(DatabaseMetaDataNode.getSchemaName("/metadata/foo_db/xxx/foo_schema").isPresent());
+    }
+    
+    @Test
     void assertGetSchemaNameByTableNode() {
         Optional<String> actual = DatabaseMetaDataNode.getSchemaNameByTableNode("/metadata/foo_db/schemas/foo_schema/tables");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_schema"));
+    }
+    
+    @Test
+    void assertGetSchemaNameByTableNodeIfNotFound() {
+        assertFalse(DatabaseMetaDataNode.getSchemaNameByTableNode("/xxx/foo_db/schemas/foo_schema/tables").isPresent());
+    }
+    
+    @Test
+    void assertGetVersionNodeByActiveVersionPath() {
+        assertThat(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath("foo_rule", "1"), is("foo_rule/1"));
+    }
+    
+    @Test
+    void assertGetMetaDataNode() {
+        assertThat(DatabaseMetaDataNode.getMetaDataNode(), is("/metadata"));
     }
 }
