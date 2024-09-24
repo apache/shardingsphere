@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source node persist service.
@@ -67,13 +68,11 @@ public final class DataSourceNodePersistService {
      * @return data source pool configurations
      */
     @SuppressWarnings("unchecked")
-    public Map<String, DataSourcePoolProperties> load(final String databaseName, final String name) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(1, 1F);
+    public Optional<DataSourcePoolProperties> load(final String databaseName, final String name) {
         String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
-        if (!Strings.isNullOrEmpty(dataSourceValue)) {
-            result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
-        }
-        return result;
+        return Strings.isNullOrEmpty(dataSourceValue)
+                ? Optional.empty()
+                : Optional.of(new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
     }
     
     /**

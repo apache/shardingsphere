@@ -29,9 +29,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -65,17 +67,16 @@ class DataSourceNodePersistServiceTest {
     void assertLoadWithVersions() {
         when(repository.query("/metadata/foo_db/data_sources/nodes/foo_ds/active_version")).thenReturn("10");
         when(repository.query("/metadata/foo_db/data_sources/nodes/foo_ds/versions/10")).thenReturn("{dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource}");
-        Map<String, DataSourcePoolProperties> actual = dataSourceNodePersistService.load("foo_db", "foo_ds");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_ds").getPoolClassName(), is("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource"));
+        Optional<DataSourcePoolProperties> actual = dataSourceNodePersistService.load("foo_db", "foo_ds");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getPoolClassName(), is("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource"));
     }
     
     @Test
     void assertLoadWithoutVersions() {
         when(repository.query("/metadata/foo_db/data_sources/nodes/foo_ds/active_version")).thenReturn("");
         when(repository.query("/metadata/foo_db/data_sources/nodes/foo_ds/versions/")).thenReturn("");
-        Map<String, DataSourcePoolProperties> actual = dataSourceNodePersistService.load("foo_db", "foo_ds");
-        assertTrue(actual.isEmpty());
+        assertFalse(dataSourceNodePersistService.load("foo_db", "foo_ds").isPresent());
     }
     
     @Test
