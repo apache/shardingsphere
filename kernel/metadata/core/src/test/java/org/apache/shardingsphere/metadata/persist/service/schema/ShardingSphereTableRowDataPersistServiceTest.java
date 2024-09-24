@@ -60,7 +60,7 @@ class ShardingSphereTableRowDataPersistServiceTest {
         YamlShardingSphereRowData rowData = new YamlShardingSphereRowData();
         rowData.setUniqueKey("foo_key");
         persistService.persist("foo_db", "foo_schema", "foo_tbl", Collections.singletonList(rowData));
-        verify(repository).persist("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key", "uniqueKey: foo_key\n");
+        verify(repository).persist("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key", "uniqueKey: foo_key" + System.lineSeparator());
     }
     
     @Test
@@ -74,7 +74,7 @@ class ShardingSphereTableRowDataPersistServiceTest {
     @Test
     void assertLoadWithRowData() {
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl")).thenReturn(Collections.singletonList("foo_tbl"));
-        when(repository.query("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_tbl")).thenReturn("uniqueKey: foo_key\n");
+        when(repository.query("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_tbl")).thenReturn("uniqueKey: foo_key" + System.lineSeparator());
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", "foo_tbl", table);
         assertThat(actual.getName(), is("foo_tbl"));
