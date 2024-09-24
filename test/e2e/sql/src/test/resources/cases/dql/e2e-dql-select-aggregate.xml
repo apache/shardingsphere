@@ -140,4 +140,8 @@
     <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE CONCAT('%', ?, '%')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="abc:String" expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE CONCAT('%', CONCAT(?, '%'))" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
+        <assertion parameters="abc:String" expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

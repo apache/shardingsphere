@@ -17,38 +17,20 @@
 
 package org.apache.shardingsphere.metadata.persist.node.metadata;
 
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ViewMetaDataNodeTest {
     
     @Test
-    void assertGetViewName() {
-        Optional<String> actual = ViewMetaDataNode.getViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_view"));
-    }
-    
-    @Test
-    void assertIsViewActiveVersionNode() {
-        assertTrue(ViewMetaDataNode.isViewActiveVersionNode("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
-    }
-    
-    @Test
-    void assertIsViewNode() {
-        assertTrue(ViewMetaDataNode.isViewNode("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
-    }
-    
-    @Test
-    void assertGetVersionNodeByActiveVersionPath() {
-        assertThat(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0"),
-                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
+    void assertGetMetaDataViewsNode() {
+        assertThat(ViewMetaDataNode.getMetaDataViewsNode("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/views"));
     }
     
     @Test
@@ -76,5 +58,32 @@ class ViewMetaDataNodeTest {
         Optional<String> actual = ViewMetaDataNode.getViewNameByActiveVersionNode("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_view"));
+    }
+    
+    @Test
+    void assertGetTableNameByActiveVersionNodeIfNotFound() {
+        assertFalse(ViewMetaDataNode.getViewNameByActiveVersionNode("/xxx/foo_db/schemas/foo_schema/views/foo_view/active_version").isPresent());
+    }
+    
+    @Test
+    void assertGetViewName() {
+        Optional<String> actual = ViewMetaDataNode.getViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_view"));
+    }
+    
+    @Test
+    void assertGetViewNameIfNotFound() {
+        assertFalse(ViewMetaDataNode.getViewName("/xxx/foo_db/schemas/foo_schema/views/foo_view").isPresent());
+    }
+    
+    @Test
+    void assertIsViewActiveVersionNode() {
+        assertTrue(ViewMetaDataNode.isViewActiveVersionNode("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
+    }
+    
+    @Test
+    void assertIsViewNode() {
+        assertTrue(ViewMetaDataNode.isViewNode("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
 }
