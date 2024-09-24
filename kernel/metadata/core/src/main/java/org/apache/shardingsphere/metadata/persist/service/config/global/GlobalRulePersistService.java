@@ -79,10 +79,7 @@ public final class GlobalRulePersistService {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)) {
-            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
-            if (!repositoryTuples.isEmpty()) {
-                metaDataVersions.addAll(persistTuples(repositoryTuples));
-            }
+            metaDataVersions.addAll(persistTuples(repositoryTupleSwapperEngine.swapToRepositoryTuples(each)));
         }
         metaDataVersionPersistService.switchActiveVersion(metaDataVersions);
     }
