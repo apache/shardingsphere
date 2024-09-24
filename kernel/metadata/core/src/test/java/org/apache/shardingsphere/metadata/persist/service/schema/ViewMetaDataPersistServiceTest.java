@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.service.schema;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,9 +38,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TableMetaDataPersistServiceTest {
+class ViewMetaDataPersistServiceTest {
     
-    private TableMetaDataPersistService persistService;
+    private ViewMetaDataPersistService persistService;
     
     @Mock
     private PersistRepository repository;
@@ -50,43 +50,43 @@ class TableMetaDataPersistServiceTest {
     
     @BeforeEach
     void setUp() {
-        persistService = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
+        persistService = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
     }
     
     @Test
     void assertPersist() {
-        persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class)));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0", "{}" + System.lineSeparator());
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0");
+        persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", mock(ShardingSphereView.class)));
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0");
         verify(metaDataVersionPersistService).switchActiveVersion(any());
     }
     
     @Test
-    void assertLoadWithEmptyTables() {
+    void assertLoadWithEmptyViews() {
         assertTrue(persistService.load("foo_db", "foo_schema").isEmpty());
     }
     
     @Test
-    void assertLoadWithTables() {
-        when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("foo_tbl"));
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version")).thenReturn("0");
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0")).thenReturn("{name: foo_tbl}");
-        Map<String, ShardingSphereTable> actual = persistService.load("foo_db", "foo_schema");
+    void assertLoadWithViews() {
+        when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/views")).thenReturn(Collections.singletonList("foo_view"));
+        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0")).thenReturn("{name: foo_view}");
+        Map<String, ShardingSphereView> actual = persistService.load("foo_db", "foo_schema");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_tbl").getName(), is("foo_tbl"));
+        assertThat(actual.get("foo_view").getName(), is("foo_view"));
     }
     
     @Test
-    void assertLoadWithTable() {
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version")).thenReturn("0");
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0")).thenReturn("{name: foo_tbl}");
-        ShardingSphereTable actual = persistService.load("foo_db", "foo_schema", "foo_tbl");
-        assertThat(actual.getName(), is("foo_tbl"));
+    void assertLoadWithView() {
+        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0")).thenReturn("{name: foo_view}");
+        ShardingSphereView actual = persistService.load("foo_db", "foo_schema", "foo_view");
+        assertThat(actual.getName(), is("foo_view"));
     }
     
     @Test
     void assertDelete() {
-        persistService.delete("foo_db", "foo_schema", "foo_tbl");
-        verify(repository).delete("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
+        persistService.delete("foo_db", "foo_schema", "foo_view");
+        verify(repository).delete("/metadata/foo_db/schemas/foo_schema/views/foo_view");
     }
 }
