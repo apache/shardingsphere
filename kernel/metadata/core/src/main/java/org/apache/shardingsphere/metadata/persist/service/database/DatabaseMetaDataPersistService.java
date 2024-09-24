@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.service.database;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -37,17 +38,15 @@ import java.util.Map;
 @Getter
 public final class DatabaseMetaDataPersistService {
     
+    @Getter(AccessLevel.NONE)
     private final PersistRepository repository;
     
     private final TableMetaDataPersistService tableMetaDataPersistService;
     
     private final ViewMetaDataPersistService viewMetaDataPersistService;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
-    
     public DatabaseMetaDataPersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         this.repository = repository;
-        this.metaDataVersionPersistService = metaDataVersionPersistService;
         tableMetaDataPersistService = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
         viewMetaDataPersistService = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
     }
