@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source unit persist service.
@@ -47,17 +48,9 @@ public final class DataSourceUnitPersistService {
      * @param databaseName database name
      * @return data source pool properties map
      */
-    @SuppressWarnings("unchecked")
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
         Collection<String> childrenKeys = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitsNode(databaseName));
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(childrenKeys.size(), 1F);
-        for (String each : childrenKeys) {
-            String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
-            if (!Strings.isNullOrEmpty(dataSourceValue)) {
-                result.put(each, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
-            }
-        }
-        return result;
+        return childrenKeys.stream().collect(Collectors.toMap(each -> each, each -> load(databaseName, each), (a, b) -> b, () -> new LinkedHashMap<>(childrenKeys.size(), 1F)));
     }
     
     /**
