@@ -42,25 +42,6 @@ public final class DataSourceUnitPersistService {
     private final PersistRepository repository;
     
     /**
-     * Persist data source pool configurations.
-     *
-     * @param databaseName database name
-     * @param dataSourceConfigs data source pool configurations
-     */
-    public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
-            List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
-            repository.persist(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, entry.getKey(), versions.isEmpty()
-                    ? MetaDataVersion.DEFAULT_VERSION
-                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
-            if (Strings.isNullOrEmpty(activeVersion)) {
-                repository.persist(DataSourceMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
-            }
-        }
-    }
-    
-    /**
      * Load data source pool configurations.
      *
      * @param databaseName database name
@@ -97,13 +78,22 @@ public final class DataSourceUnitPersistService {
     }
     
     /**
-     * Delete data source pool configurations.
+     * Persist data source pool configurations.
      *
      * @param databaseName database name
-     * @param dataSourceName data source name
+     * @param dataSourceConfigs data source pool configurations
      */
-    public void delete(final String databaseName, final String dataSourceName) {
-        repository.delete(DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, dataSourceName));
+    public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
+            String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
+            List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
+            repository.persist(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, entry.getKey(), versions.isEmpty()
+                    ? MetaDataVersion.DEFAULT_VERSION
+                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
+            if (Strings.isNullOrEmpty(activeVersion)) {
+                repository.persist(DataSourceMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
+            }
+        }
     }
     
     /**
@@ -130,5 +120,15 @@ public final class DataSourceUnitPersistService {
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
         return repository.query(DataSourceMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, dataSourceName));
+    }
+    
+    /**
+     * Delete data source pool configurations.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     */
+    public void delete(final String databaseName, final String dataSourceName) {
+        repository.delete(DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, dataSourceName));
     }
 }
