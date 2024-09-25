@@ -123,7 +123,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
                 .switchByRegisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
         MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
                 switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
-        metaDataPersistService.getDataSourceUnitService().persistConfigurations(databaseName, toBeRegisteredProps);
+        metaDataPersistService.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
         afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
         reloadMetaDataContexts.close();
     }
@@ -137,7 +137,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
                 switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
         metaDataPersistService.getMetaDataVersionPersistService()
-                .switchActiveVersion(dataSourceService.persistConfigurations(databaseName, toBeUpdatedProps));
+                .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
         afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
         reloadMetaDataContexts.close();
     }
