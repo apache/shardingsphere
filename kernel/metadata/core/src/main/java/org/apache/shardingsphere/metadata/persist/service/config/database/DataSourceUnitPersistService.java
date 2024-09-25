@@ -67,42 +67,24 @@ public final class DataSourceUnitPersistService {
     }
     
     /**
-     * Persist data source pool configurations.
+     * Persist data source pool properties map.
      *
      * @param databaseName database name
-     * @param dataSourceConfigs data source pool configurations
-     */
-    public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
-            List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
-            repository.persist(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, entry.getKey(), versions.isEmpty()
-                    ? MetaDataVersion.DEFAULT_VERSION
-                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
-            if (Strings.isNullOrEmpty(activeVersion)) {
-                repository.persist(DataSourceMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
-            }
-        }
-    }
-    
-    /**
-     * Persist data source pool configurations.
-     *
-     * @param databaseName database name
-     * @param dataSourceConfigs to be persisted configurations
+     * @param dataSourcePropsMap to be persisted data source properties map
      * @return meta data versions
      */
-    public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
+    public Collection<MetaDataVersion> persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
+            String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
             List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceUnitVersionsNode(databaseName, entry.getKey()));
             String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(DataSourceMetaDataNode.getDataSourceUnitVersionNode(databaseName, entry.getKey(), nextActiveVersion),
                     YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
-            if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
+            if (Strings.isNullOrEmpty(activeVersion)) {
                 repository.persist(DataSourceMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey()), getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
+            result.add(new MetaDataVersion(DataSourceMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey()), activeVersion, nextActiveVersion));
         }
         return result;
     }

@@ -244,7 +244,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 });
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
         metaDataPersistService.getMetaDataVersionPersistService()
-                .switchActiveVersion(dataSourceService.persistConfigurations(databaseName, toBeRegisteredProps));
+                .switchActiveVersion(dataSourceService.persist(databaseName, toBeRegisteredProps));
         clearServiceCache();
     }
     
@@ -259,7 +259,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
         metaDataPersistService.getMetaDataVersionPersistService()
-                .switchActiveVersion(dataSourceService.persistConfigurations(databaseName, toBeUpdatedProps));
+                .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
         switchingResource.closeStaleDataSources();
         clearServiceCache();
     }
