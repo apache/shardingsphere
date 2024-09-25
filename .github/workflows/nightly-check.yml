@@ -155,7 +155,7 @@ jobs:
       - uses: actions/stale@v9
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          days-before-issue-stale: 14
+          days-before-issue-stale: 7
           days-before-pr-stale: -1
           days-before-close: -1
           stale-issue-label: "stale"
