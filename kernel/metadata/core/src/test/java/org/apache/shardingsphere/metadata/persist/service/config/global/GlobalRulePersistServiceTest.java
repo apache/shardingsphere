@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.metadata.persist.fixture.YamlRuleConfigurationFixture;
 import org.apache.shardingsphere.metadata.persist.service.config.RepositoryTuplePersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.global.fixture.GlobalRulePersistServiceFixtureYamlRuleConfiguration;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -81,7 +81,7 @@ class GlobalRulePersistServiceTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         YamlRuleConfigurationSwapper swapper = mock(YamlRuleConfigurationSwapper.class);
         when(OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, swapper));
-        YamlRuleConfiguration yamlRuleConfig = new GlobalRulePersistServiceFixtureYamlRuleConfiguration();
+        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationFixture();
         when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
         when(repository.query("/rules/fixture/active_version")).thenReturn("10");
         when(repository.getChildrenKeys("/rules/fixture/versions")).thenReturn(Collections.singletonList("10"));
@@ -97,7 +97,7 @@ class GlobalRulePersistServiceTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         YamlRuleConfigurationSwapper swapper = mock(YamlRuleConfigurationSwapper.class);
         when(OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, swapper));
-        YamlRuleConfiguration yamlRuleConfig = new GlobalRulePersistServiceFixtureYamlRuleConfiguration();
+        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationFixture();
         when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
         when(repository.getChildrenKeys("/rules/fixture/versions")).thenReturn(Collections.emptyList());
         globalRulePersistService.persist(Collections.singleton(ruleConfig));
