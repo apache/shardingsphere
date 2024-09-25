@@ -19,9 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignme
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 
@@ -37,7 +35,4 @@ public final class SetAssignmentSegment implements SQLSegment {
     private final int stopIndex;
     
     private final Collection<ColumnAssignmentSegment> assignments;
-    
-    @Setter
-    private TableSegment from;
 }

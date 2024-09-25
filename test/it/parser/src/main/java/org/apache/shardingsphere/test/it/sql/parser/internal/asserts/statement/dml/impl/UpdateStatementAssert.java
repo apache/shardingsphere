@@ -58,6 +58,7 @@ public final class UpdateStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertSetClause(assertContext, actual, expected);
+        assertFromClause(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
         assertOrderByClause(assertContext, actual, expected);
         assertLimitClause(assertContext, actual, expected);
@@ -75,6 +76,15 @@ public final class UpdateStatementAssert {
     
     private static void assertSetClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         SetClauseAssert.assertIs(assertContext, actual.getSetAssignment(), expected.getSetClause());
+    }
+    
+    private static void assertFromClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        if (null == expected.getFrom()) {
+            assertFalse(actual.getFrom().isPresent(), assertContext.getText("Actual from segment should not exist."));
+        } else {
+            assertTrue(actual.getFrom().isPresent(), assertContext.getText("Actual from segment should exist."));
+            TableAssert.assertIs(assertContext, actual.getFrom().get(), expected.getFrom());
+        }
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {

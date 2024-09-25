@@ -191,6 +191,7 @@
     <sql-case id="select_multilinestring" value="SELECT MultiLineString(ST_GeomFromText('LineString(1 1, 2 2)'),ST_GeomFromText('LineString(1 1, 2 2)'))" db-types="MySQL" />
     <sql-case id="select_multipoint" value="SELECT MultiPoint(point(1,1),point(1,1))" db-types="MySQL" />
     <sql-case id="select_multipolygon" value="SELECT MultiPolygon(ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'),ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'))" db-types="MySQL" />
+    <sql-case id="select_from_table_function" value="SELECT * FROM GENERATE_SERIES(1, name)" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_json_objectagg" value="SELECT JSON_OBJECTAGG(attribute, value) FROM t GROUP BY id" db-types="MySQL" />
     <sql-case id="select_json_overlaps" value="SELECT JSON_OVERLAPS(&quot;[1,3,5,7]&quot;, &quot;[2,5,7]&quot;)" db-types="MySQL" />
     <sql-case id="select_json_pretty" value="SELECT JSON_PRETTY('123')" db-types="MySQL" />

@@ -17,11 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dml;
 
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+
+import java.util.Optional;
 
 /**
  * PostgreSQL update statement.
  */
+@Setter
 public final class PostgreSQLUpdateStatement extends UpdateStatement implements PostgreSQLStatement {
+    
+    private TableSegment from;
+    
+    @Override
+    public Optional<TableSegment> getFrom() {
+        return Optional.ofNullable(from);
+    }
 }
