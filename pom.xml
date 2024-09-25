@@ -833,6 +833,9 @@
         </pluginManagement>
         
         <plugins>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
             <!-- Release plugins -->
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
