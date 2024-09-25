@@ -177,7 +177,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
         Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
-        when(metaDataPersistService.getDatabaseRulePersistService().persistConfigurations("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
+        when(metaDataPersistService.getDatabaseRulePersistService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
         AlterRuleItemEvent event = mock(AlterRuleItemEvent.class);
         RuleConfigurationEventBuilder ruleConfigurationEventBuilder = mock(RuleConfigurationEventBuilder.class);
         when(ruleConfigurationEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
@@ -197,7 +197,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertRemoveRuleConfigurationItem() throws SQLException {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
         Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
-        when(metaDataPersistService.getDatabaseRulePersistService().deleteConfigurations("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
+        when(metaDataPersistService.getDatabaseRulePersistService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
         RuleConfigurationEventBuilder ruleConfigurationEventBuilder = mock(RuleConfigurationEventBuilder.class);
         DropRuleItemEvent event = mock(DropRuleItemEvent.class);
         when(ruleConfigurationEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));

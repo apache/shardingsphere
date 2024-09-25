@@ -185,7 +185,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     public void alterSingleRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         ruleConfigs.removeIf(each -> !each.getClass().isAssignableFrom(SingleRuleConfiguration.class));
         metaDataPersistService.getMetaDataVersionPersistService()
-                .switchActiveVersion(metaDataPersistService.getDatabaseRulePersistService().persistConfigurations(databaseName, ruleConfigs));
+                .switchActiveVersion(metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, ruleConfigs));
     }
     
     @Override
@@ -194,7 +194,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             return;
         }
         MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().persistConfigurations(databaseName, Collections.singleton(toBeAlteredRuleConfig));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, Collections.singleton(toBeAlteredRuleConfig));
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
         afterRuleConfigurationAltered(databaseName, originalMetaDataContexts);
     }
@@ -208,7 +208,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
-            metaDataPersistService.getDatabaseRulePersistService().deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+            metaDataPersistService.getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
         }
     }
     

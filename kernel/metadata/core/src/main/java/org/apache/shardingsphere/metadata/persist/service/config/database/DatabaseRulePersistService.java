@@ -63,30 +63,13 @@ public final class DatabaseRulePersistService {
      * Persist configurations.
      *
      * @param databaseName database name
-     * @param configs configurations
-     */
-    public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
-        for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
-            Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
-            if (!repositoryTuples.isEmpty()) {
-                persistDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples);
-            }
-        }
-    }
-    
-    /**
-     * Persist configurations.
-     *
-     * @param databaseName database name
      * @param configs to be persisted configurations
      * @return meta data versions
      */
-    public Collection<MetaDataVersion> persistConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
+    public Collection<MetaDataVersion> persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (YamlRuleConfiguration each : yamlRuleConfigs) {
+        for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
             Collection<RepositoryTuple> repositoryTuples = repositoryTupleSwapperEngine.swapToRepositoryTuples(each);
             if (!repositoryTuples.isEmpty()) {
                 result.addAll(persistDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples));
@@ -130,7 +113,7 @@ public final class DatabaseRulePersistService {
      * @param configs to be deleted configurations
      * @return meta data versions
      */
-    public Collection<MetaDataVersion> deleteConfigurations(final String databaseName, final Collection<RuleConfiguration> configs) {
+    public Collection<MetaDataVersion> delete(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         RepositoryTupleSwapperEngine repositoryTupleSwapperEngine = new RepositoryTupleSwapperEngine();
         for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
@@ -140,17 +123,17 @@ public final class DatabaseRulePersistService {
             }
             List<RepositoryTuple> newRepositoryTuples = new LinkedList<>(repositoryTuples);
             Collections.reverse(newRepositoryTuples);
-            result.addAll(deleteRepositoryTuples(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), newRepositoryTuples));
+            result.addAll(delete(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), newRepositoryTuples));
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> deleteRepositoryTuples(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+    private Collection<MetaDataVersion> delete(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            String delKey = DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey());
-            repository.delete(delKey);
-            result.add(new MetaDataVersion(delKey));
+            String toBeDeletedKey = DatabaseRuleMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey());
+            repository.delete(toBeDeletedKey);
+            result.add(new MetaDataVersion(toBeDeletedKey));
         }
         return result;
     }
