@@ -47,6 +47,32 @@ public final class TableMetaDataPersistService {
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     /**
+     * Load tables.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return loaded tables
+     */
+    public Map<String, ShardingSphereTable> load(final String databaseName, final String schemaName) {
+        List<String> tableNames = repository.getChildrenKeys(TableMetaDataNode.getMetaDataTablesNode(databaseName, schemaName));
+        return tableNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> load(databaseName, schemaName, each), (a, b) -> b, () -> new LinkedHashMap<>(tableNames.size(), 1F)));
+    }
+    
+    /**
+     * Load table.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return loaded table
+     */
+    public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
+        String tableContent = repository.query(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName,
+                repository.query(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName))));
+        return new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class));
+    }
+    
+    /**
      * Persist tables.
      *
      * @param databaseName database name
@@ -73,32 +99,6 @@ public final class TableMetaDataPersistService {
     
     private String getActiveVersion(final String databaseName, final String schemaName, final String tableName) {
         return repository.query(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName));
-    }
-    
-    /**
-     * Load tables.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return loaded tables
-     */
-    public Map<String, ShardingSphereTable> load(final String databaseName, final String schemaName) {
-        List<String> tableNames = repository.getChildrenKeys(TableMetaDataNode.getMetaDataTablesNode(databaseName, schemaName));
-        return tableNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> load(databaseName, schemaName, each), (a, b) -> b, () -> new LinkedHashMap<>(tableNames.size(), 1F)));
-    }
-    
-    /**
-     * Load table.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return loaded table
-     */
-    public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
-        String tableContent = repository.query(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName,
-                repository.query(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName))));
-        return new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class));
     }
     
     /**

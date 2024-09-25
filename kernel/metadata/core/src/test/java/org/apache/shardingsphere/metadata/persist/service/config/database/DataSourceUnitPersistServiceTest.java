@@ -25,7 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,7 +48,7 @@ class DataSourceUnitPersistServiceTest {
     
     @Test
     void assertLoad() {
-        when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units")).thenReturn(Arrays.asList("foo_ds", "bar_ds"));
+        when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units")).thenReturn(Collections.singletonList("foo_ds"));
         when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/versions/10")).thenReturn("{dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource}");
         Map<String, DataSourcePoolProperties> actual = persistService.load("foo_db");
         assertThat(actual.size(), is(1));
