@@ -47,6 +47,32 @@ public final class ViewMetaDataPersistService {
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     /**
+     * Load views.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return loaded views
+     */
+    public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName) {
+        List<String> viewNames = repository.getChildrenKeys(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName));
+        return viewNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> load(databaseName, schemaName, each), (a, b) -> b, () -> new LinkedHashMap<>(viewNames.size(), 1F)));
+    }
+    
+    /**
+     * Load view.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     * @return loaded view
+     */
+    public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
+        String view = repository.query(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName,
+                repository.query(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName))));
+        return new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
+    }
+    
+    /**
      * Persist views.
      *
      * @param databaseName database name
@@ -71,32 +97,6 @@ public final class ViewMetaDataPersistService {
     
     private String getActiveVersion(final String databaseName, final String schemaName, final String viewName) {
         return repository.query(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName));
-    }
-    
-    /**
-     * Load views.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return loaded views
-     */
-    public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName) {
-        List<String> viewNames = repository.getChildrenKeys(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName));
-        return viewNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> load(databaseName, schemaName, each), (a, b) -> b, () -> new LinkedHashMap<>(viewNames.size(), 1F)));
-    }
-    
-    /**
-     * Load view.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @return loaded view
-     */
-    public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
-        String view = repository.query(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName,
-                repository.query(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName))));
-        return new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
     }
     
     /**

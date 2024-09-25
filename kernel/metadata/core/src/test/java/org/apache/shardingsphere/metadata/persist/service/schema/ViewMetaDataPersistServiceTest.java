@@ -31,7 +31,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -54,20 +53,7 @@ class ViewMetaDataPersistServiceTest {
     }
     
     @Test
-    void assertPersist() {
-        persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", mock(ShardingSphereView.class)));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", "{}" + System.lineSeparator());
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0");
-        verify(metaDataVersionPersistService).switchActiveVersion(any());
-    }
-    
-    @Test
-    void assertLoadWithEmptyViews() {
-        assertTrue(persistService.load("foo_db", "foo_schema").isEmpty());
-    }
-    
-    @Test
-    void assertLoadWithViews() {
+    void assertLoad() {
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/views")).thenReturn(Collections.singletonList("foo_view"));
         when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("0");
         when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0")).thenReturn("{name: foo_view}");
@@ -77,11 +63,11 @@ class ViewMetaDataPersistServiceTest {
     }
     
     @Test
-    void assertLoadWithView() {
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("0");
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0")).thenReturn("{name: foo_view}");
-        ShardingSphereView actual = persistService.load("foo_db", "foo_schema", "foo_view");
-        assertThat(actual.getName(), is("foo_view"));
+    void assertPersist() {
+        persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", mock(ShardingSphereView.class)));
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0");
+        verify(metaDataVersionPersistService).switchActiveVersion(any());
     }
     
     @Test

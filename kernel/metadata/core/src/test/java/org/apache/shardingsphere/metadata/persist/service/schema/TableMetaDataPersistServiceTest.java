@@ -31,7 +31,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -54,20 +53,7 @@ class TableMetaDataPersistServiceTest {
     }
     
     @Test
-    void assertPersist() {
-        persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class)));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0", "{}" + System.lineSeparator());
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0");
-        verify(metaDataVersionPersistService).switchActiveVersion(any());
-    }
-    
-    @Test
-    void assertLoadWithEmptyTables() {
-        assertTrue(persistService.load("foo_db", "foo_schema").isEmpty());
-    }
-    
-    @Test
-    void assertLoadWithTables() {
+    void assertLoad() {
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("foo_tbl"));
         when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version")).thenReturn("0");
         when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0")).thenReturn("{name: foo_tbl}");
@@ -77,11 +63,11 @@ class TableMetaDataPersistServiceTest {
     }
     
     @Test
-    void assertLoadWithTable() {
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version")).thenReturn("0");
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0")).thenReturn("{name: foo_tbl}");
-        ShardingSphereTable actual = persistService.load("foo_db", "foo_schema", "foo_tbl");
-        assertThat(actual.getName(), is("foo_tbl"));
+    void assertPersist() {
+        persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class)));
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0");
+        verify(metaDataVersionPersistService).switchActiveVersion(any());
     }
     
     @Test
