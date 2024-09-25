@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.metadata.persist.service.schema;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -35,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * View meta data persist service.
@@ -83,11 +82,7 @@ public final class ViewMetaDataPersistService {
      */
     public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName) {
         List<String> viewNames = repository.getChildrenKeys(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName));
-        Map<String, ShardingSphereView> result = new LinkedHashMap<>(viewNames.size(), 1F);
-        for (String each : viewNames) {
-            getViewMetaData(databaseName, schemaName, each).ifPresent(optional -> result.put(each.toLowerCase(), optional));
-        }
-        return result;
+        return viewNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> load(databaseName, schemaName, each), (a, b) -> b, () -> new LinkedHashMap<>(viewNames.size(), 1F)));
     }
     
     /**
@@ -99,15 +94,9 @@ public final class ViewMetaDataPersistService {
      * @return loaded view
      */
     public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
-        Optional<ShardingSphereView> result = getViewMetaData(databaseName, schemaName, viewName);
-        Preconditions.checkState(result.isPresent());
-        return result.get();
-    }
-    
-    private Optional<ShardingSphereView> getViewMetaData(final String databaseName, final String schemaName, final String viewName) {
         String view = repository.query(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName,
                 repository.query(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName))));
-        return Strings.isNullOrEmpty(view) ? Optional.empty() : Optional.of(new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class)));
+        return new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
     }
     
     /**

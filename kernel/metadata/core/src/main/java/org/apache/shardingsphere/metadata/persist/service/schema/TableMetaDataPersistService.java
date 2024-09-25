@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.metadata.persist.service.schema;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -35,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Table meta data persist service.
@@ -85,11 +84,7 @@ public final class TableMetaDataPersistService {
      */
     public Map<String, ShardingSphereTable> load(final String databaseName, final String schemaName) {
         List<String> tableNames = repository.getChildrenKeys(TableMetaDataNode.getMetaDataTablesNode(databaseName, schemaName));
-        Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableNames.size(), 1F);
-        for (String each : tableNames) {
-            getTableMetaData(databaseName, schemaName, each).ifPresent(optional -> result.put(each.toLowerCase(), optional));
-        }
-        return result;
+        return tableNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> load(databaseName, schemaName, each), (a, b) -> b, () -> new LinkedHashMap<>(tableNames.size(), 1F)));
     }
     
     /**
@@ -101,15 +96,9 @@ public final class TableMetaDataPersistService {
      * @return loaded table
      */
     public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
-        Optional<ShardingSphereTable> result = getTableMetaData(databaseName, schemaName, tableName);
-        Preconditions.checkState(result.isPresent());
-        return result.get();
-    }
-    
-    private Optional<ShardingSphereTable> getTableMetaData(final String databaseName, final String schemaName, final String tableName) {
         String tableContent = repository.query(TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName,
                 repository.query(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName))));
-        return Strings.isNullOrEmpty(tableContent) ? Optional.empty() : Optional.of(new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class)));
+        return new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class));
     }
     
     /**
