@@ -46,6 +46,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -155,14 +156,14 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertRemoveNullRuleConfigurationItem() {
         metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", null);
-        verify(metaDataPersistService.getDatabaseRulePersistService(), times(0)).deleteConfigurations(eq("foo_db"), any());
+        verify(metaDataPersistService.getDatabaseRulePersistService(), times(0)).delete(eq("foo_db"), anyCollection());
     }
     
     @Test
     void assertRemoveRuleConfigurationItem() {
         RuleConfiguration ruleConfig = new SingleRuleConfiguration();
         metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
-        verify(metaDataPersistService.getDatabaseRulePersistService()).deleteConfigurations("foo_db", Collections.singleton(ruleConfig));
+        verify(metaDataPersistService.getDatabaseRulePersistService()).delete("foo_db", Collections.singleton(ruleConfig));
     }
     
     @Test

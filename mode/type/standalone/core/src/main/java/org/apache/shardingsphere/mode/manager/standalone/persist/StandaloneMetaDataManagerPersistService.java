@@ -316,7 +316,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         if (null == toBeRemovedRuleConfig) {
             return;
         }
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().deleteConfigurations(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion metaDataVersion : metaDataVersions) {
             Optional<DispatchEvent> ruleItemEvent = buildAlterRuleItemEvent(databaseName, metaDataVersion, Type.DELETED);
             // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
