@@ -31,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Data source node persist service.
@@ -42,10 +41,10 @@ public final class DataSourceNodePersistService {
     private final PersistRepository repository;
     
     /**
-     * Load data source pool configurations.
+     * Load data source pool properties map.
      *
      * @param databaseName database name
-     * @return data source pool configurations
+     * @return data source pool properties map
      */
     @SuppressWarnings("unchecked")
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
@@ -61,18 +60,16 @@ public final class DataSourceNodePersistService {
     }
     
     /**
-     * Load data source pool configurations.
+     * Load data source pool properties.
      *
      * @param databaseName database name
-     * @param name name
-     * @return data source pool configurations
+     * @param dataSourceName data source name
+     * @return data source pool properties
      */
     @SuppressWarnings("unchecked")
-    public Optional<DataSourcePoolProperties> load(final String databaseName, final String name) {
-        String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
-        return Strings.isNullOrEmpty(dataSourceValue)
-                ? Optional.empty()
-                : Optional.of(new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
+    public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
+        String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, dataSourceName, getDataSourceActiveVersion(databaseName, dataSourceName)));
+        return new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class));
     }
     
     /**
