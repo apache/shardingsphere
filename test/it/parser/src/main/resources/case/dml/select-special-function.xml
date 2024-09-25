@@ -4130,4 +4130,20 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_from_table_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <function-table>
+                <table-function function-name="GENERATE_SERIES" text="GENERATE_SERIES(1, name)">
+                    <parameter>
+                        <literal-expression value="1" start-index="30" stop-index="30" />
+                        <column name="name" start-index="33" stop-index="36" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

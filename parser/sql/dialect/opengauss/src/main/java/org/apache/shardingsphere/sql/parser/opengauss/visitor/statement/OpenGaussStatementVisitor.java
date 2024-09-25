@@ -179,6 +179,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Param
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -898,6 +899,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
+        if (null != ctx.fromClause()) {
+            result.setFrom((TableSegment) visit(ctx.fromClause()));
+        }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -1222,6 +1226,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (null != ctx.tableReference()) {
             return getJoinTableSegment(ctx);
         }
+        if (null != ctx.functionTable() && null != ctx.functionTable().functionExprWindowless() && null != ctx.functionTable().functionExprWindowless().funcApplication()) {
+            return getFunctionTableSegment(ctx);
+        }
         // TODO deal with functionTable and xmlTable
         return new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support")));
     }
@@ -1260,6 +1267,19 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         result.setStopIndex(stopIndex);
         visitJoinedTable(ctx.joinedTable(), result);
         result.setAlias(alias);
+        return result;
+    }
+    
+    private FunctionTableSegment getFunctionTableSegment(final TableReferenceContext ctx) {
+        FunctionSegment functionSegment = (FunctionSegment) visit(ctx.functionTable().functionExprWindowless().funcApplication());
+        return new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionSegment);
+    }
+    
+    @Override
+    public ASTNode visitFuncApplication(final FuncApplicationContext ctx) {
+        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.funcName().getText(), getOriginalText(ctx));
+        result.getParameters().addAll(expressionSegments);
         return result;
     }
     

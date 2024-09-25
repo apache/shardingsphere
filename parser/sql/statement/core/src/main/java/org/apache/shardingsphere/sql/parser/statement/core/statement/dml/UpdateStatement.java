@@ -155,4 +155,21 @@ public abstract class UpdateStatement extends AbstractSQLStatement implements DM
      */
     public void setOutputSegment(final OutputSegment outputSegment) {
     }
+    
+    /**
+     * Get from segment.
+     *
+     * @return from segment
+     */
+    public Optional<TableSegment> getFrom() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Set from segment.
+     *
+     * @param from from segment
+     */
+    public void setFrom(final TableSegment from) {
+    }
 }
