@@ -133,7 +133,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterSingleRuleConfiguration() {
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(Arrays.asList(new SingleRuleConfiguration(), mock(RuleConfiguration.class)));
-        when(metaDataPersistService.getDatabaseRulePersistService().persistConfigurations("foo_db", ruleConfigs)).thenReturn(Collections.emptyList());
+        when(metaDataPersistService.getDatabaseRulePersistService().persist("foo_db", ruleConfigs)).thenReturn(Collections.emptyList());
         metaDataManagerPersistService.alterSingleRuleConfiguration("foo_db", ruleConfigs);
         assertThat(ruleConfigs.size(), is(1));
         verify(metaDataPersistService.getMetaDataVersionPersistService()).switchActiveVersion(Collections.emptyList());
@@ -142,14 +142,14 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterNullRuleConfiguration() {
         metaDataManagerPersistService.alterRuleConfiguration("foo_db", null);
-        verify(metaDataPersistService.getDatabaseRulePersistService(), times(0)).persistConfigurations(eq("foo_db"), any());
+        verify(metaDataPersistService.getDatabaseRulePersistService(), times(0)).persist(eq("foo_db"), any());
     }
     
     @Test
     void assertAlterRuleConfiguration() {
         RuleConfiguration ruleConfig = new SingleRuleConfiguration();
         metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
-        verify(metaDataPersistService.getDatabaseRulePersistService()).persistConfigurations("foo_db", Collections.singleton(ruleConfig));
+        verify(metaDataPersistService.getDatabaseRulePersistService()).persist("foo_db", Collections.singleton(ruleConfig));
     }
     
     @Test

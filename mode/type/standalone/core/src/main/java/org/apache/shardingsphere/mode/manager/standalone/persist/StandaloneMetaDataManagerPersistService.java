@@ -283,7 +283,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void alterSingleRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         ruleConfigs.removeIf(each -> !each.getClass().isAssignableFrom(SingleRuleConfiguration.class));
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
-                .persistConfigurations(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+                .persist(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
         metaDataContextManager.getDatabaseRuleConfigurationManager().alterRuleConfiguration(databaseName, ruleConfigs.iterator().next());
         clearServiceCache();
@@ -295,7 +295,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             return;
         }
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
-                .persistConfigurations(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), Collections.singleton(toBeAlteredRuleConfig));
+                .persist(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), Collections.singleton(toBeAlteredRuleConfig));
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
         for (MetaDataVersion each : metaDataVersions) {
             // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
