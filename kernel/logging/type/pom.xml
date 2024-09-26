@@ -20,16 +20,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel</artifactId>
+        <artifactId>shardingsphere-logging</artifactId>
         <version>5.5.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-logging</artifactId>
+    <artifactId>shardingsphere-logging-type</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>api</module>
-        <module>core</module>
-        <module>type</module>
+        <module>logback</module>
     </modules>
 </project>
