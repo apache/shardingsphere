@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.util.LoggingUtils;
+import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
@@ -81,7 +81,7 @@ public final class ShowDistVariablesExecutor implements DistSQLQueryExecutor<Sho
     }
     
     private void addLoggingPropsRows(final ShardingSphereMetaData metaData, final Collection<LocalDataQueryResultRow> rows) {
-        Optional<ShardingSphereLogger> sqlLogger = LoggingUtils.getSQLLogger(metaData.getGlobalRuleMetaData());
+        Optional<ShardingSphereLogger> sqlLogger = metaData.getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger);
         if (sqlLogger.isPresent()) {
             Properties sqlLoggerProps = sqlLogger.get().getProps();
             rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString()));

@@ -21,7 +21,11 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
+import org.apache.shardingsphere.logging.constant.LoggingConstants;
+import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -29,14 +33,48 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class LoggingRuleBuilderTest {
     
     @Test
-    void assertBuild() {
-        LoggingRuleConfiguration ruleConfig = new LoggingRuleConfiguration(Collections.emptyList(), Collections.emptyList());
+    void assertBuildWhenSyncPropertiesToRule() {
+        ShardingSphereLogger logger = new ShardingSphereLogger(LoggingConstants.SQL_LOG_TOPIC, null, false, null);
+        LoggingRuleConfiguration ruleConfig = new LoggingRuleConfiguration(Collections.singleton(logger), Collections.emptyList());
+        ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(
+                new Property(LoggingConstants.SQL_SHOW, Boolean.TRUE.toString()), new Property(LoggingConstants.SQL_SIMPLE, Boolean.TRUE.toString())));
         LoggingRuleBuilder ruleBuilder = (LoggingRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyMap(), new ConfigurationProperties(new Properties()));
+        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyMap(), props);
         assertThat(actual.getConfiguration(), is(ruleConfig));
+        assertThat(logger.getProps().getProperty(LoggingConstants.SQL_LOG_ENABLE), is(Boolean.TRUE.toString()));
+        assertThat(logger.getProps().getProperty(LoggingConstants.SQL_LOG_SIMPLE), is(Boolean.TRUE.toString()));
+    }
+    
+    @Test
+    void assertBuildWhenSyncRuleToProperties() {
+        ShardingSphereLogger logger = new ShardingSphereLogger(LoggingConstants.SQL_LOG_TOPIC, null, false, null);
+        logger.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, Boolean.TRUE.toString());
+        logger.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, Boolean.TRUE.toString());
+        LoggingRuleConfiguration ruleConfig = new LoggingRuleConfiguration(Collections.singleton(logger), Collections.emptyList());
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        LoggingRuleBuilder ruleBuilder = (LoggingRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyMap(), props);
+        assertThat(actual.getConfiguration(), is(ruleConfig));
+        assertThat(props.getProps().getProperty(LoggingConstants.SQL_SHOW), is(Boolean.TRUE.toString()));
+        assertThat(props.getProps().getProperty(LoggingConstants.SQL_SIMPLE), is(Boolean.TRUE.toString()));
+    }
+    
+    @Test
+    void assertBuildWhenSyncNothing() {
+        ShardingSphereLogger logger = new ShardingSphereLogger(LoggingConstants.SQL_LOG_TOPIC, null, false, null);
+        LoggingRuleConfiguration ruleConfig = new LoggingRuleConfiguration(Collections.singleton(logger), Collections.emptyList());
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        LoggingRuleBuilder ruleBuilder = (LoggingRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyMap(), props);
+        assertThat(actual.getConfiguration(), is(ruleConfig));
+        assertFalse(logger.getProps().containsKey(LoggingConstants.SQL_LOG_ENABLE));
+        assertFalse(logger.getProps().containsKey(LoggingConstants.SQL_LOG_SIMPLE));
+        assertFalse(props.getProps().containsKey(LoggingConstants.SQL_SHOW));
+        assertFalse(props.getProps().containsKey(LoggingConstants.SQL_SIMPLE));
     }
 }
