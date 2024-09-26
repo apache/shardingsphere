@@ -20,7 +20,6 @@ package org.apache.shardingsphere.logging.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingOrder;
-import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
 
 import java.util.stream.Collectors;
@@ -44,16 +43,8 @@ public final class YamlLoggingRuleConfigurationSwapper implements YamlRuleConfig
     
     @Override
     public LoggingRuleConfiguration swapToObject(final YamlLoggingRuleConfiguration yamlConfig) {
-        LoggingRuleConfiguration result = new LoggingRuleConfiguration(yamlConfig.getLoggers().stream().map(loggerSwapper::swapToObject).collect(Collectors.toList()),
+        return new LoggingRuleConfiguration(yamlConfig.getLoggers().stream().map(loggerSwapper::swapToObject).collect(Collectors.toList()),
                 yamlConfig.getAppenders().stream().map(appenderSwapper::swapToObject).collect(Collectors.toList()));
-        if (null == result.getLoggers()) {
-            result = getDefaultLoggingRuleConfiguration();
-        }
-        return result;
-    }
-    
-    private LoggingRuleConfiguration getDefaultLoggingRuleConfiguration() {
-        return new DefaultLoggingRuleConfigurationBuilder().build();
     }
     
     @Override
