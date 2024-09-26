@@ -57,7 +57,8 @@ public final class DefaultLoggingRuleConfigurationBuilder implements DefaultGlob
     private Collection<ShardingSphereLogger> getDefaultLoggers(final LoggerContext loggerContext) {
         return loggerContext.getLoggerList().stream().filter(each -> null != each.getLevel()).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName()))
                 .map(each -> new ShardingSphereLogger(each.getName(), each.getLevel().levelStr, each.isAdditive(),
-                        each.iteratorForAppenders().hasNext() ? each.iteratorForAppenders().next().getName() : null)).collect(Collectors.toList());
+                        each.iteratorForAppenders().hasNext() ? each.iteratorForAppenders().next().getName() : null))
+                .collect(Collectors.toList());
     }
     
     private Collection<ShardingSphereAppender> getDefaultAppenders(final LoggerContext loggerContext) {
