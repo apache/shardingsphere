@@ -36,7 +36,7 @@ public interface ShardingSphereLogBuilder<T> extends TypedSPI {
      * @param loggerContext logger context
      * @return default loggers
      */
-    Collection<ShardingSphereLogger> getDefaultLoggers(final T loggerContext);
+    Collection<ShardingSphereLogger> getDefaultLoggers(T loggerContext);
     
     /**
      * Get default appenders.
@@ -44,7 +44,7 @@ public interface ShardingSphereLogBuilder<T> extends TypedSPI {
      * @param loggerContext logger context
      * @return default appenders
      */
-    Collection<ShardingSphereAppender> getDefaultAppenders(final T loggerContext);
+    Collection<ShardingSphereAppender> getDefaultAppenders(T loggerContext);
     
     @Override
     Class<T> getType();
