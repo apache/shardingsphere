@@ -39,7 +39,7 @@ class LoggingRuleTest {
     }
     
     @Test
-    void assertFields() {
+    void assertGetConfiguration() {
         assertThat(loggingRule.getConfiguration().getLoggers().size(), is(1));
         assertThat(loggingRule.getConfiguration().getAppenders().size(), is(1));
     }
