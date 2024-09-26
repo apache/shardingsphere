@@ -41,7 +41,7 @@ public final class LoggingRuleBuilder implements GlobalRuleBuilder<LoggingRuleCo
         return new LoggingRule(ruleConfig);
     }
     
-    public void syncLoggingRuleConfiguration(final LoggingRuleConfiguration ruleConfig, final ConfigurationProperties props) {
+    private void syncLoggingRuleConfiguration(final LoggingRuleConfiguration ruleConfig, final ConfigurationProperties props) {
         getSQLLogger(ruleConfig).ifPresent(optional -> {
             syncPropertiesToRule(optional.getProps(), props);
             syncRuleToProperties(optional.getProps(), props);
