@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.logging.spi;
 
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
@@ -28,6 +29,7 @@ import java.util.Collection;
  * 
  * @param <T> type of logger context
  */
+@SingletonSPI
 public interface ShardingSphereLogBuilder<T> extends TypedSPI {
     
     /**
