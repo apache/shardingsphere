@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.logging.rule.builder.type;
+package org.apache.shardingsphere.logging.type.logback;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.Appender;

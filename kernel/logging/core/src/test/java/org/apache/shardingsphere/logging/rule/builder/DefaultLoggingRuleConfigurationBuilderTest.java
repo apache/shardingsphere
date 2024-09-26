@@ -20,15 +20,14 @@ package org.apache.shardingsphere.logging.rule.builder;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultLoggingRuleConfigurationBuilderTest {
     
     @Test
     void assertBuild() {
         LoggingRuleConfiguration actual = new DefaultLoggingRuleConfigurationBuilder().build();
-        assertThat(actual.getLoggers().size(), is(4));
-        assertThat(actual.getAppenders().size(), is(1));
+        assertTrue(actual.getLoggers().isEmpty());
+        assertTrue(actual.getAppenders().isEmpty());
     }
 }

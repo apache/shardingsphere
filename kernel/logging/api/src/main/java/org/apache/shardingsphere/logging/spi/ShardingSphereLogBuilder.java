@@ -32,7 +32,7 @@ public interface ShardingSphereLogBuilder<T> extends TypedSPI {
     
     /**
      * Get default loggers.
-     * 
+     *
      * @param loggerContext logger context
      * @return default loggers
      */
@@ -40,7 +40,7 @@ public interface ShardingSphereLogBuilder<T> extends TypedSPI {
     
     /**
      * Get default appenders.
-     * 
+     *
      * @param loggerContext logger context
      * @return default appenders
      */

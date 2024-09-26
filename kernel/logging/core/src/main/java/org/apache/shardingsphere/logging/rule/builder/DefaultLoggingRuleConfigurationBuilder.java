@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.logging.rule.builder;
 
-import ch.qos.logback.classic.LoggerContext;
 import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingOrder;
-import org.apache.shardingsphere.logging.rule.builder.type.LogbackBuilder;
+import org.apache.shardingsphere.logging.spi.ShardingSphereLogBuilder;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
@@ -32,15 +32,13 @@ import java.util.Collections;
  */
 public final class DefaultLoggingRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<LoggingRuleConfiguration, LoggingRuleBuilder> {
     
+    @SuppressWarnings("unchecked")
     @Override
     public LoggingRuleConfiguration build() {
         ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
-        if (LoggerContext.class == loggerFactory.getClass()) {
-            LogbackBuilder logbackBuilder = new LogbackBuilder();
-            LoggerContext loggerContext = (LoggerContext) loggerFactory;
-            return new LoggingRuleConfiguration(logbackBuilder.getDefaultLoggers(loggerContext), logbackBuilder.getDefaultAppenders(loggerContext));
-        }
-        return new LoggingRuleConfiguration(Collections.emptyList(), Collections.emptySet());
+        return TypedSPILoader.findService(ShardingSphereLogBuilder.class, loggerFactory.getClass())
+                .map(optional -> new LoggingRuleConfiguration(optional.getDefaultLoggers(loggerFactory), optional.getDefaultAppenders(loggerFactory)))
+                .orElseGet(() -> new LoggingRuleConfiguration(Collections.emptyList(), Collections.emptySet()));
     }
     
     @Override
