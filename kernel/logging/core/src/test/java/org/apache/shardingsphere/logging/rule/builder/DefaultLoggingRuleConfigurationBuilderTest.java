@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 class DefaultLoggingRuleConfigurationBuilderTest {
     
     @SuppressWarnings("rawtypes")
-    @Test 
+    @Test
     void assertBuildWithDefaultShardingSphereLogBuilder() {
         when(LoggerFactory.getILoggerFactory()).thenReturn(mock(ILoggerFactory.class));
         DefaultGlobalRuleConfigurationBuilder builder =
