@@ -24,8 +24,8 @@ import lombok.Setter;
 /**
  * ShardingSphere appender.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class ShardingSphereAppender {
     
     private final String appenderName;
