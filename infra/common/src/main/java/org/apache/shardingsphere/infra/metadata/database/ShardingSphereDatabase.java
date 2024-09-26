@@ -74,7 +74,7 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Create database meta data.
+     * Create database.
      *
      * @param name database name
      * @param protocolType database protocol type
@@ -82,7 +82,7 @@ public final class ShardingSphereDatabase {
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param computeNodeInstanceContext compute node instance context
-     * @return database meta data
+     * @return database
      * @throws SQLException SQL exception
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes,
@@ -98,12 +98,12 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Create system database meta data.
+     * Create system database.
      *
      * @param name system database name
      * @param protocolType protocol database type
      * @param props configuration properties
-     * @return system database meta data
+     * @return system database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final ConfigurationProperties props) {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
@@ -112,14 +112,14 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Create database meta data.
+     * Create database.
      *
      * @param name database name
      * @param protocolType database protocol type
      * @param databaseConfig database configuration
      * @param computeNodeInstanceContext compute node instance context
      * @param schemas schemas
-     * @return database meta data
+     * @return database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final ComputeNodeInstanceContext computeNodeInstanceContext, final Map<String, ShardingSphereSchema> schemas) {
