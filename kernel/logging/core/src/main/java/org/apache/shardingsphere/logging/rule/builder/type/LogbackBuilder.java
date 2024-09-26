@@ -25,6 +25,7 @@ import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.pattern.PatternLayoutBase;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
+import org.apache.shardingsphere.logging.spi.ShardingSphereLogBuilder;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -36,8 +37,9 @@ import java.util.stream.Collectors;
 /**
  * Logback builder.
  */
-public final class LogbackBuilder {
+public final class LogbackBuilder implements ShardingSphereLogBuilder<LoggerContext> {
     
+    @Override
     public Collection<ShardingSphereLogger> getDefaultLoggers(final LoggerContext loggerContext) {
         return loggerContext.getLoggerList().stream().filter(each -> null != each.getLevel()).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName()))
                 .map(each -> new ShardingSphereLogger(
@@ -45,6 +47,7 @@ public final class LogbackBuilder {
                 .collect(Collectors.toList());
     }
     
+    @Override
     public Collection<ShardingSphereAppender> getDefaultAppenders(final LoggerContext loggerContext) {
         return loggerContext.getLoggerList().stream().filter(each -> null != each.getLevel()).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName())).map(each -> {
             if (each.iteratorForAppenders().hasNext()) {
@@ -71,5 +74,10 @@ public final class LogbackBuilder {
         if (appender instanceof FileAppender) {
             shardingSphereAppender.setFile(((FileAppender<?>) appender).getFile());
         }
+    }
+    
+    @Override
+    public Class<LoggerContext> getType() {
+        return LoggerContext.class;
     }
 }
