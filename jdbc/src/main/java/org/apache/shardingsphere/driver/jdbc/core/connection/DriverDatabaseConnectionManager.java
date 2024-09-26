@@ -137,6 +137,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 connectionTransaction.commit();
             }
         } finally {
+            methodInvocationRecorder.remove("setSavepoint");
             for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
@@ -158,6 +159,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 connectionTransaction.rollback();
             }
         } finally {
+            methodInvocationRecorder.remove("setSavepoint");
             for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
@@ -215,6 +217,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        methodInvocationRecorder.remove("setSavepoint");
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepoint.getSavepointName());
         }
