@@ -36,42 +36,34 @@ import java.util.Properties;
 public final class LoggingUtils {
     
     /**
-     * Get ShardingSphere-SQL logger.
+     * Get ShardingSphere logger.
      *
-     * @param globalRuleMetaData ShardingSphere global rule metaData
-     * @return ShardingSphere-SQL logger
+     * @param globalRuleMetaData ShardingSphere rule metaData
+     * @return ShardingSphere logger
      */
     public static Optional<ShardingSphereLogger> getSQLLogger(final RuleMetaData globalRuleMetaData) {
         return globalRuleMetaData.findSingleRule(LoggingRule.class).isPresent() ? getSQLLogger(globalRuleMetaData.getSingleRule(LoggingRule.class).getConfiguration()) : Optional.empty();
     }
     
-    /**
-     * Get ShardingSphere-SQL logger.
-     *
-     * @param loggingRuleConfig logging global rule configuration
-     * @return ShardingSphere-SQL logger
-     */
-    public static Optional<ShardingSphereLogger> getSQLLogger(final LoggingRuleConfiguration loggingRuleConfig) {
-        return loggingRuleConfig.getLoggers().stream()
-                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
+    private static Optional<ShardingSphereLogger> getSQLLogger(final LoggingRuleConfiguration ruleConfig) {
+        return ruleConfig.getLoggers().stream().filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
     
     /**
      * Synchronize the log-related configuration in logging rule and props.
      * Use the configuration in the logging rule first.
      *
-     * @param loggingRuleConfig logging global rule configuration
+     * @param ruleConfig logging rule configuration
      * @param props configuration properties
      */
-    public static void syncLoggingConfig(final LoggingRuleConfiguration loggingRuleConfig, final ConfigurationProperties props) {
-        getSQLLogger(loggingRuleConfig).ifPresent(option -> {
-            Properties loggerProps = option.getProps();
-            syncPropsToLoggingRule(loggerProps, props);
-            syncLoggingRuleToProps(loggerProps, props);
+    public static void syncLoggingRuleConfiguration(final LoggingRuleConfiguration ruleConfig, final ConfigurationProperties props) {
+        getSQLLogger(ruleConfig).ifPresent(optional -> {
+            syncPropertiesToRule(optional.getProps(), props);
+            syncRuleToProperties(optional.getProps(), props);
         });
     }
     
-    private static void syncPropsToLoggingRule(final Properties loggerProps, final ConfigurationProperties props) {
+    private static void syncPropertiesToRule(final Properties loggerProps, final ConfigurationProperties props) {
         if (!loggerProps.containsKey(LoggingConstants.SQL_LOG_ENABLE) && props.getProps().containsKey(LoggingConstants.SQL_SHOW)) {
             loggerProps.setProperty(LoggingConstants.SQL_LOG_ENABLE, props.getProps().get(LoggingConstants.SQL_SHOW).toString());
         }
@@ -80,7 +72,7 @@ public final class LoggingUtils {
         }
     }
     
-    private static void syncLoggingRuleToProps(final Properties loggerProps, final ConfigurationProperties props) {
+    private static void syncRuleToProperties(final Properties loggerProps, final ConfigurationProperties props) {
         if (loggerProps.containsKey(LoggingConstants.SQL_LOG_ENABLE)) {
             props.getProps().setProperty(LoggingConstants.SQL_SHOW, loggerProps.get(LoggingConstants.SQL_LOG_ENABLE).toString());
         }
