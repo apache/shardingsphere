@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.logging.type.logback.LogbackBuilder
+org.apache.shardingsphere.logging.type.logback.ShardingSphereLogbackBuilder

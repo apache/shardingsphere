@@ -35,9 +35,9 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Logback builder.
+ * ShardingSphere log builder for logback.
  */
-public final class LogbackBuilder implements ShardingSphereLogBuilder<LoggerContext> {
+public final class ShardingSphereLogbackBuilder implements ShardingSphereLogBuilder<LoggerContext> {
     
     @Override
     public Collection<ShardingSphereLogger> getDefaultLoggers(final LoggerContext loggerContext) {
