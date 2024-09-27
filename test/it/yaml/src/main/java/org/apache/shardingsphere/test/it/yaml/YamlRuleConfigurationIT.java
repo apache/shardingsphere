@@ -40,7 +40,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class YamlRuleConfigurationUnmarshalIT {
+public abstract class YamlRuleConfigurationIT {
     
     private final String yamlFile;
     
@@ -49,7 +49,7 @@ public abstract class YamlRuleConfigurationUnmarshalIT {
     @SuppressWarnings("rawtypes")
     private final YamlRuleConfigurationSwapper swapper;
     
-    public YamlRuleConfigurationUnmarshalIT(final String yamlFile, final RuleConfiguration expectedRuleConfig) {
+    public YamlRuleConfigurationIT(final String yamlFile, final RuleConfiguration expectedRuleConfig) {
         this.yamlFile = yamlFile;
         this.expectedRuleConfig = expectedRuleConfig;
         swapper = OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(expectedRuleConfig)).get(expectedRuleConfig);

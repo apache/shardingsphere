@@ -20,15 +20,15 @@ package org.apache.shardingsphere.authority.it;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
-class AuthorityRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class AuthorityRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    AuthorityRuleConfigurationYamlUnmarshalIT() {
+    AuthorityRuleConfigurationYamlIT() {
         super("yaml/authority-rule.yaml", getExpectedRuleConfiguration());
     }
     

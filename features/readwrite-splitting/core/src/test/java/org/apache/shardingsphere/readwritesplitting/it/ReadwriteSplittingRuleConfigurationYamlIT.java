@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,9 +33,9 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ReadwriteSplittingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class ReadwriteSplittingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    ReadwriteSplittingRuleConfigurationYamlUnmarshalIT() {
+    ReadwriteSplittingRuleConfigurationYamlIT() {
         super("yaml/readwrite-splitting-rule.yaml", getExpectedRuleConfiguration());
     }
     

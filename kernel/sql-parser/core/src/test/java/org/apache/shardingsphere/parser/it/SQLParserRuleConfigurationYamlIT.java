@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.it;
+package org.apache.shardingsphere.parser.it;
 
-import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
-class GlobalClockRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class SQLParserRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    GlobalClockRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/global-clock-rule.yaml", new GlobalClockRuleConfiguration("FIXTURE", "FIXTURE", true, PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1"))));
+    SQLParserRuleConfigurationYamlIT() {
+        super("yaml/sql-parser-rule.yaml", new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(256, 4096)));
     }
 }

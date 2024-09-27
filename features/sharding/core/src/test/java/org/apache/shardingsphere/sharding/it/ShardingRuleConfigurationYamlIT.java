@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheOptionsConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
@@ -45,9 +45,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShardingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    ShardingRuleConfigurationYamlUnmarshalIT() {
+    ShardingRuleConfigurationYamlIT() {
         super("yaml/sharding-rule.yaml", getExpectedRuleConfiguration());
     }
     
