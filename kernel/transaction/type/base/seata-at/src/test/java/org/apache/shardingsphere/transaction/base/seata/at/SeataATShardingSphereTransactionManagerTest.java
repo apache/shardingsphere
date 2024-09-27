@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import io.seata.core.context.RootContext;
-import io.seata.core.protocol.RegisterRMRequest;
-import io.seata.core.protocol.RegisterRMResponse;
-import io.seata.core.protocol.RegisterTMRequest;
-import io.seata.core.protocol.RegisterTMResponse;
-import io.seata.core.protocol.transaction.GlobalBeginRequest;
-import io.seata.core.protocol.transaction.GlobalBeginResponse;
-import io.seata.core.protocol.transaction.GlobalCommitRequest;
-import io.seata.core.protocol.transaction.GlobalCommitResponse;
-import io.seata.core.protocol.transaction.GlobalRollbackRequest;
-import io.seata.core.protocol.transaction.GlobalRollbackResponse;
-import io.seata.core.rpc.netty.RmNettyRemotingClient;
-import io.seata.core.rpc.netty.TmNettyRemotingClient;
-import io.seata.rm.datasource.ConnectionProxy;
-import io.seata.rm.datasource.DataSourceProxy;
-import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
+import org.apache.seata.core.context.RootContext;
+import org.apache.seata.core.protocol.RegisterRMRequest;
+import org.apache.seata.core.protocol.RegisterRMResponse;
+import org.apache.seata.core.protocol.RegisterTMRequest;
+import org.apache.seata.core.protocol.RegisterTMResponse;
+import org.apache.seata.core.protocol.transaction.GlobalBeginRequest;
+import org.apache.seata.core.protocol.transaction.GlobalBeginResponse;
+import org.apache.seata.core.protocol.transaction.GlobalCommitRequest;
+import org.apache.seata.core.protocol.transaction.GlobalCommitResponse;
+import org.apache.seata.core.protocol.transaction.GlobalRollbackRequest;
+import org.apache.seata.core.protocol.transaction.GlobalRollbackResponse;
+import org.apache.seata.core.rpc.netty.RmNettyRemotingClient;
+import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
+import org.apache.seata.rm.datasource.ConnectionProxy;
+import org.apache.seata.rm.datasource.DataSourceProxy;
+import org.apache.seata.tm.api.GlobalTransactionContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
+import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockedMysqlDataSource;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -92,7 +92,7 @@ class SeataATShardingSphereTransactionManagerTest {
     @BeforeEach
     void setUp() {
         seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")),
-                Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource()), "Seata");
+                Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedMysqlDataSource()), "Seata");
     }
     
     @AfterEach

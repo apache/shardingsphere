@@ -17,7 +17,7 @@
     "pattern":"\\QMETA-INF/native/libnetty_transport_native_epoll_x86_64.so\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/io.seata.config.ExtConfigurationProvider\\E"
+    "pattern":"\\QMETA-INF/seata/io.seata.config.ConfigurationProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\QMETA-INF/seata/io.seata.core.auth.AuthSigner\\E"
@@ -29,19 +29,40 @@
     "pattern":"\\QMETA-INF/seata/io.seata.core.model.ResourceManager\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/io.seata.core.model.TransactionManager\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/io.seata.core.rpc.hook.RpcHook\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\QMETA-INF/seata/io.seata.discovery.registry.RegistryProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/io.seata.rm.AbstractRMHandler\\E"
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.config.ConfigurationProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/io.seata.sqlparser.util.DbTypeParser\\E"
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.config.ExtConfigurationProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.core.auth.AuthSigner\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataTransactionalSQLExecutionHook"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.core.context.ContextCore\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.core.model.ResourceManager\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.core.model.TransactionManager\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.core.rpc.hook.RpcHook\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.discovery.registry.RegistryProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.rm.AbstractRMHandler\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.rm.datasource.undo.UndoLogManager\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/seata/org.apache.seata.sqlparser.util.DbTypeParser\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.icatch.TransactionServicePlugin\\E"
@@ -74,7 +95,7 @@
     "pattern":"\\QMETA-INF/services/io.grpc.NameResolverProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/io.seata.config.ExtConfigurationProvider\\E"
+    "pattern":"\\QMETA-INF/services/io.seata.config.ConfigurationProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\QMETA-INF/services/io.seata.core.auth.AuthSigner\\E"
@@ -86,19 +107,7 @@
     "pattern":"\\QMETA-INF/services/io.seata.core.model.ResourceManager\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/io.seata.core.model.TransactionManager\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/io.seata.core.rpc.hook.RpcHook\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\QMETA-INF/services/io.seata.discovery.registry.RegistryProvider\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/io.seata.rm.AbstractRMHandler\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/io.seata.sqlparser.util.DbTypeParser\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\QMETA-INF/services/io.vertx.core.spi.VerticleFactory\\E"
@@ -117,6 +126,39 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":"\\QMETA-INF/services/javax.xml.stream.XMLOutputFactory\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.config.ConfigurationProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.config.ExtConfigurationProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.core.auth.AuthSigner\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataTransactionalSQLExecutionHook"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.core.context.ContextCore\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.core.model.ResourceManager\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.core.model.TransactionManager\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.core.rpc.hook.RpcHook\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.discovery.registry.RegistryProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.rm.AbstractRMHandler\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.rm.datasource.undo.UndoLogManager\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.seata.sqlparser.util.DbTypeParser\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.authority.rule.AuthorityRule"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.authority.spi.PrivilegeProvider\\E"
@@ -192,6 +234,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlPersistRepositoryConfigurationSwapper\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.logging.spi.ShardingSphereLogBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator\\E"
