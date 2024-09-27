@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ShardingConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
     
     ShardingConfigurationRepositoryTupleSwapperEngineIT() {
-        super("yaml/sharding-rule.yaml");
+        super("yaml/sharding-rule-for-tuple.yaml");
     }
     
     @Override
