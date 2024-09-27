@@ -42,6 +42,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
 
 /**
  * ShardingSphere connection.
@@ -262,6 +263,30 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
         databaseConnectionManager.setReadOnly(readOnly);
+    }
+    
+    /**
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>.
+     * ShardingSphere does not propagate this property to the real JDBC Driver.
+     * `0` is actually the default value of {@link java.net.Socket#getSoTimeout()}.
+     */
+    @Override
+    public int getNetworkTimeout() {
+        return 0;
+    }
+    
+    /**
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>.
+     * ShardingSphere does not propagate this property to the real JDBC Driver.
+     *
+     * @param executor     Not used.
+     * @param milliseconds The time in milliseconds to wait for the database operation to complete.
+     */
+    @Override
+    public void setNetworkTimeout(final Executor executor, final int milliseconds) throws SQLException {
+        if (0 > milliseconds) {
+            throw new SQLException("Network timeout must be a value greater than or equal to 0.");
+        }
     }
     
     @Override

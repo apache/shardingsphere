@@ -31,6 +31,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -78,12 +79,12 @@ class UnsupportedOperationConnectionTest {
     
     @Test
     void assertGetNetworkTimeout() {
-        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::getNetworkTimeout);
+        assertDoesNotThrow(shardingSphereConnection::getNetworkTimeout);
     }
     
     @Test
     void assertSetNetworkTimeout() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.setNetworkTimeout(null, 0));
+        assertDoesNotThrow(() -> shardingSphereConnection.setNetworkTimeout(null, 0));
     }
     
     @Test
