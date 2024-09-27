@@ -265,28 +265,22 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         databaseConnectionManager.setReadOnly(readOnly);
     }
     
-    /**
-     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>.
-     * ShardingSphere does not propagate this property to the real JDBC Driver.
-     * `0` is actually the default value of {@link java.net.Socket#getSoTimeout()}.
+    /*
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>. ShardingSphere does not propagate this property to the
+     * real JDBC Driver. `0` is actually the default value of {@link java.net.Socket#getSoTimeout()}.
      */
     @Override
     public int getNetworkTimeout() {
         return 0;
     }
     
-    /**
-     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>.
-     * ShardingSphere does not propagate this property to the real JDBC Driver.
-     *
-     * @param executor     Not used.
-     * @param milliseconds The time in milliseconds to wait for the database operation to complete.
+    /*
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>. ShardingSphere does not propagate this property to the
+     * real JDBC Driver.
      */
     @Override
     public void setNetworkTimeout(final Executor executor, final int milliseconds) throws SQLException {
-        if (0 > milliseconds) {
-            throw new SQLException("Network timeout must be a value greater than or equal to 0.");
-        }
+        ShardingSpherePreconditions.checkState(0 <= milliseconds, () -> new SQLException("Network timeout must be a value greater than or equal to 0."));
     }
     
     @Override
