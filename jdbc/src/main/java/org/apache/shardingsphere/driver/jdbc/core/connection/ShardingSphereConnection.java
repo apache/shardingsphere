@@ -266,9 +266,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     /*
-     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>.
-     * ShardingSphere does not propagate this property to the real JDBC Driver.
-     * `0` is actually the default value of {@link java.net.Socket#getSoTimeout()}.
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>. ShardingSphere does not propagate this property to the
+     * real JDBC Driver. `0` is actually the default value of {@link java.net.Socket#getSoTimeout()}.
      */
     @Override
     public int getNetworkTimeout() {
@@ -276,8 +275,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     /*
-     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>.
-     * ShardingSphere does not propagate this property to the real JDBC Driver.
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>. ShardingSphere does not propagate this property to the
+     * real JDBC Driver.
      */
     @Override
     public void setNetworkTimeout(final Executor executor, final int milliseconds) throws SQLException {
