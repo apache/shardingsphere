@@ -33,7 +33,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ReadwriteSplittingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<ReadwriteSplittingRuleConfiguration> {
+class ReadwriteSplittingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     ReadwriteSplittingRuleConfigurationYamlUnmarshalIT() {
         super("yaml/readwrite-splitting-rule.yaml", getExpectedRuleConfiguration());

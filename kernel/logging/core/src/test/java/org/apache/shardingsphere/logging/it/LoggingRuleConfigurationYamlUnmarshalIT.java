@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import java.util.Collections;
 
-class LoggingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<LoggingRuleConfiguration> {
+class LoggingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     LoggingRuleConfigurationYamlUnmarshalIT() {
         super("yaml/logging-rule.yaml", getExpectedRuleConfiguration());

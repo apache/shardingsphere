@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
-class TransactionRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<TransactionRuleConfiguration> {
+class TransactionRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     TransactionRuleConfigurationYamlUnmarshalIT() {
         super("yaml/transaction-rule.yaml", new TransactionRuleConfiguration("XA", "FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1"))));

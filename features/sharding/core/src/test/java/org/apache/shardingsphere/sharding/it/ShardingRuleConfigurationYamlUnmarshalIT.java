@@ -45,7 +45,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShardingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<ShardingRuleConfiguration> {
+class ShardingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     ShardingRuleConfigurationYamlUnmarshalIT() {
         super("yaml/sharding-rule.yaml", getExpectedRuleConfiguration());

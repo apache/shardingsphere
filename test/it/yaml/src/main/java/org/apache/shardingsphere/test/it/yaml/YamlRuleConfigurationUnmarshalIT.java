@@ -40,16 +40,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class YamlRuleConfigurationUnmarshalIT<T extends RuleConfiguration> {
+public abstract class YamlRuleConfigurationUnmarshalIT {
     
     private final String yamlFile;
     
-    private final T expectedRuleConfig;
+    private final RuleConfiguration expectedRuleConfig;
     
     @SuppressWarnings("rawtypes")
     private final YamlRuleConfigurationSwapper swapper;
     
-    public YamlRuleConfigurationUnmarshalIT(final String yamlFile, final T expectedRuleConfig) {
+    public YamlRuleConfigurationUnmarshalIT(final String yamlFile, final RuleConfiguration expectedRuleConfig) {
         this.yamlFile = yamlFile;
         this.expectedRuleConfig = expectedRuleConfig;
         swapper = OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(expectedRuleConfig)).get(expectedRuleConfig);
@@ -85,7 +85,7 @@ public abstract class YamlRuleConfigurationUnmarshalIT<T extends RuleConfigurati
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFile);
         assertNotNull(url);
         YamlRootConfiguration actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
-        T actualRuleConfig = (T) swapper.swapToObject(actual.getRules().iterator().next());
+        RuleConfiguration actualRuleConfig = (RuleConfiguration) swapper.swapToObject(actual.getRules().iterator().next());
         assertTrue(DeepEquals.deepEquals(actualRuleConfig, expectedRuleConfig));
     }
     

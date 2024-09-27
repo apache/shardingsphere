@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import java.util.Arrays;
 
-class BroadcastRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<BroadcastRuleConfiguration> {
+class BroadcastRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     BroadcastRuleConfigurationYamlUnmarshalIT() {
         super("yaml/broadcast-rule.yaml", new BroadcastRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl")));

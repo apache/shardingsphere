@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
-class SQLTranslatorRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<SQLTranslatorRuleConfiguration> {
+class SQLTranslatorRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     SQLTranslatorRuleConfigurationYamlUnmarshalIT() {
         super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfiguration("FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1")), true));

@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
-class AuthorityRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<AuthorityRuleConfiguration> {
+class AuthorityRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     AuthorityRuleConfigurationYamlUnmarshalIT() {
         super("yaml/authority-rule.yaml", getExpectedRuleConfiguration());

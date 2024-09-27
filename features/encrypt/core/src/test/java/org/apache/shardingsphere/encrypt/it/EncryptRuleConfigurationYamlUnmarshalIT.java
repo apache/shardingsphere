@@ -38,7 +38,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<EncryptRuleConfiguration> {
+class EncryptRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     EncryptRuleConfigurationYamlUnmarshalIT() {
         super("yaml/encrypt-rule.yaml", getExpectedRuleConfiguration());

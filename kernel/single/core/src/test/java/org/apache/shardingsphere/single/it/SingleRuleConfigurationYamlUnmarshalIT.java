@@ -20,7 +20,7 @@ package org.apache.shardingsphere.single.it;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
-class SingleRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<SingleRuleConfiguration> {
+class SingleRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     SingleRuleConfigurationYamlUnmarshalIT() {
         super("yaml/single-rule.yaml", getExpectedRuleConfiguration());

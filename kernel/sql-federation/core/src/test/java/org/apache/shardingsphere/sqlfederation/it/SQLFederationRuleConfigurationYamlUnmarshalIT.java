@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
-class SQLFederationRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<SQLFederationRuleConfiguration> {
+class SQLFederationRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     SQLFederationRuleConfigurationYamlUnmarshalIT() {
         super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfiguration(true, true, new CacheOption(128, 1024)));

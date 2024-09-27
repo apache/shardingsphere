@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import java.util.Arrays;
 import java.util.Collections;
 
-class ShadowRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<ShadowRuleConfiguration> {
+class ShadowRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     ShadowRuleConfigurationYamlUnmarshalIT() {
         super("yaml/shadow-rule.yaml", getExpectedRuleConfiguration());

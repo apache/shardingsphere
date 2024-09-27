@@ -21,7 +21,7 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
-class SQLParserRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT<SQLParserRuleConfiguration> {
+class SQLParserRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     SQLParserRuleConfigurationYamlUnmarshalIT() {
         super("yaml/sql-parser-rule.yaml", new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(256, 4096)));
