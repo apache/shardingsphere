@@ -17,13 +17,24 @@
 
 package org.apache.shardingsphere.mask.it;
 
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,12 +43,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MaskRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     MaskRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/mask-rule.yaml");
+        super("yaml/mask-rule.yaml", getExpectedRuleConfiguration());
+    }
+    
+    private static MaskRuleConfiguration getExpectedRuleConfiguration() {
+        Collection<MaskTableRuleConfiguration> tables = Collections.singletonList(new MaskTableRuleConfiguration("t_user",
+                Arrays.asList(new MaskColumnRuleConfiguration("telephone", "keep_first_n_last_m_mask"), new MaskColumnRuleConfiguration("password", "md5_mask"))));
+        Map<String, AlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>(2, 1F);
+        maskAlgorithms.put("keep_first_n_last_m_mask",
+                new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", 3), new Property("replace-char", "*"), new Property("last-m", 4))));
+        maskAlgorithms.put("md5_mask", new AlgorithmConfiguration("MD5", new Properties()));
+        return new MaskRuleConfiguration(tables, maskAlgorithms);
     }
     
     @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertMaskRule((YamlMaskRuleConfiguration) actual.getRules().iterator().next());
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
+        assertMaskRule((YamlMaskRuleConfiguration) actual);
+        return true;
     }
     
     private void assertMaskRule(final YamlMaskRuleConfiguration actual) {

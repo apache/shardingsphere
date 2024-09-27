@@ -17,29 +17,14 @@
 
 package org.apache.shardingsphere.transaction.it;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
-import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 class TransactionRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     TransactionRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/transaction-rule.yaml");
-    }
-    
-    @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertSQLTranslatorRule((YamlTransactionRuleConfiguration) actual.getRules().iterator().next());
-    }
-    
-    private void assertSQLTranslatorRule(final YamlTransactionRuleConfiguration actual) {
-        assertThat(actual.getDefaultType(), is("XA"));
-        assertThat(actual.getProviderType(), is("FIXTURE"));
-        assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("k0"), is("v0"));
-        assertThat(actual.getProps().getProperty("k1"), is("v1"));
+        super("yaml/transaction-rule.yaml", new TransactionRuleConfiguration("XA", "FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1"))));
     }
 }

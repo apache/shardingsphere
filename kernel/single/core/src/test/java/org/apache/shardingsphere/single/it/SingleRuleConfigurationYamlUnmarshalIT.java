@@ -17,28 +17,19 @@
 
 package org.apache.shardingsphere.single.it;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
-
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class SingleRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     SingleRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/single-rule.yaml");
+        super("yaml/single-rule.yaml", getExpectedRuleConfiguration());
     }
     
-    @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertSingleRule((YamlSingleRuleConfiguration) actual.getRules().iterator().next());
-    }
-    
-    private void assertSingleRule(final YamlSingleRuleConfiguration actual) {
-        assertThat(actual.getTables(), is(Collections.singletonList("foo_tbl")));
-        assertThat(actual.getDefaultDataSource(), is("foo_ds"));
+    private static SingleRuleConfiguration getExpectedRuleConfiguration() {
+        SingleRuleConfiguration result = new SingleRuleConfiguration();
+        result.getTables().add("foo_tbl");
+        result.setDefaultDataSource("foo_ds");
+        return result;
     }
 }

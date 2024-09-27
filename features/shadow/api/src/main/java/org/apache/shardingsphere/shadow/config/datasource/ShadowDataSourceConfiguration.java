@@ -24,9 +24,9 @@ import lombok.Setter;
 /**
  * Shadow data source mapper configuration.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class ShadowDataSourceConfiguration {
     
     private final String name;

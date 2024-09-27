@@ -17,29 +17,14 @@
 
 package org.apache.shardingsphere.broadcast.it;
 
-import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
-import java.util.ArrayList;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Arrays;
 
 class BroadcastRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     BroadcastRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/broadcast-rule.yaml");
-    }
-    
-    @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertBroadcastRule((YamlBroadcastRuleConfiguration) actual.getRules().iterator().next());
-    }
-    
-    private void assertBroadcastRule(final YamlBroadcastRuleConfiguration actual) {
-        assertThat(actual.getTables().size(), is(2));
-        assertThat(new ArrayList<>(actual.getTables()).get(0), is("foo_tbl"));
-        assertThat(new ArrayList<>(actual.getTables()).get(1), is("bar_tbl"));
+        super("yaml/broadcast-rule.yaml", new BroadcastRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl")));
     }
 }

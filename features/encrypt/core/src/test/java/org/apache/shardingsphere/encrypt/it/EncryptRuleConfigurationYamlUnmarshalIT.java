@@ -17,12 +17,22 @@
 
 package org.apache.shardingsphere.encrypt.it;
 
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,12 +41,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class EncryptRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     EncryptRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/encrypt-rule.yaml");
+        super("yaml/encrypt-rule.yaml", getExpectedRuleConfiguration());
+    }
+    
+    private static EncryptRuleConfiguration getExpectedRuleConfiguration() {
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("username",
+                new EncryptColumnItemRuleConfiguration("username_cipher", "aes_encryptor"));
+        encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_username", "assisted_encryptor"));
+        Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("t_user", Collections.singletonList(encryptColumnRuleConfig)));
+        Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>(2, 1F);
+        encryptors.put("aes_encryptor", new AlgorithmConfiguration("AES", PropertiesBuilder.build(new Property("aes-key-value", "123456abc"), new Property("digest-algorithm-name", "SHA-1"))));
+        encryptors.put("assisted_encryptor", new AlgorithmConfiguration("AES", PropertiesBuilder.build(new Property("aes-key-value", "123456abc"), new Property("digest-algorithm-name", "SHA-1"))));
+        return new EncryptRuleConfiguration(tables, encryptors);
     }
     
     @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertEncryptRule((YamlEncryptRuleConfiguration) actual.getRules().iterator().next());
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
+        assertEncryptRule((YamlEncryptRuleConfiguration) actual);
+        return true;
     }
     
     private void assertEncryptRule(final YamlEncryptRuleConfiguration actual) {

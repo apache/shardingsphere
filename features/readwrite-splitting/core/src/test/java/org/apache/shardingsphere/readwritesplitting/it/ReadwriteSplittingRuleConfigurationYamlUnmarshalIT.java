@@ -17,9 +17,18 @@
 
 package org.apache.shardingsphere.readwritesplitting.it;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,12 +36,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ReadwriteSplittingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     ReadwriteSplittingRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/readwrite-splitting-rule.yaml");
+        super("yaml/readwrite-splitting-rule.yaml", getExpectedRuleConfiguration());
+    }
+    
+    private static ReadwriteSplittingRuleConfiguration getExpectedRuleConfiguration() {
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Arrays.asList(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("ds_0", "write_ds_0", Arrays.asList("write_ds_0_read_0", "write_ds_0_read_1"), "roundRobin"),
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("ds_1", "write_ds_1", Arrays.asList("write_ds_1_read_0", "write_ds_1_read_1"), "random"));
+        Map<String, AlgorithmConfiguration> loadBalancers = new LinkedHashMap<>(2, 1F);
+        loadBalancers.put("random", new AlgorithmConfiguration("RANDOM", new Properties()));
+        loadBalancers.put("roundRobin", new AlgorithmConfiguration("ROUND_ROBIN", new Properties()));
+        return new ReadwriteSplittingRuleConfiguration(dataSourceGroups, loadBalancers);
     }
     
     @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) actual.getRules().iterator().next());
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
+        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) actual);
+        return true;
     }
     
     private void assertReadwriteSplittingRule(final YamlReadwriteSplittingRuleConfiguration actual) {

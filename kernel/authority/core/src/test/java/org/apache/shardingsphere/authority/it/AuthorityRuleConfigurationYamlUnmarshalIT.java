@@ -17,61 +17,24 @@
 
 package org.apache.shardingsphere.authority.it;
 
-import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Properties;
 
 class AuthorityRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     AuthorityRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/authority-rule.yaml");
+        super("yaml/authority-rule.yaml", getExpectedRuleConfiguration());
     }
     
-    @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertAuthorityRule((YamlAuthorityRuleConfiguration) actual.getRules().iterator().next());
-    }
-    
-    private void assertAuthorityRule(final YamlAuthorityRuleConfiguration actual) {
-        assertUsers(new ArrayList<>(actual.getUsers()));
-        assertPrivilege(actual.getPrivilege());
-        assertAuthenticators(actual.getAuthenticators());
-        assertDefaultAuthenticator(actual.getDefaultAuthenticator());
-    }
-    
-    private void assertUsers(final List<YamlUserConfiguration> actual) {
-        assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getUser(), is("root@%"));
-        assertThat(actual.get(0).getPassword(), is("root"));
-        assertTrue(actual.get(0).isAdmin());
-        assertThat(actual.get(1).getUser(), is("sharding@"));
-        assertThat(actual.get(1).getPassword(), is("sharding"));
-        assertFalse(actual.get(1).isAdmin());
-    }
-    
-    private void assertPrivilege(final YamlAlgorithmConfiguration actual) {
-        assertThat(actual.getType(), is("ALL_PERMITTED"));
-        assertTrue(actual.getProps().isEmpty());
-    }
-    
-    private void assertAuthenticators(final Map<String, YamlAlgorithmConfiguration> actual) {
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get("fixture").getType(), is("FIXTURE"));
-        assertTrue(actual.get("fixture").getProps().isEmpty());
-    }
-    
-    private void assertDefaultAuthenticator(final String actual) {
-        assertThat(actual, is("fixture"));
+    private static AuthorityRuleConfiguration getExpectedRuleConfiguration() {
+        return new AuthorityRuleConfiguration(
+                Arrays.asList(new ShardingSphereUser("root", "root", "%", null, true), new ShardingSphereUser("sharding", "sharding", "%", null, false)),
+                new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.singletonMap("fixture", new AlgorithmConfiguration("FIXTURE", new Properties())), "fixture");
     }
 }

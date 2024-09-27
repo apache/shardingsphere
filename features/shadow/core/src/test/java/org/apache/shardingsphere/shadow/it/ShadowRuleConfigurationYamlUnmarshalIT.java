@@ -17,101 +17,40 @@
 
 package org.apache.shardingsphere.shadow.it;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 import java.util.Arrays;
-import java.util.Optional;
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Collections;
 
 class ShadowRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     ShadowRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/shadow-rule.yaml");
+        super("yaml/shadow-rule.yaml", getExpectedRuleConfiguration());
     }
     
-    @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        Optional<YamlShadowRuleConfiguration> shadowRuleConfig = actual.getRules().stream()
-                .filter(each -> each instanceof YamlShadowRuleConfiguration).findFirst().map(optional -> (YamlShadowRuleConfiguration) optional);
-        assertTrue(shadowRuleConfig.isPresent());
-        assertThat(shadowRuleConfig.get().getTables().size(), is(3));
-        assertTOrder(shadowRuleConfig.get());
-        assertTOrderItem(shadowRuleConfig.get());
-        assertTAddress(shadowRuleConfig.get());
-        assertThat(shadowRuleConfig.get().getDefaultShadowAlgorithmName(), is("sql-hint-algorithm"));
-        assertThat(shadowRuleConfig.get().getShadowAlgorithms().size(), is(4));
-        assertUserIdInsertMatchAlgorithm(shadowRuleConfig.get());
-        assertUserIdUpdateMatchAlgorithm(shadowRuleConfig.get());
-        assertUserIdSelectMatchAlgorithm(shadowRuleConfig.get());
-        assertSqlHintAlgorithm(shadowRuleConfig.get());
-    }
-    
-    private void assertTOrder(final YamlShadowRuleConfiguration actual) {
-        assertThat(actual.getTables().get("t_order").getDataSourceNames().iterator().next(), is("shadowDataSource"));
-        assertThat(actual.getTables().get("t_order").getShadowAlgorithmNames().size(), is(2));
-        assertTrue(actual.getTables().get("t_order").getShadowAlgorithmNames().containsAll(Arrays.asList("user-id-insert-match-algorithm", "user-id-select-match-algorithm")));
-    }
-    
-    private void assertTOrderItem(final YamlShadowRuleConfiguration actual) {
-        assertThat(actual.getTables().get("t_order_item").getDataSourceNames().iterator().next(), is("shadowDataSource"));
-        assertThat(actual.getTables().get("t_order_item").getShadowAlgorithmNames().size(), is(3));
-        assertTrue(actual.getTables().get("t_order_item").getShadowAlgorithmNames().containsAll(
-                Arrays.asList("user-id-insert-match-algorithm", "user-id-update-match-algorithm", "user-id-select-match-algorithm")));
-    }
-    
-    private void assertTAddress(final YamlShadowRuleConfiguration actual) {
-        assertThat(actual.getTables().get("t_address").getDataSourceNames().iterator().next(), is("shadowDataSource"));
-        assertThat(actual.getTables().get("t_address").getShadowAlgorithmNames().size(), is(3));
-        assertTrue(actual.getTables().get("t_address").getShadowAlgorithmNames().containsAll(Arrays.asList("user-id-insert-match-algorithm", "user-id-select-match-algorithm", "sql-hint-algorithm")));
-    }
-    
-    private void assertUserIdInsertMatchAlgorithm(final YamlShadowRuleConfiguration actual) {
-        assertThat(actual.getShadowAlgorithms().get("user-id-insert-match-algorithm").getType(), is("REGEX_MATCH"));
-        Properties props = actual.getShadowAlgorithms().get("user-id-insert-match-algorithm").getProps();
-        assertThat(props.size(), is(3));
-        assertTrue(props.containsKey("operation"));
-        assertThat(props.getProperty("operation"), is("insert"));
-        assertTrue(props.containsKey("column"));
-        assertThat(props.getProperty("column"), is("user_id"));
-        assertTrue(props.containsKey("regex"));
-        assertThat(props.getProperty("regex"), is("[1]"));
-    }
-    
-    private void assertUserIdUpdateMatchAlgorithm(final YamlShadowRuleConfiguration actual) {
-        assertThat(actual.getShadowAlgorithms().get("user-id-update-match-algorithm").getType(), is("REGEX_MATCH"));
-        Properties props = actual.getShadowAlgorithms().get("user-id-update-match-algorithm").getProps();
-        assertThat(props.size(), is(3));
-        assertTrue(props.containsKey("operation"));
-        assertThat(props.getProperty("operation"), is("update"));
-        assertTrue(props.containsKey("column"));
-        assertThat(props.getProperty("column"), is("user_id"));
-        assertTrue(props.containsKey("regex"));
-        assertThat(props.getProperty("regex"), is("[1]"));
-    }
-    
-    private void assertUserIdSelectMatchAlgorithm(final YamlShadowRuleConfiguration actual) {
-        assertThat(actual.getShadowAlgorithms().get("user-id-select-match-algorithm").getType(), is("REGEX_MATCH"));
-        Properties props = actual.getShadowAlgorithms().get("user-id-select-match-algorithm").getProps();
-        assertThat(props.size(), is(3));
-        assertTrue(props.containsKey("operation"));
-        assertThat(props.getProperty("operation"), is("select"));
-        assertTrue(props.containsKey("column"));
-        assertThat(props.getProperty("column"), is("user_id"));
-        assertTrue(props.containsKey("regex"));
-        assertThat(props.getProperty("regex"), is("[1]"));
-    }
-    
-    private void assertSqlHintAlgorithm(final YamlShadowRuleConfiguration actual) {
-        assertThat(actual.getShadowAlgorithms().get("sql-hint-algorithm").getType(), is("SQL_HINT"));
-        Properties props = actual.getShadowAlgorithms().get("sql-hint-algorithm").getProps();
-        assertThat(props.size(), is(2));
-        assertTrue((boolean) props.get("shadow"));
-        assertThat(props.getProperty("foo"), is("bar"));
+    private static ShadowRuleConfiguration getExpectedRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.getDataSources().add(new ShadowDataSourceConfiguration("shadowDataSource", "ds", "ds_shadow"));
+        result.getTables().put("t_order", new ShadowTableConfiguration(
+                Collections.singletonList("shadowDataSource"), Arrays.asList("user-id-insert-match-algorithm", "user-id-select-match-algorithm")));
+        result.getTables().put("t_order_item", new ShadowTableConfiguration(
+                Collections.singletonList("shadowDataSource"), Arrays.asList("user-id-insert-match-algorithm", "user-id-update-match-algorithm", "user-id-select-match-algorithm")));
+        result.getTables().put("t_address", new ShadowTableConfiguration(
+                Collections.singletonList("shadowDataSource"), Arrays.asList("user-id-insert-match-algorithm", "user-id-select-match-algorithm", "sql-hint-algorithm")));
+        result.getShadowAlgorithms().put("user-id-insert-match-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("regex", "[1]"), new Property("column", "user_id"), new Property("operation", "insert"))));
+        result.getShadowAlgorithms().put("user-id-update-match-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("regex", "[1]"), new Property("column", "user_id"), new Property("operation", "update"))));
+        result.getShadowAlgorithms().put("user-id-select-match-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("regex", "[1]"), new Property("column", "user_id"), new Property("operation", "select"))));
+        result.getShadowAlgorithms().put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", true), new Property("foo", "bar"))));
+        result.setDefaultShadowAlgorithmName("sql-hint-algorithm");
+        return result;
     }
 }

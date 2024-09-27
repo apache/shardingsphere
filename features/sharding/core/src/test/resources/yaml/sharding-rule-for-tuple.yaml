@@ -52,6 +52,7 @@ rules:
           shardingColumn: order_id
           shardingAlgorithmName: core_standard_fixture
   bindingTables:
+    - t_order, t_order_item
     - foo:t_order, t_order_item
   defaultDatabaseStrategy:
     standard:

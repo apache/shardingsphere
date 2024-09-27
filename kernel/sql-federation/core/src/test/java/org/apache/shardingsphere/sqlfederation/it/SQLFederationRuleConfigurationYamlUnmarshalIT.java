@@ -17,34 +17,13 @@
 
 package org.apache.shardingsphere.sqlfederation.it;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLFederationRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     SQLFederationRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/sql-federation-rule.yaml");
-    }
-    
-    @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertSQLFederationRule((YamlSQLFederationRuleConfiguration) actual.getRules().iterator().next());
-    }
-    
-    private void assertSQLFederationRule(final YamlSQLFederationRuleConfiguration actual) {
-        assertTrue(actual.isSqlFederationEnabled());
-        assertTrue(actual.isAllQueryUseSQLFederation());
-        assertExecutionPlanCache(actual.getExecutionPlanCache());
-    }
-    
-    private void assertExecutionPlanCache(final YamlSQLFederationExecutionPlanCacheRuleConfiguration actual) {
-        assertThat(actual.getInitialCapacity(), is(128));
-        assertThat(actual.getMaximumSize(), is(1024L));
+        super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfiguration(true, true, new CacheOption(128, 1024)));
     }
 }

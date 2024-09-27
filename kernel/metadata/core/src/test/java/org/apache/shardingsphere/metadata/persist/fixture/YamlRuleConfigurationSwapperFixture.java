@@ -47,6 +47,6 @@ public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfig
     
     @Override
     public int getOrder() {
-        return 3;
+        return -400;
     }
 }

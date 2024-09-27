@@ -17,30 +17,14 @@
 
 package org.apache.shardingsphere.sqltranslator.it;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 class SQLTranslatorRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     SQLTranslatorRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/sql-translator-rule.yaml");
-    }
-    
-    @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertSQLTranslatorRule((YamlSQLTranslatorRuleConfiguration) actual.getRules().iterator().next());
-    }
-    
-    private void assertSQLTranslatorRule(final YamlSQLTranslatorRuleConfiguration actual) {
-        assertThat(actual.getType(), is("FIXTURE"));
-        assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("k0"), is("v0"));
-        assertThat(actual.getProps().getProperty("k1"), is("v1"));
-        assertTrue(actual.isUseOriginalSQLWhenTranslatingFailed());
+        super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfiguration("FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1")), true));
     }
 }

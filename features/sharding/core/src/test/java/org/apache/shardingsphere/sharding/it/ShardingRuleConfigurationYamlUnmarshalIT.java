@@ -17,14 +17,29 @@
 
 package org.apache.shardingsphere.sharding.it;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
+import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,22 +48,58 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ShardingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     ShardingRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/sharding-rule.yaml");
+        super("yaml/sharding-rule.yaml", getExpectedRuleConfiguration());
+    }
+    
+    private static ShardingRuleConfiguration getExpectedRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration userTableRuleConfig = new ShardingTableRuleConfiguration("t_user", "ds_${0..1}.t_user_${0..15}");
+        userTableRuleConfig.setDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("region_id, user_id", "core_complex_fixture"));
+        userTableRuleConfig.setTableShardingStrategy(new ComplexShardingStrategyConfiguration("region_id, user_id", "core_complex_fixture"));
+        result.getTables().add(userTableRuleConfig);
+        ShardingTableRuleConfiguration stockTableRuleConfig = new ShardingTableRuleConfiguration("t_stock", "ds_${0..1}.t_stock{0..8}");
+        stockTableRuleConfig.setDatabaseShardingStrategy(new HintShardingStrategyConfiguration("core_hint_fixture"));
+        stockTableRuleConfig.setTableShardingStrategy(new HintShardingStrategyConfiguration("core_hint_fixture"));
+        result.getTables().add(stockTableRuleConfig);
+        ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
+        orderTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "table_inline"));
+        orderTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        result.getTables().add(orderTableRuleConfig);
+        ShardingTableRuleConfiguration orderItemTableRuleConfig = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${0..1}");
+        orderItemTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "core_standard_fixture"));
+        result.getTables().add(orderItemTableRuleConfig);
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order, t_order_item"));
+        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "database_inline"));
+        result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        result.setDefaultShardingColumn("order_id");
+        result.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "snowflake"));
+        result.setDefaultAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singletonList("sharding_key_required_auditor"), true));
+        result.getShardingAlgorithms().put("core_standard_fixture", new AlgorithmConfiguration("CORE.STANDARD.FIXTURE", new Properties()));
+        result.getShardingAlgorithms().put("core_complex_fixture", new AlgorithmConfiguration("CORE.COMPLEX.FIXTURE", new Properties()));
+        result.getShardingAlgorithms().put("core_hint_fixture", new AlgorithmConfiguration("CORE.HINT.FIXTURE", new Properties()));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${order_id % 2}"))));
+        result.getShardingAlgorithms().put("table_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
+        result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+        result.setShardingCache(new ShardingCacheConfiguration(512, new ShardingCacheOptionsConfiguration(true, 65536, 262144)));
+        return result;
     }
     
     @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream()
-                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(optional -> (YamlShardingRuleConfiguration) optional);
-        assertTrue(shardingRuleConfig.isPresent());
-        assertThat(shardingRuleConfig.get().getTables().size(), is(4));
-        assertTUser(shardingRuleConfig.get());
-        assertTStock(shardingRuleConfig.get());
-        assertTOrder(shardingRuleConfig.get());
-        assertTOrderItem(shardingRuleConfig.get());
-        assertBindingTable(shardingRuleConfig.get());
-        assertShardingCache(shardingRuleConfig.get());
-        assertThat(shardingRuleConfig.get().getDefaultShardingColumn(), is("order_id"));
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
+        assertShardingRule((YamlShardingRuleConfiguration) actual);
+        return true;
+    }
+    
+    private void assertShardingRule(final YamlShardingRuleConfiguration actual) {
+        assertThat(actual.getTables().size(), is(4));
+        assertTUser(actual);
+        assertTStock(actual);
+        assertTOrder(actual);
+        assertTOrderItem(actual);
+        assertBindingTable(actual);
+        assertShardingCache(actual);
+        assertThat(actual.getDefaultShardingColumn(), is("order_id"));
     }
     
     private void assertTUser(final YamlShardingRuleConfiguration actual) {
@@ -81,9 +132,8 @@ class ShardingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnma
     }
     
     private void assertBindingTable(final YamlShardingRuleConfiguration actual) {
-        assertThat(actual.getBindingTables().size(), is(2));
-        assertThat(new ArrayList<>(actual.getBindingTables()).get(0), is("t_order, t_order_item"));
-        assertThat(new ArrayList<>(actual.getBindingTables()).get(1), is("foo:t_order, t_order_item"));
+        assertThat(actual.getBindingTables().size(), is(1));
+        assertThat(new ArrayList<>(actual.getBindingTables()).get(0), is("foo:t_order, t_order_item"));
     }
     
     private void assertShardingCache(final YamlShardingRuleConfiguration actual) {

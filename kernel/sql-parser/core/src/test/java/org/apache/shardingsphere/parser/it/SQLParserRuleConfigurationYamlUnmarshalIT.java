@@ -17,37 +17,13 @@
 
 package org.apache.shardingsphere.parser.it;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
-import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class SQLParserRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
     SQLParserRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/sql-parser-rule.yaml");
-    }
-    
-    @Override
-    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertSQLParserRule((YamlSQLParserRuleConfiguration) actual.getRules().iterator().next());
-    }
-    
-    private void assertSQLParserRule(final YamlSQLParserRuleConfiguration actual) {
-        assertSQLStatementCache(actual.getSqlStatementCache());
-        assertSQLParseTreeCache(actual.getParseTreeCache());
-    }
-    
-    private void assertSQLStatementCache(final YamlSQLParserCacheOptionRuleConfiguration actual) {
-        assertThat(actual.getInitialCapacity(), is(256));
-        assertThat(actual.getMaximumSize(), is(4096L));
-    }
-    
-    private void assertSQLParseTreeCache(final YamlSQLParserCacheOptionRuleConfiguration actual) {
-        assertThat(actual.getInitialCapacity(), is(128));
-        assertThat(actual.getMaximumSize(), is(1024L));
+        super("yaml/sql-parser-rule.yaml", new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(256, 4096)));
     }
 }
