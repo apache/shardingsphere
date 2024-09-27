@@ -19,16 +19,16 @@ package org.apache.shardingsphere.broadcast.it;
 
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class BroadcastRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class BroadcastRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    BroadcastRuleConfigurationYamlIT() {
+    BroadcastRuleConfigurationYamlUnmarshalIT() {
         super("yaml/broadcast-rule.yaml");
     }
     

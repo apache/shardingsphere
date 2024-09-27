@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.it;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -29,9 +29,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShadowRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class ShadowRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    ShadowRuleConfigurationYamlIT() {
+    ShadowRuleConfigurationYamlUnmarshalIT() {
         super("yaml/shadow-rule.yaml");
     }
     

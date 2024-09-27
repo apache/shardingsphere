@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.it;
+package org.apache.shardingsphere.sqltranslator.it;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
-
-import java.util.Collections;
+import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SingleRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class SQLTranslatorRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    SingleRuleConfigurationYamlIT() {
-        super("yaml/single-rule.yaml");
+    SQLTranslatorRuleConfigurationYamlUnmarshalIT() {
+        super("yaml/sql-translator-rule.yaml");
     }
     
     @Override
     protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
-        assertSingleRule((YamlSingleRuleConfiguration) actual.getRules().iterator().next());
+        assertSQLTranslatorRule((YamlSQLTranslatorRuleConfiguration) actual.getRules().iterator().next());
     }
     
-    private void assertSingleRule(final YamlSingleRuleConfiguration actual) {
-        assertThat(actual.getTables(), is(Collections.singletonList("foo_tbl")));
-        assertThat(actual.getDefaultDataSource(), is("foo_ds"));
+    private void assertSQLTranslatorRule(final YamlSQLTranslatorRuleConfiguration actual) {
+        assertThat(actual.getType(), is("FIXTURE"));
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().getProperty("k0"), is("v0"));
+        assertThat(actual.getProps().getProperty("k1"), is("v1"));
+        assertTrue(actual.isUseOriginalSQLWhenTranslatingFailed());
     }
 }

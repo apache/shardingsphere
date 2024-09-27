@@ -20,15 +20,15 @@ package org.apache.shardingsphere.sqlfederation.it;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SQLFederationRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class SQLFederationRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    SQLFederationRuleConfigurationYamlIT() {
+    SQLFederationRuleConfigurationYamlUnmarshalIT() {
         super("yaml/sql-federation-rule.yaml");
     }
     

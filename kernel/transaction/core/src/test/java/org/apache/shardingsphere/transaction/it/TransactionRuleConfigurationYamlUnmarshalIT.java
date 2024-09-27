@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.transaction.it;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class TransactionRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class TransactionRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    TransactionRuleConfigurationYamlIT() {
+    TransactionRuleConfigurationYamlUnmarshalIT() {
         super("yaml/transaction-rule.yaml");
     }
     

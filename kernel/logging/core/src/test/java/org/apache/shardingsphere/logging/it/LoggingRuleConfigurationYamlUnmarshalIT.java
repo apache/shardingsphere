@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,9 +30,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LoggingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class LoggingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    LoggingRuleConfigurationYamlIT() {
+    LoggingRuleConfigurationYamlUnmarshalIT() {
         super("yaml/logging-rule.yaml");
     }
     
