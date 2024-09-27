@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.it;
+package org.apache.shardingsphere.broadcast.it;
 
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
-class SQLFederationRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+import java.util.Arrays;
+
+class BroadcastRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    SQLFederationRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfiguration(true, true, new CacheOption(128, 1024)));
+    BroadcastRuleConfigurationYamlIT() {
+        super("yaml/broadcast-rule.yaml", new BroadcastRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl")));
     }
 }

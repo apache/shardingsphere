@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.it;
+package org.apache.shardingsphere.globalclock.it;
 
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
-class TransactionRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class GlobalClockRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    TransactionRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/transaction-rule.yaml", new TransactionRuleConfiguration("XA", "FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1"))));
+    GlobalClockRuleConfigurationYamlIT() {
+        super("yaml/global-clock-rule.yaml", new GlobalClockRuleConfiguration("FIXTURE", "FIXTURE", true, PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1"))));
     }
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleCo
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
@@ -38,9 +38,9 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    EncryptRuleConfigurationYamlUnmarshalIT() {
+    EncryptRuleConfigurationYamlIT() {
         super("yaml/encrypt-rule.yaml", getExpectedRuleConfiguration());
     }
     

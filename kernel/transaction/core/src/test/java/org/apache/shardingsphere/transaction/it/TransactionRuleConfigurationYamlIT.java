@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.it;
+package org.apache.shardingsphere.transaction.it;
 
-import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
-class SQLTranslatorRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class TransactionRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    SQLTranslatorRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfiguration("FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1")), true));
+    TransactionRuleConfigurationYamlIT() {
+        super("yaml/transaction-rule.yaml", new TransactionRuleConfiguration("XA", "FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1"))));
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
@@ -40,9 +40,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MaskRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class MaskRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    MaskRuleConfigurationYamlUnmarshalIT() {
+    MaskRuleConfigurationYamlIT() {
         super("yaml/mask-rule.yaml", getExpectedRuleConfiguration());
     }
     

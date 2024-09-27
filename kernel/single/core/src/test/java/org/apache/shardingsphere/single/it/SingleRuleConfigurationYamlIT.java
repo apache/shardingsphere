@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.it;
+package org.apache.shardingsphere.single.it;
 
-import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
-import java.util.Arrays;
-
-class BroadcastRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class SingleRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    BroadcastRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/broadcast-rule.yaml", new BroadcastRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl")));
+    SingleRuleConfigurationYamlIT() {
+        super("yaml/single-rule.yaml", getExpectedRuleConfiguration());
+    }
+    
+    private static SingleRuleConfiguration getExpectedRuleConfiguration() {
+        SingleRuleConfiguration result = new SingleRuleConfiguration();
+        result.getTables().add("foo_tbl");
+        result.setDefaultDataSource("foo_ds");
+        return result;
     }
 }

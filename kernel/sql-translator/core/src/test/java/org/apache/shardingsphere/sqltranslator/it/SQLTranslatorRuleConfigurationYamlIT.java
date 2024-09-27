@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.it;
+package org.apache.shardingsphere.sqltranslator.it;
 
-import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
-class SingleRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class SQLTranslatorRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    SingleRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/single-rule.yaml", getExpectedRuleConfiguration());
-    }
-    
-    private static SingleRuleConfiguration getExpectedRuleConfiguration() {
-        SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.getTables().add("foo_tbl");
-        result.setDefaultDataSource("foo_ds");
-        return result;
+    SQLTranslatorRuleConfigurationYamlIT() {
+        super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfiguration("FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1")), true));
     }
 }

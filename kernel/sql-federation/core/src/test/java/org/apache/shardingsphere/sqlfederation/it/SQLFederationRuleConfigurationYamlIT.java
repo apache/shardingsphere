@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.parser.it;
+package org.apache.shardingsphere.sqlfederation.it;
 
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
-class SQLParserRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class SQLFederationRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    SQLParserRuleConfigurationYamlUnmarshalIT() {
-        super("yaml/sql-parser-rule.yaml", new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(256, 4096)));
+    SQLFederationRuleConfigurationYamlIT() {
+        super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfiguration(true, true, new CacheOption(128, 1024)));
     }
 }

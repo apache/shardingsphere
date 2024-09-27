@@ -20,13 +20,13 @@ package org.apache.shardingsphere.logging.it;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import java.util.Collections;
 
-class LoggingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class LoggingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    LoggingRuleConfigurationYamlUnmarshalIT() {
+    LoggingRuleConfigurationYamlIT() {
         super("yaml/logging-rule.yaml", getExpectedRuleConfiguration());
     }
     

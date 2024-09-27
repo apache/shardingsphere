@@ -21,16 +21,16 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-class ShadowRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
+class ShadowRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    ShadowRuleConfigurationYamlUnmarshalIT() {
+    ShadowRuleConfigurationYamlIT() {
         super("yaml/shadow-rule.yaml", getExpectedRuleConfiguration());
     }
     
