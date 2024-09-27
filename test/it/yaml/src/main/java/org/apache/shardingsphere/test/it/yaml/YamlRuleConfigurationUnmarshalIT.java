@@ -89,8 +89,8 @@ public abstract class YamlRuleConfigurationUnmarshalIT {
         assertTrue(DeepEquals.deepEquals(actualRuleConfig, expectedRuleConfig));
     }
     
-    // TODO should remove it when yaml rule swapper fixed by map's key
-    protected boolean assertYamlConfiguration(YamlRuleConfiguration actual) {
+    // TODO should remove the method when yaml rule swapper fixed by map's key
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
         return false;
     }
 }
