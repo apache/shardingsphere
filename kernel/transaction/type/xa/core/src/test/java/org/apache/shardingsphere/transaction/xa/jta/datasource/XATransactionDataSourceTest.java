@@ -19,6 +19,11 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.Synchronization;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -34,11 +39,6 @@ import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.RollbackException;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 

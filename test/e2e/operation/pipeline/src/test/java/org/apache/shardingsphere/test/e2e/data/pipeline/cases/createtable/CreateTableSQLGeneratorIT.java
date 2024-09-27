@@ -40,7 +40,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXB;
+import jakarta.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
