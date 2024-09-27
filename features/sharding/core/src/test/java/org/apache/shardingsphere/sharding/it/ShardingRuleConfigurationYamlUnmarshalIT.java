@@ -68,7 +68,6 @@ class ShardingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnma
         ShardingTableRuleConfiguration orderItemTableRuleConfig = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${0..1}");
         orderItemTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "core_standard_fixture"));
         result.getTables().add(orderItemTableRuleConfig);
-        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration(null, "t_order, t_order_item"));
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order, t_order_item"));
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "database_inline"));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
