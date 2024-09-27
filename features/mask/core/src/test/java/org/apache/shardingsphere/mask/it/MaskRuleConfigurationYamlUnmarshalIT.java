@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigur
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import java.util.Map;
 
@@ -29,9 +29,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MaskRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class MaskRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    MaskRuleConfigurationYamlIT() {
+    MaskRuleConfigurationYamlUnmarshalIT() {
         super("yaml/mask-rule.yaml");
     }
     

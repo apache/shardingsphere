@@ -21,16 +21,16 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class EncryptRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    EncryptRuleConfigurationYamlIT() {
+    EncryptRuleConfigurationYamlUnmarshalIT() {
         super("yaml/encrypt-rule.yaml");
     }
     

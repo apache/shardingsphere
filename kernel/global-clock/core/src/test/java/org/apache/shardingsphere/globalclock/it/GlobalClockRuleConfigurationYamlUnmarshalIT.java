@@ -19,15 +19,15 @@ package org.apache.shardingsphere.globalclock.it;
 
 import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GlobalClockRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class GlobalClockRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    GlobalClockRuleConfigurationYamlIT() {
+    GlobalClockRuleConfigurationYamlUnmarshalIT() {
         super("yaml/global-clock-rule.yaml");
     }
     

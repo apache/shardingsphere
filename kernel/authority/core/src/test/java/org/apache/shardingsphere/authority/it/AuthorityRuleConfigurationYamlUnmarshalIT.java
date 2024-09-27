@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfigur
 import org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AuthorityRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class AuthorityRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    AuthorityRuleConfigurationYamlIT() {
+    AuthorityRuleConfigurationYamlUnmarshalIT() {
         super("yaml/authority-rule.yaml");
     }
     

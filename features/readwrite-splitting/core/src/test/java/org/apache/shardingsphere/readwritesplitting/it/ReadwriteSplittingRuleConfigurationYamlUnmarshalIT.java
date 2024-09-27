@@ -19,14 +19,14 @@ package org.apache.shardingsphere.readwritesplitting.it;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ReadwriteSplittingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class ReadwriteSplittingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    ReadwriteSplittingRuleConfigurationYamlIT() {
+    ReadwriteSplittingRuleConfigurationYamlUnmarshalIT() {
         super("yaml/readwrite-splitting-rule.yaml");
     }
     

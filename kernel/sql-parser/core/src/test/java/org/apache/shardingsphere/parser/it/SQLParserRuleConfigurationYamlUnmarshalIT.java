@@ -20,14 +20,14 @@ package org.apache.shardingsphere.parser.it;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationUnmarshalIT;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SQLParserRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
+class SQLParserRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarshalIT {
     
-    SQLParserRuleConfigurationYamlIT() {
+    SQLParserRuleConfigurationYamlUnmarshalIT() {
         super("yaml/sql-parser-rule.yaml");
     }
     

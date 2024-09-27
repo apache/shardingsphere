@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RequiredArgsConstructor
-public abstract class YamlRuleConfigurationIT {
+public abstract class YamlRuleConfigurationUnmarshalIT {
     
     private final String yamlFile;
     
