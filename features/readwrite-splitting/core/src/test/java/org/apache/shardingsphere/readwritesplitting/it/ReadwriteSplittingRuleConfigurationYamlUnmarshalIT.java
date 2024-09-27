@@ -50,7 +50,7 @@ class ReadwriteSplittingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigu
     }
     
     @Override
-    protected boolean assertYamlConfiguration(YamlRuleConfiguration actual) {
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
         assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) actual);
         return true;
     }

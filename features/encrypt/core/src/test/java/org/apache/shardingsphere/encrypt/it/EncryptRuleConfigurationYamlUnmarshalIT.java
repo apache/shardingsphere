@@ -56,7 +56,7 @@ class EncryptRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmar
     }
     
     @Override
-    protected boolean assertYamlConfiguration(YamlRuleConfiguration actual) {
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
         assertEncryptRule((YamlEncryptRuleConfiguration) actual);
         return true;
     }

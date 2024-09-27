@@ -86,7 +86,7 @@ class ShardingRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnma
     }
     
     @Override
-    protected boolean assertYamlConfiguration(YamlRuleConfiguration actual) {
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
         assertShardingRule((YamlShardingRuleConfiguration) actual);
         return true;
     }

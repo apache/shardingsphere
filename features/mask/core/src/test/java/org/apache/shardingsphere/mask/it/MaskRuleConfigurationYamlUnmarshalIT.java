@@ -57,7 +57,7 @@ class MaskRuleConfigurationYamlUnmarshalIT extends YamlRuleConfigurationUnmarsha
     }
     
     @Override
-    protected boolean assertYamlConfiguration(YamlRuleConfiguration actual) {
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
         assertMaskRule((YamlMaskRuleConfiguration) actual);
         return true;
     }
