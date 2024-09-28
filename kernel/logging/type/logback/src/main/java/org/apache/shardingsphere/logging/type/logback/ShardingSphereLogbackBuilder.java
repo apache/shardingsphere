@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.logging.type.logback;
 
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
@@ -26,7 +27,6 @@ import ch.qos.logback.core.pattern.PatternLayoutBase;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.spi.ShardingSphereLogBuilder;
-import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -41,23 +41,25 @@ public final class ShardingSphereLogbackBuilder implements ShardingSphereLogBuil
     
     @Override
     public Collection<ShardingSphereLogger> getDefaultLoggers(final LoggerContext loggerContext) {
-        return loggerContext.getLoggerList().stream().filter(each -> null != each.getLevel()).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName()))
-                .map(each -> new ShardingSphereLogger(
-                        each.getName(), each.getLevel().levelStr, each.isAdditive(), each.iteratorForAppenders().hasNext() ? each.iteratorForAppenders().next().getName() : null))
+        return loggerContext.getLoggerList().stream().filter(this::isQualifiedLogger).map(each -> new ShardingSphereLogger(
+                each.getName(), each.getLevel().levelStr, each.isAdditive(), each.iteratorForAppenders().hasNext() ? each.iteratorForAppenders().next().getName() : null))
                 .collect(Collectors.toList());
+    }
+    
+    private boolean isQualifiedLogger(final Logger logger) {
+        return null != logger.getLevel() && !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(logger.getName());
     }
     
     @Override
     public Collection<ShardingSphereAppender> getDefaultAppenders(final LoggerContext loggerContext) {
-        return loggerContext.getLoggerList().stream().filter(each -> null != each.getLevel()).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName())).map(each -> {
-            if (each.iteratorForAppenders().hasNext()) {
-                Appender<?> appender = each.iteratorForAppenders().next();
-                ShardingSphereAppender result = new ShardingSphereAppender(appender.getName(), appender.getClass().getName(), getAppenderPattern(appender));
-                getFileOutput(appender, result);
-                return result;
-            }
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(ShardingSphereAppender::getAppenderName))));
+        return loggerContext.getLoggerList().stream().filter(this::isQualifiedLogger)
+                .map(each -> each.iteratorForAppenders().hasNext() ? getShardingSphereAppender(each.iteratorForAppenders().next()) : null).filter(Objects::nonNull)
+                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(ShardingSphereAppender::getAppenderName))));
+    }
+    
+    private ShardingSphereAppender getShardingSphereAppender(final Appender<?> appender) {
+        String file = appender instanceof FileAppender ? ((FileAppender<?>) appender).getFile() : null;
+        return new ShardingSphereAppender(appender.getName(), appender.getClass().getName(), getAppenderPattern(appender), file);
     }
     
     private String getAppenderPattern(final Appender<?> appender) {
@@ -68,12 +70,6 @@ public final class ShardingSphereLogbackBuilder implements ShardingSphereLogBuil
             return layout.getPattern();
         }
         return "";
-    }
-    
-    private void getFileOutput(final Appender<?> appender, final ShardingSphereAppender shardingSphereAppender) {
-        if (appender instanceof FileAppender) {
-            shardingSphereAppender.setFile(((FileAppender<?>) appender).getFile());
-        }
     }
     
     @Override

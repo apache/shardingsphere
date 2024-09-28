@@ -38,8 +38,6 @@ public final class YamlAppenderSwapper implements YamlConfigurationSwapper<YamlA
     
     @Override
     public ShardingSphereAppender swapToObject(final YamlAppenderConfiguration yamlConfig) {
-        ShardingSphereAppender result = new ShardingSphereAppender(yamlConfig.getAppenderName(), yamlConfig.getAppenderClass(), yamlConfig.getPattern());
-        result.setFile(yamlConfig.getFile());
-        return result;
+        return new ShardingSphereAppender(yamlConfig.getAppenderName(), yamlConfig.getAppenderClass(), yamlConfig.getPattern(), yamlConfig.getFile());
     }
 }

@@ -38,7 +38,7 @@ class LoggingRuleTest {
     @BeforeEach
     void setup() {
         loggingRule = new LoggingRule(new LoggingRuleConfiguration(Collections.singleton(new ShardingSphereLogger(LoggingConstants.SQL_LOG_TOPIC, "INFO", true, "console")),
-                Collections.singleton(new ShardingSphereAppender("console", "ch.qos.logback.core.ConsoleAppender", "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n"))));
+                Collections.singleton(new ShardingSphereAppender("console", "ch.qos.logback.core.ConsoleAppender", "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n", null))));
     }
     
     @Test

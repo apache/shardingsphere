@@ -40,7 +40,7 @@ public final class YamlLoggerSwapper implements YamlConfigurationSwapper<YamlLog
     @Override
     public ShardingSphereLogger swapToObject(final YamlLoggerConfiguration yamlConfig) {
         ShardingSphereLogger result = new ShardingSphereLogger(yamlConfig.getLoggerName(), yamlConfig.getLevel(), yamlConfig.getAdditivity(), yamlConfig.getAppenderName());
-        result.setProps(yamlConfig.getProps());
+        result.getProps().putAll(yamlConfig.getProps());
         return result;
     }
 }

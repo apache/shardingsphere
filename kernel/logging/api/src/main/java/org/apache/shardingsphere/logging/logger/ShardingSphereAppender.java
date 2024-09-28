@@ -19,7 +19,6 @@ package org.apache.shardingsphere.logging.logger;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * ShardingSphere appender.
@@ -34,6 +33,5 @@ public final class ShardingSphereAppender {
     
     private final String pattern;
     
-    @Setter
-    private String file;
+    private final String file;
 }

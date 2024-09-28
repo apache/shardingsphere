@@ -34,8 +34,7 @@ class LoggingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         ShardingSphereLogger logger = new ShardingSphereLogger("foo_logger", "INFO", true, "foo_appender");
         logger.getProps().put("k0", "v0");
         logger.getProps().put("k1", "v1");
-        ShardingSphereAppender appender = new ShardingSphereAppender("foo_appender", "foo_appender_class", "sss");
-        appender.setFile("foo_file");
+        ShardingSphereAppender appender = new ShardingSphereAppender("foo_appender", "foo_appender_class", "sss", "foo_file");
         return new LoggingRuleConfiguration(Collections.singletonList(logger), Collections.singletonList(appender));
     }
 }
