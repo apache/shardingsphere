@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.yaml.config.pojo;
+package org.apache.shardingsphere.single.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
