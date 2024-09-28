@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -107,15 +108,32 @@ public final class RuleMetaData {
     public Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap() {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
         for (ShardingSphereRule each : rules) {
-            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
-            if (ruleAttribute.isPresent()) {
-                mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(ruleAttribute.get())));
-                continue;
+            Collection<String> inUsedStorageUnitNames = getInUsedStorageUnitNames(each);
+            if (!inUsedStorageUnitNames.isEmpty()) {
+                mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, inUsedStorageUnitNames));
             }
-            each.getAttributes().findAttribute(DataNodeRuleAttribute.class)
-                    .ifPresent(optional -> mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(optional))));
         }
         return result;
+    }
+    
+    private Collection<String> getInUsedStorageUnitNames(final ShardingSphereRule rule) {
+        Optional<DataSourceMapperRuleAttribute> dataSourceMapperRuleAttribute = rule.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
+        if (dataSourceMapperRuleAttribute.isPresent()) {
+            return getInUsedStorageUnitNames(dataSourceMapperRuleAttribute.get());
+        }
+        Optional<DataNodeRuleAttribute> dataNodeRuleAttribute = rule.getAttributes().findAttribute(DataNodeRuleAttribute.class);
+        if (dataNodeRuleAttribute.isPresent()) {
+            return getInUsedStorageUnitNames(dataNodeRuleAttribute.get());
+        }
+        return Collections.emptyList();
+    }
+    
+    private Collection<String> getInUsedStorageUnitNames(final DataSourceMapperRuleAttribute ruleAttribute) {
+        return ruleAttribute.getDataSourceMapper().values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+    
+    private Collection<String> getInUsedStorageUnitNames(final DataNodeRuleAttribute ruleAttribute) {
+        return ruleAttribute.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
     }
     
     private Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap(final ShardingSphereRule rule, final Collection<String> inUsedStorageUnitNames) {
@@ -127,14 +145,6 @@ public final class RuleMetaData {
             result.get(each).add(rule.getClass());
         }
         return result;
-    }
-    
-    private Collection<String> getInUsedStorageUnitNames(final DataSourceMapperRuleAttribute ruleAttribute) {
-        return ruleAttribute.getDataSourceMapper().values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-    }
-    
-    private Collection<String> getInUsedStorageUnitNames(final DataNodeRuleAttribute ruleAttribute) {
-        return ruleAttribute.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
     }
     
     private void mergeInUsedStorageUnitNameAndRules(final Map<String, Collection<Class<? extends ShardingSphereRule>>> storageUnitNameAndRules,
