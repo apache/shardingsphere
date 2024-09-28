@@ -18,26 +18,51 @@
 package org.apache.shardingsphere.timeservice.type.database;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.timeservice.spi.TimestampService;
+import org.apache.shardingsphere.timeservice.type.database.exception.DatetimeLoadingException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DatabaseTimestampServiceTest {
     
-    @Test
-    void assertTimestamp() {
+    private TimestampService timestampService;
+    
+    @BeforeEach
+    void setUp() {
         Properties props = PropertiesBuilder.build(
                 new Property("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource"),
                 new Property("jdbcUrl", "jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),
                 new Property("username", "sa"),
                 new Property("password", ""),
                 new Property("maximumPoolSize", "1"));
+        timestampService = TypedSPILoader.getService(TimestampService.class, "Database", props);
+    }
+    
+    @Test
+    void assertGetTimestamp() {
         long currentTime = System.currentTimeMillis();
-        assertTrue(TypedSPILoader.getService(TimestampService.class, "Database", props).getTimestamp().getTime() >= currentTime);
+        assertTrue(timestampService.getTimestamp().getTime() >= currentTime);
+    }
+    
+    @Test
+    void assertGetTimestampFailed() throws ReflectiveOperationException, SQLException {
+        Connection connection = mock(Connection.class);
+        when(connection.prepareStatement(any())).thenThrow(new SQLException(""));
+        Plugins.getMemberAccessor().set(DatabaseTimestampService.class.getDeclaredField("dataSource"), timestampService, new MockedDataSource(connection));
+        assertThrows(DatetimeLoadingException.class, () -> timestampService.getTimestamp().getTime());
     }
 }
