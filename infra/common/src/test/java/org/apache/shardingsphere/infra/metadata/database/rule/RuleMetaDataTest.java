@@ -73,7 +73,6 @@ class RuleMetaDataTest {
         assertTrue(new RuleMetaData(Collections.emptyList()).getInUsedStorageUnitNameAndRulesMap().isEmpty());
     }
     
-    
     @Test
     void assertGetAttributes() {
         assertTrue(ruleMetaData.getAttributes(RuleAttribute.class).isEmpty());
