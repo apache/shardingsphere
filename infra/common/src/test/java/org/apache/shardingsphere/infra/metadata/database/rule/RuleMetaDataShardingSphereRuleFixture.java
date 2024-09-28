@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import static org.mockito.Mockito.mock;
 
-public class ShardingSphereRuleFixture implements ShardingSphereRule {
+public class RuleMetaDataShardingSphereRuleFixture implements ShardingSphereRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
