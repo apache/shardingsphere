@@ -17,18 +17,31 @@
 
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
 class RuleMetaDataTest {
     
-    private final RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new ShardingSphereRuleFixture()));
+    private final RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(new ShardingSphereRuleFixture(), mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
+    
+    @Test
+    void assertGetConfigurations() {
+        assertThat(ruleMetaData.getConfigurations().size(), is(2));
+    }
     
     @Test
     void assertFindRules() {
@@ -41,12 +54,27 @@ class RuleMetaDataTest {
     }
     
     @Test
+    void assertFindSingleRuleFailed() {
+        assertFalse(ruleMetaData.findSingleRule(mock(GlobalRule.class).getClass()).isPresent());
+    }
+    
+    @Test
     void assertGetSingleRule() {
         assertThat(ruleMetaData.getSingleRule(ShardingSphereRuleFixture.class), instanceOf(ShardingSphereRuleFixture.class));
     }
     
     @Test
+    void assertGetSingleRuleFailed() {
+        assertThrows(IllegalStateException.class, () -> ruleMetaData.getSingleRule(mock(GlobalRule.class).getClass()));
+    }
+    
+    @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesAreEmpty() {
         assertTrue(new RuleMetaData(Collections.emptyList()).getInUsedStorageUnitNameAndRulesMap().isEmpty());
+    }
+    
+    @Test
+    void assertGetAttributes() {
+        assertTrue(ruleMetaData.getAttributes(RuleAttribute.class).isEmpty());
     }
 }
