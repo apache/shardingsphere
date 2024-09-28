@@ -37,6 +37,6 @@ class MySQLTimestampLoadingSQLProviderTest {
     
     @Test
     void assertGetTimestampLoadingSQL() {
-        assertThat(provider.getTimestampLoadingSQL(), is("SELECT NOW()")); 
+        assertThat(provider.getTimestampLoadingSQL(), is("SELECT NOW()"));
     }
 }
