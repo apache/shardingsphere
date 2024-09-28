@@ -116,6 +116,17 @@ public final class RuleMetaData {
         return result;
     }
     
+    private Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap(final ShardingSphereRule rule, final Collection<String> inUsedStorageUnitNames) {
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
+        for (String each : inUsedStorageUnitNames) {
+            if (!result.containsKey(each)) {
+                result.put(each, new LinkedHashSet<>());
+            }
+            result.get(each).add(rule.getClass());
+        }
+        return result;
+    }
+    
     private Collection<String> getInUsedStorageUnitNames(final ShardingSphereRule rule) {
         Optional<DataSourceMapperRuleAttribute> dataSourceMapperRuleAttribute = rule.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
         if (dataSourceMapperRuleAttribute.isPresent()) {
@@ -134,17 +145,6 @@ public final class RuleMetaData {
     
     private Collection<String> getInUsedStorageUnitNames(final DataNodeRuleAttribute ruleAttribute) {
         return ruleAttribute.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
-    }
-    
-    private Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap(final ShardingSphereRule rule, final Collection<String> inUsedStorageUnitNames) {
-        Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
-        for (String each : inUsedStorageUnitNames) {
-            if (!result.containsKey(each)) {
-                result.put(each, new LinkedHashSet<>());
-            }
-            result.get(each).add(rule.getClass());
-        }
-        return result;
     }
     
     private void mergeInUsedStorageUnitNameAndRules(final Map<String, Collection<Class<? extends ShardingSphereRule>>> storageUnitNameAndRules,
