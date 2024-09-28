@@ -24,6 +24,6 @@ import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 class SQLParserRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     SQLParserRuleConfigurationYamlIT() {
-        super("yaml/sql-parser-rule.yaml", new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(256, 4096)));
+        super("yaml/sql-parser-rule.yaml", new SQLParserRuleConfiguration(new CacheOption(512, 2048L), new CacheOption(256, 4096L)));
     }
 }

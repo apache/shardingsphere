@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.yaml.config.swapper;
+package org.apache.shardingsphere.single.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 
 /**
  * YAML single rule configuration swapper.

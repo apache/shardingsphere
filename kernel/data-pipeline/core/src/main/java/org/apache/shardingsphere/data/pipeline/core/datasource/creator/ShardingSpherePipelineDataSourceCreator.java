@@ -38,7 +38,7 @@ import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepos
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

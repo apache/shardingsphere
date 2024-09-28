@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.it;
 
 import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
 
 import java.util.List;
