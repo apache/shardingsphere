@@ -24,11 +24,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,7 @@ class YamlShardingSphereDataSourceFactoryTest {
     }
     
     @Test
-    void assertCreateDataSourceWithBytes() throws SQLException, IOException {
+    void assertCreateDataSourceWithBytes() throws SQLException, IOException, URISyntaxException {
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(readFile(getYamlFileUrl()).getBytes()));
     }
     
@@ -79,17 +80,8 @@ class YamlShardingSphereDataSourceFactoryTest {
         return Objects.requireNonNull(YamlShardingSphereDataSourceFactoryTest.class.getResource("/config/factory/database-for-factory-test.yaml"));
     }
     
-    private String readFile(final URL url) throws IOException {
-        StringBuilder result = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                result.append(line).append(System.lineSeparator());
-            }
-        }
-        return result.toString();
+    private String readFile(final URL url) throws IOException, URISyntaxException {
+        return String.join(System.lineSeparator(), Files.readAllLines(Paths.get(url.toURI())));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
