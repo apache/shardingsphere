@@ -49,7 +49,7 @@ public abstract class YamlRuleConfigurationIT {
     @SuppressWarnings("rawtypes")
     private final YamlRuleConfigurationSwapper swapper;
     
-    public YamlRuleConfigurationIT(final String yamlFile, final RuleConfiguration expectedRuleConfig) {
+    protected YamlRuleConfigurationIT(final String yamlFile, final RuleConfiguration expectedRuleConfig) {
         this.yamlFile = yamlFile;
         this.expectedRuleConfig = expectedRuleConfig;
         swapper = OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(expectedRuleConfig)).get(expectedRuleConfig);
@@ -90,7 +90,7 @@ public abstract class YamlRuleConfigurationIT {
     }
     
     // TODO should remove the method when yaml rule swapper fixed by map's key
-    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
+    protected boolean assertYamlConfiguration(@SuppressWarnings("unused") final YamlRuleConfiguration actual) {
         return false;
     }
 }

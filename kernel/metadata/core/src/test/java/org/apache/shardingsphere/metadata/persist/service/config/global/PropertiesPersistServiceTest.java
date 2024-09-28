@@ -68,7 +68,7 @@ class PropertiesPersistServiceTest {
     }
     
     @Test
-    void persistWithEmptyActiveVersion() {
+    void assertPersistWithEmptyActiveVersion() {
         when(repository.query("/props/active_version")).thenReturn("");
         persistService.persist(PropertiesBuilder.build(new Property("k", "v")));
         verify(repository).persist("/props/versions/0", "k: v" + System.lineSeparator());
@@ -77,7 +77,7 @@ class PropertiesPersistServiceTest {
     }
     
     @Test
-    void persistWithActiveVersion() {
+    void assertPersistWithActiveVersion() {
         when(repository.getChildrenKeys("/props/versions")).thenReturn(Collections.singletonList("10"));
         persistService.persist(PropertiesBuilder.build(new Property("k", "v")));
         verify(repository).persist("/props/versions/11", "k: v" + System.lineSeparator());
