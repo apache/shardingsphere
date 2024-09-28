@@ -42,7 +42,7 @@ public final class ShardingSphereLogbackBuilder implements ShardingSphereLogBuil
     @Override
     public Collection<ShardingSphereLogger> getDefaultLoggers(final LoggerContext loggerContext) {
         return loggerContext.getLoggerList().stream().filter(this::isQualifiedLogger).map(each -> new ShardingSphereLogger(
-                        each.getName(), each.getLevel().levelStr, each.isAdditive(), each.iteratorForAppenders().hasNext() ? each.iteratorForAppenders().next().getName() : null))
+                each.getName(), each.getLevel().levelStr, each.isAdditive(), each.iteratorForAppenders().hasNext() ? each.iteratorForAppenders().next().getName() : null))
                 .collect(Collectors.toList());
     }
     
