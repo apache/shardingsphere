@@ -15,44 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.verify;
+package org.apache.shardingsphere.test.matcher;
 
 import com.cedarsoftware.util.DeepEquals;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.mockito.ArgumentMatcher;
+import org.mockito.internal.progress.ThreadSafeMockingProgress;
 
 import java.io.Serializable;
 
-import static org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress;
-
 /**
- * Argument matchers of ShardingSphere.
+ * ShardingSphere argument verify matchers.
  */
-public final class ShardingSphereArgumentMatchers {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereArgumentVerifyMatchers {
     
     /**
      * Deep equals.
      * 
      * @param obj to be verified object
-     * @return null
      * @param <T> type of to be verified object
+     * @return null
      */
     public static <T> T deepEq(final T obj) {
         reportMatcher(new DeepEqualsMatcher(obj));
         return obj;
     }
     
-    private static void reportMatcher(ArgumentMatcher<?> matcher) {
-        mockingProgress().getArgumentMatcherStorage().reportMatcher(matcher);
+    private static void reportMatcher(final ArgumentMatcher<?> matcher) {
+        ThreadSafeMockingProgress.mockingProgress().getArgumentMatcherStorage().reportMatcher(matcher);
     }
     
     @RequiredArgsConstructor
-    public static class DeepEqualsMatcher implements ArgumentMatcher<Object>, Serializable {
+    private static class DeepEqualsMatcher implements ArgumentMatcher<Object>, Serializable {
         
         private final Object wanted;
         
         @Override
-        public boolean matches(Object actual) {
+        public boolean matches(final Object actual) {
             return DeepEquals.deepEquals(wanted, actual);
         }
         
