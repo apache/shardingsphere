@@ -31,10 +31,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * ShardingSphere table row data persist service.
+ * Table row data persist service.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereTableRowDataPersistService {
+public final class TableRowDataPersistService {
     
     private final PersistRepository repository;
     
