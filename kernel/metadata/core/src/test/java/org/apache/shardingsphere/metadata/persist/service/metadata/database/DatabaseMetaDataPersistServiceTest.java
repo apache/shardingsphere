@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.database;
+package org.apache.shardingsphere.metadata.persist.service.metadata.database;
 
-import org.apache.shardingsphere.metadata.persist.service.table.TableMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.table.ViewMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,17 +39,9 @@ class DatabaseMetaDataPersistServiceTest {
     @Mock
     private PersistRepository repository;
     
-    @Mock
-    private TableMetaDataPersistService tableMetaDataPersistService;
-    
-    @Mock
-    private ViewMetaDataPersistService viewMetaDataPersistService;
-    
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
-        persistService = new DatabaseMetaDataPersistService(repository, mock(MetaDataVersionPersistService.class));
-        Plugins.getMemberAccessor().set(DatabaseMetaDataPersistService.class.getDeclaredField("tableMetaDataPersistService"), persistService, tableMetaDataPersistService);
-        Plugins.getMemberAccessor().set(DatabaseMetaDataPersistService.class.getDeclaredField("viewMetaDataPersistService"), persistService, viewMetaDataPersistService);
+    void setUp() {
+        persistService = new DatabaseMetaDataPersistService(repository);
     }
     
     @Test

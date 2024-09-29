@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
@@ -85,20 +85,20 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertCreateDatabase() {
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataContextManager.getSchemaMetaDataManager()).addDatabase("foo_db");
-        verify(metaDataPersistService.getDatabaseMetaDataService()).add("foo_db");
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
     }
     
     @Test
     void assertDropDatabase() {
         metaDataManagerPersistService.dropDatabase("foo_db");
         verify(metaDataContextManager.getSchemaMetaDataManager()).dropDatabase("foo_db");
-        verify(metaDataPersistService.getDatabaseMetaDataService()).drop("foo_db");
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
     }
     
     @Test
     void assertCreateSchema() {
         metaDataManagerPersistService.createSchema("foo_db", "foo_schema");
-        verify(metaDataPersistService.getDatabaseMetaDataService().getSchemaMetaDataPersistService()).add("foo_db", "foo_schema");
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).add("foo_db", "foo_schema");
     }
     
     @Test
@@ -107,13 +107,13 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
-        DatabaseMetaDataPersistService databaseMetaDataService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataService);
+        DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
-        verify(databaseMetaDataService.getSchemaMetaDataPersistService(), times(0)).add("foo_db", "bar_schema");
-        verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
-        verify(databaseMetaDataService.getViewMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
-        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).drop("foo_db", "foo_schema");
+        verify(databaseMetaDataFacade.getSchema(), times(0)).add("foo_db", "bar_schema");
+        verify(databaseMetaDataFacade.getTable()).persist("foo_db", "bar_schema", new HashMap<>());
+        verify(databaseMetaDataFacade.getView()).persist("foo_db", "bar_schema", new HashMap<>());
+        verify(databaseMetaDataFacade.getSchema()).drop("foo_db", "foo_schema");
     }
     
     @Test
@@ -126,13 +126,13 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
-        DatabaseMetaDataPersistService databaseMetaDataService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataService);
+        DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
-        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).add("foo_db", "bar_schema");
-        verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
-        verify(databaseMetaDataService.getViewMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
-        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).drop("foo_db", "foo_schema");
+        verify(databaseMetaDataFacade.getSchema()).add("foo_db", "bar_schema");
+        verify(databaseMetaDataFacade.getTable()).persist("foo_db", "bar_schema", new HashMap<>());
+        verify(databaseMetaDataFacade.getView()).persist("foo_db", "bar_schema", new HashMap<>());
+        verify(databaseMetaDataFacade.getSchema()).drop("foo_db", "foo_schema");
     }
     
     @Test
@@ -147,11 +147,10 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterSchemaMetaData() {
-        DatabaseMetaDataPersistService databaseMetaDataService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataService);
+        DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.alterSchemaMetaData(new AlterSchemaMetaDataPOJO("foo_db", "foo_schema", Collections.singleton("foo_ds")));
-        verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "foo_schema", new HashMap<>());
-        verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "foo_schema", new HashMap<>());
+        verify(databaseMetaDataFacade.getTable()).persist("foo_db", "foo_schema", new HashMap<>());
     }
     
     @Test
@@ -232,13 +231,13 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertCreateTable() {
         ShardingSphereTable table = new ShardingSphereTable();
         metaDataManagerPersistService.createTable("foo_db", "foo_schema", table, "foo_ds");
-        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).persist("foo_db", "foo_schema", Maps.of("", table));
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Maps.of("", table));
     }
     
     @Test
     void assertDropTables() {
         metaDataManagerPersistService.dropTables("foo_db", "foo_schema", Collections.singleton("foo_tbl"));
-        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).drop("foo_db", "foo_schema", "foo_tbl");
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).drop("foo_db", "foo_schema", "foo_tbl");
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

@@ -82,7 +82,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
         Preconditions.checkArgument(event.getActiveVersion().equals(
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
-        ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().getTableMetaDataPersistService()
+        ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable()
                 .load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), table, null);
         refreshShardingSphereStatisticsData();
@@ -109,7 +109,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
         Preconditions.checkArgument(event.getActiveVersion().equals(
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
-        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService()
+        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView()
                 .load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, view);
         refreshShardingSphereStatisticsData();

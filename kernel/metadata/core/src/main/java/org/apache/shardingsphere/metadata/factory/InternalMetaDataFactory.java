@@ -51,7 +51,7 @@ public final class InternalMetaDataFactory {
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         return ShardingSphereDatabase.create(databaseName,
-                protocolType, databaseConfig, computeNodeInstanceContext, persistService.getDatabaseMetaDataService().getSchemaMetaDataPersistService().load(databaseName));
+                protocolType, databaseConfig, computeNodeInstanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName));
     }
     
     /**

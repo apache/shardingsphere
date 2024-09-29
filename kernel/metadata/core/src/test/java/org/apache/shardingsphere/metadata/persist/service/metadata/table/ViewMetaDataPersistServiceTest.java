@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.table;
+package org.apache.shardingsphere.metadata.persist.service.metadata.table;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
