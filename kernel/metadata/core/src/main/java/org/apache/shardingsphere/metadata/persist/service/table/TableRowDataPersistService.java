@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.schema;
+package org.apache.shardingsphere.metadata.persist.service.table;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;

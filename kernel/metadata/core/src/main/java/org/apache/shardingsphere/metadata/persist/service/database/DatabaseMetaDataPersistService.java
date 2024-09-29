@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.metadata.persist.service.schema.TableMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.schema.ViewMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.table.TableMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.table.ViewMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
