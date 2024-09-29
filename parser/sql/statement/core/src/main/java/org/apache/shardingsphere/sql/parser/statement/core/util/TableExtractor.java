@@ -23,15 +23,21 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.V
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
@@ -59,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -135,14 +142,11 @@ public final class TableExtractor {
     }
     
     private void extractTablesFromExpression(final ExpressionSegment expressionSegment) {
-        if (expressionSegment instanceof ColumnSegment && ((ColumnSegment) expressionSegment).getOwner().isPresent() && needRewrite(((ColumnSegment) expressionSegment).getOwner().get())) {
-            OwnerSegment ownerSegment = ((ColumnSegment) expressionSegment).getOwner().get();
-            rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
+        if (expressionSegment instanceof ColumnSegment) {
+            extractTablesFromColumnSegments(Collections.singleton((ColumnSegment) expressionSegment));
         }
         if (expressionSegment instanceof ListExpression) {
-            for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {
-                extractTablesFromExpression(each);
-            }
+            ((ListExpression) expressionSegment).getItems().forEach(this::extractTablesFromExpression);
         }
         if (expressionSegment instanceof ExistsSubqueryExpression) {
             extractTablesFromSelect(((ExistsSubqueryExpression) expressionSegment).getSubquery().getSelect());
@@ -159,20 +163,43 @@ public final class TableExtractor {
         if (expressionSegment instanceof SubqueryExpressionSegment) {
             extractTablesFromSelect(((SubqueryExpressionSegment) expressionSegment).getSubquery().getSelect());
         }
+        if (expressionSegment instanceof SubquerySegment) {
+            extractTablesFromSelect(((SubquerySegment) expressionSegment).getSelect());
+        }
         if (expressionSegment instanceof BinaryOperationExpression) {
             extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getLeft());
             extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getRight());
         }
         if (expressionSegment instanceof MatchAgainstExpression) {
-            for (ColumnSegment each : ((MatchAgainstExpression) expressionSegment).getColumns()) {
-                extractTablesFromExpression(each);
-            }
+            ((MatchAgainstExpression) expressionSegment).getColumns().forEach(this::extractTablesFromExpression);
+            extractTablesFromExpression(((MatchAgainstExpression) expressionSegment).getExpr());
         }
         if (expressionSegment instanceof FunctionSegment) {
-            for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
-                extractTablesFromExpression(each);
-            }
+            ((FunctionSegment) expressionSegment).getParameters().forEach(this::extractTablesFromExpression);
         }
+        if (expressionSegment instanceof CaseWhenExpression) {
+            extractTablesFromCaseWhenExpression((CaseWhenExpression) expressionSegment);
+        }
+        if (expressionSegment instanceof CollateExpression) {
+            extractTablesFromExpression(((CollateExpression) expressionSegment).getCollateName());
+        }
+        if (expressionSegment instanceof DatetimeExpression) {
+            extractTablesFromExpression(((DatetimeExpression) expressionSegment).getLeft());
+            extractTablesFromExpression(((DatetimeExpression) expressionSegment).getRight());
+        }
+        if (expressionSegment instanceof NotExpression) {
+            extractTablesFromExpression(((NotExpression) expressionSegment).getExpression());
+        }
+        if (expressionSegment instanceof TypeCastExpression) {
+            extractTablesFromExpression(((TypeCastExpression) expressionSegment).getExpression());
+        }
+    }
+    
+    private void extractTablesFromCaseWhenExpression(final CaseWhenExpression expressionSegment) {
+        extractTablesFromExpression(expressionSegment.getCaseExpr());
+        expressionSegment.getWhenExprs().forEach(this::extractTablesFromExpression);
+        expressionSegment.getThenExprs().forEach(this::extractTablesFromExpression);
+        extractTablesFromExpression(expressionSegment.getElseExpr());
     }
     
     private void extractTablesFromProjections(final ProjectionsSegment projections) {
@@ -253,12 +280,12 @@ public final class TableExtractor {
     }
     
     private void extractTablesFromColumnSegments(final Collection<ColumnSegment> columnSegments) {
-        columnSegments.forEach(each -> {
+        for (ColumnSegment each : columnSegments) {
             if (each.getOwner().isPresent() && needRewrite(each.getOwner().get())) {
                 OwnerSegment ownerSegment = each.getOwner().get();
                 rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
             }
-        });
+        }
     }
     
     /**
