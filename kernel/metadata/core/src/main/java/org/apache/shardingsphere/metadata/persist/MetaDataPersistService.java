@@ -152,7 +152,7 @@ public final class MetaDataPersistService {
         Map<String, ShardingSphereSchema> toBeDeletedSchemas = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.alterSchemaByRuleAltered(databaseName, value));
-        toBeDeletedSchemas.forEach((key, value) -> databaseMetaDataService.dropTables(databaseName, key, value.getTables()));
+        toBeDeletedSchemas.forEach((key, value) -> databaseMetaDataService.getTableMetaDataPersistService().drop(databaseName, key, value.getTables()));
     }
     
     /**
@@ -166,6 +166,6 @@ public final class MetaDataPersistService {
         Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.alterSchemaByRuleDropped(databaseName, key, value));
-        toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.dropTables(databaseName, key, value.getTables()));
+        toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.getTableMetaDataPersistService().drop(databaseName, key, value.getTables()));
     }
 }

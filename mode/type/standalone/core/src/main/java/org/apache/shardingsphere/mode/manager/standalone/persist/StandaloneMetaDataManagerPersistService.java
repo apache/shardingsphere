@@ -222,7 +222,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         DatabaseMetaDataPersistService databaseMetaDataService = metaDataPersistService.getDatabaseMetaDataService();
         databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, tables);
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, schemaName, views);
-        alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> databaseMetaDataService.getTableMetaDataPersistService().delete(databaseName, schemaName, each));
+        alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> databaseMetaDataService.getTableMetaDataPersistService().drop(databaseName, schemaName, each));
         alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> databaseMetaDataService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));
     }
     
@@ -362,7 +362,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         removeTablesToDataNode(database, schemaName, tableNames);
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().delete(databaseName, schemaName, each));
+        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().drop(databaseName, schemaName, each));
     }
     
     private void addTableToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final ShardingSphereTable table) {

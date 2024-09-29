@@ -112,7 +112,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         DatabaseMetaDataPersistService databaseMetaDataService = metaDataPersistService.getDatabaseMetaDataService();
         databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, schemaName, tables);
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, schemaName, views);
-        alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> databaseMetaDataService.getTableMetaDataPersistService().delete(databaseName, schemaName, each));
+        alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> databaseMetaDataService.getTableMetaDataPersistService().drop(databaseName, schemaName, each));
         alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> databaseMetaDataService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));
     }
     
@@ -243,6 +243,6 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void dropTables(final String databaseName, final String schemaName, final Collection<String> tableNames) {
-        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().delete(databaseName, schemaName, each));
+        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().drop(databaseName, schemaName, each));
     }
 }

@@ -40,6 +40,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -65,7 +66,7 @@ class MetaDataPersistServiceTest {
     @Mock
     private DataSourceUnitPersistService dataSourceUnitService;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DatabaseMetaDataPersistService databaseMetaDataService;
     
     @Mock
@@ -150,7 +151,7 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_added", toBeAddedSchema));
         metaDataPersistService.persistReloadDatabaseByAlter("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
         verify(databaseMetaDataService).alterSchemaByRuleAltered("foo_db", toBeAddedSchema);
-        verify(databaseMetaDataService).dropTables("foo_db", "to_be_deleted", Collections.emptyMap());
+        verify(databaseMetaDataService.getTableMetaDataPersistService()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
     }
     
     @Test
@@ -161,6 +162,6 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_altered", toBeAlterSchema));
         metaDataPersistService.persistReloadDatabaseByDrop("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
         verify(databaseMetaDataService).alterSchemaByRuleDropped("foo_db", "to_be_altered", toBeAlterSchema);
-        verify(databaseMetaDataService).dropTables("foo_db", "to_be_deleted", Collections.emptyMap());
+        verify(databaseMetaDataService.getTableMetaDataPersistService()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
     }
 }

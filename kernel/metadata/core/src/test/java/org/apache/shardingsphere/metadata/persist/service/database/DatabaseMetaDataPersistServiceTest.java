@@ -128,12 +128,6 @@ class DatabaseMetaDataPersistServiceTest {
     }
     
     @Test
-    void assertDropTables() {
-        persistService.dropTables("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class)));
-        verify(tableMetaDataPersistService).delete("foo_db", "foo_schema", "foo_tbl");
-    }
-    
-    @Test
     void assertAlterSchemaByAlterConfigurationByRefresh() {
         persistService.alterSchemaByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema"));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
