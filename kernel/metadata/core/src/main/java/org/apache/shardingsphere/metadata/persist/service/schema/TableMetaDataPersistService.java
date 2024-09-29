@@ -49,8 +49,8 @@ public final class TableMetaDataPersistService {
     /**
      * Load tables.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
+     * @param databaseName to be loaded database name
+     * @param schemaName to be loaded schema name
      * @return loaded tables
      */
     public Map<String, ShardingSphereTable> load(final String databaseName, final String schemaName) {
@@ -61,9 +61,9 @@ public final class TableMetaDataPersistService {
     /**
      * Load table.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param databaseName to be loaded database name
+     * @param schemaName to be loaded schema name
+     * @param tableName to be loaded table name
      * @return loaded table
      */
     public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
@@ -75,9 +75,9 @@ public final class TableMetaDataPersistService {
     /**
      * Persist tables.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tables tables
+     * @param databaseName to be persisted database name
+     * @param schemaName to be persisted schema name
+     * @param tables to be persisted tables
      */
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
@@ -104,9 +104,9 @@ public final class TableMetaDataPersistService {
     /**
      * Delete table.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param databaseName to be deleted database name
+     * @param schemaName to be deleted schema name
+     * @param tableName to be deleted table name
      */
     public void delete(final String databaseName, final String schemaName, final String tableName) {
         repository.delete(TableMetaDataNode.getTableNode(databaseName, schemaName, tableName.toLowerCase()));

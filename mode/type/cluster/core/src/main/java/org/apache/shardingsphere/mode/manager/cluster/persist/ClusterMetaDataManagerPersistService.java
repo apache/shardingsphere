@@ -163,7 +163,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
         reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService()
-                .persistByAlterConfiguration(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
+                .alterSchemaByRuleAltered(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schema));
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
                         .persist(originalMetaDataContexts.getMetaData().getDatabases().get(databaseName.toLowerCase()), schemaName, schemaData)));
@@ -173,7 +173,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
         reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService()
-                .persistByDropConfiguration(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
+                .alterSchemaByRuleDropped(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
                         .persist(originalMetaDataContexts.getMetaData().getDatabases().get(databaseName.toLowerCase()), schemaName, schemaData)));
