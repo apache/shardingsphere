@@ -54,7 +54,7 @@ public final class DatabaseMetaDataPersistService {
     /**
      * Add database.
      *
-     * @param databaseName database name
+     * @param databaseName to be added database name
      */
     public void addDatabase(final String databaseName) {
         repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
@@ -63,7 +63,7 @@ public final class DatabaseMetaDataPersistService {
     /**
      * Drop database.
      *
-     * @param databaseName database name
+     * @param databaseName to be dropped database name
      */
     public void dropDatabase(final String databaseName) {
         repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
@@ -72,7 +72,7 @@ public final class DatabaseMetaDataPersistService {
     /**
      * Load database names.
      *
-     * @return database names
+     * @return loaded database names
      */
     public Collection<String> loadAllDatabaseNames() {
         return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataNode());
@@ -82,7 +82,7 @@ public final class DatabaseMetaDataPersistService {
      * Add schema.
      *
      * @param databaseName database name
-     * @param schemaName schema name
+     * @param schemaName to be added schema name
      */
     public void addSchema(final String databaseName, final String schemaName) {
         repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName), "");
@@ -92,20 +92,20 @@ public final class DatabaseMetaDataPersistService {
      * Drop schema.
      *
      * @param databaseName database name
-     * @param schemaName schema name
+     * @param schemaName to be dropped schema name
      */
     public void dropSchema(final String databaseName, final String schemaName) {
         repository.delete(DatabaseMetaDataNode.getMetaDataSchemaPath(databaseName, schemaName));
     }
     
     /**
-     * Compare and persist schema.
+     * Alter schema.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
+     * @param databaseName to be altered database name
+     * @param schema to be altered schema
      */
-    public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+    public void alterSchema(final String databaseName, final ShardingSphereSchema schema) {
+        String schemaName = schema.getName().toLowerCase();
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
         }

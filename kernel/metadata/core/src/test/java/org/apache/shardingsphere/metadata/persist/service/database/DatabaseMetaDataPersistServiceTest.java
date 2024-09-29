@@ -94,30 +94,25 @@ class DatabaseMetaDataPersistServiceTest {
     }
     
     @Test
-    void assertCompareAndPersistWithEmptyTablesAndViews() {
-        persistService.compareAndPersist("foo_db", "foo_schema", mock(ShardingSphereSchema.class));
+    void assertAlterSchemaWithoutTablesAndViews() {
+        persistService.alterSchema("foo_db", new ShardingSphereSchema("foo_schema"));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
         verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyMap());
     }
     
     @Test
-    void assertCompareAndPersistWithNotEmptyTables() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getTables()).thenReturn(Collections.emptyMap());
-        persistService.compareAndPersist("foo_db", "foo_schema", schema);
+    void assertAlterSchemaWithTables() {
+        Map<String, ShardingSphereTable> tables = Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class));
+        persistService.alterSchema("foo_db", new ShardingSphereSchema("foo_schema", tables, Collections.emptyMap()));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyMap());
+        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", tables);
     }
     
     @Test
-    void assertCompareAndPersistWithNotEmptyViews() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(schema.getTables()).thenReturn(Collections.singletonMap("foo_tbl", table));
-        when(schema.getViews()).thenReturn(Collections.emptyMap());
-        persistService.compareAndPersist("foo_db", "foo_schema", schema);
+    void assertAlterSchemaWithViews() {
+        persistService.alterSchema("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyMap(), Collections.singletonMap("foo_view", mock(ShardingSphereView.class))));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", table));
+        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyMap());
     }
     
     @Test

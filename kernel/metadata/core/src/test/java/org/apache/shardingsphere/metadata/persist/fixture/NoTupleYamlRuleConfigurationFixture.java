@@ -18,13 +18,17 @@
 package org.apache.shardingsphere.metadata.persist.fixture;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
-@RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
+@Setter
+public final class NoTupleYamlRuleConfigurationFixture implements YamlRuleConfiguration {
     
-    private final String name;
+    private String name;
+    
+    @Override
+    public Class<NoTupleRuleConfigurationFixture> getRuleConfigurationType() {
+        return NoTupleRuleConfigurationFixture.class;
+    }
 }
