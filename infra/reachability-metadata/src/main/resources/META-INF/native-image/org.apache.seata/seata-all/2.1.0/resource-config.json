@@ -1,0 +1,20 @@
+{
+  "resources":{
+  "includes":[{
+    "condition":{"typeReachable":"org.apache.seata.config.ConfigurationFactory"},
+    "pattern":".*META-INF/services/io\\.seata\\..+"
+  },{
+    "condition":{"typeReachable":"org.apache.seata.config.ConfigurationFactory"},
+    "pattern":".*META-INF/services/org\\.apache\\.seata\\..+"
+  },{
+    "condition":{"typeReachable":"org.apache.seata.sqlparser.druid.DruidDbTypeParserImpl"},
+    "pattern":"\\QMETA-INF/druid-driver.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.seata.config.FileConfiguration"},
+    "pattern":"\\Q\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.seata.sqlparser.druid.DefaultDruidLoader"},
+    "pattern":"\\Qlib/sqlparser/druid.jar\\E"
+  }]},
+  "bundles":[]
+}

@@ -258,46 +258,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 ]
 ```
 
-6. 当使用 Seata 的 BASE 集成时，用户需要使用特定的 `io.seata:seata-all:1.8.0` 版本以避开对 ByteBuddy Java API 的使用，
-并排除 `io.seata:seata-all:1.8.0` 中过时的 `org.antlr:antlr4-runtime:4.8` 的 Maven 依赖。可能的配置例子如下，
-
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>io.seata</groupId>
-         <artifactId>seata-all</artifactId>
-         <version>1.8.0</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.antlr</groupId>
-               <artifactId>antlr4-runtime</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>commons-lang</groupId>
-               <artifactId>commons-lang</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>org.apache.commons</groupId>
-               <artifactId>commons-pool2</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-    </dependencies>
-</project>
-```
-
-7. 当需要通过 ShardingSphere JDBC 使用 ClickHouse 方言时，
+6. 当需要通过 ShardingSphere JDBC 使用 ClickHouse 方言时，
 用户需要手动引入相关的可选模块和 classifier 为 `http` 的 ClickHouse JDBC 驱动。
 原则上，ShardingSphere 的 GraalVM Native Image 集成不希望使用 classifier 为 `all` 的 `com.clickhouse:clickhouse-jdbc`，
 因为 Uber Jar 会导致采集重复的 GraalVM Reachability Metadata。
@@ -482,7 +443,13 @@ CREATE TABLE IF NOT EXISTS t_order
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 ```
 
+由于 HiveServer2 JDBC Driver 未实现 `java.sql.DatabaseMetaData#getURL()`，
+ShardingSphere 做了模糊处理，因此用户暂时仅可通过 HikariCP 连接 HiveServer2。
+
 HiveServer2 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 Seata AT 模式事务，更多讨论位于 https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions 。
+
+8. 由于 https://github.com/oracle/graal/issues/7979 的影响，
+对应 `com.oracle.database.jdbc:ojdbc8` Maven 模块的 Oracle JDBC Driver 无法在 GraalVM Native Image 下使用。
 
 ## 贡献 GraalVM Reachability Metadata
 
