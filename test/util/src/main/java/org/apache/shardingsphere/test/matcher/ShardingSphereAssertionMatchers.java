@@ -33,7 +33,7 @@ public final class ShardingSphereAssertionMatchers {
     
     /**
      * Deep equal.
-     * 
+     *
      * @param operand operand
      * @param <T> type of operand
      * @return matcher

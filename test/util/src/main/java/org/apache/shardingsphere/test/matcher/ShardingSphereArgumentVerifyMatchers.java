@@ -34,7 +34,7 @@ public final class ShardingSphereArgumentVerifyMatchers {
     
     /**
      * Deep equals.
-     * 
+     *
      * @param obj to be verified object
      * @param <T> type of to be verified object
      * @return null
