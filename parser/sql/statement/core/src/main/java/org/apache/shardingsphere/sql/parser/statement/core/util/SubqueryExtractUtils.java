@@ -21,14 +21,18 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -36,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
@@ -147,9 +152,7 @@ public final class SubqueryExtractUtils {
             extractSubquerySegments(result, subquery.getSelect());
         }
         if (expressionSegment instanceof ListExpression) {
-            for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {
-                extractSubquerySegmentsFromExpression(result, each, subqueryType);
-            }
+            ((ListExpression) expressionSegment).getItems().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
         }
         if (expressionSegment instanceof BinaryOperationExpression) {
             extractSubquerySegmentsFromExpression(result, ((BinaryOperationExpression) expressionSegment).getLeft(), subqueryType);
@@ -169,6 +172,32 @@ public final class SubqueryExtractUtils {
         if (expressionSegment instanceof FunctionSegment) {
             ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
         }
+        if (expressionSegment instanceof MatchAgainstExpression) {
+            extractSubquerySegmentsFromExpression(result, ((MatchAgainstExpression) expressionSegment).getExpr(), subqueryType);
+        }
+        if (expressionSegment instanceof CaseWhenExpression) {
+            extractSubquerySegmentsFromCaseWhenExpression(result, (CaseWhenExpression) expressionSegment, subqueryType);
+        }
+        if (expressionSegment instanceof CollateExpression) {
+            extractSubquerySegmentsFromExpression(result, ((CollateExpression) expressionSegment).getCollateName(), subqueryType);
+        }
+        if (expressionSegment instanceof DatetimeExpression) {
+            extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getLeft(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getRight(), subqueryType);
+        }
+        if (expressionSegment instanceof NotExpression) {
+            extractSubquerySegmentsFromExpression(result, ((NotExpression) expressionSegment).getExpression(), subqueryType);
+        }
+        if (expressionSegment instanceof TypeCastExpression) {
+            extractSubquerySegmentsFromExpression(result, ((TypeCastExpression) expressionSegment).getExpression(), subqueryType);
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromCaseWhenExpression(final List<SubquerySegment> result, final CaseWhenExpression expressionSegment, final SubqueryType subqueryType) {
+        extractSubquerySegmentsFromExpression(result, expressionSegment.getCaseExpr(), subqueryType);
+        expressionSegment.getWhenExprs().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
+        expressionSegment.getThenExprs().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
+        extractSubquerySegmentsFromExpression(result, expressionSegment.getElseExpr(), subqueryType);
     }
     
     private static void extractSubquerySegmentsFromCombine(final List<SubquerySegment> result, final CombineSegment combineSegment) {
