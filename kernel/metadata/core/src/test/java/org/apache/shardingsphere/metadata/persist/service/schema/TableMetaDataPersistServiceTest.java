@@ -71,8 +71,14 @@ class TableMetaDataPersistServiceTest {
     }
     
     @Test
-    void assertDelete() {
-        persistService.delete("foo_db", "foo_schema", "foo_tbl");
+    void assertDropTable() {
+        persistService.drop("foo_db", "foo_schema", "foo_tbl");
+        verify(repository).delete("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
+    }
+    
+    @Test
+    void assertDropTables() {
+        persistService.drop("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class)));
         verify(repository).delete("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
     }
 }

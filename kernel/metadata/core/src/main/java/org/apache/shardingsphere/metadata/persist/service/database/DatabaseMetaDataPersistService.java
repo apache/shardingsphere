@@ -111,7 +111,7 @@ public final class DatabaseMetaDataPersistService {
         }
         Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
         tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
-        GenericSchemaManager.getToBeDroppedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
+        GenericSchemaManager.getToBeDroppedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.drop(databaseName, schemaName, key));
     }
     
     /**
@@ -165,6 +165,6 @@ public final class DatabaseMetaDataPersistService {
      * @param tables to be dropped tables
      */
     public void dropTables(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
-        tables.forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
+        tables.forEach((key, value) -> tableMetaDataPersistService.drop(databaseName, schemaName, key));
     }
 }

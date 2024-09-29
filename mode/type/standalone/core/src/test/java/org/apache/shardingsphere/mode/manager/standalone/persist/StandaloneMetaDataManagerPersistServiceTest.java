@@ -238,7 +238,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertDropTables() {
         metaDataManagerPersistService.dropTables("foo_db", "foo_schema", Collections.singleton("foo_tbl"));
-        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).delete("foo_db", "foo_schema", "foo_tbl");
+        verify(metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService()).drop("foo_db", "foo_schema", "foo_tbl");
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

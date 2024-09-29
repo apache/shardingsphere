@@ -102,13 +102,24 @@ public final class TableMetaDataPersistService {
     }
     
     /**
-     * Delete table.
+     * Drop table.
      *
-     * @param databaseName to be deleted database name
-     * @param schemaName to be deleted schema name
-     * @param tableName to be deleted table name
+     * @param databaseName to be dropped database name
+     * @param schemaName to be dropped schema name
+     * @param tableName to be dropped table name
      */
-    public void delete(final String databaseName, final String schemaName, final String tableName) {
+    public void drop(final String databaseName, final String schemaName, final String tableName) {
         repository.delete(TableMetaDataNode.getTableNode(databaseName, schemaName, tableName.toLowerCase()));
+    }
+    
+    /**
+     * Drop tables.
+     *
+     * @param databaseName to be dropped database name
+     * @param schemaName to be dropped schema name
+     * @param tables to be dropped tables
+     */
+    public void drop(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
+        tables.forEach((key, value) -> drop(databaseName, schemaName, key));
     }
 }
