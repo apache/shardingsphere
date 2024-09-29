@@ -151,8 +151,8 @@ public final class MetaDataPersistService {
     public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Map<String, ShardingSphereSchema> toBeDeletedSchemas = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.persistByAlterConfiguration(databaseName, key, value));
-        toBeDeletedSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
+        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.alterSchemaByRuleAltered(databaseName, value));
+        toBeDeletedSchemas.forEach((key, value) -> databaseMetaDataService.dropTables(databaseName, key, value.getTables()));
     }
     
     /**
@@ -165,7 +165,7 @@ public final class MetaDataPersistService {
     public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.persistByDropConfiguration(databaseName, key, value));
-        toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.delete(databaseName, key, value));
+        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.alterSchemaByRuleDropped(databaseName, key, value));
+        toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.dropTables(databaseName, key, value.getTables()));
     }
 }

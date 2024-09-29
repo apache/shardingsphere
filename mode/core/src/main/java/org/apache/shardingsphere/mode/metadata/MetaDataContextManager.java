@@ -141,7 +141,7 @@ public class MetaDataContextManager {
             dropSchemas(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
             metaDataContexts.set(reloadedMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
-                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().alterSchemaByRefresh(database.getName(), schema));
         } catch (final SQLException ex) {
             log.error("Refresh table meta data: {} failed", database.getName(), ex);
         }

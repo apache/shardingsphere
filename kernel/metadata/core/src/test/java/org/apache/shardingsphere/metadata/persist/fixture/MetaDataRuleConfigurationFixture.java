@@ -18,19 +18,13 @@
 package org.apache.shardingsphere.metadata.persist.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 
-@RepositoryTupleEntity(value = "fixture", leaf = true)
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
+public final class MetaDataRuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
     
-    private String name;
-    
-    @Override
-    public Class<RuleConfigurationFixture> getRuleConfigurationType() {
-        return RuleConfigurationFixture.class;
-    }
+    private final String name;
 }

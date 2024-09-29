@@ -132,7 +132,7 @@ public final class ContextManager implements AutoCloseable {
                 persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().dropSchema(database.getName(), schemaName);
             } else {
                 database.addSchema(schemaName, reloadedSchema);
-                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, reloadedSchema);
+                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().alterSchemaByRefresh(database.getName(), reloadedSchema);
             }
         } catch (final SQLException ex) {
             log.error("Reload meta data of database: {} schema: {} with data source: {} failed", database.getName(), schemaName, dataSourceName, ex);

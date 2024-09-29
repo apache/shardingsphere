@@ -19,34 +19,32 @@ package org.apache.shardingsphere.metadata.persist.fixture;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
-public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
+public final class NoTupleYamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<NoTupleYamlRuleConfigurationFixture, NoTupleRuleConfigurationFixture> {
     
     @Override
-    public Class<RuleConfigurationFixture> getTypeClass() {
-        return RuleConfigurationFixture.class;
-    }
-    
-    @Override
-    public YamlRuleConfigurationFixture swapToYamlConfiguration(final RuleConfigurationFixture data) {
-        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
+    public NoTupleYamlRuleConfigurationFixture swapToYamlConfiguration(final NoTupleRuleConfigurationFixture data) {
+        NoTupleYamlRuleConfigurationFixture result = new NoTupleYamlRuleConfigurationFixture();
         result.setName(data.getName());
         return result;
     }
     
     @Override
-    public RuleConfigurationFixture swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
-        RuleConfigurationFixture result = new RuleConfigurationFixture();
-        result.setName(yamlConfig.getName());
-        return result;
+    public NoTupleRuleConfigurationFixture swapToObject(final NoTupleYamlRuleConfigurationFixture yamlConfig) {
+        return new NoTupleRuleConfigurationFixture(yamlConfig.getName());
     }
     
     @Override
     public String getRuleTagName() {
-        return "FIXTURE";
+        return "NO_TUPLE.FIXTURE";
     }
     
     @Override
     public int getOrder() {
-        return -400;
+        return -401;
+    }
+    
+    @Override
+    public Class<NoTupleRuleConfigurationFixture> getTypeClass() {
+        return NoTupleRuleConfigurationFixture.class;
     }
 }

@@ -54,7 +54,7 @@ public final class DatabaseMetaDataPersistService {
     /**
      * Add database.
      *
-     * @param databaseName database name
+     * @param databaseName to be added database name
      */
     public void addDatabase(final String databaseName) {
         repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
@@ -63,7 +63,7 @@ public final class DatabaseMetaDataPersistService {
     /**
      * Drop database.
      *
-     * @param databaseName database name
+     * @param databaseName to be dropped database name
      */
     public void dropDatabase(final String databaseName) {
         repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
@@ -72,7 +72,7 @@ public final class DatabaseMetaDataPersistService {
     /**
      * Load database names.
      *
-     * @return database names
+     * @return loaded database names
      */
     public Collection<String> loadAllDatabaseNames() {
         return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataNode());
@@ -82,7 +82,7 @@ public final class DatabaseMetaDataPersistService {
      * Add schema.
      *
      * @param databaseName database name
-     * @param schemaName schema name
+     * @param schemaName to be added schema name
      */
     public void addSchema(final String databaseName, final String schemaName) {
         repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName), "");
@@ -92,20 +92,20 @@ public final class DatabaseMetaDataPersistService {
      * Drop schema.
      *
      * @param databaseName database name
-     * @param schemaName schema name
+     * @param schemaName to be dropped schema name
      */
     public void dropSchema(final String databaseName, final String schemaName) {
         repository.delete(DatabaseMetaDataNode.getMetaDataSchemaPath(databaseName, schemaName));
     }
     
     /**
-     * Compare and persist schema.
+     * Alter schema by refresh.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
+     * @param databaseName to be altered database name
+     * @param schema to be altered schema
      */
-    public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+    public void alterSchemaByRefresh(final String databaseName, final ShardingSphereSchema schema) {
+        String schemaName = schema.getName().toLowerCase();
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
         }
@@ -115,14 +115,28 @@ public final class DatabaseMetaDataPersistService {
     }
     
     /**
-     * Delete schema metadata.
+     * Alter schema by rule altered.
+     *
+     * @param databaseName database name
+     * @param schema to be altered schema
+     */
+    public void alterSchemaByRuleAltered(final String databaseName, final ShardingSphereSchema schema) {
+        String schemaName = schema.getName().toLowerCase();
+        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+            addSchema(databaseName, schemaName);
+        }
+        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
+    }
+    
+    /**
+     * Alter schema by rule dropped.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param schema schema meta data
+     * @param schema to be altered schema
      */
-    public void delete(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        schema.getTables().forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
+    public void alterSchemaByRuleDropped(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
     }
     
     /**
@@ -144,27 +158,13 @@ public final class DatabaseMetaDataPersistService {
     }
     
     /**
-     * Persist by alter configuration.
+     * Drop tables.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
+     * @param databaseName to be dropped database name
+     * @param schemaName to be dropped schema name
+     * @param tables to be dropped tables
      */
-    public void persistByAlterConfiguration(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
-            addSchema(databaseName, schemaName);
-        }
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
-    }
-    
-    /**
-     * Persist by drop configuration.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
-     */
-    public void persistByDropConfiguration(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
+    public void dropTables(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
+        tables.forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
 }
