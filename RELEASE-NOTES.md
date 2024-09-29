@@ -1,3 +1,21 @@
+## Release 5.5.1-SNAPSHOT
+
+### API Change
+
+### New Feature
+
+### Enhancement
+
+1. SQL Parser: Support PostgreSQL, openGauss function table and update from segment parse - #32994
+
+### Bug Fix
+
+1. Sharding: Fix alter view exception when config sharding rule and binding table rule - #32696
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/29)
+
 ## Release 5.5.0
 
 ### API Change
