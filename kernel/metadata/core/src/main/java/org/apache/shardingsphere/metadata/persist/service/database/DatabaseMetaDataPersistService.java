@@ -156,15 +156,4 @@ public final class DatabaseMetaDataPersistService {
     private Collection<String> loadAllSchemaNames(final String databaseName) {
         return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName));
     }
-    
-    /**
-     * Drop tables.
-     *
-     * @param databaseName to be dropped database name
-     * @param schemaName to be dropped schema name
-     * @param tables to be dropped tables
-     */
-    public void dropTables(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
-        tables.forEach((key, value) -> tableMetaDataPersistService.drop(databaseName, schemaName, key));
-    }
 }

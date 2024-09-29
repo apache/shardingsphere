@@ -37,16 +37,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingSphereTableRowDataPersistServiceTest {
+class TableRowDataPersistServiceTest {
     
-    private ShardingSphereTableRowDataPersistService persistService;
+    private TableRowDataPersistService persistService;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        persistService = new ShardingSphereTableRowDataPersistService(repository);
+        persistService = new TableRowDataPersistService(repository);
     }
     
     @Test

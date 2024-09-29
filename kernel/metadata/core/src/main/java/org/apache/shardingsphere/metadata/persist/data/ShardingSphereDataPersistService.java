@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
-import org.apache.shardingsphere.metadata.persist.service.schema.ShardingSphereTableRowDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.schema.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.ArrayList;
@@ -41,11 +41,11 @@ public final class ShardingSphereDataPersistService {
     
     private final PersistRepository repository;
     
-    private final ShardingSphereTableRowDataPersistService tableRowDataPersistService;
+    private final TableRowDataPersistService tableRowDataPersistService;
     
     public ShardingSphereDataPersistService(final PersistRepository repository) {
         this.repository = repository;
-        tableRowDataPersistService = new ShardingSphereTableRowDataPersistService(repository);
+        tableRowDataPersistService = new TableRowDataPersistService(repository);
     }
     
     /**
