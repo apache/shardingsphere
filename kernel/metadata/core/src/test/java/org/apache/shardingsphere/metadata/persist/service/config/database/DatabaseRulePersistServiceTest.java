@@ -62,7 +62,7 @@ class DatabaseRulePersistServiceTest {
     
     @Test
     void assertPersistWithoutActiveVersion() {
-        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new RuleConfigurationFixture()));
+        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new RuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
         assertNull(actual.iterator().next().getCurrentActiveVersion());
@@ -73,7 +73,7 @@ class DatabaseRulePersistServiceTest {
     void assertPersistWithActiveVersion() {
         when(repository.query("/metadata/foo_db/rules/fixture/fixture/active_version")).thenReturn("10");
         when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/fixture/versions")).thenReturn(Collections.singletonList("10"));
-        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new RuleConfigurationFixture()));
+        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new RuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
         assertThat(actual.iterator().next().getCurrentActiveVersion(), is("10"));
@@ -88,7 +88,7 @@ class DatabaseRulePersistServiceTest {
     
     @Test
     void assertDeleteWithRuleConfigurations() {
-        Collection<MetaDataVersion> actual = persistService.delete("foo_db", Collections.singleton(new RuleConfigurationFixture()));
+        Collection<MetaDataVersion> actual = persistService.delete("foo_db", Collections.singleton(new RuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
         assertThat(actual.iterator().next().getCurrentActiveVersion(), is(""));

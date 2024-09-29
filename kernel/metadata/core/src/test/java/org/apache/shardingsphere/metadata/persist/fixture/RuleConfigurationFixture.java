@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.metadata.persist.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class RuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
     
-    private String name;
+    private final String name;
 }
