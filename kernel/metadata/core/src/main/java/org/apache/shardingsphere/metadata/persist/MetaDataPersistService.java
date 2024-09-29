@@ -50,7 +50,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * New meta data persist service.
+ * Meta data persist service.
  */
 @Getter
 public final class MetaDataPersistService {
