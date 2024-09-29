@@ -81,14 +81,14 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     @Override
     public void createDatabase(final String databaseName) {
         metaDataContextManager.getSchemaMetaDataManager().addDatabase(databaseName);
-        metaDataPersistService.getDatabaseMetaDataService().addDatabase(databaseName);
+        metaDataPersistService.getDatabaseMetaDataService().add(databaseName);
         clearServiceCache();
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
         metaDataContextManager.getSchemaMetaDataManager().dropDatabase(databaseName);
-        metaDataPersistService.getDatabaseMetaDataService().dropDatabase(databaseName);
+        metaDataPersistService.getDatabaseMetaDataService().drop(databaseName);
         clearServiceCache();
     }
     
@@ -99,7 +99,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         database.addSchema(schemaName, schema);
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        metaDataPersistService.getDatabaseMetaDataService().addSchema(databaseName, schemaName);
+        metaDataPersistService.getDatabaseMetaDataService().getSchemaMetaDataPersistService().add(databaseName, schemaName);
     }
     
     @Override
@@ -114,11 +114,11 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         String databaseName = alterSchemaPOJO.getDatabaseName();
         String alteredSchemaName = alterSchemaPOJO.getRenameSchemaName();
         if (alteredSchema.isEmpty()) {
-            databaseMetaDataService.addSchema(databaseName, alteredSchemaName);
+            databaseMetaDataService.getSchemaMetaDataPersistService().add(databaseName, alteredSchemaName);
         }
         databaseMetaDataService.getTableMetaDataPersistService().persist(databaseName, alteredSchemaName, alteredSchema.getTables());
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, alteredSchemaName, alteredSchema.getViews());
-        databaseMetaDataService.dropSchema(databaseName, alterSchemaPOJO.getSchemaName());
+        databaseMetaDataService.getSchemaMetaDataPersistService().drop(databaseName, alterSchemaPOJO.getSchemaName());
     }
     
     private void putSchemaMetaData(final ShardingSphereDatabase database, final String schemaName, final String renameSchemaName, final String logicDataSourceName) {
@@ -238,7 +238,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getSchemas()
                 .forEach((schemaName, schema) -> {
                     if (schema.isEmpty()) {
-                        metaDataPersistService.getDatabaseMetaDataService().addSchema(databaseName, schemaName);
+                        metaDataPersistService.getDatabaseMetaDataService().getSchemaMetaDataPersistService().add(databaseName, schemaName);
                     }
                     metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().persist(databaseName, schemaName, schema.getTables());
                 });

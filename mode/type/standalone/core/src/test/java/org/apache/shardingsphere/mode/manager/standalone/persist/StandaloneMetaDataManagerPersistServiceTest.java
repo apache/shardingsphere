@@ -85,20 +85,20 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertCreateDatabase() {
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataContextManager.getSchemaMetaDataManager()).addDatabase("foo_db");
-        verify(metaDataPersistService.getDatabaseMetaDataService()).addDatabase("foo_db");
+        verify(metaDataPersistService.getDatabaseMetaDataService()).add("foo_db");
     }
     
     @Test
     void assertDropDatabase() {
         metaDataManagerPersistService.dropDatabase("foo_db");
         verify(metaDataContextManager.getSchemaMetaDataManager()).dropDatabase("foo_db");
-        verify(metaDataPersistService.getDatabaseMetaDataService()).dropDatabase("foo_db");
+        verify(metaDataPersistService.getDatabaseMetaDataService()).drop("foo_db");
     }
     
     @Test
     void assertCreateSchema() {
         metaDataManagerPersistService.createSchema("foo_db", "foo_schema");
-        verify(metaDataPersistService.getDatabaseMetaDataService()).addSchema("foo_db", "foo_schema");
+        verify(metaDataPersistService.getDatabaseMetaDataService().getSchemaMetaDataPersistService()).add("foo_db", "foo_schema");
     }
     
     @Test
@@ -110,10 +110,10 @@ class StandaloneMetaDataManagerPersistServiceTest {
         DatabaseMetaDataPersistService databaseMetaDataService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataService);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
-        verify(databaseMetaDataService, times(0)).addSchema("foo_db", "bar_schema");
+        verify(databaseMetaDataService.getSchemaMetaDataPersistService(), times(0)).add("foo_db", "bar_schema");
         verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
         verify(databaseMetaDataService.getViewMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
-        verify(databaseMetaDataService).dropSchema("foo_db", "foo_schema");
+        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).drop("foo_db", "foo_schema");
     }
     
     @Test
@@ -129,10 +129,10 @@ class StandaloneMetaDataManagerPersistServiceTest {
         DatabaseMetaDataPersistService databaseMetaDataService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataService);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
-        verify(databaseMetaDataService).addSchema("foo_db", "bar_schema");
+        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).add("foo_db", "bar_schema");
         verify(databaseMetaDataService.getTableMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
         verify(databaseMetaDataService.getViewMetaDataPersistService()).persist("foo_db", "bar_schema", new HashMap<>());
-        verify(databaseMetaDataService).dropSchema("foo_db", "foo_schema");
+        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).drop("foo_db", "foo_schema");
     }
     
     @Test

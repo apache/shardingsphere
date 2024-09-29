@@ -106,7 +106,7 @@ class MetaDataPersistServiceTest {
     @Test
     void assertPersistConfigurationsWithEmptyDatabase() {
         metaDataPersistService.persistConfigurations("foo_db", mock(DatabaseConfiguration.class), Collections.emptyMap(), Collections.emptyList());
-        verify(databaseMetaDataService).addDatabase("foo_db");
+        verify(databaseMetaDataService).add("foo_db");
     }
     
     @Test
@@ -150,7 +150,7 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeDroppedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_deleted", toBeDeletedSchema));
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_added", toBeAddedSchema));
         metaDataPersistService.persistReloadDatabaseByAlter("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(databaseMetaDataService).alterSchemaByRuleAltered("foo_db", toBeAddedSchema);
+        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).alterByRuleAltered("foo_db", toBeAddedSchema);
         verify(databaseMetaDataService.getTableMetaDataPersistService()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
     }
     
@@ -161,7 +161,7 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeDroppedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_deleted", toBeDeletedSchema));
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_altered", toBeAlterSchema));
         metaDataPersistService.persistReloadDatabaseByDrop("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(databaseMetaDataService).alterSchemaByRuleDropped("foo_db", "to_be_altered", toBeAlterSchema);
+        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).alterByRuleDropped("foo_db", "to_be_altered", toBeAlterSchema);
         verify(databaseMetaDataService.getTableMetaDataPersistService()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
     }
 }

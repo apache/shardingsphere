@@ -107,7 +107,7 @@ public final class MetaDataPersistService {
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfig, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
         Map<String, DataSourcePoolProperties> propsMap = getDataSourcePoolPropertiesMap(databaseConfig);
         if (propsMap.isEmpty() && databaseConfig.getRuleConfigurations().isEmpty()) {
-            databaseMetaDataService.addDatabase(databaseName);
+            databaseMetaDataService.add(databaseName);
         } else {
             dataSourceUnitService.persist(databaseName, propsMap);
             databaseRulePersistService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
@@ -151,7 +151,7 @@ public final class MetaDataPersistService {
     public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Map<String, ShardingSphereSchema> toBeDeletedSchemas = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.alterSchemaByRuleAltered(databaseName, value));
+        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.getSchemaMetaDataPersistService().alterByRuleAltered(databaseName, value));
         toBeDeletedSchemas.forEach((key, value) -> databaseMetaDataService.getTableMetaDataPersistService().drop(databaseName, key, value.getTables()));
     }
     
@@ -165,7 +165,7 @@ public final class MetaDataPersistService {
     public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Map<String, ShardingSphereSchema> toBeAlterSchemas = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.alterSchemaByRuleDropped(databaseName, key, value));
+        toBeAddedSchemas.forEach((key, value) -> databaseMetaDataService.getSchemaMetaDataPersistService().alterByRuleDropped(databaseName, key, value));
         toBeAlterSchemas.forEach((key, value) -> databaseMetaDataService.getTableMetaDataPersistService().drop(databaseName, key, value.getTables()));
     }
 }
