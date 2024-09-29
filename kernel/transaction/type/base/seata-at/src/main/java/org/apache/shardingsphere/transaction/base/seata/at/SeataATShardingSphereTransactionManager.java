@@ -120,7 +120,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
         try {
             globalTransaction.commit();
         } finally {
-            if (!GlobalTransactionRole.Participant.equals(globalTransaction.getGlobalTransactionRole())) {
+            if (GlobalTransactionRole.Participant != globalTransaction.getGlobalTransactionRole()) {
                 SeataTransactionHolder.clear();
                 RootContext.unbind();
                 SeataXIDContext.remove();
