@@ -90,7 +90,7 @@ public abstract class YamlRuleConfigurationIT {
     }
     
     // TODO should remove the method when yaml rule swapper fixed by map's key
-    protected boolean assertYamlConfiguration(@SuppressWarnings("unused") final YamlRuleConfiguration actual) {
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
         return false;
     }
 }
