@@ -33,7 +33,7 @@ import org.apache.shardingsphere.metadata.persist.service.config.database.DataSo
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -67,7 +67,7 @@ class MetaDataPersistServiceTest {
     private DataSourceUnitPersistService dataSourceUnitService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DatabaseMetaDataPersistService databaseMetaDataService;
+    private DatabaseMetaDataPersistFacade databaseMetaDataFacade;
     
     @Mock
     private DatabaseRulePersistService databaseRulePersistService;
@@ -84,7 +84,7 @@ class MetaDataPersistServiceTest {
     void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
         setField("dataSourceUnitService", dataSourceUnitService);
-        setField("databaseMetaDataService", databaseMetaDataService);
+        setField("databaseMetaDataFacade", databaseMetaDataFacade);
         setField("databaseRulePersistService", databaseRulePersistService);
         setField("globalRuleService", globalRuleService);
         setField("propsService", propsService);
@@ -106,7 +106,7 @@ class MetaDataPersistServiceTest {
     @Test
     void assertPersistConfigurationsWithEmptyDatabase() {
         metaDataPersistService.persistConfigurations("foo_db", mock(DatabaseConfiguration.class), Collections.emptyMap(), Collections.emptyList());
-        verify(databaseMetaDataService).add("foo_db");
+        verify(databaseMetaDataFacade.getDatabase()).add("foo_db");
     }
     
     @Test
@@ -150,8 +150,8 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeDroppedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_deleted", toBeDeletedSchema));
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_added", toBeAddedSchema));
         metaDataPersistService.persistReloadDatabaseByAlter("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).alterByRuleAltered("foo_db", toBeAddedSchema);
-        verify(databaseMetaDataService.getTableMetaDataPersistService()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
+        verify(databaseMetaDataFacade.getSchema()).alterByRuleAltered("foo_db", toBeAddedSchema);
+        verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
     }
     
     @Test
@@ -161,7 +161,7 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeDroppedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_deleted", toBeDeletedSchema));
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_altered", toBeAlterSchema));
         metaDataPersistService.persistReloadDatabaseByDrop("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(databaseMetaDataService.getSchemaMetaDataPersistService()).alterByRuleDropped("foo_db", "to_be_altered", toBeAlterSchema);
-        verify(databaseMetaDataService.getTableMetaDataPersistService()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
+        verify(databaseMetaDataFacade.getSchema()).alterByRuleDropped("foo_db", "to_be_altered", toBeAlterSchema);
+        verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
     }
 }

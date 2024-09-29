@@ -97,7 +97,7 @@ public class MetaDataContextManager {
      */
     public void dropSchemas(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         GenericSchemaManager.getToBeDroppedSchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas())
-                .keySet().forEach(each -> metaDataPersistService.getDatabaseMetaDataService().getSchemaMetaDataPersistService().drop(databaseName, each));
+                .keySet().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
     }
     
     /**
@@ -121,9 +121,9 @@ public class MetaDataContextManager {
             metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
                     .forEach((schemaName, schema) -> {
                         if (schema.isEmpty()) {
-                            metaDataPersistService.getDatabaseMetaDataService().getSchemaMetaDataPersistService().add(database.getName(), schemaName);
+                            metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(database.getName(), schemaName);
                         }
-                        metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().persist(database.getName(), schemaName, schema.getTables());
+                        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, schema.getTables());
                     });
         } catch (final SQLException ex) {
             log.error("Refresh database meta data: {} failed", database.getName(), ex);
@@ -141,7 +141,7 @@ public class MetaDataContextManager {
             dropSchemas(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
             metaDataContexts.set(reloadedMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
-                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().getSchemaMetaDataPersistService().alterByRefresh(database.getName(), schema));
+                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), schema));
         } catch (final SQLException ex) {
             log.error("Refresh table meta data: {} failed", database.getName(), ex);
         }

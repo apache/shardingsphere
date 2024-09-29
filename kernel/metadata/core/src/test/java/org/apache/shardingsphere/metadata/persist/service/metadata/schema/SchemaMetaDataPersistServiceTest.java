@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.schema;
+package org.apache.shardingsphere.metadata.persist.service.metadata.schema;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.metadata.persist.service.table.TableMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.table.ViewMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.metadata.table.TableMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.metadata.table.ViewMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;

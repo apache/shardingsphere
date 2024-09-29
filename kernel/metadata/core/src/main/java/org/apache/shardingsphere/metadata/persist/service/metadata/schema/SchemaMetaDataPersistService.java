@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service.schema;
+package org.apache.shardingsphere.metadata.persist.service.metadata.schema;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.metadata.persist.service.table.TableMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.table.ViewMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.metadata.table.TableMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.metadata.table.ViewMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
@@ -34,11 +32,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Schema meta data registry service.
+ * Schema meta data persist service.
  */
 public final class SchemaMetaDataPersistService {
     
-    @Getter(AccessLevel.NONE)
     private final PersistRepository repository;
     
     private final TableMetaDataPersistService tableMetaDataPersistService;
