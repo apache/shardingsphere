@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -75,13 +74,7 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
     }
     
     private Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabasesMappings) {
-        Collection<String> result = new HashSet<>();
-        for (Entry<ShardingSphereUser, Collection<String>> entry : userDatabasesMappings.entrySet()) {
-            if (entry.getKey().getGrantee().accept(user.getGrantee())) {
-                result.addAll(entry.getValue());
-            }
-        }
-        return result;
+        return userDatabasesMappings.entrySet().stream().filter(entry -> entry.getKey().getGrantee().accept(user.getGrantee())).flatMap(entry -> entry.getValue().stream()).collect(Collectors.toSet());
     }
     
     @Override
