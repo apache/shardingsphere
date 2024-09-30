@@ -31,9 +31,6 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
     
     @Override
     public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
-        if (null == data) {
-            return null;
-        }
         YamlUserConfiguration result = new YamlUserConfiguration();
         result.setUser(data.getGrantee().toString());
         result.setPassword(data.getPassword());
@@ -44,9 +41,6 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
     
     @Override
     public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
-        if (null == yamlConfig) {
-            return null;
-        }
         Grantee grantee = convertYamlUserToGrantee(yamlConfig.getUser());
         return new ShardingSphereUser(grantee.getUsername(), yamlConfig.getPassword(), grantee.getHostname(), yamlConfig.getAuthenticationMethodName(), yamlConfig.isAdmin());
     }
