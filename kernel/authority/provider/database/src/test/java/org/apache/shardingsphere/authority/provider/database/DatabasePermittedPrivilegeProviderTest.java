@@ -36,6 +36,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -58,5 +59,11 @@ class DatabasePermittedPrivilegeProviderTest {
         assertTrue(actual.get(new Grantee("user1", "%")).hasPrivileges("bar_db"));
         assertFalse(actual.get(new Grantee("user1", "%")).hasPrivileges("sys_db"));
         assertFalse(actual.get(new Grantee("user3", "%")).hasPrivileges("sys_db"));
+    }
+    
+    @Test
+    void assertBuildFailed() {
+        Properties props = PropertiesBuilder.build(new Property("user-database-mappings", "invalid"));
+        assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(PrivilegeProvider.class, "SCHEMA_PRIVILEGES_PERMITTED", props));
     }
 }
