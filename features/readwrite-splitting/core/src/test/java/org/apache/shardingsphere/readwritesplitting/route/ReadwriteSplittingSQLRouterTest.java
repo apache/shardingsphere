@@ -99,7 +99,6 @@ class ReadwriteSplittingSQLRouterTest {
     
     @Test
     void assertDecorateRouteContextToReplicaDataSource() {
-        RouteContext actual = mockRouteContext();
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
@@ -109,6 +108,7 @@ class ReadwriteSplittingSQLRouterTest {
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(staticRule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+        RouteContext actual = mockRouteContext();
         sqlRouter.decorateRouteContext(actual, queryContext, database, staticRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NONE_READWRITE_SPLITTING_DATASOURCE_NAME));
