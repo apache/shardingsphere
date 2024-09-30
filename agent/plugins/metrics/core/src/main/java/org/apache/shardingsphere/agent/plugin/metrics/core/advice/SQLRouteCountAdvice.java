@@ -41,7 +41,7 @@ public final class SQLRouteCountAdvice extends AbstractInstanceMethodAdvice {
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
-        QueryContext queryContext = (QueryContext) args[1];
+        QueryContext queryContext = (QueryContext) args[0];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         getSQLType(sqlStatement).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc(optional));
     }
