@@ -27,8 +27,10 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Authority rule.
@@ -38,11 +40,16 @@ public final class AuthorityRule implements GlobalRule {
     @Getter
     private final AuthorityRuleConfiguration configuration;
     
+    @Getter
+    private final Collection<ShardingSphereUser> users;
+    
     private final Map<Grantee, ShardingSpherePrivileges> privileges;
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        privileges = TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps()).build(ruleConfig);
+        users = ruleConfig.getUsers().stream()
+                .map(each -> new ShardingSphereUser(each.getUsername(), each.getPassword(), each.getHostname(), each.getAuthenticationMethodName(), each.isAdmin())).collect(Collectors.toList());
+        privileges = TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps()).build(ruleConfig, users);
     }
     
     /**
@@ -69,7 +76,7 @@ public final class AuthorityRule implements GlobalRule {
      */
     @HighFrequencyInvocation
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return configuration.getUsers().stream().filter(each -> each.getGrantee().accept(grantee)).findFirst();
+        return users.stream().filter(each -> each.getGrantee().accept(grantee)).findFirst();
     }
     
     /**

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.authority.provider.database;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -29,9 +30,11 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,12 +49,15 @@ class DatabasePermittedPrivilegeProviderTest {
     void assertBuild() {
         Properties props = PropertiesBuilder.build(new Property("user-database-mappings", "root@localhost=*, user1@127.0.0.1=sys_db, user1@=foo_db, user1@=bar_db, user2@=*"));
         PrivilegeProvider provider = TypedSPILoader.getService(PrivilegeProvider.class, "DATABASE_PERMITTED", props);
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Arrays.asList(
-                new ShardingSphereUser("root", "", "localhost"),
-                new ShardingSphereUser("user1", "", "127.0.0.1"),
-                new ShardingSphereUser("user1", "", "%"),
-                new ShardingSphereUser("user3", "", "%")), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
-        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig);
+        Collection<UserConfiguration> userConfigs = Arrays.asList(
+                new UserConfiguration("root", "", "localhost", null, false),
+                new UserConfiguration("user1", "", "127.0.0.1", null, false),
+                new UserConfiguration("user1", "", "%", null, false),
+                new UserConfiguration("user3", "", "%", null, false));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(userConfigs, mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
+        Collection<ShardingSphereUser> users = userConfigs.stream()
+                .map(each -> new ShardingSphereUser(each.getUsername(), each.getPassword(), each.getHostname(), each.getAuthenticationMethodName(), each.isAdmin())).collect(Collectors.toList());
+        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig, users);
         assertThat(actual.size(), is(4));
         assertTrue(actual.get(new Grantee("root", "localhost")).hasPrivileges("sys_db"));
         assertTrue(actual.get(new Grantee("user1", "127.0.0.1")).hasPrivileges("sys_db"));
