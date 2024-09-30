@@ -2,6 +2,8 @@
 
 ### API Change
 
+1. Authority: Use UserConfiguration instead of ShardingSphereUser in AuthorityConfiguration for decouple API and implementation - [#33073](https://github.com/apache/shardingsphere/pull/33073)
+
 ### New Feature
 
 ### Enhancement
