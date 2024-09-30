@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.authority.yaml.swapper;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -41,17 +39,7 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
     
     @Override
     public UserConfiguration swapToObject(final YamlUserConfiguration yamlConfig) {
-        Grantee grantee = convertYamlUserToGrantee(yamlConfig.getUser());
+        Grantee grantee = new Grantee(yamlConfig.getUser());
         return new UserConfiguration(grantee.getUsername(), yamlConfig.getPassword(), grantee.getHostname(), yamlConfig.getAuthenticationMethodName(), yamlConfig.isAdmin());
-    }
-    
-    private Grantee convertYamlUserToGrantee(final String yamlUser) {
-        if (!yamlUser.contains("@")) {
-            return new Grantee(yamlUser, "");
-        }
-        String username = yamlUser.substring(0, yamlUser.indexOf('@'));
-        String hostname = yamlUser.substring(yamlUser.indexOf('@') + 1);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(username), "user configuration `%s` is invalid, the legal format is `username@hostname`", yamlUser);
-        return new Grantee(username, hostname);
     }
 }

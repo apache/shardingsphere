@@ -198,7 +198,7 @@ class ShowDatabasesExecutorTest {
     private AuthorityRule mockAuthorityRule() {
         AuthorityRule result = mock(AuthorityRule.class);
         ShardingSpherePrivileges privileges = mockPrivileges();
-        when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(privileges));
+        when(result.findPrivileges(new Grantee("root"))).thenReturn(Optional.of(privileges));
         return result;
     }
     
@@ -221,7 +221,7 @@ class ShowDatabasesExecutorTest {
     
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-        when(result.getConnectionContext().getGrantee()).thenReturn(new Grantee("root", ""));
+        when(result.getConnectionContext().getGrantee()).thenReturn(new Grantee("root"));
         return result;
     }
 }
