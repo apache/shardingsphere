@@ -19,14 +19,11 @@ package org.apache.shardingsphere.shadow.route.engine.determiner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.hint.PreciseHintShadowValue;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Hint shadow algorithm determiner.
@@ -40,22 +37,17 @@ public final class HintShadowAlgorithmDeterminer {
      * @param shadowAlgorithm hint shadow algorithm
      * @param shadowCondition shadow determine condition
      * @param shadowRule shadow rule
+     * @param useShadow use shadow or not
      * @return is shadow or not
      */
-    public static boolean isShadow(final HintShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
-        Collection<PreciseHintShadowValue<Comparable<?>>> noteShadowValues = createNoteShadowValues(shadowCondition);
-        for (PreciseHintShadowValue<Comparable<?>> each : noteShadowValues) {
-            if (shadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), each)) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean isShadow(final HintShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule, final boolean useShadow) {
+        PreciseHintShadowValue<Comparable<?>> shadowValue = createNoteShadowValues(shadowCondition, useShadow);
+        return shadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), shadowValue);
     }
     
-    private static Collection<PreciseHintShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition) {
+    private static PreciseHintShadowValue<Comparable<?>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition, final boolean useShadow) {
         ShadowOperationType shadowOperationType = shadowDetermineCondition.getShadowOperationType();
         String tableName = shadowDetermineCondition.getTableName();
-        return shadowDetermineCondition.getSqlComments().stream()
-                .<PreciseHintShadowValue<Comparable<?>>>map(each -> new PreciseHintShadowValue<>(tableName, shadowOperationType, each)).collect(Collectors.toList());
+        return new PreciseHintShadowValue<>(tableName, shadowOperationType, useShadow);
     }
 }
