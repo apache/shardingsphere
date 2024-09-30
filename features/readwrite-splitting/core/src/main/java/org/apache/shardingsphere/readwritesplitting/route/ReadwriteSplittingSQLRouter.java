@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -40,14 +39,15 @@ public final class ReadwriteSplittingSQLRouter implements DecorateSQLRouter<Read
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final ReadwriteSplittingRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                     final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String logicDataSourceName = each.getDataSourceMapper().getActualName();
             rule.findDataSourceGroupRule(logicDataSourceName).ifPresent(optional -> {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(optional, connectionContext).route(queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
+                String actualDataSourceName =
+                        new ReadwriteSplittingDataSourceRouter(optional, queryContext.getConnectionContext()).route(queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
                 toBeAdded.add(new RouteUnit(new RouteMapper(logicDataSourceName, actualDataSourceName), each.getTableMappers()));
             });
         }

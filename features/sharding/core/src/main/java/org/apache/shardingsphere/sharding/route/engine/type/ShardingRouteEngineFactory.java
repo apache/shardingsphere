@@ -82,11 +82,10 @@ public final class ShardingRouteEngineFactory {
      * @param queryContext query context
      * @param shardingConditions shardingConditions
      * @param props ShardingSphere properties
-     * @param connectionContext connection context
      * @return created instance
      */
     public static ShardingRouteEngine newInstance(final ShardingRule shardingRule, final ShardingSphereDatabase database, final QueryContext queryContext,
-                                                  final ShardingConditions shardingConditions, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                                  final ShardingConditions shardingConditions, final ConfigurationProperties props) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {
@@ -99,12 +98,12 @@ public final class ShardingRouteEngineFactory {
             return getDDLRoutingEngine(shardingRule, database, sqlStatementContext);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALRoutingEngine(shardingRule, database, sqlStatementContext, connectionContext);
+            return getDALRoutingEngine(shardingRule, database, sqlStatementContext, queryContext.getConnectionContext());
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLRoutingEngine(shardingRule, database, sqlStatementContext);
         }
-        return getDQLRoutingEngine(shardingRule, database, sqlStatementContext, queryContext.getHintValueContext(), shardingConditions, props, connectionContext);
+        return getDQLRoutingEngine(shardingRule, database, sqlStatementContext, queryContext.getHintValueContext(), shardingConditions, props, queryContext.getConnectionContext());
     }
     
     private static ShardingRouteEngine getDDLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
