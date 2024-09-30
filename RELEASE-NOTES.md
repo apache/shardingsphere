@@ -11,6 +11,7 @@
 ### Bug Fix
 
 1. Sharding: Fix alter view exception when config sharding rule and binding table rule - [#32696](https://github.com/apache/shardingsphere/issues/32696)
+2. Shadow: Use hintValueContext to replace extract sql hint from sql statement for solving shadow sql hint bug - [#33063](https://github.com/apache/shardingsphere/pull/33063)
 
 ### Change Log
 
