@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.authority.distsql.handler.query;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,9 +58,9 @@ class ShowAuthorityRuleExecutorTest {
     }
     
     private AuthorityRuleConfiguration createRuleConfiguration() {
-        ShardingSphereUser user = new ShardingSphereUser("root", "", "localhost");
+        UserConfiguration userConfig = new UserConfiguration("root", "", "localhost", null, false);
         AlgorithmConfiguration privilegeProvider = new AlgorithmConfiguration("ALL_PERMITTED", new Properties());
-        return new AuthorityRuleConfiguration(Collections.singleton(user), privilegeProvider, Collections.emptyMap(), null);
+        return new AuthorityRuleConfiguration(Collections.singleton(userConfig), privilegeProvider, Collections.emptyMap(), null);
     }
     
     @Test
