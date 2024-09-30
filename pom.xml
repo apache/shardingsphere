@@ -137,10 +137,10 @@
         <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
         <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
         
-        <junit.version>5.10.3</junit.version>
-        <hamcrest.version>2.2</hamcrest.version>
+        <junit.version>5.11.1</junit.version>
+        <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
-        <awaitility.version>4.2.0</awaitility.version>
+        <awaitility.version>4.2.2</awaitility.version>
         <testcontainers.version>1.20.1</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
@@ -151,7 +151,7 @@
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
-        <native-maven-plugin.version>0.10.2</native-maven-plugin.version>
+        <native-maven-plugin.version>0.10.3</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
