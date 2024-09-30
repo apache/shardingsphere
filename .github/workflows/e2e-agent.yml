@@ -63,7 +63,7 @@ jobs:
   build-e2e-image:
     name: Build E2E Image
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -103,7 +103,7 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - Agent with MySQL
     needs: [ global-environment, build-e2e-image ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 15
     strategy:
       max-parallel: 20
