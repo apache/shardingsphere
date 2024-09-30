@@ -75,6 +75,7 @@ class AuthorityRuleTest {
     private AuthorityRule createAuthorityRule(final String defaultAuthenticator) {
         Collection<ShardingSphereUser> users = Arrays.asList(new ShardingSphereUser("root", "root", "localhost"), new ShardingSphereUser("admin", "123456", "localhost"));
         AlgorithmConfiguration privilegeProvider = new AlgorithmConfiguration("FIXTURE", new Properties());
-        return new AuthorityRule(new AuthorityRuleConfiguration(users, privilegeProvider, Collections.singletonMap("foo", new AlgorithmConfiguration("FOO_AUTHENTICATION", new Properties())), defaultAuthenticator));
+        return new AuthorityRule(new AuthorityRuleConfiguration(
+                users, privilegeProvider, Collections.singletonMap("foo", new AlgorithmConfiguration("FOO_AUTHENTICATION", new Properties())), defaultAuthenticator));
     }
 }
