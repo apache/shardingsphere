@@ -42,6 +42,6 @@ class SQLHintShadowAlgorithmTest {
     @Test
     void assertIsShadow() {
         assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), new PreciseHintShadowValue<>("t_auto", ShadowOperationType.INSERT, true)));
-        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), new PreciseHintShadowValue<>("t_user", ShadowOperationType.HINT_MATCH, false)));
+        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), new PreciseHintShadowValue<>("t_user", ShadowOperationType.HINT_MATCH, true)));
     }
 }
