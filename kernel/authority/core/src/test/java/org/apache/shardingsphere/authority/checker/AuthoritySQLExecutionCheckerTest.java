@@ -18,22 +18,25 @@
 package org.apache.shardingsphere.authority.checker;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.junit.jupiter.api.Test;
 
-/**
- * Authority SQL execution checker.
- */
-public final class AuthoritySQLExecutionChecker implements SQLExecutionChecker {
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class AuthoritySQLExecutionCheckerTest {
     
-    @Override
-    public void check(final ShardingSphereMetaData metaData, final Grantee grantee, final QueryContext queryContext, final ShardingSphereDatabase database) {
-        AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, grantee).isAuthorized(database.getName()), () -> new UnknownDatabaseException(database.getName()));
+    @Test
+    void assertCheck() {
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
+        assertDoesNotThrow(() -> new AuthoritySQLExecutionChecker().check(metaData, null, mock(QueryContext.class), mock(ShardingSphereDatabase.class)));
     }
 }
