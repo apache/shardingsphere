@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.route.engine.dml;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
@@ -35,8 +36,8 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     
     private final InsertStatementContext sqlStatementContext;
     
-    public ShadowInsertStatementRoutingEngine(final InsertStatementContext sqlStatementContext) {
-        super(sqlStatementContext, ShadowOperationType.INSERT);
+    public ShadowInsertStatementRoutingEngine(final InsertStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
+        super(sqlStatementContext, hintValueContext, ShadowOperationType.INSERT);
         this.sqlStatementContext = sqlStatementContext;
     }
     

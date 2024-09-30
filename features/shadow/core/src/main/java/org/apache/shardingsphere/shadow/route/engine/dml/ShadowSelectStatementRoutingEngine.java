@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
@@ -43,8 +44,8 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
     
     private final List<Object> parameters;
     
-    public ShadowSelectStatementRoutingEngine(final SelectStatementContext sqlStatementContext, final List<Object> parameters) {
-        super(sqlStatementContext, ShadowOperationType.SELECT);
+    public ShadowSelectStatementRoutingEngine(final SelectStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
+        super(sqlStatementContext, hintValueContext, ShadowOperationType.SELECT);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
