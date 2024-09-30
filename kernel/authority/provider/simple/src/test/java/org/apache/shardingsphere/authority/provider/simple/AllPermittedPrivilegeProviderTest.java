@@ -54,7 +54,7 @@ class AllPermittedPrivilegeProviderTest {
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) throws Exception {
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.of("withType", TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PERMITTED")),
                     Arguments.of("withAlias", TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PRIVILEGES_PERMITTED")),
                     Arguments.of("withDefault", TypedSPILoader.getService(PrivilegeProvider.class, null)));
