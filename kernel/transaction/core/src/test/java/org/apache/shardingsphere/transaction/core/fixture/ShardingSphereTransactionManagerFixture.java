@@ -70,6 +70,11 @@ public final class ShardingSphereTransactionManagerFixture implements ShardingSp
     }
     
     @Override
+    public boolean containsProviderType(final String providerType) {
+        return true;
+    }
+    
+    @Override
     public void close() {
     }
     

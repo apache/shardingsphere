@@ -94,9 +94,7 @@ public interface ShardingSphereDistributionTransactionManager extends TypedSPI, 
      * @param providerType transaction manager provider type 
      * @return contains provider type or not
      */
-    default boolean containsProviderType(final String providerType) {
-        return true;
-    }
+    boolean containsProviderType(String providerType);
     
     /**
      * Close transaction manager.

@@ -135,17 +135,6 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereD
     }
     
     @Override
-    public void close() {
-        for (XATransactionDataSource each : cachedDataSources.values()) {
-            each.close();
-        }
-        cachedDataSources.clear();
-        if (null != xaTransactionManagerProvider) {
-            xaTransactionManagerProvider.close();
-        }
-    }
-    
-    @Override
     public boolean containsProviderType(final String providerType) {
         try {
             TypedSPILoader.checkService(XATransactionManagerProvider.class, providerType, new Properties());
@@ -154,6 +143,17 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereD
             return false;
         }
         
+    }
+    
+    @Override
+    public void close() {
+        for (XATransactionDataSource each : cachedDataSources.values()) {
+            each.close();
+        }
+        cachedDataSources.clear();
+        if (null != xaTransactionManagerProvider) {
+            xaTransactionManagerProvider.close();
+        }
     }
     
     @Override
