@@ -24,8 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.internal.progress.ThreadSafeMockingProgress;
 
-import java.io.Serializable;
-
 /**
  * ShardingSphere argument verify matchers.
  */
@@ -49,7 +47,7 @@ public final class ShardingSphereArgumentVerifyMatchers {
     }
     
     @RequiredArgsConstructor
-    private static class DeepEqualsMatcher implements ArgumentMatcher<Object>, Serializable {
+    private static class DeepEqualsMatcher implements ArgumentMatcher<Object> {
         
         private final Object wanted;
         
