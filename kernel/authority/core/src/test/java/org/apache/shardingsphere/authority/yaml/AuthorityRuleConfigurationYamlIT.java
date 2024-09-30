@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.authority.yaml;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ class AuthorityRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     private static AuthorityRuleConfiguration getExpectedRuleConfiguration() {
         return new AuthorityRuleConfiguration(
-                Arrays.asList(new ShardingSphereUser("root", "root", "%", null, true), new ShardingSphereUser("sharding", "sharding", "%", null, false)),
+                Arrays.asList(new UserConfiguration("root", "root", "%", null, true), new UserConfiguration("sharding", "sharding", "%", null, false)),
                 new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.singletonMap("fixture", new AlgorithmConfiguration("FIXTURE", new Properties())), "fixture");
     }
 }

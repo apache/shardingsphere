@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.authority.rule;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -73,9 +74,12 @@ class AuthorityRuleTest {
     }
     
     private AuthorityRule createAuthorityRule(final String defaultAuthenticator) {
-        Collection<ShardingSphereUser> users = Arrays.asList(new ShardingSphereUser("root", "root", "localhost"), new ShardingSphereUser("admin", "123456", "localhost"));
+        Collection<UserConfiguration> userConfigs = Arrays.asList(
+                new UserConfiguration("root", "root", "localhost", null, false),
+                new UserConfiguration("admin", "123456", "localhost", null, false));
         AlgorithmConfiguration privilegeProvider = new AlgorithmConfiguration("FIXTURE", new Properties());
-        return new AuthorityRule(new AuthorityRuleConfiguration(
-                users, privilegeProvider, Collections.singletonMap("foo", new AlgorithmConfiguration("FOO_AUTHENTICATION", new Properties())), defaultAuthenticator));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
+                userConfigs, privilegeProvider, Collections.singletonMap("foo", new AlgorithmConfiguration("FOO_AUTHENTICATION", new Properties())), defaultAuthenticator);
+        return new AuthorityRule(ruleConfig);
     }
 }

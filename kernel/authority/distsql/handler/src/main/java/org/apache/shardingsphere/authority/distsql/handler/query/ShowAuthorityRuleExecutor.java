@@ -46,7 +46,7 @@ public final class ShowAuthorityRuleExecutor implements DistSQLQueryExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowAuthorityRuleStatement sqlStatement, final ContextManager contextManager) {
-        String users = rule.getConfiguration().getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; "));
+        String users = rule.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; "));
         String provider = rule.getConfiguration().getPrivilegeProvider().getType();
         Properties props = rule.getConfiguration().getPrivilegeProvider().getProps().isEmpty() ? new Properties() : rule.getConfiguration().getPrivilegeProvider().getProps();
         return Collections.singleton(new LocalDataQueryResultRow(users, provider, props));

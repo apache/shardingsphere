@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 public final class AllPermittedPrivilegeProvider implements PrivilegeProvider {
     
     @Override
-    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig) {
-        return ruleConfig.getUsers().stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new AllPermittedPrivileges()));
+    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users) {
+        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new AllPermittedPrivileges()));
     }
     
     @Override

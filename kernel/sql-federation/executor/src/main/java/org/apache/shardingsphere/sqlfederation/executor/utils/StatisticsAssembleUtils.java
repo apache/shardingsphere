@@ -83,7 +83,7 @@ public final class StatisticsAssembleUtils {
     }
     
     private static void assembleOpenGaussRoleData(final ShardingSphereTableData tableData, final ShardingSphereMetaData metaData) {
-        for (ShardingSphereUser each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers()) {
+        for (ShardingSphereUser each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getUsers()) {
             Object[] rows = new Object[27];
             rows[0] = each.getGrantee().getUsername();
             tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));

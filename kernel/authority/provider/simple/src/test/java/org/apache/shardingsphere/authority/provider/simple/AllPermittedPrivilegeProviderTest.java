@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.authority.provider.simple;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -45,8 +46,8 @@ class AllPermittedPrivilegeProviderTest {
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertBuild(final String name, final PrivilegeProvider provider) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
-                Collections.singleton(new ShardingSphereUser("root@%")), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
-        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig);
+                Collections.singleton(new UserConfiguration("root", "", "%", null, false)), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
+        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig, Collections.singleton(new ShardingSphereUser("root@%")));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(new Grantee("root", "%")), instanceOf(AllPermittedPrivileges.class));
     }

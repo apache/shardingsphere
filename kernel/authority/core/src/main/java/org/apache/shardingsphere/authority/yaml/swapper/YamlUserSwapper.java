@@ -19,20 +19,20 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * YAML user swapper.
  */
-public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserConfiguration, ShardingSphereUser> {
+public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserConfiguration, UserConfiguration> {
     
     @Override
-    public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
+    public YamlUserConfiguration swapToYamlConfiguration(final UserConfiguration data) {
         YamlUserConfiguration result = new YamlUserConfiguration();
-        result.setUser(data.getGrantee().toString());
+        result.setUser(new Grantee(data.getUsername(), data.getHostname()).toString());
         result.setPassword(data.getPassword());
         result.setAuthenticationMethodName(data.getAuthenticationMethodName());
         result.setAdmin(data.isAdmin());
@@ -40,9 +40,9 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
     }
     
     @Override
-    public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
+    public UserConfiguration swapToObject(final YamlUserConfiguration yamlConfig) {
         Grantee grantee = convertYamlUserToGrantee(yamlConfig.getUser());
-        return new ShardingSphereUser(grantee.getUsername(), yamlConfig.getPassword(), grantee.getHostname(), yamlConfig.getAuthenticationMethodName(), yamlConfig.isAdmin());
+        return new UserConfiguration(grantee.getUsername(), yamlConfig.getPassword(), grantee.getHostname(), yamlConfig.getAuthenticationMethodName(), yamlConfig.isAdmin());
     }
     
     private Grantee convertYamlUserToGrantee(final String yamlUser) {
