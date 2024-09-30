@@ -150,7 +150,7 @@ public abstract class SQLRewriterIT {
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(databaseName));
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, metaData);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
-        RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(connectionContext, queryContext, globalRuleMetaData, database);
+        RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(queryContext, globalRuleMetaData, database);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, globalRuleMetaData, props);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(queryContext, routeContext, connectionContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult

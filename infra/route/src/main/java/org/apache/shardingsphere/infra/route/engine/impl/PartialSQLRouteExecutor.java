@@ -26,14 +26,13 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
-import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.EntranceSQLRouter;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
@@ -61,7 +60,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         RouteContext result = new RouteContext();
         Optional<String> dataSourceName = findDataSourceByHint(queryContext.getHintValueContext(), database.getResourceMetaData().getStorageUnits());
         if (dataSourceName.isPresent()) {
@@ -70,9 +69,9 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
         }
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
             if (result.getRouteUnits().isEmpty() && entry.getValue() instanceof EntranceSQLRouter) {
-                result = ((EntranceSQLRouter) entry.getValue()).createRouteContext(queryContext, globalRuleMetaData, database, entry.getKey(), props, connectionContext);
+                result = ((EntranceSQLRouter) entry.getValue()).createRouteContext(queryContext, globalRuleMetaData, database, entry.getKey(), props);
             } else if (entry.getValue() instanceof DecorateSQLRouter) {
-                ((DecorateSQLRouter) entry.getValue()).decorateRouteContext(result, queryContext, database, entry.getKey(), props, connectionContext);
+                ((DecorateSQLRouter) entry.getValue()).decorateRouteContext(result, queryContext, database, entry.getKey(), props);
             }
         }
         if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnits().size()) {

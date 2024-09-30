@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTableStatusStatement;
@@ -48,15 +47,14 @@ public final class SQLRouteEngine {
     /**
      * Route SQL.
      *
-     * @param connectionContext connection context
      * @param queryContext query context
      * @param globalRuleMetaData global rule meta data
      * @param database database
      * @return route context
      */
-    public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         SQLRouteExecutor executor = isNeedAllSchemas(queryContext.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
-        return executor.route(connectionContext, queryContext, globalRuleMetaData, database);
+        return executor.route(queryContext, globalRuleMetaData, database);
     }
     
     // TODO use dynamic config to judge unconfigured schema

@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.infra.route.engine.impl;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.util.Collections;
 
@@ -34,7 +33,7 @@ import java.util.Collections;
 public final class AllSQLRouteExecutor implements SQLRouteExecutor {
     
     @Override
-    public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         RouteContext result = new RouteContext();
         for (String each : database.getResourceMetaData().getStorageUnits().keySet()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));

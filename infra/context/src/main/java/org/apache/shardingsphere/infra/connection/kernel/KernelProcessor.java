@@ -65,7 +65,7 @@ public final class KernelProcessor {
     
     private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
-        return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(connectionContext, queryContext, globalRuleMetaData, database);
+        return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(queryContext, globalRuleMetaData, database);
     }
     
     private SQLRewriteResult rewrite(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final RouteContext routeContext,
