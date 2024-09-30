@@ -41,28 +41,28 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
     
     private static final String USER_DATABASE_MAPPINGS_KEY = "user-database-mappings";
     
-    private String userDatabaseMappings;
+    private String userDatabasesMappings;
     
     @Override
     public void init(final Properties props) {
-        userDatabaseMappings = props.getProperty(USER_DATABASE_MAPPINGS_KEY, "");
-        checkUserDatabaseMappings();
+        userDatabasesMappings = props.getProperty(USER_DATABASE_MAPPINGS_KEY, "");
+        checkUserDatabasesMappings();
     }
     
-    private void checkUserDatabaseMappings() {
-        Preconditions.checkArgument(!"".equals(userDatabaseMappings), "user-database-mappings configuration `%s` can not be null", userDatabaseMappings);
-        Arrays.stream(userDatabaseMappings.split(",")).forEach(each -> Preconditions.checkArgument(each.contains("@") && each.contains("="),
+    private void checkUserDatabasesMappings() {
+        Preconditions.checkArgument(!"".equals(userDatabasesMappings), "user-database-mappings configuration `%s` can not be null", userDatabasesMappings);
+        Arrays.stream(userDatabasesMappings.split(",")).forEach(each -> Preconditions.checkArgument(each.contains("@") && each.contains("="),
                 "user-database-mappings configuration `%s` is invalid, the configuration format should be like `username@hostname=database`", each));
     }
     
     @Override
     public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig) {
-        Map<ShardingSphereUser, Collection<String>> userDatabaseMappings = convertUserDatabases();
-        return ruleConfig.getUsers().stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
+        Map<ShardingSphereUser, Collection<String>> userDatabasesMappings = convertToUserDatabasesMappings();
+        return ruleConfig.getUsers().stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabasesMappings))));
     }
     
-    private Map<ShardingSphereUser, Collection<String>> convertUserDatabases() {
-        String[] mappings = userDatabaseMappings.split(",");
+    private Map<ShardingSphereUser, Collection<String>> convertToUserDatabasesMappings() {
+        String[] mappings = userDatabasesMappings.split(",");
         Map<ShardingSphereUser, Collection<String>> result = new HashMap<>(mappings.length, 1F);
         for (String each : mappings) {
             String[] userDatabasePair = each.trim().split("=");
@@ -74,9 +74,9 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
         return result;
     }
     
-    private Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
+    private Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabasesMappings) {
         Collection<String> result = new HashSet<>();
-        for (Entry<ShardingSphereUser, Collection<String>> entry : userDatabaseMappings.entrySet()) {
+        for (Entry<ShardingSphereUser, Collection<String>> entry : userDatabasesMappings.entrySet()) {
             boolean isAnyOtherHost = entry.getKey().getGrantee().accept(user.getGrantee());
             if (isAnyOtherHost || user.equals(entry.getKey())) {
                 result.addAll(entry.getValue());
