@@ -19,7 +19,7 @@ name: Nightly - E2E SQL
 
 on:
   schedule:
-    - cron: '0 20 */1 * *'  # once a day. UTC time
+    - cron: '0 18 */1 * *'# once a day. UTC time
   workflow_dispatch:
 
 concurrency:
@@ -38,7 +38,7 @@ jobs:
   build-e2e-image:
     name: Build E2E Image
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -67,8 +67,8 @@ jobs:
     name: E2E - SQL
     needs: [ build-e2e-image, global-environment ]
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    timeout-minutes: 180
     strategy:
       max-parallel: 20
       fail-fast: false

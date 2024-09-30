@@ -31,10 +31,10 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   check-spotbugs:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - SpotBugs
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -167,10 +167,10 @@ jobs:
             marked as stale.
   
   check-dependency-convergence:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Dependency Convergence
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
