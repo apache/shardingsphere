@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.DatabaseMetaData;
@@ -41,6 +42,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 
@@ -177,15 +179,14 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private void processDistributedTransaction() throws SQLException {
-        switch (databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit)) {
-            case BEGIN:
-                databaseConnectionManager.begin();
-                break;
-            case COMMIT:
-                databaseConnectionManager.commit();
-                break;
-            default:
-                break;
+        Optional<DistributedTransactionOperationType> operationType = databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit);
+        if (!operationType.isPresent()) {
+            return;
+        }
+        if (DistributedTransactionOperationType.BEGIN == operationType.get()) {
+            databaseConnectionManager.begin();
+        } else {
+            databaseConnectionManager.commit();
         }
     }
     
