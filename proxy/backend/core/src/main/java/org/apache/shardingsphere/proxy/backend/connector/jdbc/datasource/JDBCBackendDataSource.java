@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.BackendDataSo
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -96,8 +96,8 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        ShardingSphereDistributionTransactionManager distributionTransactionManager = transactionRule.getResource().getTransactionManager(transactionType);
-        Connection result = isInTransaction(distributionTransactionManager) ? distributionTransactionManager.getConnection(databaseName, dataSourceName) : dataSource.getConnection();
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = transactionRule.getResource().getTransactionManager(transactionType);
+        Connection result = isInTransaction(distributedTransactionManager) ? distributedTransactionManager.getConnection(databaseName, dataSourceName) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {
             String catalog = dataSourceName.split("\\.")[1];
             result.setCatalog(catalog);
@@ -105,7 +105,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         return result;
     }
     
-    private boolean isInTransaction(final ShardingSphereDistributionTransactionManager distributionTransactionManager) {
-        return null != distributionTransactionManager && distributionTransactionManager.isInTransaction();
+    private boolean isInTransaction(final ShardingSphereDistributedTransactionManager distributedTransactionManager) {
+        return null != distributedTransactionManager && distributedTransactionManager.isInTransaction();
     }
 }
