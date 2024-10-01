@@ -14,9 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM oraclelinux:9-slim
-LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org"
-ENV LOCAL_PATH=/opt/shardingsphere-proxy-native-bin
-ARG OUTPUT_DIRECTORY_NAME
-COPY target/${OUTPUT_DIRECTORY_NAME} ${LOCAL_PATH}
-ENTRYPOINT ["${LOCAL_PATH}/proxy-native", "3307", "${LOCAL_PATH}/conf", "0.0.0.0", "false"]
+
+mode:
+  type: Standalone
+  repository:
+    type: JDBC
+authority:
+  users:
+    - user: root@%
+      password: root
+  privilege:
+    type: ALL_PERMITTED
+props:
+  sql-show: false
+  proxy-frontend-database-protocol-type: MySQL

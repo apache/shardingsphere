@@ -1,21 +1,5 @@
 [
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"},
-  "name":"[Lcom.fasterxml.jackson.databind.deser.Deserializers;"
-},
-{
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"},
-  "name":"[Lcom.fasterxml.jackson.databind.ser.Serializers;"
-},
-{
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.DataSourceProxy"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
   "condition":{"typeReachable":"org.apache.seata.config.ConfigurationFactory"},
   "name":"io.seata.config.ConfigurationProvider"
 },

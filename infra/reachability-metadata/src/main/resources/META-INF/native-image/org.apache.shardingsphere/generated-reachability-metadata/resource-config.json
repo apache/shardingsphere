@@ -13,7 +13,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/maven/com.atomikos/atomikos-util/pom.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy"},
     "pattern":"\\QMETA-INF/native/libnetty_transport_native_epoll_x86_64.so\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
@@ -76,16 +76,16 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.recovery.OltpLogFactory\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseRequestManager\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.data.ClickHouseDataStreamFactory\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.jdbc.JdbcTypeMapping\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
@@ -115,10 +115,13 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\QMETA-INF/services/io.vertx.core.spi.VertxServiceProvider\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet"},
+    "pattern":"\\QMETA-INF/services/java.nio.charset.spi.CharsetProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/javax.xml.datatype.DatatypeFactory\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
@@ -163,14 +166,47 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.authority.rule.AuthorityRule"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.authority.spi.PrivilegeProvider\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.RegisterMigrationSourceStorageUnitExecutor"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolDefaultVersionProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.distsql.handler.engine.update.AdvancedDistSQLUpdateExecutor\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.distsql.parser.core.featured.DistSQLParserEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacadeFactory\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.manager.RuleItemManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.MetaDataPersistService"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database.type.CreateDatabaseRuleOperator"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider\\E"
@@ -184,17 +220,26 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.metadata.database.system.DialectSystemDatabase\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.props.TypedPropertyValue"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.type.DatabaseType\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.datanode.DataNodes"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.datanode.DataNodeBuilder\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolActiveDetector\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesContentValidator\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.audit.SQLAuditor\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook\\E"
@@ -205,11 +250,20 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.merge.MergeEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.manager.RuleItemManager"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator\\E"
@@ -217,35 +271,89 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.route.SQLRouter\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.persist.StandaloneMetaDataManagerPersistService"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rule.builder.database.DefaultDatabaseRuleConfigurationBuilder\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.core.ShardingSphereURLLoadEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstruct\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlPersistRepositoryConfigurationSwapper\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.logging.spi.ShardingSphereLogBuilder\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.ContextManagerBuilder\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.manager.RuleItemManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.persist.StandaloneMetaDataManagerPersistService"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.RuleNodePathProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.connector.AdvancedProxySQLExecutor\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder\\E"
@@ -256,13 +364,19 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sqltranslator.spi.SQLTranslator\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.timeservice.spi.TimestampService\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.transaction.spi.TransactionHook\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
     "pattern":"\\QMETA-INF/services/org.codehaus.groovy.runtime.ExtensionModule\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/org.testcontainers.containers.JdbcDatabaseContainerProvider\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/org.testcontainers.core.CreateContainerCmdModifier\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
@@ -277,11 +391,14 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qcom/atomikos/icatch/provider/imp/transactions.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qcom/clickhouse/client/internal/jpountz/util/linux/amd64/liblz4-java.so\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qcontainer-license-acceptance.txt\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion"},
+    "pattern":"\\Qcurrent-git-commit.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qjta.properties\\E"
@@ -289,19 +406,19 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Qlib/sqlparser/druid.jar\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qorg/apache/hc/core5/version.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\Qorg/h2/util/data.zip\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qorg/postgresql/driverconfig.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Qregistry.conf\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.H2OptimizerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.MySQLOptimizerBuilder"},
     "pattern":"\\Qsaffron.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
@@ -1216,1533 +1333,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase"},
     "pattern":"\\Qschema/mysql/sys/waits_global_by_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/_pg_foreign_data_wrappers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/_pg_foreign_servers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/_pg_foreign_table_columns.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/_pg_foreign_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/_pg_user_mappings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/administrable_role_authorizations.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/applicable_roles.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/attributes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/character_sets.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/check_constraint_routine_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/check_constraints.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/collation_character_set_applicability.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/collations.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/column_domain_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/column_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/column_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/column_udt_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/columns.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/constraint_column_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/constraint_table_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/data_type_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/domain_constraints.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/domain_udt_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/domains.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/element_types.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/enabled_roles.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/foreign_data_wrapper_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/foreign_data_wrappers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/foreign_server_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/foreign_servers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/foreign_table_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/foreign_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/information_schema_catalog_name.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/key_column_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/parameters.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/referential_constraints.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/role_column_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/role_routine_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/role_table_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/role_udt_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/role_usage_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/routine_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/routines.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/schemata.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/sql_features.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/sql_implementation_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/sql_languages.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/sql_packages.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/sql_parts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/sql_sizing.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/sql_sizing_profiles.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/table_constraints.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/table_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/triggered_update_columns.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/triggers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/udt_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/usage_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/user_defined_types.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/user_mapping_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/user_mappings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/view_column_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/view_routine_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/view_table_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/information_schema/views.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/get_global_prepared_xacts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_all_control_group_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_asp.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_auditing.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_auditing_access.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_auditing_policy.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_auditing_policy_access.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_auditing_policy_filters.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_auditing_policy_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_auditing_privilege.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_client_global_keys.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_client_global_keys_args.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_cluster_resource_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_column_keys.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_column_keys_args.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_comm_proxy_thread_status.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_db_privilege.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_db_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_encrypted_columns.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_encrypted_proc.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_file_stat.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_get_control_group_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_global_chain.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_global_config.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_gsc_memory_detail.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_instance_time.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_job_argument.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_job_attribute.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_labels.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_lsc_memory_detail.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_masking.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_masking_policy.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_masking_policy_actions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_masking_policy_filters.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_matview.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_matview_dependency.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_matviews.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_model_warehouse.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_obsscaninfo.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_opt_model.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_os_run_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_package.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_policy_label.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_recyclebin.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_redo_stat.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_session_cpu_statistics.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_session_memory.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_session_memory_context.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_session_memory_detail.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_session_memory_statistics.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_session_stat.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_session_time.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_shared_memory_detail.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_sql_count.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_stat_session_cu.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_thread_memory_context.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_total_memory_detail.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_total_nodegroup_memory_detail.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_txn_snapshot.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_uid.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_cgroup_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_ec_operator_history.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_ec_operator_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_ec_operator_statistics.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_instance_history.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_operator_history.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_operator_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_operator_statistics.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_plan_encoding_table.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_plan_operator_history.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_plan_operator_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_rebuild_user_resource_pool.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_resource_pool.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_session_history.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_session_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_session_info_all.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_session_query_info_all.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_session_statistics.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_user_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_user_resource_history.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/gs_wlm_workload_records.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/mpp_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_aggregate.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_am.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_amop.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_amproc.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_app_workloadgroup_mapping.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_attrdef.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_attribute.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_auth_history.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_auth_members.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_authid.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_available_extension_versions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_available_extensions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_cast.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_class.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_collation.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_comm_delay.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_comm_recv_stream.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_comm_send_stream.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_comm_status.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_constraint.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_control_group_config.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_conversion.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_cursors.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_database.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_db_role_setting.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_default_acl.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_depend.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_description.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_directory.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_enum.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_ext_stats.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_extension.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_extension_data_source.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_foreign_data_wrapper.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_foreign_server.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_foreign_table.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_get_invalid_backends.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_get_senders_catchup_time.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_group.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_gtt_attached_pids.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_gtt_relstats.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_gtt_stats.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_hashbucket.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_index.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_inherits.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_job.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_job_proc.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_language.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_largeobject.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_largeobject_metadata.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_locks.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_namespace.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_node_env.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_object.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_obsscaninfo.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_opclass.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_operator.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_opfamily.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_os_threads.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_partition.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_pltemplate.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_prepared_statements.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_prepared_xacts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_proc.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_publication.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_publication_rel.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_publication_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_range.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_replication_origin.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_replication_origin_status.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_replication_slots.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_resource_pool.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_rewrite.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_rlspolicies.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_rlspolicy.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_roles.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_rules.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_running_xacts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_seclabel.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_seclabels.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_session_iostat.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_session_wlmstat.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_settings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_shadow.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_shdepend.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_shdescription.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_shseclabel.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_activity.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_activity_ng.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_all_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_all_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_bad_block.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_bgwriter.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_database.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_database_conflicts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_replication.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_subscription.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_sys_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_sys_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_user_functions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_user_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_user_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_xact_all_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_xact_sys_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_xact_user_functions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stat_xact_user_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_all_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_all_sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_all_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_sys_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_sys_sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_sys_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_user_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_user_sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statio_user_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statistic.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_statistic_ext.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_stats.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_subscription.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_synonym.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_tablespace.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_tde_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_thread_wait_status.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_timezone_abbrevs.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_timezone_names.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_total_memory_detail.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_total_user_resource_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_total_user_resource_info_oid.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_trigger.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_ts_config.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_ts_config_map.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_ts_dict.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_ts_parser.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_ts_template.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_type.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_user.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_user_mapping.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_user_mappings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_user_status.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_variable_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_views.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_wlm_statistics.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pg_workload_group.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pgxc_class.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pgxc_group.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pgxc_node.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pgxc_prepared_xacts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pgxc_slice.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/pgxc_thread_wait_status.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/plan_table.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/plan_table_data.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/statement_history.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/streaming_cont_query.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/streaming_reaper_status.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/streaming_stream.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/opengauss/pg_catalog/sys_dummy.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/_pg_foreign_data_wrappers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/_pg_foreign_servers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/_pg_foreign_table_columns.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/_pg_foreign_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/_pg_user_mappings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/administrable_role_authorizations.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/applicable_roles.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/attributes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/character_sets.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/check_constraint_routine_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/check_constraints.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/collation_character_set_applicability.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/collations.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/column_column_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/column_domain_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/column_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/column_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/column_udt_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/columns.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/constraint_column_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/constraint_table_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/data_type_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/domain_constraints.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/domain_udt_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/domains.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/element_types.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/enabled_roles.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/foreign_data_wrapper_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/foreign_data_wrappers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/foreign_server_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/foreign_servers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/foreign_table_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/foreign_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/information_schema_catalog_name.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/key_column_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/parameters.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/referential_constraints.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/role_column_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/role_routine_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/role_table_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/role_udt_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/role_usage_grants.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/routine_column_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/routine_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/routine_routine_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/routine_sequence_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/routine_table_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/routines.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/schemata.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/sql_features.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/sql_implementation_info.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/sql_parts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/sql_sizing.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/table_constraints.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/table_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/transforms.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/triggered_update_columns.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/triggers.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/udt_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/usage_privileges.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/user_defined_types.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/user_mapping_options.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/user_mappings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/view_column_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/view_routine_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/view_table_usage.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/information_schema/views.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_aggregate.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_am.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_amop.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_amproc.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_attrdef.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_attribute.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_auth_members.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_authid.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_available_extension_versions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_available_extensions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_backend_memory_contexts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_cast.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_class.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_collation.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_config.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_constraint.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_conversion.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_cursors.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_database.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_db_role_setting.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_default_acl.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_depend.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_description.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_enum.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_event_trigger.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_extension.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_file_settings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_foreign_data_wrapper.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_foreign_server.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_foreign_table.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_group.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_hba_file_rules.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_index.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_inherits.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_init_privs.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_language.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_largeobject.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_largeobject_metadata.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_locks.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_matviews.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_namespace.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_opclass.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_operator.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_opfamily.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_partitioned_table.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_policies.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_policy.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_prepared_statements.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_prepared_xacts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_proc.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_publication.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_publication_rel.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_publication_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_range.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_replication_origin.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_replication_origin_status.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_replication_slots.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_rewrite.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_roles.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_rules.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_seclabel.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_seclabels.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_sequence.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_settings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_shadow.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_shdepend.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_shdescription.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_shmem_allocations.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_shseclabel.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_activity.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_all_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_all_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_archiver.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_bgwriter.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_database.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_database_conflicts.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_gssapi.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_progress_analyze.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_progress_basebackup.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_progress_cluster.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_progress_copy.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_progress_create_index.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_progress_vacuum.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_replication.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_replication_slots.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_slru.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_ssl.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_subscription.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_sys_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_sys_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_user_functions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_user_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_user_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_wal.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_wal_receiver.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_xact_all_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_xact_sys_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_xact_user_functions.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stat_xact_user_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_all_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_all_sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_all_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_sys_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_sys_sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_sys_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_user_indexes.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_user_sequences.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statio_user_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statistic.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statistic_ext.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_statistic_ext_data.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stats.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stats_ext.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_stats_ext_exprs.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_subscription.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_subscription_rel.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_tables.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_tablespace.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_timezone_abbrevs.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_timezone_names.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_transform.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_trigger.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_ts_config.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_ts_config_map.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_ts_dict.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_ts_parser.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_ts_template.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_type.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_user.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_user_mapping.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_user_mappings.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
-    "pattern":"\\Qschema/postgresql/pg_catalog/pg_views.yaml\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader"},
     "pattern":"\\Qschema\\E"
   }, {
@@ -2770,10 +1360,10 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":"\\Qsql\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qtest-native/sql/seata-script-client-at-postgresql.sql\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qtest-native/sql/test-native-databases-clickhouse.sql\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
@@ -2833,7 +1423,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\Qvertx-default-jul-logging.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"java.base:\\Qjdk/internal/icu/impl/data/icudt74b/nfkc.nrm\\E"
   }]},
   "bundles":[{
