@@ -55,9 +55,9 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
     }
     
     @Override
-    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users) {
+    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig, final Collection<Grantee> grantees) {
         Map<ShardingSphereUser, Collection<String>> userDatabasesMappings = convertToUserDatabasesMappings();
-        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabasesMappings))));
+        return grantees.stream().collect(Collectors.toMap(each -> each, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabasesMappings))));
     }
     
     private Map<ShardingSphereUser, Collection<String>> convertToUserDatabasesMappings() {
@@ -73,8 +73,8 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
         return result;
     }
     
-    private Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabasesMappings) {
-        return userDatabasesMappings.entrySet().stream().filter(entry -> entry.getKey().getGrantee().accept(user.getGrantee())).flatMap(entry -> entry.getValue().stream()).collect(Collectors.toSet());
+    private Collection<String> getUserDatabases(final Grantee grantee, final Map<ShardingSphereUser, Collection<String>> userDatabasesMappings) {
+        return userDatabasesMappings.entrySet().stream().filter(entry -> entry.getKey().getGrantee().accept(grantee)).flatMap(entry -> entry.getValue().stream()).collect(Collectors.toSet());
     }
     
     @Override

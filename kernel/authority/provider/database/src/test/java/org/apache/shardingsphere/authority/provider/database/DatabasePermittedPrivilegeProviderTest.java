@@ -23,7 +23,6 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -55,9 +54,8 @@ class DatabasePermittedPrivilegeProviderTest {
                 new UserConfiguration("user1", "", "%", null, false),
                 new UserConfiguration("user3", "", "%", null, false));
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(userConfigs, mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
-        Collection<ShardingSphereUser> users = userConfigs.stream()
-                .map(each -> new ShardingSphereUser(each.getUsername(), each.getPassword(), each.getHostname(), each.getAuthenticationMethodName(), each.isAdmin())).collect(Collectors.toList());
-        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig, users);
+        Collection<Grantee> grantees = userConfigs.stream().map(each -> new Grantee(each.getUsername(), each.getHostname())).collect(Collectors.toList());
+        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig, grantees);
         assertThat(actual.size(), is(4));
         assertTrue(actual.get(new Grantee("root", "localhost")).hasPrivileges("sys_db"));
         assertTrue(actual.get(new Grantee("user1", "127.0.0.1")).hasPrivileges("sys_db"));
