@@ -52,7 +52,7 @@ public final class ConnectionTransaction {
      * @return in transaction or not
      */
     public boolean isInTransaction(final TransactionConnectionContext transactionContext) {
-        return transactionContext.isInTransaction() && null != distributionTransactionManager && distributionTransactionManager.isInTransaction();
+        return transactionContext.isInTransaction() && isInTransaction();
     }
     
     /**
