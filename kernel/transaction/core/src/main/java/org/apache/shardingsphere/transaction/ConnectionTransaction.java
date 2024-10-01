@@ -46,21 +46,21 @@ public final class ConnectionTransaction {
     }
     
     /**
-     * Whether in distribution transaction.
+     * Whether in distributed transaction.
      *
      * @param transactionContext transaction connection context
-     * @return in distribution transaction or not
+     * @return in distributed transaction or not
      */
-    public boolean isInDistributionTransaction(final TransactionConnectionContext transactionContext) {
-        return transactionContext.isInTransaction() && isInDistributionTransaction();
+    public boolean isInDistributedTransaction(final TransactionConnectionContext transactionContext) {
+        return transactionContext.isInTransaction() && isInDistributedTransaction();
     }
     
     /**
-     * Whether in distribution transaction.
+     * Whether in distributed transaction.
      *
-     * @return in distribution transaction or not
+     * @return in distributed transaction or not
      */
-    public boolean isInDistributionTransaction() {
+    public boolean isInDistributedTransaction() {
         return null != distributionTransactionManager && distributionTransactionManager.isInTransaction();
     }
     
@@ -80,7 +80,7 @@ public final class ConnectionTransaction {
      * @return hold transaction or not
      */
     public boolean isHoldTransaction(final boolean autoCommit) {
-        return TransactionType.LOCAL == transactionType && !autoCommit || TransactionType.XA == transactionType && isInDistributionTransaction();
+        return TransactionType.LOCAL == transactionType && !autoCommit || TransactionType.XA == transactionType && isInDistributedTransaction();
     }
     
     /**
@@ -93,7 +93,7 @@ public final class ConnectionTransaction {
      * @throws SQLException SQL exception
      */
     public Optional<Connection> getConnection(final String databaseName, final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        return isInDistributionTransaction(transactionConnectionContext) ? Optional.of(distributionTransactionManager.getConnection(databaseName, dataSourceName)) : Optional.empty();
+        return isInDistributedTransaction(transactionConnectionContext) ? Optional.of(distributionTransactionManager.getConnection(databaseName, dataSourceName)) : Optional.empty();
     }
     
     /**

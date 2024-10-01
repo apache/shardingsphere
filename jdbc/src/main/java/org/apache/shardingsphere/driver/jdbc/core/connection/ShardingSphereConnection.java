@@ -301,7 +301,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public void close() throws SQLException {
-        if (databaseConnectionManager.getConnectionTransaction().isInDistributionTransaction(databaseConnectionManager.getConnectionContext().getTransactionContext())) {
+        if (databaseConnectionManager.getConnectionTransaction().isInDistributedTransaction(databaseConnectionManager.getConnectionContext().getTransactionContext())) {
             databaseConnectionManager.getConnectionTransaction().rollback();
         }
         closed = true;
