@@ -20,7 +20,6 @@ package org.apache.shardingsphere.authority.spi;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -37,8 +36,8 @@ public interface PrivilegeProvider extends TypedSPI {
      * Build grantee and privileges map.
      *
      * @param ruleConfig authority rule configuration
-     * @param users users
+     * @param grantees grantees
      * @return grantee and privileges map
      */
-    Map<Grantee, ShardingSpherePrivileges> build(AuthorityRuleConfiguration ruleConfig, Collection<ShardingSphereUser> users);
+    Map<Grantee, ShardingSpherePrivileges> build(AuthorityRuleConfiguration ruleConfig, Collection<Grantee> grantees);
 }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.mockito.Answers;
 
 import java.util.Collection;
@@ -34,9 +33,9 @@ import static org.mockito.Mockito.withSettings;
 public final class PrivilegeProviderFixture implements PrivilegeProvider {
     
     @Override
-    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users) {
+    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig, final Collection<Grantee> grantees) {
         ShardingSpherePrivileges privileges = mockPrivileges();
-        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> privileges));
+        return grantees.stream().collect(Collectors.toMap(each -> each, each -> privileges));
     }
     
     private ShardingSpherePrivileges mockPrivileges() {

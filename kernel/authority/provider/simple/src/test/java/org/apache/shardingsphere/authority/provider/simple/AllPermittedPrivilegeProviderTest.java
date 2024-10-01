@@ -23,7 +23,6 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,7 +46,7 @@ class AllPermittedPrivilegeProviderTest {
     void assertBuild(final String name, final PrivilegeProvider provider) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
                 Collections.singleton(new UserConfiguration("root", "", "%", null, false)), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
-        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig, Collections.singleton(new ShardingSphereUser("root@%")));
+        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig, Collections.singleton(new Grantee("root@%")));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(new Grantee("root", "%")), instanceOf(AllPermittedPrivileges.class));
     }
