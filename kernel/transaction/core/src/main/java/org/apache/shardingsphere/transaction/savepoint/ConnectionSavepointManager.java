@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction;
+package org.apache.shardingsphere.transaction.savepoint;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -86,16 +86,18 @@ public final class ConnectionSavepointManager {
      */
     public void releaseSavepoint(final Connection connection, final String savepointName) throws SQLException {
         Optional<Savepoint> result = lookupSavepoint(connection, savepointName);
-        if (result.isPresent()) {
-            DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
-            databaseType = databaseType.getTrunkDatabaseType().orElse(databaseType);
-            if (databaseType instanceof MySQLDatabaseType) {
-                try (Statement statement = connection.createStatement()) {
-                    statement.execute(String.format("RELEASE SAVEPOINT %s", savepointName));
-                }
-            } else {
-                connection.releaseSavepoint(result.get());
+        if (!result.isPresent()) {
+            return;
+        }
+        DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
+        databaseType = databaseType.getTrunkDatabaseType().orElse(databaseType);
+        Optional<SavepointReleaseSQLProvider> savepointReleaseSQLProvider = DatabaseTypedSPILoader.findService(SavepointReleaseSQLProvider.class, databaseType);
+        if (savepointReleaseSQLProvider.isPresent()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(savepointReleaseSQLProvider.get().getSQL(savepointName));
             }
+        } else {
+            connection.releaseSavepoint(result.get());
         }
     }
     
