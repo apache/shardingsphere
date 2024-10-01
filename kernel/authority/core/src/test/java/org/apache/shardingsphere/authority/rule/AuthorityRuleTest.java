@@ -24,9 +24,11 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -56,6 +58,14 @@ class AuthorityRuleTest {
     }
     
     @Test
+    void assertGetGrantees() {
+        List<Grantee> actual = new ArrayList<>(createAuthorityRule(null).getGrantees());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is(new Grantee("root", "localhost")));
+        assertThat(actual.get(1), is(new Grantee("admin", "localhost")));
+    }
+    
+    @Test
     void assertFindUser() {
         Grantee toBefoundGrantee = new Grantee("admin", "localhost");
         Optional<ShardingSphereUser> actual = createAuthorityRule(null).findUser(toBefoundGrantee);
@@ -71,6 +81,11 @@ class AuthorityRuleTest {
     @Test
     void assertFindPrivileges() {
         assertTrue(createAuthorityRule(null).findPrivileges(new Grantee("admin", "localhost")).isPresent());
+    }
+    
+    @Test
+    void assertNotFoundPrivileges() {
+        assertFalse(createAuthorityRule(null).findPrivileges(new Grantee("not_found", "")).isPresent());
     }
     
     private AuthorityRule createAuthorityRule(final String defaultAuthenticator) {
