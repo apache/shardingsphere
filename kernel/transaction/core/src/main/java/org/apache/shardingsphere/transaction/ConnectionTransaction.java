@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,14 +35,14 @@ public final class ConnectionTransaction {
     @Getter
     private final TransactionType transactionType;
     
-    private final ShardingSphereDistributionTransactionManager distributionTransactionManager;
+    private final ShardingSphereDistributedTransactionManager distributedTransactionManager;
     
     private final TransactionConnectionContext transactionContext;
     
     public ConnectionTransaction(final TransactionRule rule, final TransactionConnectionContext transactionContext) {
         transactionType = transactionContext.getTransactionType().isPresent() ? TransactionType.valueOf(transactionContext.getTransactionType().get()) : rule.getDefaultType();
         this.transactionContext = transactionContext;
-        distributionTransactionManager = TransactionType.LOCAL == transactionType ? null : rule.getResource().getTransactionManager(rule.getDefaultType());
+        distributedTransactionManager = TransactionType.LOCAL == transactionType ? null : rule.getResource().getTransactionManager(rule.getDefaultType());
     }
     
     /**
@@ -61,7 +61,7 @@ public final class ConnectionTransaction {
      * @return in distributed transaction or not
      */
     public boolean isInDistributedTransaction() {
-        return null != distributionTransactionManager && distributionTransactionManager.isInTransaction();
+        return null != distributedTransactionManager && distributedTransactionManager.isInTransaction();
     }
     
     /**
@@ -93,28 +93,28 @@ public final class ConnectionTransaction {
      * @throws SQLException SQL exception
      */
     public Optional<Connection> getConnection(final String databaseName, final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        return isInDistributedTransaction(transactionConnectionContext) ? Optional.of(distributionTransactionManager.getConnection(databaseName, dataSourceName)) : Optional.empty();
+        return isInDistributedTransaction(transactionConnectionContext) ? Optional.of(distributedTransactionManager.getConnection(databaseName, dataSourceName)) : Optional.empty();
     }
     
     /**
      * Begin transaction.
      */
     public void begin() {
-        distributionTransactionManager.begin();
+        distributedTransactionManager.begin();
     }
     
     /**
      * Commit transaction.
      */
     public void commit() {
-        distributionTransactionManager.commit(transactionContext.isExceptionOccur());
+        distributedTransactionManager.commit(transactionContext.isExceptionOccur());
     }
     
     /**
      * Rollback transaction.
      */
     public void rollback() {
-        distributionTransactionManager.rollback();
+        distributedTransactionManager.rollback();
     }
     
     /**
@@ -124,10 +124,10 @@ public final class ConnectionTransaction {
      * @return distributed transaction operation type
      */
     public DistributedTransactionOperationType getDistributedTransactionOperationType(final boolean autoCommit) {
-        if (!autoCommit && !distributionTransactionManager.isInTransaction()) {
+        if (!autoCommit && !distributedTransactionManager.isInTransaction()) {
             return DistributedTransactionOperationType.BEGIN;
         }
-        if (autoCommit && distributionTransactionManager.isInTransaction()) {
+        if (autoCommit && distributedTransactionManager.isInTransaction()) {
             return DistributedTransactionOperationType.COMMIT;
         }
         return DistributedTransactionOperationType.IGNORE;

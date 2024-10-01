@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -45,14 +45,14 @@ class ConnectionTransactionTest {
     }
     
     @Test
-    void assertIsNotInDistributedTransactionWhenIsNotDistributionTransaction() {
+    void assertIsNotInDistributedTransactionWhenIsNotDistributedTransaction() {
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.beginTransaction("LOCAL");
         assertFalse(new ConnectionTransaction(mock(TransactionRule.class), context).isInDistributedTransaction(context));
     }
     
     @Test
-    void assertIsNotInDistributedTransactionWhenDistributionTransactionIsNotBegin() {
+    void assertIsNotInDistributedTransactionWhenDistributedTransactionIsNotBegin() {
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.beginTransaction("XA");
         assertFalse(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), context).isInDistributedTransaction(context));
@@ -100,29 +100,29 @@ class ConnectionTransactionTest {
     
     @Test
     void assertBegin() {
-        ShardingSphereDistributionTransactionManager distributionTransactionManager = mock(ShardingSphereDistributionTransactionManager.class);
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
-        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributionTransactionManager);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributedTransactionManager);
         new ConnectionTransaction(rule, new TransactionConnectionContext()).begin();
-        verify(distributionTransactionManager).begin();
+        verify(distributedTransactionManager).begin();
     }
     
     @Test
     void assertCommit() {
-        ShardingSphereDistributionTransactionManager distributionTransactionManager = mock(ShardingSphereDistributionTransactionManager.class);
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
-        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributionTransactionManager);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributedTransactionManager);
         new ConnectionTransaction(rule, new TransactionConnectionContext()).commit();
-        verify(distributionTransactionManager).commit(false);
+        verify(distributedTransactionManager).commit(false);
     }
     
     @Test
     void assertRollback() {
-        ShardingSphereDistributionTransactionManager distributionTransactionManager = mock(ShardingSphereDistributionTransactionManager.class);
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
-        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributionTransactionManager);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributedTransactionManager);
         new ConnectionTransaction(rule, new TransactionConnectionContext()).rollback();
-        verify(distributionTransactionManager).rollback();
+        verify(distributedTransactionManager).rollback();
     }
     
     @Test

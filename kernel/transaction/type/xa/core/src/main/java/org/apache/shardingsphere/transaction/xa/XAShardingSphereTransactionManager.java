@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
@@ -51,7 +51,7 @@ import java.util.Properties;
 /**
  * ShardingSphere Transaction manager for XA.
  */
-public final class XAShardingSphereTransactionManager implements ShardingSphereDistributionTransactionManager {
+public final class XAShardingSphereTransactionManager implements ShardingSphereDistributedTransactionManager {
     
     private final Map<String, XATransactionDataSource> cachedDataSources = new CaseInsensitiveMap<>();
     

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
 import java.sql.Connection;
@@ -52,7 +52,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final LocalTransactionManager localTransactionManager;
     
-    private final ShardingSphereDistributionTransactionManager distributionTransactionManager;
+    private final ShardingSphereDistributedTransactionManager distributedTransactionManager;
     
     private final Map<ShardingSphereRule, TransactionHook> transactionHooks;
     
@@ -62,7 +62,7 @@ public final class BackendTransactionManager implements TransactionManager {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         transactionType = transactionRule.getDefaultType();
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
-        distributionTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
+        distributedTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
         transactionHooks = OrderedSPILoader.getServices(TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     }
     
@@ -78,10 +78,10 @@ public final class BackendTransactionManager implements TransactionManager {
         for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
             entry.getValue().beforeBegin(entry.getKey(), databaseType, getTransactionContext());
         }
-        if (TransactionType.LOCAL == transactionType || null == distributionTransactionManager) {
+        if (TransactionType.LOCAL == transactionType || null == distributedTransactionManager) {
             localTransactionManager.begin();
         } else {
-            distributionTransactionManager.begin();
+            distributedTransactionManager.begin();
         }
         for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
             entry.getValue().afterBegin(entry.getKey(), databaseType, getTransactionContext());
@@ -97,10 +97,10 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributionTransactionManager) {
+                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributedTransactionManager) {
                     localTransactionManager.commit();
                 } else {
-                    distributionTransactionManager.commit(getTransactionContext().isExceptionOccur());
+                    distributedTransactionManager.commit(getTransactionContext().isExceptionOccur());
                 }
             } finally {
                 for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
@@ -124,10 +124,10 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
-                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributionTransactionManager) {
+                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributedTransactionManager) {
                     localTransactionManager.rollback();
                 } else {
-                    distributionTransactionManager.rollback();
+                    distributedTransactionManager.rollback();
                 }
             } finally {
                 for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
