@@ -106,7 +106,7 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
         if (!isAutoCommit) {
             return false;
         }
-        if (!TransactionType.isDistributedTransaction(defaultType) || connectionTransaction.isInTransaction()) {
+        if (!TransactionType.isDistributedTransaction(defaultType) || connectionTransaction.isInDistributedTransaction()) {
             return false;
         }
         return isWriteDMLStatement(executionContext.getSqlStatementContext().getSqlStatement()) && executionContext.getExecutionUnits().size() > 1;
