@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -32,10 +34,12 @@ import java.sql.Statement;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ConnectionSavepointManagerTest {
     
     private static final String SAVE_POINT = "SavePoint";
@@ -62,6 +66,12 @@ class ConnectionSavepointManagerTest {
         ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
         ConnectionSavepointManager.getInstance().rollbackToSavepoint(connection, SAVE_POINT);
         verify(connection).rollback(savepoint);
+    }
+    
+    @Test
+    void assertRollbackWithoutSavepoint() throws SQLException {
+        ConnectionSavepointManager.getInstance().rollbackToSavepoint(connection, SAVE_POINT);
+        verify(connection, times(0)).rollback(savepoint);
     }
     
     @Test
