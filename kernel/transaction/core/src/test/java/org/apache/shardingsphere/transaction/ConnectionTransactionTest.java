@@ -39,32 +39,32 @@ import static org.mockito.Mockito.when;
 class ConnectionTransactionTest {
     
     @Test
-    void assertIsNotInTransactionWhenTransactionIsNotBegin() {
+    void assertIsNotInDistributionTransactionWhenTransactionIsNotBegin() {
         TransactionConnectionContext context = new TransactionConnectionContext();
-        assertFalse(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), context).isInTransaction(context));
+        assertFalse(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), context).isInDistributionTransaction(context));
     }
     
     @Test
-    void assertIsNotInTransactionWhenIsNotDistributionTransaction() {
+    void assertIsNotInDistributionTransactionWhenIsNotDistributionTransaction() {
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.beginTransaction("LOCAL");
-        assertFalse(new ConnectionTransaction(mock(TransactionRule.class), context).isInTransaction(context));
+        assertFalse(new ConnectionTransaction(mock(TransactionRule.class), context).isInDistributionTransaction(context));
     }
     
     @Test
-    void assertIsNotInTransactionWhenDistributionTransactionIsNotBegin() {
+    void assertIsNotInDistributionTransactionWhenDistributionTransactionIsNotBegin() {
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.beginTransaction("XA");
-        assertFalse(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), context).isInTransaction(context));
+        assertFalse(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), context).isInDistributionTransaction(context));
     }
     
     @Test
-    void assertIsInTransaction() {
+    void assertIsInDistributionTransaction() {
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.beginTransaction("XA");
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
-        assertTrue(new ConnectionTransaction(rule, context).isInTransaction(context));
+        assertTrue(new ConnectionTransaction(rule, context).isInDistributionTransaction(context));
     }
     
     @Test
