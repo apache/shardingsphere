@@ -81,7 +81,12 @@ public final class AuthorityRule implements GlobalRule {
      */
     @HighFrequencyInvocation
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return users.stream().filter(each -> each.getGrantee().accept(grantee)).findFirst();
+        for (ShardingSphereUser each : users) {
+            if (each.getGrantee().accept(grantee)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     /**
@@ -92,6 +97,11 @@ public final class AuthorityRule implements GlobalRule {
      */
     @HighFrequencyInvocation
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return privileges.keySet().stream().filter(each -> each.accept(grantee)).findFirst().map(privileges::get);
+        for (Grantee each : privileges.keySet()) {
+            if (each.accept(grantee)) {
+                return Optional.of(each).map(privileges::get);
+            }
+        }
+        return Optional.empty();
     }
 }
