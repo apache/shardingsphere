@@ -40,30 +40,30 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("resource")
 class TransactionRuleTest {
     
-    private static final String SHARDING_DB_1 = "sharding_db_1";
+    private static final String FOO_DB = "foo_db";
     
-    private static final String SHARDING_DB_2 = "sharding_db_2";
+    private static final String BAR_DB = "bar_db";
     
     @Test
-    void assertInitTransactionRuleWithMultiDatabaseType() {
-        try (TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()))) {
-            assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
-        }
+    void assertRefreshWithNotDatabaseChange() {
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.emptyMap());
+        actual.refresh(Collections.singletonMap(BAR_DB, createAddDatabase()), GlobalRuleChangedType.SCHEMA_CHANGED);
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
-    void assertAddResource() {
-        try (TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()))) {
-            actual.refresh(Collections.singletonMap(SHARDING_DB_2, createAddDatabase()), GlobalRuleChangedType.DATABASE_CHANGED);
-            assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
-        }
+    void assertRefreshWithDatabaseChange() {
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(FOO_DB, createDatabase()));
+        actual.refresh(Collections.singletonMap(BAR_DB, createAddDatabase()), GlobalRuleChangedType.DATABASE_CHANGED);
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
     void assertClose() {
-        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(FOO_DB, createDatabase()));
         actual.close();
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
@@ -93,7 +93,7 @@ class TransactionRuleTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         ResourceMetaData resourceMetaData = createAddResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(result.getName()).thenReturn(SHARDING_DB_2);
+        when(result.getName()).thenReturn(BAR_DB);
         return result;
     }
     
