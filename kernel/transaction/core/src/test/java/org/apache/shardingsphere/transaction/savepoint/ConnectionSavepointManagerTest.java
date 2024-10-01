@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction;
+package org.apache.shardingsphere.transaction.savepoint;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -32,13 +34,15 @@ import java.sql.Statement;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ConnectionSavepointManagerTest {
     
-    private static final String SAVE_POINT = "SavePoint";
+    private static final String SAVE_POINT = "foo_savepoint";
     
     @Mock
     private Connection connection;
@@ -65,6 +69,12 @@ class ConnectionSavepointManagerTest {
     }
     
     @Test
+    void assertRollbackWithoutSavepoint() throws SQLException {
+        ConnectionSavepointManager.getInstance().rollbackToSavepoint(connection, SAVE_POINT);
+        verify(connection, times(0)).rollback(savepoint);
+    }
+    
+    @Test
     void assertSaveReleaseSavingPoint() throws SQLException {
         ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -83,7 +93,7 @@ class ConnectionSavepointManagerTest {
         Statement statement = mock(Statement.class);
         when(connection.createStatement()).thenReturn(statement);
         ConnectionSavepointManager.getInstance().releaseSavepoint(connection, SAVE_POINT);
-        verify(statement).execute(String.format("RELEASE SAVEPOINT %s", SAVE_POINT));
+        verify(statement).execute("RELEASE SAVEPOINT foo_savepoint");
     }
     
     @Test
