@@ -54,7 +54,7 @@ class DatabasePermittedPrivilegeProviderTest {
         assertTrue(provider.build(ruleConfig, new Grantee("user1", "127.0.0.1")).hasPrivileges("foo_db"));
         assertTrue(provider.build(ruleConfig, new Grantee("user1", "%")).hasPrivileges("bar_db"));
         assertFalse(provider.build(ruleConfig, new Grantee("user1", "%")).hasPrivileges("sys_db"));
-        assertTrue(provider.build(ruleConfig, new Grantee("user3", "%")).hasPrivileges("sys_db"));
+        assertFalse(provider.build(ruleConfig, new Grantee("user3", "%")).hasPrivileges("sys_db"));
     }
     
     @Test
