@@ -136,42 +136,38 @@ class ConnectionTransactionTest {
     void assertGetConnectionWithoutInDistributeTransaction() throws SQLException {
         TransactionRule rule = mock(TransactionRule.class);
         when(rule.getDefaultType()).thenReturn(TransactionType.LOCAL);
-        assertFalse(new ConnectionTransaction(rule, new TransactionConnectionContext()).getConnection("foo_db", "foo_ds", new TransactionConnectionContext()).isPresent());
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        assertFalse(new ConnectionTransaction(rule, context).getConnection("foo_db", "foo_ds", context).isPresent());
     }
     
     @Test
     void assertGetConnectionWithInDistributeTransaction() throws SQLException {
-        TransactionConnectionContext transactionConnectionContext = new TransactionConnectionContext();
-        transactionConnectionContext.beginTransaction("XA");
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.beginTransaction("XA");
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).getConnection("foo_db", "foo_ds")).thenReturn(mock(Connection.class));
-        assertTrue(new ConnectionTransaction(rule, transactionConnectionContext).getConnection("foo_db", "foo_ds", transactionConnectionContext).isPresent());
+        assertTrue(new ConnectionTransaction(rule, context).getConnection("foo_db", "foo_ds", context).isPresent());
     }
     
     @Test
     void assertGetDistributedTransactionBeginOperationType() {
-        ShardingSphereDistributionTransactionManager distributionTransactionManager = mock(ShardingSphereDistributionTransactionManager.class);
-        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
-        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributionTransactionManager);
-        ConnectionTransaction connectionTransaction = new ConnectionTransaction(rule, new TransactionConnectionContext());
-        assertThat(connectionTransaction.getDistributedTransactionOperationType(false), is(DistributedTransactionOperationType.BEGIN));
+        assertThat(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), new TransactionConnectionContext()).getDistributedTransactionOperationType(false),
+                is(DistributedTransactionOperationType.BEGIN));
     }
     
     @Test
     void assertGetDistributedTransactionCommitOperationType() {
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
-        ConnectionTransaction connectionTransaction = new ConnectionTransaction(rule, new TransactionConnectionContext());
-        assertThat(connectionTransaction.getDistributedTransactionOperationType(true), is(DistributedTransactionOperationType.COMMIT));
+        assertThat(new ConnectionTransaction(rule, new TransactionConnectionContext()).getDistributedTransactionOperationType(true), is(DistributedTransactionOperationType.COMMIT));
     }
     
     @Test
     void assertDistributedTransactionIgnoreOperationTypeWhenIsAutoCommit() {
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
-        ConnectionTransaction connectionTransaction = new ConnectionTransaction(rule, new TransactionConnectionContext());
-        assertThat(connectionTransaction.getDistributedTransactionOperationType(false), is(DistributedTransactionOperationType.IGNORE));
+        assertThat(new ConnectionTransaction(rule, new TransactionConnectionContext()).getDistributedTransactionOperationType(false), is(DistributedTransactionOperationType.IGNORE));
     }
     
     @Test
