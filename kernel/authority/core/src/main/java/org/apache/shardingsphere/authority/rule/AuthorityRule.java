@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,8 +50,11 @@ public final class AuthorityRule implements GlobalRule {
         configuration = ruleConfig;
         users = ruleConfig.getUsers().stream()
                 .map(each -> new ShardingSphereUser(each.getUsername(), each.getPassword(), each.getHostname(), each.getAuthenticationMethodName(), each.isAdmin())).collect(Collectors.toList());
-        privileges = TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps()).build(ruleConfig,
-                users.stream().map(ShardingSphereUser::getGrantee).collect(Collectors.toList()));
+        privileges = new HashMap<>();
+        for (ShardingSphereUser each : users) {
+            privileges.put(each.getGrantee(), TypedSPILoader.getService(
+                    PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps()).build(ruleConfig, each.getGrantee()));
+        }
     }
     
     /**

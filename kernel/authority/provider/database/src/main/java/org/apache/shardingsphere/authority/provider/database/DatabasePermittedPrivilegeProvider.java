@@ -55,9 +55,9 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
     }
     
     @Override
-    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig, final Collection<Grantee> grantees) {
+    public ShardingSpherePrivileges build(final AuthorityRuleConfiguration ruleConfig, final Grantee grantee) {
         Map<ShardingSphereUser, Collection<String>> userDatabasesMappings = convertToUserDatabasesMappings();
-        return grantees.stream().collect(Collectors.toMap(each -> each, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabasesMappings))));
+        return new DatabasePermittedPrivileges(getUserDatabases(grantee, userDatabasesMappings));
     }
     
     private Map<ShardingSphereUser, Collection<String>> convertToUserDatabasesMappings() {
