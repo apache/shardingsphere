@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ConnectionSavepointManagerTest {
     
-    private static final String SAVE_POINT = "SavePoint";
+    private static final String SAVE_POINT = "foo_savepoint";
     
     @Mock
     private Connection connection;
@@ -93,7 +93,7 @@ class ConnectionSavepointManagerTest {
         Statement statement = mock(Statement.class);
         when(connection.createStatement()).thenReturn(statement);
         ConnectionSavepointManager.getInstance().releaseSavepoint(connection, SAVE_POINT);
-        verify(statement).execute(String.format("RELEASE SAVEPOINT %s", SAVE_POINT));
+        verify(statement).execute("RELEASE SAVEPOINT foo_savepoint");
     }
     
     @Test
