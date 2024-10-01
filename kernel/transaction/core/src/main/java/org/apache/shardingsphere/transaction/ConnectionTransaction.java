@@ -137,4 +137,3 @@ public final class ConnectionTransaction {
         BEGIN, COMMIT, IGNORE
     }
 }
- 
