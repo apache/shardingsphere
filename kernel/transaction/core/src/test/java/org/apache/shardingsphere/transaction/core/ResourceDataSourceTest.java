@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.core;
 
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.transaction.exception.ResourceNameLengthExceededException;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
@@ -25,32 +26,27 @@ import java.util.regex.Pattern;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceDataSourceTest {
     
-    private static final String DATABASE_NAME = "sharding_db";
-    
-    private static final String DATA_SOURCE_NAME = "fooDataSource";
-    
     @Test
     void assertNewInstance() {
-        String originalName = DATABASE_NAME + "." + DATA_SOURCE_NAME;
+        String originalName = "foo_db.foo_ds";
         ResourceDataSource actual = new ResourceDataSource(originalName, new MockedDataSource());
         assertThat(actual.getOriginalName(), is(originalName));
         assertThat(actual.getDataSource(), instanceOf(MockedDataSource.class));
-        assertTrue(isStartWithNumber(actual.getUniqueResourceName()));
-        assertTrue(actual.getUniqueResourceName().endsWith(DATA_SOURCE_NAME));
-    }
-    
-    private boolean isStartWithNumber(final String resourceId) {
-        Pattern pattern = Pattern.compile("[0-9]+-.*");
-        return pattern.matcher(resourceId).matches();
+        assertThat(actual.getUniqueResourceName(), matchesPattern(Pattern.compile("\\d+-foo_ds")));
     }
     
     @Test
-    void assertDataSourceNameOnlyFailure() {
-        assertThrows(IllegalStateException.class, () -> new ResourceDataSource(DATA_SOURCE_NAME, new MockedDataSource()));
+    void assertNewInstanceFailureWithInvalidFormat() {
+        assertThrows(IllegalStateException.class, () -> new ResourceDataSource("invalid", new MockedDataSource()));
+    }
+    
+    @Test
+    void assertNewInstanceFailureWithTooLongUniqueResourceName() {
+        assertThrows(ResourceNameLengthExceededException.class, () -> new ResourceDataSource("foo_db.foo_ds_00000000000000000000000000000000000000000000000000", new MockedDataSource()));
     }
 }
