@@ -49,7 +49,8 @@ public final class AuthorityRule implements GlobalRule {
                 .map(each -> new ShardingSphereUser(each.getUsername(), each.getPassword(), each.getHostname(), each.getAuthenticationMethodName(), each.isAdmin())).collect(Collectors.toList());
         privileges = users.stream().collect(Collectors.toMap(each -> each,
                 each -> TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps())
-                        .build(ruleConfig, each.getGrantee()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                        .build(ruleConfig, each.getGrantee()),
+                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -70,7 +71,7 @@ public final class AuthorityRule implements GlobalRule {
     
     /**
      * Get grantees.
-     * 
+     *
      * @return grantees
      */
     public Collection<Grantee> getGrantees() {
