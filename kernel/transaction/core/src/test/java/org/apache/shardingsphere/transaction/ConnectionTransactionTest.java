@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -153,26 +154,26 @@ class ConnectionTransactionTest {
     @Test
     void assertGetDistributedTransactionBeginOperationType() {
         assertThat(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), new TransactionConnectionContext()).getDistributedTransactionOperationType(false),
-                is(DistributedTransactionOperationType.BEGIN));
+                is(Optional.of(DistributedTransactionOperationType.BEGIN)));
     }
     
     @Test
     void assertGetDistributedTransactionCommitOperationType() {
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
-        assertThat(new ConnectionTransaction(rule, new TransactionConnectionContext()).getDistributedTransactionOperationType(true), is(DistributedTransactionOperationType.COMMIT));
+        assertThat(new ConnectionTransaction(rule, new TransactionConnectionContext()).getDistributedTransactionOperationType(true), is(Optional.of(DistributedTransactionOperationType.COMMIT)));
     }
     
     @Test
-    void assertDistributedTransactionIgnoreOperationTypeWhenIsAutoCommit() {
+    void assertDistributedTransactionOperationTypeFailedWhenIsAutoCommit() {
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
-        assertThat(new ConnectionTransaction(rule, new TransactionConnectionContext()).getDistributedTransactionOperationType(false), is(DistributedTransactionOperationType.IGNORE));
+        assertFalse(new ConnectionTransaction(rule, new TransactionConnectionContext()).getDistributedTransactionOperationType(false).isPresent());
     }
     
     @Test
-    void assertDistributedTransactionIgnoreOperationTypeWhenIsNotInDistributedTransaction() {
+    void assertDistributedTransactionOperationTypeFailedWhenIsNotInDistributedTransaction() {
         ConnectionTransaction connectionTransaction = new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), new TransactionConnectionContext());
-        assertThat(connectionTransaction.getDistributedTransactionOperationType(true), is(DistributedTransactionOperationType.IGNORE));
+        assertFalse(connectionTransaction.getDistributedTransactionOperationType(true).isPresent());
     }
 }

@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -64,7 +65,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertSetAutoCommitWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
-        when(connectionTransaction.getDistributedTransactionOperationType(true)).thenReturn(DistributedTransactionOperationType.COMMIT);
+        when(connectionTransaction.getDistributedTransactionOperationType(true)).thenReturn(Optional.of(DistributedTransactionOperationType.COMMIT));
         when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
             DriverDatabaseConnectionManager connectionManager = mockConnectionManager(connection, connectionTransaction);
@@ -92,7 +93,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertCommitWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
-        when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
+        when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(Optional.of(DistributedTransactionOperationType.BEGIN));
         when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
             DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, connectionTransaction);
@@ -119,7 +120,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertRollbackWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
-        when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
+        when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(Optional.of(DistributedTransactionOperationType.BEGIN));
         when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
             final DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, connectionTransaction);

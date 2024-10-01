@@ -121,19 +121,20 @@ public final class ConnectionTransaction {
      * Get distributed transaction operation type.
      *
      * @param autoCommit is auto commit
-     * @return distributed transaction operation type
+     * @return got distributed transaction operation type
      */
-    public DistributedTransactionOperationType getDistributedTransactionOperationType(final boolean autoCommit) {
+    public Optional<DistributedTransactionOperationType> getDistributedTransactionOperationType(final boolean autoCommit) {
         if (!autoCommit && !distributedTransactionManager.isInTransaction()) {
-            return DistributedTransactionOperationType.BEGIN;
+            return Optional.of(DistributedTransactionOperationType.BEGIN);
         }
         if (autoCommit && distributedTransactionManager.isInTransaction()) {
-            return DistributedTransactionOperationType.COMMIT;
+            return Optional.of(DistributedTransactionOperationType.COMMIT);
         }
-        return DistributedTransactionOperationType.IGNORE;
+        return Optional.empty();
     }
     
     public enum DistributedTransactionOperationType {
-        BEGIN, COMMIT, IGNORE
+        
+        BEGIN, COMMIT
     }
 }
