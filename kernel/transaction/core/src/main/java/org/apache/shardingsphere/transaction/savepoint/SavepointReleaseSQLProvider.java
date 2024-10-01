@@ -30,6 +30,7 @@ public interface SavepointReleaseSQLProvider extends DatabaseTypedSPI {
      * Get release savepoint SQL.
      *
      * @param savepointName savepoint name
+     * @return got SQL
      */
     String getSQL(String savepointName);
 }
