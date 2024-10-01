@@ -19,7 +19,6 @@ package org.apache.shardingsphere.authority.provider.database;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.config.UserConfiguration;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -31,12 +30,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -54,15 +49,12 @@ class DatabasePermittedPrivilegeProviderTest {
                 new UserConfiguration("user1", "", "%", null, false),
                 new UserConfiguration("user3", "", "%", null, false));
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(userConfigs, mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
-        Collection<Grantee> grantees = userConfigs.stream().map(each -> new Grantee(each.getUsername(), each.getHostname())).collect(Collectors.toList());
-        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig, grantees);
-        assertThat(actual.size(), is(4));
-        assertTrue(actual.get(new Grantee("root", "localhost")).hasPrivileges("sys_db"));
-        assertTrue(actual.get(new Grantee("user1", "127.0.0.1")).hasPrivileges("sys_db"));
-        assertTrue(actual.get(new Grantee("user1", "127.0.0.1")).hasPrivileges("foo_db"));
-        assertTrue(actual.get(new Grantee("user1", "%")).hasPrivileges("bar_db"));
-        assertFalse(actual.get(new Grantee("user1", "%")).hasPrivileges("sys_db"));
-        assertFalse(actual.get(new Grantee("user3", "%")).hasPrivileges("sys_db"));
+        assertTrue(provider.build(ruleConfig, new Grantee("root", "localhost")).hasPrivileges("sys_db"));
+        assertTrue(provider.build(ruleConfig, new Grantee("user1", "127.0.0.1")).hasPrivileges("sys_db"));
+        assertTrue(provider.build(ruleConfig, new Grantee("user1", "127.0.0.1")).hasPrivileges("foo_db"));
+        assertTrue(provider.build(ruleConfig, new Grantee("user1", "%")).hasPrivileges("bar_db"));
+        assertFalse(provider.build(ruleConfig, new Grantee("user1", "%")).hasPrivileges("sys_db"));
+        assertFalse(provider.build(ruleConfig, new Grantee("user3", "%")).hasPrivileges("sys_db"));
     }
     
     @Test

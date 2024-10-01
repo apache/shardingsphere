@@ -31,11 +31,9 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -46,9 +44,8 @@ class AllPermittedPrivilegeProviderTest {
     void assertBuild(final String name, final PrivilegeProvider provider) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
                 Collections.singleton(new UserConfiguration("root", "", "%", null, false)), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
-        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(ruleConfig, Collections.singleton(new Grantee("root@%")));
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(new Grantee("root", "%")), instanceOf(AllPermittedPrivileges.class));
+        ShardingSpherePrivileges actual = provider.build(ruleConfig, new Grantee("root@%"));
+        assertThat(actual, instanceOf(AllPermittedPrivileges.class));
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
