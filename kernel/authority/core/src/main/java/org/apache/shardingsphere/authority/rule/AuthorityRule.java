@@ -41,7 +41,6 @@ public final class AuthorityRule implements GlobalRule {
     @Getter
     private final AuthorityRuleConfiguration configuration;
     
-    @Getter
     private final Collection<ShardingSphereUser> users;
     
     private final Map<Grantee, ShardingSpherePrivileges> privileges;
@@ -71,6 +70,15 @@ public final class AuthorityRule implements GlobalRule {
             return configuration.getAuthenticators().get(configuration.getDefaultAuthenticator()).getType();
         }
         return "";
+    }
+    
+    /**
+     * Get grantees.
+     * 
+     * @return grantees
+     */
+    public Collection<Grantee> getGrantees() {
+        return privileges.keySet();
     }
     
     /**
