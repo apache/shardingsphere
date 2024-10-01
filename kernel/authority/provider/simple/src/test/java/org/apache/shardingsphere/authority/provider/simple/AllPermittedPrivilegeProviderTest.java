@@ -44,7 +44,7 @@ class AllPermittedPrivilegeProviderTest {
     void assertBuild(final String name, final PrivilegeProvider provider) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
                 Collections.singleton(new UserConfiguration("root", "", "%", null, false)), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
-        ShardingSpherePrivileges actual = provider.build(ruleConfig, (new Grantee("root@%")));
+        ShardingSpherePrivileges actual = provider.build(ruleConfig, new Grantee("root@%"));
         assertThat(actual, instanceOf(AllPermittedPrivileges.class));
     }
     
