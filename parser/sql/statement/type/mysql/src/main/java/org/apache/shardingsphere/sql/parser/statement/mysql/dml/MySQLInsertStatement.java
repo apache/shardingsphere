@@ -35,7 +35,7 @@ public final class MySQLInsertStatement extends InsertStatement implements MySQL
     private SetAssignmentSegment setAssignment;
     
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
-
+    
     private ReturningSegment returningSegment;
     
     @Override
@@ -47,7 +47,7 @@ public final class MySQLInsertStatement extends InsertStatement implements MySQL
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumns);
     }
-
+    
     @Override
     public Optional<ReturningSegment> getReturningSegment() {
         return Optional.ofNullable(returningSegment);

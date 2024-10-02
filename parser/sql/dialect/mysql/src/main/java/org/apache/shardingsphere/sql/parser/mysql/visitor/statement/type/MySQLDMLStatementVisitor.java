@@ -208,7 +208,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitReturningClause(final ReturningClauseContext ctx) {
         TargetListContext targetList = ctx.targetList();
