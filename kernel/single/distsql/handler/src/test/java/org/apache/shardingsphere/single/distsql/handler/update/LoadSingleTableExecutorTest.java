@@ -96,21 +96,13 @@ class LoadSingleTableExecutorTest {
     }
     
     @Test
-    void assertExecuteUpdateWithInvalidStorageUnits() {
+    void assertExecuteUpdateWithNotExistedStorageUnits() {
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_tbl")));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
     }
     
     @Test
-    void assertExecuteUpdateWithDuplicatedTables() {
-        when(schema.containsTable("foo_tbl")).thenReturn(true);
-        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Arrays.asList(new SingleTableSegment("foo_ds", "*"), new SingleTableSegment("foo_ds", "foo_tbl")));
-        assertThrows(TableExistsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
-    }
-    
-    @Test
-    void assertExecuteUpdateWithInvalidTowLayersTableNodeStyle() {
+    void assertExecuteUpdateWithInvalidTableNodeFormatWhenSchemaNotSupported() {
         when(schema.containsTable("foo_tbl")).thenReturn(true);
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl")));
@@ -118,7 +110,16 @@ class LoadSingleTableExecutorTest {
     }
     
     @Test
-    void assertExecuteUpdateWithNotExistedActualTable() {
+    void assertExecuteUpdateWithExistedLogicTables() {
+        when(schema.containsTable("foo_tbl")).thenReturn(true);
+        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Arrays.asList(
+                new SingleTableSegment("*", "*"), new SingleTableSegment("*", "*", "*"), new SingleTableSegment("foo_ds", "*"), new SingleTableSegment("foo_ds", "foo_tbl")));
+        assertThrows(TableExistsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteUpdateWithNotExistedActualTables() {
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
