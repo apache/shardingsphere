@@ -117,7 +117,7 @@ public abstract class DeleteStatement extends AbstractSQLStatement implements DM
      */
     public void setWithSegment(final WithSegment withSegment) {
     }
-
+    
     /**
      * Get returning segment of delete statement.
      *

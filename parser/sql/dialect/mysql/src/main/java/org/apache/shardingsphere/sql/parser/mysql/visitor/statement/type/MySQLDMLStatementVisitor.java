@@ -210,7 +210,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     }
 
     @Override
-    public ASTNode visitReturningClause(ReturningClauseContext ctx) {
+    public ASTNode visitReturningClause(final ReturningClauseContext ctx) {
         TargetListContext targetList = ctx.targetList();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(targetList.getStart().getStartIndex(), targetList.getStop().getStopIndex());
         for (ProjectionContext projectionContext : targetList.projection()) {
