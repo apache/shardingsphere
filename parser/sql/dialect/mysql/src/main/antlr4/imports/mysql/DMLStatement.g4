@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : INSERT insertSpecification INTO? tableName partitionNames? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause?
+    : INSERT insertSpecification INTO? tableName partitionNames? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause? returningClause?
     ;
 
 insertSpecification
@@ -60,7 +60,7 @@ derivedColumns
     ;
 
 replace
-    : REPLACE replaceSpecification? INTO? tableName partitionNames? (replaceValuesClause | setAssignmentsClause | replaceSelectClause)
+    : REPLACE replaceSpecification? INTO? tableName partitionNames? (replaceValuesClause | setAssignmentsClause | replaceSelectClause) returningClause?
     ;
 
 replaceSpecification
@@ -105,7 +105,7 @@ blobValue
     ;
 
 delete
-    : DELETE deleteSpecification (singleTableClause | multipleTablesClause) whereClause? orderByClause? limitClause?
+    : DELETE deleteSpecification (singleTableClause | multipleTablesClause) whereClause? orderByClause? limitClause? returningClause?
     ;
 
 deleteSpecification
@@ -416,4 +416,12 @@ tableIdentOptWild
 
 tableAliasRefList
     : tableIdentOptWild (COMMA_ tableIdentOptWild)*
+    ;
+
+returningClause
+    : RETURNING targetList
+    ;
+
+targetList
+    : projection (COMMA_ projection)*
     ;

@@ -158,6 +158,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -1390,6 +1391,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
+        if (null != ctx.returningClause()) {
+            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+        }
         return result;
     }
     
@@ -1462,6 +1466,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
+        if (null != ctx.returningClause()) {
+            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+        }
         return result;
     }
     
@@ -1593,6 +1600,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
+        if (null != ctx.returningClause()) {
+            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+        }
         return result;
     }
     

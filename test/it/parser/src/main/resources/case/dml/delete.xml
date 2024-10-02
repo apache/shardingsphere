@@ -742,4 +742,34 @@
             </expr>
         </where>
     </delete>
+    <delete sql-case-id="delete_returning_expressions">
+        <table name="t2" start-index="12" stop-index="13" />
+        <where start-index="15" stop-index="26">
+            <expr>
+                <binary-operation-expression start-index="21" stop-index="26">
+                    <left>
+                        <column name="id" start-index="21" stop-index="22" />
+                    </left>
+                    <right>
+                        <literal-expression value="2" start-index="26" stop-index="26" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <returning start-index="29" stop-index="44">
+            <projections start-index="39" stop-index="44">
+                <column-projection name="id" start-index="39" stop-index="40" />
+                <expression-projection start-index="42" stop-index="44" text="t&amp;t">
+                    <left>
+                        <column name="t" start-index="42" stop-index="42" />
+                    </left>
+                    <operator>&amp;</operator>
+                    <right>
+                        <column name="t" start-index="44" stop-index="44" />
+                    </right>
+                </expression-projection>
+            </projections>
+        </returning>
+    </delete>
 </sql-parser-test-cases>

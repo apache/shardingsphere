@@ -4288,4 +4288,36 @@
             </assignment>
         </on-duplicate-key-columns>
     </insert>
+    <insert sql-case-id="insert_returning_expressions">
+        <table name="t2" start-index="12" stop-index="13" />
+        <columns start-index="15" stop-index="18">
+            <column name ="id" start-index="16" stop-index="17" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="28" stop-index="28" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="32" stop-index="32" />
+                </assignment-value>
+            </value>
+        </values>
+        <returning start-index="35" stop-index="50">
+            <projections start-index="45" stop-index="50">
+                <column-projection name="id" start-index="45" stop-index="46" />
+                <expression-projection start-index="48" stop-index="50" text="t&amp;t">
+                    <left>
+                        <column name="t" start-index="48" stop-index="48" />
+                    </left>
+                    <operator>&amp;</operator>
+                    <right>
+                        <column name="t" start-index="50" stop-index="50" />
+                    </right>
+                </expression-projection>
+            </projections>
+        </returning>
+    </insert>
 </sql-parser-test-cases>
