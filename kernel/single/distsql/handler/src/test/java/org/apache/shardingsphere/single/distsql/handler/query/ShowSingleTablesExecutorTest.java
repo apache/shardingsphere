@@ -45,26 +45,11 @@ import static org.mockito.Mockito.when;
 
 class ShowSingleTablesExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
-    DistSQLQueryExecuteEngine setUp(final ShowSingleTablesStatement statement) {
-        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        SingleRule rule = mockSingleRule();
-        when(database.getRuleMetaData().findSingleRule(SingleRule.class)).thenReturn(Optional.of(rule));
-        return result;
-    }
-    
     @Test
     void assertGetRowData() throws SQLException {
-        engine = setUp(mock(ShowSingleTablesStatement.class));
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
+        DistSQLQueryExecuteEngine executeEngine = new DistSQLQueryExecuteEngine(mock(ShowSingleTablesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+        executeEngine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = executeEngine.getRows();
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -77,14 +62,23 @@ class ShowSingleTablesExecutorTest {
     
     @Test
     void assertGetSingleTableWithLikeLiteral() throws SQLException {
-        engine = setUp(new ShowSingleTablesStatement(null, "%item"));
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
+        DistSQLQueryExecuteEngine executeEngine = new DistSQLQueryExecuteEngine(new ShowSingleTablesStatement(null, "%item"), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+        executeEngine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = executeEngine.getRows();
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("t_order_item"));
         assertThat(row.getCell(2), is("ds_2"));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        SingleRule rule = mockSingleRule();
+        when(database.getRuleMetaData().findSingleRule(SingleRule.class)).thenReturn(Optional.of(rule));
+        return result;
     }
     
     private SingleRule mockSingleRule() {
