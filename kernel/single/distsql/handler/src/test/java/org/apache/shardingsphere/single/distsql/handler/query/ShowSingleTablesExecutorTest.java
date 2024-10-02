@@ -30,10 +30,11 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,30 +47,25 @@ import static org.mockito.Mockito.when;
 class ShowSingleTablesExecutorTest {
     
     @Test
-    void assertGetRowData() throws SQLException {
+    void assertExecuteQuery() throws SQLException {
         DistSQLQueryExecuteEngine executeEngine = new DistSQLQueryExecuteEngine(mock(ShowSingleTablesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
         executeEngine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = executeEngine.getRows();
+        List<LocalDataQueryResultRow> actual = new ArrayList<>(executeEngine.getRows());
         assertThat(actual.size(), is(2));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("t_order"));
-        assertThat(row.getCell(2), is("ds_1"));
-        row = iterator.next();
-        assertThat(row.getCell(1), is("t_order_item"));
-        assertThat(row.getCell(2), is("ds_2"));
+        assertThat(actual.get(0).getCell(1), is("t_order"));
+        assertThat(actual.get(0).getCell(2), is("ds_1"));
+        assertThat(actual.get(1).getCell(1), is("t_order_item"));
+        assertThat(actual.get(1).getCell(2), is("ds_2"));
     }
     
     @Test
-    void assertGetSingleTableWithLikeLiteral() throws SQLException {
+    void assertExecuteQueryWithLikeLiteral() throws SQLException {
         DistSQLQueryExecuteEngine executeEngine = new DistSQLQueryExecuteEngine(new ShowSingleTablesStatement(null, "%item"), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
         executeEngine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = executeEngine.getRows();
+        List<LocalDataQueryResultRow> actual = new ArrayList<>(executeEngine.getRows());
         assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("t_order_item"));
-        assertThat(row.getCell(2), is("ds_2"));
+        assertThat(actual.get(0).getCell(1), is("t_order_item"));
+        assertThat(actual.get(0).getCell(2), is("ds_2"));
     }
     
     private ContextManager mockContextManager() {
