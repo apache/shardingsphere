@@ -62,8 +62,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ContextManager contextManager = mockContextManager(rule, database);
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement(null), "foo_db", contextManager);
-        engine.executeUpdate();
+        new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement(null), "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         verify(metaDataManagerPersistService)
                 .removeRuleConfigurationItem(eq("foo_db"), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("foo_ds"))));
@@ -79,8 +78,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         when(database.getResourceMetaData().getStorageUnits().keySet()).thenReturn(new HashSet<>(Arrays.asList("foo_ds", "bar_ds")));
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager(rule, database);
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement("bar_ds"), "foo_db", contextManager);
-        engine.executeUpdate();
+        new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement("bar_ds"), "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         verify(metaDataManagerPersistService).removeRuleConfigurationItem("foo_db", null);
         verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("bar_ds"))));

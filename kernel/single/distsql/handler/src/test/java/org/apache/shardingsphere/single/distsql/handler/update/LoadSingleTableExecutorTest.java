@@ -17,41 +17,57 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings({SingleTableDataNodeLoader.class, SingleTableLoadUtils.class})
+@MockitoSettings(strictness = Strictness.LENIENT)
 class LoadSingleTableExecutorTest {
-    
-    private final LoadSingleTableExecutor executor = new LoadSingleTableExecutor();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -61,59 +77,93 @@ class LoadSingleTableExecutorTest {
     
     @BeforeEach
     void setUp() {
+        when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(schema);
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
     }
     
+    private ContextManager mockContextManager(final SingleRule rule) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        if (null == rule) {
+            when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        } else {
+            when(rule.getAttributes()).thenReturn(new RuleAttributes());
+            when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        }
+        return result;
+    }
+    
     @Test
-    void assertCheckWithDuplicatedTables() {
-        when(database.getName()).thenReturn("foo_db");
-        when(schema.containsTable("foo")).thenReturn(true);
+    void assertExecuteUpdateWithNotExistedStorageUnits() {
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_tbl")));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteUpdateWithInvalidTableNodeFormatWhenSchemaNotSupported() {
+        when(schema.containsTable("foo_tbl")).thenReturn(true);
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", "foo")));
-        executor.setDatabase(database);
-        assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl")));
+        assertThrows(InvalidDataNodeFormatException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
     }
     
     @Test
-    void assertCheckWithEmptyStorageUnits() {
-        when(database.getName()).thenReturn("foo_db");
-        when(database.getResourceMetaData().getStorageUnits().isEmpty()).thenReturn(true);
-        executor.setDatabase(database);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", "*")));
-        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+    void assertExecuteUpdateWithExistedLogicTables() {
+        when(schema.containsTable("foo_tbl")).thenReturn(true);
+        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Arrays.asList(
+                new SingleTableSegment("*", "*"), new SingleTableSegment("*", "*", "*"), new SingleTableSegment("foo_ds", "*"), new SingleTableSegment("foo_ds", "foo_tbl")));
+        assertThrows(TableExistsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
     }
     
     @Test
-    void assertCheckWithInvalidStorageUnit() {
-        when(database.getName()).thenReturn("foo_db");
-        executor.setDatabase(database);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("ds_0", "foo")));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+    void assertExecuteUpdateWithNotExistedActualTables() {
+        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        when(SingleTableLoadUtils.getAggregatedDataSourceMap(any(), any())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_tbl")));
+        assertThrows(TableNotFoundException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class))).executeUpdate());
     }
     
     @Test
-    void assertBuild() {
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", "foo")));
-        SingleRule rule = mock(SingleRule.class);
-        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
-        executor.setRule(rule);
-        SingleRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        assertThat(actual.getTables().iterator().next(), is("ds_0.foo"));
-    }
-    
-    @Test
-    void assertUpdate() {
-        Collection<String> currentTables = new LinkedList<>(Collections.singletonList("ds_0.foo"));
+    void assertExecuteUpdateWithSingleRule() throws SQLException {
+        Collection<String> currentTables = new LinkedList<>(Collections.singleton("foo_ds.foo_tbl"));
+        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        when(SingleTableDataNodeLoader.load(eq("foo_db"), any(), any())).thenReturn(Collections.singletonMap("foo_tbl", Collections.singleton(new DataNode("foo_ds.foo_tbl"))));
+        when(SingleTableLoadUtils.convertToDataNodes(eq("foo_db"), any(), any())).thenReturn(Collections.singleton(new DataNode("foo_ds.foo_tbl")));
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
-        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", "bar")));
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", "bar_tbl")));
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
-        SingleRuleConfiguration toBeCreatedConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        Iterator<String> iterator = toBeCreatedConfig.getTables().iterator();
-        assertThat(iterator.next(), is("ds_0.foo"));
-        assertThat(iterator.next(), is("ds_0.bar"));
+        ContextManager contextManager = mockContextManager(rule);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"), any());
+    }
+    
+    @Test
+    void assertExecuteUpdateWithoutSingleRule() throws SQLException {
+        Collection<String> currentTables = new LinkedList<>(Collections.singleton("foo_ds.foo_tbl"));
+        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        when(SingleTableDataNodeLoader.load(eq("foo_db"), any(), any())).thenReturn(Collections.singletonMap("foo_tbl", Collections.singleton(new DataNode("foo_ds.foo_tbl"))));
+        when(SingleTableLoadUtils.convertToDataNodes(eq("foo_db"), any(), any())).thenReturn(Collections.singleton(new DataNode("foo_ds.foo_tbl")));
+        SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", "bar_tbl")));
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getConfiguration()).thenReturn(currentConfig);
+        ContextManager contextManager = mockContextManager(null);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"), any());
     }
 }
