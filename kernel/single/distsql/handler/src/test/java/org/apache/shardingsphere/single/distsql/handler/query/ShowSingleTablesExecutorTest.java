@@ -30,10 +30,11 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,10 +46,26 @@ import static org.mockito.Mockito.when;
 
 class ShowSingleTablesExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
+    @Test
+    void assertExecuteQuery() throws SQLException {
+        DistSQLQueryExecuteEngine executeEngine = new DistSQLQueryExecuteEngine(mock(ShowSingleTablesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+        executeEngine.executeQuery();
+        List<LocalDataQueryResultRow> actual = new ArrayList<>(executeEngine.getRows());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getCell(1), is("t_order"));
+        assertThat(actual.get(0).getCell(2), is("ds_1"));
+        assertThat(actual.get(1).getCell(1), is("t_order_item"));
+        assertThat(actual.get(1).getCell(2), is("ds_2"));
+    }
     
-    DistSQLQueryExecuteEngine setUp(final ShowSingleTablesStatement statement) {
-        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+    @Test
+    void assertExecuteQueryWithLikeLiteral() throws SQLException {
+        DistSQLQueryExecuteEngine executeEngine = new DistSQLQueryExecuteEngine(new ShowSingleTablesStatement(null, "%item"), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+        executeEngine.executeQuery();
+        List<LocalDataQueryResultRow> actual = new ArrayList<>(executeEngine.getRows());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getCell(1), is("t_order_item"));
+        assertThat(actual.get(0).getCell(2), is("ds_2"));
     }
     
     private ContextManager mockContextManager() {
@@ -58,33 +75,6 @@ class ShowSingleTablesExecutorTest {
         SingleRule rule = mockSingleRule();
         when(database.getRuleMetaData().findSingleRule(SingleRule.class)).thenReturn(Optional.of(rule));
         return result;
-    }
-    
-    @Test
-    void assertGetRowData() throws SQLException {
-        engine = setUp(mock(ShowSingleTablesStatement.class));
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(2));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("t_order"));
-        assertThat(row.getCell(2), is("ds_1"));
-        row = iterator.next();
-        assertThat(row.getCell(1), is("t_order_item"));
-        assertThat(row.getCell(2), is("ds_2"));
-    }
-    
-    @Test
-    void assertGetSingleTableWithLikeLiteral() throws SQLException {
-        engine = setUp(new ShowSingleTablesStatement(null, "%item"));
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("t_order_item"));
-        assertThat(row.getCell(2), is("ds_2"));
     }
     
     private SingleRule mockSingleRule() {
