@@ -66,14 +66,7 @@ class CreateMaskRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertWithoutIfNotExistsRuleConfiguration));
-    }
-    
-    private boolean assertWithoutIfNotExistsRuleConfiguration(final MaskRuleConfiguration actual) {
-        assertThat(actual.getTables().size(), is(2));
-        assertTrue(actual.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
-        assertTrue(actual.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
-        return true;
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfiguration));
     }
     
     @Test
@@ -85,7 +78,7 @@ class CreateMaskRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertWithIfNotExistsRuleConfiguration));
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfiguration));
     }
     
     private CreateMaskRuleStatement createSQLStatement(final boolean ifNotExists, final String algorithmType) {
@@ -117,7 +110,7 @@ class CreateMaskRuleExecutorTest {
         return new MaskRuleConfiguration(rules, Collections.emptyMap());
     }
     
-    private boolean assertWithIfNotExistsRuleConfiguration(final MaskRuleConfiguration actual) {
+    private boolean assertRuleConfiguration(final MaskRuleConfiguration actual) {
         assertThat(actual.getTables().size(), is(2));
         assertTrue(actual.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
         assertTrue(actual.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
