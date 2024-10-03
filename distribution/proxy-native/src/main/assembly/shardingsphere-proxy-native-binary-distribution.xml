@@ -19,16 +19,17 @@
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
     <id>shardingsphere-proxy-native-bin</id>
     <formats>
+        <format>dir</format>
         <format>tar.gz</format>
     </formats>
-    <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${project.build.finalName}-shardingsphere-proxy-native-bin</baseDirectory>
+    <includeBaseDirectory>false</includeBaseDirectory>
     
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
             <includes>
-                <include>${imageName}</include>
+                <include>${proxy.native.image.name}</include>
+                <include>*.so</include>
             </includes>
             <outputDirectory>/</outputDirectory>
             <fileMode>0755</fileMode>
@@ -41,7 +42,9 @@
         <fileSet>
             <directory>../../distribution/proxy/src/main/release-docs</directory>
             <includes>
-                <include>**/*</include>
+                <include>licenses/*</include>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
             </includes>
             <outputDirectory>/</outputDirectory>
         </fileSet>

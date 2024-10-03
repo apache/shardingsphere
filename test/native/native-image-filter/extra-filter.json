@@ -8,6 +8,7 @@
     {"excludeClasses": "groovy.**"},
     {"excludeClasses": "io.**"},
     {"excludeClasses": "java.**"},
+    {"includeClasses": "java.util.LinkedHashSet"},
     {"includeClasses": "java.util.Properties"},
     {"includeClasses": "java.util.ServiceLoader"},
     {"excludeClasses": "javax.**"},

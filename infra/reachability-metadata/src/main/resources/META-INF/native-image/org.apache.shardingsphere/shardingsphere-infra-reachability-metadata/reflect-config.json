@@ -61,6 +61,11 @@
   "methods":[{"name":"getDefaultType","parameterTypes":[] }, {"name":"getProps","parameterTypes":[] }, {"name":"getProviderType","parameterTypes":[] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration"},
+  "name":"org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration",
+  "allPublicMethods":true
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer"},
   "name":"org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer",
   "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
@@ -78,6 +83,31 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveInsertStatement"},
   "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveInsertStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLDeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveDeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerDeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseDeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

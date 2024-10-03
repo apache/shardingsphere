@@ -9,6 +9,11 @@
 {
   "condition":{"typeReachable":"com.zaxxer.hikari.HikariDataSource"},
   "name":"com.zaxxer.hikari.HikariDataSource",
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"isClosed","parameterTypes":[] }, {"name":"isRunning","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"isClosed","parameterTypes":[] }, {"name":"isRunning","parameterTypes":[] }, {"name":"getHikariPoolMXBean","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"com.zaxxer.hikari.pool.HikariPool"},
+  "name":"com.zaxxer.hikari.pool.HikariPool",
+  "methods":[{"name":"getActiveConnections","parameterTypes":[] }]
 }
 ]
