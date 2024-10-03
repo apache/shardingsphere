@@ -86,9 +86,8 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     
     private ContextManager mockContextManager(final SingleRule rule, final ShardingSphereDatabase database) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(rule));
         when(database.getName()).thenReturn("foo_db");
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }

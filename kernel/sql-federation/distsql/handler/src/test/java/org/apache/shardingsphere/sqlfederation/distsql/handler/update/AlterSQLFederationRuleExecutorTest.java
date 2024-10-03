@@ -18,52 +18,74 @@
 package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import java.sql.SQLException;
+import java.util.Collections;
+
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class AlterSQLFederationRuleExecutorTest {
     
-    private DistSQLUpdateExecuteEngine engine;
-    
     @Test
-    void assertExecute() {
+    void assertExecuteUpdate() throws SQLException {
         AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(true, true, new CacheOptionSegment(64, 512L));
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+        ContextManager contextManager = mockContextManager();
+        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
+                ArgumentMatchers.<SQLFederationRuleConfiguration>argThat(x -> assertRuleConfiguration(x, true, true, new CacheOption(64, 512L))));
     }
     
     @Test
-    void assertExecuteWithNullStatement() {
+    void assertExecuteUpdateWithNullStatement() throws SQLException {
         AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(null, null, null);
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+        ContextManager contextManager = mockContextManager();
+        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
+                ArgumentMatchers.<SQLFederationRuleConfiguration>argThat(x -> assertRuleConfiguration(x, false, false, new CacheOption(2000, 65535L))));
     }
     
     @Test
-    void assertExecuteWithNullCacheOptionSegment() {
+    void assertExecuteUpdateWithNullCacheOptionSegment() throws SQLException {
         AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(null, null, new CacheOptionSegment(null, null));
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+        ContextManager contextManager = mockContextManager();
+        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
+                ArgumentMatchers.<SQLFederationRuleConfiguration>argThat(x -> assertRuleConfiguration(x, false, false, new CacheOption(2000, 65535L))));
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    private boolean assertRuleConfiguration(final SQLFederationRuleConfiguration actual,
+                                            final boolean expectedSQLFederationEnabled, final boolean expectedAllQueryUseSQLFederation, final CacheOption expectedExecutionPlanCache) {
+        assertThat(actual.isSqlFederationEnabled(), is(expectedSQLFederationEnabled));
+        assertThat(actual.isAllQueryUseSQLFederation(), is(expectedAllQueryUseSQLFederation));
+        assertThat(actual.getExecutionPlanCache(), deepEqual(expectedExecutionPlanCache));
+        return true;
+    }
+    
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         SQLFederationRule rule = mock(SQLFederationRule.class);
-        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
-        when(executor.getRuleClass()).thenReturn(SQLFederationRule.class);
         when(rule.getConfiguration()).thenReturn(new DefaultSQLFederationRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         return result;
     }
 }
