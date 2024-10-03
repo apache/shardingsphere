@@ -45,14 +45,6 @@ import static org.mockito.Mockito.when;
 
 class CreateBroadcastTableRuleExecutorTest {
     
-    private ContextManager mockContextManager(final ShardingSphereDatabase database, final BroadcastRule rule) {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("foo_db");
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(null == rule ? Collections.emptyList() : Collections.singleton(rule)));
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        return result;
-    }
-    
     @Test
     void assertExecuteUpdateWithEmptyStorageUnits() {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
@@ -106,5 +98,13 @@ class CreateBroadcastTableRuleExecutorTest {
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"),
                 ArgumentMatchers.<BroadcastRuleConfiguration>argThat(x -> x.getTables().equals(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl")))));
+    }
+    
+    private ContextManager mockContextManager(final ShardingSphereDatabase database, final BroadcastRule rule) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(null == rule ? Collections.emptyList() : Collections.singleton(rule)));
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        return result;
     }
 }
