@@ -30,9 +30,9 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,14 +46,12 @@ class ShowGlobalClockRuleExecutorTest {
     void assertGlobalClockRule() throws SQLException {
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowGlobalClockRuleStatement(), null, mockContextManager(), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
+        List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
         assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("TSO"));
-        assertThat(row.getCell(2), is("local"));
-        assertThat(row.getCell(3), is("false"));
-        assertThat(row.getCell(4), is("{\"key\":\"value\"}"));
+        assertThat(actual.get(0).getCell(1), is("TSO"));
+        assertThat(actual.get(0).getCell(2), is("local"));
+        assertThat(actual.get(0).getCell(3), is("false"));
+        assertThat(actual.get(0).getCell(4), is("{\"key\":\"value\"}"));
     }
     
     private ContextManager mockContextManager() {
