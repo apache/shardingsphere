@@ -18,44 +18,49 @@
 package org.apache.shardingsphere.globalclock.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
-import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class AlterGlobalClockRuleExecutorTest {
     
-    private DistSQLUpdateExecuteEngine engine;
-    
-    @BeforeEach
-    void setUp() {
-        AlterGlobalClockRuleStatement sqlStatement = new AlterGlobalClockRuleStatement("TSO", "redis", Boolean.TRUE, new Properties());
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+    @Test
+    void assertExecute() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        new DistSQLUpdateExecuteEngine(new AlterGlobalClockRuleStatement("TSO", "redis", true, new Properties()), null, contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(ArgumentMatchers.argThat(this::assertRuleConfiguration));
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    private boolean assertRuleConfiguration(final GlobalClockRuleConfiguration actual) {
+        assertThat(actual.getType(), is("TSO"));
+        assertThat(actual.getProvider(), is("redis"));
+        assertTrue(actual.isEnabled());
+        return true;
+    }
+    
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         GlobalClockRule rule = mock(GlobalClockRule.class);
-        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
-        when(executor.getRuleClass()).thenReturn(GlobalClockRule.class);
-        when(rule.getConfiguration()).thenReturn(new DefaultGlobalClockRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        when(rule.getConfiguration()).thenReturn(new GlobalClockRuleConfiguration("TSO", "local", false, new Properties()));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         return result;
-    }
-    
-    @Test
-    void assertExecute() {
-        assertDoesNotThrow(() -> engine.executeUpdate());
     }
 }
