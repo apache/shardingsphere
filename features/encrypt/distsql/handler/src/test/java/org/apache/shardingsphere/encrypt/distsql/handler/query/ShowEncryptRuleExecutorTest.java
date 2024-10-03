@@ -29,13 +29,11 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -47,22 +45,13 @@ import static org.mockito.Mockito.when;
 
 class ShowEncryptRuleExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
-    @BeforeEach
-    void setUp() {
-        ShowEncryptRulesStatement showEncryptRulesStatement = mock(ShowEncryptRulesStatement.class);
-        when(showEncryptRulesStatement.getTableName()).thenReturn("T_ENCRYPT");
-        engine = new DistSQLQueryExecuteEngine(showEncryptRulesStatement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
-    }
-    
     @Test
     void assertGetRowData() throws SQLException {
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowEncryptRulesStatement("T_ENCRYPT", null), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
+        LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("t_encrypt"));
         assertThat(row.getCell(2), is("user_id"));
         assertThat(row.getCell(3), is("user_cipher"));
