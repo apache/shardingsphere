@@ -71,7 +71,7 @@ public class ShardingSphereTransactionManagerFixture implements ShardingSphereDi
     
     @Override
     public boolean containsProviderType(final String providerType) {
-        return true;
+        return !"Invalid".equals(providerType);
     }
     
     @Override
