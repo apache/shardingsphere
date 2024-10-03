@@ -18,52 +18,71 @@
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import java.sql.SQLException;
+import java.util.Collections;
+
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class AlterSQLParserRuleExecutorTest {
     
-    private DistSQLUpdateExecuteEngine engine;
-    
     @Test
-    void assertExecute() {
+    void assertExecute() throws SQLException {
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+        ContextManager contextManager = mockContextManager();
+        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
+                ArgumentMatchers.<SQLParserRuleConfiguration>argThat(x -> assertRuleConfiguration(x, new CacheOption(64, 512L), new CacheOption(1000, 1000L))));
     }
     
     @Test
-    void assertExecuteWithNullStatement() {
+    void assertExecuteWithNullStatement() throws SQLException {
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(null, null);
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+        ContextManager contextManager = mockContextManager();
+        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
+                ArgumentMatchers.<SQLParserRuleConfiguration>argThat(x -> assertRuleConfiguration(x, new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));
     }
     
     @Test
-    void assertExecuteWithNullCacheOptionSegment() {
+    void assertExecuteWithNullCacheOptionSegment() throws SQLException {
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(null, null), new CacheOptionSegment(null, null));
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+        ContextManager contextManager = mockContextManager();
+        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
+                ArgumentMatchers.<SQLParserRuleConfiguration>argThat(x -> assertRuleConfiguration(x, new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    private boolean assertRuleConfiguration(final SQLParserRuleConfiguration actual, final CacheOption expectedParseTreeCache, final CacheOption expectedSQLStatementCache) {
+        assertThat(actual.getParseTreeCache(), deepEqual(expectedParseTreeCache));
+        assertThat(actual.getSqlStatementCache(), deepEqual(expectedSQLStatementCache));
+        return true;
+    }
+    
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         SQLParserRule rule = mock(SQLParserRule.class);
-        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
-        when(executor.getRuleClass()).thenReturn(SQLParserRule.class);
         when(rule.getConfiguration()).thenReturn(new DefaultSQLParserRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         return result;
     }
 }
