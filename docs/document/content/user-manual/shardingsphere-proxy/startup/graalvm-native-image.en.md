@@ -14,8 +14,8 @@ For background information about GraalVM Native Image, please refer to https://w
 
 ## Notice
 
-All Docker Images mentioned in this section are not distributed through ASF official channels such as https://downloads.apache.org and https://repository.apache.org/ .
-Docker Images are only provided on downstream channels such as `ghcr.io` for convenience.
+All Docker images mentioned in this section are not distributed through ASF official channels such as https://downloads.apache.org and https://repository.apache.org .
+Docker images are only provided in downstream channels such as `GitHub Packages` and `Docker Hub` for easy use.
 
 Native Image products of Proxy exist in nightly builds at https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-proxy-native .
 Assuming that there is a `conf` folder containing `global.yaml` as `./custom/conf`, you can test it with the following `docker-compose.yml` file.
@@ -53,6 +53,9 @@ This section assumes that you are in one of the following system environments:
 
 If you are in a system environment that Graal compiler does not support, such as Linux (riscv64),
 please enable LLVM backend according to the content of https://medium.com/graalvm/graalvm-native-image-meets-risc-v-899be38eddd9 to use the LLVM compiler.
+
+Users must build the different GraalVM Native Image for each target operating system and target architecture that they need to run the GraalVM Native Image on.
+Users can consider partially circumventing this limitation by using Docker Image.
 
 This section is still limited by the documented content of the [GraalVM Native Image](/us/user-manual/shardingsphere-jdbc/graalvm-native-image) on the ShardingSphere JDBC side.
 
@@ -116,18 +119,24 @@ cd ./shardingsphere/
    The third parameter is the host to listen to. If it is `0.0.0.0`, any database client is allowed to access ShardingSphere Proxy Native.
    The fourth parameter is Force Start. If it is `true`, it ensures that ShardingSphere Proxy Native can start normally regardless of whether it can be connected.
 
-Assuming the folder `./custom/conf` already exists, the example is.
+Only command line parameters can be set for binaries of built GraalVM Native Images. This means that:
+
+(1) Users can only set JVM parameters during the process of building a GraalVM Native Image
+(2) Users cannot set JVM parameters for binaries of built GraalVM Native Images
+
+Assuming the folder `/customAbsolutePath/conf` already exists, the example is.
 
 ```bash
 cd ./shardingsphere/
 cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.1-SNAPSHOT-shardingsphere-proxy-native-bin/
-./proxy-native "3307" "./custom/conf" "0.0.0.0" "false"
+./proxy-native "3307" "/customAbsolutePath/conf" "0.0.0.0" "false"
 ```
 
 4. If you need to build a Docker Image, after adding the dependencies that have SPI implementation or third-party dependencies, 
    execute the following command in the command line:
 
 ```shell
+cd ./shardingsphere/
 ./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,docker.native -DskipTests clean package
 ```
 
@@ -144,25 +153,34 @@ services:
       - "3307:3307"
 ```
 
-If you do not make any changes to the Git Source, 
-the commands mentioned above will use `oraclelinux:9-slim` as the Base Docker Image.
-But if you want to use a smaller Docker Image such as `busybox:glic`, 
-`gcr.io/distroless/base` or `scratch` as the Base Docker Image, 
-you need to follow the requirements of https://www.graalvm.org/jdk23/reference-manual/native-image/guides/build-static-executables/ and add `-H:+StaticExecutableWithDynamicLibC` to the `jvmArgs` of the `native profile` in `pom.xml`.
-Also note that some third-party dependencies will require more system libraries to be installed in the `Dockerfile`, such as `libdl`.
-So make sure to adjust the contents of `pom.xml` and `Dockerfile` under `distribution/proxy-native` according to your usage.
+If the user does not make any changes to the Git Source, the command mentioned above will use `oraclelinux:9-slim` as the Base Docker Image.
+But if the user wants to use a smaller Docker Image such as `scratch`, `alpine:3`, `gcr.io/distroless/base-debian12`,
+`gcr.io/distroless/java-base-debian12` or `gcr.io/distroless/static-debian12` as the Base Docker Image,
+the user may need to add `--static`, 
+`--libc=musl` or `--static-nolibc` to the `Maven Profile` of `pom.xml` as required by https://www.graalvm.org/jdk23/reference-manual/native-image/guides/build-static-executables/ and other operations such as `buildArgs`.
+
+Building a statically linked GraalVM Native Image requires more system dependencies, 
+and currently does not support building statically linked GraalVM Native Images for environments such as Linux (aarch64).
+Fully statically linked GraalVM Native Images use musl libc.
+Most Linux systems come with outdated musl, such as Ubuntu 22.04.5 LTS which uses [musl (1.2.2-4) unstable](https://packages.ubuntu.com/jammy/musl).
+Users always need to build and install a new version of musl from source.
+
+Also note that some third-party Maven dependencies will require more system libraries to be installed in the `Dockerfile`,
+so make sure to adjust the contents of `pom.xml` and `Dockerfile` under `distribution/proxy-native` according to your usage.
 
 ## Observability
 
 The observability provided by ShardingSphere Proxy in the form of GraalVM Native Image is not consistent with [observability](/cn/user-manual/shardingsphere-proxy/observability).
 
 Users can use a series of command-line tools or visualization tools provided by https://www.graalvm.org/jdk23/tools/ to observe the internal behavior of GraalVM Native Image,
-and use VSCode to complete debugging work according to their requirements. 
-If users are using IntelliJ IDEA and want to debug the generated GraalVM Native Image,
-users can follow https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java and its successors.
-If users are not using Linux, they cannot debug GraalVM Native Image. Please follow https://github.com/oracle/graal/issues/5648 which has not been closed.
+and use VSCode under Linux to complete debugging work according to their requirements. 
+If the user is using IntelliJ IDEA and wants to debug the generated GraalVM Native Image,
+the user can follow https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java and its successors.
+
+If the user is not using Linux, the GraalVM Native Image cannot be debugged. 
+Please follow https://github.com/oracle/graal/issues/5648 which has not been closed.
 
 For Java Agents such as `ShardingSphere Agent`, the `native-image` component of GraalVM does not fully support the use of javaagent when building Native Image.
-Users need to pay attention to https://github.com/oracle/graal/issues/1065 which has not been closed.
+Users need to pay attention to https://github.com/oracle/graal/issues/8177 which has not been closed.
 
 If users expect to use such Java Agents under ShardingSphere Proxy Native, they need to pay attention to the changes involved in https://github.com/oracle/graal/pull/8077 .

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.proxy.commons;
+package org.apache.shardingsphere.test.natived.commons.proxy;
 
 import lombok.Getter;
 import org.apache.curator.test.InstanceSpec;

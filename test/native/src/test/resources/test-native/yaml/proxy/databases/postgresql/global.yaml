@@ -15,4 +15,16 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.natived.commons.algorithm.TestQueryAssistedShardingEncryptAlgorithm
+mode:
+  type: Standalone
+  repository:
+    type: JDBC
+authority:
+  users:
+    - user: root@%
+      password: root
+  privilege:
+    type: ALL_PERMITTED
+props:
+  sql-show: false
+  proxy-frontend-database-protocol-type: PostgreSQL

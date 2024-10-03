@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.commons.repository;
+package org.apache.shardingsphere.test.natived.commons.repository;
 
-import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Order;
+import org.apache.shardingsphere.test.natived.commons.entity.Order;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

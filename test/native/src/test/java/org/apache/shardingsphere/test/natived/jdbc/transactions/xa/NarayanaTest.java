@@ -21,7 +21,7 @@ import com.arjuna.ats.arjuna.common.CoreEnvironmentBeanException;
 import com.arjuna.ats.arjuna.common.arjPropertyManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;

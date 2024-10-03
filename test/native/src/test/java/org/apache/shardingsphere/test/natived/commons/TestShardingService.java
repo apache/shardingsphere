@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.commons;
+package org.apache.shardingsphere.test.natived.commons;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Address;
-import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Order;
-import org.apache.shardingsphere.test.natived.jdbc.commons.entity.OrderItem;
-import org.apache.shardingsphere.test.natived.jdbc.commons.repository.AddressRepository;
-import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderItemRepository;
-import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderRepository;
+import org.apache.shardingsphere.test.natived.commons.entity.Address;
+import org.apache.shardingsphere.test.natived.commons.entity.Order;
+import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
+import org.apache.shardingsphere.test.natived.commons.repository.AddressRepository;
+import org.apache.shardingsphere.test.natived.commons.repository.OrderItemRepository;
+import org.apache.shardingsphere.test.natived.commons.repository.OrderRepository;
 import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
