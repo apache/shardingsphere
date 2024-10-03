@@ -100,8 +100,8 @@ class AlterEncryptRuleExecutorTest {
         when(rule.getAllTableNames()).thenReturn(Collections.singleton("t_encrypt"));
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
         ContextManager contextManager = mockContextManager(rule);
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         new DistSQLUpdateExecuteEngine(createSQLStatementWithoutAssistQueryAndLikeColumns(), "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         metaDataManagerPersistService.removeRuleConfigurationItem(eq("foo_db"), ArgumentMatchers.argThat(this::assertToBeDroppedRuleConfiguration));
         metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration));
     }
