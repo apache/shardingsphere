@@ -17,55 +17,74 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.distsql.handler.fixture.ShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShardingSphereServiceLoader.class)
 class AlterTransactionRuleExecutorTest {
     
     @Test
-    void assertExecuteWithXA() {
-        when(ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributedTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
-        AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
-        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement(
-                "XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))));
-        TransactionRule rule = mock(TransactionRule.class);
-        executor.setRule(rule);
-        TransactionRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        assertThat(actual.getDefaultType(), is("XA"));
-        assertThat(actual.getProviderType(), is("Atomikos"));
-        assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("host"), is("127.0.0.1"));
-        assertThat(actual.getProps().getProperty("databaseName"), is("jbossts"));
+    void assertExecuteUpdateWithInvalidTransactionType() {
+        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement("Invalid", new TransactionProviderSegment("", new Properties()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager()).executeUpdate());
     }
     
     @Test
-    void assertExecuteWithLocal() {
-        AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
+    void assertExecuteUpdateWithNotExistedDistributedTransactionType() {
+        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement("BASE", new TransactionProviderSegment("", new Properties()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager()).executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteUpdateWithNotExistedXATransactionProvider() {
+        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Invalid", new Properties()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager()).executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteUpdate() throws SQLException {
+        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement(
+                "XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))));
+        ContextManager contextManager = mockContextManager();
+        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager);
+        engine.executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(ArgumentMatchers.argThat(this::assertRuleConfiguration));
+    }
+    
+    private boolean assertRuleConfiguration(final TransactionRuleConfiguration actual) {
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().getProperty("host"), is("127.0.0.1"));
+        assertThat(actual.getProps().getProperty("databaseName"), is("jbossts"));
+        return true;
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         TransactionRule rule = mock(TransactionRule.class);
-        executor.setRule(rule);
-        TransactionRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
-        assertThat(actual.getDefaultType(), is("LOCAL"));
-        assertThat(actual.getProviderType(), is(""));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        return result;
     }
 }

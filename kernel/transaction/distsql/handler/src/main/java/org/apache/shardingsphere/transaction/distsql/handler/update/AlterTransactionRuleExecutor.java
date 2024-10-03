@@ -39,11 +39,9 @@ public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionE
     public void checkBeforeUpdate(final AlterTransactionRuleStatement sqlStatement) {
         checkTransactionType(sqlStatement);
         TransactionType transactionType = TransactionType.valueOf(sqlStatement.getDefaultType().toUpperCase());
-        if (TransactionType.LOCAL == transactionType) {
-            return;
+        if (TransactionType.LOCAL != transactionType) {
+            checkTransactionManager(sqlStatement, transactionType);
         }
-        checkTransactionManager(sqlStatement, transactionType);
-        
     }
     
     private void checkTransactionType(final AlterTransactionRuleStatement statement) {
