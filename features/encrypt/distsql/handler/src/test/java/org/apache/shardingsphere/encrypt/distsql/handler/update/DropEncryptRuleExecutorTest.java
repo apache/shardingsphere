@@ -87,10 +87,10 @@ class DropEncryptRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(createSQLStatement("T_ENCRYPT"), "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfigurationWithInUsedEncryptor));
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutEncryptors));
     }
     
-    private boolean assertRuleConfigurationWithInUsedEncryptor(final EncryptRuleConfiguration actual) {
+    private boolean assertRuleConfigurationWithoutEncryptors(final EncryptRuleConfiguration actual) {
         assertThat(actual.getTables().size(), is(1));
         assertTrue(actual.getEncryptors().isEmpty());
         return true;
@@ -105,13 +105,7 @@ class DropEncryptRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(statement, "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfigurationWithIfExists));
-    }
-    
-    private boolean assertRuleConfigurationWithIfExists(final EncryptRuleConfiguration actual) {
-        assertThat(actual.getTables().size(), is(1));
-        assertTrue(actual.getEncryptors().isEmpty());
-        return true;
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutEncryptors));
     }
     
     private DropEncryptRuleStatement createSQLStatement(final String tableName) {
