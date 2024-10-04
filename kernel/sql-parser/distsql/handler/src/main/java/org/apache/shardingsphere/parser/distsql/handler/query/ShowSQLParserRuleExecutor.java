@@ -46,8 +46,9 @@ public final class ShowSQLParserRuleExecutor implements DistSQLQueryExecutor<Sho
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSQLParserRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLParserRuleConfiguration ruleConfig = rule.getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(null != ruleConfig.getParseTreeCache() ? ruleConfig.getParseTreeCache().toString() : "",
-                null != ruleConfig.getSqlStatementCache() ? ruleConfig.getSqlStatementCache().toString() : ""));
+        return Collections.singleton(new LocalDataQueryResultRow(
+                null == ruleConfig.getParseTreeCache() ? "" : ruleConfig.getParseTreeCache().toString(),
+                null == ruleConfig.getSqlStatementCache() ? "" : ruleConfig.getSqlStatementCache().toString()));
     }
     
     @Override
