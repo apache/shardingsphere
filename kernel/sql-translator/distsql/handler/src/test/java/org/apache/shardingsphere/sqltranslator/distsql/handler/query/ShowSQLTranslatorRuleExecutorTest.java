@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
@@ -30,37 +31,32 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShowSQLTranslatorRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest<SQLTranslatorRule> {
+class ShowSQLTranslatorRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest {
     
     ShowSQLTranslatorRuleExecutorTest() {
-        super(SQLTranslatorRule.class);
+        super(mock(SQLTranslatorRule.class));
     }
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final SQLTranslatorRule rule, final DistSQLStatement sqlStatement, final List<LocalDataQueryResultRow> expectedRows) throws SQLException {
-        assertQueryResultRows(rule, sqlStatement, expectedRows);
+    void assertExecuteQuery(final String name,
+                            final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expectedRows) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expectedRows);
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("normal", mockRule(), new ShowSQLTranslatorRuleStatement(), Collections.singletonList(new LocalDataQueryResultRow("NATIVE", "", "true"))));
-        }
-        
-        private SQLTranslatorRule mockRule() {
-            SQLTranslatorRule result = mock(SQLTranslatorRule.class);
-            when(result.getConfiguration()).thenReturn(new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true));
-            return result;
+            return Stream.of(Arguments.arguments("normal", new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true), new ShowSQLTranslatorRuleStatement(),
+                    Collections.singleton(new LocalDataQueryResultRow("NATIVE", "", "true"))));
         }
     }
 }
