@@ -17,45 +17,59 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorTest;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShowSQLParserRuleExecutorTest {
+class ShowSQLParserRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest<SQLParserRule> {
     
-    @Test
-    void assertSQLParserRule() throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowSQLParserRuleStatement(), null, mockContextManager(), mock(DistSQLConnectionContext.class));
-        engine.executeQuery();
-        List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getCell(1), is("initialCapacity: 128, maximumSize: 1024"));
-        assertThat(actual.get(0).getCell(2), is("initialCapacity: 2000, maximumSize: 65535"));
+    ShowSQLParserRuleExecutorTest() {
+        super(SQLParserRule.class);
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        SQLParserRule rule = mock(SQLParserRule.class);
-        when(rule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L)));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteQuery(final String name, final SQLParserRule rule, final DistSQLStatement sqlStatement, final List<LocalDataQueryResultRow> expectedRows) throws SQLException {
+        assertQueryResultRows(rule, sqlStatement, expectedRows);
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.arguments("withCacheOption", mockRuleWithCacheOption(), new ShowSQLParserRuleStatement(),
+                            Collections.singletonList(new LocalDataQueryResultRow("initialCapacity: 128, maximumSize: 1024", "initialCapacity: 2000, maximumSize: 65535"))),
+                    Arguments.arguments("withoutCacheOption", mockRuleWithoutCacheOption(), new ShowSQLParserRuleStatement(), Collections.singletonList(new LocalDataQueryResultRow("", ""))));
+        }
+        
+        private SQLParserRule mockRuleWithCacheOption() {
+            SQLParserRule result = mock(SQLParserRule.class);
+            when(result.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L)));
+            return result;
+        }
+        
+        private SQLParserRule mockRuleWithoutCacheOption() {
+            SQLParserRule result = mock(SQLParserRule.class);
+            when(result.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(null, null));
+            return result;
+        }
     }
 }
