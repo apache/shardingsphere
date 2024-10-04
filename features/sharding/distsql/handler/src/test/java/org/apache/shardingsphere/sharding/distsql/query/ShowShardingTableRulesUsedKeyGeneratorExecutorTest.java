@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecut
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -36,9 +37,9 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,9 +50,17 @@ import static org.mockito.Mockito.when;
 
 class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
     
-    DistSQLQueryExecuteEngine setUp(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final String keyGeneratorName) {
-        when(statement.getKeyGeneratorName()).thenReturn(Optional.of(keyGeneratorName));
-        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+    @Test
+    void assertExecuteQuery() throws SQLException {
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(
+                new ShowShardingTableRulesUsedKeyGeneratorStatement("snowflake", null), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+        engine.executeQuery();
+        List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getCell(1), is("table"));
+        assertThat(actual.get(0).getCell(2), is("t_order"));
+        assertThat(actual.get(1).getCell(1), is("auto_table"));
+        assertThat(actual.get(1).getCell(2), is("t_order_auto"));
     }
     
     private ContextManager mockContextManager() {
@@ -60,23 +69,8 @@ class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
         when(result.getDatabase("foo_db")).thenReturn(database);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         return result;
-    }
-    
-    @Test
-    void assertGetRowData() throws SQLException {
-        DistSQLQueryExecuteEngine engine = setUp(mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class), "snowflake");
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(2));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("table"));
-        assertThat(row.getCell(2), is("t_order"));
-        row = iterator.next();
-        assertThat(row.getCell(1), is("auto_table"));
-        assertThat(row.getCell(2), is("t_order_auto"));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {
@@ -85,17 +79,10 @@ class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
         result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
-        result.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
-        result.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
-        result.getShardingAlgorithms().put("auto_mod", createShardingAutoModAlgorithmConfiguration());
-        result.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
-        return result;
-    }
-    
-    private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_0, ds_1");
-        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "auto_mod"));
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
+        result.getShardingAlgorithms().put("t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
+        result.getShardingAlgorithms().put("auto_mod", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "4"))));
+        result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -106,15 +93,10 @@ class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
         return result;
     }
     
-    private AlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
-        return new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", algorithmExpression)));
-    }
-    
-    private AlgorithmConfiguration createShardingAutoModAlgorithmConfiguration() {
-        return new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "4")));
-    }
-    
-    private AlgorithmConfiguration createKeyGeneratorConfiguration() {
-        return new AlgorithmConfiguration("SNOWFLAKE", new Properties());
+    private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_0, ds_1");
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "auto_mod"));
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        return result;
     }
 }
