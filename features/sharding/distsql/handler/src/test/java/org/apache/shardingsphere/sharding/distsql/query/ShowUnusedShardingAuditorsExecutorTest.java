@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAu
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -48,11 +47,17 @@ import static org.mockito.Mockito.when;
 
 class ShowUnusedShardingAuditorsExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
-    @BeforeEach
-    void setUp() {
-        engine = new DistSQLQueryExecuteEngine(mock(ShowUnusedShardingAuditorsStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+    @Test
+    void assertExecuteQuery() throws SQLException {
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(mock(ShowUnusedShardingAuditorsStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("fixture"));
+        assertThat(row.getCell(2), is("FIXTURE"));
+        assertThat(row.getCell(3), is("{\"key\":\"value\"}"));
     }
     
     private ContextManager mockContextManager() {
@@ -63,18 +68,6 @@ class ShowUnusedShardingAuditorsExecutorTest {
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
         return result;
-    }
-    
-    @Test
-    void assertGetRowData() throws SQLException {
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("fixture"));
-        assertThat(row.getCell(2), is("FIXTURE"));
-        assertThat(row.getCell(3), is("{\"key\":\"value\"}"));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {
