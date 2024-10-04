@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 class ShowShardingTableNodesExecutorTest {
     
     @Test
-    void assertGetRowData() throws SQLException {
+    void assertExecuteQuery() throws SQLException {
         ShardingRule rule = createShardingRule();
         assertOrder(rule);
         assertOrderItem(rule);
