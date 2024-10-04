@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 class ShowEncryptRuleExecutorTest {
     
     @Test
-    void assertGetRowData() throws SQLException {
+    void assertExecuteQuery() throws SQLException {
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowEncryptRulesStatement("T_ENCRYPT", null), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();

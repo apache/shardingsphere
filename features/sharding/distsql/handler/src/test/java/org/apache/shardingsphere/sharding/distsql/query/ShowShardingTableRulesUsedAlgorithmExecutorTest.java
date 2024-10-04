@@ -49,26 +49,10 @@ import static org.mockito.Mockito.when;
 
 class ShowShardingTableRulesUsedAlgorithmExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
-    DistSQLQueryExecuteEngine setUp(final ShowShardingTableRulesUsedAlgorithmStatement statement, final String algorithmName) {
-        when(statement.getShardingAlgorithmName()).thenReturn(Optional.of(algorithmName));
-        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
-        return result;
-    }
-    
     @Test
     void assertGetRowData1() throws SQLException {
-        engine = setUp(mock(ShowShardingTableRulesUsedAlgorithmStatement.class), "t_order_inline");
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(
+                new ShowShardingTableRulesUsedAlgorithmStatement("t_order_inline", null), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
@@ -80,7 +64,8 @@ class ShowShardingTableRulesUsedAlgorithmExecutorTest {
     
     @Test
     void assertGetRowData2() throws SQLException {
-        engine = setUp(mock(ShowShardingTableRulesUsedAlgorithmStatement.class), "auto_mod");
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(
+                new ShowShardingTableRulesUsedAlgorithmStatement("auto_mod", null), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
@@ -88,6 +73,16 @@ class ShowShardingTableRulesUsedAlgorithmExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("auto_table"));
         assertThat(row.getCell(2), is("t_order_auto"));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {
