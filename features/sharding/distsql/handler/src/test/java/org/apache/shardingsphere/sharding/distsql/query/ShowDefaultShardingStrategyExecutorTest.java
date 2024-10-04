@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
@@ -51,7 +50,7 @@ class ShowDefaultShardingStrategyExecutorTest {
     @Test
     void assertExecuteQueryWithNullShardingStrategy() throws SQLException {
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(
-                mock(ShowDefaultShardingStrategyStatement.class), "foo_db", mockContextManager(createRuleConfigurationWithNullShardingStrategy()), mock(DistSQLConnectionContext.class));
+                mock(ShowDefaultShardingStrategyStatement.class), "foo_db", mockContextManager(new ShardingRuleConfiguration()), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
         assertThat(actual.size(), is(2));
@@ -62,18 +61,11 @@ class ShowDefaultShardingStrategyExecutorTest {
         assertThat(actual.get(0).getCell(5), is(""));
         assertThat(actual.get(0).getCell(6), is(""));
         assertThat(actual.get(1).getCell(1), is("DATABASE"));
-        assertThat(actual.get(1).getCell(2), is("COMPLEX"));
-        assertThat(actual.get(1).getCell(3), is("use_id, order_id"));
-        assertThat(actual.get(1).getCell(4), is("database_inline"));
-        assertThat(actual.get(1).getCell(5), is("INLINE"));
-        assertThat(actual.get(1).getCell(6), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
-    }
-    
-    private ShardingRuleConfiguration createRuleConfigurationWithNullShardingStrategy() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
-        result.setDefaultDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("use_id, order_id", "database_inline"));
-        return result;
+        assertThat(actual.get(1).getCell(2), is(""));
+        assertThat(actual.get(1).getCell(3), is(""));
+        assertThat(actual.get(1).getCell(4), is(""));
+        assertThat(actual.get(1).getCell(5), is(""));
+        assertThat(actual.get(1).getCell(6), is(""));
     }
     
     @Test
@@ -90,18 +82,17 @@ class ShowDefaultShardingStrategyExecutorTest {
         assertThat(actual.get(0).getCell(5), is(""));
         assertThat(actual.get(0).getCell(6), is(""));
         assertThat(actual.get(1).getCell(1), is("DATABASE"));
-        assertThat(actual.get(1).getCell(2), is("COMPLEX"));
-        assertThat(actual.get(1).getCell(3), is("use_id, order_id"));
-        assertThat(actual.get(1).getCell(4), is("database_inline"));
-        assertThat(actual.get(1).getCell(5), is("INLINE"));
-        assertThat(actual.get(1).getCell(6), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
+        assertThat(actual.get(1).getCell(2), is("NONE"));
+        assertThat(actual.get(1).getCell(3), is(""));
+        assertThat(actual.get(1).getCell(4), is(""));
+        assertThat(actual.get(1).getCell(5), is(""));
+        assertThat(actual.get(1).getCell(6), is(""));
     }
     
     private ShardingRuleConfiguration createRuleConfigurationWithNoneShardingStrategyType() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
-        result.setDefaultDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("use_id, order_id", "database_inline"));
+        result.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
         return result;
     }
     
