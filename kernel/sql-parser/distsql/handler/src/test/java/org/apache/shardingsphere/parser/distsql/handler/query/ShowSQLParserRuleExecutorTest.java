@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 class ShowSQLParserRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest<SQLParserRule> {
     
-    public ShowSQLParserRuleExecutorTest() {
+    ShowSQLParserRuleExecutorTest() {
         super(SQLParserRule.class);
     }
     
