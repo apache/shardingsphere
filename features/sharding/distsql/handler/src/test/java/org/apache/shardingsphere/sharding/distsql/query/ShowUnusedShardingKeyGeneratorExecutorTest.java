@@ -22,19 +22,19 @@ import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecut
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,11 +45,16 @@ import static org.mockito.Mockito.when;
 
 class ShowUnusedShardingKeyGeneratorExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
-    @BeforeEach
-    void setUp() {
-        engine = new DistSQLQueryExecuteEngine(mock(ShowUnusedShardingKeyGeneratorsStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+    @Test
+    void assertExecuteQuery() throws SQLException {
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(mock(ShowUnusedShardingKeyGeneratorsStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("uuid_key_generator"));
+        assertThat(row.getCell(2), is("UUID"));
+        assertThat(row.getCell(3), is(""));
     }
     
     private ContextManager mockContextManager() {
@@ -58,37 +63,31 @@ class ShowUnusedShardingKeyGeneratorExecutorTest {
         when(result.getDatabase("foo_db")).thenReturn(database);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         return result;
-    }
-    
-    @Test
-    void assertGetRowData() throws SQLException {
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("uuid_key_generator"));
-        assertThat(row.getCell(2), is("UUID"));
-        assertThat(row.getCell(3), is(""));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getKeyGenerators().put("snowflake_key_generator", createSnowflakeKeyGeneratorConfiguration());
+        result.getKeyGenerators().put("snowflake_key_generator", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         result.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
+        result.getTables().add(createShardingTableRuleConfiguration());
+        result.getTables().add(new ShardingTableRuleConfiguration("bar_table", null));
         result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("bar_auto_table", null));
+        result.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration(null, "snowflake_key_generator"));
         return result;
     }
     
-    private AlgorithmConfiguration createSnowflakeKeyGeneratorConfiguration() {
-        return new AlgorithmConfiguration("SNOWFLAKE", new Properties());
+    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_table", null);
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("foo_col", "snowflake_key_generator"));
+        return result;
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake_key_generator"));
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("foo_auto_table", null);
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("foo_col", "snowflake_key_generator"));
         return result;
     }
 }

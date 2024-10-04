@@ -48,12 +48,12 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements DistSQLQuer
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingKeyGeneratorsStatement sqlStatement, final ContextManager contextManager) {
-        Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(rule.getConfiguration());
+        Collection<String> inUsedKeyGenerators = getInUsedKeyGenerators(rule.getConfiguration());
         return rule.getConfiguration().getKeyGenerators().entrySet().stream().filter(entry -> !inUsedKeyGenerators.contains(entry.getKey()))
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps())).collect(Collectors.toList());
     }
     
-    private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration ruleConfig) {
+    private Collection<String> getInUsedKeyGenerators(final ShardingRuleConfiguration ruleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         ruleConfig.getTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
         ruleConfig.getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
