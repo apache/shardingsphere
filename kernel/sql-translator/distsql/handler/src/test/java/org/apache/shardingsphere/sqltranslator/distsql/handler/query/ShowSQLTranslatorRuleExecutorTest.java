@@ -17,46 +17,46 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorTest;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShowSQLTranslatorRuleExecutorTest {
+class ShowSQLTranslatorRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest {
     
-    @Test
-    void assertExecute() throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowSQLTranslatorRuleStatement(), null, mockContextManager(), mock(DistSQLConnectionContext.class));
-        engine.executeQuery();
-        List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getCell(1), is("NATIVE"));
-        assertThat(actual.get(0).getCell(2), is(""));
-        assertThat(actual.get(0).getCell(3), is("true"));
+    ShowSQLTranslatorRuleExecutorTest() {
+        super(mock(SQLTranslatorRule.class));
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        SQLTranslatorRule rule = mock(SQLTranslatorRule.class);
-        when(rule.getConfiguration()).thenReturn(new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteQuery(final String name,
+                            final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expectedRows) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expectedRows);
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.arguments("normal", new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true), new ShowSQLTranslatorRuleStatement(),
+                    Collections.singleton(new LocalDataQueryResultRow("NATIVE", "", "true"))));
+        }
     }
 }

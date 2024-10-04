@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
@@ -30,7 +31,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,20 +39,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RequiredArgsConstructor
-public abstract class DistSQLGlobalRuleQueryExecutorTest<T extends GlobalRule> {
+public abstract class DistSQLGlobalRuleQueryExecutorTest {
     
-    private final Class<T> ruleType;
+    private final GlobalRule mockedRule;
     
-    protected void assertQueryResultRows(final T rule, final DistSQLStatement sqlStatement, final List<LocalDataQueryResultRow> expectedRows) throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, null, mockContextManager(rule), mock(DistSQLConnectionContext.class));
+    protected void assertQueryResultRows(final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expectedRows) throws SQLException {
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, null, mockContextManager(ruleConfig), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actualRows = new ArrayList<>(engine.getRows());
-        assertThat(actualRows, deepEqual(expectedRows));
+        assertThat(actualRows, deepEqual(new ArrayList<>(expectedRows)));
     }
     
-    private ContextManager mockContextManager(final T rule) {
+    private ContextManager mockContextManager(final GlobalRuleConfiguration ruleConfig) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(mockedRule.getConfiguration()).thenReturn(ruleConfig);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mockedRule)));
         return result;
     }
 }

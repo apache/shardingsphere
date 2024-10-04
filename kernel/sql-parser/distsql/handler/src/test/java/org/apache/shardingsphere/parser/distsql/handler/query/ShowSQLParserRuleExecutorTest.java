@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.parser.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
@@ -31,23 +32,23 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShowSQLParserRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest<SQLParserRule> {
+class ShowSQLParserRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest {
     
     ShowSQLParserRuleExecutorTest() {
-        super(SQLParserRule.class);
+        super(mock(SQLParserRule.class));
     }
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final SQLParserRule rule, final DistSQLStatement sqlStatement, final List<LocalDataQueryResultRow> expectedRows) throws SQLException {
-        assertQueryResultRows(rule, sqlStatement, expectedRows);
+    void assertExecuteQuery(final String name,
+                            final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expectedRows) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expectedRows);
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -55,21 +56,10 @@ class ShowSQLParserRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest<S
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.arguments("withCacheOption", mockRuleWithCacheOption(), new ShowSQLParserRuleStatement(),
-                            Collections.singletonList(new LocalDataQueryResultRow("initialCapacity: 128, maximumSize: 1024", "initialCapacity: 2000, maximumSize: 65535"))),
-                    Arguments.arguments("withoutCacheOption", mockRuleWithoutCacheOption(), new ShowSQLParserRuleStatement(), Collections.singletonList(new LocalDataQueryResultRow("", ""))));
-        }
-        
-        private SQLParserRule mockRuleWithCacheOption() {
-            SQLParserRule result = mock(SQLParserRule.class);
-            when(result.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L)));
-            return result;
-        }
-        
-        private SQLParserRule mockRuleWithoutCacheOption() {
-            SQLParserRule result = mock(SQLParserRule.class);
-            when(result.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(null, null));
-            return result;
+                    Arguments.arguments("withCacheOption", new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L)), new ShowSQLParserRuleStatement(),
+                            Collections.singleton(new LocalDataQueryResultRow("initialCapacity: 128, maximumSize: 1024", "initialCapacity: 2000, maximumSize: 65535"))),
+                    Arguments.arguments("withoutCacheOption", new SQLParserRuleConfiguration(null, null), new ShowSQLParserRuleStatement(),
+                            Collections.singleton(new LocalDataQueryResultRow("", ""))));
         }
     }
 }
