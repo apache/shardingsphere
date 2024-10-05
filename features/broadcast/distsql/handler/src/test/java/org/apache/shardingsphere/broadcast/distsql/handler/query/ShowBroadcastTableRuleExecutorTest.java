@@ -20,49 +20,42 @@ package org.apache.shardingsphere.broadcast.distsql.handler.query;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShowBroadcastTableRuleExecutorTest {
+class ShowBroadcastTableRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    @Test
-    void assertGetRowData() throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(mock(ShowBroadcastTableRulesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
-        engine.executeQuery();
-        List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
-        assertThat(actual.get(0).getCell(1), is("t_address"));
+    ShowBroadcastTableRuleExecutorTest() {
+        super(mock(BroadcastRule.class));
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        BroadcastRule rule = mockBroadcastRule();
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
-    private BroadcastRule mockBroadcastRule() {
-        BroadcastRule result = mock(BroadcastRule.class);
-        BroadcastRuleConfiguration config = mock(BroadcastRuleConfiguration.class);
-        when(config.getTables()).thenReturn(Collections.singleton("t_address"));
-        when(result.getConfiguration()).thenReturn(config);
-        return result;
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.arguments("normal", new BroadcastRuleConfiguration(Collections.singleton("t_address")), new ShowBroadcastTableRulesStatement(null),
+                    Collections.singleton(new LocalDataQueryResultRow("t_address"))));
+        }
     }
 }

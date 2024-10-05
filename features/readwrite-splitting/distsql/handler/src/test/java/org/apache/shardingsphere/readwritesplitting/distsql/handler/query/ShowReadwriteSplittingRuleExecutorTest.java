@@ -17,124 +17,88 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingExportableRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingExportableRuleAttribute;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShowReadwriteSplittingRuleExecutorTest {
+class ShowReadwriteSplittingRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
-    @Test
-    void assertGetRowData() throws SQLException {
-        engine = setUp(mock(ShowReadwriteSplittingRulesStatement.class), createRuleConfiguration());
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("readwrite_ds"));
-        assertThat(row.getCell(2), is("ds_primary"));
-        assertThat(row.getCell(3), is("ds_slave_0,ds_slave_1"));
-        assertThat(row.getCell(4), is("DYNAMIC"));
-        assertThat(row.getCell(5), is("random"));
-        assertThat(row.getCell(6), is("{\"read_weight\":\"2:1\"}"));
+    ShowReadwriteSplittingRuleExecutorTest() {
+        super(mockRule());
     }
     
-    @Test
-    void assertGetRowDataWithSpecifiedRuleName() throws SQLException {
-        engine = setUp(new ShowReadwriteSplittingRulesStatement("readwrite_ds", null), createRuleConfiguration());
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("readwrite_ds"));
-        assertThat(row.getCell(2), is("ds_primary"));
-        assertThat(row.getCell(3), is("ds_slave_0,ds_slave_1"));
-        assertThat(row.getCell(4), is("DYNAMIC"));
-        assertThat(row.getCell(5), is("random"));
-        assertThat(row.getCell(6), is("{\"read_weight\":\"2:1\"}"));
-    }
-    
-    private DistSQLQueryExecuteEngine setUp(final ShowReadwriteSplittingRulesStatement statement, final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(ruleConfig), mock(DistSQLConnectionContext.class));
-    }
-    
-    private ContextManager mockContextManager(final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+    private static ReadwriteSplittingRule mockRule() {
+        ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
         ReadwriteSplittingExportableRuleAttribute ruleAttribute = mock(ReadwriteSplittingExportableRuleAttribute.class);
         when(ruleAttribute.getExportData()).thenReturn(createExportedData());
-        when(rule.getConfiguration()).thenReturn(ruleConfig);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        when(database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(rule));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
     
-    private Map<String, Object> createExportedData() {
+    private static Map<String, Object> createExportedData() {
         Map<String, Object> result = new HashMap<>(2, 1F);
         result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, Collections.emptyMap());
         result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, Collections.emptyMap());
         return result;
     }
     
-    private ReadwriteSplittingRuleConfiguration createRuleConfiguration() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig =
-                new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
-        return new ReadwriteSplittingRuleConfiguration(
-                Collections.singleton(dataSourceGroupConfig), Collections.singletonMap("test", new AlgorithmConfiguration("random", PropertiesBuilder.build(new Property("read_weight", "2:1")))));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
-    @Test
-    void assertGetRowDataWithoutLoadBalancer() throws SQLException {
-        engine = setUp(mock(ShowReadwriteSplittingRulesStatement.class), createRuleConfigurationWithoutLoadBalancer());
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("readwrite_ds"));
-        assertThat(row.getCell(2), is("write_ds"));
-        assertThat(row.getCell(3), is("read_ds_0,read_ds_1"));
-        assertThat(row.getCell(4), is("DYNAMIC"));
-        assertThat(row.getCell(5), is(""));
-        assertThat(row.getCell(6), is(""));
-    }
-    
-    private ReadwriteSplittingRuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig =
-                new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
-        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig), null);
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.arguments("withNull", createRuleConfiguration(), new ShowReadwriteSplittingRulesStatement(null, null),
+                    Collections.singleton(new LocalDataQueryResultRow("readwrite_ds", "ds_primary", "ds_slave_0,ds_slave_1", "DYNAMIC", "random", "{\"read_weight\":\"2:1\"}"))),
+                    Arguments.arguments("withSpecifiedRuleName", createRuleConfiguration(), new ShowReadwriteSplittingRulesStatement("readwrite_ds", null),
+                            Collections.singleton(new LocalDataQueryResultRow("readwrite_ds", "ds_primary", "ds_slave_0,ds_slave_1", "DYNAMIC", "random", "{\"read_weight\":\"2:1\"}"))),
+                    Arguments.arguments("withoutLoadBalancer", createRuleConfigurationWithoutLoadBalancer(), new ShowReadwriteSplittingRulesStatement("readwrite_ds", null),
+                            Collections.singleton(new LocalDataQueryResultRow("readwrite_ds", "write_ds", "read_ds_0,read_ds_1", "DYNAMIC", "", ""))));
+        }
+        
+        private ReadwriteSplittingRuleConfiguration createRuleConfiguration() {
+            ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig =
+                    new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
+            return new ReadwriteSplittingRuleConfiguration(
+                    Collections.singleton(dataSourceGroupConfig), Collections.singletonMap("test", new AlgorithmConfiguration("random", PropertiesBuilder.build(new Property("read_weight", "2:1")))));
+        }
+        
+        private ReadwriteSplittingRuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
+            ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig =
+                    new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
+            return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig), null);
+        }
     }
 }

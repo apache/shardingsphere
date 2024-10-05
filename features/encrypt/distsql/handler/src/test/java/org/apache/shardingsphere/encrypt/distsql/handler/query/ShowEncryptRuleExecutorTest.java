@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
@@ -26,61 +25,51 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShowEncryptRuleExecutorTest {
+class ShowEncryptRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    @Test
-    void assertExecuteQuery() throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowEncryptRulesStatement("T_ENCRYPT", null), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("t_encrypt"));
-        assertThat(row.getCell(2), is("user_id"));
-        assertThat(row.getCell(3), is("user_cipher"));
-        assertThat(row.getCell(4), is("user_assisted"));
-        assertThat(row.getCell(5), is("user_like"));
-        assertThat(row.getCell(6), is("md5"));
-        assertThat(row.getCell(7), is(""));
-        assertThat(row.getCell(8), is(""));
-        assertThat(row.getCell(9), is(""));
-        assertThat(row.getCell(10), is(""));
-        assertThat(row.getCell(11), is(""));
+    ShowEncryptRuleExecutorTest() {
+        super(mock(EncryptRule.class));
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
-        when(database.getRuleMetaData().findSingleRule(EncryptRule.class)).thenReturn(Optional.of(rule));
-        return result;
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
-    private EncryptRuleConfiguration getRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "test"));
-        encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "foo_assist_query_encryptor"));
-        encryptColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "foo_like_encryptor"));
-        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(encryptColumnRuleConfig));
-        AlgorithmConfiguration shardingSphereAlgorithmConfig = new AlgorithmConfiguration("md5", new Properties());
-        return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfig));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowEncryptRulesStatement("T_ENCRYPT", null),
+                    Collections.singleton(new LocalDataQueryResultRow("t_encrypt", "user_id", "user_cipher", "user_assisted", "user_like", "md5", "", "", "", "", ""))));
+        }
+        
+        private EncryptRuleConfiguration createRuleConfiguration() {
+            EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "test"));
+            encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "foo_assist_query_encryptor"));
+            encryptColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "foo_like_encryptor"));
+            EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(encryptColumnRuleConfig));
+            AlgorithmConfiguration shardingSphereAlgorithmConfig = new AlgorithmConfiguration("md5", new Properties());
+            return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfig));
+        }
     }
 }

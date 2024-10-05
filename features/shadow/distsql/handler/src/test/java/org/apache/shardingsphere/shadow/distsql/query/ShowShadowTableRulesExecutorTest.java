@@ -17,68 +17,57 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShowShadowTableRulesExecutorTest {
+class ShowShadowTableRulesExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    private DistSQLQueryExecuteEngine engine;
-    
-    @BeforeEach
-    void setUp() {
-        engine = new DistSQLQueryExecuteEngine(mock(ShowShadowTableRulesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
+    ShowShadowTableRulesExecutorTest() {
+        super(mock(ShadowRule.class));
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(database.getRuleMetaData().findSingleRule(ShadowRule.class)).thenReturn(Optional.of(rule));
-        return result;
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
-    @Test
-    void assertGetRowData() throws SQLException {
-        engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actual = engine.getRows();
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("t_order"));
-        assertThat(row.getCell(2), is("shadowAlgorithmName_1,shadowAlgorithmName_2"));
-    }
-    
-    private ShadowRuleConfiguration createRuleConfiguration() {
-        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Arrays.asList("shadowAlgorithmName_1", "shadowAlgorithmName_2")));
-        result.getShadowAlgorithms().put("shadowAlgorithmName", new AlgorithmConfiguration("sql_hint", PropertiesBuilder.build(new Property("foo", "bar"))));
-        return result;
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShadowTableRulesStatement(null, null),
+                    Collections.singleton(new LocalDataQueryResultRow("t_order", "shadowAlgorithmName_1,shadowAlgorithmName_2"))));
+        }
+        
+        private ShadowRuleConfiguration createRuleConfiguration() {
+            ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+            result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Arrays.asList("shadowAlgorithmName_1", "shadowAlgorithmName_2")));
+            result.getShadowAlgorithms().put("shadowAlgorithmName", new AlgorithmConfiguration("sql_hint", PropertiesBuilder.build(new Property("foo", "bar"))));
+            return result;
+        }
     }
 }
