@@ -83,6 +83,5 @@ class ShowDefaultShardingStrategyExecutorTest extends DistSQLDatabaseRuleQueryEx
             result.setDefaultDatabaseShardingStrategy(new HintShardingStrategyConfiguration("database_inline"));
             return result;
         }
-        
     }
 }
