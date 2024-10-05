@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 
 class ShowShardingAlgorithmExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowShardingAlgorithmExecutorTest() {
+    ShowShardingAlgorithmExecutorTest() {
         super(mock(ShardingRule.class));
     }
     
