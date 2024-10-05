@@ -87,11 +87,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
   "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveDeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -108,6 +103,31 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
   "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseDeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer"},
+  "name":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser"},
+  "name":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

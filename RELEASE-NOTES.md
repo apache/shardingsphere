@@ -10,6 +10,7 @@
 
 1. SQL Parser: Support PostgreSQL, openGauss function table and update from segment parse - [#32994](https://github.com/apache/shardingsphere/pull/32994)
 2. DistSQL: Support running DistSQL under Proxy Native in the form of GraalVM Native Image - [#33095](https://github.com/apache/shardingsphere/pull/33095)
+2. DistSQL: Support connecting to Postgres via DistSQL in Proxy Native - [#33124](https://github.com/apache/shardingsphere/pull/33124)
 
 ### Bug Fix
 

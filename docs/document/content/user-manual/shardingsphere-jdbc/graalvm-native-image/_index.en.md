@@ -468,6 +468,12 @@ More discussion is available at https://cwiki.apache.org/confluence/display/Hive
 8. Due to https://github.com/oracle/graal/issues/7979 , 
 the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Maven module cannot be used under GraalVM Native Image.
 
+9. Due to https://github.com/apache/doris/issues/9426, when connecting to Apache Doris FE via Shardinghere JDBC,
+   users need to provide GraalVM Reachability Metadata related to the `apache/doris` integration module.
+
+10. Due to https://github.com/prestodb/presto/issues/23226, when connecting to Presto Server via Shardinghere JDBC,
+    users need to provide GraalVM Reachability Metadata related to the `com.facebook.presto:presto-jdbc` and `prestodb/presto` integration module.
+
 ## Contribute GraalVM Reachability Metadata
 
 The verification of ShardingSphere's availability under GraalVM Native Image is completed through the Maven Plugin subproject 
@@ -481,13 +487,13 @@ This subset of unit tests avoids the use of third-party libraries such as Mockit
 
 ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for executing nativeTest for the `shardingsphere-test-native` module.
 
+Contributors must install Docker Engine to execute unit tests related to `testcontainers-java`, as per https://java.testcontainers.org/supported_docker_environment/ .
+
 Assuming that the contributor is under a new Ubuntu 22.04.4 LTS instance, Contributors can manage the JDK and tool chain through 
 `SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-test-native` submodule.
 
-You must install Docker Engine to execute `testcontainers-java` related unit tests.
-
 ```bash
-sudo apt install unzip zip curl sed -y
+sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install java 22.0.2-graalce

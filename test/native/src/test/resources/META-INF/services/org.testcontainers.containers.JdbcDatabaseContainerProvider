@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.natived.jdbc.commons.testcontainers.ClickHouseProvider
+org.apache.shardingsphere.test.natived.commons.testcontainers.ClickHouseProvider

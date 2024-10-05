@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.commons.entity;
+package org.apache.shardingsphere.test.natived.commons.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.proxy.features;
+package org.apache.shardingsphere.test.natived.proxy.databases;
 
-import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
@@ -39,16 +38,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
 @EnabledInNativeImage
 @Testcontainers
-class ShardingTest {
+class PostgresTest {
     
     @Container
-    public static final GenericContainer<?> MYSQL_CONTAINER = new GenericContainer<>("mysql:9.0.1-oraclelinux9")
-            .withEnv("MYSQL_ROOT_PASSWORD", "yourStrongPassword123!")
-            .withExposedPorts(3306);
+    public static final GenericContainer<?> POSTGRES_CONTAINER = new GenericContainer<>("postgres:16.3-bookworm")
+            .withEnv("POSTGRES_PASSWORD", "yourStrongPassword123!")
+            .withExposedPorts(5432);
     
     private static ProxyTestingServer proxyTestingServer;
     
@@ -56,22 +56,27 @@ class ShardingTest {
     
     @BeforeAll
     static void beforeAll() throws SQLException {
-        Awaitility.await().atMost(Duration.ofMinutes(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
-            openConnection("root", "yourStrongPassword123!", "jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306))
+        Awaitility.await().atMost(Duration.ofMinutes(30L)).ignoreExceptions().until(() -> {
+            openConnection("postgres", "yourStrongPassword123!", "jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/")
                     .close();
             return true;
         });
         try (
-                Connection connection = openConnection("root", "yourStrongPassword123!", "jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306));
+                Connection connection = openConnection("postgres", "yourStrongPassword123!", "jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/");
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE demo_ds_0");
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
             statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
-        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/features/sharding").toAbsolutePath().normalize().toString();
+        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().normalize().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofMinutes(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
-            openConnection("root", "root", "jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort()).close();
+        try {
+            TimeUnit.SECONDS.sleep(10L);
+        } catch (final InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+        Awaitility.await().atMost(Duration.ofMinutes(30L)).until(() -> {
+            openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
             return true;
         });
     }
@@ -91,21 +96,24 @@ class ShardingTest {
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         try (
-                Connection connection = openConnection("root", "root", "jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort());
+                Connection connection = openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres");
                 Statement statement = connection.createStatement()) {
             statement.execute("CREATE DATABASE sharding_db");
-            statement.execute("USE sharding_db");
+        }
+        try (
+                Connection connection = openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
+                Statement statement = connection.createStatement()) {
             statement.execute("REGISTER STORAGE UNIT ds_0 (\n"
-                    + "  URL=\"jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306) + "/demo_ds_0\",\n"
-                    + "  USER=\"root\",\n"
+                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_0\",\n"
+                    + "  USER=\"postgres\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + "),ds_1 (\n"
-                    + "  URL=\"jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306) + "/demo_ds_1\",\n"
-                    + "  USER=\"root\",\n"
+                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_1\",\n"
+                    + "  USER=\"postgres\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + "),ds_2 (\n"
-                    + "  URL=\"jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306) + "/demo_ds_2\",\n"
-                    + "  USER=\"root\",\n"
+                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_2\",\n"
+                    + "  USER=\"postgres\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + ")");
             statement.execute("CREATE DEFAULT SHARDING DATABASE STRATEGY (\n"
@@ -131,8 +139,8 @@ class ShardingTest {
             statement.execute("CREATE BROADCAST TABLE RULE t_address");
         }
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        config.setJdbcUrl("jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
+        config.setDriverClassName("org.postgresql.Driver");
+        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
         config.setUsername("root");
         config.setPassword("root");
         DataSource dataSource = new HikariDataSource(config);
@@ -143,8 +151,8 @@ class ShardingTest {
     }
     
     private void initEnvironment() throws SQLException {
-        testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
-        testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
+        testShardingService.getOrderRepository().createTableIfNotExistsInPostgres();
+        testShardingService.getOrderItemRepository().createTableIfNotExistsInPostgres();
         testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();

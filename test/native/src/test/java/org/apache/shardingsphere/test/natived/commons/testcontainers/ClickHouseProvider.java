@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.commons.testcontainers;
+package org.apache.shardingsphere.test.natived.commons.testcontainers;
 
 import org.testcontainers.clickhouse.ClickHouseContainer;
 import org.testcontainers.containers.JdbcDatabaseContainer;

@@ -451,6 +451,12 @@ HiveServer2 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 
 8. 由于 https://github.com/oracle/graal/issues/7979 的影响，
 对应 `com.oracle.database.jdbc:ojdbc8` Maven 模块的 Oracle JDBC Driver 无法在 GraalVM Native Image 下使用。
 
+9. 由于 https://github.com/apache/doris/issues/9426 的影响，当通过 Shardinghere JDBC 连接至 Apache Doris FE，
+用户需自行提供 `apache/doris` 集成模块相关的 GraalVM Reachability Metadata。
+
+10. 由于 https://github.com/prestodb/presto/issues/23226 的影响，当通过 Shardinghere JDBC 连接至 Presto Server，
+用户需自行提供 `com.facebook.presto:presto-jdbc` 和 `prestodb/presto` 集成模块相关的 GraalVM Reachability Metadata。
+
 ## 贡献 GraalVM Reachability Metadata
 
 ShardingSphere 对在 GraalVM Native Image 下的可用性的验证，是通过 GraalVM Native Build Tools 的 Maven Plugin 子项目来完成的。
@@ -463,13 +469,13 @@ ShardingSphere 定义了 `shardingsphere-test-native` 的 Maven Module 用于为
 
 ShardingSphere 定义了 `nativeTestInShardingSphere` 的 Maven Profile 用于为 `shardingsphere-test-native` 模块执行 nativeTest 。
 
+贡献者必须安装 Docker Engine 以执行 `testcontainers-java` 相关的单元测试，以 https://java.testcontainers.org/supported_docker_environment/ 为准。
+
 假设贡献者处于新的 Ubuntu 22.04.4 LTS 实例下，其可通过如下 bash 命令通过 SDKMAN! 管理 JDK 和工具链，
 并为 `shardingsphere-test-native` 子模块执行 nativeTest。
 
-你必须安装 Docker Engine 以执行 `testcontainers-java` 相关的单元测试。
-
 ```bash
-sudo apt install unzip zip curl sed -y
+sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install java 22.0.2-graalce
