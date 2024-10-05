@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 
 class ShowMaskRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowMaskRuleExecutorTest() {
+    ShowMaskRuleExecutorTest() {
         super(mock(MaskRule.class));
     }
     

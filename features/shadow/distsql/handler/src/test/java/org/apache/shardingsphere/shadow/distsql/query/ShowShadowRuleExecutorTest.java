@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 
 class ShowShadowRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowShadowRuleExecutorTest() {
+    ShowShadowRuleExecutorTest() {
         super(mock(ShadowRule.class));
     }
     

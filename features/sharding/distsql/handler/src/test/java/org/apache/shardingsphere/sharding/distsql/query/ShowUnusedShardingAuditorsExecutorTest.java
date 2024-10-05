@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 
 class ShowUnusedShardingAuditorsExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowUnusedShardingAuditorsExecutorTest() {
+    ShowUnusedShardingAuditorsExecutorTest() {
         super(mock(ShardingRule.class));
     }
     

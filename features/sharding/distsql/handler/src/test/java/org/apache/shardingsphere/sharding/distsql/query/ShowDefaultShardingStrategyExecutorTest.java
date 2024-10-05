@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 
 class ShowDefaultShardingStrategyExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowDefaultShardingStrategyExecutorTest() {
+    ShowDefaultShardingStrategyExecutorTest() {
         super(mock(ShardingRule.class));
     }
     

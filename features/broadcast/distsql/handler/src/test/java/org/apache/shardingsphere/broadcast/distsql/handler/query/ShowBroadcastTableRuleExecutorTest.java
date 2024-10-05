@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 
 class ShowBroadcastTableRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowBroadcastTableRuleExecutorTest() {
+    ShowBroadcastTableRuleExecutorTest() {
         super(mock(BroadcastRule.class));
     }
     

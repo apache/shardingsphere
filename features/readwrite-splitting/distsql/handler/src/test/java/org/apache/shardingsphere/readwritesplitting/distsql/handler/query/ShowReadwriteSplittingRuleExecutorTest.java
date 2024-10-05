@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 class ShowReadwriteSplittingRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowReadwriteSplittingRuleExecutorTest() {
+    ShowReadwriteSplittingRuleExecutorTest() {
         super(mockRule());
     }
     

@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 class ShowSingleTablesExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowSingleTablesExecutorTest() {
+    ShowSingleTablesExecutorTest() {
         super(mockRule());
     }
     

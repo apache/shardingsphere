@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 
 class ShowEncryptRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowEncryptRuleExecutorTest() {
+    ShowEncryptRuleExecutorTest() {
         super(mock(EncryptRule.class));
     }
     

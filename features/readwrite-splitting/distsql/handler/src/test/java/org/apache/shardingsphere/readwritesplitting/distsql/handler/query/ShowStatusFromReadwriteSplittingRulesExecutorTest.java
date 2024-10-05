@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 class ShowStatusFromReadwriteSplittingRulesExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowStatusFromReadwriteSplittingRulesExecutorTest() {
+    ShowStatusFromReadwriteSplittingRulesExecutorTest() {
         super(mockRule());
     }
     

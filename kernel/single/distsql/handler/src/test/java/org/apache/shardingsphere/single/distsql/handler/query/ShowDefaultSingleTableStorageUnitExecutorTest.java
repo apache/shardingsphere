@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 
 class ShowDefaultSingleTableStorageUnitExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    public ShowDefaultSingleTableStorageUnitExecutorTest() {
+    ShowDefaultSingleTableStorageUnitExecutorTest() {
         super(mock(SingleRule.class));
     }
     
