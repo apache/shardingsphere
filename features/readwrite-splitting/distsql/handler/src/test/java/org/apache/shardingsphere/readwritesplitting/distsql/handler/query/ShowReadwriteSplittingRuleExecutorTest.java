@@ -79,7 +79,7 @@ class ShowReadwriteSplittingRuleExecutorTest extends DistSQLDatabaseRuleQueryExe
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), mock(ShowReadwriteSplittingRulesStatement.class),
+            return Stream.of(Arguments.arguments("withNull", createRuleConfiguration(), new ShowReadwriteSplittingRulesStatement(null, null),
                             Collections.singleton(new LocalDataQueryResultRow("readwrite_ds", "ds_primary", "ds_slave_0,ds_slave_1", "DYNAMIC", "random", "{\"read_weight\":\"2:1\"}"))),
                     Arguments.arguments("withSpecifiedRuleName", createRuleConfiguration(), new ShowReadwriteSplittingRulesStatement("readwrite_ds", null),
                             Collections.singleton(new LocalDataQueryResultRow("readwrite_ds", "ds_primary", "ds_slave_0,ds_slave_1", "DYNAMIC", "random", "{\"read_weight\":\"2:1\"}"))),
