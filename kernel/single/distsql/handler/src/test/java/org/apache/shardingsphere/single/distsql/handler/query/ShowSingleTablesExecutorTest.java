@@ -63,7 +63,8 @@ class ShowSingleTablesExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest 
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
@@ -72,7 +73,7 @@ class ShowSingleTablesExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest 
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("normal", new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), new ShowSingleTablesStatement(null, null),
-                            Arrays.asList(new LocalDataQueryResultRow("t_order", "ds_1"), new LocalDataQueryResultRow("t_order_item", "ds_2"))),
+                    Arrays.asList(new LocalDataQueryResultRow("t_order", "ds_1"), new LocalDataQueryResultRow("t_order_item", "ds_2"))),
                     Arguments.arguments("withLikeLiteral", new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), new ShowSingleTablesStatement(null, "%item"),
                             Collections.singleton(new LocalDataQueryResultRow("t_order_item", "ds_2"))));
         }

@@ -50,7 +50,8 @@ class ShowUnusedShardingAlgorithmsExecutorTest extends DistSQLDatabaseRuleQueryE
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
@@ -59,7 +60,7 @@ class ShowUnusedShardingAlgorithmsExecutorTest extends DistSQLDatabaseRuleQueryE
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowUnusedShardingAlgorithmsStatement(null),
-                            Collections.singleton(new LocalDataQueryResultRow("database_inline", "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}"))));
+                    Collections.singleton(new LocalDataQueryResultRow("database_inline", "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}"))));
         }
         
         private ShardingRuleConfiguration createRuleConfiguration() {

@@ -54,7 +54,8 @@ class ShowShardingTableRulesUsedAlgorithmExecutorTest extends DistSQLDatabaseRul
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
@@ -63,7 +64,7 @@ class ShowShardingTableRulesUsedAlgorithmExecutorTest extends DistSQLDatabaseRul
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("withTable", createRuleConfiguration(), new ShowShardingTableRulesUsedAlgorithmStatement("t_order_inline", null),
-                            Collections.singleton(new LocalDataQueryResultRow("table", "t_order"))),
+                    Collections.singleton(new LocalDataQueryResultRow("table", "t_order"))),
                     Arguments.arguments("withAutoTable", createRuleConfiguration(), new ShowShardingTableRulesUsedAlgorithmStatement("auto_mod", null),
                             Collections.singleton(new LocalDataQueryResultRow("auto_table", "t_order_auto"))));
         }

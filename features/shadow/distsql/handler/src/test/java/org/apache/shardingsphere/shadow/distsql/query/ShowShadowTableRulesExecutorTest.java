@@ -50,7 +50,8 @@ class ShowShadowTableRulesExecutorTest extends DistSQLDatabaseRuleQueryExecutorT
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
@@ -59,7 +60,7 @@ class ShowShadowTableRulesExecutorTest extends DistSQLDatabaseRuleQueryExecutorT
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShadowTableRulesStatement(null, null),
-                            Collections.singleton(new LocalDataQueryResultRow("t_order", "shadowAlgorithmName_1,shadowAlgorithmName_2"))));
+                    Collections.singleton(new LocalDataQueryResultRow("t_order", "shadowAlgorithmName_1,shadowAlgorithmName_2"))));
         }
         
         private ShadowRuleConfiguration createRuleConfiguration() {

@@ -50,7 +50,8 @@ class ShowUnusedShardingKeyGeneratorExecutorTest extends DistSQLDatabaseRuleQuer
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
@@ -59,7 +60,7 @@ class ShowUnusedShardingKeyGeneratorExecutorTest extends DistSQLDatabaseRuleQuer
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowUnusedShardingKeyGeneratorsStatement(null),
-                            Collections.singleton(new LocalDataQueryResultRow("uuid_key_generator", "UUID", ""))));
+                    Collections.singleton(new LocalDataQueryResultRow("uuid_key_generator", "UUID", ""))));
         }
         
         private ShardingRuleConfiguration createRuleConfiguration() {

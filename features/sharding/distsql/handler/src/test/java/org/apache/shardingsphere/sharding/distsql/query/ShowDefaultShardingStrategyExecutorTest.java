@@ -51,7 +51,8 @@ class ShowDefaultShardingStrategyExecutorTest extends DistSQLDatabaseRuleQueryEx
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
@@ -60,9 +61,9 @@ class ShowDefaultShardingStrategyExecutorTest extends DistSQLDatabaseRuleQueryEx
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("withNullShardingStrategy", new ShardingRuleConfiguration(), new ShowDefaultShardingStrategyStatement(null),
-                            Arrays.asList(new LocalDataQueryResultRow("TABLE", "", "", "", "", ""), new LocalDataQueryResultRow("DATABASE", "", "", "", "", ""))),
+                    Arrays.asList(new LocalDataQueryResultRow("TABLE", "", "", "", "", ""), new LocalDataQueryResultRow("DATABASE", "", "", "", "", ""))),
                     Arguments.arguments("withNoneShardingStrategyType", createRuleConfigurationWithNoneShardingStrategyType(), new ShowDefaultShardingStrategyStatement(null),
-                    Arrays.asList(new LocalDataQueryResultRow("TABLE", "NONE", "", "", "", ""), new LocalDataQueryResultRow("DATABASE", "NONE", "", "", "", ""))),
+                            Arrays.asList(new LocalDataQueryResultRow("TABLE", "NONE", "", "", "", ""), new LocalDataQueryResultRow("DATABASE", "NONE", "", "", "", ""))),
                     Arguments.arguments("withShardingStrategyType", createRuleConfigurationWithShardingStrategyType(), new ShowDefaultShardingStrategyStatement(null),
                             Arrays.asList(
                                     new LocalDataQueryResultRow("TABLE", "STANDARD", "use_id", "database_inline", "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}"),

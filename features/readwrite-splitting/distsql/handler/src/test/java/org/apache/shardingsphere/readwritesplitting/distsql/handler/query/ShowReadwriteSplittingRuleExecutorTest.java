@@ -71,7 +71,8 @@ class ShowReadwriteSplittingRuleExecutorTest extends DistSQLDatabaseRuleQueryExe
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
@@ -80,7 +81,7 @@ class ShowReadwriteSplittingRuleExecutorTest extends DistSQLDatabaseRuleQueryExe
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("withNull", createRuleConfiguration(), new ShowReadwriteSplittingRulesStatement(null, null),
-                            Collections.singleton(new LocalDataQueryResultRow("readwrite_ds", "ds_primary", "ds_slave_0,ds_slave_1", "DYNAMIC", "random", "{\"read_weight\":\"2:1\"}"))),
+                    Collections.singleton(new LocalDataQueryResultRow("readwrite_ds", "ds_primary", "ds_slave_0,ds_slave_1", "DYNAMIC", "random", "{\"read_weight\":\"2:1\"}"))),
                     Arguments.arguments("withSpecifiedRuleName", createRuleConfiguration(), new ShowReadwriteSplittingRulesStatement("readwrite_ds", null),
                             Collections.singleton(new LocalDataQueryResultRow("readwrite_ds", "ds_primary", "ds_slave_0,ds_slave_1", "DYNAMIC", "random", "{\"read_weight\":\"2:1\"}"))),
                     Arguments.arguments("withoutLoadBalancer", createRuleConfigurationWithoutLoadBalancer(), new ShowReadwriteSplittingRulesStatement("readwrite_ds", null),

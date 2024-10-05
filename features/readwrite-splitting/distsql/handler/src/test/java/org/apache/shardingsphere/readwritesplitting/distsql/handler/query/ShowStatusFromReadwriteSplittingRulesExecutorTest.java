@@ -65,7 +65,8 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest extends DistSQLDatabaseR
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+    void assertExecuteQuery(final String name, final DatabaseRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement,
+                            final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
@@ -74,7 +75,7 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest extends DistSQLDatabaseR
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("withoutRuleName", mock(ReadwriteSplittingRuleConfiguration.class), new ShowStatusFromReadwriteSplittingRulesStatement(null, null),
-                            Arrays.asList(new LocalDataQueryResultRow("read_ds_0", "ENABLED"), new LocalDataQueryResultRow("read_ds_1", "DISABLED"))),
+                    Arrays.asList(new LocalDataQueryResultRow("read_ds_0", "ENABLED"), new LocalDataQueryResultRow("read_ds_1", "DISABLED"))),
                     Arguments.arguments("withRuleName", mock(ReadwriteSplittingRuleConfiguration.class), new ShowStatusFromReadwriteSplittingRulesStatement(null, "bar_rule"),
                             Collections.emptyList()));
         }
