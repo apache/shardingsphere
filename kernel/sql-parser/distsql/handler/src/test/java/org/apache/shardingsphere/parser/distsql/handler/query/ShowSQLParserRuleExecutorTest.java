@@ -46,9 +46,8 @@ class ShowSQLParserRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name,
-                            final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expectedRows) throws SQLException {
-        assertQueryResultRows(ruleConfig, sqlStatement, expectedRows);
+    void assertExecuteQuery(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expected);
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
