@@ -17,46 +17,48 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.queryable.ShowSQLFederationRuleStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorTest;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShowSQLFederationRuleExecutorTest {
+class ShowSQLFederationRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest {
     
-    @Test
-    void assertGetRows() throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowSQLFederationRuleStatement(), null, mockContextManager(), mock(DistSQLConnectionContext.class));
-        engine.executeQuery();
-        List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getCell(1), is("true"));
-        assertThat(actual.get(0).getCell(2), is("true"));
-        assertThat(actual.get(0).getCell(3), is("initialCapacity: 2000, maximumSize: 65535"));
+    ShowSQLFederationRuleExecutorTest() {
+        super(mock(SQLFederationRule.class));
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        SQLFederationRule rule = mock(SQLFederationRule.class);
-        when(rule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, true, new CacheOption(2000, 65535L)));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteQuery(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        assertQueryResultRows(ruleConfig, sqlStatement, expected);
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.arguments("withCacheOption", new SQLFederationRuleConfiguration(false, false, new CacheOption(2000, 65535L)), new ShowSQLFederationRuleStatement(),
+                            Collections.singleton(new LocalDataQueryResultRow(false, false, "initialCapacity: 2000, maximumSize: 65535"))),
+                    Arguments.arguments("withoutCacheOption", new SQLFederationRuleConfiguration(true, true, null), new ShowSQLFederationRuleStatement(),
+                            Collections.singleton(new LocalDataQueryResultRow(true, true, ""))));
+        }
     }
 }

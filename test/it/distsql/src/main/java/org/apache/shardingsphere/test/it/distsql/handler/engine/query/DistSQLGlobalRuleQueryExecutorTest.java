@@ -43,11 +43,11 @@ public abstract class DistSQLGlobalRuleQueryExecutorTest {
     
     private final GlobalRule mockedRule;
     
-    protected void assertQueryResultRows(final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expectedRows) throws SQLException {
+    protected void assertQueryResultRows(final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, null, mockContextManager(ruleConfig), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
-        Collection<LocalDataQueryResultRow> actualRows = new ArrayList<>(engine.getRows());
-        assertThat(actualRows, deepEqual(new ArrayList<>(expectedRows)));
+        Collection<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
+        assertThat(actual, deepEqual(new ArrayList<>(expected)));
     }
     
     private ContextManager mockContextManager(final GlobalRuleConfiguration ruleConfig) {
