@@ -185,8 +185,17 @@ public final class JDBCRepository implements StandalonePersistRepository {
         }
     }
     
+    /**
+     * Delete the specified row.
+     * Once the database connection involved in this row of data has been closed by other threads and this row of data is located in the H2Database started in memory mode,
+     * the data is actually deleted.
+     * @param key key of data
+     */
     @Override
     public void delete(final String key) {
+        if (dataSource.isClosed() && dataSource.getJdbcUrl().startsWith("jdbc:h2:mem:")) {
+            return;
+        }
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(repositorySQL.getDeleteSQL())) {

@@ -1,8 +1,14 @@
 {
   "resources":{
   "includes":[{
-    "condition":{"typeReachable":"org.apache.calcite.avatica.remote.Driver"},
+    "condition":{"typeReachable":"org.apache.calcite.avatica.DriverVersion"},
     "pattern":"\\Qorg-apache-calcite-jdbc.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.calcite.config.CalciteSystemProperty"},
+    "pattern":"\\Qsaffron.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.calcite.plan.RelOptCluster"},
+    "pattern":"java.base:\\Qjdk/internal/icu/impl/data/icudt74b/nfkc.nrm\\E"
   }]},
   "bundles":[]
 }

@@ -94,10 +94,6 @@
   "name":"org.apache.seata.config.Configuration"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.config.ConfigurationCache$$Lambda/0x00007fea13cd9cb0"},
-  "name":"org.apache.seata.config.Configuration"
-},
-{
   "condition":{"typeReachable":"org.apache.seata.config.ConfigurationFactory"},
   "name":"org.apache.seata.config.apollo.ApolloConfigurationProvider"
 },
@@ -281,10 +277,6 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
-  "name":"org.apache.seata.rm.datasource.sql.struct.Field"
-},
-{
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
@@ -303,10 +295,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"},
-  "name":"org.apache.seata.rm.datasource.sql.struct.Field"
-},
-{
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
@@ -350,10 +338,6 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
-  "name":"org.apache.seata.rm.datasource.sql.struct.Row"
-},
-{
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
@@ -372,10 +356,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"},
-  "name":"org.apache.seata.rm.datasource.sql.struct.Row"
-},
-{
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
@@ -407,10 +387,6 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
-  "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
-},
-{
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"},
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
@@ -429,10 +405,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"},
-  "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
-},
-{
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
@@ -508,10 +480,6 @@
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
-  "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
-},
-{
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"},
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
@@ -530,10 +498,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"},
-  "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
-},
-{
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
@@ -565,10 +529,6 @@
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
-  "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
-},
-{
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"},
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
@@ -587,10 +547,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"},
-  "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
-},
-{
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {

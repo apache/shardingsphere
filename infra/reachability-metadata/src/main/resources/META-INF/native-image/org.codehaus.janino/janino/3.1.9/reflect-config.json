@@ -1,0 +1,7 @@
+[
+{
+  "condition":{"typeReachable":"org.codehaus.commons.compiler.CompilerFactoryFactory"},
+  "name":"org.codehaus.janino.CompilerFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+}
+]

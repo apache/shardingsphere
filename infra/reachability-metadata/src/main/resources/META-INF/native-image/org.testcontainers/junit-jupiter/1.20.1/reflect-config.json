@@ -135,10 +135,6 @@
   "allDeclaredMethods": true
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.containers.GenericContainer$$Lambda/0x00007f841f23d008"},
-  "name":"org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
-},
-{
   "condition":{"typeReachable":"org.testcontainers.shaded.org.awaitility.core.ConditionFactory"},
   "name":"org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
 },

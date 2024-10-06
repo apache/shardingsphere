@@ -1,0 +1,7 @@
+[
+{
+  "condition":{"typeReachable":"com.google.common.collect.Table"},
+  "name":"com.google.common.collect.Table",
+  "allDeclaredMethods": true
+}
+]

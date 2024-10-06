@@ -91,6 +91,11 @@
   "allPublicConstructors": true
 },
 {
+  "condition":{"typeReachable":"java.io.Serializable"},
+  "name":"java.io.Serializable",
+  "allDeclaredFields": true
+},
+{
   "condition":{"typeReachable":"java.lang.Boolean"},
   "name":"java.lang.Boolean",
   "allDeclaredMethods": true,
@@ -121,6 +126,21 @@
   "allDeclaredMethods": true,
   "allDeclaredFields": true,
   "allDeclaredConstructors": true
+},
+{
+  "condition":{"typeReachable":"java.lang.Enum"},
+  "name":"java.lang.Enum",
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"java.lang.constant.Constable"},
+  "name":"java.lang.constant.Constable",
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"java.lang.Comparable"},
+  "name":"java.lang.Comparable",
+  "allDeclaredFields": true
 },
 {
   "condition":{"typeReachable":"java.lang.StackTraceElement"},
@@ -348,8 +368,8 @@
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"sun.security.provider.SecureRandom"},
-  "name":"sun.security.provider.SecureRandom",
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

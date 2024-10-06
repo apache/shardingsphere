@@ -45,6 +45,7 @@
 1. Infra: Support compiling and using ShardingSphere under OpenJDK 23 - [#33025](https://github.com/apache/shardingsphere/pull/33025)
 1. Hive: Support Hive integration module to connect to HiveServer2 4.0.1 - [#33212](https://github.com/apache/shardingsphere/pull/33212)
 1. Infra: Support building Example module with OpenJDK 23 - [#33224](https://github.com/apache/shardingsphere/pull/33224)
+1. DistSQL: Support connecting to OpenGauss via DistSQL in Proxy Native - [#33139](https://github.com/apache/shardingsphere/pull/33139)
 
 ### Bug Fix
 

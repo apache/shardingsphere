@@ -152,5 +152,13 @@
   "allDeclaredMethods": true,
   "allPublicMethods": true,
   "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.OpenGaussTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.databases.OpenGaussTest",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true,
+  "allDeclaredFields": true
 }
 ]
