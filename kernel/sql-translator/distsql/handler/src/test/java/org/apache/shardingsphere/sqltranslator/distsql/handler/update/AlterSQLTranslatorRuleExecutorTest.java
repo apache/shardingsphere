@@ -56,9 +56,9 @@ class AlterSQLTranslatorRuleExecutorTest extends GlobalRuleDefinitionExecutorTes
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("withTrueOriginalSQLWhenTranslatingFailed",
-                            new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true),
-                            new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("NATIVE", PropertiesBuilder.build(new Property("foo", "bar"))), true),
-                            new SQLTranslatorRuleConfiguration("NATIVE", PropertiesBuilder.build(new Property("foo", "bar")), true)),
+                    new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true),
+                    new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("NATIVE", PropertiesBuilder.build(new Property("foo", "bar"))), true),
+                    new SQLTranslatorRuleConfiguration("NATIVE", PropertiesBuilder.build(new Property("foo", "bar")), true)),
                     Arguments.arguments("withNullOriginalSQLWhenTranslatingFailed",
                             new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true),
                             new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("NATIVE", PropertiesBuilder.build(new Property("foo", "bar"))), null),

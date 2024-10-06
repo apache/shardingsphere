@@ -55,9 +55,9 @@ class AlterSQLParserRuleExecutorTest extends GlobalRuleDefinitionExecutorTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("normal",
-                            new DefaultSQLParserRuleConfigurationBuilder().build(),
-                            new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L)),
-                            new SQLParserRuleConfiguration(new CacheOption(64, 512L), new CacheOption(1000, 1000L))),
+                    new DefaultSQLParserRuleConfigurationBuilder().build(),
+                    new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L)),
+                    new SQLParserRuleConfiguration(new CacheOption(64, 512L), new CacheOption(1000, 1000L))),
                     Arguments.arguments("withNullStatement",
                             new DefaultSQLParserRuleConfigurationBuilder().build(),
                             new AlterSQLParserRuleStatement(null, null),
