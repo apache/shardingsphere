@@ -17,72 +17,55 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.GlobalRuleDefinitionExecutorTest;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.stream.Stream;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-class AlterSQLParserRuleExecutorTest {
+class AlterSQLParserRuleExecutorTest extends GlobalRuleDefinitionExecutorTest {
     
-    @Test
-    void assertExecute() throws SQLException {
-        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
-        ContextManager contextManager = mockContextManager();
-        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
-                ArgumentMatchers.<SQLParserRuleConfiguration>argThat(x -> assertRuleConfiguration(x, new CacheOption(64, 512L), new CacheOption(1000, 1000L))));
+    AlterSQLParserRuleExecutorTest() {
+        super(mock(SQLParserRule.class));
     }
     
-    @Test
-    void assertExecuteWithNullStatement() throws SQLException {
-        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(null, null);
-        ContextManager contextManager = mockContextManager();
-        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
-                ArgumentMatchers.<SQLParserRuleConfiguration>argThat(x -> assertRuleConfiguration(x, new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig) throws SQLException {
+        assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, null);
     }
     
-    @Test
-    void assertExecuteWithNullCacheOptionSegment() throws SQLException {
-        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(null, null), new CacheOptionSegment(null, null));
-        ContextManager contextManager = mockContextManager();
-        new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(
-                ArgumentMatchers.<SQLParserRuleConfiguration>argThat(x -> assertRuleConfiguration(x, new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));
-    }
-    
-    private boolean assertRuleConfiguration(final SQLParserRuleConfiguration actual, final CacheOption expectedParseTreeCache, final CacheOption expectedSQLStatementCache) {
-        assertThat(actual.getParseTreeCache(), deepEqual(expectedParseTreeCache));
-        assertThat(actual.getSqlStatementCache(), deepEqual(expectedSQLStatementCache));
-        return true;
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        SQLParserRule rule = mock(SQLParserRule.class);
-        when(rule.getConfiguration()).thenReturn(new DefaultSQLParserRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.arguments("normal",
+                    new DefaultSQLParserRuleConfigurationBuilder().build(),
+                    new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L)),
+                    new SQLParserRuleConfiguration(new CacheOption(64, 512L), new CacheOption(1000, 1000L))),
+                    Arguments.arguments("withNullStatement",
+                            new DefaultSQLParserRuleConfigurationBuilder().build(),
+                            new AlterSQLParserRuleStatement(null, null),
+                            new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L))),
+                    Arguments.arguments("wthNullCacheOptionSegment",
+                            new DefaultSQLParserRuleConfigurationBuilder().build(),
+                            new AlterSQLParserRuleStatement(new CacheOptionSegment(null, null), new CacheOptionSegment(null, null)),
+                            new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));
+        }
     }
 }
