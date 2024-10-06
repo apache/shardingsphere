@@ -18,46 +18,27 @@
 package org.apache.shardingsphere.globalclock.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorTest;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorSettings;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorTestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorAssert;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class ShowGlobalClockRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest {
+@DistSQLRuleQueryExecutorSettings("cases/show-global-clock-rule.xml")
+class ShowGlobalClockRuleExecutorTest {
     
-    ShowGlobalClockRuleExecutorTest() {
-        super(mock(GlobalClockRule.class));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
-        assertQueryResultRows(ruleConfig, sqlStatement, expected);
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(
-                    Arguments.arguments("normal", new GlobalClockRuleConfiguration("TSO", "local", false, PropertiesBuilder.build(new Property("key", "value"))), new ShowGlobalClockRuleStatement(),
-                            Collections.singleton(new LocalDataQueryResultRow("TSO", "local", "false", "{\"key\":\"value\"}"))));
-        }
+    @ParameterizedTest(name = "DistSQL -> {0}")
+    @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        new DistSQLGlobalRuleQueryExecutorAssert(mock(GlobalClockRule.class)).assertQueryResultRows(sqlStatement, currentRuleConfig, expected);
     }
 }
