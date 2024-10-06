@@ -1,0 +1,20 @@
+[
+{
+  "condition":{"typeReachable":"com.google.common.cache.CacheLoader$FunctionToCacheLoader"},
+  "name":"com.google.common.collect.ImmutableSortedMap$Builder"
+},
+{
+  "condition":{"typeReachable":"com.google.common.cache.CacheLoader$FunctionToCacheLoader"},
+  "name":"com.google.common.collect.Table"
+},
+{
+  "condition":{"typeReachable":"com.google.common.util.concurrent.AbstractFuture$UnsafeAtomicHelper"},
+  "name":"com.google.common.util.concurrent.AbstractFuture",
+  "fields":[{"name":"listeners"}, {"name":"value"}, {"name":"waiters"}]
+},
+{
+  "condition":{"typeReachable":"com.google.common.util.concurrent.AbstractFuture$UnsafeAtomicHelper"},
+  "name":"com.google.common.util.concurrent.AbstractFuture$Waiter",
+  "fields":[{"name":"next"}, {"name":"thread"}]
+}
+]

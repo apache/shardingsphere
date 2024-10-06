@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
@@ -52,15 +53,18 @@ import static org.hamcrest.Matchers.nullValue;
 @Testcontainers
 class StandaloneMetastoreTest {
     
+    @AutoClose
     private final Network network = Network.newNetwork();
     
     @Container
+    @AutoClose
     private final GenericContainer<?> hmsContainer = new GenericContainer<>("apache/hive:4.0.1")
             .withEnv("SERVICE_NAME", "metastore")
             .withNetwork(network)
             .withNetworkAliases("metastore");
     
     @Container
+    @AutoClose
     private final GenericContainer<?> hs2Container = new GenericContainer<>("apache/hive:4.0.1")
             .withEnv("SERVICE_NAME", "hiveserver2")
             .withEnv("SERVICE_OPTS", "-Dhive.metastore.uris=thrift://metastore:9083")
@@ -93,7 +97,6 @@ class StandaloneMetastoreTest {
             }
             contextManager.close();
         }
-        network.close();
         System.clearProperty(systemPropKeyPrefix + "ds0.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds1.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds2.jdbc-url");
