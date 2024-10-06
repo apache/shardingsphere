@@ -187,7 +187,7 @@ Read/write-splitting supports static and dynamic configuration
 
 18. Support to use `instance_id` to perform operations when `enable/disable` a proxy instance
 
-19. Support auto creative algorithm when `CREATE SHARING TABLE RULE`, reducing the steps of creating rule
+19. Support auto creative algorithm when `CREATE SHARDING TABLE RULE`, reducing the steps of creating rule
 
 20. Support specifying an existing KeyGenerator when `CREATE SHARDING TABLE RULE`
 

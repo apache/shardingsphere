@@ -28,6 +28,6 @@ public final class MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeExc
     private static final long serialVersionUID = -3667110081810167498L;
     
     public MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException(final int shardingColumnSize, final int shardingValueSize) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 53, "Complex inline algorithm need %d sharing columns, but only found %d.", shardingColumnSize, shardingValueSize);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 53, "Complex inline algorithm need %d sharding columns, but only found %d.", shardingColumnSize, shardingValueSize);
     }
 }

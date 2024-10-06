@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexSh
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
@@ -68,7 +68,7 @@ public class ShardingRuleChecker {
         shardingRule.getShardingTables().forEach((key, value) -> {
             DataNode sampleActualDataNode = value.getActualDataNodes().iterator().next();
             ShardingSpherePreconditions.checkNotContains(uniqueActualDataNodes, sampleActualDataNode,
-                    () -> new DuplicateSharingActualDataNodeException(key, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
+                    () -> new DuplicateShardingActualDataNodeException(key, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
             uniqueActualDataNodes.add(sampleActualDataNode);
         });
     }

@@ -1343,7 +1343,7 @@
 
 ### Enhancement
 
-1. Optimization for Sharing Parser with ANTLR Visitor improving the parsing performance of long SQL by 100%~1000%
+1. Optimization for Sharding Parser with ANTLR Visitor improving the parsing performance of long SQL by 100%~1000%
 1. Use multiple threads to load metadata for different data sources
 1. Support `allow.range.query.with.inline.sharding` option
 1. The docker of ShardingSphere-Proxy supports loading external lib packages

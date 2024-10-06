@@ -23,11 +23,11 @@ import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 /**
  * Duplicate sharding actual data node exception.
  */
-public final class DuplicateSharingActualDataNodeException extends ShardingSQLException {
+public final class DuplicateShardingActualDataNodeException extends ShardingSQLException {
     
     private static final long serialVersionUID = 3503761639898230998L;
     
-    public DuplicateSharingActualDataNodeException(final String logicalTableName, final String dataSourceName, final String tableName) {
+    public DuplicateShardingActualDataNodeException(final String logicalTableName, final String dataSourceName, final String tableName) {
         super(XOpenSQLState.DUPLICATE, 12,
                 "Same actual data node cannot be configured in multiple logic tables in same database, logical table '%s', actual data node '%s.%s'.", logicalTableName, dataSourceName, tableName);
     }

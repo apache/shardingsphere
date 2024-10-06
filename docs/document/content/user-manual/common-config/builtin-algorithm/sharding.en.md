@@ -119,7 +119,7 @@ Type: COMPLEX_INLINE
 
 | *Name*                                     | *DataType* | *Description*                                                                                            | *Default Value* |
 |--------------------------------------------|------------|----------------------------------------------------------------------------------------------------------|-----------------|
-| sharding-columns (?)                       | String     | sharing column names                                                                                     | -               |
+| sharding-columns (?)                       | String     | sharding column names                                                                                    | -               |
 | algorithm-expression                       | String     | Inline expression sharding algorithm                                                                     | -               |
 | allow-range-query-with-inline-sharding (?) | boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
 
