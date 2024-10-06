@@ -186,6 +186,14 @@
   "allPublicMethods": true
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.OpenGaussTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.databases.OpenGaussTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest"},
   "name":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest",
   "allDeclaredFields": true,

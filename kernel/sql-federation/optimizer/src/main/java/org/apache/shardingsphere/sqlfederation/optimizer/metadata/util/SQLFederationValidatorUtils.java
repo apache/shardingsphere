@@ -26,6 +26,9 @@ import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.prepare.CalciteCatalogReader;
+import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
+import org.apache.calcite.rel.metadata.ProxyingMetadataHandlerProvider;
+import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.Schema;
@@ -137,6 +140,8 @@ public final class SQLFederationValidatorUtils {
      */
     public static RelOptCluster createRelOptCluster(final RelDataTypeFactory relDataTypeFactory, final Convention convention) {
         RelOptPlanner volcanoPlanner = SQLFederationPlannerBuilder.buildVolcanoPlanner(convention);
-        return RelOptCluster.create(volcanoPlanner, new RexBuilder(relDataTypeFactory));
+        RelOptCluster relOptCluster = RelOptCluster.create(volcanoPlanner, new RexBuilder(relDataTypeFactory));
+        relOptCluster.setMetadataQuerySupplier(() -> new RelMetadataQuery(new ProxyingMetadataHandlerProvider(DefaultRelMetadataProvider.INSTANCE)));
+        return relOptCluster;
     }
 }

@@ -436,5 +436,21 @@
   "condition":{"typeReachable":"sun.security.provider.SecureRandom"},
   "name":"sun.security.provider.SecureRandom",
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
+},
+{
+  "condition":{"typeReachable":"org.codehaus.janino.ClassLoaderIClassLoader"},
+  "name":"org"
+},
+{
+  "condition":{"typeReachable":"org.codehaus.janino.ClassLoaderIClassLoader"},
+  "name":"org.apache"
+},
+{
+  "condition":{"typeReachable":"org.codehaus.janino.ClassLoaderIClassLoader"},
+  "name":"org.apache.calcite"
+},
+{
+  "condition":{"typeReachable":"org.codehaus.janino.ClassLoaderIClassLoader"},
+  "name":"org.apache.shardingsphere"
 }
 ]

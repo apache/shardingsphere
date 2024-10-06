@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
-import org.apache.calcite.rel.metadata.RelMetadataQueryBase;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
@@ -52,14 +50,12 @@ public final class SQLStatementCompiler {
      * @return sql federation execution plan
      */
     public SQLFederationExecutionPlan compile(final SQLStatement sqlStatement, final String databaseType) {
-        RelMetadataQueryBase.THREAD_PROVIDERS.set(JaninoRelMetadataProvider.DEFAULT);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
         RelDataType resultColumnType = Objects.requireNonNull(converter.validator).getValidatedNodeType(sqlNode);
         RelNode replacePlan = LogicalScanRelShuttle.replace(logicalPlan, databaseType);
         RelNode rewritePlan = rewrite(replacePlan, SQLFederationPlannerBuilder.buildHepPlanner());
         RelNode physicalPlan = optimize(rewritePlan, converter);
-        RelMetadataQueryBase.THREAD_PROVIDERS.remove();
         return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
     }
     
