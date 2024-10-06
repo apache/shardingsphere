@@ -178,7 +178,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20050       | HY000     | Sharding algorithm class '%s' should be implement '%s'.                                                                             |
 | 20051       | HY000     | Routed target '%s' does not exist, available targets are '%s'.                                                                      |
 | 20052       | 44000     | Inline sharding algorithms expression '%s' and sharding column '%s' do not match.                                                   |
-| 20053       | 44000     | Complex inline algorithm need %d sharing columns, but only found %d.                                                                |
+| 20053       | 44000     | Complex inline algorithm need %d sharding columns, but only found %d.                                                               |
 | 20054       | 44000     | No sharding database route info.                                                                                                    |
 | 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s'.          |
 | 20056       | 44000     | Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.                       |

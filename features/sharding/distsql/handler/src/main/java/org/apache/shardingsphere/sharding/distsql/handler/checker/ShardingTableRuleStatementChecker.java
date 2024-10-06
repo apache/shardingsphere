@@ -87,7 +87,7 @@ public final class ShardingTableRuleStatementChecker {
     private static final String DELIMITER = ".";
     
     /**
-     * Check create sharing table rule statement.
+     * Check create sharding table rule statement.
      *
      * @param database database
      * @param rules rules
@@ -100,7 +100,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     /**
-     * Check alter sharing table rule statement.
+     * Check alter sharding table rule statement.
      *
      * @param database database
      * @param rules rules
