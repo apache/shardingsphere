@@ -17,74 +17,63 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.GlobalRuleDefinitionExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Properties;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-class AlterTransactionRuleExecutorTest {
+class AlterTransactionRuleExecutorTest extends GlobalRuleDefinitionExecutorTest {
     
-    @Test
-    void assertExecuteUpdateWithInvalidTransactionType() {
-        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement("Invalid", new TransactionProviderSegment("", new Properties()));
-        assertThrows(InvalidRuleConfigurationException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager()).executeUpdate());
+    AlterTransactionRuleExecutorTest() {
+        super(mock(TransactionRule.class));
     }
     
-    @Test
-    void assertExecuteUpdateWithNotExistedDistributedTransactionType() {
-        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement("BASE", new TransactionProviderSegment("", new Properties()));
-        assertThrows(InvalidRuleConfigurationException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager()).executeUpdate());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig,
+                             final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
+        assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, expectedException);
     }
     
-    @Test
-    void assertExecuteUpdateWithNotExistedXATransactionProvider() {
-        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Invalid", new Properties()));
-        assertThrows(InvalidRuleConfigurationException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager()).executeUpdate());
-    }
-    
-    @Test
-    void assertExecuteUpdate() throws SQLException {
-        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement(
-                "XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))));
-        ContextManager contextManager = mockContextManager();
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, contextManager);
-        engine.executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(ArgumentMatchers.argThat(this::assertRuleConfiguration));
-    }
-    
-    private boolean assertRuleConfiguration(final TransactionRuleConfiguration actual) {
-        assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("host"), is("127.0.0.1"));
-        assertThat(actual.getProps().getProperty("databaseName"), is("jbossts"));
-        return true;
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        TransactionRule rule = mock(TransactionRule.class);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.arguments("withInvalidTransactionType",
+                            new TransactionRuleConfiguration("", "", new Properties()),
+                            new AlterTransactionRuleStatement("Invalid", new TransactionProviderSegment("", new Properties())),
+                            null, InvalidRuleConfigurationException.class),
+                    Arguments.arguments("withNotExistedDistributedTransactionType",
+                            new TransactionRuleConfiguration("", "", new Properties()),
+                            new AlterTransactionRuleStatement("BASE", new TransactionProviderSegment("", new Properties())),
+                            null, InvalidRuleConfigurationException.class),
+                    Arguments.arguments("withNotExistedXATransactionProvider",
+                            new TransactionRuleConfiguration("", "", new Properties()),
+                            new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Invalid", new Properties())),
+                            null, InvalidRuleConfigurationException.class),
+                    Arguments.arguments("normal",
+                            new TransactionRuleConfiguration("XA", "Atomikos", new Properties()),
+                            new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("k", "v")))),
+                            new TransactionRuleConfiguration("XA", "Atomikos", PropertiesBuilder.build(new Property("k", "v"))), null));
+        }
     }
 }
