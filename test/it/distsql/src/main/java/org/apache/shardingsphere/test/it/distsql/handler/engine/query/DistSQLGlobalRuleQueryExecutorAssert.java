@@ -48,14 +48,14 @@ public final class DistSQLGlobalRuleQueryExecutorAssert {
     
     /**
      * Assert query result rows.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration
      * @param expected expected query result rows
      * @throws SQLException SQL exception
      */
     public void assertQueryResultRows(final DistSQLStatement sqlStatement,
-                                         final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+                                      final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, null, mockContextManager(currentRuleConfig), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());

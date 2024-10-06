@@ -30,7 +30,7 @@ public @interface DistSQLRuleQueryExecutorSettings {
     
     /**
      * Get test case XML file path.
-     * 
+     *
      * @return test case XML file path
      */
     String value();
