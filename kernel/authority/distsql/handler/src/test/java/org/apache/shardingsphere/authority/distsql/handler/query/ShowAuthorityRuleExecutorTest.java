@@ -17,62 +17,37 @@
 
 package org.apache.shardingsphere.authority.distsql.handler.query;
 
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.config.UserConfiguration;
-import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorTest;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorAssert;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorSettings;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorTestCaseArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShowAuthorityRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest {
+@DistSQLRuleQueryExecutorSettings("cases/show-authority-rule.xml")
+class ShowAuthorityRuleExecutorTest {
     
-    ShowAuthorityRuleExecutorTest() {
-        super(mockRule());
+    @ParameterizedTest(name = "DistSQL -> {0}")
+    @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        new DistSQLGlobalRuleQueryExecutorAssert(mockRule()).assertQueryResultRows(sqlStatement, currentRuleConfig, expected);
     }
     
-    private static AuthorityRule mockRule() {
+    private AuthorityRule mockRule() {
         AuthorityRule result = mock(AuthorityRule.class);
         when(result.getGrantees()).thenReturn(Collections.singleton(new Grantee("root", "localhost")));
         return result;
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
-        assertQueryResultRows(ruleConfig, sqlStatement, expected);
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(
-                    Arguments.arguments("normal", createRuleConfiguration(), new ShowAuthorityRuleStatement(),
-                            Collections.singleton(new LocalDataQueryResultRow("root@localhost", "ALL_PERMITTED", ""))));
-        }
-        
-        private AuthorityRuleConfiguration createRuleConfiguration() {
-            UserConfiguration userConfig = new UserConfiguration("root", "", "localhost", null, false);
-            AlgorithmConfiguration privilegeProvider = new AlgorithmConfiguration("ALL_PERMITTED", new Properties());
-            return new AuthorityRuleConfiguration(Collections.singleton(userConfig), privilegeProvider, Collections.emptyMap(), null);
-        }
     }
 }

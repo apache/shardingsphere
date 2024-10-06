@@ -20,45 +20,25 @@ package org.apache.shardingsphere.parser.distsql.handler.query;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorTest;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLGlobalRuleQueryExecutorAssert;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorSettings;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorTestCaseArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class ShowSQLParserRuleExecutorTest extends DistSQLGlobalRuleQueryExecutorTest {
+@DistSQLRuleQueryExecutorSettings("cases/show-sql-parser-rule.xml")
+class ShowSQLParserRuleExecutorTest {
     
-    ShowSQLParserRuleExecutorTest() {
-        super(mock(SQLParserRule.class));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertExecuteQuery(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
-        assertQueryResultRows(ruleConfig, sqlStatement, expected);
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(
-                    Arguments.arguments("withCacheOption", new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L)), new ShowSQLParserRuleStatement(),
-                            Collections.singleton(new LocalDataQueryResultRow("initialCapacity: 128, maximumSize: 1024", "initialCapacity: 2000, maximumSize: 65535"))),
-                    Arguments.arguments("withoutCacheOption", new SQLParserRuleConfiguration(null, null), new ShowSQLParserRuleStatement(),
-                            Collections.singleton(new LocalDataQueryResultRow("", ""))));
-        }
+    @ParameterizedTest(name = "DistSQL -> {0}")
+    @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
+    void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
+                            final GlobalRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
+        new DistSQLGlobalRuleQueryExecutorAssert(mock(SQLParserRule.class)).assertQueryResultRows(sqlStatement, currentRuleConfig, expected);
     }
 }

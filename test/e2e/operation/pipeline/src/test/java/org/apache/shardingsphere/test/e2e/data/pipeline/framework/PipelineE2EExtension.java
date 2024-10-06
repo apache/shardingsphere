@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
 public final class PipelineE2EExtension implements BeforeEachCallback, TestWatcher {
     
     @Override
-    public void beforeEach(final ExtensionContext context) throws Exception {
+    public void beforeEach(final ExtensionContext context) {
         log.info("Before case: {}.{}({})", context.getTestClass().map(Class::getSimpleName).orElse(""),
                 context.getTestMethod().map(Method::getName).orElse(""), context.getDisplayName());
     }
