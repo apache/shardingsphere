@@ -60,7 +60,7 @@ public final class RouteContext {
      * @return actual data source names
      */
     public Collection<String> getActualDataSourceNames() {
-        return routeUnits.stream().map(each -> each.getDataSourceMapper().getActualName()).collect(Collectors.toCollection(() -> new HashSet<>(routeUnits.size(), 1L)));
+        return routeUnits.stream().map(each -> each.getDataSourceMapper().getActualName()).collect(Collectors.toSet());
     }
     
     /**
