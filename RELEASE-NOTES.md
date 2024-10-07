@@ -9,14 +9,15 @@
 ### Enhancement
 
 1. SQL Parser: Support PostgreSQL, openGauss function table and update from segment parse - [#32994](https://github.com/apache/shardingsphere/pull/32994)
-2. DistSQL: Support running DistSQL under Proxy Native in the form of GraalVM Native Image - [#33095](https://github.com/apache/shardingsphere/pull/33095)
-2. DistSQL: Support connecting to Postgres via DistSQL in Proxy Native - [#33124](https://github.com/apache/shardingsphere/pull/33124)
+1. DistSQL: Support running DistSQL under Proxy Native in the form of GraalVM Native Image - [#33095](https://github.com/apache/shardingsphere/pull/33095)
+1. DistSQL: Support connecting to Postgres via DistSQL in Proxy Native - [#33124](https://github.com/apache/shardingsphere/pull/33124)
+1. DistSQL: Check duplicate actual data nodes when creating or altering sharding table rule - [#33138](https://github.com/apache/shardingsphere/pull/33138)
 
 ### Bug Fix
 
 1. Sharding: Fix alter view exception when config sharding rule and binding table rule - [#32696](https://github.com/apache/shardingsphere/issues/32696)
-2. Shadow: Use hintValueContext to replace extract sql hint from sql statement for solving shadow sql hint bug - [#33063](https://github.com/apache/shardingsphere/pull/33063)
-3. Shadow: Make Shadow feature available again in GraalVM Native Image - [#33080](https://github.com/apache/shardingsphere/pull/33080)
+1. Shadow: Use hintValueContext to replace extract sql hint from sql statement for solving shadow sql hint bug - [#33063](https://github.com/apache/shardingsphere/pull/33063)
+1. Shadow: Make Shadow feature available again in GraalVM Native Image - [#33080](https://github.com/apache/shardingsphere/pull/33080)
 
 ### Change Log
 
