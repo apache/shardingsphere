@@ -1,0 +1,7 @@
+[
+{
+  "condition":{"typeReachable":"com.atomikos.logging.LoggerFactory"},
+  "name":"com.atomikos.logging.Slf4JLoggerFactoryDelegate",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+}
+]

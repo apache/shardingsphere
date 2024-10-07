@@ -14,6 +14,7 @@
 1. DistSQL: Support connecting to Postgres via DistSQL in Proxy Native - [#33124](https://github.com/apache/shardingsphere/pull/33124)
 1. DistSQL: Check duplicate actual data nodes when creating or altering sharding table rule - [#33138](https://github.com/apache/shardingsphere/pull/33138)
 1. DistSQL: Check user privilege when registering or altering storage unit - [#32172](https://github.com/apache/shardingsphere/pull/32172)
+1. Infra: Enable Safe Composition of Metadata for ShardingSphere Proxy Native - [#33179](https://github.com/apache/shardingsphere/pull/33179)
 
 ### Bug Fix
 

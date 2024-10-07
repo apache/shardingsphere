@@ -194,9 +194,6 @@
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"},
@@ -244,7 +241,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine"},
@@ -268,8 +265,11 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.type.PartialSQLRouteExecutor"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.route.SQLRouter\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.SQLRouteEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.route.engine.SQLRouteExecutorDecider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder\\E"

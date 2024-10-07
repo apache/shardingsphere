@@ -1,0 +1,8 @@
+{
+  "resources":{
+  "includes":[{
+    "condition":{"typeReachable":"com.clickhouse.logging.LoggerFactory"},
+    "pattern":"\\QMETA-INF/services/com.clickhouse.logging.LoggerFactory\\E"
+  }]},
+  "bundles":[]
+}
