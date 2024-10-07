@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -47,16 +47,24 @@ public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreate
     @Override
     public void checkBeforeUpdate(final CreateShardingTableRuleStatement sqlStatement) {
         ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), sqlStatement.isIfNotExists(), null == rule ? null : rule.getConfiguration());
+        checkUniqueActualDataNodes(sqlStatement);
+    }
+    
+    private void checkUniqueActualDataNodes(final CreateShardingTableRuleStatement sqlStatement) {
+        if (null == rule) {
+            ShardingTableRuleStatementChecker.checkToBeAddedDataNodes(ShardingTableRuleStatementConverter.convertDataNodes(sqlStatement.getRules()));
+            return;
+        }
+        if (sqlStatement.isIfNotExists()) {
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
+            sqlStatement.getRules().removeIf(each -> duplicatedRuleNames.contains(each.getLogicTable()));
+        }
+        rule.getShardingRuleChecker().checkToBeAddedDataNodes(ShardingTableRuleStatementConverter.convertDataNodes(sqlStatement.getRules()), false);
     }
     
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableRuleStatement sqlStatement) {
-        Collection<AbstractTableRuleSegment> segments = sqlStatement.getRules();
-        if (sqlStatement.isIfNotExists()) {
-            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
-            segments.removeIf(each -> duplicatedRuleNames.contains(each.getLogicTable()));
-        }
-        return ShardingTableRuleStatementConverter.convert(segments);
+        return ShardingTableRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     private Collection<String> getDuplicatedRuleNames(final CreateShardingTableRuleStatement sqlStatement) {
@@ -65,7 +73,7 @@ public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreate
     }
     
     private Collection<String> getCurrentShardingTables() {
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new CaseInsensitiveSet<>();
         result.addAll(rule.getConfiguration().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         result.addAll(rule.getConfiguration().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return result;

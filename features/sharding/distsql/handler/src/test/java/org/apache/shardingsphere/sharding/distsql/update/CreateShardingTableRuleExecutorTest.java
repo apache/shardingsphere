@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRul
 import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -183,6 +184,19 @@ class CreateShardingTableRuleExecutorTest {
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
         assertThrows(InvalidShardingStrategyConfigurationException.class, () -> executor.checkBeforeUpdate(distSQLStatement));
+    }
+    
+    @Test
+    void assertCheckWithDuplicateDataNodes() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order'),"
+                + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))))"
+                + "), t_order_item("
+                + "DATANODES('ds_${0..1}.t_order'),"
+                + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))))"
+                + ");";
+        CreateShardingTableRuleStatement sqlStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        assertThrows(DuplicateShardingActualDataNodeException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test

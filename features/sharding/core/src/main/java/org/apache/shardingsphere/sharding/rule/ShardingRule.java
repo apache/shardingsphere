@@ -84,8 +84,6 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShardingRule implements DatabaseRule {
     
-    private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
-    
     private final ShardingRuleConfiguration configuration;
     
     private final Collection<String> dataSourceNames;
