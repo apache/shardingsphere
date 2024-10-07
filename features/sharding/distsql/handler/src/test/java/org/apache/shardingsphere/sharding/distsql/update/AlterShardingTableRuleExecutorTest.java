@@ -103,6 +103,8 @@ class AlterShardingTableRuleExecutorTest {
         AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order_item"), createCompleteTableRule("t_order")));
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        ShardingRuleChecker checker = new ShardingRuleChecker(rule);
+        when(rule.getShardingRuleChecker()).thenReturn(checker);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
@@ -130,6 +132,8 @@ class AlterShardingTableRuleExecutorTest {
         AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("T_ORDER_ITEM"), createCompleteTableRule("T_ORDER")));
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        ShardingRuleChecker checker = new ShardingRuleChecker(rule);
+        when(rule.getShardingRuleChecker()).thenReturn(checker);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
@@ -157,6 +161,8 @@ class AlterShardingTableRuleExecutorTest {
         AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order"), createCompleteTableRule("t_order_item")));
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        ShardingRuleChecker checker = new ShardingRuleChecker(rule);
+        when(rule.getShardingRuleChecker()).thenReturn(checker);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
