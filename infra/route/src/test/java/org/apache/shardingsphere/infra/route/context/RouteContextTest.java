@@ -115,8 +115,7 @@ class RouteContextTest {
                 is(new LinkedHashSet<>(Arrays.asList(
                         new RouteUnit(new RouteMapper("foo_ds", "foo_ds"), Collections.singleton(new RouteMapper("logic_tbl", "actual_tbl"))),
                         new RouteUnit(new RouteMapper("bar_ds", "bar_ds"), Collections.singleton(new RouteMapper("logic_tbl", "actual_tbl"))),
-                        new RouteUnit(new RouteMapper("new_ds", "new_ds"), Collections.singleton(new RouteMapper("new_tbl", "new_tbl"))))
-                )));
+                        new RouteUnit(new RouteMapper("new_ds", "new_ds"), Collections.singleton(new RouteMapper("new_tbl", "new_tbl")))))));
     }
     
     @Test
