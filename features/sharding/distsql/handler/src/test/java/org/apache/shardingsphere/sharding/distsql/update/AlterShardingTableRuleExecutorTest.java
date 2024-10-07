@@ -78,15 +78,15 @@ class AlterShardingTableRuleExecutorTest {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         executor.setDatabase(database);
-    }
-    
-    @Test
-    void assertCheckWithDuplicateDataNodes() {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         ShardingRuleChecker checker = new ShardingRuleChecker(rule);
         when(rule.getShardingRuleChecker()).thenReturn(checker);
         executor.setRule(rule);
+    }
+    
+    @Test
+    void assertCheckWithDuplicateDataNodes() {
         String sql = "ALTER SHARDING TABLE RULE t_order("
                 + "DATANODES('ds_${0..1}.t_order'),"
                 + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))))"
@@ -101,11 +101,6 @@ class AlterShardingTableRuleExecutorTest {
     @Test
     void assertUpdate() {
         AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order_item"), createCompleteTableRule("t_order")));
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        ShardingRuleChecker checker = new ShardingRuleChecker(rule);
-        when(rule.getShardingRuleChecker()).thenReturn(checker);
-        executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
@@ -130,11 +125,6 @@ class AlterShardingTableRuleExecutorTest {
     @Test
     void assertUpdateWithDifferentCase() {
         AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("T_ORDER_ITEM"), createCompleteTableRule("T_ORDER")));
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        ShardingRuleChecker checker = new ShardingRuleChecker(rule);
-        when(rule.getShardingRuleChecker()).thenReturn(checker);
-        executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
@@ -159,11 +149,6 @@ class AlterShardingTableRuleExecutorTest {
     @Test
     void assertUpdateTableType() {
         AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order"), createCompleteTableRule("t_order_item")));
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        ShardingRuleChecker checker = new ShardingRuleChecker(rule);
-        when(rule.getShardingRuleChecker()).thenReturn(checker);
-        executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
