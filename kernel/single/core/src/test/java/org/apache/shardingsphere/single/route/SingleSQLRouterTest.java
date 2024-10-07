@@ -55,8 +55,10 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -195,9 +197,7 @@ class SingleSQLRouterTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new RuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
         sqlRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is("write_ds"));
-        assertThat(routedDataSourceNames.next(), is("readwrite_ds"));
+        assertThat(routeContext.getActualDataSourceNames(), is(new HashSet<>(Arrays.asList("write_ds", "readwrite_ds"))));
     }
     
     @Test
