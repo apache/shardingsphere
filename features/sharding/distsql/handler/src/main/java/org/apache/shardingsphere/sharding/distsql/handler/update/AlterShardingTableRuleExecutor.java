@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -46,6 +46,11 @@ public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterEx
     @Override
     public void checkBeforeUpdate(final AlterShardingTableRuleStatement sqlStatement) {
         ShardingTableRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), rule.getConfiguration());
+        checkUniqueActualDataNodes(sqlStatement);
+    }
+    
+    private void checkUniqueActualDataNodes(final AlterShardingTableRuleStatement sqlStatement) {
+        rule.getShardingRuleChecker().checkToBeAddedDataNodes(ShardingTableRuleStatementConverter.convertDataNodes(sqlStatement.getRules()), true);
     }
     
     @Override
