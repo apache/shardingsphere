@@ -251,9 +251,10 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 ```json
 [
 {
-  "condition":{"typeReachable":"com.mysql.cj.jdbc.MysqlXADataSource"},
-  "name":"com.mysql.cj.jdbc.MysqlXADataSource",
-  "allDeclaredConstructors": true
+   "condition":{"typeReachable":"com.mysql.cj.jdbc.MysqlXADataSource"},
+   "name":"com.mysql.cj.jdbc.MysqlXADataSource",
+   "allPublicMethods": true,
+   "methods": [{"name":"<init>","parameterTypes":[] }]
 }
 ]
 ```
@@ -484,7 +485,7 @@ sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PnativeTestInShardingSphere -e clean test
+./mvnw -PnativeTestInShardingSphere -e -T 1C clean test
 ```
 
 当贡献者发现缺少与 ShardingSphere 无关的第三方库的 GraalVM Reachability Metadata 时，应当在
@@ -513,10 +514,26 @@ Reachability Metadata 位于 `shardingsphere-infra-reachability-metadata` 子模
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -DskipNativeTests -e clean test native:metadata-copy
+./mvnw -PgenerateMetadata -DskipNativeTests -e -T 1C clean test native:metadata-copy
 ```
 
-在使用 GraalVM Native Build Tools 的 Maven Plugin 时，
-贡献者应避免使用 Maven 的并行构建功能。
-GraalVM Native Build Tools 的 Maven Plugin并不是线程安全的，
-它与 https://cwiki.apache.org/confluence/display/MAVEN/Parallel+builds+in+Maven+3 不兼容。
+受 https://github.com/apache/shardingsphere/issues/33206 影响，
+贡献者执行 `./mvnw -PgenerateMetadata -DskipNativeTests -T 1C -e clean test native:metadata-copy` 后，
+`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/resource-config.json` 会生成不必要的包含绝对路径的 JSON 条目，
+类似如下，
+
+```json
+{
+   "resources":{
+      "includes":[{
+         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
+         "pattern":"\\QcustomPath/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml\\E"
+      }, {
+         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
+         "pattern":"\\QcustomPath/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/\\E"
+      }]},
+   "bundles":[]
+}
+```
+
+贡献者应始终手动删除这些包含绝对路径的 JSON 条目，并等待 https://github.com/oracle/graal/issues/8417 被解决。

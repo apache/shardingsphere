@@ -38,7 +38,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
 @EnabledInNativeImage
@@ -56,7 +55,7 @@ class PostgresTest {
     
     @BeforeAll
     static void beforeAll() throws SQLException {
-        Awaitility.await().atMost(Duration.ofMinutes(30L)).ignoreExceptions().until(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
             openConnection("postgres", "yourStrongPassword123!", "jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/")
                     .close();
             return true;
@@ -70,12 +69,7 @@ class PostgresTest {
         }
         String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().normalize().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        try {
-            TimeUnit.SECONDS.sleep(10L);
-        } catch (final InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
-        Awaitility.await().atMost(Duration.ofMinutes(30L)).until(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
             openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
             return true;
         });
