@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableR
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -93,10 +94,12 @@ class CreateShardingTableRuleExecutorTest {
     
     @Test
     void assertBuildToBeCreatedRuleConfiguration() {
-        CreateShardingTableRuleStatement sqlStatement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        ShardingRuleChecker checker = new ShardingRuleChecker(rule);
+        when(rule.getShardingRuleChecker()).thenReturn(checker);
         executor.setRule(rule);
+        CreateShardingTableRuleStatement sqlStatement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         assertThat(actual.getTables().size(), is(1));
@@ -201,13 +204,15 @@ class CreateShardingTableRuleExecutorTest {
     
     @Test
     void assertUpdateWithIfNotExistsStatement() {
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        ShardingRuleChecker checker = new ShardingRuleChecker(rule);
+        when(rule.getShardingRuleChecker()).thenReturn(checker);
+        executor.setRule(rule);
         Collection<AbstractTableRuleSegment> segments = new LinkedList<>();
         segments.add(createCompleteAutoTableRule());
         segments.add(createCompleteTableRule());
         CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, segments);
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        executor.setRule(rule);
         executor.checkBeforeUpdate(statementWithIfNotExists);
         ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists);
         assertThat(actual.getTables().size(), is(1));
