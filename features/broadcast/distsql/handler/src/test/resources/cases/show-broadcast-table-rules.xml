@@ -17,7 +17,7 @@
   -->
 
 <distsql-rule-query-executor-test-cases>
-    <test-case dist-sql="SHOW BROADCAST TABLE RULES" current-rule-config-yaml-file="cases/show-broadcast-table-rule-current-config.yaml">
+    <test-case dist-sql="SHOW BROADCAST TABLE RULES" current-rule-config-yaml-file="cases/show-broadcast-table-rules-current-config.yaml">
         <expected-query-result-rows>
             <expected-query-result-row>t_address</expected-query-result-row>
         </expected-query-result-rows>
