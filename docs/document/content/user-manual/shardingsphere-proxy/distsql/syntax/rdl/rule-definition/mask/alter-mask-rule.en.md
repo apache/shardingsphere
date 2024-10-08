@@ -12,7 +12,7 @@ The `ALTER MASK RULE` syntax is used to create a mask rule.
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-AlterEncryptRule ::=
+AlterMaskRule ::=
   'ALTER' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
 
 maskRuleDefinition ::=
