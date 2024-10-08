@@ -44,7 +44,7 @@ import java.util.List;
 public final class ShardingCreateViewStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(((CreateViewStatement) sqlStatementContext.getSqlStatement()).getSelect());

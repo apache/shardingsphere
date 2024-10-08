@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
@@ -62,8 +63,8 @@ class ShardingAlterIndexStatementValidatorTest {
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(false);
-        assertDoesNotThrow(() -> new ShardingAlterIndexStatementValidator().preValidate(
-                shardingRule, new AlterIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -75,9 +76,8 @@ class ShardingAlterIndexStatementValidatorTest {
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(table.containsIndex("t_order_index")).thenReturn(false);
-        assertThrows(IndexNotExistedException.class,
-                () -> new ShardingAlterIndexStatementValidator().preValidate(
-                        shardingRule, new AlterIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(IndexNotExistedException.class, () -> new ShardingAlterIndexStatementValidator().preValidate(shardingRule,
+                new AlterIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -90,8 +90,7 @@ class ShardingAlterIndexStatementValidatorTest {
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
-        assertThrows(DuplicateIndexException.class,
-                () -> new ShardingAlterIndexStatementValidator().preValidate(
-                        shardingRule, new AlterIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(DuplicateIndexException.class, () -> new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
 }

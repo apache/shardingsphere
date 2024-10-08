@@ -72,6 +72,9 @@ public final class SQLHintUtils {
         if (containsHintKey(hintKeyValues, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)) {
             result.setSkipSQLRewrite(Boolean.parseBoolean(getHintValue(hintKeyValues, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)));
         }
+        if (containsHintKey(hintKeyValues, SQLHintPropertiesKey.SKIP_METADATA_VALIDATE_KEY)) {
+            result.setSkipMetadataValidate(Boolean.parseBoolean(getHintValue(hintKeyValues, SQLHintPropertiesKey.SKIP_METADATA_VALIDATE_KEY)));
+        }
         if (containsHintKey(hintKeyValues, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY)) {
             String property = getHintValue(hintKeyValues, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY);
             result.getDisableAuditNames().addAll(getSplitterSQLHintValue(property));

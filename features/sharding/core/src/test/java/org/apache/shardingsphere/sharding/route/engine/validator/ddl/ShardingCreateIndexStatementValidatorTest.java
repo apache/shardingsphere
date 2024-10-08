@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
@@ -63,8 +64,8 @@ class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchema("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertDoesNotThrow(() -> new ShardingCreateIndexStatementValidator().preValidate(
-                shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -73,9 +74,8 @@ class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         when(database.getSchema("public").containsTable("t_order")).thenReturn(false);
-        assertThrows(NoSuchTableException.class,
-                () -> new ShardingCreateIndexStatementValidator().preValidate(
-                        shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(NoSuchTableException.class, () -> new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -87,9 +87,8 @@ class ShardingCreateIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(database.getSchema("public").containsIndex("t_order", "t_order_index")).thenReturn(true);
-        assertThrows(DuplicateIndexException.class,
-                () -> new ShardingCreateIndexStatementValidator().preValidate(
-                        shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(DuplicateIndexException.class, () -> new ShardingCreateIndexStatementValidator().preValidate(shardingRule,
+                new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -101,8 +100,8 @@ class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchema("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertDoesNotThrow(() -> new ShardingCreateIndexStatementValidator().preValidate(
-                shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -112,9 +111,8 @@ class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(database.getSchema("public").containsTable("t_order")).thenReturn(false);
-        assertThrows(NoSuchTableException.class,
-                () -> new ShardingCreateIndexStatementValidator().preValidate(
-                        shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(NoSuchTableException.class, () -> new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -127,8 +125,7 @@ class ShardingCreateIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(database.getSchema("public").containsIndex("t_order", "content_idx")).thenReturn(true);
-        assertThrows(DuplicateIndexException.class,
-                () -> new ShardingCreateIndexStatementValidator().preValidate(
-                        shardingRule, new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(DuplicateIndexException.class, () -> new ShardingCreateIndexStatementValidator().preValidate(shardingRule,
+                new CreateIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
 }

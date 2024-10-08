@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadXMLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingLoadXMLStatementValidator;
@@ -53,8 +54,8 @@ class ShardingLoadXMLStatementValidatorTest {
     @Test
     void assertPreValidateLoadXMLWithSingleTable() {
         MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(() -> new ShardingLoadXMLStatementValidator().preValidate(
-                shardingRule, new LoadXMLStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingLoadXMLStatementValidator().preValidate(shardingRule, new LoadXMLStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -62,7 +63,7 @@ class ShardingLoadXMLStatementValidatorTest {
         MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadXMLStatementValidator().preValidate(shardingRule, new LoadXMLStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                () -> new ShardingLoadXMLStatementValidator().preValidate(shardingRule, new LoadXMLStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), mock(HintValueContext.class),
                         Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
     }
 }

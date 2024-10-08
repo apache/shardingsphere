@@ -73,8 +73,8 @@ class ShardingDropIndexStatementValidatorTest {
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingDropIndexStatementValidator().preValidate(
-                shardingRule, new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -86,9 +86,8 @@ class ShardingDropIndexStatementValidatorTest {
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(table.containsIndex("t_order_index")).thenReturn(false);
-        assertThrows(IndexNotExistedException.class,
-                () -> new ShardingDropIndexStatementValidator().preValidate(
-                        shardingRule, new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(IndexNotExistedException.class, () -> new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test

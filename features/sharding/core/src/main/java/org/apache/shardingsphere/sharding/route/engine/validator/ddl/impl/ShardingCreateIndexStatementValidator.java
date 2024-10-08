@@ -39,7 +39,7 @@ import java.util.List;
 public final class ShardingCreateIndexStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         CreateIndexStatementContext createIndexStatementContext = (CreateIndexStatementContext) sqlStatementContext;
         CreateIndexStatement createIndexStatement = createIndexStatementContext.getSqlStatement();

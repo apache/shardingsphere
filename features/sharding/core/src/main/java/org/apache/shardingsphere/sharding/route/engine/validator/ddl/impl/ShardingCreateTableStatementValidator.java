@@ -39,11 +39,11 @@ import java.util.List;
 public final class ShardingCreateTableStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         CreateTableStatementContext createTableStatementContext = (CreateTableStatementContext) sqlStatementContext;
         CreateTableStatement createTableStatement = createTableStatementContext.getSqlStatement();
-        if (!createTableStatement.isIfNotExists()) {
+        if (!createTableStatement.isIfNotExists() && !hintValueContext.isSkipMetadataValidate()) {
             String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
             ShardingSphereSchema schema = createTableStatementContext.getTablesContext().getSchemaName()
                     .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));

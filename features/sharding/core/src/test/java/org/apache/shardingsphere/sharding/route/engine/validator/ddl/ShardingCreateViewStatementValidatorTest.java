@@ -80,8 +80,8 @@ class ShardingCreateViewStatementValidatorTest {
     
     @Test
     void assertPreValidateCreateView() {
-        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().preValidate(
-                shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, mock(HintValueContext.class), Collections.emptyList(),
+                mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -89,9 +89,8 @@ class ShardingCreateViewStatementValidatorTest {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(false);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        assertThrows(EngagedViewException.class,
-                () -> new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
-                        props));
+        assertThrows(EngagedViewException.class, () -> new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, mock(HintValueContext.class),
+                Collections.emptyList(), mock(ShardingSphereDatabase.class), props));
     }
     
     @Test

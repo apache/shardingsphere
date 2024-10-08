@@ -87,7 +87,7 @@ class ShardingDropTableStatementValidatorTest {
         when(database.getName()).thenReturn("db_schema");
         when(database.getSchema("db_schema").containsTable("t_order_item")).thenReturn(true);
         ShardingDropTableStatementValidator validator = new ShardingDropTableStatementValidator();
-        validator.preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        validator.preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         RouteMapper dataSourceMapper = new RouteMapper("db", "db1");
         Collection<RouteMapper> tableMapper = new LinkedList<>();

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -52,6 +53,8 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     private final Collection<QualifiedTable> singleTables;
     
     private final SQLStatement sqlStatement;
+    
+    private final HintValueContext hintValueContext;
     
     @Override
     public void route(final RouteContext routeContext, final SingleRule singleRule) {
@@ -90,7 +93,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
             if (dataNode.isPresent() && containsIfNotExists) {
                 String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElse(null);
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
-            } else if (dataNode.isPresent()) {
+            } else if (dataNode.isPresent() && !hintValueContext.isSkipMetadataValidate()) {
                 throw new TableExistsException(table.getTableName());
             } else {
                 String dataSourceName = rule.assignNewDataSourceName();

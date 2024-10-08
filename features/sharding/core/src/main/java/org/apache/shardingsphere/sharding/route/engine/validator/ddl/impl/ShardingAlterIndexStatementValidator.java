@@ -40,7 +40,7 @@ import java.util.Optional;
 public final class ShardingAlterIndexStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         AlterIndexStatement alterIndexStatement = (AlterIndexStatement) sqlStatementContext.getSqlStatement();
         Optional<IndexSegment> index = alterIndexStatement.getIndex();

@@ -56,7 +56,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SingleMetaDataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.validate(rule, sqlStatementContext, database));
         Collection<QualifiedTable> singleTables = getSingleTables(database, rule, result, sqlStatementContext);
-        SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(result, rule));
+        SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).ifPresent(optional -> optional.route(result, rule));
         return result;
     }
     
@@ -70,7 +70,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
                                      final SingleRule rule, final ConfigurationProperties props) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         Collection<QualifiedTable> singleTables = getSingleTables(database, rule, routeContext, sqlStatementContext);
-        SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(routeContext, rule));
+        SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).ifPresent(optional -> optional.route(routeContext, rule));
     }
     
     private RouteContext createSingleDataSourceRouteContext(final SingleRule rule, final ShardingSphereDatabase database, final QueryContext queryContext) {

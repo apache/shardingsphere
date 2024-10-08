@@ -49,6 +49,12 @@ class SQLHintUtilsTest {
     }
     
     @Test
+    void assertSQLHintSkipMetadataValidate() {
+        HintValueContext actual = SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */");
+        assertTrue(actual.isSkipMetadataValidate());
+    }
+    
+    @Test
     void assertSQLHintDisableAuditNames() {
         HintValueContext actual = SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: DISABLE_AUDIT_NAMES=sharding_audit1 sharding_audit2 */");
         assertThat(actual.getDisableAuditNames().size(), is(2));
