@@ -32,7 +32,6 @@ import java.util.List;
 /**
  * Generated key insert value parameter rewriter.
  */
-@Setter
 public final class GeneratedKeyInsertValueParameterRewriter implements ParameterRewriter {
     
     @Override
