@@ -12,7 +12,7 @@ The `DROP MASK RULE` syntax is used to drop existing mask rule.
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-DropEncryptRule ::=
+DropMaskRule ::=
   'DROP' 'MASK' 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
