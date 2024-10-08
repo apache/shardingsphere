@@ -42,7 +42,7 @@ class LocalDataQueryResultRowTest {
     
     @Test
     void assertGetCellWithNullValue() {
-        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(null, null);
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(null, "null");
         assertThat(actual.getCell(1), is(""));
         assertThat(actual.getCell(2), is(""));
     }

@@ -42,7 +42,7 @@ public final class LocalDataQueryResultRow {
     }
     
     private Object convert(final Object data) {
-        if (null == data) {
+        if (null == data || "null".equals(data)) {
             return "";
         }
         if (data instanceof Optional) {
