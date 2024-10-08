@@ -31,19 +31,18 @@ import java.util.Optional;
 public final class GeneratedKeyInsertColumnTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     
     @Override
-    protected boolean isGenerateSQLToken(final InsertStatementContext insertStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
-        return sqlSegment.isPresent() && !sqlSegment.get().getColumns().isEmpty()
-                && insertStatementContext.getGeneratedKeyContext().isPresent()
-                && !insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty();
+    protected boolean isGenerateSQLToken(final InsertStatementContext statementContext) {
+        Optional<InsertColumnsSegment> insertColumns = statementContext.getSqlStatement().getInsertColumns();
+        return insertColumns.isPresent() && !insertColumns.get().getColumns().isEmpty()
+                && statementContext.getGeneratedKeyContext().isPresent() && !statementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty();
     }
     
     @Override
     public GeneratedKeyInsertColumnToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
-        Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
-        Preconditions.checkState(sqlSegment.isPresent());
-        return new GeneratedKeyInsertColumnToken(sqlSegment.get().getStopIndex(), generatedKey.get().getColumnName());
+        Optional<InsertColumnsSegment> insertColumns = insertStatementContext.getSqlStatement().getInsertColumns();
+        Preconditions.checkState(insertColumns.isPresent());
+        return new GeneratedKeyInsertColumnToken(insertColumns.get().getStopIndex(), generatedKey.get().getColumnName());
     }
 }
