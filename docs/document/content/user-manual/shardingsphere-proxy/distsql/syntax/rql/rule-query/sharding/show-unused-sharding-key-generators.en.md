@@ -6,15 +6,15 @@ weight = 6
 
 ### Description
 
-`SHOW SHARDING KEY GENERATORS` syntax is used to query sharding key generators that are not used in specified database.
+`SHOW UNUSED SHARDING KEY GENERATORS` syntax is used to query sharding key generators that are not used in specified database.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ShowShardingKeyGenerators::=
-  'SHOW' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
+ShowUnusedShardingKeyGenerators::=
+  'SHOW' 'UNUSED' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
