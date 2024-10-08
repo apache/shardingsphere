@@ -30,10 +30,19 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class GeneratedKeyAssignmentTokenGeneratorTest {
+    
+    @Test
+    void assertIsGenerateSQLToken() {
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(insertStatementContext.getSqlStatement().getSetAssignment().isPresent()).thenReturn(true);
+        assertTrue(new GeneratedKeyAssignmentTokenGenerator().isGenerateSQLToken(insertStatementContext));
+    }
     
     @Test
     void assertGenerateSQLTokenWithLiteralValue() {
