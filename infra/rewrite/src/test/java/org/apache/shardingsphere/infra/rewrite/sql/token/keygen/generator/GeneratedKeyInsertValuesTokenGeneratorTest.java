@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValue;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -35,41 +36,85 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class GeneratedKeyInsertValuesTokenGeneratorTest {
     
     @Test
-    void assertGenerateSQLToken() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        GeneratedKeyContext generatedKeyContext = getGeneratedKeyContext();
-        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(mock(InsertValueContext.class)));
+    void assertIsNotGenerateSQLTokenWithEmptyInsertValues() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getValues()).thenReturn(Collections.emptyList());
+        assertFalse(new GeneratedKeyInsertValuesTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithoutGeneratedKeyContext() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getValues()).thenReturn(Collections.singleton(mock(InsertValuesSegment.class)));
+        when(statementContext.getGeneratedKeyContext()).thenReturn(Optional.empty());
+        assertFalse(new GeneratedKeyInsertValuesTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithEmptyGeneratedValues() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getValues()).thenReturn(Collections.singleton(mock(InsertValuesSegment.class)));
+        GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_col", false);
+        when(statementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        assertFalse(new GeneratedKeyInsertValuesTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
+    void assertIsGenerateSQLToken() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getValues()).thenReturn(Collections.singleton(mock(InsertValuesSegment.class)));
+        GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_col", false);
+        generatedKeyContext.getGeneratedValues().add(1);
+        when(statementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        assertTrue(new GeneratedKeyInsertValuesTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithoutPreviousInsertValuesTokens() {
+        GeneratedKeyInsertValuesTokenGenerator generator = new GeneratedKeyInsertValuesTokenGenerator();
+        generator.setPreviousSQLTokens(Collections.singletonList(mock(SQLToken.class)));
+        assertThrows(IllegalStateException.class, () -> generator.generateSQLToken(mock(InsertStatementContext.class)));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithPreviousSQLTokens() {
+        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(mock(InsertValueContext.class)));
+        when(sqlStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(createGeneratedKeyContext()));
         List<List<Object>> parameterGroups = Collections.singletonList(new ArrayList<>(Collections.singleton(new Object())));
-        when(insertStatementContext.getGroupedParameters()).thenReturn(parameterGroups);
+        when(sqlStatementContext.getGroupedParameters()).thenReturn(parameterGroups);
         GeneratedKeyInsertValuesTokenGenerator generator = new GeneratedKeyInsertValuesTokenGenerator();
         generator.setPreviousSQLTokens(getPreviousSQLTokens());
-        SQLToken sqlToken = generator.generateSQLToken(insertStatementContext);
+        SQLToken sqlToken = generator.generateSQLToken(sqlStatementContext);
         assertThat(sqlToken, instanceOf(InsertValuesToken.class));
         assertThat(((InsertValuesToken) sqlToken).getInsertValues().get(0).getValues().get(0), instanceOf(DerivedParameterMarkerExpressionSegment.class));
         parameterGroups.get(0).clear();
         ((InsertValuesToken) sqlToken).getInsertValues().get(0).getValues().clear();
-        sqlToken = generator.generateSQLToken(insertStatementContext);
+        sqlToken = generator.generateSQLToken(sqlStatementContext);
         assertThat(((InsertValuesToken) sqlToken).getInsertValues().get(0).getValues().get(0), instanceOf(DerivedLiteralExpressionSegment.class));
+    }
+    
+    private GeneratedKeyContext createGeneratedKeyContext() {
+        GeneratedKeyContext result = new GeneratedKeyContext("foo_col", false);
+        result.getGeneratedValues().add("TEST_GENERATED_VALUE");
+        return result;
     }
     
     private List<SQLToken> getPreviousSQLTokens() {
         InsertValue insertValue = mock(InsertValue.class);
         when(insertValue.getValues()).thenReturn(new LinkedList<>());
-        InsertValuesToken insertValuesToken = mock(InsertValuesToken.class);
-        when(insertValuesToken.getInsertValues()).thenReturn(Collections.singletonList(insertValue));
-        return Collections.singletonList(insertValuesToken);
-    }
-    
-    private GeneratedKeyContext getGeneratedKeyContext() {
-        GeneratedKeyContext result = mock(GeneratedKeyContext.class);
-        when(result.getGeneratedValues()).thenReturn(Collections.singleton("TEST_GENERATED_VALUE"));
-        return result;
+        InsertValuesToken sqlToken = mock(InsertValuesToken.class);
+        when(sqlToken.getInsertValues()).thenReturn(Collections.singletonList(insertValue));
+        return Collections.singletonList(sqlToken);
     }
 }
