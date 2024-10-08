@@ -6,7 +6,7 @@ weight = 11
 
 ### Description
 
-`SHOW SHARDING TABLE RULES USED ALGORITHM` syntax is used to query sharding rules used specified sharding key generator in specified logical database
+`SHOW SHARDING TABLE RULES USED KEY GENERATOR` syntax is used to query sharding rules used specified sharding key generator in specified logical database
 
 ### Syntax
 
