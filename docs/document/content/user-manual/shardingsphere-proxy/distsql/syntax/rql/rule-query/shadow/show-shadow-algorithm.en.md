@@ -12,7 +12,7 @@ The `SHOW SHADOW ALGORITHMS` syntax is used to query shadow algorithms for speci
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ShowEncryptAlgorithm::=
+ShowShadowAlgorithm::=
   'SHOW' 'SHADOW' 'ALGORITHMS' ('FROM' databaseName)?
 
 databaseName ::=
