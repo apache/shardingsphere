@@ -9,6 +9,7 @@
 ### Enhancement
 
 1. SQL Parser: Support PostgreSQL, openGauss function table and update from segment parse - [#32994](https://github.com/apache/shardingsphere/pull/32994)
+1. SQL Parser: Support MariaDB DML Returning Clause - [#33094](https://github.com/apache/shardingsphere/issues/33094)
 1. DistSQL: Support running DistSQL under Proxy Native in the form of GraalVM Native Image - [#33095](https://github.com/apache/shardingsphere/pull/33095)
 1. DistSQL: Support connecting to Postgres via DistSQL in Proxy Native - [#33124](https://github.com/apache/shardingsphere/pull/33124)
 1. DistSQL: Check duplicate actual data nodes when creating or altering sharding table rule - [#33138](https://github.com/apache/shardingsphere/pull/33138)
