@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen;
 
-import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
