@@ -27,9 +27,8 @@ import org.apache.shardingsphere.infra.route.engine.type.AllSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.engine.type.PartialSQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Collection;
 
@@ -53,12 +52,16 @@ public final class SQLRouteEngine {
      * @return route context
      */
     public RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
-        SQLRouteExecutor executor = isNeedAllSchemas(queryContext.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
+        SQLRouteExecutor executor = isNeedRouteAll(queryContext.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
         return executor.route(queryContext, globalRuleMetaData, database);
     }
     
-    // TODO use dynamic config to judge un-configured schema
-    private boolean isNeedAllSchemas(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof MySQLShowTablesStatement || sqlStatement instanceof MySQLShowTableStatusStatement;
+    private boolean isNeedRouteAll(final SQLStatement sqlStatement) {
+        for (SQLRouteExecutorDecider each : ShardingSphereServiceLoader.getServiceInstances(SQLRouteExecutorDecider.class)) {
+            if (each.isNeedRouteAll(sqlStatement)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
