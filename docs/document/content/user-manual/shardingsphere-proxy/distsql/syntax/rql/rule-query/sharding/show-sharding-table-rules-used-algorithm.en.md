@@ -1,5 +1,5 @@
 +++
-title = "SHOW SHARDING TABLE NODES"
+title = "SHOW SHARDING TABLE RULES USED ALGORITHM"
 weight = 10
 
 +++
