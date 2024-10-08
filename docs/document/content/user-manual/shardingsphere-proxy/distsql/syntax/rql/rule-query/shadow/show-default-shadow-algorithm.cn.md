@@ -12,7 +12,7 @@ weight = 4
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-ShowEncryptAlgorithm::=
+ShowDefaultShadowAlgorithm::=
   'SHOW' 'DEFAULT' 'SHADOW' 'ALGORITHM' ('FROM' databaseName)?
 
 databaseName ::=
