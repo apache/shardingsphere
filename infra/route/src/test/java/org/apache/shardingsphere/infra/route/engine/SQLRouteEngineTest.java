@@ -49,16 +49,9 @@ class SQLRouteEngineTest {
     
     @Test
     void assertRouteSuccess() {
-        ConnectionContext connectionContext = mock(ConnectionContext.class);
-        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("logic_schema"));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new RouteRuleFixture()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema", mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
-        when(metaData.containsDatabase("logic_schema")).thenReturn(true);
-        when(metaData.getDatabase("logic_schema")).thenReturn(database);
-        QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
-        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), new ConfigurationProperties(new Properties()));
-        RouteContext actual = sqlRouteEngine.route(queryContext, mock(RuleMetaData.class), database);
+        ShardingSphereDatabase database = createDatabase();
+        QueryContext queryContext = mockQueryContext(database);
+        RouteContext actual = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -68,15 +61,23 @@ class SQLRouteEngineTest {
     
     @Test
     void assertRouteFailure() {
+        ShardingSphereDatabase database = createDatabase();
+        QueryContext queryContext = mockQueryContext(database);
+        assertThrows(UnsupportedOperationException.class, () -> new SQLRouteEngine(
+                Collections.singleton(new RouteFailureRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database));
+    }
+    
+    private ShardingSphereDatabase createDatabase() {
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new RouteRuleFixture()));
+        return new ShardingSphereDatabase("logic_schema", mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+    }
+    
+    private QueryContext mockQueryContext(final ShardingSphereDatabase database) {
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("logic_schema"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new RouteRuleFixture()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema", mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
-        when(metaData.containsDatabase("logic_schema")).thenReturn(true);
         when(metaData.getDatabase("logic_schema")).thenReturn(database);
-        QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
-        assertThrows(UnsupportedOperationException.class, () -> new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()),
-                new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database));
+        when(metaData.containsDatabase("logic_schema")).thenReturn(true);
+        return new QueryContext(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
     }
 }

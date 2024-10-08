@@ -57,7 +57,7 @@ public final class SQLRouteEngine {
         return executor.route(queryContext, globalRuleMetaData, database);
     }
     
-    // TODO use dynamic config to judge unconfigured schema
+    // TODO use dynamic config to judge un-configured schema
     private boolean isNeedAllSchemas(final SQLStatement sqlStatement) {
         return sqlStatement instanceof MySQLShowTablesStatement || sqlStatement instanceof MySQLShowTableStatusStatement;
     }
