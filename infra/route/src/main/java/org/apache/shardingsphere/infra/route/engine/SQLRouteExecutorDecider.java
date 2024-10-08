@@ -28,7 +28,7 @@ public interface SQLRouteExecutorDecider {
     
     /**
      * Judge is need route all resources.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @return is need route all resources or not
      */
