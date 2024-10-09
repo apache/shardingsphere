@@ -30,7 +30,7 @@ class CursorConnectionContextTest {
     
     @SuppressWarnings("resource")
     @Test
-    void removeCursor() {
+    void assertRemoveCursor() {
         CursorConnectionContext cursorConnectionContext = createCursorConnectionContext();
         cursorConnectionContext.removeCursor("foo");
         assertFalse(cursorConnectionContext.getOrderByValueGroups().containsKey("foo"));
@@ -40,7 +40,7 @@ class CursorConnectionContextTest {
     }
     
     @Test
-    void removeClose() {
+    void assertClose() {
         CursorConnectionContext cursorConnectionContext = createCursorConnectionContext();
         cursorConnectionContext.close();
         assertTrue(cursorConnectionContext.getOrderByValueGroups().isEmpty());
