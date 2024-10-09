@@ -22,9 +22,11 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ResourceLock;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
@@ -43,6 +45,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -67,7 +71,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
     
-    private final Collection<TransactionHook> transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
+    @SuppressWarnings("rawtypes")
+    private final Map<ShardingSphereRule, TransactionHook> transactionHooks = OrderedSPILoader.getServices(
+            TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     
     @Override
     public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
@@ -106,10 +112,12 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         return databaseName.toLowerCase() + "." + dataSourceName;
     }
     
-    private void executeTransactionHooksAfterCreateConnections(final List<Connection> result) throws SQLException {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void executeTransactionHooksAfterCreateConnections(final List<Connection> connections) throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            for (TransactionHook each : transactionHooks) {
-                each.afterCreateConnections(result, connectionSession.getConnectionContext().getTransactionContext());
+            DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
+            for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
+                entry.getValue().afterCreateConnections(entry.getKey(), databaseType, connections, connectionSession.getConnectionContext().getTransactionContext());
             }
         }
     }

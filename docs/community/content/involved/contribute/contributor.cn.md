@@ -82,7 +82,11 @@ git push origin issueNo
  - 接着导师做 CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了 ShardingSphere 的官方贡献者！
 
-**6. 删除分支**
+**6. 更新 Release Note**
+
+ - 编码完成后，请更新当前开发版本的 [Release Note](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md)，根据 issue 的不同类型，在 `API Change`、`New Feature`、`Enhancement` 或 `Bug Fix` 分类中进行添加，`RELEASE-NOTES` 需要遵循统一的格式：`{feature_name}: {description} - {issue/pr link}`，例如：`SQL Parser: Support PostgreSQL, openGauss function table and update from segment parse - #32994`。
+
+**7. 删除分支**
 
  - 在导师将 pull request 合并到 ShardingSphere 的 master 分支中之后，您就可以将远程的分支（origin/issueNo）及与远程分支（origin/issueNo）关联的本地分支（issueNo）删除。
  

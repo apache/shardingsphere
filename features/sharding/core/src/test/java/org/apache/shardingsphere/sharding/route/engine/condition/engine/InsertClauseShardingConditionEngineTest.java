@@ -101,7 +101,7 @@ class InsertClauseShardingConditionEngineTest {
     
     private InsertStatement mockInsertStatement() {
         InsertStatement result = mock(InsertStatement.class);
-        when(result.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table"))));
+        when(result.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table")))));
         return result;
     }
     

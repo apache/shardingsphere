@@ -54,15 +54,16 @@ public final class StatisticsCollectJobWorker {
      * Initialize job worker.
      */
     public void initialize() {
-        if (WORKER_INITIALIZED.compareAndSet(false, true)) {
-            ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
-            if ("ZooKeeper".equals(modeConfig.getRepository().getType())) {
-                scheduleJobBootstrap = new ScheduleJobBootstrap(createRegistryCenter(modeConfig), new StatisticsCollectJob(contextManager), createJobConfiguration());
-                scheduleJobBootstrap.schedule();
-                return;
-            }
-            log.warn("Can not collect statistics because of unsupported cluster type: {}", modeConfig.getRepository().getType());
+        if (!WORKER_INITIALIZED.compareAndSet(false, true)) {
+            return;
         }
+        ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
+        if (!"ZooKeeper".equals(modeConfig.getRepository().getType())) {
+            log.warn("Can not collect statistics because of unsupported cluster type: {}", modeConfig.getRepository().getType());
+            return;
+        }
+        scheduleJobBootstrap = new ScheduleJobBootstrap(createRegistryCenter(modeConfig), new StatisticsCollectJob(contextManager), createJobConfiguration());
+        scheduleJobBootstrap.schedule();
     }
     
     private CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig) {

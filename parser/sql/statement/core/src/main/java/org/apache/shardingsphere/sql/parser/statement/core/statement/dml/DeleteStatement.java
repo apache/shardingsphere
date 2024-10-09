@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -115,5 +116,14 @@ public abstract class DeleteStatement extends AbstractSQLStatement implements DM
      * @param withSegment with segment
      */
     public void setWithSegment(final WithSegment withSegment) {
+    }
+    
+    /**
+     * Get returning segment of delete statement.
+     *
+     * @return returning segment
+     */
+    public Optional<ReturningSegment> getReturningSegment() {
+        return Optional.empty();
     }
 }

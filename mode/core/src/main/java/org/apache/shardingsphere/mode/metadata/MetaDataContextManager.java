@@ -74,8 +74,7 @@ public class MetaDataContextManager {
     
     private final RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine;
     
-    public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                  final PersistRepository repository) {
+    public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         resourceSwitchManager = new ResourceSwitchManager();
@@ -90,15 +89,15 @@ public class MetaDataContextManager {
     }
     
     /**
-     * Delete schema names.
+     * Drop schemas.
      *
      * @param databaseName database name
      * @param reloadDatabase reload database
      * @param currentDatabase current database
      */
-    public void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        GenericSchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
-                .forEach(each -> metaDataPersistService.getDatabaseMetaDataService().dropSchema(databaseName, each));
+    public void dropSchemas(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        GenericSchemaManager.getToBeDroppedSchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas())
+                .keySet().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
     }
     
     /**
@@ -122,9 +121,9 @@ public class MetaDataContextManager {
             metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
                     .forEach((schemaName, schema) -> {
                         if (schema.isEmpty()) {
-                            metaDataPersistService.getDatabaseMetaDataService().addSchema(database.getName(), schemaName);
+                            metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(database.getName(), schemaName);
                         }
-                        metaDataPersistService.getDatabaseMetaDataService().getTableMetaDataPersistService().persist(database.getName(), schemaName, schema.getTables());
+                        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, schema.getTables());
                     });
         } catch (final SQLException ex) {
             log.error("Refresh database meta data: {} failed", database.getName(), ex);
@@ -139,10 +138,10 @@ public class MetaDataContextManager {
     public void refreshTableMetaData(final ShardingSphereDatabase database) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
-            deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
+            dropSchemas(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
             metaDataContexts.set(reloadedMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(database.getName()).getSchemas()
-                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
+                    .forEach((schemaName, schema) -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), schema));
         } catch (final SQLException ex) {
             log.error("Refresh table meta data: {} failed", database.getName(), ex);
         }

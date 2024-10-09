@@ -23,7 +23,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingServer;
-import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

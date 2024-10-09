@@ -84,7 +84,8 @@ public final class SchemaMetaDataUtils {
                                                                                  final String tableName) {
         for (DataNode dataNode : dataNodes.getDataNodes(tableName)) {
             ShardingSpherePreconditions.checkState(notSupportThreeTierStructureStorageTypes.isEmpty() || !dataNode.getDataSourceName().contains("."),
-                    () -> new UnsupportedActualDataNodeStructureException(dataNode, notSupportThreeTierStructureStorageTypes.iterator().next().getJdbcUrlPrefixes()));
+                    () -> new UnsupportedActualDataNodeStructureException(
+                            dataNode.getDataSourceName(), dataNode.getTableName(), notSupportThreeTierStructureStorageTypes.iterator().next().getJdbcUrlPrefixes()));
             if (dataNode.getDataSourceName().contains(".")) {
                 String database = dataNode.getDataSourceName().split("\\.")[1];
                 GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().put(dataNode.getTableName(), database);

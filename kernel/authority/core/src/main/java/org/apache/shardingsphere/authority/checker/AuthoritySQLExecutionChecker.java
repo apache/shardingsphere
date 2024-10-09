@@ -34,7 +34,6 @@ public final class AuthoritySQLExecutionChecker implements SQLExecutionChecker {
     @Override
     public void check(final ShardingSphereMetaData metaData, final Grantee grantee, final QueryContext queryContext, final ShardingSphereDatabase database) {
         AuthorityRule authorityRule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, grantee).isAuthorized(database.getName()),
-                () -> new UnknownDatabaseException(database.getName()));
+        ShardingSpherePreconditions.checkState(new AuthorityChecker(authorityRule, grantee).isAuthorized(database.getName()), () -> new UnknownDatabaseException(database.getName()));
     }
 }

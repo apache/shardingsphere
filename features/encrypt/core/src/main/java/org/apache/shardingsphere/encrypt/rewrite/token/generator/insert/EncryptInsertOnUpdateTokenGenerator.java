@@ -77,7 +77,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         }
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
-        String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
+        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnAssignmentSegment each : onDuplicateKeyColumnsSegments) {

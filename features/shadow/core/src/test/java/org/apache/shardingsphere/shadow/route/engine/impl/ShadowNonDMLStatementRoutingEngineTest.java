@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.engine.impl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -27,8 +26,6 @@ import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +37,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ShadowNonDMLStatementRoutingEngineTest {
     
@@ -49,14 +44,12 @@ class ShadowNonDMLStatementRoutingEngineTest {
     
     @BeforeEach
     void init() {
-        shadowRouteEngine = new ShadowNonDMLStatementRoutingEngine(createSQLStatementContext());
+        shadowRouteEngine = new ShadowNonDMLStatementRoutingEngine(createHintValueContext());
     }
     
-    private SQLStatementContext createSQLStatementContext() {
-        CreateTableStatementContext result = mock(CreateTableStatementContext.class);
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
-        sqlStatement.getCommentSegments().add(new CommentSegment("/* SHARDINGSPHERE_HINT: SHADOW=true */", 0, 20));
-        when(result.getSqlStatement()).thenReturn(sqlStatement);
+    private HintValueContext createHintValueContext() {
+        HintValueContext result = new HintValueContext();
+        result.setShadow(true);
         return result;
     }
     

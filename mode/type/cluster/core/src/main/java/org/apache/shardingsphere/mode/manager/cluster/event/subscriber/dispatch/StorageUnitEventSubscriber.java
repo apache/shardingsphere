@@ -20,16 +20,20 @@ package org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.AlterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.RegisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.util.Collections;
+
 /**
  * Storage unit event subscriber.
  */
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class StorageUnitEventSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
@@ -41,10 +45,12 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final RegisterStorageUnitEvent event) {
-        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
-        contextManager.getMetaDataContextManager().getStorageUnitManager().registerStorageUnit(event.getDatabaseName(),
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
+        Preconditions.checkArgument(event.getActiveVersion().equals(
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
+                "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
+        DataSourcePoolProperties dataSourcePoolProps = contextManager
+                .getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName());
+        contextManager.getMetaDataContextManager().getStorageUnitManager().registerStorageUnit(event.getDatabaseName(), Collections.singletonMap(event.getStorageUnitName(), dataSourcePoolProps));
     }
     
     /**
@@ -54,10 +60,12 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final AlterStorageUnitEvent event) {
-        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
-        contextManager.getMetaDataContextManager().getStorageUnitManager().alterStorageUnit(
-                event.getDatabaseName(), contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
+        Preconditions.checkArgument(event.getActiveVersion().equals(
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
+                "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
+        DataSourcePoolProperties dataSourcePoolProps = contextManager
+                .getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName());
+        contextManager.getMetaDataContextManager().getStorageUnitManager().alterStorageUnit(event.getDatabaseName(), Collections.singletonMap(event.getStorageUnitName(), dataSourcePoolProps));
     }
     
     /**
@@ -67,8 +75,7 @@ public final class StorageUnitEventSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final UnregisterStorageUnitEvent event) {
-        Preconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName()),
-                "No database '%s' exists.", event.getDatabaseName());
+        Preconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName()), "No database '%s' exists.", event.getDatabaseName());
         contextManager.getMetaDataContextManager().getStorageUnitManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
 }

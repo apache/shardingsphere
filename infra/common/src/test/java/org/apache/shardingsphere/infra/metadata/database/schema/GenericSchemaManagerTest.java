@@ -45,12 +45,12 @@ class GenericSchemaManagerTest {
     }
     
     @Test
-    void assertGetToBeDeletedTablesBySchemas() {
+    void assertGetToBeDroppedTablesBySchemas() {
         Map<String, ShardingSphereSchema> currentSchemas = Collections.singletonMap("foo_schema",
                 new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_table", new ShardingSphereTable("foo_table",
                         Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap()));
         Map<String, ShardingSphereSchema> reloadSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyMap()));
-        Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadSchemas, currentSchemas);
+        Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadSchemas, currentSchemas);
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_schema").getTables().size(), is(1));
         assertTrue(actual.get("foo_schema").getTables().containsKey("foo_table"));
@@ -64,16 +64,16 @@ class GenericSchemaManagerTest {
     }
     
     @Test
-    void assertGetToBeDeletedTables() {
-        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeDeletedTables(Collections.emptyMap(), Collections.singletonMap("foo_table", new ShardingSphereTable()));
+    void assertGetToBeDroppedTables() {
+        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(Collections.emptyMap(), Collections.singletonMap("foo_table", new ShardingSphereTable()));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_table"));
     }
     
     @Test
-    void assertGetToBeDeletedSchemaNames() {
+    void assertGetToBeDroppedSchemas() {
         Map<String, ShardingSphereSchema> actual =
-                GenericSchemaManager.getToBeDeletedSchemaNames(Collections.emptyMap(), Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME)));
+                GenericSchemaManager.getToBeDroppedSchemas(Collections.emptyMap(), Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME)));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_schema"));
         

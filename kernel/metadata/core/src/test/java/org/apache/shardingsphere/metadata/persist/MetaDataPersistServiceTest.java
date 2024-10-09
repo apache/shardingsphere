@@ -17,26 +17,57 @@
 
 package org.apache.shardingsphere.metadata.persist;
 
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
+import org.apache.shardingsphere.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings({TypedSPILoader.class, DataSourcePoolPropertiesCreator.class, GenericSchemaManager.class})
 class MetaDataPersistServiceTest {
     
     @Mock
-    private DataSourceUnitPersistService dataSourceService;
+    private DataSourceUnitPersistService dataSourceUnitService;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private DatabaseMetaDataPersistFacade databaseMetaDataFacade;
     
     @Mock
     private DatabaseRulePersistService databaseRulePersistService;
@@ -52,18 +83,85 @@ class MetaDataPersistServiceTest {
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
-        setField("dataSourceUnitService", dataSourceService);
+        setField("dataSourceUnitService", dataSourceUnitService);
+        setField("databaseMetaDataFacade", databaseMetaDataFacade);
         setField("databaseRulePersistService", databaseRulePersistService);
         setField("globalRuleService", globalRuleService);
         setField("propsService", propsService);
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Plugins.getMemberAccessor().set(metaDataPersistService.getClass().getDeclaredField(name), metaDataPersistService, value);
+        Plugins.getMemberAccessor().set(MetaDataPersistService.class.getDeclaredField(name), metaDataPersistService, value);
+    }
+    
+    @Test
+    void assertPersistGlobalRuleConfiguration() {
+        Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
+        Properties props = new Properties();
+        metaDataPersistService.persistGlobalRuleConfiguration(globalRuleConfigs, props);
+        verify(globalRuleService).persist(globalRuleConfigs);
+        verify(propsService).persist(props);
+    }
+    
+    @Test
+    void assertPersistConfigurationsWithEmptyDatabase() {
+        metaDataPersistService.persistConfigurations("foo_db", mock(DatabaseConfiguration.class), Collections.emptyMap(), Collections.emptyList());
+        verify(databaseMetaDataFacade.getDatabase()).add("foo_db");
+    }
+    
+    @Test
+    void assertPersistConfigurationsWithDatabaseRuleConfigurations() {
+        DatabaseConfiguration databaseConfig = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
+        when(databaseConfig.getStorageUnits()).thenReturn(Collections.emptyMap());
+        when(databaseConfig.getRuleConfigurations().isEmpty()).thenReturn(false);
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        when(TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass())).thenReturn(Optional.of(mock(RuleConfigurationDecorator.class)));
+        metaDataPersistService.persistConfigurations("foo_db", databaseConfig, Collections.emptyMap(), Collections.singleton(rule));
+        verify(dataSourceUnitService).persist("foo_db", Collections.emptyMap());
+        verify(databaseRulePersistService).persist(eq("foo_db"), any());
+    }
+    
+    @Test
+    void assertPersistConfigurationsWithDataSourcePoolProperties() {
+        DatabaseConfiguration databaseConfig = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
+        when(databaseConfig.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", mock(StorageUnit.class, RETURNS_DEEP_STUBS)));
+        metaDataPersistService.persistConfigurations("foo_db", databaseConfig, Collections.emptyMap(), Collections.emptyList());
+        verify(dataSourceUnitService).persist(eq("foo_db"), any());
+        verify(databaseRulePersistService).persist("foo_db", Collections.emptyList());
     }
     
     @Test
     void assertLoadDataSourceConfigurations() {
-        assertTrue(metaDataPersistService.loadDataSourceConfigurations("foo_db").isEmpty());
+        DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class);
+        when(dataSourceUnitService.load("foo_db")).thenReturn(Collections.singletonMap("foo_ds", dataSourcePoolProps));
+        DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
+        when(DataSourcePoolPropertiesCreator.createConfiguration(dataSourcePoolProps)).thenReturn(dataSourceConfig);
+        Map<String, DataSourceConfiguration> actual = metaDataPersistService.loadDataSourceConfigurations("foo_db");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("foo_ds"), is(dataSourceConfig));
+    }
+    
+    @Test
+    void assertPersistReloadDatabaseByAlter() {
+        ShardingSphereSchema toBeDeletedSchema = mock(ShardingSphereSchema.class);
+        ShardingSphereSchema toBeAddedSchema = new ShardingSphereSchema("to_be_added");
+        when(GenericSchemaManager.getToBeDroppedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_deleted", toBeDeletedSchema));
+        when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_added", toBeAddedSchema));
+        metaDataPersistService.persistReloadDatabaseByAlter("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
+        verify(databaseMetaDataFacade.getSchema()).alterByRuleAltered("foo_db", toBeAddedSchema);
+        verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
+    }
+    
+    @Test
+    void assertPersistReloadDatabaseByDrop() {
+        ShardingSphereSchema toBeDeletedSchema = mock(ShardingSphereSchema.class);
+        ShardingSphereSchema toBeAlterSchema = mock(ShardingSphereSchema.class);
+        when(GenericSchemaManager.getToBeDroppedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_deleted", toBeDeletedSchema));
+        when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_altered", toBeAlterSchema));
+        metaDataPersistService.persistReloadDatabaseByDrop("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
+        verify(databaseMetaDataFacade.getSchema()).alterByRuleDropped("foo_db", "to_be_altered", toBeAlterSchema);
+        verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
     }
 }

@@ -43,6 +43,10 @@ public final class Grantee {
     
     private final String toString;
     
+    public Grantee(final String value) {
+        this(value.contains("@") ? value.substring(0, value.indexOf('@')) : value, value.contains("@") ? value.substring(value.indexOf('@') + 1) : "");
+    }
+    
     public Grantee(final String username, final String hostname) {
         this.username = username;
         this.hostname = Strings.isNullOrEmpty(hostname) ? HOST_WILDCARD : hostname;

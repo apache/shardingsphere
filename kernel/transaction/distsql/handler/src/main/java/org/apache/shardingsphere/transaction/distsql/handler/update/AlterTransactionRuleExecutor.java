@@ -25,7 +25,7 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -39,11 +39,9 @@ public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionE
     public void checkBeforeUpdate(final AlterTransactionRuleStatement sqlStatement) {
         checkTransactionType(sqlStatement);
         TransactionType transactionType = TransactionType.valueOf(sqlStatement.getDefaultType().toUpperCase());
-        if (TransactionType.LOCAL == transactionType) {
-            return;
+        if (TransactionType.LOCAL != transactionType) {
+            checkTransactionManager(sqlStatement, transactionType);
         }
-        checkTransactionManager(sqlStatement, transactionType);
-        
     }
     
     private void checkTransactionType(final AlterTransactionRuleStatement statement) {
@@ -55,18 +53,18 @@ public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionE
     }
     
     private void checkTransactionManager(final AlterTransactionRuleStatement statement, final TransactionType transactionType) {
-        Collection<ShardingSphereDistributionTransactionManager> distributionTransactionManagers = ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributionTransactionManager.class);
-        Optional<ShardingSphereDistributionTransactionManager> distributionTransactionManager =
-                distributionTransactionManagers.stream().filter(each -> transactionType == each.getTransactionType()).findFirst();
-        ShardingSpherePreconditions.checkState(distributionTransactionManager.isPresent(),
+        Collection<ShardingSphereDistributedTransactionManager> distributedTransactionManagers = ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributedTransactionManager.class);
+        Optional<ShardingSphereDistributedTransactionManager> distributedTransactionManager =
+                distributedTransactionManagers.stream().filter(each -> transactionType == each.getTransactionType()).findFirst();
+        ShardingSpherePreconditions.checkState(distributedTransactionManager.isPresent(),
                 () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager with type `%s`", statement.getDefaultType())));
         if (TransactionType.XA == transactionType) {
-            checkTransactionManagerProviderType(distributionTransactionManager.get(), statement.getProvider().getProviderType());
+            checkTransactionManagerProviderType(distributedTransactionManager.get(), statement.getProvider().getProviderType());
         }
     }
     
-    private void checkTransactionManagerProviderType(final ShardingSphereDistributionTransactionManager distributionTransactionManager, final String providerType) {
-        ShardingSpherePreconditions.checkState(distributionTransactionManager.containsProviderType(providerType),
+    private void checkTransactionManagerProviderType(final ShardingSphereDistributedTransactionManager distributedTransactionManager, final String providerType) {
+        ShardingSpherePreconditions.checkState(distributedTransactionManager.containsProviderType(providerType),
                 () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager provider with type `%s`", providerType)));
     }
     

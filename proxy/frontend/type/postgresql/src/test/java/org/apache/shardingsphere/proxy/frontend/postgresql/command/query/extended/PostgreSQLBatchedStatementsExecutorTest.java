@@ -64,6 +64,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -118,7 +119,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     
     private InsertStatementContext mockInsertStatementContext() {
         PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
-        when(insertStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))));
+        when(insertStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t")))));
         when(insertStatement.getValues()).thenReturn(Collections.emptyList());
         when(insertStatement.getCommentSegments()).thenReturn(Collections.emptyList());
         when(insertStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));

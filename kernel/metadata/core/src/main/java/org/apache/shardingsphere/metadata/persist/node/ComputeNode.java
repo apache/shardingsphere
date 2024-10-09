@@ -167,15 +167,6 @@ public final class ComputeNode {
     }
     
     /**
-     * Get cluster state node path.
-     *
-     * @return cluster state node path
-     */
-    public static String getClusterStateNodePath() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, STATUS_NODE);
-    }
-    
-    /**
      * Get compute node state node path.
      *
      * @param instanceId instance id

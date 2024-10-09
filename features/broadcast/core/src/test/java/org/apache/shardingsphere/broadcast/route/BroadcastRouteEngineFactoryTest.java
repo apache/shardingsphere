@@ -57,7 +57,8 @@ class BroadcastRouteEngineFactoryTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(TCLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        BroadcastRouteEngine engine = BroadcastRouteEngineFactory.newInstance(broadcastRule, database, queryContext, connectionContext);
+        when(queryContext.getConnectionContext()).thenReturn(connectionContext);
+        BroadcastRouteEngine engine = BroadcastRouteEngineFactory.newInstance(broadcastRule, database, queryContext);
         assertThat(engine, instanceOf(BroadcastDatabaseBroadcastRoutingEngine.class));
     }
 }

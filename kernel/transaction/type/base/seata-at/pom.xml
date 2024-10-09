@@ -29,7 +29,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.seata</groupId>
+                <groupId>org.apache.seata</groupId>
                 <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
                 <exclusions>
@@ -55,41 +55,9 @@
         </dependency>
         
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-database</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.seata</groupId>
+            <groupId>org.apache.seata</groupId>
             <artifactId>seata-all</artifactId>
-            <version>${seata.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.oracle</groupId>
-                    <artifactId>ojdbc6</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.alibaba</groupId>
-                    <artifactId>dubbo</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun</groupId>
-                    <artifactId>jconsole</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

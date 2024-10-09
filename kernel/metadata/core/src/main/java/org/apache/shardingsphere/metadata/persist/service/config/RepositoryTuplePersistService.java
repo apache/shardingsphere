@@ -47,7 +47,7 @@ public final class RepositoryTuplePersistService {
      * @param rootNode root node
      * @return loaded repository tuples
      */
-    public Collection<RepositoryTuple> loadRepositoryTuples(final String rootNode) {
+    public Collection<RepositoryTuple> load(final String rootNode) {
         Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
         return loadNodes(rootNode).stream().filter(each -> pattern.matcher(each).find()).map(this::getRepositoryTuple).collect(Collectors.toList());
     }

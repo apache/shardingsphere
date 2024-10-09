@@ -271,48 +271,7 @@ to define the constructor of `com.mysql.cj.jdbc.MysqlXADataSource` inside the Gr
 ]
 ```
 
-6. When using Seata's BASE integration, 
-users need to use a specific `io.seata:seata-all:1.8.0` version to avoid using the ByteBuddy Java API,
-and exclude the outdated Maven dependency of `org.antlr:antlr4-runtime:4.8` in `io.seata:seata-all:1.8.0`.
-Possible configuration examples are as follows,
-
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>io.seata</groupId>
-         <artifactId>seata-all</artifactId>
-         <version>1.8.0</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.antlr</groupId>
-               <artifactId>antlr4-runtime</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>commons-lang</groupId>
-               <artifactId>commons-lang</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>org.apache.commons</groupId>
-               <artifactId>commons-pool2</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-    </dependencies>
-</project>
-```
-
-7. When using the ClickHouse dialect through ShardingSphere JDBC, 
+6. When using the ClickHouse dialect through ShardingSphere JDBC, 
 users need to manually introduce the relevant optional modules and the ClickHouse JDBC driver with the classifier `http`.
 In principle, ShardingSphere's GraalVM Native Image integration does not want to use `com.clickhouse:clickhouse-jdbc` with classifier `all`, 
 because Uber Jar will cause the collection of duplicate GraalVM Reachability Metadata.
@@ -500,8 +459,20 @@ CREATE TABLE IF NOT EXISTS t_order
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 ```
 
+Since HiveServer2 JDBC Driver does not implement `java.sql.DatabaseMetaData#getURL()`, 
+ShardingSphere has done some obfuscation, so users can only connect to HiveServer2 through HikariCP for now.
+
 HiveServer2 does not support local transactions, XA transactions, and Seata AT mode transactions at the ShardingSphere integration level. 
 More discussion is available at https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions .
+
+8. Due to https://github.com/oracle/graal/issues/7979 , 
+the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Maven module cannot be used under GraalVM Native Image.
+
+9. Due to https://github.com/apache/doris/issues/9426, when connecting to Apache Doris FE via Shardinghere JDBC,
+   users need to provide GraalVM Reachability Metadata related to the `apache/doris` integration module.
+
+10. Due to https://github.com/prestodb/presto/issues/23226, when connecting to Presto Server via Shardinghere JDBC,
+    users need to provide GraalVM Reachability Metadata related to the `com.facebook.presto:presto-jdbc` and `prestodb/presto` integration module.
 
 ## Contribute GraalVM Reachability Metadata
 
@@ -516,13 +487,13 @@ This subset of unit tests avoids the use of third-party libraries such as Mockit
 
 ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for executing nativeTest for the `shardingsphere-test-native` module.
 
+Contributors must install Docker Engine to execute unit tests related to `testcontainers-java`, as per https://java.testcontainers.org/supported_docker_environment/ .
+
 Assuming that the contributor is under a new Ubuntu 22.04.4 LTS instance, Contributors can manage the JDK and tool chain through 
 `SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-test-native` submodule.
 
-You must install Docker Engine to execute `testcontainers-java` related unit tests.
-
 ```bash
-sudo apt install unzip zip curl sed -y
+sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install java 22.0.2-graalce

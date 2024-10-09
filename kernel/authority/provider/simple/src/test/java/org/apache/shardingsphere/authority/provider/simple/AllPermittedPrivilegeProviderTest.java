@@ -18,30 +18,43 @@
 package org.apache.shardingsphere.authority.provider.simple;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class AllPermittedPrivilegeProviderTest {
     
-    @Test
-    void assertBuild() {
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertBuild(final String name, final PrivilegeProvider provider) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
-                Collections.singleton(new ShardingSphereUser("root@%")), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
-        Map<Grantee, ShardingSpherePrivileges> actual = TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PERMITTED").build(ruleConfig);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(new Grantee("root", "%")), instanceOf(AllPermittedPrivileges.class));
+                Collections.singleton(new UserConfiguration("root", "", "%", null, false)), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
+        ShardingSpherePrivileges actual = provider.build(ruleConfig, new Grantee("root@%"));
+        assertThat(actual, instanceOf(AllPermittedPrivileges.class));
+    }
+    
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("withType", TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PERMITTED")),
+                    Arguments.of("withAlias", TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PRIVILEGES_PERMITTED")),
+                    Arguments.of("withDefault", TypedSPILoader.getService(PrivilegeProvider.class, null)));
+        }
     }
 }

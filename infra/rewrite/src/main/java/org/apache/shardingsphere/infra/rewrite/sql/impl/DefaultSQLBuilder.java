@@ -27,7 +27,7 @@ import java.util.List;
 public final class DefaultSQLBuilder extends AbstractSQLBuilder {
     
     public DefaultSQLBuilder(final String sql, final List<SQLToken> sqlTokens) {
-        super(sql, sqlTokens, null);
+        super(sql, sqlTokens);
     }
     
     @Override

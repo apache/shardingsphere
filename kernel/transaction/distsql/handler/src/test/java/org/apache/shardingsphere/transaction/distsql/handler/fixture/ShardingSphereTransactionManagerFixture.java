@@ -20,14 +20,14 @@ package org.apache.shardingsphere.transaction.distsql.handler.fixture;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 
 @Setter
-public class ShardingSphereTransactionManagerFixture implements ShardingSphereDistributionTransactionManager {
+public class ShardingSphereTransactionManagerFixture implements ShardingSphereDistributedTransactionManager {
     
     private Runnable caller;
     
@@ -67,6 +67,11 @@ public class ShardingSphereTransactionManagerFixture implements ShardingSphereDi
     
     @Override
     public void rollback() {
+    }
+    
+    @Override
+    public boolean containsProviderType(final String providerType) {
+        return !"Invalid".equals(providerType);
     }
     
     @Override

@@ -18,31 +18,46 @@
 package org.apache.shardingsphere.mode.persist.service;
 
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StatePersistServiceTest {
     
+    private StatePersistService statePersistService;
+    
     @Mock
     private PersistRepository repository;
     
-    @Test
-    void assertUpdateClusterStateClusterStateWithoutPath() {
-        StatePersistService statePersistService = new StatePersistService(repository);
-        statePersistService.updateClusterState(ClusterState.OK);
-        verify(repository).persist(ComputeNode.getClusterStateNodePath(), ClusterState.OK.name());
+    @BeforeEach
+    void setUp() {
+        statePersistService = new StatePersistService(repository);
     }
     
     @Test
-    void assertLoadClusterStateClusterState() {
-        new StatePersistService(repository).loadClusterState();
-        verify(repository).query(ComputeNode.getClusterStateNodePath());
+    void assertUpdate() {
+        statePersistService.update(ClusterState.OK);
+        verify(repository).persist("/states/cluster_state", ClusterState.OK.name());
+    }
+    
+    @Test
+    void assertLoad() {
+        when(repository.query("/states/cluster_state")).thenReturn(ClusterState.READ_ONLY.name());
+        assertThat(statePersistService.load(), is(ClusterState.READ_ONLY));
+    }
+    
+    @Test
+    void assertLoadWithEmptyState() {
+        when(repository.query("/states/cluster_state")).thenReturn("");
+        assertThat(statePersistService.load(), is(ClusterState.OK));
     }
 }

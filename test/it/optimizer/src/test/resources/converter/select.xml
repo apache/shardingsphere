@@ -35,4 +35,6 @@
     <test-cases sql-case-id="select_with_json_value_return_type" expected-sql="SELECT * FROM `t_order` WHERE JSON_VALUE(`items`, '''$.name''' 'RETURNING' VARCHAR(100)) = 'jack'" db-types="MySQL" />
     <test-cases sql-case-id="select_projection_with_parameter" expected-sql="SELECT 1 &quot;id&quot;, ?, &quot;SYSDATE&quot; &quot;create_time&quot;, &quot;TRUNC&quot;(&quot;SYSDATE&quot;) &quot;create_date&quot;" db-types="Oracle" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_projection_with_parameter" expected-sql="SELECT 1 &quot;id&quot;, 'OK' &quot;status&quot;, &quot;SYSDATE&quot; &quot;create_time&quot;, &quot;TRUNC&quot;(&quot;SYSDATE&quot;) &quot;create_date&quot;" db-types="Oracle" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_with_not_operator_number" expected-sql="SELECT NOT 0, NOT 1, NOT 2" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_not_operator_boolean" expected-sql="SELECT NOT TRUE, NOT FALSE" db-types="MySQL" />
 </sql-node-converter-test-cases>

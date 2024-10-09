@@ -28,9 +28,6 @@ public final class YamlLoggerSwapper implements YamlConfigurationSwapper<YamlLog
     
     @Override
     public YamlLoggerConfiguration swapToYamlConfiguration(final ShardingSphereLogger data) {
-        if (null == data) {
-            return null;
-        }
         YamlLoggerConfiguration result = new YamlLoggerConfiguration();
         result.setLoggerName(data.getLoggerName());
         result.setLevel(data.getLevel());
@@ -42,11 +39,8 @@ public final class YamlLoggerSwapper implements YamlConfigurationSwapper<YamlLog
     
     @Override
     public ShardingSphereLogger swapToObject(final YamlLoggerConfiguration yamlConfig) {
-        if (null == yamlConfig) {
-            return null;
-        }
         ShardingSphereLogger result = new ShardingSphereLogger(yamlConfig.getLoggerName(), yamlConfig.getLevel(), yamlConfig.getAdditivity(), yamlConfig.getAppenderName());
-        result.setProps(yamlConfig.getProps());
+        result.getProps().putAll(yamlConfig.getProps());
         return result;
     }
 }

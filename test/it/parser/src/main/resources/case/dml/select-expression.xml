@@ -2641,7 +2641,14 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <simple-table name="not support" start-index="14" stop-index="70" />
+            <function-table>
+                <table-function function-name="cypher" text="cypher('sharding_test_1', $$ CREATE (n) $$)">
+                    <parameter>
+                        <literal-expression value="sharding_test_1" start-index="21" stop-index="37" />
+                        <common-expression literal-text="$$ CREATE (n) $$" start-index="40" stop-index="55"/>
+                    </parameter>
+                </table-function>
+            </function-table>
         </from>
     </select>
 

@@ -9,7 +9,9 @@ Apache ShardingSphere 提供 BASE 事务，集成了 Seata 的实现。本文所
 
 ## 前提条件
 
-引入 Maven 依赖，并排除 `io.seata:seata-all` 中过时的 `org.antlr:antlr4-runtime:4.8` 的 Maven 依赖。
+ShardingSphere 的 Seata 集成仅在 `apache/incubator-seata:v2.1.0` 或更高版本可用。
+对于 `org.apache.seata:seata-all` Maven 模块对应的 Seata Client，此限制同时作用于 HotSpot VM 和 GraalVM Native Image。
+引入 Maven 依赖，并排除 `org.apache.seata:seata-all` 中过时的 `org.antlr:antlr4-runtime:4.8` 的 Maven 依赖。
 
 ```xml
 <project>
@@ -25,9 +27,9 @@ Apache ShardingSphere 提供 BASE 事务，集成了 Seata 的实现。本文所
          <version>${shardingsphere.version}</version>
       </dependency>
       <dependency>
-         <groupId>io.seata</groupId>
+         <groupId>org.apache.seata</groupId>
          <artifactId>seata-all</artifactId>
-         <version>2.0.0</version>
+         <version>2.1.0</version>
          <exclusions>
             <exclusion>
                <groupId>org.antlr</groupId>
@@ -38,6 +40,12 @@ Apache ShardingSphere 提供 BASE 事务，集成了 Seata 的实现。本文所
     </dependencies>
 </project>
 ```
+
+受 Calcite 的影响，ShardingSphere JDBC 使用的 `commons-lang:commons-lang` 和 `org.apache.commons:commons-pool2` 与 Seata Client 存在依赖冲突，
+需用户根据实际情景考虑是否需要解决依赖冲突。
+
+使用 ShardingSphere 的 Seata 集成模块时，ShardingSphere 连接的数据库实例应同时实现 ShardingSphere 的方言解析支持与 Seata AT 模式的方言解析支持。
+这类数据库包括但不限于 `mysql`，`gvenzl/oracle-free`，`gvenzl/oracle-xe`，`postgres`，`mcr.microsoft.com/mssql/server` 等 Docker Image。
 
 ## 操作步骤
 
@@ -50,32 +58,27 @@ Apache ShardingSphere 提供 BASE 事务，集成了 Seata 的实现。本文所
 ### 启动 Seata Server
 
 按照如下任一链接的步骤，下载并启动 Seata 服务器。
-合理的启动方式应通过 Docker Hub 中的 `seataio/seata-server` 的 Docker Image 来实例化 Seata 服务器。
-对于 `apache/incubator-seata:v2.0.0` 及更早的 Seata 版本，应使用 Docker Hub 中的 `seataio/seata-server`。
-否则应使用 Docker Hub 中的 `apache/seata-server`。
+合理的启动方式应通过 Docker Hub 中的 `apache/seata-server` 的 Docker Image 来实例化 Seata 服务器。
 
-- [seata-fescar-workshop](https://github.com/seata/fescar-workshop)
-- https://hub.docker.com/r/seataio/seata-server
 - https://hub.docker.com/r/apache/seata-server
 
 ### 创建 undo_log 表
 
 在每一个 ShardingSphere 涉及的真实数据库实例中创建 `undo_log` 表。
-SQL 的内容以 https://github.com/apache/incubator-seata/tree/v2.0.0/script/client/at/db 内对应的数据库为准。
+SQL 的内容以 https://github.com/apache/incubator-seata/tree/v2.1.0/script/client/at/db 内对应的数据库为准。
 以下内容以 MySQL 为例。
 ```sql
 CREATE TABLE IF NOT EXISTS `undo_log`
 (
-    `branch_id`     BIGINT       NOT NULL COMMENT 'branch transaction id',
-    `xid`           VARCHAR(128) NOT NULL COMMENT 'global transaction id',
-    `context`       VARCHAR(128) NOT NULL COMMENT 'undo_log context,such as serialization',
-    `rollback_info` LONGBLOB     NOT NULL COMMENT 'rollback info',
-    `log_status`    INT(11)      NOT NULL COMMENT '0:normal status,1:defense status',
-    `log_created`   DATETIME(6)  NOT NULL COMMENT 'create datetime',
-    `log_modified`  DATETIME(6)  NOT NULL COMMENT 'modify datetime',
-    UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
-    ) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT ='AT transaction mode undo table';
-
+   `branch_id`     BIGINT       NOT NULL COMMENT 'branch transaction id',
+   `xid`           VARCHAR(128) NOT NULL COMMENT 'global transaction id',
+   `context`       VARCHAR(128) NOT NULL COMMENT 'undo_log context,such as serialization',
+   `rollback_info` LONGBLOB     NOT NULL COMMENT 'rollback info',
+   `log_status`    INT(11)      NOT NULL COMMENT '0:normal status,1:defense status',
+   `log_created`   DATETIME(6)  NOT NULL COMMENT 'create datetime',
+   `log_modified`  DATETIME(6)  NOT NULL COMMENT 'modify datetime',
+   UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
+   ) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT ='AT transaction mode undo table';
 ALTER TABLE `undo_log` ADD INDEX `ix_log_created` (`log_created`);
 ```
 
@@ -91,7 +94,7 @@ transaction:
 ```
 
 在 classpath 的根目录中增加 `seata.conf` 文件， 
-配置文件格式参考 `io.seata.config.FileConfiguration` 的 [JavaDoc](https://github.com/apache/incubator-seata/blob/v2.0.0/config/seata-config-core/src/main/java/io/seata/config/FileConfiguration.java)。
+配置文件格式参考 `org.apache.seata.config.FileConfiguration` 的 [JavaDoc](https://github.com/apache/incubator-seata/blob/v2.1.0/config/seata-config-core/src/main/java/org/apache/seata/config/FileConfiguration.java)。
 
 `seata.conf` 存在四个属性，
 
@@ -116,8 +119,8 @@ client {
 一个最小配置的 `seata.conf` 如下。
 由 ShardingSphere 管理的 `seata.conf` 中， `client.transaction.service.group` 的默认值设置为 `default` 是出于历史原因。
 假设用户使用的 Seata Server 和 Seata Client 的 `registry.conf` 中，`registry.type` 和 `config.type` 均为 `file`，
-则对于 `registry.conf` 的 `config.file.name` 配置的 `.conf` 文件中，事务分组名在 `apache/incubator-seata:v1.5.1` 之后默认值为 `default_tx_group`，
-反之则为 `my_test_tx_group`。
+则对于 `registry.conf` 的 `config.file.name` 配置的 `.conf` 文件中，事务分组名在 `apache/incubator-seata:v1.5.1` 及之后默认值为 `default_tx_group`，
+在 `apache/incubator-seata:v1.5.1` 之前则为 `my_test_tx_group`。
 
 ```conf
 client.application.id = example
@@ -131,7 +134,7 @@ ShardingSphere 的 Seata 集成不支持隔离级别。
 
 ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的局部变量。
 而 `org.apache.seata.spring.annotation.GlobalTransactionScanner` 则是采用 Dynamic Proxy 的方式对方法进行增强。
-这意味着用户在使用 ShardingSphere 的 Seata 集成时，用户应避免使用 `io.seata:seata-all` 的 Java API，
+这意味着用户在使用 ShardingSphere 的 Seata 集成时，用户应避免使用 `org.apache.seata:seata-all` 的 Java API，
 除非用户正在混合使用 ShardingSphere 的 Seata 集成与 Seata Client 的 TCC 模式特性。
 
 针对 ShardingSphere 数据源，讨论 6 种情况，
@@ -145,13 +148,13 @@ ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的
 
 4. 在函数上使用 Spring Framework 的 `org.springframework.transaction.annotation.Transactional` 注解，这是被允许的。
 
-5. 在函数上使用 `io.seata.spring.annotation.GlobalTransactional` 注解，这是**不被允许的**。
+5. 在函数上使用 `org.apache.seata.spring.annotation.GlobalTransactional` 注解，这是**不被允许的**。
 
-6. 手动从 `io.seata.tm.api.GlobalTransactionContext ` 创建 `io.seata.tm.api.GlobalTransaction` 实例，
-调用 `io.seata.tm.api.GlobalTransaction` 实例的 `begin()`, `commit()` 和 `rollback()` 方法，这是**不被允许的**。
+6. 手动从 `org.apache.seata.tm.api.GlobalTransactionContext ` 创建 `org.apache.seata.tm.api.GlobalTransaction` 实例，
+调用 `org.apache.seata.tm.api.GlobalTransaction` 实例的 `begin()`, `commit()` 和 `rollback()` 方法，这是**不被允许的**。
 
 在使用 Spring Boot 的实际情景中，
-`com.alibaba.cloud:spring-cloud-starter-alibaba-seata` 和 `io.seata:seata-spring-boot-starter` 常常被其他 Maven 依赖传递引入。
+`com.alibaba.cloud:spring-cloud-starter-alibaba-seata` 和 `org.apache.seata:seata-spring-boot-starter` 常常被其他 Maven 依赖传递引入。
 为了避开事务冲突，用户需要在 Spring Boot 的配置文件中将 `seata.enable-auto-data-source-proxy` 的属性置为 `false`。一个可能的依赖关系如下。
 
 ```xml
@@ -168,9 +171,9 @@ ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的
          <version>${shardingsphere.version}</version>
       </dependency>
       <dependency>
-         <groupId>io.seata</groupId>
+         <groupId>org.apache.seata</groupId>
          <artifactId>seata-spring-boot-starter</artifactId>
-         <version>2.0.0</version>
+         <version>2.1.0</version>
          <exclusions>
             <exclusion>
                <groupId>org.antlr</groupId>
@@ -195,20 +198,20 @@ seata:
 
 对于设置开启 ShardingSphere 的 Seata 集成的情况下，
 在与 ShardingSphere JDBC DataSource 无关的业务函数中，如需在业务函数使用 Seata Client 的 Seata TCC 模式相关的特性，
-可实例化一个未代理的普通 TCC 接口实现类， 然后使用 `io.seata.integration.tx.api.util.ProxyUtil` 创建一个代理的TCC接口类，
+可实例化一个未代理的普通 TCC 接口实现类， 然后使用 `org.apache.seata.integration.tx.api.util.ProxyUtil` 创建一个代理的TCC接口类，
 并调用 TCC 接口实现类 `Try`，`Confirm`，`Cancel` 三个阶段对应的函数。
 
-对于由 Seata TCC 模式而引入的 `io.seata.spring.annotation.GlobalTransactional` 注解或 Seata TCC 模式涉及的业务函数中需要与数据库实例交互，
+对于由 Seata TCC 模式而引入的 `org.apache.seata.spring.annotation.GlobalTransactional` 注解或 Seata TCC 模式涉及的业务函数中需要与数据库实例交互，
 此注解标记的业务函数内不应使用 ShardingSphere JDBC DataSource，
 而是应该手动创建`javax.sql.DataSource` 实例，或从自定义的 Spring Bean 中获取 `javax.sql.DataSource` 实例。
 
 ### 跨服务调用的事务传播
 
 跨服务调用场景下的事务传播，并不像单个微服务内的事务操作一样开箱即用。
-对于 Seata Server，跨服务调用场景下的事务传播，要把 XID 通过服务调用传递到服务提供方，并绑定到 `io.seata.core.context.RootContext` 中去。
+对于 Seata Server，跨服务调用场景下的事务传播，要把 XID 通过服务调用传递到服务提供方，并绑定到 `org.apache.seata.core.context.RootContext` 中去。
 参考 https://seata.apache.org/docs/user/api/ 。这需要讨论两种情况，
 
-1. 在使用 ShardingSphere JDBC 的场景下，跨多个微服务的事务场景需要考虑在起点微服务的上下文使用 `io.seata.core.context.RootContext.getXID()` 获取 Seata XID 后，
+1. 在使用 ShardingSphere JDBC 的场景下，跨多个微服务的事务场景需要考虑在起点微服务的上下文使用 `org.apache.seata.core.context.RootContext.getXID()` 获取 Seata XID 后，
    通过 HTTP 或 RPC 等手段传递给终点微服务，并在终点微服务的 Filter 或 Spring WebMVC HandlerInterceptor 中处理。
    Spring WebMVC HandlerInterceptor 仅适用于 Spring Boot 微服务，对 Quarkus，Micronaut Framework 和 Helidon 无效。
 
@@ -270,7 +273,7 @@ public class DemoService {
 讨论单服务调用的事务传播。当微服务实例 `a-service` 的业务函数 `aMethod` 抛出异常，在业务函数内对 MySQL 数据库实例 `a-mysql` 的更改将被正常回滚。
 
 讨论跨服务调用的事务传播。当微服务实例 `b-service` 的业务函数 `bMethod` 抛出异常，在业务函数内对 MySQL 数据库实例 `b-mysql` 的更改将被正常回滚，
-而微服务实例 `a-service` 的 `io.seata.core.context.RootContext` 未绑定微服务实例 `b-service` 的业务函数 `bMethod` 的 Seata XID，
+而微服务实例 `a-service` 的 `org.apache.seata.core.context.RootContext` 未绑定微服务实例 `b-service` 的业务函数 `bMethod` 的 Seata XID，
 因此在业务函数内对 MySQL 数据库实例 `a-mysql` 的更改将不会被回滚。
 
 为了实现当微服务实例 `b-service` 的业务函数 `bMethod` 抛出异常，在业务函数内对 MySQL 数据库实例 `a-mysql` 和 `b-mysql` 的更改均被正常回滚，
@@ -281,7 +284,7 @@ public class DemoService {
 可能的改造逻辑如下。
 
 ```java
-import io.seata.core.context.RootContext;
+import org.apache.seata.core.context.RootContext;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -308,7 +311,7 @@ public class DemoService {
 此时在微服务实例 `a-service` 和 `b-service` 均需要添加自定义的 `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` 实现。
 
 ```java
-import io.seata.integration.http.TransactionPropagationInterceptor;
+import org.apache.seata.integration.http.TransactionPropagationInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -330,7 +333,7 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 可能的改造逻辑如下。
 
 ```java
-import io.seata.core.context.RootContext;
+import org.apache.seata.core.context.RootContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
@@ -356,7 +359,7 @@ public class DemoService {
 此时在微服务实例 `a-service` 和 `b-service` 均需要添加自定义的 `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` 实现。
 
 ```java
-import io.seata.integration.http.JakartaTransactionPropagationInterceptor;
+import org.apache.seata.integration.http.JakartaTransactionPropagationInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -375,14 +378,14 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 
 3. 微服务实例 `a-service` 和 `b-service` 均为 Spring Boot 微服务，但使用的 API 网关中间件阻断了所有包含 `TX_XID` 的 HTTP Header 的 HTTP 请求。
 用户需要考虑更改把 XID 通过服务调用传递到微服务实例 `a-service` 使用的 HTTP Header，或使用 RPC 框架把 XID 通过服务调用传递到微服务实例 `a-service`。
-参考 https://github.com/apache/incubator-seata/tree/v2.0.0/integration 。
+参考 https://github.com/apache/incubator-seata/tree/v2.1.0/integration 。
 
 4. 微服务实例 `a-service` 和 `b-service` 均为 Quarkus，Micronaut Framework 和 Helidon 等微服务。此情况下无法使用 Spring WebMVC HandlerInterceptor。
 可参考如下 Spring Boot 3 的自定义 WebMvcConfigurer 实现，来实现 Filter。
 
 ```java
-import io.seata.common.util.StringUtils;
-import io.seata.core.context.RootContext;
+import org.apache.seata.common.util.StringUtils;
+import org.apache.seata.core.context.RootContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Configuration;
@@ -429,6 +432,3 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 5. 微服务实例 `a-service` 和 `b-service` 均为 Spring Boot 微服务，但使用的组件是 Spring WebFlux 而非 Spring WebMVC。
 在反应式编程 API 下 ShardingSphere JDBC 无法处理 R2DBC DataSource，仅可处理 JDBC DataSource。
 在使用 WebFlux 组件的 Spring Boot 微服务中应避免创建 ShardingSphere JDBC DataSource。
-
-6. 微服务实例 `a-service` 和 `b-service` 使用的 Seata Client 为 `org.apache.seata:seata-all`， 而非 `io.seata:seata-all`。
-将所有对 `io.seata` package 的调用更改为 `org.apache.seata` package 即可。

@@ -84,7 +84,7 @@ public final class ShardingRouteAssert {
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
         connectionContext.setCurrentDatabaseName(DefaultDatabase.LOGIC_NAME);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), connectionContext, metaData);
-        return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(connectionContext, queryContext, mock(RuleMetaData.class), database);
+        return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(queryContext, mock(RuleMetaData.class), database);
     }
     
     private static ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {

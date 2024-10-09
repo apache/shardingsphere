@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRul
 import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.exception.algorithm.ShardingAlgorithmClassImplementationException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
@@ -87,7 +88,7 @@ public final class ShardingTableRuleStatementChecker {
     private static final String DELIMITER = ".";
     
     /**
-     * Check create sharing table rule statement.
+     * Check create sharding table rule statement.
      *
      * @param database database
      * @param rules rules
@@ -100,7 +101,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     /**
-     * Check alter sharing table rule statement.
+     * Check alter sharding table rule statement.
      *
      * @param database database
      * @param rules rules
@@ -524,5 +525,20 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> result = toBeAlteredRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         result.addAll(toBeAlteredRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         return result;
+    }
+    
+    /**
+     * Check to be added data nodes.
+     *
+     * @param toBeAddedDataNodes to be added data nodes
+     */
+    public static void checkToBeAddedDataNodes(final Map<String, Collection<DataNode>> toBeAddedDataNodes) {
+        Collection<DataNode> uniqueActualDataNodes = new HashSet<>(toBeAddedDataNodes.size(), 1F);
+        toBeAddedDataNodes.forEach((key, value) -> {
+            DataNode sampleActualDataNode = value.iterator().next();
+            ShardingSpherePreconditions.checkNotContains(uniqueActualDataNodes, sampleActualDataNode,
+                    () -> new DuplicateShardingActualDataNodeException(key, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
+            uniqueActualDataNodes.add(sampleActualDataNode);
+        });
     }
 }

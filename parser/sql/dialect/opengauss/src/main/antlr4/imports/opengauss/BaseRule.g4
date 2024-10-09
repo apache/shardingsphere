@@ -121,7 +121,7 @@ identifier
 uescape
     : UESCAPE STRING_
     ;
-    
+
 unreservedWord
     : ABORT
     | ABSOLUTE
@@ -490,7 +490,7 @@ synonymName
 objectName
     : (owner DOT_)? identifier
     ;
-    
+
 tableName
     : (owner DOT_)? name
     ;
@@ -846,7 +846,7 @@ jsonOperator
     | JSONB_PATH_CONTAIN_ANY_VALUE_ # jsonbPathContainAnyValue
     | JSONB_PATH_PREDICATE_CHECK_ # jsonbPathPredicateCheck
     ;
-    
+
 geometricOperator
     : GEOMETRIC_LENGTH_
     | GEOMETRIC_DISTANCE_
@@ -1972,11 +1972,11 @@ event
 typeNameList
     : typeName (COMMA_ typeName)*
     ;
-    
+
 ifNotExists
     : IF NOT EXISTS
     ;
-    
+
 ifExists
     : IF EXISTS
     ;

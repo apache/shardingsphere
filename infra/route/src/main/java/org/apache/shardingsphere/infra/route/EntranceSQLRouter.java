@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 /**
@@ -40,9 +39,8 @@ public interface EntranceSQLRouter<T extends ShardingSphereRule> extends SQLRout
      * @param database database
      * @param rule rule
      * @param props configuration properties
-     * @param connectionContext connection context
      * @return route context
      */
     RouteContext createRouteContext(QueryContext queryContext,
-                                    RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
+                                    RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
 }

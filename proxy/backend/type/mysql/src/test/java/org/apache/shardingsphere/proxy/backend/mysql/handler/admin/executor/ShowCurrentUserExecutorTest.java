@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class ShowCurrentUserExecutorTest {
     
-    private static final Grantee GRANTEE = new Grantee("root", "");
+    private static final Grantee GRANTEE = new Grantee("root");
     
     @Test
     void assertExecute() throws SQLException {

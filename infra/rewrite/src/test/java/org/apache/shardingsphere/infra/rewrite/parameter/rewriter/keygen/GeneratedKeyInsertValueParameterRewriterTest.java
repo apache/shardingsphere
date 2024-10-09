@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
@@ -31,8 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -49,7 +50,7 @@ class GeneratedKeyInsertValueParameterRewriterTest {
     
     @Test
     void assertIsNeedRewrite() {
-        GeneratedKeyInsertValueParameterRewriter paramRewriter = new GeneratedKeyInsertValueParameterRewriter();
+        ParameterRewriter paramRewriter = new GeneratedKeyInsertValueParameterRewriter();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         assertFalse(paramRewriter.isNeedRewrite(selectStatementContext));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
@@ -64,10 +65,19 @@ class GeneratedKeyInsertValueParameterRewriterTest {
     }
     
     @Test
-    void assertRewrite() {
+    void assertRewriteWithoutGeneratedKeys() {
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        ParameterBuilder groupedParamBuilder = getParameterBuilder();
+        ParameterRewriter paramRewriter = new GeneratedKeyInsertValueParameterRewriter();
+        paramRewriter.rewrite(groupedParamBuilder, insertStatementContext, null);
+        assertFalse(((GroupedParameterBuilder) groupedParamBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().containsKey(TEST_PARAMETER_COUNT));
+    }
+    
+    @Test
+    void assertRewriteWithGeneratedKeys() {
         InsertStatementContext insertStatementContext = getInsertStatementContext();
         ParameterBuilder groupedParamBuilder = getParameterBuilder();
-        GeneratedKeyInsertValueParameterRewriter paramRewriter = new GeneratedKeyInsertValueParameterRewriter();
+        ParameterRewriter paramRewriter = new GeneratedKeyInsertValueParameterRewriter();
         paramRewriter.rewrite(groupedParamBuilder, insertStatementContext, null);
         assertThat(((GroupedParameterBuilder) groupedParamBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().get(TEST_PARAMETER_COUNT), hasItem(TEST_GENERATED_VALUE));
     }

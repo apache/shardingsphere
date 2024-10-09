@@ -26,16 +26,16 @@
     <artifactId>shardingsphere-test-native</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <!--Before merging https://github.com/apache/incubator-seata/pull/6386,
-using Seata Client under GraalVM Native Image requires using the version released under its 1.x.x release-->
-        <seata.version>1.8.0</seata.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -106,7 +106,7 @@ using Seata Client under GraalVM Native Image requires using the version release
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.seata</groupId>
+            <groupId>org.apache.seata</groupId>
             <artifactId>seata-all</artifactId>
             <version>${seata.version}</version>
             <scope>test</scope>

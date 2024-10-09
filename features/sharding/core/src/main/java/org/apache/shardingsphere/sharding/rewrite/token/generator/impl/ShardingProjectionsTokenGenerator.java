@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -37,10 +36,10 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
-import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -140,7 +139,6 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     }
     
     private NullsOrderType generateNewNullsOrderType(final OrderDirection orderDirection, final DatabaseType databaseType) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return OrderDirection.ASC == orderDirection ? dialectDatabaseMetaData.getDefaultNullsOrderType() : dialectDatabaseMetaData.getDefaultNullsOrderType().getReversedOrderType();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultNullsOrderType().getResolvedOrderType(orderDirection.name());
     }
 }

@@ -23,7 +23,7 @@
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+    <logger name="org.apache.shardingsphere" level="off" additivity="false">
         <appender-ref ref="console" />
     </logger>
     

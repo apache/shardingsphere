@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.metadata.persist.node.StatesNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
+import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
-import org.apache.shardingsphere.mode.path.ListenerAssistedNodePath;
+import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -38,8 +37,8 @@ import java.util.Optional;
 public final class ListenerAssistedDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ListenerAssistedNodePath.getRootNodePath());
+    public String getSubscribedKey() {
+        return StatesNode.getListenerAssistedNodePath();
     }
     
     @Override
@@ -49,16 +48,13 @@ public final class ListenerAssistedDispatchEventBuilder implements DispatchEvent
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        Optional<String> databaseName = ListenerAssistedNodePath.getDatabaseName(event.getKey());
+        Optional<String> databaseName = StatesNode.getDatabaseNameByListenerAssistedNodePath(event.getKey());
         if (!databaseName.isPresent()) {
             return Optional.empty();
         }
-        ListenerAssisted data = YamlEngine.unmarshal(event.getValue(), ListenerAssisted.class);
-        if (ListenerAssistedType.CREATE_DATABASE == data.getListenerAssistedType()) {
-            return Optional.of(new CreateDatabaseListenerAssistedEvent(databaseName.get()));
-        }
-        return ListenerAssistedType.DROP_DATABASE == data.getListenerAssistedType()
-                ? Optional.of(new DropDatabaseListenerAssistedEvent(databaseName.get()))
-                : Optional.empty();
+        ListenerAssistedType listenerAssistedType = YamlEngine.unmarshal(event.getValue(), ListenerAssisted.class).getListenerAssistedType();
+        return Optional.of(ListenerAssistedType.CREATE_DATABASE == listenerAssistedType
+                ? new CreateDatabaseListenerAssistedEvent(databaseName.get())
+                : new DropDatabaseListenerAssistedEvent(databaseName.get()));
     }
 }

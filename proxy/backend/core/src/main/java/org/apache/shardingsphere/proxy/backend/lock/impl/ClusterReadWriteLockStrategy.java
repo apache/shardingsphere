@@ -28,7 +28,7 @@ public class ClusterReadWriteLockStrategy implements ClusterLockStrategy {
     
     @Override
     public void lock() {
-        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getStatePersistService().updateClusterState(ClusterState.UNAVAILABLE);
+        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getStatePersistService().update(ClusterState.UNAVAILABLE);
     }
     
     @Override

@@ -81,13 +81,6 @@ class DataNodeTest {
     }
     
     @Test
-    void assertFormat() {
-        String expected = "ds_0.tbl_0";
-        DataNode dataNode = new DataNode(expected);
-        assertThat(dataNode.format(), is(expected));
-    }
-    
-    @Test
     void assertNewValidDataNodeIncludeInstance() {
         DataNode dataNode = new DataNode("ds_0.db_0.tbl_0");
         assertThat(dataNode.getDataSourceName(), is("ds_0.db_0"));
@@ -102,12 +95,5 @@ class DataNodeTest {
     @Test
     void assertToStringIncludeInstance() {
         assertThat(new DataNode("ds_0.db_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0.db_0, tableName=tbl_0, schemaName=null)"));
-    }
-    
-    @Test
-    void assertFormatIncludeInstance() {
-        String expected = "ds_0.db_0.tbl_0";
-        DataNode dataNode = new DataNode(expected);
-        assertThat(dataNode.format(), is(expected));
     }
 }

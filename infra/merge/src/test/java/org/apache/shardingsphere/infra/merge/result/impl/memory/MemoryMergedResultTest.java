@@ -34,6 +34,7 @@ import java.util.Date;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -59,7 +60,10 @@ class MemoryMergedResultTest {
     @Test
     void assertGetValue() throws SQLException {
         when(memoryResultSetRow.getCell(1)).thenReturn("1");
+        when(memoryResultSetRow.getCell(2)).thenReturn(null);
         assertThat(memoryMergedResult.getValue(1, Object.class).toString(), is("1"));
+        assertNull(memoryMergedResult.getValue(2, Object.class));
+        assertTrue(memoryMergedResult.wasNull());
     }
     
     @Test
@@ -90,12 +94,20 @@ class MemoryMergedResultTest {
     @Test
     void assertGetCalendarValue() {
         when(memoryResultSetRow.getCell(1)).thenReturn(new Date(0L));
+        when(memoryResultSetRow.getCell(2)).thenReturn(null);
         assertThat(memoryMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
+        assertNull(memoryMergedResult.getCalendarValue(2, Object.class, Calendar.getInstance()));
+        assertTrue(memoryMergedResult.wasNull());
     }
     
     @Test
     void assertGetInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> memoryMergedResult.getInputStream(1, "ascii"));
+    }
+    
+    @Test
+    void assertGetCharacterStream() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> memoryMergedResult.getCharacterStream(1));
     }
     
     @Test

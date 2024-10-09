@@ -66,7 +66,7 @@ public final class TransactionContainerComposer implements AutoCloseable {
     
     private DataSource createJdbcDataSource() {
         DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
-        return dockerContainerComposer.getJdbcContainer().getTargetDataSource();
+        return dockerContainerComposer.getJdbcContainer().getTargetDataSource(null);
     }
     
     @Override

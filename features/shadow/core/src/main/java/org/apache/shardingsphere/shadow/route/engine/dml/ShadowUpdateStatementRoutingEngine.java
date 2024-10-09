@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
@@ -41,8 +42,8 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
     
     private final List<Object> parameters;
     
-    public ShadowUpdateStatementRoutingEngine(final UpdateStatementContext sqlStatementContext, final List<Object> parameters) {
-        super(sqlStatementContext, ShadowOperationType.UPDATE);
+    public ShadowUpdateStatementRoutingEngine(final UpdateStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
+        super(sqlStatementContext, hintValueContext, ShadowOperationType.UPDATE);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }

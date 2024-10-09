@@ -71,7 +71,7 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
             ShardingSpherePreconditions.checkState(InsertSelectColumnsEncryptorComparator.isSame(insertColumns, projections, encryptRule),
                     () -> new UnsupportedSQLOperationException("Can not use different encryptor in insert select columns"));
         }
-        EncryptTable encryptTable = encryptRule.getEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
+        EncryptTable encryptTable = encryptRule.getEncryptTable(insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse(""));
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : insertColumns) {
             String columnName = each.getIdentifier().getValue();

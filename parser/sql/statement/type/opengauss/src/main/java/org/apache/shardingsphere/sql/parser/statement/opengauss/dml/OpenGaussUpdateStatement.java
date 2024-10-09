@@ -17,11 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.statement.opengauss.dml;
 
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
+
+import java.util.Optional;
 
 /**
  * OpenGauss update statement.
  */
+@Setter
 public final class OpenGaussUpdateStatement extends UpdateStatement implements OpenGaussStatement {
+    
+    private TableSegment from;
+    
+    @Override
+    public Optional<TableSegment> getFrom() {
+        return Optional.ofNullable(from);
+    }
 }

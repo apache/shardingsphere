@@ -61,9 +61,9 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage(),
                 "");
         jdbcContainer = AdapterContainerFactory.newInstance(
-                AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig);
+                AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer);
         proxyContainer = AdapterContainerFactory.newInstance(
-                AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig);
+                AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer);
         if (proxyContainer instanceof DockerITContainer) {
             if (isClusterMode(testParam.getRunMode())) {
                 ((DockerITContainer) proxyContainer).dependsOn(governanceContainer);

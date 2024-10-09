@@ -23,7 +23,7 @@ explain
     : DESCRIBE tableName
     | ANALYZE tableName
     ;
-    
+
 fromSchema
     : (FROM | IN) (owner DOT_)? schemaName
     ;

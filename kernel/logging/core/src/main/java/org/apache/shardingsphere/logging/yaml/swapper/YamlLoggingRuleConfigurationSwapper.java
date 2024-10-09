@@ -17,39 +17,34 @@
 
 package org.apache.shardingsphere.logging.yaml.swapper;
 
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingOrder;
-import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
-import org.apache.shardingsphere.logging.yaml.config.YamlAppendersConfigurationConverter;
-import org.apache.shardingsphere.logging.yaml.config.YamlLoggersConfigurationConverter;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+
+import java.util.stream.Collectors;
 
 /**
  * YAML logging rule configuration swapper.
  */
 public final class YamlLoggingRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlLoggingRuleConfiguration, LoggingRuleConfiguration> {
     
+    private final YamlLoggerSwapper loggerSwapper = new YamlLoggerSwapper();
+    
+    private final YamlAppenderSwapper appenderSwapper = new YamlAppenderSwapper();
+    
     @Override
     public YamlLoggingRuleConfiguration swapToYamlConfiguration(final LoggingRuleConfiguration data) {
         YamlLoggingRuleConfiguration result = new YamlLoggingRuleConfiguration();
-        result.setLoggers(YamlLoggersConfigurationConverter.convertYamlLoggerConfigurations(data.getLoggers()));
-        result.setAppenders(YamlAppendersConfigurationConverter.convertYamlAppenderConfigurations(data.getAppenders()));
+        result.setLoggers(data.getLoggers().stream().map(loggerSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
+        result.setAppenders(data.getAppenders().stream().map(appenderSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
         return result;
     }
     
     @Override
     public LoggingRuleConfiguration swapToObject(final YamlLoggingRuleConfiguration yamlConfig) {
-        LoggingRuleConfiguration result = new LoggingRuleConfiguration(YamlLoggersConfigurationConverter.convertShardingSphereLogger(yamlConfig.getLoggers()),
-                YamlAppendersConfigurationConverter.convertShardingSphereAppender(yamlConfig.getAppenders()));
-        if (null == result.getLoggers()) {
-            result = getDefaultLoggingRuleConfiguration();
-        }
-        return result;
-    }
-    
-    private LoggingRuleConfiguration getDefaultLoggingRuleConfiguration() {
-        return new DefaultLoggingRuleConfigurationBuilder().build();
+        return new LoggingRuleConfiguration(yamlConfig.getLoggers().stream().map(loggerSwapper::swapToObject).collect(Collectors.toList()),
+                yamlConfig.getAppenders().stream().map(appenderSwapper::swapToObject).collect(Collectors.toList()));
     }
     
     @Override

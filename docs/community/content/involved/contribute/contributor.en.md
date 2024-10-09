@@ -82,7 +82,11 @@ git push origin issueNo
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
  - At last, congratulations on being an official contributor of ShardingSphere
 
-**6. Delete Branch**
+**6. Update Release Note**
+
+ - After coding is completed, please update the [Release Note](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md) of current development version. According to the different types of issues, add them in the `API Change`, `New Feature`, `Enhancement` or `Bug Fix` categories. `RELEASE-NOTES` needs to follow the unified format: `{feature_name}: {description} - {issue/pr link}`, for example: `SQL Parser: Support PostgreSQL, openGauss function table and update from segment parse - #32994`.
+
+**7. Delete Branch**
 
  - You can delete the remote branch (origin/issueNo) and the local branch (issueNo) associated with the remote branch (origin/issueNo) after the mentor merged the pull request into the master branch of ShardingSphere.
  

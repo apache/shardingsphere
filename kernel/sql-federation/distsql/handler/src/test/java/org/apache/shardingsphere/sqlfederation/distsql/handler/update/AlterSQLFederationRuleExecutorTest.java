@@ -17,53 +17,57 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.GlobalRuleDefinitionExecutorTest;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import java.sql.SQLException;
+import java.util.stream.Stream;
+
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class AlterSQLFederationRuleExecutorTest {
+class AlterSQLFederationRuleExecutorTest extends GlobalRuleDefinitionExecutorTest {
     
-    private DistSQLUpdateExecuteEngine engine;
-    
-    @Test
-    void assertExecute() {
-        AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(true, true, new CacheOptionSegment(64, 512L));
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+    AlterSQLFederationRuleExecutorTest() {
+        super(mock(SQLFederationRule.class));
     }
     
-    @Test
-    void assertExecuteWithNullStatement() {
-        AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(null, null, null);
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig,
+                             final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
+        assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, expectedException);
     }
     
-    @Test
-    void assertExecuteWithNullCacheOptionSegment() {
-        AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(null, null, new CacheOptionSegment(null, null));
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(() -> engine.executeUpdate());
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        SQLFederationRule rule = mock(SQLFederationRule.class);
-        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
-        when(executor.getRuleClass()).thenReturn(SQLFederationRule.class);
-        when(rule.getConfiguration()).thenReturn(new DefaultSQLFederationRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
-        return result;
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.arguments("normal",
+                            new DefaultSQLFederationRuleConfigurationBuilder().build(),
+                            new AlterSQLFederationRuleStatement(true, true, new CacheOptionSegment(64, 512L)),
+                            new SQLFederationRuleConfiguration(true, true, new CacheOption(64, 512L)), null),
+                    Arguments.arguments("withNotExistedDistributedTransactionType",
+                            new DefaultSQLFederationRuleConfigurationBuilder().build(),
+                            new AlterSQLFederationRuleStatement(null, null, null),
+                            new SQLFederationRuleConfiguration(false, false, new CacheOption(2000, 65535L)), null),
+                    Arguments.arguments("withNotExistedXATransactionProvider",
+                            new DefaultSQLFederationRuleConfigurationBuilder().build(),
+                            new AlterSQLFederationRuleStatement(null, null, new CacheOptionSegment(null, null)),
+                            new SQLFederationRuleConfiguration(false, false, new CacheOption(2000, 65535L)), null));
+        }
     }
 }

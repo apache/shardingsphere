@@ -39,14 +39,24 @@ jobs:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 40
+    timeout-minutes: 150
     strategy:
       max-parallel: 20
       fail-fast: false
       matrix:
         java-version: [ 11, 21 ]
         operation: [ transaction, pipeline, showprocesslist ]
-        image: [ { type: "it.docker.mysql.version", version: "mysql:5.7,mysql:8.0" }, { type: "it.docker.postgresql.version", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }, { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0" } ]
+        image: [
+          { type: "it.docker.mysql.version", version: "mysql:5.7" },
+          { type: "it.docker.mysql.version", version: "mysql:8.0" },
+          { type: "it.docker.mariadb.version", version: "mariadb:11" },
+          { type: "it.docker.postgresql.version", version: "postgres:11-alpine" },
+          { type: "it.docker.postgresql.version", version: "postgres:12-alpine" },
+          { type: "it.docker.postgresql.version", version: "postgres:13-alpine" },
+          { type: "it.docker.postgresql.version", version: "postgres:14-alpine" },
+          { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" },
+          { type: "it.docker.opengauss.version", version: "enmotech/opengauss:3.0.0" }
+        ]
         exclude:
           - operation: transaction
             image: { type: "it.docker.mariadb.version", version: "mariadb:11" }

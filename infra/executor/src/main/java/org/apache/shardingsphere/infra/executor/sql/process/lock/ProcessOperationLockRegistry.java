@@ -45,29 +45,29 @@ public final class ProcessOperationLockRegistry {
     /**
      * Wait until release ready.
      *
-     * @param lockId lock ID
+     * @param processId process ID
      * @param releaseStrategy process operation lock release strategy
      * @return release ready or not
      */
-    public boolean waitUntilReleaseReady(final String lockId, final ProcessOperationLockReleaseStrategy releaseStrategy) {
+    public boolean waitUntilReleaseReady(final String processId, final ProcessOperationLockReleaseStrategy releaseStrategy) {
         ProcessOperationLock lock = new ProcessOperationLock();
-        locks.put(lockId, lock);
+        locks.put(processId, lock);
         lock.lock();
         try {
             return lock.awaitDefaultTime(releaseStrategy);
         } finally {
             lock.unlock();
-            locks.remove(lockId);
+            locks.remove(processId);
         }
     }
     
     /**
      * Notify lock.
      *
-     * @param lockId lock ID
+     * @param processId process ID
      */
-    public void notify(final String lockId) {
-        ProcessOperationLock lock = locks.get(lockId);
+    public void notify(final String processId) {
+        ProcessOperationLock lock = locks.get(processId);
         if (null != lock) {
             lock.doNotify();
         }

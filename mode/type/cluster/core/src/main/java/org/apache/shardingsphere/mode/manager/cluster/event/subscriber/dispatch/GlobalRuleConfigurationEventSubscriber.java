@@ -33,6 +33,7 @@ import java.util.Optional;
  * Global rule configuration event subscriber.
  */
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class GlobalRuleConfigurationEventSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
@@ -45,8 +46,9 @@ public final class GlobalRuleConfigurationEventSubscriber implements EventSubscr
     @SuppressWarnings("unchecked")
     @Subscribe
     public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
-        Preconditions.checkArgument(event.getActiveVersion().equals(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
+        Preconditions.checkArgument(event.getActiveVersion().equals(
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
+                "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
         Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(event.getRuleSimpleName());
         Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", event.getRuleSimpleName());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(

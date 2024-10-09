@@ -22,10 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
-import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
@@ -33,17 +31,16 @@ import org.apache.shardingsphere.shadow.route.engine.determiner.ColumnShadowAlgo
 import org.apache.shardingsphere.shadow.route.engine.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Abstract shadow DML statement route engine.
@@ -53,6 +50,8 @@ import java.util.stream.Collectors;
 public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRouteEngine {
     
     private final SQLStatementContext sqlStatementContext;
+    
+    private final HintValueContext hintValueContext;
     
     private final ShadowOperationType operationType;
     
@@ -76,33 +75,27 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     
     private Map<String, String> findShadowDataSourceMappings(final ShadowRule rule) {
         Collection<String> relatedShadowTables = rule.getRelatedShadowTables(tableAliasNameMappings.values());
-        Collection<String> sqlComments = getSQLComments();
-        if (relatedShadowTables.isEmpty() && isMatchDefaultAlgorithm(rule, sqlComments)) {
+        if (relatedShadowTables.isEmpty() && isMatchDefaultAlgorithm(rule)) {
             return rule.getAllShadowDataSourceMappings();
         }
-        Map<String, String> result = findBySQLComments(rule, sqlComments, relatedShadowTables);
+        Map<String, String> result = findBySQLComments(rule, relatedShadowTables);
         return result.isEmpty() ? findByShadowColumn(rule, relatedShadowTables) : result;
     }
     
-    private Collection<String> getSQLComments() {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return ((AbstractSQLStatement) sqlStatement).getCommentSegments().stream().map(CommentSegment::getText).collect(Collectors.toList());
-    }
-    
     @SuppressWarnings("unchecked")
-    private boolean isMatchDefaultAlgorithm(final ShadowRule rule, final Collection<String> sqlComments) {
+    private boolean isMatchDefaultAlgorithm(final ShadowRule rule) {
         Optional<ShadowAlgorithm> defaultAlgorithm = rule.getDefaultShadowAlgorithm();
         if (defaultAlgorithm.isPresent() && defaultAlgorithm.get() instanceof HintShadowAlgorithm<?>) {
             ShadowDetermineCondition determineCondition = new ShadowDetermineCondition("", ShadowOperationType.HINT_MATCH);
-            return HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) defaultAlgorithm.get(), determineCondition.initSQLComments(sqlComments), rule);
+            return HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) defaultAlgorithm.get(), determineCondition, rule, hintValueContext.isShadow());
         }
         return false;
     }
     
-    private Map<String, String> findBySQLComments(final ShadowRule rule, final Collection<String> sqlComments, final Collection<String> relatedShadowTables) {
+    private Map<String, String> findBySQLComments(final ShadowRule rule, final Collection<String> relatedShadowTables) {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : relatedShadowTables) {
-            if (isContainsShadowInSQLComments(rule, each, sqlComments, new ShadowDetermineCondition(each, operationType))) {
+            if (isContainsShadowInSQLComments(rule, each, new ShadowDetermineCondition(each, operationType))) {
                 result.putAll(rule.getRelatedShadowDataSourceMappings(each));
                 return result;
             }
@@ -110,10 +103,9 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
         return result;
     }
     
-    private boolean isContainsShadowInSQLComments(final ShadowRule rule, final String tableName, final Collection<String> sqlComments, final ShadowDetermineCondition shadowCondition) {
-        ShadowDetermineCondition shadowConditionWithComments = shadowCondition.initSQLComments(sqlComments);
+    private boolean isContainsShadowInSQLComments(final ShadowRule rule, final String tableName, final ShadowDetermineCondition shadowCondition) {
         for (HintShadowAlgorithm<Comparable<?>> each : rule.getRelatedHintShadowAlgorithms(tableName)) {
-            if (HintShadowAlgorithmDeterminer.isShadow(each, shadowConditionWithComments, rule)) {
+            if (HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, hintValueContext.isShadow())) {
                 return true;
             }
         }

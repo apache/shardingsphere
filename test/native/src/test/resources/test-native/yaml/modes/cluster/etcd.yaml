@@ -65,7 +65,7 @@ rules:
         type: CLASS_BASED
         props:
           strategy: STANDARD
-          algorithmClassName: org.apache.shardingsphere.test.natived.jdbc.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture
+          algorithmClassName: org.apache.shardingsphere.test.natived.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture
     keyGenerators:
       snowflake:
         type: SNOWFLAKE

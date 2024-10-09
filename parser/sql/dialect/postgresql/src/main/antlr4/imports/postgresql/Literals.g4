@@ -47,7 +47,7 @@ fragment INT_
 fragment HEX_
     : [0-9a-fA-F]
     ;
-    
+
 fragment IDENTIFIER_START_CHAR
    : [a-zA-Z_]
    | [\u00AA\u00B5\u00BA\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]
@@ -59,12 +59,12 @@ fragment IDENTIFIER_CHAR
    : STRICT_IDENTIFIER_CHAR
    | DOLLAR_
    ;
-   
+
 fragment STRICT_IDENTIFIER_CHAR
    : IDENTIFIER_START_CHAR
    | [0-9]
    ;
-   
+
 DEFAULT_DOES_NOT_MATCH_ANYTHING
    : 'Default does not match anything'
    ;

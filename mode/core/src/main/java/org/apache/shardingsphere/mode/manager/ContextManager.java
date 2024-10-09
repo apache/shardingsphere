@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -70,7 +69,7 @@ public final class ContextManager implements AutoCloseable {
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataContextManager = new MetaDataContextManager(this.metaDataContexts, computeNodeInstanceContext, repository);
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
-        stateContext = new StateContext(persistServiceFacade.getStatePersistService().loadClusterState().orElse(ClusterState.OK));
+        stateContext = new StateContext(persistServiceFacade.getStatePersistService().load());
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             each.onInitialized(this);
@@ -130,12 +129,10 @@ public final class ContextManager implements AutoCloseable {
             ShardingSphereSchema reloadedSchema = loadSchema(database, schemaName, dataSourceName);
             if (reloadedSchema.getTables().isEmpty()) {
                 database.dropSchema(schemaName);
-                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().dropSchema(database.getName(),
-                        schemaName);
+                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getSchema().drop(database.getName(), schemaName);
             } else {
                 database.addSchema(schemaName, reloadedSchema);
-                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService()
-                        .compareAndPersist(database.getName(), schemaName, reloadedSchema);
+                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), reloadedSchema);
             }
         } catch (final SQLException ex) {
             log.error("Reload meta data of database: {} schema: {} with data source: {} failed", database.getName(), schemaName, dataSourceName, ex);
@@ -149,7 +146,7 @@ public final class ContextManager implements AutoCloseable {
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource()),
                 database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(material).get(schemaName);
-        result.getViews().putAll(persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), schemaName));
+        result.getViews().putAll(persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(database.getName(), schemaName));
         return result;
     }
     
@@ -192,7 +189,7 @@ public final class ContextManager implements AutoCloseable {
     
     private void persistTable(final ShardingSphereDatabase database, final String schemaName, final String tableName, final GenericSchemaBuilderMaterial material) throws SQLException {
         ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singleton(tableName), material).getOrDefault(schemaName, new ShardingSphereSchema(schemaName));
-        persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataService().getTableMetaDataPersistService()
+        persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getTable()
                 .persist(database.getName(), schemaName, Collections.singletonMap(tableName, schema.getTable(tableName)));
     }
     

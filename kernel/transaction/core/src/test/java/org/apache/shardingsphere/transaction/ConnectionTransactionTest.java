@@ -19,60 +19,161 @@ package org.apache.shardingsphere.transaction;
 
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.Properties;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ConnectionTransactionTest {
     
-    private ConnectionTransaction connectionTransaction;
-    
     @Test
-    void assertDistributedTransactionOperationTypeCommit() {
-        connectionTransaction = new ConnectionTransaction(getXATransactionRule(), new TransactionConnectionContext());
-        DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(true);
-        assertThat(operationType, is(DistributedTransactionOperationType.COMMIT));
+    void assertIsNotInDistributedTransactionWhenTransactionIsNotBegin() {
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        assertFalse(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), context).isInDistributedTransaction(context));
     }
     
     @Test
-    void assertDistributedTransactionOperationTypeIgnore() {
-        connectionTransaction = new ConnectionTransaction(getXATransactionRule(), new TransactionConnectionContext());
-        DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
-        assertThat(operationType, is(DistributedTransactionOperationType.IGNORE));
+    void assertIsNotInDistributedTransactionWhenIsNotDistributedTransaction() {
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.beginTransaction("LOCAL");
+        assertFalse(new ConnectionTransaction(mock(TransactionRule.class), context).isInDistributedTransaction(context));
+    }
+    
+    @Test
+    void assertIsNotInDistributedTransactionWhenDistributedTransactionIsNotBegin() {
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.beginTransaction("XA");
+        assertFalse(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), context).isInDistributedTransaction(context));
+    }
+    
+    @Test
+    void assertIsInDistributedTransaction() {
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.beginTransaction("XA");
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
+        assertTrue(new ConnectionTransaction(rule, context).isInDistributedTransaction(context));
     }
     
     @Test
     void assertIsLocalTransaction() {
-        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule(), new TransactionConnectionContext());
-        assertTrue(connectionTransaction.isLocalTransaction());
-        connectionTransaction = new ConnectionTransaction(getXATransactionRule(), new TransactionConnectionContext());
-        assertFalse(connectionTransaction.isLocalTransaction());
+        TransactionRule rule = mock(TransactionRule.class);
+        when(rule.getDefaultType()).thenReturn(TransactionType.LOCAL);
+        assertTrue(new ConnectionTransaction(rule, new TransactionConnectionContext()).isLocalTransaction());
     }
     
     @Test
-    void assertIsHoldTransaction() {
-        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule(), new TransactionConnectionContext());
-        assertTrue(connectionTransaction.isHoldTransaction(false));
-        connectionTransaction = new ConnectionTransaction(getXATransactionRule(), new TransactionConnectionContext());
-        assertTrue(connectionTransaction.isInTransaction());
-        assertTrue(connectionTransaction.isHoldTransaction(true));
-        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule(), new TransactionConnectionContext());
-        assertFalse(connectionTransaction.isHoldTransaction(true));
+    void assertIsNotLocalTransaction() {
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getDefaultType()).thenReturn(TransactionType.XA);
+        assertFalse(new ConnectionTransaction(rule, new TransactionConnectionContext()).isLocalTransaction());
     }
     
-    private TransactionRule getLocalTransactionRule() {
-        return new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap());
+    @Test
+    void assertIsHoldTransactionWithLocalAndNotAutoCommit() {
+        TransactionRule rule = mock(TransactionRule.class);
+        when(rule.getDefaultType()).thenReturn(TransactionType.LOCAL);
+        assertTrue(new ConnectionTransaction(rule, new TransactionConnectionContext()).isHoldTransaction(false));
     }
     
-    private TransactionRule getXATransactionRule() {
-        return new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyMap());
+    @Test
+    void assertIsHoldTransactionWithXAAndAutoCommit() {
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getDefaultType()).thenReturn(TransactionType.XA);
+        when(rule.getResource().getTransactionManager(TransactionType.XA).isInTransaction()).thenReturn(true);
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.beginTransaction("XA");
+        assertTrue(new ConnectionTransaction(rule, context).isHoldTransaction(true));
+    }
+    
+    @Test
+    void assertBegin() {
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributedTransactionManager);
+        new ConnectionTransaction(rule, new TransactionConnectionContext()).begin();
+        verify(distributedTransactionManager).begin();
+    }
+    
+    @Test
+    void assertCommit() {
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributedTransactionManager);
+        new ConnectionTransaction(rule, new TransactionConnectionContext()).commit();
+        verify(distributedTransactionManager).commit(false);
+    }
+    
+    @Test
+    void assertRollback() {
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType())).thenReturn(distributedTransactionManager);
+        new ConnectionTransaction(rule, new TransactionConnectionContext()).rollback();
+        verify(distributedTransactionManager).rollback();
+    }
+    
+    @Test
+    void assertIsHoldTransactionWithLocalAndAutoCommit() {
+        TransactionRule rule = mock(TransactionRule.class);
+        when(rule.getDefaultType()).thenReturn(TransactionType.LOCAL);
+        assertFalse(new ConnectionTransaction(rule, new TransactionConnectionContext()).isHoldTransaction(true));
+    }
+    
+    @Test
+    void assertGetConnectionWithoutInDistributeTransaction() throws SQLException {
+        TransactionRule rule = mock(TransactionRule.class);
+        when(rule.getDefaultType()).thenReturn(TransactionType.LOCAL);
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        assertFalse(new ConnectionTransaction(rule, context).getConnection("foo_db", "foo_ds", context).isPresent());
+    }
+    
+    @Test
+    void assertGetConnectionWithInDistributeTransaction() throws SQLException {
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.beginTransaction("XA");
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType()).getConnection("foo_db", "foo_ds")).thenReturn(mock(Connection.class));
+        assertTrue(new ConnectionTransaction(rule, context).getConnection("foo_db", "foo_ds", context).isPresent());
+    }
+    
+    @Test
+    void assertGetDistributedTransactionBeginOperationType() {
+        assertThat(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), new TransactionConnectionContext()).getDistributedTransactionOperationType(false),
+                is(Optional.of(DistributedTransactionOperationType.BEGIN)));
+    }
+    
+    @Test
+    void assertGetDistributedTransactionCommitOperationType() {
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
+        assertThat(new ConnectionTransaction(rule, new TransactionConnectionContext()).getDistributedTransactionOperationType(true), is(Optional.of(DistributedTransactionOperationType.COMMIT)));
+    }
+    
+    @Test
+    void assertDistributedTransactionOperationTypeFailedWhenIsAutoCommit() {
+        TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
+        assertFalse(new ConnectionTransaction(rule, new TransactionConnectionContext()).getDistributedTransactionOperationType(false).isPresent());
+    }
+    
+    @Test
+    void assertDistributedTransactionOperationTypeFailedWhenIsNotInDistributedTransaction() {
+        ConnectionTransaction connectionTransaction = new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), new TransactionConnectionContext());
+        assertFalse(connectionTransaction.getDistributedTransactionOperationType(true).isPresent());
     }
 }

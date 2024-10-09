@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
 
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
@@ -35,6 +36,8 @@ public final class MySQLDeleteStatement extends DeleteStatement implements MySQL
     
     private LimitSegment limit;
     
+    private ReturningSegment returningSegment;
+    
     @Override
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
@@ -43,5 +46,10 @@ public final class MySQLDeleteStatement extends DeleteStatement implements MySQL
     @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
+    }
+    
+    @Override
+    public Optional<ReturningSegment> getReturningSegment() {
+        return Optional.ofNullable(returningSegment);
     }
 }

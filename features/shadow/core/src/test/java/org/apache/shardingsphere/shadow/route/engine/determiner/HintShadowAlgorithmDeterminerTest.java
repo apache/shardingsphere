@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
-import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -42,7 +43,14 @@ class HintShadowAlgorithmDeterminerTest {
     @Test
     void assertIsShadow() {
         HintShadowAlgorithm hintShadowAlgorithm = (HintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());
-        assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration())));
+        HintValueContext hintValueContext = createHintValueContext();
+        assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration()), hintValueContext.isShadow()));
+    }
+    
+    private HintValueContext createHintValueContext() {
+        HintValueContext result = new HintValueContext();
+        result.setShadow(true);
+        return result;
     }
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
@@ -61,6 +69,6 @@ class HintShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT).initSQLComments(Collections.singleton("/* SHARDINGSPHERE_HINT: SHADOW=true */"));
+        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
     }
 }

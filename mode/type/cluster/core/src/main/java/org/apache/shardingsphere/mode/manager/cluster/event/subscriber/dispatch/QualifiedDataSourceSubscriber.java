@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mode.event.dispatch.state.storage.QualifiedData
  * Qualified data source subscriber.
  */
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public class QualifiedDataSourceSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;

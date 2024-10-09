@@ -80,7 +80,7 @@ exec
     ;
 
 update
-    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause outputClause? whereClause? optionHint?
+    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause fromClause? outputClause? whereClause? optionHint?
     ;
 
 assignment
@@ -88,7 +88,7 @@ assignment
     ;
 
 setAssignmentsClause
-    : SET assignment (COMMA_ assignment)* fromClause?
+    : SET assignment (COMMA_ assignment)*
     ;
 
 assignmentValues

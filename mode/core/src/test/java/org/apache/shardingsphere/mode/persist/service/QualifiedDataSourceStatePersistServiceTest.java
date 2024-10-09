@@ -17,29 +17,48 @@
 
 package org.apache.shardingsphere.mode.persist.service;
 
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class QualifiedDataSourceStatePersistServiceTest {
     
+    private QualifiedDataSourceStatePersistService qualifiedDataSourceStatePersistService;
+    
     @Mock
     private PersistRepository repository;
     
+    @BeforeEach
+    void setUp() {
+        qualifiedDataSourceStatePersistService = new QualifiedDataSourceStatePersistService(repository);
+    }
+    
     @Test
-    void assertLoadStatus() {
-        List<String> disabledDataSources = Arrays.asList("replica_query_db.readwrite_ds.replica_ds_0", "other_schema.other_ds.other_ds0");
-        when(repository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
-        assertDoesNotThrow(() -> new QualifiedDataSourceStatePersistService(repository).loadStates());
+    void assertLoad() {
+        when(repository.getChildrenKeys("/nodes/qualified_data_sources")).thenReturn(Arrays.asList("foo_db.foo_group.foo_ds", "bar_db.bar_group.bar_ds"));
+        when(repository.query("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds")).thenReturn("state: ENABLED");
+        Map<String, QualifiedDataSourceState> actual = qualifiedDataSourceStatePersistService.load();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("foo_db.foo_group.foo_ds").getState(), is(DataSourceState.ENABLED));
+    }
+    
+    @Test
+    void assertUpdate() {
+        qualifiedDataSourceStatePersistService.update("foo_db", "foo_group", "foo_ds", DataSourceState.ENABLED);
+        verify(repository).persist("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "state: ENABLED" + System.lineSeparator());
     }
 }

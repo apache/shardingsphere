@@ -28,7 +28,7 @@ class StateContextTest {
     private final StateContext stateContext = new StateContext(ClusterState.OK);
     
     @Test
-    void assertGetCurrentClusterState() {
+    void assertGetClusterState() {
         assertThat(stateContext.getClusterState(), is(ClusterState.OK));
     }
     

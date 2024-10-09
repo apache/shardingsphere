@@ -78,10 +78,6 @@
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? GROUP BY i.user_id ORDER BY i.item_id DESC LIMIT ?, ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-source-name="read_dataset" />
-    </test-case>
-    
     <!-- TODO Replace with standard table structure -->
     <!--<test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-source-name="read_dataset" />

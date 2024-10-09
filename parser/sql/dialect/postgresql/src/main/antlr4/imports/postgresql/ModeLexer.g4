@@ -23,11 +23,11 @@ BEGIN_DOLLAR_STRING_CONSTANT
    : '$' TAG? '$'
    {pushTag();} -> pushMode (DOLLAR_QUOTED_STRING_MODE)
    ;
-   
+
 fragment TAG
    : IDENTIFIER_START_CHAR STRICT_IDENTIFIER_CHAR*
    ;
-   
+
 mode DOLLAR_QUOTED_STRING_MODE;
 DOLLAR_TEXT
    : ~ '$'+

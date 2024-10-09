@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.DatabaseDataAddedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.DatabaseDataDeletedEvent;
@@ -30,12 +31,9 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.data.SchemaDataDel
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSphereRowDataChangedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSphereRowDataDeletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.data.TableDataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -44,8 +42,8 @@ import java.util.Optional;
 public final class ShardingSphereDataDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ShardingSphereDataNode.getShardingSphereDataNodePath());
+    public String getSubscribedKey() {
+        return ShardingSphereDataNode.getShardingSphereDataNodePath();
     }
     
     @Override
@@ -55,101 +53,79 @@ public final class ShardingSphereDataDispatchEventBuilder implements DispatchEve
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        if (isDatabaseChanged(event)) {
-            return createDatabaseChangedEvent(event);
-        }
-        if (isSchemaChanged(event)) {
-            return createSchemaChangedEvent(event);
-        }
-        if (isTableChanged(event)) {
-            return createTableChangedEvent(event);
-        }
-        if (isTableRowDataChanged(event)) {
-            return createRowDataChangedEvent(event);
-        }
-        return Optional.empty();
-    }
-    
-    private boolean isDatabaseChanged(final DataChangedEvent event) {
-        return ShardingSphereDataNode.getDatabaseName(event.getKey()).isPresent();
-    }
-    
-    private boolean isSchemaChanged(final DataChangedEvent event) {
-        return ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey()).isPresent() && ShardingSphereDataNode.getSchemaName(event.getKey()).isPresent();
-    }
-    
-    private boolean isTableChanged(final DataChangedEvent event) {
-        Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
-        Optional<String> schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
-        Optional<String> tableName = ShardingSphereDataNode.getTableName(event.getKey());
-        return databaseName.isPresent() && schemaName.isPresent() && tableName.isPresent();
-    }
-    
-    private boolean isTableRowDataChanged(final DataChangedEvent event) {
-        return ShardingSphereDataNode.getRowUniqueKey(event.getKey()).isPresent();
-    }
-    
-    private Optional<DispatchEvent> createDatabaseChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = ShardingSphereDataNode.getDatabaseName(event.getKey());
-        Preconditions.checkState(databaseName.isPresent());
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new DatabaseDataAddedEvent(databaseName.get()));
+        if (databaseName.isPresent()) {
+            return createDatabaseChangedEvent(event, databaseName.get());
         }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new DatabaseDataDeletedEvent(databaseName.get()));
+        databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
+        if (!databaseName.isPresent()) {
+            return Optional.empty();
         }
-        return Optional.empty();
-    }
-    
-    private Optional<DispatchEvent> createSchemaChangedEvent(final DataChangedEvent event) {
-        Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
-        Preconditions.checkState(databaseName.isPresent());
         Optional<String> schemaName = ShardingSphereDataNode.getSchemaName(event.getKey());
-        Preconditions.checkState(schemaName.isPresent());
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new SchemaDataAddedEvent(databaseName.get(), schemaName.get()));
+        if (schemaName.isPresent()) {
+            return createSchemaChangedEvent(event, databaseName.get(), schemaName.get());
         }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new SchemaDataDeletedEvent(databaseName.get(), schemaName.get()));
+        schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
+        if (!schemaName.isPresent()) {
+            return Optional.empty();
         }
-        return Optional.empty();
-    }
-    
-    private Optional<DispatchEvent> createTableChangedEvent(final DataChangedEvent event) {
-        Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
-        Preconditions.checkState(databaseName.isPresent());
-        Optional<String> schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
-        Preconditions.checkState(schemaName.isPresent());
-        return doCreateTableChangedEvent(event, databaseName.get(), schemaName.get());
-    }
-    
-    private Optional<DispatchEvent> doCreateTableChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
         Optional<String> tableName = ShardingSphereDataNode.getTableName(event.getKey());
-        Preconditions.checkState(tableName.isPresent());
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return Optional.of(new TableDataChangedEvent(databaseName, schemaName, tableName.get(), null));
+        if (tableName.isPresent()) {
+            return createTableChangedEvent(event, databaseName.get(), schemaName.get(), tableName.get());
         }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new TableDataChangedEvent(databaseName, schemaName, null, tableName.get()));
+        tableName = ShardingSphereDataNode.getTableNameByRowPath(event.getKey());
+        if (!tableName.isPresent()) {
+            return Optional.empty();
+        }
+        Optional<String> rowPath = ShardingSphereDataNode.getRowUniqueKey(event.getKey());
+        if (rowPath.isPresent()) {
+            return createRowDataChangedEvent(event, databaseName.get(), schemaName.get(), tableName.get(), rowPath.get());
         }
         return Optional.empty();
     }
     
-    private Optional<DispatchEvent> createRowDataChangedEvent(final DataChangedEvent event) {
-        Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
-        Preconditions.checkState(databaseName.isPresent());
-        Optional<String> schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
-        Preconditions.checkState(schemaName.isPresent());
-        Optional<String> tableName = ShardingSphereDataNode.getTableNameByRowPath(event.getKey());
-        Preconditions.checkState(tableName.isPresent());
-        Optional<String> rowPath = ShardingSphereDataNode.getRowUniqueKey(event.getKey());
-        Preconditions.checkState(rowPath.isPresent());
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType() && !Strings.isNullOrEmpty(event.getValue())) {
-            YamlShardingSphereRowData yamlShardingSphereRowData = YamlEngine.unmarshal(event.getValue(), YamlShardingSphereRowData.class);
-            return Optional.of(new ShardingSphereRowDataChangedEvent(databaseName.get(), schemaName.get(), tableName.get(), yamlShardingSphereRowData));
+    private Optional<DispatchEvent> createDatabaseChangedEvent(final DataChangedEvent event, final String databaseName) {
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                return Optional.of(new DatabaseDataAddedEvent(databaseName));
+            case DELETED:
+                return Optional.of(new DatabaseDataDeletedEvent(databaseName));
+            default:
+                return Optional.empty();
+        }
+    }
+    
+    private Optional<DispatchEvent> createSchemaChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                return Optional.of(new SchemaDataAddedEvent(databaseName, schemaName));
+            case DELETED:
+                return Optional.of(new SchemaDataDeletedEvent(databaseName, schemaName));
+            default:
+                return Optional.empty();
+        }
+    }
+    
+    private Optional<DispatchEvent> createTableChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName, final String tableName) {
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                return Optional.of(new TableDataChangedEvent(databaseName, schemaName, tableName, null));
+            case DELETED:
+                return Optional.of(new TableDataChangedEvent(databaseName, schemaName, null, tableName));
+            default:
+                return Optional.empty();
+        }
+    }
+    
+    private Optional<DispatchEvent> createRowDataChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName, final String tableName, final String rowPath) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && !Strings.isNullOrEmpty(event.getValue())) {
+            return Optional.of(new ShardingSphereRowDataChangedEvent(databaseName, schemaName, tableName, YamlEngine.unmarshal(event.getValue(), YamlShardingSphereRowData.class)));
         }
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new ShardingSphereRowDataDeletedEvent(databaseName.get(), schemaName.get(), tableName.get(), rowPath.get()));
+            return Optional.of(new ShardingSphereRowDataDeletedEvent(databaseName, schemaName, tableName, rowPath));
         }
         return Optional.empty();
     }

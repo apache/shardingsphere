@@ -58,7 +58,7 @@ systemPrivilegeClause
 grantSystemTo
     : TO (revokeeGranteeClause | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
     ;
-    
+
 roleClause
     : ignoredIdentifiers
     ;

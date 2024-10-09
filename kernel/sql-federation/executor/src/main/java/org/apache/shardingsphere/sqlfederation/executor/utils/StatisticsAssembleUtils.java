@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConstants;
 
 import java.util.Arrays;
@@ -83,9 +83,9 @@ public final class StatisticsAssembleUtils {
     }
     
     private static void assembleOpenGaussRoleData(final ShardingSphereTableData tableData, final ShardingSphereMetaData metaData) {
-        for (ShardingSphereUser each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getConfiguration().getUsers()) {
+        for (Grantee each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getGrantees()) {
             Object[] rows = new Object[27];
-            rows[0] = each.getGrantee().getUsername();
+            rows[0] = each.getUsername();
             tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
         }
     }

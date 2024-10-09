@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.algorithm.loadbalancer.weight;
 
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -30,8 +31,20 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WeightLoadBalanceAlgorithmTest {
+    
+    @Test
+    void assertInitFailed() {
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(LoadBalanceAlgorithm.class, "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "a"))));
+    }
+    
+    @Test
+    void assertCheck() {
+        LoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(LoadBalanceAlgorithm.class, "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5")));
+        assertThrows(AlgorithmInitializationException.class, () -> loadBalanceAlgorithm.check("foo_db", Collections.singletonList("test_read_ds_0")));
+    }
     
     @Test
     void assertGetSingleAvailableTarget() {

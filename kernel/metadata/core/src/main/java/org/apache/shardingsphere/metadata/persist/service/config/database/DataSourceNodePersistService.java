@@ -41,10 +41,10 @@ public final class DataSourceNodePersistService {
     private final PersistRepository repository;
     
     /**
-     * Load data source pool configurations.
+     * Load data source pool properties map.
      *
      * @param databaseName database name
-     * @return data source pool configurations
+     * @return data source pool properties map
      */
     @SuppressWarnings("unchecked")
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
@@ -60,20 +60,16 @@ public final class DataSourceNodePersistService {
     }
     
     /**
-     * Load data source pool configurations.
+     * Load data source pool properties.
      *
      * @param databaseName database name
-     * @param name name
-     * @return data source pool configurations
+     * @param dataSourceName data source name
+     * @return data source pool properties
      */
     @SuppressWarnings("unchecked")
-    public Map<String, DataSourcePoolProperties> load(final String databaseName, final String name) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(1, 1F);
-        String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
-        if (!Strings.isNullOrEmpty(dataSourceValue)) {
-            result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
-        }
-        return result;
+    public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
+        String dataSourceValue = repository.query(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, dataSourceName, getDataSourceActiveVersion(databaseName, dataSourceName)));
+        return new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class));
     }
     
     /**

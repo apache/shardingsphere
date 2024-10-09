@@ -32,8 +32,8 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -100,10 +100,9 @@ class DataSourcePoolPropertiesTest {
                 is(new DataSourcePoolProperties(MockedDataSource.class.getName(), createUserProperties("root"))));
     }
     
-    @SuppressWarnings({"SimplifiableAssertion", "ConstantValue"})
     @Test
     void assertNotEqualsWithNullValue() {
-        assertFalse(new DataSourcePoolProperties(MockedDataSource.class.getName(), Collections.emptyMap()).equals(null));
+        assertThat(new DataSourcePoolProperties(MockedDataSource.class.getName(), Collections.emptyMap()), not(nullValue()));
     }
     
     @Test

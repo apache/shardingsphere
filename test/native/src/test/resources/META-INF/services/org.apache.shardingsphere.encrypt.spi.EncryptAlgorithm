@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.natived.jdbc.commons.algorithm.TestQueryAssistedShardingEncryptAlgorithm
+org.apache.shardingsphere.test.natived.commons.algorithm.TestQueryAssistedShardingEncryptAlgorithm

@@ -65,7 +65,6 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.plugins.MemberAccessor;
 import org.mockito.quality.Strictness;
 
 import java.lang.reflect.Field;
@@ -152,13 +151,12 @@ class DatabaseConnectorTest {
         assertThat(engine, instanceOf(DatabaseConnector.class));
         Field queryHeadersField = DatabaseConnector.class.getDeclaredField("queryHeaders");
         ShardingSphereDatabase database = createDatabaseMetaData();
-        MemberAccessor accessor = Plugins.getMemberAccessor();
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"))).thenReturn(new QueryHeaderBuilderFixture());
-            accessor.set(queryHeadersField, engine,
+            Plugins.getMemberAccessor().set(queryHeadersField, engine,
                     Collections.singletonList(new QueryHeaderBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).build(createQueryResultMetaData(), database, 1)));
             Field mergedResultField = DatabaseConnector.class.getDeclaredField("mergedResult");
-            accessor.set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
+            Plugins.getMemberAccessor().set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
                 
                 @Override
                 protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,

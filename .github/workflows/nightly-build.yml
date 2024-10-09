@@ -32,12 +32,13 @@ env:
   HUB: ghcr.io/apache/shardingsphere
   PROXY: ghcr.io/apache/shardingsphere-proxy
   PROXY_NATIVE: ghcr.io/apache/shardingsphere-proxy-native
+  AGENT: ghcr.io/apache/shardingsphere-agent
 
 jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
-
+  
   upload-to-nightlies:
     if: github.repository == 'apache/shardingsphere'
     name: Upload to Nightly Builds
@@ -69,7 +70,7 @@ jobs:
           remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
           remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
           remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
-
+  
   build-proxy-image:
     if: github.repository == 'apache/shardingsphere'
     name: Build Proxy Image
@@ -104,7 +105,7 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - name: Push Docker Image
         run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
-
+  
   build-proxy-native-image:
     if: github.repository == 'apache/shardingsphere'
     name: Build Proxy Native Image
@@ -132,8 +133,33 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
         run: |
-          ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.image.tag=${{ github.sha }} clean package
-
+          ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} clean package
+  build-agent-image:
+    if: github.repository == 'apache/shardingsphere'
+    name: Build Agent Image
+    needs: global-environment
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit-id }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'maven'
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.HUB }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push Docker Image
+        run: |
+          ./mvnw -am -pl distribution/agent -Prelease,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.sha }} clean package
   build-cache:
     if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: Build Project
@@ -154,7 +180,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
-
+  
   generate-and-test-examples:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     if: github.repository == 'apache/shardingsphere'

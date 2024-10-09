@@ -71,8 +71,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return TypedSPILoader.getService(ClusterPersistRepository.class, config.getType(), config.getProps());
     }
     
-    private void registerOnline(final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+    private void registerOnline(final ComputeNodeInstanceContext computeNodeInstanceContext, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         contextManager.getPersistServiceFacade().getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
         contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataPersistService())).register();
@@ -82,7 +81,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private Collection<String> getDatabaseNames(final ContextManagerBuilderParameter param, final MetaDataPersistService metaDataPersistService) {
-        return param.getInstanceMetaData() instanceof JDBCInstanceMetaData ? param.getDatabaseConfigs().keySet() : metaDataPersistService.getDatabaseMetaDataService().loadAllDatabaseNames();
+        return param.getInstanceMetaData() instanceof JDBCInstanceMetaData
+                ? param.getDatabaseConfigs().keySet()
+                : metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
     }
     
     @Override

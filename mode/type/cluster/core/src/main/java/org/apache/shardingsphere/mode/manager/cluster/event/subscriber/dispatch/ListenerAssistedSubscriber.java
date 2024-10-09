@@ -26,8 +26,7 @@ import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseList
 import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.listener.DataChangedEventListenerManager;
-import org.apache.shardingsphere.mode.manager.cluster.listener.MetaDataChangedListener;
+import org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.manager.cluster.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -36,15 +35,16 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
  * Listener assisted subscriber.
  */
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class ListenerAssistedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
     
-    private final DataChangedEventListenerManager listenerManager;
+    private final ClusterPersistRepository repository;
     
     public ListenerAssistedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        listenerManager = new DataChangedEventListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository());
+        repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
     }
     
     /**
@@ -54,8 +54,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final CreateDatabaseListenerAssistedEvent event) {
-        listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()),
-                new MetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
+        repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()), new DatabaseMetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
         refreshShardingSphereStatisticsData();
@@ -68,7 +67,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DropDatabaseListenerAssistedEvent event) {
-        listenerManager.removeListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()));
+        repository.removeDataListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
         refreshShardingSphereStatisticsData();
@@ -77,8 +76,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
     private void refreshShardingSphereStatisticsData() {
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
                 && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager,
-                    new GlobalLockContext(new GlobalLockPersistService((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository()))).asyncRefresh();
+            new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService(repository))).asyncRefresh();
         }
     }
 }

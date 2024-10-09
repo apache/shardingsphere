@@ -19,7 +19,6 @@ package org.apache.shardingsphere.logging.logger;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.Properties;
 
@@ -38,6 +37,5 @@ public final class ShardingSphereLogger {
     
     private final String appenderName;
     
-    @Setter
-    private Properties props = new Properties();
+    private final Properties props = new Properties();
 }

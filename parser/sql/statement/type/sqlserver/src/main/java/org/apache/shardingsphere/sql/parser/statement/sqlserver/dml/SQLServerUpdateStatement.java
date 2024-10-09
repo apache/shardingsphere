@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dml;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.OptionHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 import java.util.Optional;
@@ -40,6 +41,8 @@ public final class SQLServerUpdateStatement extends UpdateStatement implements S
     private OptionHintSegment optionHintSegment;
     
     private OutputSegment outputSegment;
+    
+    private TableSegment from;
     
     @Override
     public Optional<WithSegment> getWithSegment() {
@@ -63,5 +66,10 @@ public final class SQLServerUpdateStatement extends UpdateStatement implements S
     @Override
     public Optional<OutputSegment> getOutputSegment() {
         return Optional.ofNullable(outputSegment);
+    }
+    
+    @Override
+    public Optional<TableSegment> getFrom() {
+        return Optional.ofNullable(from);
     }
 }

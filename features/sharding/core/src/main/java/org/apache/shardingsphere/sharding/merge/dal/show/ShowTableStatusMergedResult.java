@@ -74,14 +74,11 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
     }
     
     private BigInteger sum(final Object num1, final Object num2) {
-        if (num1 == null && num2 == null) {
-            return null;
-        }
-        return getNonNullBigInteger(num1).add(getNonNullBigInteger(num2));
+        return null == num1 && null == num2 ? null : getNonNullBigInteger(num1).add(getNonNullBigInteger(num2));
     }
     
     private BigInteger avg(final Object sum, final Object number) {
-        if (sum == null && number == null) {
+        if (null == sum && null == number) {
             return null;
         }
         BigInteger numberBigInteger = getNonNullBigInteger(number);
@@ -89,9 +86,6 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
     }
     
     private BigInteger getNonNullBigInteger(final Object value) {
-        return Optional.ofNullable(value)
-                .filter(BigInteger.class::isInstance)
-                .map(BigInteger.class::cast)
-                .orElse(BigInteger.ZERO);
+        return Optional.ofNullable(value).filter(BigInteger.class::isInstance).map(BigInteger.class::cast).orElse(BigInteger.ZERO);
     }
 }

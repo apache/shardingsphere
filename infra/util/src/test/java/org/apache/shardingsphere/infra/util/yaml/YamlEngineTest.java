@@ -21,11 +21,12 @@ import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcuts
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.composer.ComposerException;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -57,19 +58,19 @@ class YamlEngineTest {
     }
     
     @Test
-    void assertUnmarshalWithYamlBytes() throws IOException {
+    void assertUnmarshalWithYamlBytes() throws IOException, URISyntaxException {
         URL url = getClass().getClassLoader().getResource("yaml/shortcuts-fixture.yaml");
         assertNotNull(url);
-        String yamlContent = readContent(url);
+        String yamlContent = String.join(System.lineSeparator(), Files.readAllLines(Paths.get(url.toURI())));
         YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.getBytes(), YamlShortcutsConfigurationFixture.class);
         assertThat(actual.getName(), is("test"));
     }
     
     @Test
-    void assertUnmarshalWithEmptyYamlBytes() throws IOException {
+    void assertUnmarshalWithEmptyYamlBytes() throws IOException, URISyntaxException {
         URL url = getClass().getClassLoader().getResource("yaml/empty-config.yaml");
         assertNotNull(url);
-        String yamlContent = readContent(url);
+        String yamlContent = String.join(System.lineSeparator(), Files.readAllLines(Paths.get(url.toURI())));
         YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.getBytes(), YamlShortcutsConfigurationFixture.class);
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
@@ -108,10 +109,10 @@ class YamlEngineTest {
     }
     
     @Test
-    void assertUnmarshalInvalidYaml() throws IOException {
+    void assertUnmarshalInvalidYaml() throws IOException, URISyntaxException {
         URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
-        String yamlContent = readContent(url);
+        String yamlContent = String.join(System.lineSeparator(), Files.readAllLines(Paths.get(url.toURI())));
         assertThrows(ComposerException.class, () -> YamlEngine.unmarshal(yamlContent, Object.class));
     }
     
@@ -121,21 +122,7 @@ class YamlEngineTest {
         actual.setName("test");
         YamlShortcutsConfigurationFixture actualAnother = new YamlShortcutsConfigurationFixture();
         actualAnother.setName("test");
-        String res = "- !FIXTURE" + System.lineSeparator() + "  name: test" + System.lineSeparator() + "- !FIXTURE"
-                + System.lineSeparator() + "  name: test" + System.lineSeparator();
-        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(res));
-    }
-    
-    private String readContent(final URL url) throws IOException {
-        StringBuilder result = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                result.append(line).append(System.lineSeparator());
-            }
-        }
-        return result.toString();
+        String expected = "- !FIXTURE" + System.lineSeparator() + "  name: test" + System.lineSeparator() + "- !FIXTURE" + System.lineSeparator() + "  name: test" + System.lineSeparator();
+        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(expected));
     }
 }

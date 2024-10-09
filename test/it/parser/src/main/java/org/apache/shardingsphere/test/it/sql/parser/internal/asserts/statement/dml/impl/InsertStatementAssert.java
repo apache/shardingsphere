@@ -53,7 +53,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -89,9 +88,10 @@ public final class InsertStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(actual.getTable(), assertContext.getText("Actual table should not exist."));
+            assertFalse(actual.getTable().isPresent(), assertContext.getText("Actual table should not exist."));
         } else {
-            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+            assertTrue(actual.getTable().isPresent(), assertContext.getText("Actual table should exist."));
+            TableAssert.assertIs(assertContext, actual.getTable().get(), expected.getTable());
         }
     }
     

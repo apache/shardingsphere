@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.logging.rule;
 
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
+import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LoggingRuleTest {
     
@@ -34,13 +37,17 @@ class LoggingRuleTest {
     
     @BeforeEach
     void setup() {
-        loggingRule = new LoggingRule(new LoggingRuleConfiguration(Collections.singleton(new ShardingSphereLogger("ROOT", "INFO", true, "console")),
-                Collections.singleton(new ShardingSphereAppender("console", "ch.qos.logback.core.ConsoleAppender", "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n"))));
+        loggingRule = new LoggingRule(new LoggingRuleConfiguration(Collections.singleton(new ShardingSphereLogger(LoggingConstants.SQL_LOG_TOPIC, "INFO", true, "console")),
+                Collections.singleton(new ShardingSphereAppender("console", "ch.qos.logback.core.ConsoleAppender", "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n", null))));
     }
     
     @Test
-    void assertFields() {
-        assertThat(loggingRule.getConfiguration().getLoggers().size(), is(1));
-        assertThat(loggingRule.getConfiguration().getAppenders().size(), is(1));
+    void assertGetSQLLoggerWhenLoggingRulePresent() {
+        Optional<ShardingSphereLogger> logger = loggingRule.getSQLLogger();
+        assertTrue(logger.isPresent());
+        assertThat(logger.get().getLoggerName(), is(LoggingConstants.SQL_LOG_TOPIC));
+        assertThat(logger.get().getLevel(), is("INFO"));
+        assertTrue(logger.get().getAdditivity());
+        assertThat(logger.get().getAppenderName(), is("console"));
     }
 }

@@ -20,67 +20,91 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashSet;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class CreateBroadcastTableRuleExecutorTest {
     
-    private final CreateBroadcastTableRuleExecutor executor = new CreateBroadcastTableRuleExecutor();
-    
     @Test
-    void assertCheckSQLStatementWithEmptyStorageUnit() {
-        BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
-        when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
+    void assertExecuteUpdateWithEmptyStorageUnits() {
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        executor.setDatabase(database);
         BroadcastRule rule = mock(BroadcastRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
-        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+        assertThrows(EmptyStorageUnitException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule)).executeUpdate());
     }
     
     @Test
-    void assertCheckSQLStatementWithDuplicateBroadcastRule() {
-        executor.setDatabase(mockShardingSphereDatabase());
-        BroadcastRule rule = mock(BroadcastRule.class);
-        when(rule.getTables()).thenReturn(Collections.singleton("t_address"));
-        executor.setRule(rule);
-        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
-    }
-    
-    @Test
-    void assertBuildToBeCreatedRuleConfiguration() {
-        BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration(new LinkedList<>());
-        executor.setDatabase(mockShardingSphereDatabase());
-        BroadcastRule rule = mock(BroadcastRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
-        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        executor.checkBeforeUpdate(sqlStatement);
-        BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        assertThat(toBeCreatedRuleConfig.getTables().size(), is(1));
-        assertThat(toBeCreatedRuleConfig.getTables().iterator().next(), is("t_address"));
-    }
-    
-    private ShardingSphereDatabase mockShardingSphereDatabase() {
+    void assertExecuteUpdateWithDuplicateBroadcastTables() {
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("foo_tbl"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
-        return database;
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
+        assertThrows(DuplicateRuleException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule)).executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteUpdateWithIfNotExists() throws SQLException {
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(true, new ArrayList<>(Arrays.asList("foo_tbl", "bar_tbl")));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
+        ContextManager contextManager = mockContextManager(database, rule);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"),
+                ArgumentMatchers.<BroadcastRuleConfiguration>argThat(x -> x.getTables().equals(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl")))));
+    }
+    
+    @Test
+    void assertExecuteUpdateWithoutIfNotExists() throws SQLException {
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("bar_tbl"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
+        ContextManager contextManager = mockContextManager(database, rule);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"),
+                ArgumentMatchers.<BroadcastRuleConfiguration>argThat(x -> x.getTables().equals(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl")))));
+    }
+    
+    @Test
+    void assertExecuteUpdateWithoutExistedRule() throws SQLException {
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, new ArrayList<>(Arrays.asList("foo_tbl", "bar_tbl")));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ContextManager contextManager = mockContextManager(database, null);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"),
+                ArgumentMatchers.<BroadcastRuleConfiguration>argThat(x -> x.getTables().equals(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl")))));
+    }
+    
+    private ContextManager mockContextManager(final ShardingSphereDatabase database, final BroadcastRule rule) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(null == rule ? Collections.emptyList() : Collections.singleton(rule)));
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        return result;
     }
 }

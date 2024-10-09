@@ -17,52 +17,79 @@
 
 package org.apache.shardingsphere.test.it.yaml;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RequiredArgsConstructor
 public abstract class YamlRuleConfigurationIT {
     
     private final String yamlFile;
     
+    private final RuleConfiguration expectedRuleConfig;
+    
+    @SuppressWarnings("rawtypes")
+    private final YamlRuleConfigurationSwapper swapper;
+    
+    protected YamlRuleConfigurationIT(final String yamlFile, final RuleConfiguration expectedRuleConfig) {
+        this.yamlFile = yamlFile;
+        this.expectedRuleConfig = expectedRuleConfig;
+        swapper = OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(expectedRuleConfig)).get(expectedRuleConfig);
+    }
+    
     @Test
-    void assertUnmarshalWithYamlFile() throws IOException {
+    void assertUnmarshal() throws IOException, URISyntaxException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFile);
+        assertNotNull(url);
+        YamlRootConfiguration yamlRootConfigFromFile = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
+        YamlRootConfiguration yamlRootConfigFromBytes = YamlEngine.unmarshal(
+                Files.readAllLines(Paths.get(url.toURI())).stream().collect(Collectors.joining(System.lineSeparator())).getBytes(), YamlRootConfiguration.class);
+        assertThat(yamlRootConfigFromFile, deepEqual(yamlRootConfigFromBytes));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertSwapToYamlConfiguration() throws IOException {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFile);
         assertNotNull(url);
         YamlRootConfiguration actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
         assertThat(actual.getRules().size(), is(1));
-        assertYamlRootConfiguration(actual);
+        YamlRuleConfiguration actualYAMLRuleConfig = actual.getRules().iterator().next();
+        YamlRuleConfiguration expectedYAMLRuleConfig = (YamlRuleConfiguration) swapper.swapToYamlConfiguration(expectedRuleConfig);
+        if (!assertYamlConfiguration(actualYAMLRuleConfig)) {
+            assertThat(actualYAMLRuleConfig, deepEqual(expectedYAMLRuleConfig));
+        }
     }
     
+    @SuppressWarnings("unchecked")
     @Test
-    void assertUnmarshalWithYamlBytes() throws IOException, URISyntaxException {
+    void assertSwapToObject() throws IOException {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFile);
         assertNotNull(url);
-        StringBuilder yamlContent = new StringBuilder();
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get(url.toURI()))) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append(System.lineSeparator());
-            }
-        }
-        YamlRootConfiguration actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class);
-        assertThat(actual.getRules().size(), is(1));
-        assertYamlRootConfiguration(actual);
+        YamlRootConfiguration actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
+        RuleConfiguration actualRuleConfig = (RuleConfiguration) swapper.swapToObject(actual.getRules().iterator().next());
+        assertThat(actualRuleConfig, deepEqual(expectedRuleConfig));
     }
     
-    protected abstract void assertYamlRootConfiguration(YamlRootConfiguration actual);
+    // TODO should remove the method when yaml rule swapper fixed by map's key
+    protected boolean assertYamlConfiguration(final YamlRuleConfiguration actual) {
+        return false;
+    }
 }

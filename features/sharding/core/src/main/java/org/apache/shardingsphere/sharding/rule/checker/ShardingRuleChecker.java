@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexSh
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
@@ -44,7 +44,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -64,13 +63,14 @@ public class ShardingRuleChecker {
     }
     
     private void checkUniqueActualDataNodesInTableRules() {
-        Set<DataNode> uniqueActualDataNodes = new HashSet<>(shardingRule.getShardingTables().size(), 1F);
-        shardingRule.getShardingTables().forEach((key, value) -> {
-            DataNode sampleActualDataNode = value.getActualDataNodes().iterator().next();
-            ShardingSpherePreconditions.checkNotContains(uniqueActualDataNodes, sampleActualDataNode,
-                    () -> new DuplicateSharingActualDataNodeException(key, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
-            uniqueActualDataNodes.add(sampleActualDataNode);
-        });
+        Collection<DataNode> uniqueActualDataNodes = new HashSet<>(shardingRule.getShardingTables().size(), 1F);
+        shardingRule.getShardingTables().forEach((key, value) -> checkUniqueActualDataNodes(uniqueActualDataNodes, key, value.getActualDataNodes().iterator().next()));
+    }
+    
+    private void checkUniqueActualDataNodes(final Collection<DataNode> uniqueActualDataNodes, final String logicTable, final DataNode sampleActualDataNode) {
+        ShardingSpherePreconditions.checkNotContains(uniqueActualDataNodes, sampleActualDataNode,
+                () -> new DuplicateShardingActualDataNodeException(logicTable, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
+        uniqueActualDataNodes.add(sampleActualDataNode);
     }
     
     private void checkBindingTableConfiguration(final ShardingRuleConfiguration ruleConfig) {
@@ -177,5 +177,22 @@ public class ShardingRuleChecker {
                     () -> new AlgorithmInitializationException(shardingAlgorithm, "`%s` sharding algorithm configuration of `%s` does not match the actual data nodes",
                             shardingStrategy.getShardingAlgorithmName(), shardingTable.getLogicTable()));
         }
+    }
+    
+    /**
+     * Check to be added data nodes.
+     *
+     * @param toBeAddedDataNodes to be added data nodes
+     * @param isAlteration is alteration
+     */
+    public void checkToBeAddedDataNodes(final Map<String, Collection<DataNode>> toBeAddedDataNodes, final boolean isAlteration) {
+        Collection<DataNode> uniqueActualDataNodes = new HashSet<>(shardingRule.getShardingTables().size() + toBeAddedDataNodes.size(), 1F);
+        shardingRule.getShardingTables().forEach((key, value) -> {
+            if (isAlteration && toBeAddedDataNodes.containsKey(key)) {
+                return;
+            }
+            checkUniqueActualDataNodes(uniqueActualDataNodes, key, value.getActualDataNodes().iterator().next());
+        });
+        toBeAddedDataNodes.forEach((key, value) -> checkUniqueActualDataNodes(uniqueActualDataNodes, key, value.iterator().next()));
     }
 }

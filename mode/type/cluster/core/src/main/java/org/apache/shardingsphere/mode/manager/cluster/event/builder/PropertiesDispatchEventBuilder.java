@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.path.GlobalNodePath;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -34,8 +33,8 @@ import java.util.Optional;
 public final class PropertiesDispatchEventBuilder implements DispatchEventBuilder<AlterPropertiesEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(GlobalNode.getPropsRootNode());
+    public String getSubscribedKey() {
+        return GlobalNode.getPropsRootNode();
     }
     
     @Override
@@ -45,9 +44,6 @@ public final class PropertiesDispatchEventBuilder implements DispatchEventBuilde
     
     @Override
     public Optional<AlterPropertiesEvent> build(final DataChangedEvent event) {
-        if (GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
-            return Optional.of(new AlterPropertiesEvent(event.getKey(), event.getValue()));
-        }
-        return Optional.empty();
+        return GlobalNodePath.isPropsActiveVersionPath(event.getKey()) ? Optional.of(new AlterPropertiesEvent(event.getKey(), event.getValue())) : Optional.empty();
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -52,6 +53,8 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     private final Collection<QualifiedTable> singleTables;
     
     private final SQLStatement sqlStatement;
+    
+    private final HintValueContext hintValueContext;
     
     @Override
     public void route(final RouteContext routeContext, final SingleRule singleRule) {
@@ -87,17 +90,24 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
             QualifiedTable table = singleTables.iterator().next();
             Optional<DataNode> dataNode = rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(table.getSchemaName(), table.getTableName());
             boolean containsIfNotExists = ((CreateTableStatement) sqlStatement).isIfNotExists();
-            if (dataNode.isPresent() && containsIfNotExists) {
-                String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElse(null);
-                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
-            } else if (dataNode.isPresent()) {
-                throw new TableExistsException(table.getTableName());
+            if (dataNode.isPresent()) {
+                routeDDLStatementWithExistTable(routeContext, containsIfNotExists, dataNode.get(), table);
             } else {
                 String dataSourceName = rule.assignNewDataSourceName();
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
             }
         } else {
             fillRouteContext(rule, routeContext, singleTables);
+        }
+    }
+    
+    private void routeDDLStatementWithExistTable(final RouteContext routeContext, final boolean containsIfNotExists, final DataNode dataNode, final QualifiedTable table) {
+        if (containsIfNotExists || hintValueContext.isSkipMetadataValidate()) {
+            String dataSourceName = dataNode.getDataSourceName();
+            routeContext.getRouteUnits()
+                    .add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
+        } else {
+            throw new TableExistsException(table.getTableName());
         }
     }
     

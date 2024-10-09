@@ -17,19 +17,23 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.CreateMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,58 +43,42 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class CreateMaskRuleExecutorTest {
     
-    private final CreateMaskRuleExecutor executor = new CreateMaskRuleExecutor();
-    
-    @BeforeEach
-    void setUp() {
-        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
-    }
-    
     @Test
-    void assertCheckSQLStatementWithDuplicateMaskRule() {
+    void assertExecuteUpdateWithDuplicateMaskRule() {
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
-        executor.setRule(rule);
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createDuplicatedSQLStatement(false, "MD5")));
+        assertThrows(DuplicateRuleException.class, () -> new DistSQLUpdateExecuteEngine(createDuplicatedSQLStatement(false, "MD5"), "foo_db", mockContextManager(rule)).executeUpdate());
     }
     
     @Test
-    void assertCheckSQLStatementWithInvalidAlgorithm() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "INVALID_TYPE")));
-    }
-    
-    @Test
-    void assertCreateMaskRule() {
+    void assertExecuteUpdateWithoutIfNotExists() throws SQLException {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfiguration();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        executor.setRule(rule);
-        executor.checkBeforeUpdate(sqlStatement);
-        MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        assertThat(toBeCreatedRuleConfig.getTables().size(), is(2));
-        assertTrue(toBeCreatedRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
-        assertTrue(toBeCreatedRuleConfig.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
+        ContextManager contextManager = mockContextManager(rule);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfiguration));
     }
     
     @Test
-    void assertCreateMaskRuleWithIfNotExists() {
+    void assertExecuteUpdateWithIfNotExists() throws SQLException {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfiguration();
         MaskRule rule = mock(MaskRule.class);
         CreateMaskRuleStatement sqlStatement = createSQLStatement(true, "MD5");
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        executor.setRule(rule);
-        executor.checkBeforeUpdate(sqlStatement);
-        MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        assertThat(toBeCreatedRuleConfig.getTables().size(), is(2));
-        assertTrue(toBeCreatedRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
-        assertTrue(toBeCreatedRuleConfig.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
+        ContextManager contextManager = mockContextManager(rule);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfiguration));
     }
     
     private CreateMaskRuleStatement createSQLStatement(final boolean ifNotExists, final String algorithmType) {
@@ -120,5 +108,21 @@ class CreateMaskRuleExecutorTest {
         rules.add(new MaskTableRuleConfiguration("t_mask", Collections.emptyList()));
         rules.add(new MaskTableRuleConfiguration("t_order", Collections.emptyList()));
         return new MaskRuleConfiguration(rules, Collections.emptyMap());
+    }
+    
+    private boolean assertRuleConfiguration(final MaskRuleConfiguration actual) {
+        assertThat(actual.getTables().size(), is(2));
+        assertTrue(actual.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
+        assertTrue(actual.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
+        return true;
+    }
+    
+    private ContextManager mockContextManager(final MaskRule rule) {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        return result;
     }
 }

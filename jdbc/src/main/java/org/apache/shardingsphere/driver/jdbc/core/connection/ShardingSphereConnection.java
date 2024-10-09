@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.DatabaseMetaData;
@@ -41,7 +42,9 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
 
 /**
  * ShardingSphere connection.
@@ -176,15 +179,14 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private void processDistributedTransaction() throws SQLException {
-        switch (databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit)) {
-            case BEGIN:
-                databaseConnectionManager.begin();
-                break;
-            case COMMIT:
-                databaseConnectionManager.commit();
-                break;
-            default:
-                break;
+        Optional<DistributedTransactionOperationType> operationType = databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit);
+        if (!operationType.isPresent()) {
+            return;
+        }
+        if (DistributedTransactionOperationType.BEGIN == operationType.get()) {
+            databaseConnectionManager.begin();
+        } else {
+            databaseConnectionManager.commit();
         }
     }
     
@@ -264,6 +266,24 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         databaseConnectionManager.setReadOnly(readOnly);
     }
     
+    /*
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>. ShardingSphere does not propagate this property to the
+     * real JDBC Driver. `0` is actually the default value of {@link java.net.Socket#getSoTimeout()}.
+     */
+    @Override
+    public int getNetworkTimeout() {
+        return 0;
+    }
+    
+    /*
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>. ShardingSphere does not propagate this property to the
+     * real JDBC Driver.
+     */
+    @Override
+    public void setNetworkTimeout(final Executor executor, final int milliseconds) throws SQLException {
+        ShardingSpherePreconditions.checkState(0 <= milliseconds, () -> new SQLException("Network timeout must be a value greater than or equal to 0."));
+    }
+    
     @Override
     public boolean isValid(final int timeout) throws SQLException {
         return databaseConnectionManager.isValid(timeout);
@@ -282,7 +302,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public void close() throws SQLException {
-        if (databaseConnectionManager.getConnectionTransaction().isInTransaction(databaseConnectionManager.getConnectionContext().getTransactionContext())) {
+        if (databaseConnectionManager.getConnectionTransaction().isInDistributedTransaction(databaseConnectionManager.getConnectionContext().getTransactionContext())) {
             databaseConnectionManager.getConnectionTransaction().rollback();
         }
         closed = true;

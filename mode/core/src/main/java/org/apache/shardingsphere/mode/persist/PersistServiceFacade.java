@@ -53,13 +53,13 @@ public final class PersistServiceFacade {
     
     private final QualifiedDataSourceStatePersistService qualifiedDataSourceStatePersistService;
     
-    public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfiguration, final MetaDataContextManager metaDataContextManager) {
+    public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfig, final MetaDataContextManager metaDataContextManager) {
         this.repository = repository;
         metaDataPersistService = new MetaDataPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
         statePersistService = new StatePersistService(repository);
         qualifiedDataSourceStatePersistService = new QualifiedDataSourceStatePersistService(repository);
-        PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfiguration.getType());
+        PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfig.getType());
         metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(repository, metaDataContextManager);
         processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
         listenerAssistedPersistService = new ListenerAssistedPersistService(repository);

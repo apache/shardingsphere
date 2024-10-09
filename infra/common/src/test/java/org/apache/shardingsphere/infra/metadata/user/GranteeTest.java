@@ -59,16 +59,18 @@ class GranteeTest {
     }
     
     @Test
-    void assertToString() {
-        assertThat(new Grantee("name", "127.0.0.1").toString(), is("name@127.0.0.1"));
-        assertThat(new Grantee("name", "%").toString(), is("name@%"));
-        assertThat(new Grantee("name", "").toString(), is("name@%"));
-    }
-    
-    @Test
     void assertAccept() {
         Grantee grantee = new Grantee("name", "%");
         assertTrue(grantee.accept(new Grantee("name", "")));
         assertTrue(grantee.accept(new Grantee("name", "127.0.0.1")));
+    }
+    
+    @Test
+    void assertToString() {
+        assertThat(new Grantee("name").toString(), is("name@%"));
+        assertThat(new Grantee("name@127.0.0.1").toString(), is("name@127.0.0.1"));
+        assertThat(new Grantee("name", "127.0.0.1").toString(), is("name@127.0.0.1"));
+        assertThat(new Grantee("name", "%").toString(), is("name@%"));
+        assertThat(new Grantee("name", "").toString(), is("name@%"));
     }
 }

@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDataba
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;

@@ -100,8 +100,8 @@ class ShardingInsertStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
-                sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule, sqlStatementContext,
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
@@ -117,8 +117,8 @@ class ShardingInsertStatementValidatorTest {
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(false);
         InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(createSingleTablesContext().getTableNames());
-        assertThrows(MissingGenerateKeyColumnWithInsertSelectException.class, () -> new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
-                sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(MissingGenerateKeyColumnWithInsertSelectException.class, () -> new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule, sqlStatementContext,
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -127,8 +127,8 @@ class ShardingInsertStatementValidatorTest {
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(createSingleTablesContext().getTableNames());
-        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(),
+                database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -140,8 +140,8 @@ class ShardingInsertStatementValidatorTest {
         when(shardingRule.containsShardingTable(multiTablesContext.getTableNames())).thenReturn(true);
         InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(multiTablesContext.getTableNames());
-        assertThrows(InsertSelectTableViolationException.class, () -> new ShardingInsertStatementValidator(shardingConditions).preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(InsertSelectTableViolationException.class, () -> new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule, sqlStatementContext,
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -151,8 +151,8 @@ class ShardingInsertStatementValidatorTest {
         TablesContext multiTablesContext = createMultiTablesContext();
         InsertStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(multiTablesContext.getTableNames());
-        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(),
+                database, mock(ConfigurationProperties.class)));
     }
     
     @Test

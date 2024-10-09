@@ -430,7 +430,7 @@ MAX
 MIN
     : M I N
     ;
-    
+
 SUM
     : S U M
     ;

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
@@ -46,10 +47,10 @@ public final class ShowAuthorityRuleExecutor implements DistSQLQueryExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowAuthorityRuleStatement sqlStatement, final ContextManager contextManager) {
-        String users = rule.getConfiguration().getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; "));
+        String grantees = rule.getGrantees().stream().map(Grantee::toString).collect(Collectors.joining("; "));
         String provider = rule.getConfiguration().getPrivilegeProvider().getType();
-        Properties props = rule.getConfiguration().getPrivilegeProvider().getProps().isEmpty() ? new Properties() : rule.getConfiguration().getPrivilegeProvider().getProps();
-        return Collections.singleton(new LocalDataQueryResultRow(users, provider, props));
+        Properties props = rule.getConfiguration().getPrivilegeProvider().getProps();
+        return Collections.singleton(new LocalDataQueryResultRow(grantees, provider, props));
     }
     
     @Override

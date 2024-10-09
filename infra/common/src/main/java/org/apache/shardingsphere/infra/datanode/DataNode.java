@@ -105,21 +105,12 @@ public final class DataNode {
     /**
      * Format data node as string.
      *
-     * @return formatted data node
-     */
-    public String format() {
-        return dataSourceName + DELIMITER + tableName;
-    }
-    
-    /**
-     * Format data node as string.
-     *
      * @param databaseType database type
      * @return formatted data node
      */
     public String format(final DatabaseType databaseType) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
+        return dialectDatabaseMetaData.getDefaultSchema().isPresent() && null != schemaName ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
     }
     
     @Override

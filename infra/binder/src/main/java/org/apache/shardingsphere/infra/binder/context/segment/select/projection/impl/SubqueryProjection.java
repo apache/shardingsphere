@@ -54,7 +54,7 @@ public final class SubqueryProjection implements Projection {
     @Override
     public String getColumnLabel() {
         ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
-        return getAlias().isPresent() ? extractEngine.getIdentifierValue(getAlias().get()) : extractEngine.getColumnNameFromSubquery(subquerySegment);
+        return getAlias().map(extractEngine::getIdentifierValue).orElseGet(() -> extractEngine.getColumnNameFromSubquery(subquerySegment));
     }
     
     @Override

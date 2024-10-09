@@ -12,7 +12,7 @@ weight = 14
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-ExportDatabaseConfiguration ::=
+ImportDatabaseConfiguration ::=
   'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath
 
 filePath ::=

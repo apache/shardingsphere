@@ -42,7 +42,6 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.plugins.MemberAccessor;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
@@ -107,14 +106,12 @@ class EtcdRepositoryTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setClient() {
         mockClient();
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(repository.getClass().getDeclaredField("client"), repository, client);
+        Plugins.getMemberAccessor().set(EtcdRepository.class.getDeclaredField("client"), repository, client);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties() {
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(repository.getClass().getDeclaredField("etcdProps"), repository, new EtcdProperties(new Properties()));
+        Plugins.getMemberAccessor().set(EtcdRepository.class.getDeclaredField("etcdProps"), repository, new EtcdProperties(new Properties()));
     }
     
     @SuppressWarnings("unchecked")
@@ -278,8 +275,7 @@ class EtcdRepositoryTest {
                 .setValue(ByteString.copyFromUtf8("value1")).build();
         KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
         events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(result.getClass().getDeclaredField("events"), result, events);
+        Plugins.getMemberAccessor().set(WatchResponse.class.getDeclaredField("events"), result, events);
         return result;
     }
 }

@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
-import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
 import java.sql.Connection;
@@ -29,80 +31,99 @@ import java.util.Collection;
 
 /**
  * ShardingSphere transaction hook.
+ * 
+ * @param <T> type of rule
  */
 @SingletonSPI
-public interface TransactionHook extends TypedSPI {
+public interface TransactionHook<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Process before opening the transaction.
      *
+     * @param rule rule
+     * @param databaseType database type
      * @param transactionContext transaction context
      */
-    void beforeBegin(TransactionConnectionContext transactionContext);
+    void beforeBegin(T rule, DatabaseType databaseType, TransactionConnectionContext transactionContext);
     
     /**
      * Process after opening the transaction.
      *
+     * @param rule rule
+     * @param databaseType database type
      * @param transactionContext transaction context
      */
-    void afterBegin(TransactionConnectionContext transactionContext);
+    void afterBegin(T rule, DatabaseType databaseType, TransactionConnectionContext transactionContext);
     
     /**
      * Process after connection is created.
      *
+     * @param rule rule
+     * @param databaseType database type
      * @param connections connections
      * @param transactionContext transaction context
      * @throws SQLException SQL exception
      */
-    void afterCreateConnections(Collection<Connection> connections, TransactionConnectionContext transactionContext) throws SQLException;
+    void afterCreateConnections(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext) throws SQLException;
     
     /**
-     * Process before executing sql.
+     * Process before executing SQL.
      *
+     * @param rule rule
+     * @param databaseType database type
      * @param connections connections
      * @param transactionContext transaction context
      * @param isolationLevel isolation level
      * @throws SQLException SQL exception
      */
-    void beforeExecuteSQL(Collection<Connection> connections, TransactionConnectionContext transactionContext, TransactionIsolationLevel isolationLevel) throws SQLException;
+    void beforeExecuteSQL(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext,
+                          TransactionIsolationLevel isolationLevel) throws SQLException;
     
     /**
      * Process before committing the transaction.
      *
+     * @param rule rule
+     * @param databaseType database type
      * @param connections connections
      * @param transactionContext transaction context
      * @param lockContext lock context
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    void beforeCommit(Collection<Connection> connections, TransactionConnectionContext transactionContext, LockContext lockContext) throws SQLException;
+    void beforeCommit(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext, LockContext lockContext) throws SQLException;
     
     /**
      * Process after committing the transaction.
      *
+     * @param rule rule
+     * @param databaseType database type
      * @param connections connections
      * @param transactionContext transaction context
      * @param lockContext lock context
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    void afterCommit(Collection<Connection> connections, TransactionConnectionContext transactionContext, LockContext lockContext) throws SQLException;
+    void afterCommit(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext, LockContext lockContext) throws SQLException;
     
     /**
      * Process before rolling back the transaction.
      *
+     * @param rule rule
+     * @param databaseType database type
      * @param connections connections
      * @param transactionContext transaction context
      * @throws SQLException SQL exception
      */
-    void beforeRollback(Collection<Connection> connections, TransactionConnectionContext transactionContext) throws SQLException;
+    void beforeRollback(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext) throws SQLException;
     
     /**
      * Process after rolling back the transaction.
      *
+     * @param rule rule
+     * @param databaseType database type
      * @param connections connections
      * @param transactionContext transaction context
      * @throws SQLException SQL exception
      */
-    void afterRollback(Collection<Connection> connections, TransactionConnectionContext transactionContext) throws SQLException;
+    void afterRollback(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext) throws SQLException;
 }

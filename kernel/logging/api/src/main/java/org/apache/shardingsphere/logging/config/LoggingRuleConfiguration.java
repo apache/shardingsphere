@@ -28,8 +28,8 @@ import java.util.Collection;
 /**
  * Logging rule configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class LoggingRuleConfiguration implements GlobalRuleConfiguration {
     
     private final Collection<ShardingSphereLogger> loggers;

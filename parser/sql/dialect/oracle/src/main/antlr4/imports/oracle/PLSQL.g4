@@ -422,7 +422,7 @@ exceptionHandler
 declareSection
     : declareItem+
     ;
-    
+
 declareItem
     : typeDefinition
     | cursorDeclaration

@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 
 import java.sql.Connection;
@@ -128,7 +129,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         if (insertStatement.getParameterMarkerSegments().isEmpty() && unspecifiedTypeParameterIndexes.isEmpty() && !returningSegment.isPresent()) {
             return;
         }
-        String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
+        String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
         List<String> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
         preparedStatement.setRowDescription(returningSegment.<PostgreSQLPacket>map(returning -> describeReturning(returning, table))
@@ -166,7 +167,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private ShardingSphereTable getTableFromMetaData(final String databaseName, final InsertStatement insertStatement, final String logicTableName) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(databaseName);
-        String schemaName = insertStatement.getTable().getOwner().map(optional -> optional.getIdentifier()
+        String schemaName = insertStatement.getTable().flatMap(SimpleTableSegment::getOwner).map(optional -> optional.getIdentifier()
                 .getValue()).orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
         return database.getSchema(schemaName).getTable(logicTableName);
     }

@@ -28,9 +28,6 @@ public final class YamlAppenderSwapper implements YamlConfigurationSwapper<YamlA
     
     @Override
     public YamlAppenderConfiguration swapToYamlConfiguration(final ShardingSphereAppender data) {
-        if (null == data) {
-            return null;
-        }
         YamlAppenderConfiguration result = new YamlAppenderConfiguration();
         result.setAppenderName(data.getAppenderName());
         result.setAppenderClass(data.getAppenderClass());
@@ -41,11 +38,6 @@ public final class YamlAppenderSwapper implements YamlConfigurationSwapper<YamlA
     
     @Override
     public ShardingSphereAppender swapToObject(final YamlAppenderConfiguration yamlConfig) {
-        if (null == yamlConfig) {
-            return null;
-        }
-        ShardingSphereAppender result = new ShardingSphereAppender(yamlConfig.getAppenderName(), yamlConfig.getAppenderClass(), yamlConfig.getPattern());
-        result.setFile(yamlConfig.getFile());
-        return result;
+        return new ShardingSphereAppender(yamlConfig.getAppenderName(), yamlConfig.getAppenderClass(), yamlConfig.getPattern(), yamlConfig.getFile());
     }
 }

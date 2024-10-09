@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.authority.checker;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -34,8 +34,8 @@ class AuthorityCheckerTest {
     
     @Test
     void assertCheckIsAuthorizedDatabase() {
-        Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("FIXTURE", new Properties()), Collections.emptyMap(), null);
+        Collection<UserConfiguration> userConfigs = Collections.singleton(new UserConfiguration("root", "", "localhost", null, false));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(userConfigs, new AlgorithmConfiguration("FIXTURE", new Properties()), Collections.emptyMap(), null);
         assertTrue(new AuthorityChecker(new AuthorityRule(ruleConfig), new Grantee("root", "localhost")).isAuthorized("db0"));
     }
 }

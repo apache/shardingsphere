@@ -32,7 +32,7 @@ public final class TrunkDialectDatabaseMetaData implements DialectDatabaseMetaDa
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
+        return NullsOrderType.LOW;
     }
     
     @Override

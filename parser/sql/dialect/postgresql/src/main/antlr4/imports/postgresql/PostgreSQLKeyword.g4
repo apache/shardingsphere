@@ -142,7 +142,7 @@ COLLATE
 COMMENTS
     : C O M M E N T S
     ;
-    
+
 COMPRESSION
     : C O M P R E S S I O N
     ;
@@ -154,7 +154,7 @@ CONCURRENTLY
 FINALIZE
     : F I N A L I Z E
     ;
-    
+
 CONNECT
     : C O N N E C T
     ;

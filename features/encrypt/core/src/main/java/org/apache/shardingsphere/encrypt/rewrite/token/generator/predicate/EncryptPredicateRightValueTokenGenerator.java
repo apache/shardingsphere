@@ -87,8 +87,8 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
                 encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptTable, encryptCondition, encryptCondition.getValues(parameters)));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
         if (encryptCondition instanceof EncryptBinaryCondition && ((EncryptBinaryCondition) encryptCondition).getExpressionSegment() instanceof FunctionSegment) {
-            return new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex,
-                    ((FunctionSegment) ((EncryptBinaryCondition) encryptCondition).getExpressionSegment()).getFunctionName(), indexValues, parameterMarkerIndexes);
+            FunctionSegment functionSegment = (FunctionSegment) ((EncryptBinaryCondition) encryptCondition).getExpressionSegment();
+            return new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex, functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues, parameterMarkerIndexes);
         }
         return encryptCondition instanceof EncryptInCondition
                 ? new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes)

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AexprConstContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnyNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AscDescContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommonTableExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeLengthContext;
@@ -112,6 +114,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wh
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -141,6 +144,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -175,6 +179,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -866,6 +872,9 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
+        if (null != ctx.fromClause()) {
+            result.setFrom((TableSegment) visit(ctx.fromClause()));
+        }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -916,7 +925,32 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             LockSegment lockSegment = (LockSegment) visit(ctx.forLockingClause());
             result.setLock(lockSegment);
         }
+        if (null != ctx.withClause()) {
+            WithSegment withSegment = (WithSegment) visit(ctx.withClause());
+            result.setWithSegment(withSegment);
+        }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitWithClause(final WithClauseContext ctx) {
+        Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
+        for (CommonTableExprContext each : ctx.cteList().commonTableExpr()) {
+            commonTableExpressions.add((CommonTableExpressionSegment) visit(each));
+        }
+        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions, null != ctx.RECURSIVE());
+    }
+    
+    @Override
+    public ASTNode visitCommonTableExpr(final CommonTableExprContext ctx) {
+        return new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
+                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (PostgreSQLSelectStatement) visit(ctx.preparableStmt().select()),
+                        getOriginalText(ctx.preparableStmt().select())));
+    }
+    
+    @Override
+    public ASTNode visitAlias(final AliasContext ctx) {
+        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText()));
     }
     
     @Override
@@ -1154,25 +1188,39 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         if (null != ctx.relationExpr()) {
-            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.relationExpr().qualifiedName());
-            if (null != ctx.aliasClause()) {
-                result.setAlias((AliasSegment) visit(ctx.aliasClause()));
-            }
-            return result;
+            return getSimpleTableSegment(ctx);
         }
         if (null != ctx.selectWithParens()) {
-            PostgreSQLSelectStatement select = (PostgreSQLSelectStatement) visit(ctx.selectWithParens());
-            SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select, getOriginalText(ctx.selectWithParens()));
-            AliasSegment alias = null == ctx.aliasClause() ? null : (AliasSegment) visit(ctx.aliasClause());
-            SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquery);
-            result.setAlias(alias);
-            return result;
+            return getSubqueryTableSegment(ctx);
         }
-        if (null == ctx.tableReference()) {
-            // TODO deal with functionTable and xmlTable
-            TableNameSegment tableName = new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support"));
-            return new SimpleTableSegment(tableName);
+        if (null != ctx.tableReference()) {
+            return getJoinTableSegment(ctx);
         }
+        if (null != ctx.functionTable() && null != ctx.functionTable().functionExprWindowless() && null != ctx.functionTable().functionExprWindowless().funcApplication()) {
+            return getFunctionTableSegment(ctx);
+        }
+        // TODO deal with functionTable and xmlTable
+        return new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support")));
+    }
+    
+    private SimpleTableSegment getSimpleTableSegment(final TableReferenceContext ctx) {
+        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.relationExpr().qualifiedName());
+        if (null != ctx.aliasClause()) {
+            result.setAlias((AliasSegment) visit(ctx.aliasClause()));
+        }
+        return result;
+    }
+    
+    private SubqueryTableSegment getSubqueryTableSegment(final TableReferenceContext ctx) {
+        PostgreSQLSelectStatement select = (PostgreSQLSelectStatement) visit(ctx.selectWithParens());
+        SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select, getOriginalText(ctx.selectWithParens()));
+        AliasSegment alias = null == ctx.aliasClause() ? null : (AliasSegment) visit(ctx.aliasClause());
+        SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquery);
+        result.setAlias(alias);
+        return result;
+    }
+    
+    private ASTNode getJoinTableSegment(final TableReferenceContext ctx) {
         JoinTableSegment result = new JoinTableSegment();
         result.setLeft((TableSegment) visit(ctx.tableReference()));
         int startIndex = null == ctx.LP_() ? ctx.tableReference().start.getStartIndex() : ctx.LP_().getSymbol().getStartIndex();
@@ -1188,6 +1236,19 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         result.setStopIndex(stopIndex);
         visitJoinedTable(ctx.joinedTable(), result);
         result.setAlias(alias);
+        return result;
+    }
+    
+    private FunctionTableSegment getFunctionTableSegment(final TableReferenceContext ctx) {
+        FunctionSegment functionSegment = (FunctionSegment) visit(ctx.functionTable().functionExprWindowless().funcApplication());
+        return new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionSegment);
+    }
+    
+    @Override
+    public ASTNode visitFuncApplication(final FuncApplicationContext ctx) {
+        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.funcName().getText(), getOriginalText(ctx));
+        result.getParameters().addAll(expressionSegments);
         return result;
     }
     

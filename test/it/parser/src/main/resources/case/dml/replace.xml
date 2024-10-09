@@ -993,4 +993,36 @@
             </where>
         </select>
     </insert>
+    <insert sql-case-id="replace_returning_expressions">
+        <table name="t2" start-index="13" stop-index="14" />
+        <columns start-index="16" stop-index="19">
+            <column name ="id" start-index="17" stop-index="18" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="29" stop-index="29" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="33" stop-index="33" />
+                </assignment-value>
+            </value>
+        </values>
+        <returning start-index="36" stop-index="51">
+            <projections start-index="46" stop-index="51">
+                <column-projection name="id" start-index="46" stop-index="47" />
+                <expression-projection start-index="49" stop-index="51" text="t&amp;t">
+                    <left>
+                        <column name="t" start-index="49" stop-index="49" />
+                    </left>
+                    <operator>&amp;</operator>
+                    <right>
+                        <column name="t" start-index="51" stop-index="51" />
+                    </right>
+                </expression-projection>
+            </projections>
+        </returning>
+    </insert>
 </sql-parser-test-cases>

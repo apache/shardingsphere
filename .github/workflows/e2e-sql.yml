@@ -70,7 +70,7 @@ jobs:
   build-e2e-image:
     name: Build E2E Image
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -99,7 +99,7 @@ jobs:
     name: E2E - SQL
     needs: [ build-e2e-image, global-environment ]
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 30
     strategy:
       max-parallel: 20

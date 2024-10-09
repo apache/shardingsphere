@@ -83,7 +83,8 @@ public final class MetaDataContextsFactory {
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
                                           final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        return persistService.getDatabaseMetaDataService().loadAllDatabaseNames().isEmpty() ? createByLocal(persistService, param, computeNodeInstanceContext)
+        return persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames().isEmpty()
+                ? createByLocal(persistService, param, computeNodeInstanceContext)
                 : createByRepository(persistService, param, computeNodeInstanceContext);
     }
     
@@ -142,7 +143,9 @@ public final class MetaDataContextsFactory {
     
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext computeNodeInstanceContext,
                                                        final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
-        return computeNodeInstanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData ? databaseConfigs.keySet() : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
+        return computeNodeInstanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData
+                ? databaseConfigs.keySet()
+                : persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
     }
     
     private static Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames,
@@ -237,12 +240,16 @@ public final class MetaDataContextsFactory {
     private static void persistMetaData(final MetaDataContexts metaDataContexts, final MetaDataPersistService persistService) {
         metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas().forEach((schemaName, schema) -> {
             if (schema.isEmpty()) {
-                persistService.getDatabaseMetaDataService().addSchema(each.getName(), schemaName);
+                persistService.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schemaName);
             }
-            persistService.getDatabaseMetaDataService().getTableMetaDataPersistService().persist(each.getName(), schemaName, schema.getTables());
+            persistService.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schemaName, schema.getTables());
         }));
-        metaDataContexts.getStatistics().getDatabaseData().forEach((databaseName, databaseData) -> databaseData.getSchemaData().forEach((schemaName, schemaData) -> persistService
-                .getShardingSphereDataPersistService().persist(databaseName, schemaName, schemaData, metaDataContexts.getMetaData().getDatabases())));
+        for (Entry<String, ShardingSphereDatabaseData> databaseDataEntry : metaDataContexts.getStatistics().getDatabaseData().entrySet()) {
+            for (Entry<String, ShardingSphereSchemaData> schemaDataEntry : databaseDataEntry.getValue().getSchemaData().entrySet()) {
+                persistService.getShardingSphereDataPersistService().persist(
+                        metaDataContexts.getMetaData().getDatabases().get(databaseDataEntry.getKey().toLowerCase()), schemaDataEntry.getKey(), schemaDataEntry.getValue());
+            }
+        }
     }
     
     /**

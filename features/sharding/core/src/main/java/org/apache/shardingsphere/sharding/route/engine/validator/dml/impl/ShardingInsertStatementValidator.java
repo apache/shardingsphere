@@ -55,13 +55,13 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     private final ShardingConditions shardingConditions;
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             validateMultipleTable(shardingRule, sqlStatementContext);
         }
         InsertStatement insertStatement = (InsertStatement) sqlStatementContext.getSqlStatement();
-        String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
+        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         Optional<SubquerySegment> insertSelectSegment = insertStatement.getInsertSelect();
         if (insertSelectSegment.isPresent() && isContainsKeyGenerateStrategy(shardingRule, tableName)
                 && !isContainsKeyGenerateColumn(shardingRule, insertStatement.getColumns(), tableName)) {
@@ -91,7 +91,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         InsertStatement insertStatement = (InsertStatement) sqlStatementContext.getSqlStatement();
         Optional<SubquerySegment> insertSelect = insertStatement.getInsertSelect();
-        String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
+        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         if (insertSelect.isPresent() && shardingConditions.isNeedMerge()) {
             boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
             ShardingSpherePreconditions.checkState(singleRoutingOrSameShardingCondition, () -> new UnsupportedShardingOperationException("INSERT ... SELECT ...", tableName));

@@ -122,7 +122,7 @@ identifier
 uescape
     : UESCAPE STRING_
     ;
-    
+
 unreservedWord
     : ABORT
     | ABSOLUTE
@@ -816,7 +816,7 @@ jsonOperator
     | JSONB_PATH_CONTAIN_ANY_VALUE_ # jsonbPathContainAnyValue
     | JSONB_PATH_PREDICATE_CHECK_ # jsonbPathPredicateCheck
     ;
-    
+
 geometricOperator
     : GEOMETRIC_LENGTH_
     | GEOMETRIC_DISTANCE_

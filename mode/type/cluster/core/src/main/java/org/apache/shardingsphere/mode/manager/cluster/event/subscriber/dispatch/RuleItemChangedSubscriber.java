@@ -30,6 +30,7 @@ import java.sql.SQLException;
  * Rule item changed subscriber.
  */
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class RuleItemChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;

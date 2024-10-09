@@ -39,6 +39,6 @@ class ClickHouseDatabaseMetaDataTest {
     
     @Test
     void assertGetDefaultNullsOrderType() {
-        assertThat(dialectDatabaseMetaData.getDefaultNullsOrderType(), is(NullsOrderType.FIRST));
+        assertThat(dialectDatabaseMetaData.getDefaultNullsOrderType(), is(NullsOrderType.LOW));
     }
 }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
@@ -185,7 +185,7 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
     private void initIncrementalTasks(final MigrationJobItemContext jobItemContext) {
         MigrationTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         IncrementalDumperContext dumperContext = taskConfig.getDumperContext();
-        ExecuteEngine incrementalExecuteEngine = jobItemContext.getJobProcessContext().getIncrementalExecuteEngine();
+        PipelineExecuteEngine incrementalExecuteEngine = jobItemContext.getJobProcessContext().getIncrementalExecuteEngine();
         IncrementalTaskProgress taskProgress = PipelineTaskUtils.createIncrementalTaskProgress(dumperContext.getCommonContext().getPosition(), jobItemContext.getInitProgress());
         PipelineChannel channel = IncrementalChannelCreator.create(jobItemContext.getJobProcessContext().getProcessConfiguration().getStreamChannel(), taskProgress);
         CreateIncrementalDumperParameter param = new CreateIncrementalDumperParameter(

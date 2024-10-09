@@ -95,7 +95,7 @@
         <narayana.version>5.12.7.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-        <seata.version>2.0.0</seata.version>
+        <seata.version>2.1.0</seata.version>
         
         <netty.version>4.1.112.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
@@ -133,13 +133,14 @@
         
         <prometheus-simpleclient.version>0.11.0</prometheus-simpleclient.version>
         <prometheus-jmx.version>0.16.1</prometheus-jmx.version>
-        <opentelemetry.version>1.31.0</opentelemetry.version>
+        <opentelemetry.version>1.41.0</opentelemetry.version>
+        <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
         <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
         
-        <junit.version>5.10.3</junit.version>
-        <hamcrest.version>2.2</hamcrest.version>
+        <junit.version>5.11.1</junit.version>
+        <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
-        <awaitility.version>4.2.0</awaitility.version>
+        <awaitility.version>4.2.2</awaitility.version>
         <testcontainers.version>1.20.1</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
@@ -149,8 +150,8 @@
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
-        <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
-        <native-maven-plugin.version>0.10.2</native-maven-plugin.version>
+        <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
+        <native-maven-plugin.version>0.10.3</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
@@ -192,6 +193,7 @@
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     </properties>
     
     <dependencyManagement>
@@ -831,6 +833,9 @@
         </pluginManagement>
         
         <plugins>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
             <!-- Release plugins -->
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -849,15 +854,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/groovy/**</exclude>
-                        <exclude>**/groovyjarjarantlr4/**</exclude>
-                        <exclude>**/groovyjarjarasm/asm/**</exclude>
-                        <exclude>**/groovyjarjarpicocli/**</exclude>
-                    </excludes>
-                </configuration>
+                <version>${jacoco-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -877,9 +874,9 @@
         
         <extensions>
             <extension>
-                <groupId>kr.motd.maven</groupId>
-                <artifactId>os-maven-plugin</artifactId>
-                <version>${os-maven-plugin.version}</version>
+                <groupId>com.tisonkun.os</groupId>
+                <artifactId>os-detector-maven-plugin</artifactId>
+                <version>${os-detector-maven-plugin.version}</version>
             </extension>
         </extensions>
     </build>

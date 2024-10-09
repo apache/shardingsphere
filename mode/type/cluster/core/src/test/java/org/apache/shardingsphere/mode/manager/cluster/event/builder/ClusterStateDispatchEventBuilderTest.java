@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -32,26 +32,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClusterStateDispatchEventBuilderTest {
     
+    private final ClusterStateDispatchEventBuilder builder = new ClusterStateDispatchEventBuilder();
+    
     @Test
-    void assertCreateEventWhenReadOnly() {
-        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.UPDATED));
+    void assertGetSubscribedKey() {
+        assertThat(builder.getSubscribedKey(), is("/states/cluster_state"));
+    }
+    
+    @Test
+    void assertBuildEventWithValidClusterState() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/states/cluster_state", ClusterState.READ_ONLY.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.READ_ONLY));
     }
     
     @Test
-    void assertCreateEventWhenUnavailable() {
-        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.UNAVAILABLE.name(), Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.UNAVAILABLE));
-    }
-    
-    @Test
-    void assertCreateEventWhenEnabled() {
-        Optional<DispatchEvent> actual = new ClusterStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.OK.name(), Type.UPDATED));
+    void assertBuildEventWithInvalidClusterState() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/states/cluster_state", "INVALID", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((ClusterStateEvent) actual.get()).getClusterState(), is(ClusterState.OK));
     }

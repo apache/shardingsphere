@@ -17,48 +17,52 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.GlobalRuleDefinitionExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.sql.SQLException;
 import java.util.Properties;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class AlterSQLTranslatorRuleExecutorTest {
+class AlterSQLTranslatorRuleExecutorTest extends GlobalRuleDefinitionExecutorTest {
     
-    @Test
-    void assertExecute() {
-        AlterSQLTranslatorRuleStatement sqlStatement = new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("Native", PropertiesBuilder.build(new Property("foo", "bar"))), true);
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(engine::executeUpdate);
+    AlterSQLTranslatorRuleExecutorTest() {
+        super(mock(SQLTranslatorRule.class));
     }
     
-    @Test
-    void assertExecuteWithNullOriginalSQLWhenTranslatingFailed() {
-        AlterSQLTranslatorRuleStatement sqlStatement = new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("Native", PropertiesBuilder.build(new Property("foo", "bar"))), null);
-        DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
-        assertDoesNotThrow(engine::executeUpdate);
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig) throws SQLException {
+        assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, null);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        SQLTranslatorRule rule = mock(SQLTranslatorRule.class);
-        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
-        when(executor.getRuleClass()).thenReturn(SQLTranslatorRule.class);
-        when(rule.getConfiguration()).thenReturn(new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
-        return result;
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.arguments("withTrueOriginalSQLWhenTranslatingFailed",
+                    new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true),
+                    new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("NATIVE", PropertiesBuilder.build(new Property("foo", "bar"))), true),
+                    new SQLTranslatorRuleConfiguration("NATIVE", PropertiesBuilder.build(new Property("foo", "bar")), true)),
+                    Arguments.arguments("withNullOriginalSQLWhenTranslatingFailed",
+                            new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true),
+                            new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("NATIVE", PropertiesBuilder.build(new Property("foo", "bar"))), null),
+                            new SQLTranslatorRuleConfiguration("NATIVE", PropertiesBuilder.build(new Property("foo", "bar")), true)));
+        }
     }
 }

@@ -18,26 +18,19 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessCompletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ReportLocalProcessesCompletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ReportLocalProcessesEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Compute node state dispatch event builder.
@@ -45,8 +38,8 @@ import java.util.regex.Pattern;
 public final class ComputeNodeStateDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ComputeNode.getComputeNodePath());
+    public String getSubscribedKey() {
+        return ComputeNode.getComputeNodePath();
     }
     
     @Override
@@ -63,12 +56,6 @@ public final class ComputeNodeStateDispatchEventBuilder implements DispatchEvent
                 return result;
             }
         }
-        if (event.getKey().startsWith(ComputeNode.getShowProcessListTriggerNodePath())) {
-            return createReportLocalProcessesEvent(event);
-        }
-        if (event.getKey().startsWith(ComputeNode.getKillProcessTriggerNodePath())) {
-            return createKillLocalProcessEvent(event);
-        }
         return Optional.empty();
     }
     
@@ -84,42 +71,5 @@ public final class ComputeNodeStateDispatchEventBuilder implements DispatchEvent
             return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue())));
         }
         return Optional.empty();
-    }
-    
-    private Optional<DispatchEvent> createReportLocalProcessesEvent(final DataChangedEvent event) {
-        Matcher matcher = getShowProcessListTriggerMatcher(event);
-        if (!matcher.find()) {
-            return Optional.empty();
-        }
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new ReportLocalProcessesEvent(matcher.group(1), matcher.group(2)));
-        }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new ReportLocalProcessesCompletedEvent(matcher.group(2)));
-        }
-        return Optional.empty();
-    }
-    
-    private Matcher getShowProcessListTriggerMatcher(final DataChangedEvent event) {
-        return Pattern.compile(ComputeNode.getShowProcessListTriggerNodePath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
-    }
-    
-    private Optional<DispatchEvent> createKillLocalProcessEvent(final DataChangedEvent event) {
-        Matcher matcher = getKillProcessTriggerMatcher(event);
-        if (!matcher.find()) {
-            return Optional.empty();
-        }
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new KillLocalProcessEvent(matcher.group(1), matcher.group(2)));
-        }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new KillLocalProcessCompletedEvent(matcher.group(2)));
-        }
-        return Optional.empty();
-    }
-    
-    private Matcher getKillProcessTriggerMatcher(final DataChangedEvent event) {
-        Pattern pattern = Pattern.compile(ComputeNode.getKillProcessTriggerNodePath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(event.getKey());
     }
 }

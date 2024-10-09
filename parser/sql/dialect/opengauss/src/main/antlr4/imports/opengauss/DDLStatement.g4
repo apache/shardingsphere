@@ -852,7 +852,7 @@ alterExtension
 createSynonym
     : CREATE (OR REPLACE)? SYNONYM synonymName FOR objectName
     ;
-    
+
 alterExtensionClauses
     : UPDATE alterExtensionOptList
     | (ADD | DROP) ACCESS METHOD name
@@ -980,7 +980,7 @@ declare
 cursor
     : CURSOR cursorName cursorOptions (WITH HOLD | WITHOUT HOLD)? FOR select
     ;
-    
+
 cursorOptions
     : cursorOption*
     ;
@@ -1700,7 +1700,7 @@ dropOperatorClass
 dropOperatorFamily
     : DROP OPERATOR FAMILY ifExists? anyName USING name dropBehavior?
     ;
-    
+
 dropOwned
     : DROP OWNED BY roleList dropBehavior?
     ;
@@ -1796,7 +1796,7 @@ move
 prepare
     : PREPARE name prepTypeClause? AS preparableStmt
     ;
-    
+
 deallocate
     : DEALLOCATE PREPARE? (name | ALL)
     ;
@@ -1900,11 +1900,11 @@ schemaStmt
 grant
     : GRANT (privilegeClause | roleClause)
     ;
-    
+
 privilegeClause
     : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
     ;
-    
+
 roleClause
     : privilegeList (FROM | TO) roleList (WITH ADMIN OPTION)? (GRANTED BY roleSpec)?
     ;
@@ -1912,7 +1912,7 @@ roleClause
 privilegeTypes
     : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
     ;
-    
+
 onObjectClause
     : DATABASE nameList
     | SCHEMA nameList
@@ -1936,11 +1936,11 @@ onObjectClause
     | CLIENT_MASTER_KEY nameList
     | COLUMN_ENCRYPTION_KEY nameList
     ;
-    
+
 numericOnlyList
     : numericOnly (COMMA_ numericOnly)*
     ;
-    
+
 privilegeLevel
     : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableNames | schemaName DOT_ routineName
     ;

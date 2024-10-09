@@ -134,7 +134,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         String username = currentAuthResult.getUsername();
         String databaseName = currentAuthResult.getDatabase();
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
-        Grantee grantee = new Grantee(username, "%");
+        Grantee grantee = new Grantee(username);
         ShardingSphereUser user = rule.findUser(grantee).orElseThrow(() -> new UnknownUsernameException(username));
         Authenticator authenticator = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user);
         ShardingSpherePreconditions.checkState(login(authenticator, user, digest), () -> new InvalidPasswordException(username));
@@ -161,13 +161,13 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     }
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username, final AuthorityRule rule, final int version) {
-        Optional<Authenticator> authenticator = rule.findUser(new Grantee(username, "")).map(optional -> new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(optional));
+        Optional<Authenticator> authenticator = rule.findUser(new Grantee(username)).map(optional -> new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(optional));
         if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.MD5.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
             return new PostgreSQLMD5PasswordAuthenticationPacket(md5Salt);
         }
         serverIteration = version == OpenGaussProtocolVersion.PROTOCOL_350.getVersion() ? PROTOCOL_350_SERVER_ITERATOR : PROTOCOL_351_SERVER_ITERATOR;
-        String password = rule.findUser(new Grantee(username, "%")).map(ShardingSphereUser::getPassword).orElse("");
+        String password = rule.findUser(new Grantee(username)).map(ShardingSphereUser::getPassword).orElse("");
         return new OpenGaussAuthenticationSCRAMSha256Packet(version, serverIteration, authHexData, password);
     }
 }

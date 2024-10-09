@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.util.Collections;
@@ -35,16 +34,15 @@ public final class SQLRouterFixture implements EntranceSQLRouter<RouteRuleFixtur
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final RouteRuleFixture rule,
-                                           final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                           final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
         return result;
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext,
-                                     final QueryContext queryContext, final ShardingSphereDatabase database, final RouteRuleFixture rule,
-                                     final ConfigurationProperties props, final ConnectionContext connectionContext) {
+    public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final RouteRuleFixture rule,
+                                     final ConfigurationProperties props) {
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
     }
     

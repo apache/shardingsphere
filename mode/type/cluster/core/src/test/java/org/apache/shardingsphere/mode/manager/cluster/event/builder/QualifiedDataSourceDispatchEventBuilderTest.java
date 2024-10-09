@@ -33,34 +33,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QualifiedDataSourceDispatchEventBuilderTest {
     
+    private final QualifiedDataSourceDispatchEventBuilder builder = new QualifiedDataSourceDispatchEventBuilder();
+    
     @Test
-    void assertCreateEnabledQualifiedDataSourceChangedEvent() {
-        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
-                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: ENABLED\n", Type.ADDED));
-        assertTrue(actual.isPresent());
-        QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
-        assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
-        assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
-        assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getStatus().getState(), is(DataSourceState.ENABLED));
+    void assertGetSubscribedKey() {
+        assertThat(builder.getSubscribedKey(), is("/nodes/qualified_data_sources"));
     }
     
     @Test
-    void assertCreateDisabledQualifiedDataSourceChangedEvent() {
-        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
-                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "state: DISABLED\n", Type.DELETED));
+    void assertBuildQualifiedDataSourceStateEvent() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "state: ENABLED", Type.ADDED));
         assertTrue(actual.isPresent());
-        QualifiedDataSourceStateEvent actualEvent = (QualifiedDataSourceStateEvent) actual.get();
-        assertThat(actualEvent.getQualifiedDataSource().getDatabaseName(), is("replica_query_db"));
-        assertThat(actualEvent.getQualifiedDataSource().getGroupName(), is("readwrite_ds"));
-        assertThat(actualEvent.getQualifiedDataSource().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getStatus().getState(), is(DataSourceState.DISABLED));
+        assertThat(((QualifiedDataSourceStateEvent) actual.get()).getQualifiedDataSource().getDatabaseName(), is("foo_db"));
+        assertThat(((QualifiedDataSourceStateEvent) actual.get()).getQualifiedDataSource().getGroupName(), is("foo_group"));
+        assertThat(((QualifiedDataSourceStateEvent) actual.get()).getQualifiedDataSource().getDataSourceName(), is("foo_ds"));
+        assertThat(((QualifiedDataSourceStateEvent) actual.get()).getStatus().getState(), is(DataSourceState.ENABLED));
     }
     
     @Test
-    void assertCreateEmptyEvent() {
-        Optional<DispatchEvent> actual = new QualifiedDataSourceDispatchEventBuilder().build(
-                new DataChangedEvent("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
+    void assertBuildWithEmptyValue() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "", Type.ADDED));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertBuildWithoutQualifiedDataSource() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/qualified_data_sources", "state: DISABLED", Type.ADDED));
         assertFalse(actual.isPresent());
     }
 }

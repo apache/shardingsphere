@@ -279,7 +279,7 @@ limitClause
 limitRowCount
     : numberLiterals | parameterMarker
     ;
-    
+
 limitOffset
     : numberLiterals | parameterMarker
     ;

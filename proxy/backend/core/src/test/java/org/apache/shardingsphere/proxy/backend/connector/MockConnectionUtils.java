@@ -47,7 +47,7 @@ final class MockConnectionUtils {
     static void setCachedConnections(final ProxyDatabaseConnectionManager databaseConnectionManager, final String dataSourceName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
         cachedConnections.putAll(databaseConnectionManager.getConnectionSession().getUsedDatabaseName() + "." + dataSourceName, mockNewConnections(connectionSize));
-        Plugins.getMemberAccessor().set(databaseConnectionManager.getClass().getDeclaredField("cachedConnections"), databaseConnectionManager, cachedConnections);
+        Plugins.getMemberAccessor().set(ProxyDatabaseConnectionManager.class.getDeclaredField("cachedConnections"), databaseConnectionManager, cachedConnections);
     }
     
     /**

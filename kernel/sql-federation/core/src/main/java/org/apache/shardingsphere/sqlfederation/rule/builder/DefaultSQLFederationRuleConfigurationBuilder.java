@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfigura
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
 
 /**
- * Default sql federation rule configuration builder.
+ * Default SQL federation rule configuration builder.
  */
 public final class DefaultSQLFederationRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<SQLFederationRuleConfiguration, SQLFederationRuleBuilder> {
     

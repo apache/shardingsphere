@@ -80,8 +80,8 @@ class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
+                mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -95,8 +95,8 @@ class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateStatementValidator().preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test

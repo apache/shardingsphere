@@ -45,7 +45,6 @@ import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectState
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.plugins.MemberAccessor;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -98,15 +97,14 @@ class OrderByValueTest {
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))),
                 selectStatementContext, schema);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue1, Arrays.asList(false, false));
+        Plugins.getMemberAccessor().set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue1, Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("3", "4");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))),
                 selectStatementContext, schema);
-        accessor.set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue2, Arrays.asList(false, false));
+        Plugins.getMemberAccessor().set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue2, Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) < 0);
         assertFalse(orderByValue1.getQueryResult().next());
@@ -156,15 +154,14 @@ class OrderByValueTest {
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.FIRST))),
                 selectStatementContext, schema);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue1, Arrays.asList(false, false));
+        Plugins.getMemberAccessor().set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue1, Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("3", "4");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.FIRST))),
                 selectStatementContext, schema);
-        accessor.set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue2, Arrays.asList(false, false));
+        Plugins.getMemberAccessor().set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue2, Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) > 0);
         assertFalse(orderByValue1.getQueryResult().next());
@@ -208,15 +205,14 @@ class OrderByValueTest {
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.FIRST))),
                 selectStatementContext, schema);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue1, Arrays.asList(false, false));
+        Plugins.getMemberAccessor().set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue1, Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("1", "2");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.FIRST))),
                 selectStatementContext, schema);
-        accessor.set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue2, Arrays.asList(false, false));
+        Plugins.getMemberAccessor().set(OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), orderByValue2, Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertThat(orderByValue1.compareTo(orderByValue2), is(0));
         assertFalse(orderByValue1.getQueryResult().next());

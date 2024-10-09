@@ -64,14 +64,11 @@ class SingleTableDataNodeLoaderTest {
     
     private Map<String, DataSource> dataSourceMap;
     
-    private Collection<String> configuredSingleTables;
-    
     @BeforeEach
     void setUp() throws SQLException {
         dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
         dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
-        configuredSingleTables = Collections.singletonList("*.*");
     }
     
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
@@ -100,7 +97,8 @@ class SingleTableDataNodeLoaderTest {
         TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
         when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
         when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), configuredSingleTables);
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), Collections.singleton("*.*"));
         assertFalse(actual.containsKey("employee"));
         assertFalse(actual.containsKey("salary"));
         assertFalse(actual.containsKey("student"));
@@ -114,7 +112,7 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoadWithConflictTables() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.emptyList(), configuredSingleTables);
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("*.*.*"));
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("salary"));
         assertTrue(actual.containsKey("student"));
@@ -127,5 +125,15 @@ class SingleTableDataNodeLoaderTest {
         assertThat(actual.get("dept").iterator().next().getDataSourceName(), is("ds0"));
         assertThat(actual.get("teacher").iterator().next().getDataSourceName(), is("ds1"));
         assertThat(actual.get("class").iterator().next().getDataSourceName(), is("ds1"));
+    }
+    
+    @Test
+    void assertLoadWithEmptyConfiguredTables() {
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), Collections.emptyList());
+        assertTrue(actual.isEmpty());
     }
 }

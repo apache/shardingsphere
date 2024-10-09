@@ -31,7 +31,7 @@ public final class RouteSQLBuilder extends AbstractSQLBuilder {
     private final RouteUnit routeUnit;
     
     public RouteSQLBuilder(final String sql, final List<SQLToken> sqlTokens, final RouteUnit routeUnit) {
-        super(sql, sqlTokens, routeUnit);
+        super(sql, sqlTokens);
         this.routeUnit = routeUnit;
     }
     

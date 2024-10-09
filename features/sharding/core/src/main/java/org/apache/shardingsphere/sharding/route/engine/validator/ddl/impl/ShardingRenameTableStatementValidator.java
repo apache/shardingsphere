@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 public final class ShardingRenameTableStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final List<Object> params, final ShardingSphereDatabase database,
-                            final ConfigurationProperties props) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
+                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         RenameTableStatementContext renameTableStatementContext = (RenameTableStatementContext) sqlStatementContext;
         Collection<String> tableNames = renameTableStatementContext.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());

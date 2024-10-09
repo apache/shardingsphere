@@ -90,6 +90,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         String toBePreviewedSQL = sqlStatement.getSql();
         SQLStatement toBePreviewedStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType()).parse(toBePreviewedSQL, false);
         HintValueContext hintValueContext = connectionContext.getQueryContext().getHintValueContext();
+        hintValueContext.setSkipMetadataValidate(true);
         SQLStatementContext toBePreviewedStatementContext = new SQLBindEngine(metaData, database.getName(), hintValueContext).bind(toBePreviewedStatement, Collections.emptyList());
         QueryContext queryContext =
                 new QueryContext(toBePreviewedStatementContext, toBePreviewedSQL, Collections.emptyList(), hintValueContext, connectionContext.getQueryContext().getConnectionContext(), metaData);

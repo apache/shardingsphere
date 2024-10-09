@@ -1,14 +1,14 @@
 [
   {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "interfaces":["io.seata.config.Configuration"]
-  },
-  {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "interfaces":["java.sql.Connection"]
   },
   {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "interfaces":["org.apache.hive.service.rpc.thrift.TCLIService$Iface"]
+  },
+  {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+    "interfaces":["org.apache.seata.config.Configuration"]
   }
 ]

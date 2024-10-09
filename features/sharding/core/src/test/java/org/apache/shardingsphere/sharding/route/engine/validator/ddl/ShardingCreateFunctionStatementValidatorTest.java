@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateFunctionStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateFunctionStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -72,8 +73,8 @@ class ShardingCreateFunctionStatementValidatorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingCreateFunctionStatementValidator().preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
+                mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -89,8 +90,8 @@ class ShardingCreateFunctionStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
-        assertThrows(NoSuchTableException.class,
-                () -> new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(NoSuchTableException.class, () -> new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -106,8 +107,8 @@ class ShardingCreateFunctionStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
-        assertThrows(NoSuchTableException.class,
-                () -> new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(NoSuchTableException.class, () -> new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -124,7 +125,7 @@ class ShardingCreateFunctionStatementValidatorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
-        assertThrows(TableExistsException.class,
-                () -> new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(TableExistsException.class, () -> new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
 }

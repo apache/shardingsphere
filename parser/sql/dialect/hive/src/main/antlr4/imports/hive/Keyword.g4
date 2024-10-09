@@ -114,7 +114,7 @@ INNODB
 REDO_LOG
     : 'REDO_LOG'
     ;
-    
+
 DELIMITER
     : D E L I M I T E R
     ;

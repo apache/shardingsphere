@@ -22,14 +22,13 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 public final class SQLRouterFailureFixture implements DecorateSQLRouter<RouteFailureRuleFixture> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final RouteFailureRuleFixture rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                     final RouteFailureRuleFixture rule, final ConfigurationProperties props) {
         throw new UnsupportedOperationException("Route failure.");
     }
     

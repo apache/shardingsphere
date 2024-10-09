@@ -23,17 +23,16 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,35 +43,33 @@ import java.util.regex.Pattern;
 public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ComputeNode.getOnlineInstanceNodePath());
+    public String getSubscribedKey() {
+        return ComputeNode.getOnlineInstanceNodePath();
     }
     
     @Override
     public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
+        return Arrays.asList(Type.ADDED, Type.DELETED);
     }
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
-            return createInstanceEvent(event);
-        }
-        return Optional.empty();
+        return createInstanceEvent(event);
     }
     
     private Optional<DispatchEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = getInstanceOnlinePathMatcher(event.getKey());
-        if (matcher.find()) {
-            ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
-            InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(matcher.group(2),
-                    InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion());
-            if (Type.ADDED == event.getType()) {
-                return Optional.of(new InstanceOnlineEvent(instanceMetaData));
-            }
-            if (Type.DELETED == event.getType()) {
-                return Optional.of(new InstanceOfflineEvent(instanceMetaData));
-            }
+        if (!matcher.find()) {
+            return Optional.empty();
+        }
+        ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
+        InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(
+                matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion());
+        if (Type.ADDED == event.getType()) {
+            return Optional.of(new InstanceOnlineEvent(instanceMetaData));
+        }
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new InstanceOfflineEvent(instanceMetaData));
         }
         return Optional.empty();
     }

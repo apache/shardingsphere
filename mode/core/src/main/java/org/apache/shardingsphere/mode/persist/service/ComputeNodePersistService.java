@@ -32,10 +32,12 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Compute node persist service.
@@ -120,14 +122,10 @@ public final class ComputeNodePersistService {
     /**
      * Load all compute node instances.
      *
-     * @return compute node instances
+     * @return loaded compute node instances
      */
     public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
-        Collection<ComputeNodeInstance> result = new LinkedList<>();
-        for (InstanceType each : InstanceType.values()) {
-            result.addAll(loadComputeNodeInstances(each));
-        }
-        return result;
+        return Arrays.stream(InstanceType.values()).flatMap(each -> loadComputeNodeInstances(each).stream()).collect(Collectors.toList());
     }
     
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {

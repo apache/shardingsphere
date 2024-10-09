@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-- !FIXTURE
+- !METADATA.FIXTURE
   name: test

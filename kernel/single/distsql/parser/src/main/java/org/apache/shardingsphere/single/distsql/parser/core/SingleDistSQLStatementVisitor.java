@@ -94,7 +94,7 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     private SingleTableSegment getSingleTableSegment(final TableIdentifierContext ctx) {
         if (ctx instanceof AllTablesFromStorageUnitContext) {
-            return new SingleTableSegment(getIdentifierValue(((AllTablesFromStorageUnitContext) ctx).storageUnitName()), null, "*");
+            return new SingleTableSegment(getIdentifierValue(((AllTablesFromStorageUnitContext) ctx).storageUnitName()), "*");
         }
         if (ctx instanceof AllTablesFromSchemaContext) {
             AllTablesFromSchemaContext tableContext = (AllTablesFromSchemaContext) ctx;
@@ -102,14 +102,14 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
         }
         if (ctx instanceof TableFromStorageUnitContext) {
             TableFromStorageUnitContext tableContext = (TableFromStorageUnitContext) ctx;
-            return new SingleTableSegment(getIdentifierValue(tableContext.storageUnitName()), null, getIdentifierValue(tableContext.tableName()));
+            return new SingleTableSegment(getIdentifierValue(tableContext.storageUnitName()), getIdentifierValue(tableContext.tableName()));
         }
         if (ctx instanceof TableFromSchemaContext) {
             TableFromSchemaContext tableContext = (TableFromSchemaContext) ctx;
             return new SingleTableSegment(getIdentifierValue(tableContext.storageUnitName()), getIdentifierValue(tableContext.schemaName()), getIdentifierValue(tableContext.tableName()));
         }
         if (ctx instanceof AllTablesContext) {
-            return new SingleTableSegment("*", null, "*");
+            return new SingleTableSegment("*", "*");
         }
         if (ctx instanceof AllSchamesAndTablesFromStorageUnitContext) {
             return new SingleTableSegment(getIdentifierValue(((AllSchamesAndTablesFromStorageUnitContext) ctx).storageUnitName()), "*", "*");

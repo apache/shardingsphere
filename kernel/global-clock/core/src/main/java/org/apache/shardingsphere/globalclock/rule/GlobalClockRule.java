@@ -20,18 +20,10 @@ package org.apache.shardingsphere.globalclock.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Global clock rule.
@@ -41,35 +33,21 @@ public final class GlobalClockRule implements GlobalRule {
     
     private final GlobalClockRuleConfiguration configuration;
     
-    public GlobalClockRule(final GlobalClockRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
+    private final GlobalClockProvider globalClockProvider;
+    
+    public GlobalClockRule(final GlobalClockRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        if (ruleConfig.isEnabled()) {
-            TypedSPILoader.getService(GlobalClockProvider.class, getGlobalClockProviderType(), configuration.getProps());
-            TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", createProperties(databases));
-        }
-    }
-    
-    private Properties createProperties(final Map<String, ShardingSphereDatabase> databases) {
-        Properties result = new Properties();
-        DatabaseType storageType = findStorageType(databases.values()).orElseGet(DatabaseTypeEngine::getDefaultStorageType);
-        result.setProperty("trunkType", storageType.getTrunkDatabaseType().orElse(storageType).getType());
-        result.setProperty("enabled", String.valueOf(configuration.isEnabled()));
-        result.setProperty("type", configuration.getType());
-        result.setProperty("provider", configuration.getProvider());
-        return result;
-    }
-    
-    private Optional<DatabaseType> findStorageType(final Collection<ShardingSphereDatabase> databases) {
-        return databases.stream()
-                .flatMap(each -> each.getResourceMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType);
+        globalClockProvider = ruleConfig.isEnabled()
+                ? TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", ruleConfig.getType(), ruleConfig.getProvider()), configuration.getProps())
+                : null;
     }
     
     /**
-     * Get global clock provider type.
+     * Get global clock provider.
      *
-     * @return global clock provider type
+     * @return global clock provider
      */
-    public String getGlobalClockProviderType() {
-        return String.join(".", configuration.getType(), configuration.getProvider());
+    public Optional<GlobalClockProvider> getGlobalClockProvider() {
+        return Optional.ofNullable(globalClockProvider);
     }
 }

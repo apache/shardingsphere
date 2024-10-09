@@ -370,7 +370,7 @@ BOOLEAN
 BODY
     : B O D Y
     ;
-    
+
 DOUBLE
     : D O U B L E
     ;
@@ -463,19 +463,19 @@ SECOND
 MICROSECOND
     : M I C R O S E C O N D
     ;
-    
+
 TIMEZONE_HOUR
     : T I M E Z O N E UL_ H O U R
     ;
-    
+
 TIMEZONE_MINUTE
     : T I M E Z O N E UL_ M I N U T E
     ;
-    
+
 TIMEZONE_REGION
     : T I M E Z O N E UL_ R E G I O N
     ;
-    
+
 TIMEZONE_ABBR
     : T I M E Z O N E UL_ A B B R
     ;
@@ -487,7 +487,7 @@ MAX
 MIN
     : M I N
     ;
-    
+
 SUM
     : S U M
     ;
@@ -503,7 +503,7 @@ AVG
 DEFAULT
     : D E F A U L T
     ;
-    
+
 DEFAULTS
     : D E F A U L T S
     ;    
@@ -799,7 +799,7 @@ SHOW
 XMLTABLE
     : X M L T A B L E
     ;
-    
+
 ISSCHEMAVALID
     : I S S C H E M A V A L I D
     ;
@@ -819,15 +819,15 @@ PATH
 EXTRACT
     : E X T R A C T
     ;
-    
+
 ANYDATA
     : A N Y D A T A
     ;
-    
+
 ANYTYPE
     : A N Y T Y P E
     ;
-    
+
 ANYDATASET
     : A N Y D A T A S E T
     ;
@@ -843,7 +843,7 @@ WM_CONCAT
 DECLARE
     : D E C L A R E
     ;
-    
+
 BULK
     : B U L K
     ;
@@ -855,55 +855,55 @@ COLLECT
 INSERTING
     : I N S E R T I N G
     ;
-    
+
 UPDATING
     : U P D A T I N G
     ;
-    
+
 DELETING
     : D E L E T I N G
     ;
-    
+
 ROWCOUNT
     : R O W C O U N T
     ;
-    
+
 BULK_ROWCOUNT
     : B U L K UL_ R O W C O U N T
     ;
-    
+
 RAISE
     : R A I S E
     ;
-    
+
 WHILE
     : W H I L E
     ;
-    
+
 GOTO
     : G O T O
     ;
-    
+
 MUTABLE
     : M U T A B L E
     ;
-    
+
 IMMUTABLE
     : I M M U T A B L E
     ;
-    
+
 INDICES
     : I N D I C E S
     ;
-    
+
 PAIRS
     : P A I R S
     ;
-    
+
 PIPE
     : P I P E
     ;
-    
+
 FORALL
     : F O R A L L
     ;

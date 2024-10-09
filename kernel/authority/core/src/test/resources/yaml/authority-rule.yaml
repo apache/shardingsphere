@@ -21,7 +21,7 @@ rules:
     - user: root@%
       password: root
       admin: true
-    - user: sharding@
+    - user: sharding@%
       password: sharding
       admin: false
   privilege:

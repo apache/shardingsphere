@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen;
 
-import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
@@ -32,7 +31,6 @@ import java.util.List;
 /**
  * Generated key insert value parameter rewriter.
  */
-@Setter
 public final class GeneratedKeyInsertValueParameterRewriter implements ParameterRewriter {
     
     @Override

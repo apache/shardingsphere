@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.util.LoggingUtils;
+import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
@@ -102,7 +102,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
     
     private void syncSQLShowToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value, final ContextManager contextManager) {
         if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
-            LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
+            metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
                 decorateGlobalRuleConfiguration(contextManager);
             });
@@ -111,8 +111,8 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
     
     private void syncSQLSimpleToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value, final ContextManager contextManager) {
         if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
-            LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
-                option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
+            metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger).ifPresent(optional -> {
+                optional.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
                 decorateGlobalRuleConfiguration(contextManager);
             });
         }

@@ -52,8 +52,7 @@ rules:
           shardingColumn: order_id
           shardingAlgorithmName: core_standard_fixture
   bindingTables:
-  - t_order, t_order_item
-  - foo:t_order, t_order_item
+    - foo:t_order, t_order_item
   defaultDatabaseStrategy:
     standard:
       shardingColumn: order_id
@@ -84,7 +83,7 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_order_${order_id % 2}
-  
+
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
@@ -96,6 +95,6 @@ rules:
   shardingCache:
     allowedMaxSqlLength: 512
     routeCache:
+      softValues: true
       initialCapacity: 65536
       maximumSize: 262144
-      softValues: true

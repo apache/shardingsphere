@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Tabl
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
@@ -92,7 +92,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
                 .getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
         CompletableFuture<?> future = jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor);
-        ExecuteEngine.trigger(Collections.singletonList(future), new CheckExecuteCallback());
+        PipelineExecuteEngine.trigger(Collections.singletonList(future), new CheckExecuteCallback());
     }
     
     @Override

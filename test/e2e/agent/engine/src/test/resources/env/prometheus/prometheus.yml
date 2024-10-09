@@ -18,10 +18,10 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
-  
+
 scrape_configs:
   - job_name: 'shardingsphere-agent'
     static_configs:
      - targets:
          - "proxy.host:19090"
-         - "jdbc.host:19090"
+         - "jdbc-agent.host:19090"

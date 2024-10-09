@@ -50,6 +50,8 @@ class ShardingSphereURLTest {
             multiParams.put("databaseName", "sharding_db");
             multiParams.put("placeholder-type", "none");
             return Stream.of(Arguments.of("absolutepath:/Users/shardingsphere/config.yaml", "absolutepath:", "/Users/shardingsphere/config.yaml", Collections.emptyMap()),
+                    Arguments.of("absolutepath:/Users/shardingsphere/config.yaml?", "absolutepath:", "/Users/shardingsphere/config.yaml", Collections.emptyMap()),
+                    Arguments.of("absolutepath:/Users/shardingsphere/config.yaml?databaseName", "absolutepath:", "/Users/shardingsphere/config.yaml", Collections.emptyMap()),
                     Arguments.of("absolutepath:C:\\Users\\shardingsphere\\config.yaml", "absolutepath:", "C:\\Users\\shardingsphere\\config.yaml", Collections.emptyMap()),
                     Arguments.of("absolutepath:/Users/configDirName?databaseName=sharding_db", "absolutepath:", "/Users/configDirName", Collections.singletonMap("databaseName", "sharding_db")),
                     Arguments.of("absolutepath:/Users/configDirName/?databaseName=sharding_db", "absolutepath:", "/Users/configDirName/", Collections.singletonMap("databaseName", "sharding_db")),

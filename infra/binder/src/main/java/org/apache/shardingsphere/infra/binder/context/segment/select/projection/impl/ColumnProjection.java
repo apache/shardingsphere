@@ -68,28 +68,6 @@ public final class ColumnProjection implements Projection {
         this(owner, name, alias, databaseType, null, null);
     }
     
-    @Override
-    public String getColumnName() {
-        ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
-        return databaseType instanceof MySQLDatabaseType ? extractEngine.getIdentifierValue(name) : getColumnLabel();
-    }
-    
-    @Override
-    public String getColumnLabel() {
-        ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
-        return getAlias().isPresent() ? extractEngine.getIdentifierValue(getAlias().get()) : extractEngine.getIdentifierValue(name);
-    }
-    
-    @Override
-    public String getExpression() {
-        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
-    }
-    
-    @Override
-    public Optional<IdentifierValue> getAlias() {
-        return Optional.ofNullable(alias);
-    }
-    
     /**
      * Get owner.
      *
@@ -136,5 +114,27 @@ public final class ColumnProjection implements Projection {
      */
     public Optional<ParenthesesSegment> getRightParentheses() {
         return Optional.ofNullable(rightParentheses);
+    }
+    
+    @Override
+    public String getColumnName() {
+        ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
+        return databaseType instanceof MySQLDatabaseType ? extractEngine.getIdentifierValue(name) : getColumnLabel();
+    }
+    
+    @Override
+    public String getColumnLabel() {
+        ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
+        return getAlias().map(extractEngine::getIdentifierValue).orElseGet(() -> extractEngine.getIdentifierValue(name));
+    }
+    
+    @Override
+    public String getExpression() {
+        return null == owner ? name.getValue() : owner.getValue() + "." + name.getValue();
+    }
+    
+    @Override
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.ofNullable(alias);
     }
 }

@@ -35,8 +35,7 @@ public final class AlterSchemaPOJO {
     
     private final String logicDataSourceName;
     
-    public AlterSchemaPOJO(final String databaseName, final String schemaName,
-                           final String renameSchemaName, final Collection<String> logicDataSourceNames) {
+    public AlterSchemaPOJO(final String databaseName, final String schemaName, final String renameSchemaName, final Collection<String> logicDataSourceNames) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.renameSchemaName = renameSchemaName;

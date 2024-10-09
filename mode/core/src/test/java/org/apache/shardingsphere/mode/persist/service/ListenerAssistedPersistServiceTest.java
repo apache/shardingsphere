@@ -37,12 +37,12 @@ class ListenerAssistedPersistServiceTest {
     @Test
     void assertPersistDatabaseNameListenerAssisted() {
         new ListenerAssistedPersistService(repository).persistDatabaseNameListenerAssisted(new ListenerAssisted("foo_db", ListenerAssistedType.CREATE_DATABASE));
-        verify(repository).persistEphemeral("/listener_assisted/foo_db", "databaseName: foo_db" + System.lineSeparator() + "listenerAssistedType: CREATE_DATABASE" + System.lineSeparator());
+        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", "databaseName: foo_db" + System.lineSeparator() + "listenerAssistedType: CREATE_DATABASE" + System.lineSeparator());
     }
     
     @Test
     void assertDeleteDatabaseNameListenerAssisted() {
         new ListenerAssistedPersistService(repository).deleteDatabaseNameListenerAssisted("foo_db");
-        verify(repository).delete("/listener_assisted/foo_db");
+        verify(repository).delete("/states/listener_assisted/foo_db");
     }
 }

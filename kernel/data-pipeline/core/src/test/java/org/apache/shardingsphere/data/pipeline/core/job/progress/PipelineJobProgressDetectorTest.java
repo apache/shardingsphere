@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.progress;
 
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -46,16 +46,16 @@ class PipelineJobProgressDetectorTest {
     void assertAllInventoryTasksAreFinishedWhenNotAllTasksAreFinished() {
         AtomicReference<IngestPosition> finishedPosition = new AtomicReference<>(new IngestFinishedPosition());
         AtomicReference<IngestPosition> unfinishedPosition = new AtomicReference<>(new IngestPlaceholderPosition());
-        InventoryTask actualTask1 = new InventoryTask("foo_id_1", mock(ExecuteEngine.class), mock(ExecuteEngine.class), mock(Dumper.class), mock(Importer.class), finishedPosition);
-        InventoryTask actualTask2 = new InventoryTask("foo_id_2", mock(ExecuteEngine.class), mock(ExecuteEngine.class), mock(Dumper.class), mock(Importer.class), unfinishedPosition);
+        InventoryTask actualTask1 = new InventoryTask("foo_id_1", mock(PipelineExecuteEngine.class), mock(PipelineExecuteEngine.class), mock(Dumper.class), mock(Importer.class), finishedPosition);
+        InventoryTask actualTask2 = new InventoryTask("foo_id_2", mock(PipelineExecuteEngine.class), mock(PipelineExecuteEngine.class), mock(Dumper.class), mock(Importer.class), unfinishedPosition);
         assertFalse(PipelineJobProgressDetector.isAllInventoryTasksFinished(Arrays.asList(actualTask1, actualTask2)));
     }
     
     @Test
     void assertAllInventoryTasksAreFinished() {
         AtomicReference<IngestPosition> finishedPosition = new AtomicReference<>(new IngestFinishedPosition());
-        InventoryTask actualTask1 = new InventoryTask("foo_id_1", mock(ExecuteEngine.class), mock(ExecuteEngine.class), mock(Dumper.class), mock(Importer.class), finishedPosition);
-        InventoryTask actualTask2 = new InventoryTask("foo_id_2", mock(ExecuteEngine.class), mock(ExecuteEngine.class), mock(Dumper.class), mock(Importer.class), finishedPosition);
+        InventoryTask actualTask1 = new InventoryTask("foo_id_1", mock(PipelineExecuteEngine.class), mock(PipelineExecuteEngine.class), mock(Dumper.class), mock(Importer.class), finishedPosition);
+        InventoryTask actualTask2 = new InventoryTask("foo_id_2", mock(PipelineExecuteEngine.class), mock(PipelineExecuteEngine.class), mock(Dumper.class), mock(Importer.class), finishedPosition);
         assertTrue(PipelineJobProgressDetector.isAllInventoryTasksFinished(Arrays.asList(actualTask1, actualTask2)));
     }
     

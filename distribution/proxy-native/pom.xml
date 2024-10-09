@@ -24,11 +24,14 @@
         <version>5.5.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-native-distribution</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <properties>
-        <imageName>apache-shardingsphere-proxy-native</imageName>
-        <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
+        <proxy.native.image.name>proxy-native</proxy.native.image.name>
+        <proxy.native.image.platform>linux/amd64,linux/arm64</proxy.native.image.platform>
+        <proxy.native.image.repository>apache/shardingsphere-proxy-native</proxy.native.image.repository>
+        <proxy.native.image.tag>${project.version}</proxy.native.image.tag>
     </properties>
     
     <dependencies>
@@ -86,6 +89,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
+                            <imageName>${proxy.native.image.name}</imageName>
                             <buildArgs>
                                 <buildArg>-H:+AddAllCharsets</buildArg>
                             </buildArgs>
@@ -116,7 +120,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>shardingsphere-proxy-native-bin</id>
+                                <id>build and package</id>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
@@ -133,10 +137,6 @@
         </profile>
         <profile>
             <id>docker.native</id>
-            <properties>
-                <proxy.image.repository>${native.image.repository}</proxy.image.repository>
-                <proxy.image.tag>${project.version}</proxy.image.tag>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -145,7 +145,7 @@
                         <version>${exec-maven-plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>build</id>
+                                <id>build docker image</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -154,16 +154,13 @@
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>build</argument>
-                                        <argument>--pull</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
-                                        <argument>--build-arg</argument>
-                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
+                                        <argument>OUTPUT_DIRECTORY_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
-                                        <argument>${proxy.image.repository}:${proxy.image.tag}</argument>
+                                        <argument>${proxy.native.image.repository}:${proxy.native.image.tag}</argument>
                                         <argument>-t</argument>
-                                        <argument>${proxy.image.repository}:latest</argument>
+                                        <argument>${proxy.native.image.repository}:latest</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -174,11 +171,6 @@
         </profile>
         <profile>
             <id>docker.buildx.push.native</id>
-            <properties>
-                <proxy.image.platform>linux/amd64,linux/arm64</proxy.image.platform>
-                <proxy.image.repository>${native.image.repository}</proxy.image.repository>
-                <proxy.image.tag>${project.version}</proxy.image.tag>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -197,40 +189,17 @@
                                     <arguments>
                                         <argument>buildx</argument>
                                         <argument>create</argument>
-                                        <argument>--use</argument>
                                         <argument>--driver</argument>
                                         <argument>docker-container</argument>
                                         <argument>--name</argument>
                                         <argument>shardingsphere-builder</argument>
                                         <argument>--platform</argument>
-                                        <argument>${proxy.image.platform}</argument>
+                                        <argument>${proxy.native.image.platform}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>build</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
-                                    <executable>docker</executable>
-                                    <arguments>
-                                        <argument>buildx</argument>
-                                        <argument>build</argument>
-                                        <argument>--pull</argument>
-                                        <argument>--platform</argument>
-                                        <argument>${proxy.image.platform}</argument>
-                                        <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
-                                        <argument>--build-arg</argument>
-                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
-                                        <argument>.</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>push</id>
+                                <id>build and push docker image</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -241,17 +210,17 @@
                                         <argument>buildx</argument>
                                         <argument>build</argument>
                                         <argument>--push</argument>
+                                        <argument>--builder</argument>
+                                        <argument>shardingsphere-builder</argument>
                                         <argument>--platform</argument>
-                                        <argument>${proxy.image.platform}</argument>
+                                        <argument>${proxy.native.image.platform}</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
-                                        <argument>--build-arg</argument>
-                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
+                                        <argument>OUTPUT_DIRECTORY_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
-                                        <argument>${proxy.image.repository}:${proxy.image.tag}</argument>
+                                        <argument>${proxy.native.image.repository}:${proxy.native.image.tag}</argument>
                                         <argument>-t</argument>
-                                        <argument>${proxy.image.repository}:latest</argument>
+                                        <argument>${proxy.native.image.repository}:latest</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

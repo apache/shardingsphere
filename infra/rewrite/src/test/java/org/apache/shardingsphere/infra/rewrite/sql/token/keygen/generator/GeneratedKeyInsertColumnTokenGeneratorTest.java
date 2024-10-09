@@ -19,13 +19,17 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator;
 
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,17 +37,50 @@ import static org.mockito.Mockito.when;
 class GeneratedKeyInsertColumnTokenGeneratorTest {
     
     @Test
+    void assertIsNotGenerateSQLTokenWithoutInsertColumns() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.empty());
+        assertFalse(new GeneratedKeyInsertColumnTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithEmptyInsertColumns() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(new InsertColumnsSegment(0, 0, Collections.emptyList())));
+        assertFalse(new GeneratedKeyInsertColumnTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithoutGeneratedKeyContext() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(new InsertColumnsSegment(0, 0, Collections.singleton(mock(ColumnSegment.class)))));
+        when(statementContext.getGeneratedKeyContext()).thenReturn(Optional.empty());
+        assertFalse(new GeneratedKeyInsertColumnTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithEmptyGeneratedValues() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(new InsertColumnsSegment(0, 0, Collections.singleton(mock(ColumnSegment.class)))));
+        when(statementContext.getGeneratedKeyContext()).thenReturn(Optional.of(new GeneratedKeyContext("foo_col", false)));
+        assertFalse(new GeneratedKeyInsertColumnTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
+    void assertIsGenerateSQLToken() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(new InsertColumnsSegment(0, 0, Collections.singleton(mock(ColumnSegment.class)))));
+        GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_col", false);
+        generatedKeyContext.getGeneratedValues().add(1);
+        when(statementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        assertTrue(new GeneratedKeyInsertColumnTokenGenerator().isGenerateSQLToken(statementContext));
+    }
+    
+    @Test
     void assertGenerateSQLToken() {
-        GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class);
-        final String testColumnName = "TEST_COLUMN_NAME";
-        when(generatedKeyContext.getColumnName()).thenReturn(testColumnName);
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-        InsertColumnsSegment insertColumnsSegment = mock(InsertColumnsSegment.class);
-        final int testStopIndex = 4;
-        when(insertColumnsSegment.getStopIndex()).thenReturn(testStopIndex);
-        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(insertColumnsSegment));
-        GeneratedKeyInsertColumnTokenGenerator generatedKeyInsertColumnTokenGenerator = new GeneratedKeyInsertColumnTokenGenerator();
-        assertThat(generatedKeyInsertColumnTokenGenerator.generateSQLToken(insertStatementContext).toString(), is(", " + testColumnName));
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getGeneratedKeyContext()).thenReturn(Optional.of(new GeneratedKeyContext("foo_col", false)));
+        when(statementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(new InsertColumnsSegment(0, 4, Collections.emptyList())));
+        assertThat(new GeneratedKeyInsertColumnTokenGenerator().generateSQLToken(statementContext).toString(), is(", foo_col"));
     }
 }

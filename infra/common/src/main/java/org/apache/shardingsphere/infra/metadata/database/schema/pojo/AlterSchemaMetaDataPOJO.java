@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * alter schema metadata pojo.
+ * Alter schema metadata pojo.
  */
 @RequiredArgsConstructor
 @Getter

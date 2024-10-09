@@ -12,7 +12,7 @@ The `CREATE MASK RULE` syntax is used to create a mask rule.
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-CreateEncryptRule ::=
+CreateMaskRule ::=
   'CREATE' 'MASK' 'RULE' ifNotExists? maskRuleDefinition (',' maskRuleDefinition)*
 
 ifNotExists ::=

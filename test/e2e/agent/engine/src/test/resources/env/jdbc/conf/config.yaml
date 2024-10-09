@@ -22,14 +22,14 @@ dataSources:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://mysql.host:3306/demo_ds_0?useSSL=false&characterEncoding=utf-8
-    username: root
-    password: 123456
+    username: test_user
+    password: Test@123
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://mysql.host:3306/demo_ds_1?useSSL=false&characterEncoding=utf-8
-    username: root
-    password: 123456
+    username: test_user
+    password: Test@123
 
 rules:
   - !SHARDING

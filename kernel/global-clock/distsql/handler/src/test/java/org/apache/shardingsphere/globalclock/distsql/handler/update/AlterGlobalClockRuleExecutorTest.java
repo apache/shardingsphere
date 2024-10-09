@@ -17,45 +17,45 @@
 
 package org.apache.shardingsphere.globalclock.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
-import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.GlobalRuleDefinitionExecutorTest;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.sql.SQLException;
 import java.util.Properties;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
-class AlterGlobalClockRuleExecutorTest {
+class AlterGlobalClockRuleExecutorTest extends GlobalRuleDefinitionExecutorTest {
     
-    private DistSQLUpdateExecuteEngine engine;
-    
-    @BeforeEach
-    void setUp() {
-        AlterGlobalClockRuleStatement sqlStatement = new AlterGlobalClockRuleStatement("TSO", "redis", Boolean.TRUE, new Properties());
-        engine = new DistSQLUpdateExecuteEngine(sqlStatement, null, mockContextManager());
+    AlterGlobalClockRuleExecutorTest() {
+        super(mock(GlobalClockRule.class));
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        GlobalClockRule rule = mock(GlobalClockRule.class);
-        GlobalRuleDefinitionExecutor executor = mock(GlobalRuleDefinitionExecutor.class);
-        when(executor.getRuleClass()).thenReturn(GlobalClockRule.class);
-        when(rule.getConfiguration()).thenReturn(new DefaultGlobalClockRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass())).thenReturn(rule);
-        return result;
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig, final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig) throws SQLException {
+        assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, null);
     }
     
-    @Test
-    void assertExecute() {
-        assertDoesNotThrow(() -> engine.executeUpdate());
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.arguments("normal",
+                    new GlobalClockRuleConfiguration("TSO", "local", false, new Properties()),
+                    new AlterGlobalClockRuleStatement("TSO", "redis", true, new Properties()),
+                    new GlobalClockRuleConfiguration("TSO", "redis", true, new Properties())));
+        }
     }
 }

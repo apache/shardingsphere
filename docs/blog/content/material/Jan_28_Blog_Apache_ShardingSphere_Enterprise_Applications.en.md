@@ -24,7 +24,7 @@ Keep engineers expressed great interest in Apache ShardingSphere 5.0. At the eve
 
 ## Database Plus: Freeing DBAs and Developers
 
-Database Plus is a design concept of the distributed database system. By building a standard layer and ecosystem for use and interaction above fragmented heterogeneous databases, and by multiplying and expanding computing capabilities (e.g. data sharing, data encryption and decryption), all the interaction between applications and databases is oriented to the standard layer built by Database Plus. This results in shielding the differentiated impact of database fragmentation on upper layer transactions.
+Database Plus is a design concept of the distributed database system. By building a standard layer and ecosystem for use and interaction above fragmented heterogeneous databases, and by multiplying and expanding computing capabilities (e.g. data sharding, data encryption and decryption), all the interaction between applications and databases is oriented to the standard layer built by Database Plus. This results in shielding the differentiated impact of database fragmentation on upper layer transactions.
 
 Pan believes that the global database industry has boomed thanks in large to the following two reasons:
 

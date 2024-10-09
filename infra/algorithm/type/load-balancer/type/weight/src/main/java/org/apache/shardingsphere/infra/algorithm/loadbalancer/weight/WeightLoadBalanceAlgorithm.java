@@ -48,8 +48,7 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
         ShardingSpherePreconditions.checkNotEmpty(availableTargetNames, () -> new AlgorithmInitializationException(this, "Available target is required."));
         for (String each : availableTargetNames) {
             String weight = props.getProperty(each);
-            ShardingSpherePreconditions.checkNotNull(weight,
-                    () -> new AlgorithmInitializationException(this, "Weight of available target `%s` is required.", each));
+            ShardingSpherePreconditions.checkNotNull(weight, () -> new AlgorithmInitializationException(this, "Weight of available target `%s` is required.", each));
             try {
                 weightConfigMap.put(each, Double.parseDouble(weight));
             } catch (final NumberFormatException ex) {

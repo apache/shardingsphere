@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConne
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
+import org.apache.shardingsphere.transaction.savepoint.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -137,6 +137,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 connectionTransaction.commit();
             }
         } finally {
+            methodInvocationRecorder.remove("setSavepoint");
             for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
@@ -158,6 +159,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 connectionTransaction.rollback();
             }
         } finally {
+            methodInvocationRecorder.remove("setSavepoint");
             for (Connection each : getCachedConnections()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
@@ -215,6 +217,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        methodInvocationRecorder.remove("setSavepoint");
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepoint.getSavepointName());
         }

@@ -17,55 +17,63 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.test.it.distsql.handler.engine.update.GlobalRuleDefinitionExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.distsql.handler.fixture.ShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.util.Collections;
+import java.sql.SQLException;
 import java.util.Properties;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShardingSphereServiceLoader.class)
-class AlterTransactionRuleExecutorTest {
+class AlterTransactionRuleExecutorTest extends GlobalRuleDefinitionExecutorTest {
     
-    @Test
-    void assertExecuteWithXA() {
-        when(ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributionTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
-        AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
-        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement(
-                "XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))));
-        TransactionRule rule = mock(TransactionRule.class);
-        executor.setRule(rule);
-        TransactionRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        assertThat(actual.getDefaultType(), is("XA"));
-        assertThat(actual.getProviderType(), is("Atomikos"));
-        assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("host"), is("127.0.0.1"));
-        assertThat(actual.getProps().getProperty("databaseName"), is("jbossts"));
+    AlterTransactionRuleExecutorTest() {
+        super(mock(TransactionRule.class));
     }
     
-    @Test
-    void assertExecuteWithLocal() {
-        AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
-        TransactionRule rule = mock(TransactionRule.class);
-        executor.setRule(rule);
-        TransactionRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
-        assertThat(actual.getDefaultType(), is("LOCAL"));
-        assertThat(actual.getProviderType(), is(""));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig,
+                             final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
+        assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, expectedException);
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.arguments("withInvalidTransactionType",
+                            new TransactionRuleConfiguration("", "", new Properties()),
+                            new AlterTransactionRuleStatement("Invalid", new TransactionProviderSegment("", new Properties())),
+                            null, InvalidRuleConfigurationException.class),
+                    Arguments.arguments("withNotExistedDistributedTransactionType",
+                            new TransactionRuleConfiguration("", "", new Properties()),
+                            new AlterTransactionRuleStatement("BASE", new TransactionProviderSegment("", new Properties())),
+                            null, InvalidRuleConfigurationException.class),
+                    Arguments.arguments("withNotExistedXATransactionProvider",
+                            new TransactionRuleConfiguration("", "", new Properties()),
+                            new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Invalid", new Properties())),
+                            null, InvalidRuleConfigurationException.class),
+                    Arguments.arguments("normal",
+                            new TransactionRuleConfiguration("XA", "Atomikos", new Properties()),
+                            new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("k", "v")))),
+                            new TransactionRuleConfiguration("XA", "Atomikos", PropertiesBuilder.build(new Property("k", "v"))), null));
+        }
     }
 }

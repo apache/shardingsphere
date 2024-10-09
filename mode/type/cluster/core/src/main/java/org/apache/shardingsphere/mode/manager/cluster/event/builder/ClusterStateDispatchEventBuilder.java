@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.StatesNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -36,21 +34,18 @@ import java.util.Optional;
 public final class ClusterStateDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
     
     @Override
-    public Collection<String> getSubscribedKeys() {
-        return Collections.singleton(ComputeNode.getClusterStateNodePath());
+    public String getSubscribedKey() {
+        return StatesNode.getClusterStateNodePath();
     }
     
     @Override
     public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        String clusterStatePath = ComputeNode.getClusterStateNodePath();
-        return Strings.isNullOrEmpty(clusterStatePath) || Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStateNodePath())
-                ? Optional.empty()
-                : Optional.of(new ClusterStateEvent(getClusterState(event)));
+        return event.getKey().equals(StatesNode.getClusterStateNodePath()) ? Optional.of(new ClusterStateEvent(getClusterState(event))) : Optional.empty();
     }
     
     private ClusterState getClusterState(final DataChangedEvent event) {

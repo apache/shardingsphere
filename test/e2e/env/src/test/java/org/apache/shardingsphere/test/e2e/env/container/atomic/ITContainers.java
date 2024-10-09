@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic;
 
-import com.alibaba.dcm.DnsCacheManipulator;
-import com.github.dockerjava.api.model.ContainerNetwork;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
@@ -32,6 +31,7 @@ import org.testcontainers.shaded.org.awaitility.Awaitility;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -52,10 +52,12 @@ public final class ITContainers implements Startable {
     
     private volatile boolean started;
     
+    public ITContainers() {
+        this.scenario = null;
+    }
+    
     public ITContainers(final String scenario) {
         this.scenario = scenario;
-        DnsCacheManipulator.setDnsCachePolicy(-1);
-        System.setProperty("socksNonProxyHosts", "localhost|127.*|[::1]|0.0.0.0|[::0]|*.host");
     }
     
     /**
@@ -75,7 +77,7 @@ public final class ITContainers implements Startable {
             dockerContainer.setNetwork(network);
             String networkAlias = getNetworkAlias(container);
             dockerContainer.setNetworkAliases(Collections.singletonList(networkAlias));
-            String loggerName = String.join(":", scenario, dockerContainer.getName());
+            String loggerName = Lists.newArrayList(scenario, dockerContainer.getName()).stream().filter(Objects::nonNull).collect(Collectors.joining(":"));
             dockerContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), false));
             dockerContainers.add(dockerContainer);
         }
@@ -105,8 +107,6 @@ public final class ITContainers implements Startable {
     private void start(final DockerITContainer dockerITContainer) {
         log.info("Starting container {}...", dockerITContainer.getName());
         dockerITContainer.start();
-        dockerITContainer.getNetworkAliases().forEach(each -> DnsCacheManipulator.setDnsCache(each,
-                dockerITContainer.getContainerInfo().getNetworkSettings().getNetworks().values().stream().map(ContainerNetwork::getIpAddress).collect(Collectors.toList()).toArray(new String[0])));
     }
     
     private void waitUntilReady() {
@@ -132,6 +132,5 @@ public final class ITContainers implements Startable {
         embeddedContainers.forEach(Startable::close);
         dockerContainers.forEach(Startable::close);
         network.close();
-        DnsCacheManipulator.clearDnsCache();
     }
 }

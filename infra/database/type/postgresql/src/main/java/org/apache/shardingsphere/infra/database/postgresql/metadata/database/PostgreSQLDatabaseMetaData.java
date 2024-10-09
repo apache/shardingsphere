@@ -49,7 +49,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.LAST;
+        return NullsOrderType.HIGH;
     }
     
     @Override

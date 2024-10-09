@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.Inst
  * Compute node state subscriber.
  */
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public final class ComputeNodeStateSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
@@ -43,8 +44,8 @@ public final class ComputeNodeStateSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(contextManager.getPersistServiceFacade()
-                .getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
+        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(
+                contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**

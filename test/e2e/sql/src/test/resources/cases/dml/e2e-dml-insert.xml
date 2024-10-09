@@ -96,6 +96,10 @@
         <assertion parameters="999:int, 10:int, insertALL:String, 998:int, 10:int, insertALL:String" expected-data-file="batch_insert_into_order_with_select.xml" />
     </test-case>
     
+    <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) SELECT ?, user_name, password, email, telephone, creation_date FROM t_user where user_name = ? and user_id = ?" scenario-types="encrypt" db-types="MySQL">
+        <assertion parameters="40:int, lisi:String, 11:int" expected-data-file="insert_select_user_table.xml" />
+    </test-case>
+    
     <test-case sql="INSERT INTO t_order_item VALUES (?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" expected-generated-key-data-file="insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>

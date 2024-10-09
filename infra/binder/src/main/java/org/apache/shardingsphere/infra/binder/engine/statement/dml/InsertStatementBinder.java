@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertS
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +43,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     public InsertStatement bind(final InsertStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         InsertStatement result = copy(sqlStatement);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
-        Optional.ofNullable(sqlStatement.getTable()).ifPresent(optional -> result.setTable(SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)));
+        sqlStatement.getTable().ifPresent(optional -> result.setTable(SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)));
         if (sqlStatement.getInsertColumns().isPresent() && !sqlStatement.getInsertColumns().get().getColumns().isEmpty()) {
             result.setInsertColumns(InsertColumnsSegmentBinder.bind(sqlStatement.getInsertColumns().get(), binderContext, tableBinderContexts));
         } else {

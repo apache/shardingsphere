@@ -56,13 +56,9 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public int generate(final Properties props) {
-        int result = loadExistedWorkerId().orElseGet(this::generateNewWorkerId);
+        int result = computeNodePersistService.loadInstanceWorkerId(instanceId).orElseGet(this::generateNewWorkerId);
         logWarning(result, props);
         return result;
-    }
-    
-    private Optional<Integer> loadExistedWorkerId() {
-        return computeNodePersistService.loadInstanceWorkerId(instanceId);
     }
     
     private int generateNewWorkerId() {
@@ -78,7 +74,8 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     private Optional<Integer> generateAvailableWorkerId() {
         Collection<Integer> assignedWorkerIds = computeNodePersistService.getAssignedWorkerIds();
         ShardingSpherePreconditions.checkState(assignedWorkerIds.size() <= MAX_WORKER_ID + 1, WorkerIdAssignedException::new);
-        PriorityQueue<Integer> availableWorkerIds = IntStream.range(0, 1024).boxed().filter(each -> !assignedWorkerIds.contains(each)).collect(Collectors.toCollection(PriorityQueue::new));
+        PriorityQueue<Integer> availableWorkerIds = IntStream.range(0, MAX_WORKER_ID + 1)
+                .boxed().filter(each -> !assignedWorkerIds.contains(each)).collect(Collectors.toCollection(PriorityQueue::new));
         Integer preselectedWorkerId = availableWorkerIds.poll();
         Preconditions.checkNotNull(preselectedWorkerId, "Preselected worker-id can not be null.");
         return reservationPersistService.reserveWorkerId(preselectedWorkerId, instanceId);

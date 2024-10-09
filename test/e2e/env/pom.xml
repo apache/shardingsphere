@@ -43,12 +43,6 @@
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>dns-cache-manipulator</artifactId>
-            <version>1.8.2</version>
-        </dependency>
     </dependencies>
     
     <build>

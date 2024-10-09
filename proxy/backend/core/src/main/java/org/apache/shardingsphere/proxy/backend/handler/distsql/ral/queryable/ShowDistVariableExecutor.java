@@ -25,14 +25,14 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVa
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.util.LoggingUtils;
+import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
 import java.util.Arrays;
@@ -78,7 +78,7 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     }
     
     private String getLoggingPropsValue(final ShardingSphereMetaData metaData, final String variableName) {
-        Optional<ShardingSphereLogger> sqlLogger = LoggingUtils.getSQLLogger(metaData.getGlobalRuleMetaData());
+        Optional<ShardingSphereLogger> sqlLogger = metaData.getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger);
         if (sqlLogger.isPresent()) {
             Properties props = sqlLogger.get().getProps();
             switch (variableName) {

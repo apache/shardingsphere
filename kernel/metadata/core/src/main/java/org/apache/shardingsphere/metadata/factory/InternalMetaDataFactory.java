@@ -38,23 +38,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class InternalMetaDataFactory {
     
     /**
-     * Create database meta data for governance center.
+     * Create database meta data from governance center.
      *
      * @param databaseName database name
      * @param persistService meta data persist service
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param computeNodeInstanceContext compute node instance context
-     * @return database meta data
+     * @return database
      */
     public static ShardingSphereDatabase create(final String databaseName, final MetaDataPersistService persistService, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        return ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, computeNodeInstanceContext, persistService.getDatabaseMetaDataService().loadSchemas(databaseName));
+        return ShardingSphereDatabase.create(databaseName,
+                protocolType, databaseConfig, computeNodeInstanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName));
     }
     
     /**
-     * Create databases meta data for governance center.
+     * Create databases meta data from governance center.
      *
      * @param persistService meta data persist service
      * @param databaseConfigMap database configuration map
@@ -73,11 +74,9 @@ public final class InternalMetaDataFactory {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
-            if (entry.getValue().getStorageUnits().isEmpty()) {
-                result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, props));
-            } else {
-                result.put(databaseName.toLowerCase(), create(databaseName, persistService, entry.getValue(), props, computeNodeInstanceContext));
-            }
+            result.put(databaseName.toLowerCase(), entry.getValue().getStorageUnits().isEmpty()
+                    ? ShardingSphereDatabase.create(databaseName, protocolType, props)
+                    : create(databaseName, persistService, entry.getValue(), props, computeNodeInstanceContext));
         }
         return result;
     }

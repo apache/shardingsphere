@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.route.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -66,15 +65,15 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
-                                           final BroadcastRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                           final BroadcastRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext, connectionContext).route(result, rule);
+        BroadcastRouteEngineFactory.newInstance(rule, database, queryContext).route(result, rule);
         return result;
     }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule,
-                                     final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                     final ConfigurationProperties props) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {

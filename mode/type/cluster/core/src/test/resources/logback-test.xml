@@ -28,6 +28,7 @@
     </logger>
     <logger name="org.apache.shardingsphere.schedule.core.ModeScheduleContext" level="error" />
     <logger name="org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService" level="off" />
+    <logger name="org.apache.shardingsphere.mode.manager.cluster.workerid.ClusterWorkerIdGenerator" level="off" />
     
     <root>
         <level value="error" />

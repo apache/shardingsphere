@@ -90,7 +90,7 @@ collectionExpr
     ;
 
 update
-    : UPDATE hint? updateSpecification alias? updateSetClause whereClause? returningClause? errorLoggingClause?
+    : UPDATE hint? updateSpecification (AS? alias)? updateSetClause whereClause? returningClause? errorLoggingClause?
     ;
 
 updateSpecification

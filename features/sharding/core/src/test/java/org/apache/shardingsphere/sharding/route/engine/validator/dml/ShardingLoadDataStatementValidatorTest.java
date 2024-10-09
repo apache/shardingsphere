@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingLoadDataStatementValidator;
@@ -36,8 +37,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,8 +54,8 @@ class ShardingLoadDataStatementValidatorTest {
     @Test
     void assertPreValidateLoadDataWithSingleTable() {
         MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(() -> new ShardingLoadDataStatementValidator().preValidate(
-                shardingRule, new LoadDataStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingLoadDataStatementValidator().preValidate(shardingRule, new LoadDataStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -62,7 +63,7 @@ class ShardingLoadDataStatementValidatorTest {
         MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadDataStatementValidator().preValidate(shardingRule, new LoadDataStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
+                () -> new ShardingLoadDataStatementValidator().preValidate(shardingRule, new LoadDataStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), mock(HintValueContext.class),
                         Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
     }
 }

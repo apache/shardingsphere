@@ -19,11 +19,12 @@ package org.apache.shardingsphere.mode.manager.cluster.event.builder;
 
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
+import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -31,45 +32,74 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ComputeNodeStateDispatchEventBuilderTest {
     
+    private final ComputeNodeStateDispatchEventBuilder builder = new ComputeNodeStateDispatchEventBuilder();
+    
     @Test
-    void assertCreateEventWhenDisabled() {
-        Optional<DispatchEvent> actual = new ComputeNodeStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
+    void assertGetSubscribedKey() {
+        assertThat(builder.getSubscribedKey(), is("/nodes/compute_nodes"));
+    }
+    
+    @Test
+    void assertBuildComputeNodeInstanceStateChangedEvent() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
         assertTrue(actual.isPresent());
+        assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
         assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus(), is(InstanceState.CIRCUIT_BREAK.name()));
-        assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
     }
     
     @Test
-    void assertCreateEventWhenEnabled() {
-        Optional<DispatchEvent> actual = new ComputeNodeStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertTrue(((ComputeNodeInstanceStateChangedEvent) actual.get()).getStatus().isEmpty());
-        assertThat(((ComputeNodeInstanceStateChangedEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
+    void assertBuildWithEmptyInstanceId() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status", "", Type.ADDED));
+        assertFalse(actual.isPresent());
     }
     
     @Test
-    void assertCreateAddLabelEvent() {
-        Optional<DispatchEvent> actual = new ComputeNodeStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
-                        YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
+    void assertBuildWithDeleteInstanceIdEvent() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.DELETED));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertBuildLabelsEventWithLabels() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id", YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
         assertTrue(actual.isPresent());
-        assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
         assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
+        assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
     }
     
     @Test
-    void assertCreateUpdateLabelsEvent() {
-        Optional<DispatchEvent> actual = new ComputeNodeStateDispatchEventBuilder()
-                .build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
-                        YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
+    void assertBuildLabelsEventWithoutLabels() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id", "", Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
         assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
+        assertTrue(((LabelsEvent) actual.get()).getLabels().isEmpty());
+    }
+    
+    @Test
+    void assertBuildWithDeleteLabelsEvent() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id", "", Type.DELETED));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertBuildWorkerIdEventWithWorkerId() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/worker_id/foo_instance_id", "1", Type.ADDED));
+        assertTrue(actual.isPresent());
+        assertThat(((WorkerIdEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
+        assertThat(((WorkerIdEvent) actual.get()).getWorkerId(), is(1));
+    }
+    
+    @Test
+    void assertBuildWorkerIdEventWithoutWorkerId() {
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/nodes/compute_nodes/worker_id/foo_instance_id", "", Type.DELETED));
+        assertTrue(actual.isPresent());
+        assertThat(((WorkerIdEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
+        assertNull(((WorkerIdEvent) actual.get()).getWorkerId());
     }
 }

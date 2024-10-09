@@ -21,7 +21,6 @@ package org.apache.shardingsphere.mode.persist.pojo;
  * Listener assisted type.
  */
 public enum ListenerAssistedType {
-    CREATE_DATABASE,
     
-    DROP_DATABASE
+    CREATE_DATABASE, DROP_DATABASE
 }

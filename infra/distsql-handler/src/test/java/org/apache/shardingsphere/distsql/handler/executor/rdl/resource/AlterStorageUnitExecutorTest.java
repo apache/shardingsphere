@@ -59,7 +59,7 @@ class AlterStorageUnitExecutorTest {
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         executor.setDatabase(database);
-        Plugins.getMemberAccessor().set(executor.getClass().getDeclaredField("validateHandler"), executor, mock(DistSQLDataSourcePoolPropertiesValidator.class));
+        Plugins.getMemberAccessor().set(AlterStorageUnitExecutor.class.getDeclaredField("validateHandler"), executor, mock(DistSQLDataSourcePoolPropertiesValidator.class));
     }
     
     @Test

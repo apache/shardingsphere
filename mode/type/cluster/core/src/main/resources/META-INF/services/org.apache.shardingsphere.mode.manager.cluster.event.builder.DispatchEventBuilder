@@ -23,3 +23,5 @@ org.apache.shardingsphere.mode.manager.cluster.event.builder.GlobalRuleDispatchE
 org.apache.shardingsphere.mode.manager.cluster.event.builder.PropertiesDispatchEventBuilder
 org.apache.shardingsphere.mode.manager.cluster.event.builder.ListenerAssistedDispatchEventBuilder
 org.apache.shardingsphere.mode.manager.cluster.event.builder.ComputeNodeOnlineDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.event.builder.ShowProcessListDispatchEventBuilder
+org.apache.shardingsphere.mode.manager.cluster.event.builder.KillProcessDispatchEventBuilder

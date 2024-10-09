@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.route;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -33,30 +32,30 @@ import java.util.Collection;
 /**
  * Data source router for readwrite-splitting.
  */
-@RequiredArgsConstructor
 public final class ReadwriteSplittingDataSourceRouter {
     
     private final ReadwriteSplittingDataSourceGroupRule rule;
     
-    private final ConnectionContext connectionContext;
+    private final Collection<QualifiedReadwriteSplittingDataSourceRouter> qualifiedRouters;
+    
+    public ReadwriteSplittingDataSourceRouter(final ReadwriteSplittingDataSourceGroupRule rule, final ConnectionContext connectionContext) {
+        this.rule = rule;
+        qualifiedRouters = Arrays.asList(new QualifiedReadwriteSplittingPrimaryDataSourceRouter(), new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext));
+    }
     
     /**
      * Route.
      *
      * @param sqlStatementContext SQL statement context
      * @param hintValueContext hint value context
-     * @return data source name
+     * @return routed data source name
      */
     public String route(final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
-        for (QualifiedReadwriteSplittingDataSourceRouter each : getQualifiedRouters(connectionContext)) {
+        for (QualifiedReadwriteSplittingDataSourceRouter each : qualifiedRouters) {
             if (each.isQualified(sqlStatementContext, rule, hintValueContext)) {
                 return each.route(rule);
             }
         }
         return new StandardReadwriteSplittingDataSourceRouter().route(rule);
-    }
-    
-    private Collection<QualifiedReadwriteSplittingDataSourceRouter> getQualifiedRouters(final ConnectionContext connectionContext) {
-        return Arrays.asList(new QualifiedReadwriteSplittingPrimaryDataSourceRouter(), new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext));
     }
 }

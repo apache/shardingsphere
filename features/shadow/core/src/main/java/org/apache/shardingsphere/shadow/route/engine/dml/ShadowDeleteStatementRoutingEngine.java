@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
@@ -39,8 +40,8 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLS
     
     private final List<Object> parameters;
     
-    public ShadowDeleteStatementRoutingEngine(final DeleteStatementContext sqlStatementContext, final List<Object> parameters) {
-        super(sqlStatementContext, ShadowOperationType.DELETE);
+    public ShadowDeleteStatementRoutingEngine(final DeleteStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
+        super(sqlStatementContext, hintValueContext, ShadowOperationType.DELETE);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }

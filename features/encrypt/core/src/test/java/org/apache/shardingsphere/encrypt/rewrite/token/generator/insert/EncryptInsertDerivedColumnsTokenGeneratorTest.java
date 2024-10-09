@@ -18,13 +18,16 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -62,7 +65,7 @@ class EncryptInsertDerivedColumnsTokenGeneratorTest {
     void assertGenerateSQLTokensNotContainColumns() {
         EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator(mockEncryptRule());
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("foo_tbl");
+        when(insertStatementContext.getSqlStatement().getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
         assertTrue(tokenGenerator.generateSQLTokens(insertStatementContext).isEmpty());
     }
     
@@ -95,7 +98,7 @@ class EncryptInsertDerivedColumnsTokenGeneratorTest {
     
     private InsertStatementContext mockInsertStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("foo_tbl");
+        when(result.getSqlStatement().getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
         ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
         when(columnSegment.getIdentifier().getValue()).thenReturn("foo_col");
         when(result.getSqlStatement().getColumns()).thenReturn(Collections.singleton(columnSegment));

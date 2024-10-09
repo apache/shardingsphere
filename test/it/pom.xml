@@ -30,6 +30,7 @@
     <modules>
         <module>spi</module>
         <module>yaml</module>
+        <module>distsql</module>
         <module>parser</module>
         <module>optimizer</module>
         <module>rewriter</module>

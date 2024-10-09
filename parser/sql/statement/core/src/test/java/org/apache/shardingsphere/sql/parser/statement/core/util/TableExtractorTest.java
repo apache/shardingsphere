@@ -115,7 +115,7 @@ class TableExtractorTest {
     @Test
     void assertExtractTablesFromInsert() {
         InsertStatement insertStatement = mock(InsertStatement.class);
-        when(insertStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
+        when(insertStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order")))));
         Collection<ColumnAssignmentSegment> assignmentSegments = new LinkedList<>();
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));

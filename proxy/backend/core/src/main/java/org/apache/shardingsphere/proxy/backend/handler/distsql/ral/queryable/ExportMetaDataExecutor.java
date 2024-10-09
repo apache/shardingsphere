@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
@@ -129,11 +128,8 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
     private void generateSnapshotInfo(final ShardingSphereMetaData metaData, final ExportedClusterInfo exportedClusterInfo) {
         GlobalClockRule globalClockRule = metaData.getGlobalRuleMetaData().getSingleRule(GlobalClockRule.class);
         if (globalClockRule.getConfiguration().isEnabled()) {
-            GlobalClockProvider globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class,
-                    globalClockRule.getGlobalClockProviderType(), globalClockRule.getConfiguration().getProps());
-            long csn = globalClockProvider.getCurrentTimestamp();
             ExportedSnapshotInfo snapshotInfo = new ExportedSnapshotInfo();
-            snapshotInfo.setCsn(String.valueOf(csn));
+            snapshotInfo.setCsn(String.valueOf(globalClockRule.getGlobalClockProvider().map(GlobalClockProvider::getCurrentTimestamp).orElse(0L)));
             snapshotInfo.setCreateTime(LocalDateTime.now());
             exportedClusterInfo.setSnapshotInfo(snapshotInfo);
         }

@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.common.SQLExtensionOperatorTable;
@@ -50,6 +49,6 @@ public final class NotExpressionConverter {
         if (segment.getNotSign().equals(true)) {
             return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.NOT_SIGN, sqlNodes, SqlParserPos.ZERO));
         }
-        return Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, sqlNodes, SqlParserPos.ZERO));
+        return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.NOT, sqlNodes, SqlParserPos.ZERO));
     }
 }

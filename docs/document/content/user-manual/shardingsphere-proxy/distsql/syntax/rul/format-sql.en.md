@@ -12,7 +12,7 @@ The `FORMAT SQL` syntax is used to parse `SQL` and output formatted `SQL` statem
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ParseSql ::=
+FormatSql ::=
   'FORMAT' sqlStatement  
 ```
 {{% /tab %}}

@@ -55,7 +55,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
-        String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        String tableName = insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         GroupedParameterBuilder groupedParamBuilder = (GroupedParameterBuilder) paramBuilder;
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()

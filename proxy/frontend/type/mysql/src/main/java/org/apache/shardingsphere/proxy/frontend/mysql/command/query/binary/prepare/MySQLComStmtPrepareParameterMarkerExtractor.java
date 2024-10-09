@@ -53,7 +53,7 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
     }
     
     private static List<ShardingSphereColumn> findColumnsOfParameterMarkersForInsert(final InsertStatement insertStatement, final ShardingSphereSchema schema) {
-        ShardingSphereTable table = schema.getTable(insertStatement.getTable().getTableName().getIdentifier().getValue());
+        ShardingSphereTable table = schema.getTable(insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse(""));
         List<String> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
         List<ShardingSphereColumn> result = new ArrayList<>(insertStatement.getParameterMarkerSegments().size());
         for (InsertValuesSegment each : insertStatement.getValues()) {

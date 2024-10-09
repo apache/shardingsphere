@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   ci:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
@@ -64,7 +64,7 @@ jobs:
         run: ./mvnw clean package -B -f examples/pom.xml -T1C
   
   ci-jdk8:
-    if: github.repository == 'apache/shardingsphere'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: CI - JDK 8 on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}

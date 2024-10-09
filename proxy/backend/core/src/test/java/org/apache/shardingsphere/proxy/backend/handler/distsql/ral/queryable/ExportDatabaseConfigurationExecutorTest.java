@@ -39,9 +39,11 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -134,20 +136,10 @@ class ExportDatabaseConfigurationExecutorTest {
         return result;
     }
     
-    @SneakyThrows(IOException.class)
+    @SneakyThrows({IOException.class, URISyntaxException.class})
     private String loadExpectedRow() {
-        StringBuilder result = new StringBuilder();
-        String fileName = Objects.requireNonNull(ExportDatabaseConfigurationExecutorTest.class.getResource("/expected/export-database-configuration.yaml")).getFile();
-        try (
-                FileReader fileReader = new FileReader(fileName);
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#") && !line.trim().isEmpty()) {
-                    result.append(line).append(System.lineSeparator());
-                }
-            }
-        }
-        return result.toString();
+        URL url = Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource("/expected/export-database-configuration.yaml"));
+        return Files.readAllLines(Paths.get(url.toURI())).stream().filter(each -> !each.startsWith("#") && !each.trim().isEmpty()).collect(Collectors.joining(System.lineSeparator()))
+                + System.lineSeparator();
     }
 }

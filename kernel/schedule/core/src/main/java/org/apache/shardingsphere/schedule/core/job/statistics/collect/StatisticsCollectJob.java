@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
  * Statistics collect job.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class StatisticsCollectJob implements SimpleJob {
     
     private final ContextManager contextManager;

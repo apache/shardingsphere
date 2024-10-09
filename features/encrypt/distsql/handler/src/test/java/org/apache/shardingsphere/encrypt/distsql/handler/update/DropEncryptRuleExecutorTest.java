@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
@@ -25,10 +25,15 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.distsql.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,60 +45,67 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class DropEncryptRuleExecutorTest {
     
-    private final DropEncryptRuleExecutor executor = new DropEncryptRuleExecutor();
-    
-    @BeforeEach
-    void setUp() {
-        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
-    }
-    
     @Test
-    void assertCheckSQLStatementWithoutToBeDroppedRule() {
+    void assertExecuteUpdateWithoutToBeDroppedRule() {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        executor.setRule(rule);
-        assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatement("t_encrypt")));
+        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateExecuteEngine(createSQLStatement("t_encrypt"), "foo_db", mockContextManager(rule)).executeUpdate());
     }
     
     @Test
-    void assertUpdateCurrentRuleConfiguration() {
+    void assertExecuteUpdate() throws SQLException {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        EncryptRule rule = mock(EncryptRule.class);
+        EncryptRule rule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getAllTableNames().contains(anyString())).thenReturn(true);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
-        executor.setRule(rule);
-        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("T_ENCRYPT"));
-        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
-        assertThat(toBeDroppedRuleConfig.getEncryptors().size(), is(3));
+        ContextManager contextManager = mockContextManager(rule);
+        new DistSQLUpdateExecuteEngine(createSQLStatement("T_ENCRYPT"), "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfiguration));
+    }
+    
+    private boolean assertRuleConfiguration(final EncryptRuleConfiguration actual) {
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getEncryptors().size(), is(3));
+        return true;
     }
     
     @Test
-    void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
+    void assertExecuteUpdateWithInUsedEncryptor() throws SQLException {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
-        EncryptRule rule = mock(EncryptRule.class);
+        EncryptRule rule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
-        executor.setRule(rule);
-        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(createSQLStatement("T_ENCRYPT"));
-        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
-        assertTrue(toBeDroppedRuleConfig.getEncryptors().isEmpty());
+        when(rule.getAllTableNames().contains(anyString())).thenReturn(true);
+        ContextManager contextManager = mockContextManager(rule);
+        new DistSQLUpdateExecuteEngine(createSQLStatement("T_ENCRYPT"), "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutEncryptors));
+    }
+    
+    private boolean assertRuleConfigurationWithoutEncryptors(final EncryptRuleConfiguration actual) {
+        assertThat(actual.getTables().size(), is(1));
+        assertTrue(actual.getEncryptors().isEmpty());
+        return true;
     }
     
     @Test
-    void assertUpdateCurrentRuleConfigurationWithIfExists() {
+    void assertExecuteUpdateWithIfExists() throws SQLException {
         DropEncryptRuleStatement statement = createSQLStatement(true, "t_encrypt_1");
-        EncryptRule rule = mock(EncryptRule.class);
+        EncryptRule rule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         when(rule.getConfiguration()).thenReturn(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        executor.setRule(rule);
-        executor.checkBeforeUpdate(statement);
-        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(statement);
-        assertThat(toBeDroppedRuleConfig.getTables().size(), is(1));
-        assertTrue(toBeDroppedRuleConfig.getEncryptors().isEmpty());
+        when(rule.getAllTableNames().contains(anyString())).thenReturn(true);
+        ContextManager contextManager = mockContextManager(rule);
+        new DistSQLUpdateExecuteEngine(statement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        metaDataManagerPersistService.alterRuleConfiguration(eq("foo_db"), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutEncryptors));
     }
     
     private DropEncryptRuleStatement createSQLStatement(final String tableName) {
@@ -122,5 +134,14 @@ class DropEncryptRuleExecutorTest {
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
         return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig,
                 new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(columnRuleConfig)))), encryptors);
+    }
+    
+    private ContextManager mockContextManager(final EncryptRule rule) {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        return result;
     }
 }

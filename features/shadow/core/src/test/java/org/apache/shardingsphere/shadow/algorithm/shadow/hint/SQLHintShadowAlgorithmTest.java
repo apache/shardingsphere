@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.hint.PreciseHintShadowValue;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,18 +41,7 @@ class SQLHintShadowAlgorithmTest {
     
     @Test
     void assertIsShadow() {
-        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), new PreciseHintShadowValue<>("t_auto", ShadowOperationType.INSERT, "/*shadow:true*/")));
-        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/**/")));
-        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/*")));
-        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("aaa  = bbb")));
-        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue(" SHARDINGSPHERE_HINT: SHADOW=true */")));
-        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue(" SHARDINGSPHERE_HINT: SHADOW=true ")));
-        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue(" SHARDINGSPHERE_HINT: SHADOW=true, aaa=bbb ")));
-        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/* SHARDINGSPHERE_HINT: SHADOW = true ")));
-        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/* SHARDINGSPHERE_HINT: SHADOW=true */")));
-    }
-    
-    private PreciseHintShadowValue<String> createNoteShadowValue(final String sqlNote) {
-        return new PreciseHintShadowValue<>("t_user", ShadowOperationType.HINT_MATCH, sqlNote);
+        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), new PreciseHintShadowValue<>("t_auto", ShadowOperationType.INSERT, true)));
+        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), new PreciseHintShadowValue<>("t_user", ShadowOperationType.HINT_MATCH, true)));
     }
 }

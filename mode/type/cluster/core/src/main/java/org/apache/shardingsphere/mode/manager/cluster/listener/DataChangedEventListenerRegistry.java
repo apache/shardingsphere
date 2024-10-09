@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.listener;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.manager.cluster.event.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -31,14 +31,14 @@ import java.util.Collection;
  */
 public final class DataChangedEventListenerRegistry {
     
-    private final DataChangedEventListenerManager listenerManager;
+    private final ClusterPersistRepository repository;
     
     private final EventBusContext eventBusContext;
     
     private final Collection<String> databaseNames;
     
     public DataChangedEventListenerRegistry(final ContextManager contextManager, final Collection<String> databaseNames) {
-        listenerManager = new DataChangedEventListenerManager((ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository());
+        repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
         this.databaseNames = databaseNames;
     }
@@ -47,31 +47,15 @@ public final class DataChangedEventListenerRegistry {
      * Register data changed event listeners.
      */
     public void register() {
-        registerDatabaseRequiredListeners();
-        for (DispatchEventBuilder<?> each : ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class)) {
-            register(each);
-        }
+        databaseNames.forEach(this::registerDatabaseListeners);
+        ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class).forEach(this::registerGlobalListeners);
     }
     
-    private void register(final DispatchEventBuilder<?> builder) {
-        for (String each : builder.getSubscribedKeys()) {
-            register(each, builder);
-        }
+    private void registerDatabaseListeners(final String databaseName) {
+        repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new DatabaseMetaDataChangedListener(eventBusContext));
     }
     
-    private void register(final String subscribedKey, final DispatchEventBuilder<?> builder) {
-        listenerManager.addListener(subscribedKey, dataChangedEvent -> {
-            if (builder.getSubscribedTypes().contains(dataChangedEvent.getType())) {
-                builder.build(dataChangedEvent).ifPresent(eventBusContext::post);
-            }
-        });
-    }
-    
-    private void registerDatabaseRequiredListeners() {
-        registerMetaDataChangedEventListener();
-    }
-    
-    private void registerMetaDataChangedEventListener() {
-        databaseNames.forEach(each -> listenerManager.addListener(DatabaseMetaDataNode.getDatabaseNamePath(each), new MetaDataChangedListener(eventBusContext)));
+    private void registerGlobalListeners(final DispatchEventBuilder<?> builder) {
+        repository.watch(builder.getSubscribedKey(), new GlobalMetaDataChangedListener(eventBusContext, builder));
     }
 }

@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
-import org.postgresql.jdbc.PSQLSavepoint;
+import org.opengauss.jdbc.PSQLSavepoint;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,7 +49,7 @@ public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     private void assertSavepointNotInTransaction() {
         try (Connection connection = getDataSource().getConnection()) {
             assertThrows(SQLException.class, () -> connection.setSavepoint("point"));
-            assertThrows(SQLException.class, () -> connection.rollback(new org.postgresql.jdbc.PSQLSavepoint("point1")));
+            assertThrows(SQLException.class, () -> connection.rollback(new PSQLSavepoint("point1")));
             assertThrows(SQLException.class, () -> connection.releaseSavepoint(new PSQLSavepoint("point1")));
         }
     }

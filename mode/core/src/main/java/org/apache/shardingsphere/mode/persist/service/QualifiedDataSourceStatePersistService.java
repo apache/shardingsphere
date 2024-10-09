@@ -43,9 +43,9 @@ public final class QualifiedDataSourceStatePersistService {
     /**
      * Load qualified data source states.
      *
-     * @return qualified data source states
+     * @return loaded qualified data source states
      */
-    public Map<String, QualifiedDataSourceState> loadStates() {
+    public Map<String, QualifiedDataSourceState> load() {
         Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(QualifiedDataSourceNode.getRootPath());
         Map<String, QualifiedDataSourceState> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
         qualifiedDataSourceNodes.forEach(each -> {
@@ -60,12 +60,12 @@ public final class QualifiedDataSourceStatePersistService {
     /**
      * Update qualified data source state.
      *
-     * @param databaseName database name
-     * @param groupName group name
-     * @param storageUnitName storage unit name
-     * @param dataSourceState data source state
+     * @param databaseName to be updated database name
+     * @param groupName to be updated group name
+     * @param storageUnitName to be updated storage unit name
+     * @param dataSourceState to be updated data source state
      */
-    public void updateState(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
+    public void update(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
         QualifiedDataSourceState status = new QualifiedDataSourceState(dataSourceState);
         repository.persist(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(
                 new QualifiedDataSource(databaseName, groupName, storageUnitName)), YamlEngine.marshal(new YamlQualifiedDataSourceStateSwapper().swapToYamlConfiguration(status)));

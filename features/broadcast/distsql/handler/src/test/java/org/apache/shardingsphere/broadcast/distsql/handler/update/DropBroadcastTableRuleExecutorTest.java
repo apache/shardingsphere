@@ -17,52 +17,54 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
-import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DropBroadcastTableRuleExecutorTest {
     
-    private final DropBroadcastTableRuleExecutor executor = new DropBroadcastTableRuleExecutor();
-    
-    @BeforeEach
-    void setUp() {
+    @Test
+    void assertExecuteUpdateWithoutToBeDroppedTables() {
+        DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("foo_tbl"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("sharding_db");
-        executor.setDatabase(database);
+        BroadcastRule rule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);
+        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule)).executeUpdate());
     }
     
     @Test
-    void assertCheckSQLStatementWithoutToBeDroppedRule() {
-        DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        BroadcastRule rule = mock(BroadcastRule.class);
-        when(rule.getConfiguration()).thenReturn(new BroadcastRuleConfiguration(Collections.emptyList()));
-        executor.setRule(rule);
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+    void assertExecuteUpdate() throws SQLException {
+        DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(true, new ArrayList<>(Arrays.asList("foo_tbl", "bar_tbl")));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        BroadcastRule rule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getConfiguration().getTables()).thenReturn(Collections.singleton("foo_tbl"));
+        ContextManager contextManager = mockContextManager(database, rule);
+        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        verify(metaDataManagerPersistService).removeRuleConfiguration("foo_db", "broadcast");
     }
     
-    @Test
-    void assertUpdateCurrentRuleConfiguration() {
-        BroadcastRuleConfiguration config = new BroadcastRuleConfiguration(new LinkedList<>());
-        config.getTables().add("t_address");
-        BroadcastRule rule = mock(BroadcastRule.class);
-        when(rule.getConfiguration()).thenReturn(config);
-        executor.setRule(rule);
-        DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        BroadcastRuleConfiguration toBeAlteredConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        assertTrue(toBeAlteredConfig.getTables().isEmpty());
+    private ContextManager mockContextManager(final ShardingSphereDatabase database, final BroadcastRule rule) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(null == rule ? Collections.emptyList() : Collections.singleton(rule)));
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        return result;
     }
 }

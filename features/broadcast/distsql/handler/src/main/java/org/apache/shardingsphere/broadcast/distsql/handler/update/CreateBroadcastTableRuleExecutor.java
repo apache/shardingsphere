@@ -50,8 +50,7 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     }
     
     private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement) {
-        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
-        ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
+        ShardingSpherePreconditions.checkMustEmpty(getDuplicatedRuleNames(sqlStatement), () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
     }
     
     private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement) {

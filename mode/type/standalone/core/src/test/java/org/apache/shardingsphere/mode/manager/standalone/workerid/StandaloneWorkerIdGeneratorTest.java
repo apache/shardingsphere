@@ -43,6 +43,7 @@ class StandaloneWorkerIdGeneratorTest {
     
     @Test
     void assertGenerateWithInvalidProperties() {
+        assertThrows(WorkerIdAssignedException.class, () -> new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "-1"))));
         assertThrows(WorkerIdAssignedException.class, () -> new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1024"))));
     }
 }

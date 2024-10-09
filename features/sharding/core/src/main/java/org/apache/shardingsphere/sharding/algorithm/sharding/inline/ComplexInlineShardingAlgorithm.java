@@ -43,7 +43,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
-    private static final String SHARING_COLUMNS_KEY = "sharding-columns";
+    private static final String SHARDING_COLUMNS_KEY = "sharding-columns";
     
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
@@ -67,7 +67,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     }
     
     private Collection<String> getShardingColumns(final Properties props) {
-        String shardingColumns = props.getProperty(SHARING_COLUMNS_KEY, "");
+        String shardingColumns = props.getProperty(SHARDING_COLUMNS_KEY, "");
         return shardingColumns.isEmpty() ? Collections.emptyList() : Arrays.asList(shardingColumns.split(","));
     }
     

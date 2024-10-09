@@ -100,17 +100,14 @@
   "fields":[{"name":"tableBusy"}]
 },
 {
+  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.NodeFactory"},
+  "name":"com.github.benmanes.caffeine.cache.PDWMS",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.StripedBuffer"},
   "name":"java.lang.Thread",
   "fields":[{"name":"threadLocalRandomProbe"}]
-},
-{
-  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.LocalLoadingCache"},
-  "name":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
-},
-{
-  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.LocalLoadingCache"},
-  "name":"org.apache.shardingsphere.sql.parser.core.database.cache.ParseTreeCacheLoader"
 },
 {
   "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.UnsafeAccess"},

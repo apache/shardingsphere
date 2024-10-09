@@ -19,13 +19,12 @@ package org.apache.shardingsphere.test.natived.jdbc.features;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Address;
-import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Order;
-import org.apache.shardingsphere.test.natived.jdbc.commons.entity.OrderItem;
-import org.apache.shardingsphere.test.natived.jdbc.commons.repository.AddressRepository;
-import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderItemRepository;
-import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderRepository;
-import org.junit.jupiter.api.Disabled;
+import org.apache.shardingsphere.test.natived.commons.entity.Address;
+import org.apache.shardingsphere.test.natived.commons.entity.Order;
+import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
+import org.apache.shardingsphere.test.natived.commons.repository.AddressRepository;
+import org.apache.shardingsphere.test.natived.commons.repository.OrderItemRepository;
+import org.apache.shardingsphere.test.natived.commons.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -48,7 +47,6 @@ class ShadowTest {
     
     private AddressRepository addressRepository;
     
-    @Disabled("Fix this unit test when shadow comment get value from hint value context")
     @Test
     void assertShadowInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();

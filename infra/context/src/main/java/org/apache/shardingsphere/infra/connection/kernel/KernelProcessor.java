@@ -51,7 +51,7 @@ public final class KernelProcessor {
     public ExecutionContext generateExecutionContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData,
                                                      final ConfigurationProperties props, final ConnectionContext connectionContext) {
         check(queryContext);
-        RouteContext routeContext = route(queryContext, globalRuleMetaData, props, connectionContext);
+        RouteContext routeContext = route(queryContext, globalRuleMetaData, props);
         SQLRewriteResult rewriteResult = rewrite(queryContext, globalRuleMetaData, props, routeContext, connectionContext);
         ExecutionContext result = createExecutionContext(queryContext, routeContext, rewriteResult);
         logSQL(queryContext, props, result);
@@ -63,9 +63,9 @@ public final class KernelProcessor {
         new SupportedSQLCheckEngine().checkSQL(database.getRuleMetaData().getRules(), queryContext.getSqlStatementContext(), database.getSchemas(), database.getName());
     }
     
-    private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+    private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
-        return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(connectionContext, queryContext, globalRuleMetaData, database);
+        return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(queryContext, globalRuleMetaData, database);
     }
     
     private SQLRewriteResult rewrite(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final RouteContext routeContext,

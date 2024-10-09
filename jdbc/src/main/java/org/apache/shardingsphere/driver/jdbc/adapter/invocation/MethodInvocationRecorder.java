@@ -39,7 +39,17 @@ public final class MethodInvocationRecorder<T> {
      * @param callback callback
      */
     public void record(final String methodName, final ForceExecuteCallback<T> callback) {
+        methodInvocations.remove(methodName);
         methodInvocations.put(methodName, callback);
+    }
+    
+    /**
+     * Remove method invocation.
+     *
+     * @param methodName method name
+     */
+    public void remove(final String methodName) {
+        methodInvocations.remove(methodName);
     }
     
     /**

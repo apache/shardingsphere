@@ -1,3 +1,31 @@
+## Release 5.5.1-SNAPSHOT
+
+### API Change
+
+1. Authority: Use UserConfiguration instead of ShardingSphereUser in AuthorityConfiguration for decouple API and implementation - [#33073](https://github.com/apache/shardingsphere/pull/33073)
+
+### New Feature
+
+### Enhancement
+
+1. SQL Parser: Support PostgreSQL, openGauss function table and update from segment parse - [#32994](https://github.com/apache/shardingsphere/pull/32994)
+1. SQL Parser: Support MariaDB DML Returning Clause - [#33094](https://github.com/apache/shardingsphere/issues/33094)
+1. DistSQL: Support running DistSQL under Proxy Native in the form of GraalVM Native Image - [#33095](https://github.com/apache/shardingsphere/pull/33095)
+1. DistSQL: Support connecting to Postgres via DistSQL in Proxy Native - [#33124](https://github.com/apache/shardingsphere/pull/33124)
+1. DistSQL: Check duplicate actual data nodes when creating or altering sharding table rule - [#33138](https://github.com/apache/shardingsphere/pull/33138)
+
+### Bug Fix
+
+1. Sharding: Fix alter view exception when config sharding rule and binding table rule - [#32696](https://github.com/apache/shardingsphere/issues/32696)
+1. Shadow: Use hintValueContext to replace extract sql hint from sql statement for solving shadow sql hint bug - [#33063](https://github.com/apache/shardingsphere/pull/33063)
+1. Shadow: Make Shadow feature available again in GraalVM Native Image - [#33080](https://github.com/apache/shardingsphere/pull/33080)
+1. DistSQL & Kernel: Fix table exist exception when execute preview create table statement with exist table - [#33171](https://github.com/apache/shardingsphere/pull/33171)
+
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/29)
+
 ## Release 5.5.0
 
 ### API Change
@@ -1319,7 +1347,7 @@
 
 ### Enhancement
 
-1. Optimization for Sharing Parser with ANTLR Visitor improving the parsing performance of long SQL by 100%~1000%
+1. Optimization for Sharding Parser with ANTLR Visitor improving the parsing performance of long SQL by 100%~1000%
 1. Use multiple threads to load metadata for different data sources
 1. Support `allow.range.query.with.inline.sharding` option
 1. The docker of ShardingSphere-Proxy supports loading external lib packages

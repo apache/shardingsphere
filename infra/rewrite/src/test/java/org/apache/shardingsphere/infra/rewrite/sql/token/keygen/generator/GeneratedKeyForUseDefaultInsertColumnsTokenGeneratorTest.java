@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,18 +35,16 @@ import static org.mockito.Mockito.when;
 class GeneratedKeyForUseDefaultInsertColumnsTokenGeneratorTest {
     
     @Test
+    void assertIsGenerateSQLToken() {
+        assertTrue(new GeneratedKeyForUseDefaultInsertColumnsTokenGenerator().isGenerateSQLToken(mock(InsertStatementContext.class)));
+    }
+    
+    @Test
     void assertGenerateSQLToken() {
-        InsertColumnsSegment insertColumnsSegment = mock(InsertColumnsSegment.class);
-        final int testStopIndex = 4;
-        when(insertColumnsSegment.getStopIndex()).thenReturn(testStopIndex);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(insertColumnsSegment));
-        GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class);
-        final String testColumnName = "TEST_COLUMN_NAME";
-        when(generatedKeyContext.getColumnName()).thenReturn(testColumnName);
-        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(new InsertColumnsSegment(0, 4, Collections.emptyList())));
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(new GeneratedKeyContext("foo_col", false)));
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.emptyList());
-        GeneratedKeyForUseDefaultInsertColumnsTokenGenerator generatedKeyForUseDefaultInsertColumnsTokenGenerator = new GeneratedKeyForUseDefaultInsertColumnsTokenGenerator();
-        assertThat(generatedKeyForUseDefaultInsertColumnsTokenGenerator.generateSQLToken(insertStatementContext).toString(), is(("(" + testColumnName) + ")"));
+        assertThat(new GeneratedKeyForUseDefaultInsertColumnsTokenGenerator().generateSQLToken(insertStatementContext).toString(), is("(foo_col)"));
     }
 }

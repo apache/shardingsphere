@@ -53,7 +53,7 @@ hexadecimalLiterals
 bitValueLiterals
     : characterSetName? BIT_NUM_ collateClause?
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -140,7 +140,7 @@ expr
 andOperator
     : AND | AND_
     ;
-    
+
 orOperator
     : OR
     ;

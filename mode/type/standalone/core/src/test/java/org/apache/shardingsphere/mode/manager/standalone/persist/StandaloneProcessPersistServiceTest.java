@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -29,7 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,12 +37,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProcessRegistry.class)
 class StandaloneProcessPersistServiceTest {
     
-    private StandaloneProcessPersistService processPersistService;
-    
-    @BeforeEach
-    void setUp() {
-        processPersistService = new StandaloneProcessPersistService();
-    }
+    private final StandaloneProcessPersistService processPersistService = new StandaloneProcessPersistService();
     
     @Test
     void assertGetProcessList() {
@@ -60,8 +54,16 @@ class StandaloneProcessPersistServiceTest {
         Process process = mock(Process.class);
         Statement statement = mock(Statement.class);
         when(process.getProcessStatements()).thenReturn(Collections.singletonMap(1, statement));
-        when(processRegistry.get(any())).thenReturn(process);
-        processPersistService.killProcess("foo_process_id");
+        when(processRegistry.get("foo_id")).thenReturn(process);
+        processPersistService.killProcess("foo_id");
         verify(statement).cancel();
+    }
+    
+    @Test
+    void assertKillProcessWithNotExistedProcessId() {
+        ProcessRegistry processRegistry = mock(ProcessRegistry.class);
+        when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
+        when(processRegistry.get("foo_id")).thenReturn(null);
+        assertDoesNotThrow(() -> processPersistService.killProcess("foo_id"));
     }
 }

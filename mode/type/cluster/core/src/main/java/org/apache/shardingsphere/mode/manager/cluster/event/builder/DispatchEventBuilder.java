@@ -33,11 +33,11 @@ import java.util.Optional;
 public interface DispatchEventBuilder<T> {
     
     /**
-     * Get subscribed keys.
+     * Get subscribed key.
      *
-     * @return subscribed keys
+     * @return subscribed key
      */
-    Collection<String> getSubscribedKeys();
+    String getSubscribedKey();
     
     /**
      * Get subscribed types.

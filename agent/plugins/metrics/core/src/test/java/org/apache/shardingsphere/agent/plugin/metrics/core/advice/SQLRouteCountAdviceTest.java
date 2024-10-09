@@ -90,7 +90,7 @@ class SQLRouteCountAdviceTest {
     }
     
     void assertRoute(final QueryContext queryContext, final String expected) {
-        advice.beforeMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{new ConnectionContext(Collections::emptySet), queryContext}, "FIXTURE");
+        advice.beforeMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{queryContext, new ConnectionContext(Collections::emptySet)}, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
     }
 }
