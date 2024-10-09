@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateProcedureStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateProcedureStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -73,8 +74,8 @@ class ShardingCreateProcedureStatementValidatorTest {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
         when(shardingRule.isShardingTable("t_order_item")).thenReturn(false);
         SQLStatementContext sqlStatementContext = new CreateProcedureStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
-        assertDoesNotThrow(() -> new ShardingCreateProcedureStatementValidator().preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
+                mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -90,8 +91,8 @@ class ShardingCreateProcedureStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new CreateProcedureStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
-        assertThrows(NoSuchTableException.class,
-                () -> new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(NoSuchTableException.class, () -> new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -107,8 +108,8 @@ class ShardingCreateProcedureStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new CreateProcedureStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
-        assertThrows(NoSuchTableException.class,
-                () -> new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(NoSuchTableException.class, () -> new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -125,7 +126,7 @@ class ShardingCreateProcedureStatementValidatorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
-        assertThrows(TableExistsException.class,
-                () -> new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertThrows(TableExistsException.class, () -> new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
 }

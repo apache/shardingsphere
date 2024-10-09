@@ -35,7 +35,7 @@ import java.util.List;
 public final class ShardingLoadXMLStatementValidator extends ShardingDMLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         String tableName = ((LoadXMLStatement) sqlStatementContext.getSqlStatement()).getTableSegment().getTableName().getIdentifier().getValue();
         if (shardingRule.isShardingTable(tableName)) {

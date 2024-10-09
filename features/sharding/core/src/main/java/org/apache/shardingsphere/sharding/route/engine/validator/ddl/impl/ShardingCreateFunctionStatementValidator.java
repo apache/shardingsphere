@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
 
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +41,7 @@ import java.util.Optional;
 public final class ShardingCreateFunctionStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         CreateFunctionStatement createFunctionStatement = (CreateFunctionStatement) sqlStatementContext.getSqlStatement();
         Optional<RoutineBodySegment> routineBodySegment = createFunctionStatement.getRoutineBody();
@@ -51,11 +51,13 @@ public final class ShardingCreateFunctionStatementValidator extends ShardingDDLS
         TableExtractor extractor = new TableExtractor();
         Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
         validateShardingTable(shardingRule, "CREATE FUNCTION", existTables);
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        ShardingSphereSchema schema = createFunctionStatement.getFunctionName().flatMap(optional -> optional.getOwner()
-                .map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchema(defaultSchemaName));
-        validateTableExist(schema, existTables);
-        validateTableNotExist(schema, extractor.extractNotExistTableFromRoutineBody(routineBodySegment.get()));
+        if (!hintValueContext.isSkipMetadataValidate()) {
+            String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
+            ShardingSphereSchema schema = createFunctionStatement.getFunctionName().flatMap(optional -> optional.getOwner()
+                    .map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchema(defaultSchemaName));
+            validateTableExist(schema, existTables);
+            validateTableNotExist(schema, extractor.extractNotExistTableFromRoutineBody(routineBodySegment.get()));
+        }
     }
     
     @Override

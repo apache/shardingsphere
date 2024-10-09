@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
@@ -90,6 +91,6 @@ class ShardingDeleteStatementValidatorTest {
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
-        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
 }

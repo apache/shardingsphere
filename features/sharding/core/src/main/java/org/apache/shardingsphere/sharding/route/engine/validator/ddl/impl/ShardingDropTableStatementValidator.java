@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 public final class ShardingDropTableStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         DropTableStatementContext dropTableStatementContext = (DropTableStatementContext) sqlStatementContext;
         DropTableStatement dropTableStatement = dropTableStatementContext.getSqlStatement();

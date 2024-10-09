@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
@@ -59,7 +60,8 @@ class ShardingAlterViewStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isShardingTable("t_order")).thenReturn(false);
-        assertDoesNotThrow(() -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
+                mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -73,7 +75,8 @@ class ShardingAlterViewStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(EngagedViewException.class,
-                () -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                () -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
+                        mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -83,6 +86,7 @@ class ShardingAlterViewStatementValidatorTest {
         sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
         SQLStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        assertDoesNotThrow(() -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
+                mock(ConfigurationProperties.class)));
     }
 }

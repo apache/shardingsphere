@@ -24,15 +24,16 @@ If you use the MySQL client to connect, you need to add the `-c` option to retai
 
 The following attributes can be defined in ShardingSphere SQL Hint. In order to be compatible with the lower version SQL Hint syntax, the attributes defined in the alias can also be used:
 
-| *Name*                      | *Alias*               | *Data Type* | *Description*                                                             | *Default Value* |
-|-----------------------------|-----------------------|-------------|---------------------------------------------------------------------------|-----------------|
-| SHARDING_DATABASE_VALUE (?) | shardingDatabaseValue | Comparable  | Database sharding value, used when config Hint sharding strategy          | -               |
-| SHARDING_TABLE_VALUE (?)    | shardingTableValue    | Comparable  | Table sharding value, used when config Hint sharding strategy             | -               |
-| WRITE_ROUTE_ONLY (?)        | writeRouteOnly        | boolean     | Route to the write datasource when use readwrite-splitting                | false           |
-| DATA_SOURCE_NAME (?)        | dataSourceName        | String      | Data source pass through, route SQL directly to the specified data source | -               |
-| SKIP_SQL_REWRITE (?)        | skipSQLRewrite        | boolean     | Skip the SQL rewrite phase                                                | false           |
-| DISABLE_AUDIT_NAMES (?)     | disableAuditNames     | String      | Disable the specified SQL audit algorithm                                 | -               |
-| SHADOW (?)                  | shadow                | boolean     | Route to the shadow datasource when use shadow                            | false           |
+| *Name*                        | *Alias*               | *Data Type* | *Description*                                                          | *Default Value* |
+|-------------------------------|-----------------------|-------------|------------------------------------------------------------------------|-----------------|
+| SHARDING_DATABASE_VALUE (?)   | shardingDatabaseValue | Comparable  | Database sharding value, used when config Hint sharding strategy       | -               |
+| SHARDING_TABLE_VALUE (?)      | shardingTableValue    | Comparable  | Table sharding value, used when config Hint sharding strategy          | -               |
+| WRITE_ROUTE_ONLY (?)          | writeRouteOnly        | boolean     | Route to the write datasource when use readwrite-splitting             | false           |
+| DATA_SOURCE_NAME (?)          | dataSourceName        | String      | Data source pass through, route SQL directly to the specified data source | -               |
+| SKIP_SQL_REWRITE (?)          | skipSQLRewrite        | boolean     | Skip the SQL rewrite phase                                             | false           |
+| SKIP_METADATA_VALIDATE (?)    | skipMetadataValidate  | boolean     | Skip the SQL metadata validate                                         | false |
+| DISABLE_AUDIT_NAMES (?)       | disableAuditNames     | String      | Disable the specified SQL audit algorithm                              | -               |
+| SHADOW (?)                    | shadow                | boolean     | Route to the shadow datasource when use shadow                         | false           |
 
 
 ## SQL Hint
@@ -80,6 +81,16 @@ An example of skipping SQL rewrite SQL Hint:
 
 ```sql
 /* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */ SELECT * FROM t_order;
+```
+
+### SKIP METADATA VALIDATE
+
+The optional attribute of skip SQL metadata validate SQL Hint is `SKIP_METADATA_VALIDATE`, and `true` means skipping the current SQL metadata validate.
+
+An example of skipping SQL metadata validate SQL Hint:
+
+```sql
+/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ SELECT * FROM t_order;
 ```
 
 ### DISABLE SQL AUDIT

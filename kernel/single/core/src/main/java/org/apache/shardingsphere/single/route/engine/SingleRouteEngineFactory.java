@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.route.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
@@ -39,11 +40,12 @@ public final class SingleRouteEngineFactory {
      *
      * @param singleTables single tables
      * @param sqlStatement SQL statement
+     * @param hintValueContext hint value context
      * @return created instance
      */
-    public static Optional<SingleRouteEngine> newInstance(final Collection<QualifiedTable> singleTables, final SQLStatement sqlStatement) {
+    public static Optional<SingleRouteEngine> newInstance(final Collection<QualifiedTable> singleTables, final SQLStatement sqlStatement, final HintValueContext hintValueContext) {
         if (!singleTables.isEmpty()) {
-            return Optional.of(new SingleStandardRouteEngine(singleTables, sqlStatement));
+            return Optional.of(new SingleStandardRouteEngine(singleTables, sqlStatement, hintValueContext));
         }
         // TODO move this logic to common route logic
         if (isSchemaDDLStatement(sqlStatement)) {

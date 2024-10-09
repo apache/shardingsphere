@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
 public final class ShardingPrepareStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final List<Object> params, final ShardingSphereDatabase database,
-                            final ConfigurationProperties props) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
+                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
     }
     
     @Override

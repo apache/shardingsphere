@@ -71,7 +71,8 @@ class ShardingAlterTableStatementValidatorTest {
         SQLStatementContext sqlStatementContext = new AlterTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         when(shardingRule.containsShardingTable(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+                () -> new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
+                        mock(ConfigurationProperties.class)));
     }
     
     @Test

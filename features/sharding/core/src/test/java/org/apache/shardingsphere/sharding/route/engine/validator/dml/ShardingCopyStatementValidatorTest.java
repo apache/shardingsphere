@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingCopyStatementValidator;
@@ -56,16 +57,16 @@ class ShardingCopyStatementValidatorTest {
     void assertPreValidateWhenTableSegmentForPostgreSQL() {
         PostgreSQLCopyStatement sqlStatement = new PostgreSQLCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(
-                shardingRule, new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(shardingRule, new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
     void assertPreValidateWhenTableSegmentForOpenGauss() {
         OpenGaussCopyStatement sqlStatement = new OpenGaussCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(
-                shardingRule, new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
+        assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(shardingRule, new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), mock(HintValueContext.class),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -83,7 +84,7 @@ class ShardingCopyStatementValidatorTest {
         CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         String tableName = "t_order";
         when(shardingRule.isShardingTable(tableName)).thenReturn(true);
-        new ShardingCopyStatementValidator().preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class));
+        new ShardingCopyStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), mock(ShardingSphereDatabase.class),
+                mock(ConfigurationProperties.class));
     }
 }

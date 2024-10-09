@@ -44,6 +44,11 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     SKIP_SQL_REWRITE_KEY("SKIP_SQL_REWRITE", "skipSQLRewrite", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
+     * Whether hint skip metadata validate or not.
+     */
+    SKIP_METADATA_VALIDATE_KEY("SKIP_METADATA_VALIDATE", "skipMetadataValidate", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
      * Hint disable audit names.
      */
     DISABLE_AUDIT_NAMES_KEY("DISABLE_AUDIT_NAMES", "disableAuditNames", "", String.class),
