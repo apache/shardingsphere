@@ -25,14 +25,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,21 +51,30 @@ class DecoratorMergedResultTest {
     }
     
     @Test
-    void assertGetValueWithColumnIndex() throws SQLException {
+    void assertGetValue() throws SQLException {
         when(mergedResult.getValue(1, Object.class)).thenReturn("1");
         assertThat(decoratorMergedResult.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test
-    void assertGetCalenderValueWithColumnIndex() throws SQLException {
+    void assertGetCalenderValue() throws SQLException {
         Calendar calendar = Calendar.getInstance();
         when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
         assertThat(decoratorMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
-    void assertGetInputStreamWithColumnIndex() throws SQLException {
-        assertNull(decoratorMergedResult.getInputStream(1, "ascii"));
+    void assertGetInputStream() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        when(mergedResult.getInputStream(1, "ascii")).thenReturn(inputStream);
+        assertThat(decoratorMergedResult.getInputStream(1, "ascii"), is(inputStream));
+    }
+    
+    @Test
+    void assertGetCharacterStream() throws SQLException {
+        Reader reader = mock(Reader.class);
+        when(mergedResult.getCharacterStream(1)).thenReturn(reader);
+        assertThat(decoratorMergedResult.getCharacterStream(1), is(reader));
     }
     
     @Test
