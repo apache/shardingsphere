@@ -21,6 +21,8 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -48,6 +50,21 @@ class LocalDataQueryResultRowTest {
     }
     
     @Test
+    void assertGetCellWithOptional() {
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(Optional.empty(), Optional.of("foo"), Optional.of(1), Optional.of(PropertiesBuilder.build(new Property("foo", "bar"))));
+        assertThat(actual.getCell(1), is(""));
+        assertThat(actual.getCell(2), is("foo"));
+        assertThat(actual.getCell(3), is("1"));
+        assertThat(actual.getCell(4), is("{\"foo\":\"bar\"}"));
+    }
+    
+    @Test
+    void assertGetCellWithStringValue() {
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow("foo");
+        assertThat(actual.getCell(1), is("foo"));
+    }
+    
+    @Test
     void assertGetCellWithBooleanValue() {
         LocalDataQueryResultRow actual = new LocalDataQueryResultRow(true, Boolean.FALSE);
         assertThat(actual.getCell(1), is("true"));
@@ -71,6 +88,13 @@ class LocalDataQueryResultRowTest {
     }
     
     @Test
+    void assertGetCellWithLocalDateTimeValue() {
+        LocalDateTime localDateTime = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(localDateTime);
+        assertThat(actual.getCell(1), is(localDateTime.toString()));
+    }
+    
+    @Test
     void assertGetCellWithEnum() {
         LocalDataQueryResultRow actual = new LocalDataQueryResultRow(FixtureEnum.FOO, FixtureEnum.BAR);
         assertThat(actual.getCell(1), is("FOO"));
@@ -79,18 +103,29 @@ class LocalDataQueryResultRowTest {
     
     @Test
     void assertGetCellWithProperties() {
-        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(new Properties(), PropertiesBuilder.build(new Property("foo", "bar")));
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(new Properties(), PropertiesBuilder.build(new Property("k", "v")));
         assertThat(actual.getCell(1), is(""));
-        assertThat(actual.getCell(2), is("{\"foo\":\"bar\"}"));
+        assertThat(actual.getCell(2), is("{\"k\":\"v\"}"));
     }
     
     @Test
-    void assertGetCellWithOptional() {
-        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(Optional.empty(), Optional.of("foo"), Optional.of(1), Optional.of(PropertiesBuilder.build(new Property("foo", "bar"))));
+    void assertGetCellWithMap() {
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(Collections.emptyMap(), Collections.singletonMap("k", "v"));
         assertThat(actual.getCell(1), is(""));
-        assertThat(actual.getCell(2), is("foo"));
-        assertThat(actual.getCell(3), is("1"));
-        assertThat(actual.getCell(4), is("{\"foo\":\"bar\"}"));
+        assertThat(actual.getCell(2), is("{\"k\":\"v\"}"));
+    }
+    
+    @Test
+    void assertGetCellWithCollection() {
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(Collections.emptyList(), Collections.singleton("foo"));
+        assertThat(actual.getCell(1), is(""));
+        assertThat(actual.getCell(2), is("[\"foo\"]"));
+    }
+    
+    @Test
+    void assertGetCellWithObject() {
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(new Object());
+        assertThat(actual.getCell(1), is("{}"));
     }
     
     private enum FixtureEnum {
