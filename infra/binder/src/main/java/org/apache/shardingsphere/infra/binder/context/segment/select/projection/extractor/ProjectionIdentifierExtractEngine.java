@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.Optional;
-
 /**
  * Projection identifier extract engine.
  */
+@RequiredArgsConstructor
 public final class ProjectionIdentifierExtractEngine {
     
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private final Optional<DialectProjectionIdentifierExtractor> projectionIdentifierExtractor;
-    
-    public ProjectionIdentifierExtractEngine(final DatabaseType databaseType) {
-        projectionIdentifierExtractor = DatabaseTypedSPILoader.findService(DialectProjectionIdentifierExtractor.class, databaseType);
-    }
+    private final DatabaseType databaseType;
     
     /**
      * Get identifier value.
@@ -47,7 +42,8 @@ public final class ProjectionIdentifierExtractEngine {
         if (QuoteCharacter.NONE != identifierValue.getQuoteCharacter()) {
             return identifierValue.getValue();
         }
-        return projectionIdentifierExtractor.map(optional -> optional.getIdentifierValue(identifierValue)).orElseGet(identifierValue::getValue);
+        return DatabaseTypedSPILoader.findService(DialectProjectionIdentifierExtractor.class, databaseType)
+                .map(optional -> optional.getIdentifierValue(identifierValue)).orElseGet(identifierValue::getValue);
     }
     
     /**
@@ -58,7 +54,8 @@ public final class ProjectionIdentifierExtractEngine {
      * @return column name
      */
     public String getColumnNameFromFunction(final String functionName, final String functionExpression) {
-        return projectionIdentifierExtractor.map(optional -> optional.getColumnNameFromFunction(functionName, functionExpression)).orElse(functionExpression);
+        return DatabaseTypedSPILoader.findService(DialectProjectionIdentifierExtractor.class, databaseType)
+                .map(optional -> optional.getColumnNameFromFunction(functionName, functionExpression)).orElse(functionExpression);
     }
     
     /**
@@ -68,7 +65,7 @@ public final class ProjectionIdentifierExtractEngine {
      * @return column name
      */
     public String getColumnNameFromExpression(final String expression) {
-        return projectionIdentifierExtractor.map(optional -> optional.getColumnNameFromExpression(expression)).orElse(expression);
+        return DatabaseTypedSPILoader.findService(DialectProjectionIdentifierExtractor.class, databaseType).map(optional -> optional.getColumnNameFromExpression(expression)).orElse(expression);
     }
     
     /**
@@ -78,6 +75,7 @@ public final class ProjectionIdentifierExtractEngine {
      * @return column name
      */
     public String getColumnNameFromSubquery(final SubqueryProjectionSegment subquerySegment) {
-        return projectionIdentifierExtractor.map(optional -> optional.getColumnNameFromSubquery(subquerySegment)).orElseGet(subquerySegment::getText);
+        return DatabaseTypedSPILoader.findService(DialectProjectionIdentifierExtractor.class, databaseType)
+                .map(optional -> optional.getColumnNameFromSubquery(subquerySegment)).orElseGet(subquerySegment::getText);
     }
 }

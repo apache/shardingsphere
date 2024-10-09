@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Dialect projection identifier extractor.
  */
+@SingletonSPI
 public interface DialectProjectionIdentifierExtractor extends DatabaseTypedSPI {
     
     /**
