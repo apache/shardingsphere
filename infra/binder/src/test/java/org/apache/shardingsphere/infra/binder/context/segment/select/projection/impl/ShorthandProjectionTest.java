@@ -17,26 +17,39 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl;
 
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class ShorthandProjectionTest {
     
     @Test
-    void assertGetExpression() {
-        assertThat(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getExpression(), is("owner.*"));
+    void assertGetOwner() {
+        assertTrue(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getOwner().isPresent());
     }
     
     @Test
-    void assertGetAliasWhenAbsent() {
-        assertFalse(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getAlias().isPresent());
+    void assertGetColumnNameWithOwner() {
+        assertThat(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getColumnName(), is("owner.*"));
+    }
+    
+    @Test
+    void assertGetColumnNameWithoutOwner() {
+        assertThat(new ShorthandProjection(null, Collections.emptyList()).getColumnName(), is("*"));
+    }
+    
+    @Test
+    void assertGetColumnProjections() {
+        assertThat(new ShorthandProjection(new IdentifierValue("owner"), Arrays.asList(mock(Projection.class), mock(ColumnProjection.class))).getColumnProjections().size(), is(1));
     }
     
     @Test
@@ -45,7 +58,17 @@ class ShorthandProjectionTest {
     }
     
     @Test
-    void assertContains() {
-        assertTrue(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getOwner().isPresent());
+    void assertGetExpressionWithOwner() {
+        assertThat(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getExpression(), is("owner.*"));
+    }
+    
+    @Test
+    void assertGetExpressionWithoutOwner() {
+        assertThat(new ShorthandProjection(null, Collections.emptyList()).getExpression(), is("*"));
+    }
+    
+    @Test
+    void assertGetAlias() {
+        assertFalse(new ShorthandProjection(new IdentifierValue("owner"), Collections.emptyList()).getAlias().isPresent());
     }
 }
