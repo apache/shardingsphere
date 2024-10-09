@@ -17,11 +17,10 @@
   -->
 
 <distsql-rule-query-executor-test-cases>
-    <test-case dist-sql="SHOW ENCRYPT RULES"
-               current-rule-config-yaml-file="cases/show-encrypt-rules-current-config.yaml">
+    <test-case dist-sql="SHOW ENCRYPT RULES" current-rule-config-yaml-file="cases/show-encrypt-rules-current-config.yaml">
         <expected-query-result-rows>
             <expected-query-result-row>
-                t_user|username|username|assisted_username||AES|{"aes-key-value":"123456abc","digest-algorithm-name":"SHA-1"}|MD5|{"salt":123456}||
+                t_encrypt|user_id|user_cipher|user_assisted|user_like|md5|||||
             </expected-query-result-row>
         </expected-query-result-rows>
     </test-case>
