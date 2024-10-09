@@ -18,22 +18,18 @@
 rules:
   - !ENCRYPT
     tables:
-      t_user:
+      t_encrypt:
         columns:
-          username:
+          user_id:
             cipher:
-              name: username
-              encryptorName: name_encryptor
+              name: user_cipher
+              encryptorName: test
             assistedQuery:
-              name: assisted_username
-              encryptorName: assisted_encryptor
+              name: user_assisted
+              encryptorName: foo_assist_query_encryptor
+            likeQuery:
+              name: user_like
+              encryptorName: foo_like_encryptor
     encryptors:
-      name_encryptor:
-        type: AES
-        props:
-          aes-key-value: 123456abc
-          digest-algorithm-name: SHA-1
-      assisted_encryptor:
-        type: MD5
-        props:
-          salt: 123456
+      test:
+        type: md5
