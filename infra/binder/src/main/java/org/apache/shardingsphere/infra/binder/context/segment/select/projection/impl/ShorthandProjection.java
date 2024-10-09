@@ -41,26 +41,6 @@ public final class ShorthandProjection implements Projection {
     
     private final Collection<Projection> actualColumns;
     
-    @Override
-    public String getColumnName() {
-        return null == owner ? "*" : owner.getValue() + ".*";
-    }
-    
-    @Override
-    public String getColumnLabel() {
-        return "*";
-    }
-    
-    @Override
-    public String getExpression() {
-        return null == owner ? "*" : owner.getValue() + ".*";
-    }
-    
-    @Override
-    public Optional<IdentifierValue> getAlias() {
-        return Optional.empty();
-    }
-    
     /**
      * Get owner.
      *
@@ -83,5 +63,25 @@ public final class ShorthandProjection implements Projection {
             }
         }
         return result;
+    }
+    
+    @Override
+    public String getColumnName() {
+        return null == owner ? "*" : owner.getValue() + ".*";
+    }
+    
+    @Override
+    public String getColumnLabel() {
+        return "*";
+    }
+    
+    @Override
+    public String getExpression() {
+        return null == owner ? "*" : owner.getValue() + ".*";
+    }
+    
+    @Override
+    public Optional<IdentifierValue> getAlias() {
+        return Optional.empty();
     }
 }
