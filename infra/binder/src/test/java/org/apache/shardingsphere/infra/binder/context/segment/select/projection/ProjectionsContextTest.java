@@ -45,25 +45,25 @@ import static org.mockito.Mockito.mock;
 class ProjectionsContextTest {
     
     @Test
-    void assertUnqualifiedShorthandProjectionWithEmptyItems() {
+    void assertIsUnqualifiedShorthandProjectionWithEmptyItems() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptySet());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
-    void assertUnqualifiedShorthandProjectionWithWrongProjection() {
+    void assertIsUnqualifiedShorthandProjectionWithWrongProjection() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getColumnProjection()));
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
-    void assertUnqualifiedShorthandProjectionWithWrongShortProjection() {
+    void assertIsUnqualifiedShorthandProjectionWithWrongShortProjection() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getShorthandProjection()));
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
-    void assertUnqualifiedShorthandProjection() {
+    void assertIsUnqualifiedShorthandProjection() {
         Projection projection = new ShorthandProjection(null, Collections.emptyList());
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         assertTrue(projectionsContext.isUnqualifiedShorthandProjection());
@@ -158,5 +158,23 @@ class ProjectionsContextTest {
         ProjectionsContext maxProjection = new ProjectionsContext(0, 0, false,
                 Collections.singletonList(new ExpressionProjection(new ExpressionProjectionSegment(0, 0, "MAX(id)"), new IdentifierValue("max"), new MySQLDatabaseType())));
         assertFalse(maxProjection.isContainsLastInsertIdProjection());
+    }
+    
+    @Test
+    void assertNotFindColumnProjectionWithOutOfIndex() {
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptySet());
+        assertFalse(projectionsContext.findColumnProjection(1).isPresent());
+    }
+    
+    @Test
+    void assertNotFindColumnProjectionWithNotColumnProjection() {
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(mock(Projection.class)));
+        assertFalse(projectionsContext.findColumnProjection(1).isPresent());
+    }
+    
+    @Test
+    void assertFindColumnProjection() {
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(mock(ColumnProjection.class)));
+        assertTrue(projectionsContext.findColumnProjection(1).isPresent());
     }
 }
