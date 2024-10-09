@@ -71,11 +71,11 @@ public final class URLArgumentLine {
         return rightTrim(result);
     }
     
-    private String rightTrim(final StringBuffer result) {
-        while (result.length() > 0 && Character.isWhitespace(result.charAt(result.length() - 1))) {
-            result.deleteCharAt(result.length() - 1);
+    private String rightTrim(final StringBuffer buffer) {
+        while (buffer.length() > 0 && Character.isWhitespace(buffer.charAt(buffer.length() - 1))) {
+            buffer.deleteCharAt(buffer.length() - 1);
         }
-        return result.toString();
+        return buffer.toString();
     }
     
     private String getArgumentValue(final String argName, final URLArgumentPlaceholderType type) {

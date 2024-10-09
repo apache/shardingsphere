@@ -32,7 +32,7 @@ class URLArgumentLineTest {
     
     private final String lineMultiple1 = "key1=$${value1::default_value1}:key2=$${value2::default_value2}:tail";
     
-    private final String lineMultiple2 = "key1=$${value1::}:key2=$${value2::}:tail";
+    private final String lineMultiple2 = "key1=$${value1::}:key2=$${value2::}:tail ";
     
     @Test
     void assertParseWithInvalidPattern() {
