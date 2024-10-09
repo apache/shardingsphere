@@ -68,7 +68,11 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
             each.getColumns().forEach(this::checkEncryptorType);
             tables.put(each.getName(), new EncryptTable(each, encryptors));
         }
-        attributes.set(new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet())));
+        attributes.set(buildRuleAttributes());
+    }
+    
+    private RuleAttributes buildRuleAttributes() {
+        return new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet()));
     }
     
     private Map<String, EncryptAlgorithm> createEncryptors(final EncryptRuleConfiguration ruleConfig) {
@@ -156,13 +160,13 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         Collection<String> toBeAddedTableNames = toBeUpdatedTablesNames.stream().filter(each -> !tables.containsKey(each)).collect(Collectors.toList());
         if (!toBeAddedTableNames.isEmpty()) {
             toBeAddedTableNames.forEach(each -> addTableRule(each, toBeUpdatedRuleConfig));
-            attributes.set(new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet())));
+            attributes.set(buildRuleAttributes());
             return true;
         }
         Collection<String> toBeRemovedTableNames = tables.keySet().stream().filter(each -> !toBeUpdatedTablesNames.contains(each)).collect(Collectors.toList());
         if (!toBeRemovedTableNames.isEmpty()) {
             toBeRemovedTableNames.forEach(tables::remove);
-            attributes.set(new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet())));
+            attributes.set(buildRuleAttributes());
             // TODO check and remove unused INLINE encryptors
             return true;
         }
