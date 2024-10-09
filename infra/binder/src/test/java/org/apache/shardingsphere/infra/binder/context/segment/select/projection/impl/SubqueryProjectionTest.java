@@ -17,53 +17,33 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
-/**
- * Subquery projection.
- */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class SubqueryProjection implements Projection {
+class SubqueryProjectionTest {
     
-    private final SubqueryProjectionSegment subquerySegment;
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private final Projection projection;
-    
-    private final IdentifierValue alias;
-    
-    private final DatabaseType databaseType;
-    
-    @Override
-    public String getColumnName() {
-        return getColumnLabel();
+    @Test
+    void assertGetColumnNameWithAlias() {
+        assertThat(new SubqueryProjection(new SubqueryProjectionSegment(null, "text"), mock(Projection.class), new IdentifierValue("alias"), databaseType).getColumnName(), is("alias"));
     }
     
-    @Override
-    public String getColumnLabel() {
-        ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
-        return getAlias().map(extractEngine::getIdentifierValue).orElseGet(() -> extractEngine.getColumnNameFromSubquery(subquerySegment));
+    @Test
+    void assertGetColumnNameWithoutAlias() {
+        assertThat(new SubqueryProjection(new SubqueryProjectionSegment(null, "text"), mock(Projection.class), null, databaseType).getColumnName(), is("text"));
     }
     
-    @Override
-    public Optional<IdentifierValue> getAlias() {
-        return Optional.ofNullable(alias);
-    }
-    
-    @Override
-    public String getExpression() {
-        return subquerySegment.getText();
+    @Test
+    void assertGetExpression() {
+        assertThat(new SubqueryProjection(new SubqueryProjectionSegment(null, "text"), mock(Projection.class), null, databaseType).getExpression(), is("text"));
     }
 }
