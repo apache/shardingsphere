@@ -54,7 +54,7 @@ public final class SchemaMetaDataLoader {
     private static final String TABLE_SCHEME = "TABLE_SCHEM";
     
     /**
-     * Load schema table names by excluded tables.
+     * Load schema table names.
      *
      * @param databaseName database name
      * @param databaseType database type
