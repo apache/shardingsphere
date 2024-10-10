@@ -106,7 +106,7 @@ ALTER STORAGE UNIT ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
     USER="root",
     PASSWORD="root",
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"=30000)
 );
 ```
 
@@ -115,11 +115,10 @@ ALTER STORAGE UNIT ds_2 (
 ```sql
 ALTER STORAGE UNIT ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000"),
-    CHECK_PRIVILEGES=SELECT,XA,PIPELINE
-);
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"=30000)
+), CHECK_PRIVILEGES=SELECT,XA,PIPELINE;
 ```
 
 ### Reserved word
