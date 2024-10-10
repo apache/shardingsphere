@@ -74,9 +74,10 @@ class MySQLSchemaMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadSchemaTableNames() throws SQLException {
+    void assertLoadSchemaTableNamesByExcludedTables() throws SQLException {
         Map<String, Collection<String>> schemaTableNames = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, Collections.singletonList("tbl"));
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource), is(schemaTableNames));
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNamesByExcludedTables(DefaultDatabase.LOGIC_NAME,
+                TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource, Collections.emptyList()), is(schemaTableNames));
     }
     
     @Test

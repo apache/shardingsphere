@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.loader.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
@@ -31,7 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -54,22 +54,24 @@ public final class SchemaMetaDataLoader {
     private static final String TABLE_SCHEME = "TABLE_SCHEM";
     
     /**
-     * Load schema table names.
+     * Load schema table names by excluded tables.
      *
      * @param databaseName database name
      * @param databaseType database type
      * @param dataSource data source
+     * @param excludedTables excluded tables
      * @return loaded schema table names
      * @throws SQLException SQL exception
      */
-    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
+    public static Map<String, Collection<String>> loadSchemaTableNamesByExcludedTables(final String databaseName, final DatabaseType databaseType, final DataSource dataSource,
+                                                                                       final Collection<String> excludedTables) throws SQLException {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connection, databaseType);
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-            Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1F);
+            Map<String, Collection<String>> result = new CaseInsensitiveMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
                 String schemaName = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? each : databaseName;
-                result.put(schemaName, loadTableNames(connection, each));
+                result.put(schemaName, loadTableNames(connection, each, excludedTables));
             }
             return result;
         }
@@ -101,12 +103,12 @@ public final class SchemaMetaDataLoader {
         return result.isEmpty() ? Collections.singletonList(connection.getSchema()) : result;
     }
     
-    private static Collection<String> loadTableNames(final Connection connection, final String schemaName) throws SQLException {
+    private static Collection<String> loadTableNames(final Connection connection, final String schemaName, final Collection<String> excludedTables) throws SQLException {
         Collection<String> result = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
-                if (!isSystemTable(table)) {
+                if (!isSystemTable(table) && !excludedTables.contains(table)) {
                     result.add(table);
                 }
             }
