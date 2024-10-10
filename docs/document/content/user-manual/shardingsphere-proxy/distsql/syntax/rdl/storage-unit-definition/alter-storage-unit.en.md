@@ -13,7 +13,10 @@ The `ALTER STORAGE UNIT` syntax is used to alter storage units for the currently
 {{% tab name="Grammar" %}}
 ```sql
 AlterStorageUnit ::=
-  'ALTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
+  'ALTER' 'STORAGE' 'UNIT' storageUnitsDefinition (',' checkPrivileges)?
+
+storageUnitsDefinition ::=
+  storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
   storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
@@ -47,6 +50,12 @@ key ::=
 
 value ::=
   literal
+
+checkPrivileges ::=
+  'CHECK_PRIVILEGES' '=' privilegeType (',' privilegeType)*
+
+privilegeType ::=
+  identifier
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -56,14 +65,12 @@ value ::=
 
 ### Supplement
 
-- Before altering the storage units, please confirm that a database exists in Proxy, and execute the `use` command to
-  select a database;
+- Before altering the storage units, please confirm that a database exists in Proxy, and execute the `use` command to select a database;
 - `ALTER STORAGE UNIT` is not allowed to change the real data source associated with this storageUnit (determined by host, port and db);
-- `ALTER STORAGE UNIT` will switch the connection pool. This operation may affect the ongoing business, please use it with
-  caution;
+- `ALTER STORAGE UNIT` will switch the connection pool. This operation may affect the ongoing business, please use it with caution;
 - Please confirm that the storage unit to be altered can be connected successfully, otherwise the altering will fail;
-- `PROPERTIES` is optional, used to customize connection pool properties, `key` must be the same as the connection pool
-  property name.
+- `PROPERTIES` is optional, used to customize connection pool properties, `key` must be the same as the connection pool property name;
+- `CHECK_PRIVILEGES` can be specified to check privileges of the storage unit user. The supported types of `privilegeType` are `SELECT`, `XA`, `PIPELINE`, and `NONE`. The default value is `SELECT`. When `NONE` is included in the type list, the privilege check is skipped.
 
 ### Example
 
@@ -71,11 +78,11 @@ value ::=
 
 ```sql
 ALTER STORAGE UNIT ds_0 (
-    HOST=127.0.0.1,
+    HOST="127.0.0.1",
     PORT=3306,
-    DB=db_0,
-    USER=root,
-    PASSWORD=root
+    DB="db_0",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
@@ -83,11 +90,11 @@ ALTER STORAGE UNIT ds_0 (
 
 ```sql
 ALTER STORAGE UNIT ds_1 (
-    HOST=127.0.0.1,
+    HOST="127.0.0.1",
     PORT=3306,
-    DB=db_1,
-    USER=root,
-    PASSWORD=root
+    DB="db_1",
+    USER="root",
+    PASSWORD="root",
     PROPERTIES("maximumPoolSize"=10)
 );
 ```
@@ -97,15 +104,27 @@ ALTER STORAGE UNIT ds_1 (
 ```sql
 ALTER STORAGE UNIT ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+);
+```
+
+- Check `SELECT`, `XA` and `PIPELINE` privileges when altering
+
+```sql
+ALTER STORAGE UNIT ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
     USER=root,
     PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000"),
+    CHECK_PRIVILEGES=SELECT,XA,PIPELINE
 );
 ```
 
 ### Reserved word
 
-`ALTER`, `STORAGE`, `UNIT`, `HOST`, `PORT`, `DB`, `USER`, `PASSWORD`, `PROPERTIES`, `URL`
+`ALTER`, `STORAGE`, `UNIT`, `HOST`, `PORT`, `DB`, `USER`, `PASSWORD`, `PROPERTIES`, `URL`, `CHECK_PRIVILEGES`
 
 ### Related links
 

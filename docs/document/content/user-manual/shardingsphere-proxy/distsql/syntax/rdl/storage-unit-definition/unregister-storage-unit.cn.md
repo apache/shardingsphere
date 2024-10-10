@@ -13,22 +13,16 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 UnregisterStorageUnit ::=
-  'UNREGISTER' 'STORAGE' 'UNIT' ifExists? storageUnitName (',' storageUnitName)* (ignoreSingleTables | ignoreBroadcastTables | ignoreSingleAndBroadcastTables)?
-
-ignoreSingleTables ::=
-    'IGNORE' 'SINGLE' 'TABLES'
-
-ignoreBroadcastTables ::=
-    'IGNORE' 'BROADCAST' 'TABLES'
-
-ignoreSingleAndBroadcastTables ::=
-    'IGNORE' ('SINGLE' ',' 'BROADCAST' | 'BROADCAST' ',' 'SINGLE') 'TABLES'
+  'UNREGISTER' 'STORAGE' 'UNIT' ifExists? storageUnitName (',' storageUnitName)* ignoreTables?
 
 ifExists ::=
   'IF' 'EXISTS'
 
 storageUnitName ::=
   identifier
+
+ignoreTables ::=
+  'IGNORE' ('SINGLE')? (',')? ('BROADCAST')? 'TABLES'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -83,7 +77,7 @@ UNREGISTER STORAGE UNIT IF EXISTS ds_0;
 
 ### 保留字
 
-`DROP`、`STORAGE`、`UNIT`、`IF`、`EXISTS`、`IGNORE`、`SINGLE`、`BROADCAST`、`TABLES`
+`UNREGISTER`、`STORAGE`、`UNIT`、`IF`、`EXISTS`、`IGNORE`、`SINGLE`、`BROADCAST`、`TABLES`
 
 ### 相关链接
 
