@@ -215,15 +215,6 @@ public final class ShardingTable {
     }
     
     /**
-     * Get actual data source names.
-     *
-     * @return actual data source names
-     */
-    public Collection<String> getActualDataSourceNames() {
-        return actualDataSourceNames;
-    }
-    
-    /**
      * Get actual table names via target data source name.
      *
      * @param targetDataSource target data source name

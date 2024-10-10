@@ -76,8 +76,8 @@ class OpenGaussSchemaMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadSchemaTableNamesByExcludedTables() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNamesByExcludedTables(DefaultDatabase.LOGIC_NAME,
+    void assertLoadSchemaTableNames() throws SQLException {
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME,
                 TypedSPILoader.getService(DatabaseType.class, "openGauss"), dataSource, Collections.emptyList()), is(createSchemaTableNames()));
     }
     
