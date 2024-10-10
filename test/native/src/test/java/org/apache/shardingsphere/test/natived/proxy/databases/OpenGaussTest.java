@@ -38,15 +38,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
 @EnabledInNativeImage
 @Testcontainers
-class PostgresTest {
+class OpenGaussTest {
     
     @Container
-    public static final GenericContainer<?> POSTGRES_CONTAINER = new GenericContainer<>("postgres:16.3-bookworm")
-            .withEnv("POSTGRES_PASSWORD", "yourStrongPassword123!")
+    public static final GenericContainer<?> OPENGAUSS_CONTAINER = new GenericContainer<>("opengauss/opengauss:5.0.0")
+            .withEnv("GS_PASSWORD", "yourStrongPassword123!")
             .withExposedPorts(5432);
     
     private static ProxyTestingServer proxyTestingServer;
@@ -56,21 +57,26 @@ class PostgresTest {
     @BeforeAll
     static void beforeAll() throws SQLException {
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            openConnection("postgres", "yourStrongPassword123!", "jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/")
+            openConnection("gaussdb", "yourStrongPassword123!", "jdbc:opengauss://127.0.0.1:" + OPENGAUSS_CONTAINER.getMappedPort(5432) + "/postgres")
                     .close();
             return true;
         });
         try (
-                Connection connection = openConnection("postgres", "yourStrongPassword123!", "jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/");
+                Connection connection = openConnection("gaussdb", "yourStrongPassword123!", "jdbc:opengauss://127.0.0.1:" + OPENGAUSS_CONTAINER.getMappedPort(5432) + "/postgres");
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE demo_ds_0");
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
             statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
-        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().normalize().toString();
+        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/opengauss").toAbsolutePath().normalize().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
+        try {
+            TimeUnit.SECONDS.sleep(30L);
+        } catch (final InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).until(() -> {
+            openConnection("root", "root", "jdbc:opengauss://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();
             return true;
         });
     }
@@ -90,24 +96,24 @@ class PostgresTest {
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         try (
-                Connection connection = openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres");
+                Connection connection = openConnection("root", "root", "jdbc:opengauss://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres");
                 Statement statement = connection.createStatement()) {
             statement.execute("CREATE DATABASE sharding_db");
         }
         try (
-                Connection connection = openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
+                Connection connection = openConnection("root", "root", "jdbc:opengauss://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
                 Statement statement = connection.createStatement()) {
             statement.execute("REGISTER STORAGE UNIT ds_0 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_0\",\n"
-                    + "  USER=\"postgres\",\n"
+                    + "  URL=\"jdbc:opengauss://127.0.0.1:" + OPENGAUSS_CONTAINER.getMappedPort(5432) + "/demo_ds_0\",\n"
+                    + "  USER=\"gaussdb\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + "),ds_1 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_1\",\n"
-                    + "  USER=\"postgres\",\n"
+                    + "  URL=\"jdbc:opengauss://127.0.0.1:" + OPENGAUSS_CONTAINER.getMappedPort(5432) + "/demo_ds_1\",\n"
+                    + "  USER=\"gaussdb\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + "),ds_2 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_2\",\n"
-                    + "  USER=\"postgres\",\n"
+                    + "  URL=\"jdbc:opengauss://127.0.0.1:" + OPENGAUSS_CONTAINER.getMappedPort(5432) + "/demo_ds_2\",\n"
+                    + "  USER=\"gaussdb\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + ")");
             statement.execute("CREATE DEFAULT SHARDING DATABASE STRATEGY (\n"
@@ -133,8 +139,8 @@ class PostgresTest {
             statement.execute("CREATE BROADCAST TABLE RULE t_address");
         }
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("org.postgresql.Driver");
-        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
+        config.setDriverClassName("org.opengauss.Driver");
+        config.setJdbcUrl("jdbc:opengauss://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
         config.setUsername("root");
         config.setPassword("root");
         DataSource dataSource = new HikariDataSource(config);
