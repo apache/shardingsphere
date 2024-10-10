@@ -1,5 +1,88 @@
 [
 {
+  "condition":{"typeReachable":"java.lang.Boolean"},
+  "name":"java.lang.Boolean",
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true
+},
+{
+  "condition":{"typeReachable":"java.lang.Number"},
+  "name":"java.lang.Number",
+  "allDeclaredFields": true,
+  "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"java.lang.Integer"},
+  "name":"java.lang.Integer",
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true
+},
+{
+  "condition":{"typeReachable":"java.lang.Long"},
+  "name":"java.lang.Long",
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true
+},
+{
+  "condition":{"typeReachable":"java.lang.constant.ConstantDesc"},
+  "name":"java.lang.constant.ConstantDesc",
+  "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"java.util.HashSet"},
+  "name":"java.util.HashSet",
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors": true
+},
+{
+  "condition":{"typeReachable":"java.lang.management.MemoryManagerMXBean"},
+  "name":"java.lang.management.MemoryManagerMXBean",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"java.lang.management.MemoryPoolMXBean"},
+  "name":"java.lang.management.MemoryPoolMXBean",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"java.lang.management.ClassLoadingMXBean"},
+  "name":"java.lang.management.ClassLoadingMXBean",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"java.lang.management.RuntimeMXBean"},
+  "name":"java.lang.management.RuntimeMXBean",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"java.lang.management.CompilationMXBean"},
+  "name":"java.lang.management.CompilationMXBean",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"com.sun.management.GarbageCollectorMXBean"},
+  "name":"com.sun.management.GarbageCollectorMXBean",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"com.sun.management.GcInfo"},
+  "name":"com.sun.management.GcInfo",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean"},
+  "name":"com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean",
+  "allPublicConstructors": true
+},
+{
+  "condition":{"typeReachable":"java.lang.management.MemoryMXBean"},
+  "name":"java.lang.management.MemoryMXBean",
+  "allPublicMethods": true
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration",
   "allPublicMethods":true
@@ -129,5 +212,33 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlBaseShardingStrategyConfiguration"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlBaseShardingStrategyConfiguration",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration"},
+  "name":"org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration",
+  "allDeclaredFields": true,
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration"},
+  "name":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration",
+  "allPublicMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration"},
+  "name":"org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration",
+  "allPublicMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData"},
+  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData",
+  "allPublicMethods": true
 }
 ]

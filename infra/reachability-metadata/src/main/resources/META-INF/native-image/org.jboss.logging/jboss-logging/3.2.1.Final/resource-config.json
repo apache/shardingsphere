@@ -1,0 +1,8 @@
+{
+  "resources":{
+  "includes":[{
+    "condition":{"typeReachable":"org.jboss.logging.LoggerProviders"},
+    "pattern":"\\QMETA-INF/services/org.jboss.logging.LoggerProvider\\E"
+  }]},
+  "bundles":[]
+}

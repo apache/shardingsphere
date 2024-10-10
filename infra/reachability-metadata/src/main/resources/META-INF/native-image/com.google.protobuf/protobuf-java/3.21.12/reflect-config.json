@@ -1,0 +1,7 @@
+[
+{
+  "condition":{"typeReachable":"com.google.protobuf.ExtensionRegistryFactory"},
+  "name":"com.google.protobuf.ExtensionRegistry",
+  "methods":[{"name":"getEmptyRegistry","parameterTypes":[] }]
+}
+]

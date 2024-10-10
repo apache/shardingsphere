@@ -1096,6 +1096,9 @@
                             <configuration>
                                 <buildArgs>
                                     <buildArg>-H:+AddAllCharsets</buildArg>
+                                    <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
+                                    <buildArg>-H:ThrowMissingRegistrationErrors=</buildArg>
+                                    <buildArg>-H:MissingRegistrationReportingMode=Warn</buildArg>
                                 </buildArgs>
                                 <quickBuild>true</quickBuild>
                             </configuration>

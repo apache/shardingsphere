@@ -56,7 +56,7 @@ class ShardingTest {
     
     @BeforeAll
     static void beforeAll() throws SQLException {
-        Awaitility.await().atMost(Duration.ofMinutes(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
             openConnection("root", "yourStrongPassword123!", "jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306))
                     .close();
             return true;
@@ -70,7 +70,7 @@ class ShardingTest {
         }
         String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/features/sharding").toAbsolutePath().normalize().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofMinutes(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
             openConnection("root", "root", "jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort()).close();
             return true;
         });
