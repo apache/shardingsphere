@@ -66,7 +66,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({SingleTableDataNodeLoader.class, SingleTableLoadUtils.class})
+@StaticMockSettings({SingleTableDataNodeLoader.class, SingleTableLoadUtils.class, PhysicalResourceAggregator.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class LoadSingleTableExecutorTest {
     
