@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecut
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalResourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -66,7 +67,7 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
     
     private Map<String, Collection<DataNode>> getActualDataNodes(final ShardingSphereDatabase database) {
         ResourceMetaData resourceMetaData = database.getResourceMetaData();
-        Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(
+        Map<String, DataSource> aggregateDataSourceMap = PhysicalResourceAggregator.getAggregatedResources(
                 resourceMetaData.getStorageUnits().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules());

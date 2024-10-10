@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.InvalidStorageUnitStatusException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalResourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -113,7 +113,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     private void checkShouldExistActualTables(final LoadSingleTableStatement sqlStatement, final Collection<String> storageUnitNames, final String defaultSchemaName) {
         Map<String, DataSource> dataSourceMap = database.getResourceMetaData().getStorageUnits().entrySet()
                 .stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
-        Map<String, DataSource> aggregatedDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(dataSourceMap, database.getRuleMetaData().getRules());
+        Map<String, DataSource> aggregatedDataSourceMap = PhysicalResourceAggregator.getAggregatedResources(dataSourceMap, database.getRuleMetaData().getRules());
         Collection<String> invalidDataSources = storageUnitNames.stream().filter(each -> !aggregatedDataSourceMap.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidDataSources.isEmpty(), () -> new InvalidStorageUnitStatusException(String.format("`%s` is invalid, please use `%s`",
                 String.join(",", invalidDataSources), String.join(",", aggregatedDataSourceMap.keySet()))));

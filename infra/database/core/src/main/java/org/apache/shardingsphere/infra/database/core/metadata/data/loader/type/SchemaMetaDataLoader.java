@@ -63,8 +63,8 @@ public final class SchemaMetaDataLoader {
      * @return loaded schema table names
      * @throws SQLException SQL exception
      */
-    public static Map<String, Collection<String>> loadSchemaTableNamesByExcludedTables(final String databaseName, final DatabaseType databaseType, final DataSource dataSource,
-                                                                                       final Collection<String> excludedTables) throws SQLException {
+    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource,
+                                                                       final Collection<String> excludedTables) throws SQLException {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connection, databaseType);
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();

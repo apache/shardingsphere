@@ -182,7 +182,7 @@ public final class SingleTableDataNodeLoader {
     public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType storageType,
                                                                        final DataSource dataSource, final String dataSourceName, final Collection<String> excludedTables) {
         try {
-            return SchemaMetaDataLoader.loadSchemaTableNamesByExcludedTables(databaseName, storageType, dataSource, excludedTables);
+            return SchemaMetaDataLoader.loadSchemaTableNames(databaseName, storageType, dataSource, excludedTables);
         } catch (final SQLException ex) {
             throw new SingleTablesLoadingException(databaseName, dataSourceName, ex);
         }

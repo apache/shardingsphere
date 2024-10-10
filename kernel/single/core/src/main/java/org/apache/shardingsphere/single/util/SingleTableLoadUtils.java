@@ -25,16 +25,11 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
 
@@ -45,37 +40,6 @@ import java.util.TreeSet;
 public final class SingleTableLoadUtils {
     
     private static final String DELIMITER = ",";
-    
-    /**
-     * Get aggregated data source map.
-     *
-     * @param dataSourceMap data source map
-     * @param builtRules built rules
-     * @return aggregated data source map
-     */
-    public static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (ShardingSphereRule each : builtRules) {
-            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
-            if (ruleAttribute.isPresent()) {
-                result = getAggregatedDataSourceMap(result, ruleAttribute.get());
-            }
-        }
-        return result;
-    }
-    
-    private static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceMapperRuleAttribute ruleAttribute) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<String>> entry : ruleAttribute.getDataSourceMapper().entrySet()) {
-            for (String each : entry.getValue()) {
-                if (dataSourceMap.containsKey(each)) {
-                    result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));
-                }
-            }
-        }
-        result.putAll(dataSourceMap);
-        return result;
-    }
     
     /**
      * Get excluded tables.
