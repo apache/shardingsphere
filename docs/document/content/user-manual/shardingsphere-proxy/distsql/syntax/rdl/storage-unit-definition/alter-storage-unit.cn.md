@@ -13,7 +13,10 @@ weight = 2
 {{% tab name="语法" %}}
 ```sql
 AlterStorageUnit ::=
-  'ALTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
+  'ALTER' 'STORAGE' 'UNIT' storageUnitsDefinition (',' checkPrivileges)?
+
+storageUnitsDefinition ::=
+  storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
   storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
@@ -47,6 +50,12 @@ key ::=
 
 value ::=
   literal
+
+checkPrivileges ::=
+  'CHECK_PRIVILEGES' '=' privilegeType (',' privilegeType)*
+
+privilegeType ::=
+  identifier
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -60,7 +69,8 @@ value ::=
 - `ALTER STORAGE UNIT`不允许改变该存储单元关联的真实数据源（通过 host、port 和 db 判断）；
 - `ALTER STORAGE UNIT`会发生连接池的切换，这个操作可能对进行中的业务造成影响，请谨慎使用；
 - 请确认修改的存储单元是可以正常连接的， 否则将不能修改成功；
-- `PROPERTIES` 为可选参数，用于自定义连接池属性，`key` 必须和连接池参数名一致。
+- `PROPERTIES` 为可选参数，用于自定义连接池属性，`key` 必须和连接池参数名一致;
+- 可通过 `CHECK_PRIVILEGES` 指定注册时校验存储单元用户的权限，`privilegeType` 支持的类型有 `SELECT`、`XA`、`PIPELINE`、`NONE`，缺省值为 `SELECT`，当类型列表中包含 `NONE` 时，跳过权限校验。
 
 ### 示例
 
@@ -100,9 +110,21 @@ ALTER STORAGE UNIT ds_2 (
 );
 ```
 
+- 修改存储单元时检查 `SELECT`、`XA` 和 `PIPELINE` 权限
+
+```sql
+ALTER STORAGE UNIT ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000"),
+    CHECK_PRIVILEGES=SELECT,XA,PIPELINE
+);
+```
+
 ### 保留字
 
-`ALTER`、`STORAGE`、`UNIT`、`HOST`、`PORT`、`DB`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`
+`ALTER`、`STORAGE`、`UNIT`、`HOST`、`PORT`、`DB`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`、`CHECK_PRIVILEGES`
 
 ### 相关链接
 

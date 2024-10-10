@@ -13,22 +13,16 @@ The `UNREGISTER STORAGE UNIT` syntax is used to unregister storage unit from the
 {{% tab name="Grammar" %}}
 ```sql
 UnregisterStorageUnit ::=
-  'UNREGISTER' 'STORAGE' 'UNIT' ifExists? storageUnitName (',' storageUnitName)* (ignoreSingleTables | ignoreBroadcastTables | ignoreSingleAndBroadcastTables)?
-
-ignoreSingleTables ::=
-    'IGNORE' 'SINGLE' 'TABLES'
-
-ignoreBroadcastTables ::=
-    'IGNORE' 'BROADCAST' 'TABLES'
-
-ignoreSingleAndBroadcastTables ::=
-    'IGNORE' ('SINGLE' ',' 'BROADCAST' | 'BROADCAST' ',' 'SINGLE') 'TABLES'
+  'UNREGISTER' 'STORAGE' 'UNIT' ifExists? storageUnitName (',' storageUnitName)* ignoreTables?
 
 ifExists ::=
   'IF' 'EXISTS'
 
 storageUnitName ::=
   identifier
+
+ignoreTables ::=
+  'IGNORE' ('SINGLE')? (',')? ('BROADCAST')? 'TABLES'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -48,33 +42,37 @@ storageUnitName ::=
 
 ### Example
 
-- Drop a storage unit
+- Unregister a storage unit
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0;
 ```
 
-- Drop multiple storage units
+- Unregister multiple storage units
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0, ds_1;
 ```
 
-- Ignore single rule remove storage unit
+- Unregister storage unit and ignore single tables
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE TABLES;
 ```
 
+- Unregister storage unit and ignore broadcast tables
+
 ```sql
 UNREGISTER STORAGE UNIT ds_0 IGNORE BROADCAST TABLES;
 ```
+
+- Unregister storage unit, ignore single and broadcast tables
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE, BROADCAST TABLES;
 ```
 
-- Drop the storage unit with `ifExists` clause
+- Unregister storage unit with `ifExists` clause
 
 ```sql
 UNREGISTER STORAGE UNIT IF EXISTS ds_0;
@@ -82,7 +80,7 @@ UNREGISTER STORAGE UNIT IF EXISTS ds_0;
 
 ### Reserved word
 
-`DROP`, `STORAGE`, `UNIT`, `IF`, `EXISTS`, `IGNORE`, `SINGLE`, `BROADCAST`, `TABLES`
+`UNREGISTER`, `STORAGE`, `UNIT`, `IF`, `EXISTS`, `IGNORE`, `SINGLE`, `BROADCAST`, `TABLES`
 
 ### Related links
 
