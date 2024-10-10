@@ -74,6 +74,6 @@ public interface E2ETestParameter {
      * @return key of test parameter
      */
     default String getKey() {
-        return String.join("-", getSqlCommandType().toString(), getScenario(), getAdapter(), getDatabaseType().getType());
+        return String.join("-", getScenario(), getAdapter(), getDatabaseType().getType());
     }
 }
