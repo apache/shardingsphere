@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.datanode;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -95,13 +96,10 @@ public final class SingleTableDataNodeLoader {
     
     private static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType storageType, final String dataSourceName,
                                                           final DataSource dataSource, final Collection<String> excludedTables) {
-        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, storageType, dataSource, dataSourceName);
-        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
+        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, storageType, dataSource, dataSourceName, excludedTables);
+        Map<String, Collection<DataNode>> result = new CaseInsensitiveMap<>();
         for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
             for (String each : entry.getValue()) {
-                if (excludedTables.contains(each)) {
-                    continue;
-                }
                 Collection<DataNode> dataNodes = result.getOrDefault(each, new LinkedList<>());
                 DataNode dataNode = new DataNode(dataSourceName, each);
                 dataNode.setSchemaName(entry.getKey());
@@ -177,12 +175,14 @@ public final class SingleTableDataNodeLoader {
      * @param storageType storage type
      * @param dataSource data source
      * @param dataSourceName data source name
+     * @param excludedTables excluded tables
      * @return schema table names
      * @throws SingleTablesLoadingException Single tables loading exception
      */
-    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType storageType, final DataSource dataSource, final String dataSourceName) {
+    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType storageType,
+                                                                       final DataSource dataSource, final String dataSourceName, final Collection<String> excludedTables) {
         try {
-            return SchemaMetaDataLoader.loadSchemaTableNames(databaseName, storageType, dataSource);
+            return SchemaMetaDataLoader.loadSchemaTableNamesByExcludedTables(databaseName, storageType, dataSource, excludedTables);
         } catch (final SQLException ex) {
             throw new SingleTablesLoadingException(databaseName, dataSourceName, ex);
         }

@@ -42,6 +42,7 @@ import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -131,7 +132,8 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(storageUnitNames.size(), 1F);
         for (String each : storageUnitNames) {
             DataSource dataSource = aggregatedDataSourceMap.get(each);
-            Map<String, Collection<String>> schemaTableNames = SingleTableDataNodeLoader.loadSchemaTableNames(database.getName(), DatabaseTypeEngine.getStorageType(dataSource), dataSource, each);
+            Map<String, Collection<String>> schemaTableNames =
+                    SingleTableDataNodeLoader.loadSchemaTableNames(database.getName(), DatabaseTypeEngine.getStorageType(dataSource), dataSource, each, Collections.emptyList());
             if (!schemaTableNames.isEmpty()) {
                 result.put(each, schemaTableNames);
             }
