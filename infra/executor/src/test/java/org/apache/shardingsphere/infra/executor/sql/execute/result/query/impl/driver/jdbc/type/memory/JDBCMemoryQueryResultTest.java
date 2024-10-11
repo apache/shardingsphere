@@ -22,11 +22,14 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Blob;
@@ -355,6 +358,14 @@ class JDBCMemoryQueryResultTest {
         objectOutputStream.flush();
         objectOutputStream.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    }
+    
+    @Test
+    void assertGetCharacterStream() throws SQLException, IOException {
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSet(), databaseType);
+        queryResult.next();
+        Reader reader = queryResult.getCharacterStream(1);
+        assertThat(reader.read(), is(new BufferedReader(new InputStreamReader(getInputStream(1))).read()));
     }
     
     @Test
