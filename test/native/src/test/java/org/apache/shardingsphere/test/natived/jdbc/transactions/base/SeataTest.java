@@ -44,7 +44,7 @@ class SeataTest {
     @Container
     public static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.1.0")
             .withExposedPorts(7091, 8091)
-            .waitingFor(Wait.forHttp("/health").forPort(7091).forResponsePredicate(s -> s.equals("ok")));
+            .waitingFor(Wait.forHttp("/health").forPort(7091).forResponsePredicate("ok"::equals));
     
     private static final String SERVICE_DEFAULT_GROUP_LIST_KEY = "service.default.grouplist";
     

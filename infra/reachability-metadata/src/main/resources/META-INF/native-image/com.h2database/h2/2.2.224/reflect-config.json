@@ -2,6 +2,7 @@
 {
   "condition":{"typeReachable":"org.h2.jdbcx.JdbcDataSource"},
   "name":"org.h2.jdbcx.JdbcDataSource",
-  "allDeclaredConstructors": true
+  "allPublicMethods": true,
+  "methods": [{"name":"<init>","parameterTypes":[] }]
 }
 ]

@@ -264,9 +264,10 @@ to define the constructor of `com.mysql.cj.jdbc.MysqlXADataSource` inside the Gr
 ```json
 [
 {
-"condition":{"typeReachable":"com.mysql.cj.jdbc.MysqlXADataSource"},
-"name":"com.mysql.cj.jdbc.MysqlXADataSource",
-"allDeclaredConstructors": true
+   "condition":{"typeReachable":"com.mysql.cj.jdbc.MysqlXADataSource"},
+   "name":"com.mysql.cj.jdbc.MysqlXADataSource",
+   "allPublicMethods": true,
+   "methods": [{"name":"<init>","parameterTypes":[] }]
 }
 ]
 ```
@@ -502,7 +503,7 @@ sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PnativeTestInShardingSphere -e clean test
+./mvnw -PnativeTestInShardingSphere -e -T 1C clean test
 ```
 
 When contributors discover that GraalVM Reachability Metadata is missing for a third-party library not related to ShardingSphere, 
@@ -532,8 +533,26 @@ contributors should place it on the classpath of the `shardingsphere-test-native
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -DskipNativeTests -e clean test native:metadata-copy
+./mvnw -PgenerateMetadata -DskipNativeTests -e -T 1C clean test native:metadata-copy
 ```
 
-Contributors should avoid using Maven's parallel builds feature when using the Maven Plugin for GraalVM Native Build Tools. 
-The Maven Plugin for GraalVM Native Build Tools is not thread-safe and is incompatible with https://cwiki.apache.org/confluence/display/MAVEN/Parallel+builds+in+Maven+3 .
+Affected by https://github.com/apache/shardingsphere/issues/33206 ,
+After the contributor executes `./mvnw -PgenerateMetadata -DskipNativeTests -T 1C -e clean test native:metadata-copy`,
+`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/resource-config.json` will generate unnecessary JSON entries containing absolute paths,
+similar to the following.
+
+```json
+{
+   "resources":{
+      "includes":[{
+         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
+         "pattern":"\\QcustomPath/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml\\E"
+      }, {
+         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
+         "pattern":"\\QcustomPath/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/\\E"
+      }]},
+   "bundles":[]
+}
+```
+
+Contributors should always manually remove these JSON entries containing absolute paths and wait for https://github.com/oracle/graal/issues/8417 to be resolved.

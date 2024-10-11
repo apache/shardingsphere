@@ -40,6 +40,10 @@
   "name":"io.seata.rm.AbstractRMHandler"
 },
 {
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.PreparedStatementProxy"},
+  "name":"io.seata.rm.datasource.exec.InsertExecutor"
+},
+{
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"},
   "name":"io.seata.rm.datasource.undo.UndoExecutorHolder"
 },
@@ -90,7 +94,7 @@
   "name":"org.apache.seata.config.Configuration"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.config.ConfigurationCache$$Lambda/0x00007f3e4ba49308"},
+  "condition":{"typeReachable":"org.apache.seata.config.ConfigurationCache$$Lambda/0x00007fea13cd9cb0"},
   "name":"org.apache.seata.config.Configuration"
 },
 {
@@ -215,9 +219,33 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.StatementProxy"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.PreparedStatementProxy"},
+  "name":"org.apache.seata.rm.datasource.exec.dm.DmInsertExecutor"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.PreparedStatementProxy"},
+  "name":"org.apache.seata.rm.datasource.exec.mariadb.MariadbInsertExecutor"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.PreparedStatementProxy"},
+  "name":"org.apache.seata.rm.datasource.exec.mysql.MySQLInsertExecutor"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.PreparedStatementProxy"},
+  "name":"org.apache.seata.rm.datasource.exec.oracle.OracleInsertExecutor"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.PreparedStatementProxy"},
+  "name":"org.apache.seata.rm.datasource.exec.polardbx.PolarDBXInsertExecutor"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.ExecuteTemplate"},
   "name":"org.apache.seata.rm.datasource.exec.postgresql.PostgresqlInsertExecutor",
   "methods":[{"name":"<init>","parameterTypes":["org.apache.seata.rm.datasource.StatementProxy","org.apache.seata.rm.datasource.exec.StatementCallback","org.apache.seata.sqlparser.SQLRecognizer"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.PreparedStatementProxy"},
+  "name":"org.apache.seata.rm.datasource.exec.sqlserver.SqlServerInsertExecutor"
 },
 {
   "condition":{"typeReachable":"org.apache.seata.sqlparser.EscapeHandlerFactory"},
@@ -253,7 +281,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007f3e4bc2af00"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
@@ -278,7 +306,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007f3e4bc17788"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
@@ -322,7 +350,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007f3e4bc2af00"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
@@ -347,7 +375,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007f3e4bc17788"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
@@ -379,7 +407,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007f3e4bc2af00"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
@@ -404,7 +432,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007f3e4bc17788"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
@@ -480,7 +508,7 @@
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007f3e4bc2af00"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
@@ -505,7 +533,7 @@
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007f3e4bc17788"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
@@ -537,7 +565,7 @@
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007f3e4bc2af00"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
@@ -562,7 +590,7 @@
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007f3e4bc17788"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
@@ -794,5 +822,9 @@
   "condition":{"typeReachable":"org.apache.seata.tm.TransactionManagerHolder$SingletonHolder"},
   "name":"org.apache.seata.tm.DefaultTransactionManager",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
+  "name":"io.seata.config.file.FileConfig"
 }
 ]

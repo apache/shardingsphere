@@ -4,13 +4,9 @@
 
     {"excludeClasses": "android.app.**"},
     {"excludeClasses": "com.**"},
-    {"excludeClasses": "ch.qos.logback.classic.**"},
+    {"excludeClasses": "ch.qos.logback.**"},
     {"excludeClasses": "groovy.**"},
     {"excludeClasses": "io.**"},
-    {"excludeClasses": "java.**"},
-    {"includeClasses": "java.util.LinkedHashSet"},
-    {"includeClasses": "java.util.Properties"},
-    {"includeClasses": "java.util.ServiceLoader"},
     {"excludeClasses": "javax.**"},
     {"excludeClasses": "jdk.internal.misc.**"},
     {"excludeClasses": "libcore.io.**"},
@@ -18,6 +14,7 @@
     {"excludeClasses": "org.**"},
     {"includeClasses": "org.apache.shardingsphere.**"},
     {"excludeClasses": "sun.**"},
+    {"includeClasses": "sun.security.provider.SecureRandom"},
 
     {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}
   ],

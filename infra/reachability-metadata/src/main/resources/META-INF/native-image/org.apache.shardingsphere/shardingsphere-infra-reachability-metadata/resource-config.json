@@ -9,6 +9,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":".*sql/.+\\.xml$"
+  }, {
+    "condition":{"typeReachable":"javax.xml.parsers.FactoryFinder"},
+    "pattern":"\\QMETA-INF/services/javax.xml.parsers.SAXParserFactory\\E"
   }]},
   "bundles":[]
 }
