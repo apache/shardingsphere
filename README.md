@@ -174,7 +174,7 @@ With the client end connecting directly to the database, it provides services in
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://store.docker.com/community/images/apache/shardingsphere-proxy)
 
 A transparent database proxy, providing a database server that encapsulates the database binary protocol to support heterogeneous languages. 
-Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any kind of terminal.
+Friendlier to DBAs, the MariaDB, MySQL and PostgreSQL version now provided can use any kind of terminal.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy).
 
