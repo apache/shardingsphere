@@ -76,6 +76,12 @@ public final class ExecutionContextBuilder {
         return result;
     }
     
+    private static List<RouteMapper> getGenericTableRouteMappers(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().stream().map(each -> new RouteMapper(each, each)).collect(Collectors.toList())
+                : Collections.emptyList();
+    }
+    
     private static List<RouteMapper> getRouteTableRouteMappers(final Collection<RouteMapper> tableMappers) {
         if (null == tableMappers) {
             return Collections.emptyList();
@@ -85,11 +91,5 @@ public final class ExecutionContextBuilder {
             result.add(new RouteMapper(each.getLogicName(), each.getActualName()));
         }
         return result;
-    }
-    
-    private static List<RouteMapper> getGenericTableRouteMappers(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().stream().map(each -> new RouteMapper(each, each)).collect(Collectors.toList())
-                : Collections.emptyList();
     }
 }
