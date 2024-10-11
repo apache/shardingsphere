@@ -22,10 +22,12 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -81,6 +83,13 @@ class JDBCQueryResultMetaDataTest {
     }
     
     @Test
+    void assertGetTableNameWithException() throws SQLException {
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getTableName(1)).thenThrow(new SQLFeatureNotSupportedException());
+        assertThat(new JDBCQueryResultMetaData(resultSetMetaData).getTableName(1), is(""));
+    }
+    
+    @Test
     void assertGetColumnType() throws SQLException {
         assertThat(queryResultMetaData.getColumnType(1), is(Types.INTEGER));
     }
@@ -101,8 +110,22 @@ class JDBCQueryResultMetaDataTest {
     }
     
     @Test
+    void assertIsSignedWithException() throws SQLException {
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.isSigned(1)).thenThrow(new SQLFeatureNotSupportedException());
+        assertFalse(new JDBCQueryResultMetaData(resultSetMetaData).isSigned(1));
+    }
+    
+    @Test
     void assertIsNotNull() throws SQLException {
         assertTrue(queryResultMetaData.isNotNull(1));
+    }
+    
+    @Test
+    void assertIsNull() throws SQLException {
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNullableUnknown);
+        assertFalse(new JDBCQueryResultMetaData(resultSetMetaData).isNotNull(1));
     }
     
     @Test
