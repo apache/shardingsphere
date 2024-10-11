@@ -28,6 +28,7 @@
 1. Kernel: Support sql hint extract when sql contains dbeaver hint comment - [#32331](https://github.com/apache/shardingsphere/pull/32331)
 1. Encrypt: Support select distinct(column) encrypt rewrite and refactor SubstitutableColumnNameToken build logic - [#32344](https://github.com/apache/shardingsphere/pull/32344)
 1. SQL Federation: Support federated query mysql bin function - [#32373](https://github.com/apache/shardingsphere/pull/32373)
+1. SQL Parser: Enhance MySQL select statement - [#32395](https://github.com/apache/shardingsphere/pull/32395)
 1. Kernel: Add extract combine left select in extractFromSelectStatementWithoutProjection method - [#32429](https://github.com/apache/shardingsphere/pull/32429)
 1. Proxy Native: Add more graalvm reachability metadata for caffeine cache - [#32633](https://github.com/apache/shardingsphere/pull/32633)
 1. Sharding: Add NullsOrderType.LOW and NullsOrderType.HIGH to handle NULL order by in sharding feature - [#32813](https://github.com/apache/shardingsphere/pull/32813)
