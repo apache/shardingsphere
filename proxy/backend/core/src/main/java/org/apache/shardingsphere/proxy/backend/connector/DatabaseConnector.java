@@ -334,11 +334,15 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isNeedAccumulate() {
-        Collection<DataNodeRuleAttribute> ruleAttributes = database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
         Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableAvailable
                 ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
                 : Collections.emptyList();
-        return !ruleAttributes.isEmpty() && ruleAttributes.iterator().next().isNeedAccumulate(tableNames);
+        for (DataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
+            if (each.isNeedAccumulate(tableNames)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
