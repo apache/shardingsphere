@@ -125,8 +125,8 @@
         <opengauss.version>3.1.0-og</opengauss.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
-        <hive.version>4.0.0</hive.version>
-        <hive-server2-jdbc-driver-thin.version>1.2.0</hive-server2-jdbc-driver-thin.version>
+        <hive.version>4.0.1</hive.version>
+        <hive-server2-jdbc-driver-thin.version>1.5.0</hive-server2-jdbc-driver-thin.version>
         <presto.version>0.288.1</presto.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>

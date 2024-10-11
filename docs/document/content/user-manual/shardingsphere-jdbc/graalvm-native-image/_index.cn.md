@@ -47,7 +47,7 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.10.2</version>
+                <version>0.10.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -85,12 +85,12 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.10.2'
+   id 'org.graalvm.buildtools.native' version '0.10.3'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.2', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.3', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -289,8 +289,8 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 
 ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 Seata AT 模式事务，更多讨论位于 https://github.com/ClickHouse/clickhouse-docs/issues/2300 。
 
-7. 当需要通过 ShardingSphere JDBC 使用 Hive 方言时，受 https://issues.apache.org/jira/browse/HIVE-28308 影响，
-用户不应该使用 `classifier` 为 `standalone` 的 `org.apache.hive:hive-jdbc:4.0.0`，以避免依赖冲突。
+7. 当需要通过 ShardingSphere JDBC 使用 Hive 方言时，受 https://issues.apache.org/jira/browse/HIVE-28445 影响，
+用户不应该使用 `classifier` 为 `standalone` 的 `org.apache.hive:hive-jdbc:4.0.1`，以避免依赖冲突。
 可能的配置例子如下，
 
 ```xml
@@ -314,12 +314,12 @@ ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 S
        <dependency>
           <groupId>org.apache.hive</groupId>
           <artifactId>hive-jdbc</artifactId>
-          <version>4.0.0</version>
+          <version>4.0.1</version>
        </dependency>
        <dependency>
           <groupId>org.apache.hive</groupId>
           <artifactId>hive-service</artifactId>
-          <version>4.0.0</version>
+          <version>4.0.1</version>
        </dependency>
        <dependency>
           <groupId>org.apache.hadoop</groupId>
@@ -355,7 +355,7 @@ ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 S
        <dependency>
           <groupId>io.github.linghengqian</groupId>
           <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-          <version>1.2.0</version>
+          <version>1.5.0</version>
           <exclusions>
              <exclusion>
                 <groupId>com.fasterxml.woodstox</groupId>
