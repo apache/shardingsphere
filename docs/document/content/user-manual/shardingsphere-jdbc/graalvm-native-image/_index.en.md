@@ -20,7 +20,7 @@ https://sdkman.io/jdks#nik and https://sdkman.io/jdks#mandrel .
 
 Users can still use the old versions of GraalVM CE such as `21.0.2-graalce` on SDKMAN! to build the GraalVM Native Image product of ShardingSphere. 
 However, this will cause the failure of building the GraalVM Native Image when integrating some third-party dependencies. 
-A typical example is related to the `org.apache.hive:hive-jdbc:4.0.0` HiveServer2 JDBC Driver, which uses AWT-related classes. 
+A typical example is related to the `org.apache.hive:hive-jdbc:4.0.1` HiveServer2 JDBC Driver, which uses AWT-related classes. 
 GraalVM CE only supports AWT for GraalVM CE For JDK22 and higher versions.
 
 ```shell
@@ -49,7 +49,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
              <plugin>
                  <groupId>org.graalvm.buildtools</groupId>
                  <artifactId>native-maven-plugin</artifactId>
-                 <version>0.10.2</version>
+                 <version>0.10.3</version>
                  <extensions>true</extensions>
                  <configuration>
                     <buildArgs>
@@ -89,12 +89,12 @@ Reference https://github.com/graalvm/native-build-tools/issues/572 .
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.10.2'
+   id 'org.graalvm.buildtools.native' version '0.10.3'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.2', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.3', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -302,8 +302,8 @@ Possible configuration examples are as follows,
 ClickHouse does not support local transactions, XA transactions, and Seata AT mode transactions at the ShardingSphere integration level. 
 More discussion is at https://github.com/ClickHouse/clickhouse-docs/issues/2300 .
 
-7. When using the Hive dialect through ShardingSphere JDBC, affected by https://issues.apache.org/jira/browse/HIVE-28308 ,
-   users should not use `org.apache.hive:hive-jdbc:4.0.0` with `classifier` as `standalone` to avoid dependency conflicts.
+7. When using the Hive dialect through ShardingSphere JDBC, affected by https://issues.apache.org/jira/browse/HIVE-28445 ,
+   users should not use `org.apache.hive:hive-jdbc:4.0.1` with `classifier` as `standalone` to avoid dependency conflicts.
    Possible configuration examples are as follows,
 
 ```xml
@@ -327,12 +327,12 @@ More discussion is at https://github.com/ClickHouse/clickhouse-docs/issues/2300 
       <dependency>
          <groupId>org.apache.hive</groupId>
          <artifactId>hive-jdbc</artifactId>
-         <version>4.0.0</version>
+         <version>4.0.1</version>
       </dependency>
       <dependency>
          <groupId>org.apache.hive</groupId>
          <artifactId>hive-service</artifactId>
-         <version>4.0.0</version>
+         <version>4.0.1</version>
       </dependency>
       <dependency>
          <groupId>org.apache.hadoop</groupId>
@@ -369,7 +369,7 @@ An example of a possible configuration is as follows,
        <dependency>
           <groupId>io.github.linghengqian</groupId>
           <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-          <version>1.2.0</version>
+          <version>1.5.0</version>
           <exclusions>
              <exclusion>
                 <groupId>com.fasterxml.woodstox</groupId>

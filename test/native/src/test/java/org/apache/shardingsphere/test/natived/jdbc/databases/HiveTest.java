@@ -50,7 +50,7 @@ class HiveTest {
     
     @SuppressWarnings("resource")
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>(DockerImageName.parse("apache/hive:4.0.0"))
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>(DockerImageName.parse("apache/hive:4.0.1"))
             .withEnv("SERVICE_NAME", "hiveserver2")
             .withExposedPorts(10000, 10002);
     

@@ -42,6 +42,7 @@
 1. DistSQL: Check user privilege when registering or altering storage unit - [#32172](https://github.com/apache/shardingsphere/pull/32172)
 1. Infra: Enable Safe Composition of Metadata for ShardingSphere Proxy Native - [#33179](https://github.com/apache/shardingsphere/pull/33179)
 1. Infra: Support compiling and using ShardingSphere under OpenJDK 23 - [#33025](https://github.com/apache/shardingsphere/pull/33025)
+1. Hive: Support Hive integration module to connect to HiveServer2 4.0.1 - [#33212](https://github.com/apache/shardingsphere/pull/33212)
 
 ### Bug Fix
 
