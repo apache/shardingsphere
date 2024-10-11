@@ -69,16 +69,16 @@ public final class TablesContext {
     
     private final Map<String, IdentifierValue> tableNameAliasMap = new HashMap<>();
     
-    public TablesContext(final SimpleTableSegment tableSegment, final DatabaseType databaseType, final String currentDatabaseName) {
-        this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment), databaseType, currentDatabaseName);
+    public TablesContext(final SimpleTableSegment table, final DatabaseType databaseType, final String currentDatabaseName) {
+        this(null == table ? Collections.emptyList() : Collections.singletonList(table), databaseType, currentDatabaseName);
     }
     
     public TablesContext(final Collection<SimpleTableSegment> tables, final DatabaseType databaseType, final String currentDatabaseName) {
         this(tables, Collections.emptyMap(), databaseType, currentDatabaseName);
     }
     
-    public TablesContext(final Collection<? extends TableSegment> tables, final Map<Integer, SelectStatementContext> subqueryContexts, final DatabaseType databaseType,
-                         final String currentDatabaseName) {
+    public TablesContext(final Collection<? extends TableSegment> tables, final Map<Integer, SelectStatementContext> subqueryContexts,
+                         final DatabaseType databaseType, final String currentDatabaseName) {
         if (tables.isEmpty()) {
             return;
         }
