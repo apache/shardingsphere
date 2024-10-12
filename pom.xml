@@ -144,7 +144,7 @@
         <testcontainers.version>1.20.1</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
-        <graal-sdk.version>24.0.2</graal-sdk.version>
+        <graal-sdk.version>24.1.0</graal-sdk.version>
         <jedis.version>4.4.6</jedis.version>
         
         <!-- 3rd party library plugin versions -->
@@ -988,9 +988,36 @@
     
     <profiles>
         <profile>
-            <id>jdk11+</id>
+            <id>jdk11-22</id>
             <activation>
-                <jdk>[11,)</jdk>
+                <jdk>[11,23)</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.release>8</maven.compiler.release>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <configuration>
+                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED</argLine>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk23+</id>
+            <activation>
+                <jdk>[23,)</jdk>
             </activation>
             <properties>
                 <maven.compiler.release>8</maven.compiler.release>
