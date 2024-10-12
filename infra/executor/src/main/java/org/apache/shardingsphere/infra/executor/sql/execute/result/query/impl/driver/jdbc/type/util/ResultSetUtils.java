@@ -22,8 +22,8 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -92,46 +92,25 @@ public final class ResultSetUtils {
         }
     }
     
-    private static Object convertURL(final Object value) {
-        try {
-            return new URL(value.toString());
-        } catch (final MalformedURLException ignored) {
-            throw new UnsupportedDataTypeConversionException(URL.class, value);
+    private static Object convertNullValue(final Class<?> convertType) {
+        switch (convertType.getName()) {
+            case "boolean":
+                return false;
+            case "byte":
+                return (byte) 0;
+            case "short":
+                return (short) 0;
+            case "int":
+                return 0;
+            case "long":
+                return 0L;
+            case "float":
+                return 0.0F;
+            case "double":
+                return 0.0D;
+            default:
+                return null;
         }
-    }
-    
-    /**
-     * Convert object to BigDecimal.
-     *
-     * @param value current db object
-     * @param needScale need scale
-     * @param scale scale size
-     * @return big decimal
-     * @throws UnsupportedDataTypeConversionException unsupported data type conversion exception
-     */
-    public static Object convertBigDecimalValue(final Object value, final boolean needScale, final int scale) {
-        if (null == value) {
-            return convertNullValue(BigDecimal.class);
-        }
-        if (BigDecimal.class == value.getClass()) {
-            return adjustBigDecimalResult((BigDecimal) value, needScale, scale);
-        }
-        if (value instanceof Number || value instanceof String) {
-            BigDecimal bigDecimal = new BigDecimal(value.toString());
-            return adjustBigDecimalResult(bigDecimal, needScale, scale);
-        }
-        throw new UnsupportedDataTypeConversionException(BigDecimal.class, value);
-    }
-    
-    private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
-        if (needScale) {
-            try {
-                return value.setScale(scale, RoundingMode.UNNECESSARY);
-            } catch (final ArithmeticException ex) {
-                return value.setScale(scale, RoundingMode.HALF_UP);
-            }
-        }
-        return value;
     }
     
     private static Object convertLocalDateTimeValue(final LocalDateTime value, final Class<?> convertType) {
@@ -163,24 +142,11 @@ public final class ResultSetUtils {
         return value;
     }
     
-    private static Object convertNullValue(final Class<?> convertType) {
-        switch (convertType.getName()) {
-            case "boolean":
-                return false;
-            case "byte":
-                return (byte) 0;
-            case "short":
-                return (short) 0;
-            case "int":
-                return 0;
-            case "long":
-                return 0L;
-            case "float":
-                return 0.0F;
-            case "double":
-                return 0.0D;
-            default:
-                return null;
+    private static Object convertURL(final Object value) {
+        try {
+            return new URL(value.toString());
+        } catch (final MalformedURLException ignored) {
+            throw new UnsupportedDataTypeConversionException(URL.class, value);
         }
     }
     
@@ -216,6 +182,10 @@ public final class ResultSetUtils {
             default:
                 throw new UnsupportedDataTypeConversionException(convertType, value);
         }
+    }
+    
+    private static Boolean longToBoolean(final long longVal) {
+        return -1L == longVal || longVal > 0L;
     }
     
     private static Object convertDateValue(final Date value, final Class<?> convertType) {
@@ -260,7 +230,37 @@ public final class ResultSetUtils {
         return 't' == firstChar || 'y' == firstChar || '1' == firstChar || "-1".equals(stringVal);
     }
     
-    private static Boolean longToBoolean(final long longVal) {
-        return -1L == longVal || longVal > 0L;
+    /**
+     * Convert object to BigDecimal.
+     *
+     * @param value current db object
+     * @param needScale need scale
+     * @param scale scale size
+     * @return big decimal
+     * @throws UnsupportedDataTypeConversionException unsupported data type conversion exception
+     */
+    public static Object convertBigDecimalValue(final Object value, final boolean needScale, final int scale) {
+        if (null == value) {
+            return convertNullValue(BigDecimal.class);
+        }
+        if (BigDecimal.class == value.getClass()) {
+            return adjustBigDecimalResult((BigDecimal) value, needScale, scale);
+        }
+        if (value instanceof Number || value instanceof String) {
+            BigDecimal bigDecimal = new BigDecimal(value.toString());
+            return adjustBigDecimalResult(bigDecimal, needScale, scale);
+        }
+        throw new UnsupportedDataTypeConversionException(BigDecimal.class, value);
+    }
+    
+    private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
+        if (needScale) {
+            try {
+                return value.setScale(scale, RoundingMode.UNNECESSARY);
+            } catch (final ArithmeticException ex) {
+                return value.setScale(scale, RoundingMode.HALF_UP);
+            }
+        }
+        return value;
     }
 }
