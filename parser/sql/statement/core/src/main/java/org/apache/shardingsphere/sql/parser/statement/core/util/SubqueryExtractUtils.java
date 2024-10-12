@@ -84,6 +84,7 @@ public final class SubqueryExtractUtils {
     
     private static void extractSubquerySegmentsFromCTEs(final List<SubquerySegment> result, final Collection<CommonTableExpressionSegment> withSegment) {
         for (CommonTableExpressionSegment each : withSegment) {
+            each.getSubquery().setSubqueryType(SubqueryType.WITH);
             result.add(each.getSubquery());
             extractSubquerySegments(result, each.getSubquery().getSelect());
         }
