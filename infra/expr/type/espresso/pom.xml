@@ -51,15 +51,9 @@
         </dependency>
         <dependency>
             <groupId>org.graalvm.polyglot</groupId>
-            <artifactId>java-community</artifactId>
+            <artifactId>java</artifactId>
             <version>${graal-sdk.version}</version>
             <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.graalvm.espresso</groupId>
-            <artifactId>espresso-runtime-resources-linux-amd64</artifactId>
-            <version>${graal-sdk.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
