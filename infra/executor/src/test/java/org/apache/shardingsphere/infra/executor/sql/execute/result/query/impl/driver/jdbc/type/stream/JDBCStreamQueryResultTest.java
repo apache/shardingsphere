@@ -266,6 +266,14 @@ class JDBCStreamQueryResultTest {
         assertTrue(actual.wasNull());
     }
     
+    @Test
+    void assertClose() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        queryResult.close();
+        verify(resultSet).close();
+    }
+    
     private ResultSet getResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true).thenReturn(false);
