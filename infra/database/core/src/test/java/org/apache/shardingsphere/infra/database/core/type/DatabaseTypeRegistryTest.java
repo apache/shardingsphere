@@ -20,19 +20,24 @@ package org.apache.shardingsphere.infra.database.core.type;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseTypeRegistryTest {
     
     @Test
-    void assertGetAllBranchDatabaseTypes() {
-        Collection<DatabaseType> actual = new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "TRUNK")).getAllBranchDatabaseTypes();
-        assertThat(actual, is(Collections.singletonList(TypedSPILoader.getService(DatabaseType.class, "BRANCH"))));
+    void assertGetAllBranchDatabaseTypesWithTrunkType() {
+        assertThat(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "TRUNK")).getAllBranchDatabaseTypes(),
+                is(Collections.singletonList(TypedSPILoader.getService(DatabaseType.class, "BRANCH"))));
+    }
+    
+    @Test
+    void assertGetAllBranchDatabaseTypesWithBranchType() {
+        assertTrue(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "BRANCH")).getAllBranchDatabaseTypes().isEmpty());
     }
     
     @Test
