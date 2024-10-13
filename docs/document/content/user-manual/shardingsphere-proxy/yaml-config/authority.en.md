@@ -9,8 +9,8 @@ In ShardingSphere-Proxy, user authentication and authorization information is co
 
 Thanks to ShardingSphere's pluggable architecture, Proxy provides two levels of privilege providers, namely: 
 
-- `ALL_PERMITTED`: each user has all privileges without special authorization.
-- `DATABASE_PERMITTED`: grants the user privileges on the specified logical databases, defined by `user-database-mappings`.
+- `ALL_PERMITTED`: each user has all privileges without special authorization. (Will be removed in a future version)
+- `DATABASE_PERMITTED`: grants the user privileges on the specified logical databases, defined by `user-database-mappings`. (Recommended)
 
 The administrator can choose which privilege provider to use as needed when configuring `authority`. 
 
@@ -49,7 +49,6 @@ Explanation:
 - `authenticationMethodName` is not specified for `root@127.0.0.1`, Proxy will automatically choose the authentication method according to the frontend protocol;
 - Privilege provider is not specified, the default `ALL_PERMITTED` will be used;
 
-
 ### Authentication configuration
 
 The custom authentication configuration allows users to greater leeway to set their own custom configurations according to their scenarios. 
@@ -80,7 +79,7 @@ Explanation:
 
 ### Authorization configuration
 
-#### ALL_PERMITTED
+#### ALL_PERMITTED (Will be removed in a future version)
 
 ```yaml
 authority:
@@ -98,26 +97,25 @@ Explanation:
 - `authenticators` and `authenticationMethodName` are not defined, Proxy will automatically choose the authentication method according to the frontend protocol;
 - The privilege provider `ALL_PERMITTED` is specified.
 
-#### DATABASE_PERMITTED
+#### DATABASE_PERMITTED (Recommended)
 
 ```yaml
 authority:
   users:
     - user: root@127.0.0.1
       password: root
+      admin: true
     - user: sharding
+      password: sharding
+    - user: test
       password: sharding
   privilege:
     type: DATABASE_PERMITTED
     props:
-      user-database-mappings: root@127.0.0.1=*, sharding@%=test_db, sharding@%=sharding_db
+      user-database-mappings: sharding@%=*, test@%=test_db, test@%=sharding_db
 ```
 
 Explanation:
-- Two users are defined: `root@127.0.0.1` and `sharding`;
+- Three users are defined: `root@127.0.0.1`, `sharding` and `test`, which `root@127.0.0.1` is an admin user;
 - `authenticators` and `authenticationMethodName` are not defined, Proxy will automatically choose the authentication method according to the frontend protocol;
-- The privilege provider `DATABASE_PERMITTED` is specified, authorize `root@127.0.0.1` to access all logical databases (`*`), and user `sharding` can only access `test_db` and `sharding_db`.
-
-## Related References
-
-Please refer to [Authority Provider](/en/user-manual/shardingsphere-proxy/yaml-config/authority/) for the specific implementation of authority provider.
+- The privilege provider `DATABASE_PERMITTED` is specified, authorize `sharding@%` to access all logical databases (`*`), and user `test` can only access `test_db` and `sharding_db`.

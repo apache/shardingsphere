@@ -27,7 +27,10 @@ import java.util.Collections;
 
 /**
  * All permitted privilege provider.
+ *
+ * @deprecated Use DatabasePermittedPrivilegeProvider instead.
  */
+@Deprecated
 public final class AllPermittedPrivilegeProvider implements PrivilegeProvider {
     
     @Override
