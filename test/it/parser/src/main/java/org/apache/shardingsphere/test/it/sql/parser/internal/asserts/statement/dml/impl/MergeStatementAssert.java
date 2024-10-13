@@ -37,11 +37,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.whe
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMergeWhenAndThenSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.MergeStatementTestCase;
-import org.hamcrest.CoreMatchers;
 
 import java.util.Collection;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -104,7 +104,7 @@ public final class MergeStatementAssert {
     
     private static void assertWhenAndThenSegments(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         Collection<MergeWhenAndThenSegment> mergeWhenAndThenSegments = actual.getWhenAndThenSegments();
-        assertThat(assertContext.getText("merge when and then segment assertion error: "), mergeWhenAndThenSegments.size(), CoreMatchers.is(expected.getMergeWhenAndThenSegments().size()));
+        assertThat(assertContext.getText("merge when and then segment assertion error: "), mergeWhenAndThenSegments.size(), is(expected.getMergeWhenAndThenSegments().size()));
         int count = 0;
         for (MergeWhenAndThenSegment each : mergeWhenAndThenSegments) {
             asserMergeWhenAndTheSegment(assertContext, each, expected.getMergeWhenAndThenSegments().get(count));
@@ -132,7 +132,7 @@ public final class MergeStatementAssert {
     
     private static void assertIndexes(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         Collection<IndexSegment> indexes = actual.getIndexes();
-        assertThat(assertContext.getText("index segment assertion error: "), indexes.size(), CoreMatchers.is(expected.getIndexs().size()));
+        assertThat(assertContext.getText("index segment assertion error: "), indexes.size(), is(expected.getIndexs().size()));
         int count = 0;
         for (IndexSegment each : indexes) {
             IndexAssert.assertIs(assertContext, each, expected.getIndexs().get(count));
