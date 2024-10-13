@@ -45,14 +45,14 @@ public final class ResultSetMapper {
      * @throws SQLException SQL exception
      */
     public Object load(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        Optional<DialectResultSetMapper> dialectLoader = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType);
+        Optional<DialectResultSetMapper> dialectResultSetMapper = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType);
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
             case Types.SMALLINT:
-                return dialectLoader.isPresent() ? dialectLoader.get().getSmallintValue(resultSet, columnIndex) : Integer.valueOf(resultSet.getInt(columnIndex));
+                return dialectResultSetMapper.isPresent() ? dialectResultSetMapper.get().getSmallintValue(resultSet, columnIndex) : Integer.valueOf(resultSet.getInt(columnIndex));
             case Types.INTEGER:
                 if (metaData.isSigned(columnIndex)) {
                     return resultSet.getInt(columnIndex);
@@ -75,15 +75,15 @@ public final class ResultSetMapper {
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
-                return dialectLoader.isPresent() ? dialectLoader.get().getDateValue(resultSet, columnIndex) : resultSet.getDate(columnIndex);
+                return dialectResultSetMapper.isPresent() ? dialectResultSetMapper.get().getDateValue(resultSet, columnIndex) : resultSet.getDate(columnIndex);
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
             case Types.TIMESTAMP:
                 return resultSet.getTimestamp(columnIndex);
-            case Types.CLOB:
-                return resultSet.getClob(columnIndex);
             case Types.BLOB:
                 return resultSet.getBlob(columnIndex);
+            case Types.CLOB:
+                return resultSet.getClob(columnIndex);
             case Types.BINARY:
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
