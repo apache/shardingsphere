@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.exec.ExpectedExecClause;
-import org.hamcrest.CoreMatchers;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,7 +46,7 @@ public final class InsertExecClauseAssert {
      * @param expected expected execute clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExecSegment actual, final ExpectedExecClause expected) {
-        assertThat(assertContext.getText("exec procedure name assertion error: "), actual.getProcedureName().getIdentifier().getValue(), CoreMatchers.is(expected.getName()));
+        assertThat(assertContext.getText("exec procedure name assertion error: "), actual.getProcedureName().getIdentifier().getValue(), is(expected.getName()));
         if (null == expected.getOwner()) {
             assertFalse(actual.getProcedureName().getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
@@ -54,7 +54,7 @@ public final class InsertExecClauseAssert {
             OwnerAssert.assertIs(assertContext, actual.getProcedureName().getOwner().get(), expected.getOwner());
         }
         if (null == expected.getParameters()) {
-            assertThat(assertContext.getText("exec procedure parameters  assertion error: "), actual.getExpressionSegments().size(), CoreMatchers.is(expected.getParameters().size()));
+            assertThat(assertContext.getText("exec procedure parameters  assertion error: "), actual.getExpressionSegments().size(), is(expected.getParameters().size()));
         } else {
             int count = 0;
             for (ExpressionSegment expressionSegment : actual.getExpressionSegments()) {

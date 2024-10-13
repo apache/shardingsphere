@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.infra.database.core.type.enums;
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class NullsOrderTypeTest {
     
     @Test
     void assertGetResolvedOrderType() {
-        assertThat(NullsOrderType.HIGH.getResolvedOrderType("DESC"), CoreMatchers.is(NullsOrderType.FIRST));
-        assertThat(NullsOrderType.HIGH.getResolvedOrderType("ASC"), CoreMatchers.is(NullsOrderType.LAST));
-        assertThat(NullsOrderType.LOW.getResolvedOrderType("DESC"), CoreMatchers.is(NullsOrderType.LAST));
-        assertThat(NullsOrderType.LOW.getResolvedOrderType("ASC"), CoreMatchers.is(NullsOrderType.FIRST));
+        assertThat(NullsOrderType.HIGH.getResolvedOrderType("DESC"), is(NullsOrderType.FIRST));
+        assertThat(NullsOrderType.HIGH.getResolvedOrderType("ASC"), is(NullsOrderType.LAST));
+        assertThat(NullsOrderType.LOW.getResolvedOrderType("DESC"), is(NullsOrderType.LAST));
+        assertThat(NullsOrderType.LOW.getResolvedOrderType("ASC"), is(NullsOrderType.FIRST));
+        assertThat(NullsOrderType.FIRST.getResolvedOrderType("ASC"), is(NullsOrderType.FIRST));
     }
 }
