@@ -160,6 +160,31 @@ public final class MetaDataLoaderConnection implements Connection {
     }
     
     @Override
+    public void rollback() throws SQLException {
+        connection.rollback();
+    }
+    
+    @Override
+    public void rollback(final Savepoint savepoint) throws SQLException {
+        connection.rollback(savepoint);
+    }
+    
+    @Override
+    public Savepoint setSavepoint() throws SQLException {
+        return connection.setSavepoint();
+    }
+    
+    @Override
+    public Savepoint setSavepoint(final String name) throws SQLException {
+        return connection.setSavepoint(name);
+    }
+    
+    @Override
+    public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        connection.releaseSavepoint(savepoint);
+    }
+    
+    @Override
     public void close() throws SQLException {
         connection.close();
     }
@@ -225,38 +250,13 @@ public final class MetaDataLoaderConnection implements Connection {
     }
     
     @Override
-    public Savepoint setSavepoint() throws SQLException {
-        return connection.setSavepoint();
-    }
-    
-    @Override
-    public Savepoint setSavepoint(final String name) throws SQLException {
-        return connection.setSavepoint(name);
-    }
-    
-    @Override
-    public void rollback() throws SQLException {
-        connection.rollback();
-    }
-    
-    @Override
-    public void rollback(final Savepoint savepoint) throws SQLException {
-        connection.rollback(savepoint);
-    }
-    
-    @Override
-    public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
-        connection.releaseSavepoint(savepoint);
+    public Blob createBlob() throws SQLException {
+        return connection.createBlob();
     }
     
     @Override
     public Clob createClob() throws SQLException {
         return connection.createClob();
-    }
-    
-    @Override
-    public Blob createBlob() throws SQLException {
-        return connection.createBlob();
     }
     
     @Override
@@ -267,6 +267,16 @@ public final class MetaDataLoaderConnection implements Connection {
     @Override
     public SQLXML createSQLXML() throws SQLException {
         return connection.createSQLXML();
+    }
+    
+    @Override
+    public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
+        return connection.createArrayOf(typeName, elements);
+    }
+    
+    @Override
+    public Struct createStruct(final String typeName, final Object[] attributes) throws SQLException {
+        return connection.createStruct(typeName, attributes);
     }
     
     @Override
@@ -292,16 +302,6 @@ public final class MetaDataLoaderConnection implements Connection {
     @Override
     public Properties getClientInfo() throws SQLException {
         return connection.getClientInfo();
-    }
-    
-    @Override
-    public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        return connection.createArrayOf(typeName, elements);
-    }
-    
-    @Override
-    public Struct createStruct(final String typeName, final Object[] attributes) throws SQLException {
-        return connection.createStruct(typeName, attributes);
     }
     
     @Override
