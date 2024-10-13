@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 
-import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * JDBC URL appender.
@@ -39,8 +39,8 @@ public final class JdbcUrlAppender {
     public String appendQueryProperties(final String jdbcUrl, final Properties queryProps) {
         Properties currentQueryProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(jdbcUrl)).parse(jdbcUrl, null, null).getQueryProperties();
         return hasConflictedQueryProperties(currentQueryProps, queryProps)
-                ? concat(jdbcUrl.substring(0, jdbcUrl.indexOf('?') + 1), getMergedProperties(currentQueryProps, queryProps))
-                : concat(jdbcUrl + getURLDelimiter(currentQueryProps), queryProps);
+                ? jdbcUrl.substring(0, jdbcUrl.indexOf('?') + 1) + concat(getMergedProperties(currentQueryProps, queryProps))
+                : jdbcUrl + getURLDelimiter(currentQueryProps) + concat(queryProps);
     }
     
     private boolean hasConflictedQueryProperties(final Properties currentQueryProps, final Properties toBeAppendedQueryProps) {
@@ -54,20 +54,11 @@ public final class JdbcUrlAppender {
         return result;
     }
     
-    private String concat(final String jdbcUrl, final Properties queryProps) {
-        StringBuilder result = new StringBuilder(jdbcUrl);
-        for (Entry<Object, Object> entry : queryProps.entrySet()) {
-            result.append(entry.getKey());
-            if (null != entry.getValue()) {
-                result.append('=').append(entry.getValue());
-            }
-            result.append('&');
-        }
-        result.deleteCharAt(result.length() - 1);
-        return result.toString();
-    }
-    
     private String getURLDelimiter(final Properties currentQueryProps) {
         return currentQueryProps.isEmpty() ? "?" : "&";
+    }
+    
+    private String concat(final Properties queryProps) {
+        return queryProps.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining("&"));
     }
 }
