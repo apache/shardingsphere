@@ -39,32 +39,42 @@ class QuoteCharacterTest {
     
     @Test
     void assertGetQuoteCharacterWithNone() {
-        assertThat(QuoteCharacter.getQuoteCharacter("tbl"), is(QuoteCharacter.NONE));
+        assertThat(QuoteCharacter.getQuoteCharacter("test"), is(QuoteCharacter.NONE));
     }
     
     @Test
     void assertGetQuoteCharacterWithBackQuote() {
-        assertThat(QuoteCharacter.getQuoteCharacter("`tbl`"), is(QuoteCharacter.BACK_QUOTE));
+        assertThat(QuoteCharacter.getQuoteCharacter("`test`"), is(QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
     void assertGetQuoteCharacterWithSingleQuote() {
-        assertThat(QuoteCharacter.getQuoteCharacter("'tbl'"), is(QuoteCharacter.SINGLE_QUOTE));
+        assertThat(QuoteCharacter.getQuoteCharacter("'test'"), is(QuoteCharacter.SINGLE_QUOTE));
     }
     
     @Test
     void assertGetQuoteCharacterWithQuote() {
-        assertThat(QuoteCharacter.getQuoteCharacter("\"tbl\""), is(QuoteCharacter.QUOTE));
+        assertThat(QuoteCharacter.getQuoteCharacter("\"test\""), is(QuoteCharacter.QUOTE));
     }
     
     @Test
     void assertGetQuoteCharacterWithBrackets() {
-        assertThat(QuoteCharacter.getQuoteCharacter("[tbl]"), is(QuoteCharacter.BRACKETS));
+        assertThat(QuoteCharacter.getQuoteCharacter("[test]"), is(QuoteCharacter.BRACKETS));
     }
     
     @Test
     void assertWarp() {
         assertThat(QuoteCharacter.BACK_QUOTE.wrap("test"), is("`test`"));
+    }
+    
+    @Test
+    void assertUnwrapWithWrappedValue() {
+        assertThat(QuoteCharacter.BACK_QUOTE.unwrap("`test`"), is("test"));
+    }
+    
+    @Test
+    void assertUnwrapWithoutWrappedValue() {
+        assertThat(QuoteCharacter.BACK_QUOTE.unwrap("[test]"), is("[test]"));
     }
     
     @Test
