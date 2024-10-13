@@ -21,11 +21,21 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class JdbcUrlAppenderTest {
+    
+    @Test
+    void assertAppendQueryPropertiesWithoutToBeAppendedQueryProperties() {
+        String actual = new JdbcUrlAppender().appendQueryProperties("jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false&rewriteBatchedStatements=true", new Properties());
+        assertThat(actual, startsWith("jdbc:trunk://192.168.0.1:3306/foo_ds"));
+        assertThat(actual, containsString("rewriteBatchedStatements=true"));
+        assertThat(actual, containsString("useSSL=false"));
+    }
     
     @Test
     void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
@@ -38,8 +48,7 @@ class JdbcUrlAppenderTest {
     
     @Test
     void assertAppendQueryPropertiesWithConflictedQueryProperties() {
-        String actual = new JdbcUrlAppender().appendQueryProperties(
-                "jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false&rewriteBatchedStatements=true",
+        String actual = new JdbcUrlAppender().appendQueryProperties("jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false&rewriteBatchedStatements=true",
                 PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
         assertThat(actual, startsWith("jdbc:trunk://192.168.0.1:3306/foo_ds?"));
         assertThat(actual, containsString("rewriteBatchedStatements=true"));
@@ -48,8 +57,8 @@ class JdbcUrlAppenderTest {
     
     @Test
     void assertAppendQueryPropertiesWithoutConflictedQueryProperties() {
-        String actual = new JdbcUrlAppender().appendQueryProperties(
-                "jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false", PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
+        String actual = new JdbcUrlAppender().appendQueryProperties("jdbc:trunk://192.168.0.1:3306/foo_ds?useSSL=false",
+                PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
         assertThat(actual, startsWith("jdbc:trunk://192.168.0.1:3306/foo_ds?"));
         assertThat(actual, containsString("rewriteBatchedStatements=true"));
         assertThat(actual, containsString("useSSL=false"));
