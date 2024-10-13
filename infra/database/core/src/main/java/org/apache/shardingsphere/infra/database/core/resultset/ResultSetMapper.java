@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.resultset;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
@@ -25,17 +26,15 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Optional;
 
 /**
  * Result set mapper.
  */
+@RequiredArgsConstructor
 public final class ResultSetMapper {
     
-    private final DialectResultSetMapper dialectLoader;
-    
-    public ResultSetMapper(final DatabaseType databaseType) {
-        dialectLoader = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType).orElse(null);
-    }
+    private final DatabaseType databaseType;
     
     /**
      * Load result set value.
@@ -46,13 +45,14 @@ public final class ResultSetMapper {
      * @throws SQLException SQL exception
      */
     public Object load(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        Optional<DialectResultSetMapper> dialectLoader = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType);
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
             case Types.SMALLINT:
-                return null == dialectLoader ? Integer.valueOf(resultSet.getInt(columnIndex)) : dialectLoader.getSmallintValue(resultSet, columnIndex);
+                return dialectLoader.isPresent() ? dialectLoader.get().getSmallintValue(resultSet, columnIndex) : Integer.valueOf(resultSet.getInt(columnIndex));
             case Types.INTEGER:
                 if (metaData.isSigned(columnIndex)) {
                     return resultSet.getInt(columnIndex);
@@ -75,7 +75,7 @@ public final class ResultSetMapper {
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
-                return null == dialectLoader ? resultSet.getDate(columnIndex) : dialectLoader.getDateValue(resultSet, columnIndex);
+                return dialectLoader.isPresent() ? dialectLoader.get().getDateValue(resultSet, columnIndex) : resultSet.getDate(columnIndex);
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
             case Types.TIMESTAMP:
