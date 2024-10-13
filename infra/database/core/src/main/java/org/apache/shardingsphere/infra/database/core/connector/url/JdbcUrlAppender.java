@@ -38,6 +38,9 @@ public final class JdbcUrlAppender {
      */
     public String appendQueryProperties(final String jdbcUrl, final Properties queryProps) {
         Properties currentQueryProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(jdbcUrl)).parse(jdbcUrl, null, null).getQueryProperties();
+        if (queryProps.isEmpty()) {
+            return jdbcUrl;
+        }
         return hasConflictedQueryProperties(currentQueryProps, queryProps)
                 ? jdbcUrl.substring(0, jdbcUrl.indexOf('?') + 1) + concat(getMergedProperties(currentQueryProps, queryProps))
                 : jdbcUrl + getURLDelimiter(currentQueryProps) + concat(queryProps);
