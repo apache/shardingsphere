@@ -55,8 +55,8 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     }
     
     @Override
-    public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
-        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'", qualifiedTableName));
+    public Optional<String> buildEstimatedCountSQL(final String catalogName, final String qualifiedTableName) {
+        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", catalogName, qualifiedTableName));
     }
     
     @Override

@@ -62,8 +62,8 @@ class MySQLPipelineSQLBuilderTest {
     
     @Test
     void assertBuilderEstimateCountSQLWithoutKeyword() {
-        Optional<String> actual = sqlBuilder.buildEstimatedCountSQL("t_order");
+        Optional<String> actual = sqlBuilder.buildEstimatedCountSQL("foo_catalog", "foo_tbl");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 't_order'"));
+        assertThat(actual.get(), is("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'foo_catalog' AND TABLE_NAME = 'foo_tbl'"));
     }
 }
