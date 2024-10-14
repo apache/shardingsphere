@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
@@ -71,7 +72,7 @@ public final class SingleRule implements DatabaseRule {
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
         Map<String, DataSource> aggregateDataSourceMap = PhysicalResourceAggregator.getAggregatedResources(dataSourceMap, builtRules);
-        dataSourceNames = aggregateDataSourceMap.keySet();
+        dataSourceNames = new CaseInsensitiveSet<>(aggregateDataSourceMap.keySet());
         this.protocolType = protocolType;
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, protocolType, aggregateDataSourceMap, builtRules, configuration.getTables());
         SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
