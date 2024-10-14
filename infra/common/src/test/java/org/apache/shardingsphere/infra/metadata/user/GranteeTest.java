@@ -22,30 +22,46 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GranteeTest {
     
     @Test
-    void assertGetUsername() {
-        assertThat(new Grantee("foo", "").getUsername(), is("foo"));
+    void assertAccept() {
+        Grantee grantee = new Grantee("name", "%");
+        assertTrue(grantee.accept(new Grantee("name", "")));
+        assertTrue(grantee.accept(new Grantee("name", "127.0.0.1")));
     }
     
     @Test
-    void assertGetHostname() {
-        assertThat(new Grantee("name", "%").getHostname(), is("%"));
-        assertThat(new Grantee("name", "").getHostname(), is("%"));
+    void assertNotAcceptWithDifferentUsername() {
+        assertFalse(new Grantee("name", "%").accept(new Grantee("name1", "")));
+    }
+    
+    @Test
+    void assertNotAcceptWithoutPermittedHost() {
+        assertFalse(new Grantee("name", "127.0.0.1").accept(new Grantee("name", "127.0.0.2")));
     }
     
     @Test
     void assertEquals() {
-        Grantee grantee = new Grantee("name", "%");
-        assertThat(grantee, is(new Grantee("name", "")));
+        assertThat(new Grantee("name", "%"), is(new Grantee("NAME", "")));
     }
     
     @Test
-    void assertNotEquals() {
+    void assertNotEqualsWithDifferentClassTypes() {
         assertThat(new Grantee("name", "%"), not(new Object()));
+    }
+    
+    @Test
+    void assertNotEqualsWithDifferentUsername() {
+        assertThat(new Grantee("name", "%"), not(new Grantee("name1", "%")));
+    }
+    
+    @Test
+    void assertNotEqualsWithDifferentHostname() {
+        assertThat(new Grantee("name", "%"), not(new Grantee("name", "127.0.0.1")));
     }
     
     @Test
@@ -56,13 +72,6 @@ class GranteeTest {
     @Test
     void assertDifferentHashCode() {
         assertThat(new Grantee("name", "").hashCode(), not(new Grantee("name", "127.0.0.1").hashCode()));
-    }
-    
-    @Test
-    void assertAccept() {
-        Grantee grantee = new Grantee("name", "%");
-        assertTrue(grantee.accept(new Grantee("name", "")));
-        assertTrue(grantee.accept(new Grantee("name", "127.0.0.1")));
     }
     
     @Test
