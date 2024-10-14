@@ -73,12 +73,13 @@ public final class PipelinePrepareSQLBuilder {
     /**
      * Build estimated count SQL.
      *
+     * @param catalogName catalog name
      * @param schemaName schema name
      * @param tableName table name
      * @return estimated count SQL
      */
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildEstimatedCountSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+    public Optional<String> buildEstimatedCountSQL(final String catalogName, final String schemaName, final String tableName) {
+        return dialectSQLBuilder.buildEstimatedCountSQL(catalogName, sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**

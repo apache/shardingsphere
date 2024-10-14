@@ -68,7 +68,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     }
     
     @Override
-    public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
+    public Optional<String> buildEstimatedCountSQL(final String catalogName, final String qualifiedTableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
     }
     
