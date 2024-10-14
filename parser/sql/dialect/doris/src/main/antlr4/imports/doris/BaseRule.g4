@@ -150,6 +150,7 @@ identifierKeywordsUnambiguous
     | BEFORE
     | BINLOG
     | BIT
+    | BITXOR
     | BLOCK
     | BOOLEAN
     | BOOL
@@ -960,6 +961,10 @@ aggregationFunction
     : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;
 
+bitwiseFunction
+    : bitwiseBinaryFunctionName LP_ expr COMMA_ expr RP_
+    ;
+
 jsonFunction
     : jsonTableFunction
     | jsonFunctionName LP_ (expr? | expr (COMMA_ expr)*) RP_
@@ -991,6 +996,10 @@ jsonFunctionName
 
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | BIT_XOR | GROUP_CONCAT
+    ;
+
+bitwiseBinaryFunctionName
+    : BITXOR
     ;
 
 distinct
@@ -1036,6 +1045,7 @@ specialFunction
     | windowFunction
     | groupingFunction
     | timeStampDiffFunction
+    | bitwiseFunction
     ;
 
 currentUserFunction

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Assignm
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BitValueLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BitwiseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BlobValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BooleanPrimaryContext;
@@ -1027,6 +1028,9 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.timeStampDiffFunction()) {
             return visit(ctx.timeStampDiffFunction());
         }
+        if (null != ctx.bitwiseFunction()) {
+            return visit(ctx.bitwiseFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
     }
     
@@ -1175,6 +1179,15 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     public ASTNode visitTimeStampDiffFunction(final TimeStampDiffFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TIMESTAMPDIFF().getText(), getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.expr()));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitBitwiseFunction(final BitwiseFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.bitwiseBinaryFunctionName().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
+        }
         return result;
     }
     

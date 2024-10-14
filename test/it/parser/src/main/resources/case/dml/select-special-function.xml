@@ -4130,7 +4130,6 @@
             </expression-projection>
         </projections>
     </select>
-
     <select sql-case-id="select_from_table_function">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
@@ -4145,5 +4144,21 @@
                 </table-function>
             </function-table>
         </from>
+    </select>
+        <select sql-case-id="select_bitxor" db-types="Doris">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="BITXOR(3,5)" start-index="7" stop-index="17">
+                <expr>
+                    <function function-name="BITXOR" start-index="7" stop-index="17" text="BITXOR(3,5)">
+                        <parameter>
+                            <literal-expression value="3" start-index="14" stop-index="14" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="5" start-index="16" stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>
