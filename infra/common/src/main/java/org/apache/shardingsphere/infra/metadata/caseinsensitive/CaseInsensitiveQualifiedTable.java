@@ -19,12 +19,10 @@ package org.apache.shardingsphere.infra.metadata.caseinsensitive;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Case insensitive qualified table.
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 // TODO should merge with QualifiedTable
