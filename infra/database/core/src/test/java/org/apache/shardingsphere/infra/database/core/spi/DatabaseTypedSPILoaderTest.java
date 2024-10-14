@@ -19,11 +19,17 @@ package org.apache.shardingsphere.infra.database.core.spi;
 
 import org.apache.shardingsphere.infra.database.core.spi.fixture.DatabaseTypedSPIFixture;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class DatabaseTypedSPILoaderTest {
     
@@ -38,7 +44,42 @@ class DatabaseTypedSPILoaderTest {
     }
     
     @Test
-    void assertGetServiceWithRegisteredDatabaseType() {
+    void assertServiceNotFound() {
+        assertFalse(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, mock(DatabaseType.class)).isPresent());
+    }
+    
+    @Test
+    void assertFindServiceWithTrunkDatabaseTypeAndProperties() {
+        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "TRUNK"), new Properties()).isPresent());
+    }
+    
+    @Test
+    void assertFindServiceWithBranchDatabaseTypeAndProperties() {
+        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "BRANCH"), new Properties()).isPresent());
+    }
+    
+    @Test
+    void assertServiceNotFoundWithProperties() {
+        assertFalse(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, mock(DatabaseType.class), new Properties()).isPresent());
+    }
+    
+    @Test
+    void assertGetService() {
         assertDoesNotThrow(() -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "TRUNK")));
+    }
+    
+    @Test
+    void assertGetServiceWithServiceProviderNotFoundException() {
+        assertThrows(ServiceProviderNotFoundException.class, () -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, mock(DatabaseType.class)));
+    }
+    
+    @Test
+    void assertGetServiceWithProperties() {
+        assertDoesNotThrow(() -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "TRUNK"), new Properties()));
+    }
+    
+    @Test
+    void assertGetServiceWithPropertiesAndThrowsServiceProviderNotFoundException() {
+        assertThrows(ServiceProviderNotFoundException.class, () -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, mock(DatabaseType.class), new Properties()));
     }
 }
