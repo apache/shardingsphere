@@ -40,6 +40,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,11 +49,13 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShardingSphereDatabase.class)
@@ -78,9 +81,11 @@ class ShardingSphereMetaDataTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         GlobalRule globalRule = mock(GlobalRule.class);
         MockedDataSource dataSource = new MockedDataSource();
-        ShardingSphereRule databaseRule = mock(ShardingSphereRule.class);
-        when(databaseRule.getAttributes()).thenReturn(new RuleAttributes());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resourceMetaData, dataSource, databaseRule))),
+        ShardingSphereRule databaseRule1 = mock(ShardingSphereRule.class);
+        when(databaseRule1.getAttributes()).thenReturn(new RuleAttributes());
+        ShardingSphereRule databaseRule2 = mock(ShardingSphereRule.class, withSettings().extraInterfaces(AutoCloseable.class));
+        when(databaseRule2.getAttributes()).thenReturn(new RuleAttributes());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resourceMetaData, dataSource, databaseRule1, databaseRule2))),
                 mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), new ConfigurationProperties(new Properties()));
         metaData.dropDatabase("foo_db");
         assertTrue(metaData.getDatabases().isEmpty());
@@ -100,6 +105,12 @@ class ShardingSphereMetaDataTest {
     }
     
     @Test
+    void assertNotContainsDatabase() {
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData();
+        assertFalse(metaData.containsDatabase("foo_db"));
+    }
+    
+    @Test
     void assertGetDatabase() {
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
@@ -109,7 +120,7 @@ class ShardingSphereMetaDataTest {
         assertThat(metaData.getDatabase("foo_db"), is(database));
     }
     
-    private ShardingSphereDatabase mockDatabase(final ResourceMetaData resourceMetaData, final DataSource dataSource, final ShardingSphereRule rule) {
+    private ShardingSphereDatabase mockDatabase(final ResourceMetaData resourceMetaData, final DataSource dataSource, final ShardingSphereRule... rules) {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -117,7 +128,7 @@ class ShardingSphereMetaDataTest {
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Maps.of("url", "jdbc:mock://127.0.0.1/foo_ds", "username", "test"));
         StorageUnit storageUnit = new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, dataSource);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_db", storageUnit));
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(rules)));
         return result;
     }
 }
