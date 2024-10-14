@@ -21,19 +21,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CaseInsensitiveQualifiedTableTest {
     
     @Test
-    void assertToString() {
-        CaseInsensitiveQualifiedTable actual = new CaseInsensitiveQualifiedTable(new CaseInsensitiveIdentifier(null), new CaseInsensitiveIdentifier("t_order"));
-        assertThat(actual.toString(), is("t_order"));
+    void assertToStringWithNullSchema() {
+        assertThat(new CaseInsensitiveQualifiedTable(null, "foo_tbl").toString(), is("foo_tbl"));
     }
     
     @Test
-    void assertToStringThrowsNPE() {
-        CaseInsensitiveQualifiedTable actual = new CaseInsensitiveQualifiedTable(null, new CaseInsensitiveIdentifier("t_order"));
-        assertThrows(NullPointerException.class, actual::toString);
+    void assertToStringWithNotNullSchema() {
+        assertThat(new CaseInsensitiveQualifiedTable("foo_schema", "foo_tbl").toString(), is("foo_schema.foo_tbl"));
     }
 }

@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 /**
  * Case insensitive qualified table.
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 // TODO should merge with QualifiedTable
