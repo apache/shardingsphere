@@ -39,7 +39,7 @@ class ComputeNodeInstanceContextTest {
     
     private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null);
     
-    private final LockContext lockContext = mock(LockContext.class);
+    private final LockContext<?> lockContext = mock(LockContext.class);
     
     private final EventBusContext eventBusContext = new EventBusContext();
     
