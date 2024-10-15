@@ -50,7 +50,7 @@ class EspressoInlineExpressionParserTest {
         List<String> expected = Arrays.asList("t_order_0", "t_order_1");
         assertThat(actual, is(expected));
     }
-     
+    
     @Test
     void assertEvaluateWithNullExpression() {
         List<String> actual = getInlineExpressionParser("t_order_${null}").splitAndEvaluate();
