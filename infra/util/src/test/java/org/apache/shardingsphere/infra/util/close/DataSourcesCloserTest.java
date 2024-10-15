@@ -27,21 +27,33 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
 class DataSourcesCloserTest {
     
     @Test
-    void assertClose() throws Exception {
+    void assertCloseSuccess() throws Exception {
+        DataSource dataSource0 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
+        DataSource dataSource1 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
+        DataSource dataSource2 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
+        DataSource dataSource3 = mock(DataSource.class);
+        DataSourcesCloser.close(Arrays.asList(dataSource0, dataSource1, dataSource2, dataSource3));
+        verify((AutoCloseable) dataSource0).close();
+        verify((AutoCloseable) dataSource1).close();
+        verify((AutoCloseable) dataSource2).close();
+    }
+    
+    @Test
+    void assertCloseFailed() throws Exception {
         DataSource dataSource0 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
         DataSource dataSource1 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
         doThrow(new SQLException("test")).when((AutoCloseable) dataSource1).close();
         DataSource dataSource2 = mock(DataSource.class, withSettings().extraInterfaces(AutoCloseable.class));
-        assertThrows(SQLWrapperException.class, () -> DataSourcesCloser.close(Arrays.asList(dataSource0, dataSource1, dataSource2)));
-        verify((AutoCloseable) dataSource0, times(1)).close();
-        verify((AutoCloseable) dataSource1, times(1)).close();
-        verify((AutoCloseable) dataSource2, times(1)).close();
+        DataSource dataSource3 = mock(DataSource.class);
+        assertThrows(SQLWrapperException.class, () -> DataSourcesCloser.close(Arrays.asList(dataSource0, dataSource1, dataSource2, dataSource3)));
+        verify((AutoCloseable) dataSource0).close();
+        verify((AutoCloseable) dataSource1).close();
+        verify((AutoCloseable) dataSource2).close();
     }
 }
