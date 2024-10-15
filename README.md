@@ -114,25 +114,25 @@ We deeply appreciate [community contributors](https://shardingsphere.apache.org/
 
 <hr>
 
-:white_check_mark: Version 5.5.0: released :tada:
+:white_check_mark: Version 5.5.1: released :tada:
 
 🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
 
-:soon: Version 5.5.1
+:soon: Version 5.5.2
 
-We are currently working towards our 5.5.1 milestone.
+We are currently working towards our 5.5.2 milestone.
 Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
 [comment]: <> (##)
 
 [comment]: <> (### NIGHTLY BUILDS:)
- 
+
 [comment]: <> (<hr>)
 
 [comment]: <> (A nightly build of ShardingSphere from the latest master branch is available. )
 
 [comment]: <> (The package is updated daily and is available [here]&#40;http://117.48.121.24:8080&#41;.)
- 
+
 [comment]: <> (##)
 
 [comment]: <> (**‼️ Notice:**)
@@ -144,7 +144,7 @@ Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/mi
 [comment]: <> (The branch is not always fully tested. )
 
 [comment]: <> (The nightly build may contain bugs, and there may be new features added which may cause problems with your environment. )
- 
+
 ##
 
 ### How it Works
