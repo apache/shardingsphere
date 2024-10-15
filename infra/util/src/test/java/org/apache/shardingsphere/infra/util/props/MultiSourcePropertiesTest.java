@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.util.props;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,24 +34,22 @@ class MultiSourcePropertiesTest {
     
     @BeforeEach
     void setUp() {
-        Properties propsA = new Properties();
-        propsA.setProperty("keyA", "valueA");
-        Properties defaultProps = new Properties();
-        defaultProps.setProperty("keyA", "valueB");
-        defaultProps.setProperty("keyB", "valueB");
-        Properties propsB = new Properties(defaultProps);
+        Properties propsA = PropertiesBuilder.build(new Property("keyA", "valueA"));
+        Properties propsB = new Properties(PropertiesBuilder.build(new Property("keyA", "valueB"), new Property("keyB", "valueB")));
         multiSourceProperties = new MultiSourceProperties(propsA, propsB);
+        multiSourceProperties.setProperty("originalKey", "originalValue");
     }
     
     @Test
     void assertGetProperty() {
+        assertThat(multiSourceProperties.getProperty("originalKey"), is("originalValue"));
         assertThat(multiSourceProperties.getProperty("keyA"), is("valueA"));
         assertThat(multiSourceProperties.getProperty("keyB"), is("valueB"));
         assertNull(multiSourceProperties.getProperty("keyC"));
     }
     
     @Test
-    void assertGetPropertyWithDefault() {
+    void assertGetPropertyWithDefaultValue() {
         assertThat(multiSourceProperties.getProperty("keyA", "defaultValue"), is("valueA"));
         assertThat(multiSourceProperties.getProperty("keyB", "defaultValue"), is("valueB"));
         assertThat(multiSourceProperties.getProperty("keyC", "defaultValue"), is("defaultValue"));
