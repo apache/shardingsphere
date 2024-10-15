@@ -29,15 +29,13 @@ class GroovyUtilsTest {
     
     @Test
     void assertSplit() {
+        assertThat(GroovyUtils.split(""), is(Collections.emptyList()));
         assertThat(GroovyUtils.split(" t_order_0, t_order_1 "), is(Arrays.asList("t_order_0", "t_order_1")));
         assertThat(GroovyUtils.split("t_order_${null}"), is(Collections.singletonList("t_order_${null}")));
         assertThat(GroovyUtils.split("t_order_${'xx'}"), is(Collections.singletonList("t_order_${'xx'}")));
-        assertThat(GroovyUtils.split("t_order_${[0, 1, 2]},t_order_item_${[0, 2]}"),
-                is(Arrays.asList("t_order_${[0, 1, 2]}", "t_order_item_${[0, 2]}")));
+        assertThat(GroovyUtils.split("t_order_${[0, 1, 2]},t_order_item_${[0, 2]}"), is(Arrays.asList("t_order_${[0, 1, 2]}", "t_order_item_${[0, 2]}")));
         assertThat(GroovyUtils.split("t_order_${0..2},t_order_item_${0..1}"), is(Arrays.asList("t_order_${0..2}", "t_order_item_${0..1}")));
-        assertThat(GroovyUtils.split("t_${[\"new${1+2}\",'old']}_order_${1..2}"),
-                is(Collections.singletonList("t_${[\"new${1+2}\",'old']}_order_${1..2}")));
-        assertThat(GroovyUtils.split("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}"),
-                is(Collections.singletonList("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}")));
+        assertThat(GroovyUtils.split("t_${[\"new${1+2}\",'old']}_order_${1..2}"), is(Collections.singletonList("t_${[\"new${1+2}\",'old']}_order_${1..2}")));
+        assertThat(GroovyUtils.split("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}"), is(Collections.singletonList("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}")));
     }
 }
