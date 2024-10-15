@@ -20,6 +20,8 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
@@ -33,11 +35,11 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +48,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -218,7 +219,28 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     private static void checkLoadBalancers(final Collection<ReadwriteSplittingRuleSegment> segments) {
-        segments.stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).filter(Objects::nonNull)
-                .forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getName(), each.getProps()));
+        for (ReadwriteSplittingRuleSegment each : segments) {
+            AlgorithmSegment loadBalancer = each.getLoadBalancer();
+            if (loadBalancer != null) {
+                TypedSPILoader.checkService(LoadBalanceAlgorithm.class, loadBalancer.getName(), loadBalancer.getProps());
+                checkProperties(each);
+            }
+        }
+    }
+    
+    private static void checkProperties(final ReadwriteSplittingRuleSegment each) {
+        if ("WEIGHT".equalsIgnoreCase(each.getLoadBalancer().getName())) {
+            ShardingSpherePreconditions.checkNotEmpty(each.getLoadBalancer().getProps(),
+                    () -> new InvalidAlgorithmConfigurationException("Load balancer", each.getLoadBalancer().getName()));
+            checkDataSource(each);
+        }
+    }
+    
+    private static void checkDataSource(final ReadwriteSplittingRuleSegment ruleSegment) {
+        for (Object each : ruleSegment.getLoadBalancer().getProps().keySet()) {
+            String dataSourceName = (String) each;
+            ShardingSpherePreconditions.checkState(ruleSegment.getReadDataSources().contains(dataSourceName) || ruleSegment.getWriteDataSource().equals(dataSourceName),
+                    () -> new InvalidAlgorithmConfigurationException("Load balancer", ruleSegment.getLoadBalancer().getName()));
+        }
     }
 }
