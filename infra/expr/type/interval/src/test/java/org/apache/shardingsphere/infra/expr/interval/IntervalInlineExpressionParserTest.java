@@ -33,49 +33,49 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class IntervalInlineExpressionParserTest {
     
     @Test
-    void assertEvaluateForSimple() {
+    void assertEvaluateWithSimpleExpression() {
         List<String> expected = getResultList("P=ds-0.t_order;SP=yyyyMMdd;DIA=1;DIU=Days;DL=20231202;DU=20231202");
         assertThat(expected.size(), is(1));
         assertThat(expected, hasItems("ds-0.t_order20231202"));
     }
     
     @Test
-    void assertEvaluateForLocalDate() {
+    void assertEvaluateWithLocalDateExpression() {
         List<String> expected = getResultList("P=ds-0.t_order_;SP=yyyy_MMdd;DIA=1;DIU=Days;DL=2023_1202;DU=2023_1204");
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_2023_1202", "ds-0.t_order_2023_1203", "ds-0.t_order_2023_1204"));
     }
     
     @Test
-    void assertEvaluateForYearMonth() {
+    void assertEvaluateWithYearMonthExpression() {
         List<String> expected = getResultList("P=ds-0.t_order_;SP=yyyy_MM;DIA=1;DIU=Months;DL=2023_10;DU=2023_12");
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_2023_10", "ds-0.t_order_2023_11", "ds-0.t_order_2023_12"));
     }
     
     @Test
-    void assertEvaluateForYear() {
+    void assertEvaluateWithYearExpression() {
         List<String> expected = getResultList("P=ds-0.t_order_;SP=yyyy;DIA=1;DIU=Years;DL=2021;DU=2023");
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_2021", "ds-0.t_order_2022", "ds-0.t_order_2023"));
     }
     
     @Test
-    void assertEvaluateForLocalTime() {
+    void assertEvaluateWithLocalTimeExpression() {
         List<String> expected = getResultList("P=ds-0.t_order_;SP=HH_mm_ss_SSS;DIA=1;DIU=Millis;DL=22_48_52_131;DU=22_48_52_133");
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_22_48_52_131", "ds-0.t_order_22_48_52_132", "ds-0.t_order_22_48_52_133"));
     }
     
     @Test
-    void assertEvaluateForLocalDateTime() {
+    void assertEvaluateWithLocalDateTimeExpression() {
         List<String> expected = getResultList("P=ds-0.t_order_;SP=yyyy_MM_dd_HH_mm_ss_SSS;DIA=1;DIU=Days;DL=2023_12_04_22_48_52_131;DU=2023_12_06_22_48_52_131");
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_2023_12_04_22_48_52_131", "ds-0.t_order_2023_12_05_22_48_52_131", "ds-0.t_order_2023_12_06_22_48_52_131"));
     }
     
     @Test
-    void assertEvaluateForMonth() {
+    void assertEvaluateWithMonthExpression() {
         List<String> expected = getResultList("P=ds-0.t_order_;SP=MM;DIA=1;DIU=Months;DL=10;DU=12");
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_10", "ds-0.t_order_11", "ds-0.t_order_12"));
@@ -88,7 +88,7 @@ class IntervalInlineExpressionParserTest {
      * @see java.time.chrono.JapaneseChronology
      */
     @Test
-    void assertEvaluateForJapaneseDate() {
+    void assertEvaluateWithJapaneseDateExpression() {
         Locale originLocale = Locale.getDefault();
         try {
             Locale.setDefault(Locale.JAPAN);
@@ -108,8 +108,7 @@ class IntervalInlineExpressionParserTest {
     }
     
     private List<String> getResultList(final String inlineExpression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL", PropertiesBuilder.build(new PropertiesBuilder.Property(
-                InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression)))
-                .splitAndEvaluate();
+        return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL",
+                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression))).splitAndEvaluate();
     }
 }
