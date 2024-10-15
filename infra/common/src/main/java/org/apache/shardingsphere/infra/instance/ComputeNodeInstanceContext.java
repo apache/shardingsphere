@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
@@ -155,7 +156,7 @@ public final class ComputeNodeInstanceContext {
      * @return worker id
      */
     public int generateWorkerId(final Properties props) {
-        Preconditions.checkArgument(workerIdGenerator.get() != null, "Worker id generator is not initialized.");
+        ShardingSpherePreconditions.checkNotNull(workerIdGenerator.get(), () -> new IllegalArgumentException("Worker id generator is not initialized."));
         int result = workerIdGenerator.get().generate(props);
         instance.setWorkerId(result);
         return result;
