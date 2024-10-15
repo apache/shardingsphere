@@ -47,8 +47,7 @@ class ComputeNodeInstanceContextTest {
     void assertUpdateComputeNodeState() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_instance_id");
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
-                new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
         InstanceState actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(InstanceState.OK));
         context.updateStatus(instanceMetaData.getId(), InstanceState.CIRCUIT_BREAK.name());
@@ -78,8 +77,7 @@ class ComputeNodeInstanceContextTest {
     void assertUpdateLabel() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_instance_id");
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
-                new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
         Collection<String> expected = Arrays.asList("label_1", "label_2");
         context.updateLabel("foo_instance_id", expected);
         Collection<String> actual = context.getInstance().getLabels();
