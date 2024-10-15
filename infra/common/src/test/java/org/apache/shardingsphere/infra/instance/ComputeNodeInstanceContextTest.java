@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ComputeNodeInstanceContextTest {
@@ -42,6 +43,16 @@ class ComputeNodeInstanceContextTest {
     private final LockContext<?> lockContext = mock(LockContext.class);
     
     private final EventBusContext eventBusContext = new EventBusContext();
+    
+    @Test
+    void assertInit() {
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), modeConfig, eventBusContext);
+        WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
+        context.init(workerIdGenerator, lockContext);
+        context.generateWorkerId(new Properties());
+        verify(workerIdGenerator).generate(new Properties());
+        assertThat(context.getLockContext(), is(lockContext));
+    }
     
     @Test
     void assertUpdateComputeNodeState() {
