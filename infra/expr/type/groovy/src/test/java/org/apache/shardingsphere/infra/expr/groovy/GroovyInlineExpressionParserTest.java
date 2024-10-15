@@ -24,10 +24,10 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,82 +36,73 @@ import java.util.concurrent.Future;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GroovyInlineExpressionParserTest {
     
     @Test
-    void assertEvaluateForExpressionIsNull() {
-        InlineExpressionParser parser = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", new Properties());
-        List<String> expected = parser.splitAndEvaluate();
-        assertThat(expected, is(Collections.<String>emptyList()));
+    void assertEvaluateWithEmptyExpression() {
+        assertTrue(getInlineExpressionParser("").splitAndEvaluate().isEmpty());
     }
     
     @Test
-    void assertEvaluateForSimpleString() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, " t_order_0, t_order_1 "))).splitAndEvaluate();
-        assertThat(expected.size(), is(2));
-        assertThat(expected, hasItems("t_order_0", "t_order_1"));
+    void assertEvaluateWithSimpleExpression() {
+        List<String> actual = getInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
+        List<String> expected = Arrays.asList("t_order_0", "t_order_1");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForNull() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_order_${null}"))).splitAndEvaluate();
-        assertThat(expected.size(), is(1));
-        assertThat(expected, hasItems("t_order_"));
+    void assertEvaluateWithNullExpression() {
+        List<String> actual = getInlineExpressionParser("t_order_${null}").splitAndEvaluate();
+        List<String> expected = Collections.singletonList("t_order_");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForLiteral() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_order_${'xx'}"))).splitAndEvaluate();
-        assertThat(expected.size(), is(1));
-        assertThat(expected, hasItems("t_order_xx"));
+    void assertEvaluateWithLiteralExpression() {
+        List<String> actual = getInlineExpressionParser("t_order_${'xx'}").splitAndEvaluate();
+        List<String> expected = Collections.singletonList("t_order_xx");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForArray() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_order_${[0, 1, 2]},t_order_item_${[0, 2]}"))).splitAndEvaluate();
-        assertThat(expected.size(), is(5));
-        assertThat(expected, hasItems("t_order_0", "t_order_1", "t_order_2", "t_order_item_0", "t_order_item_2"));
+    void assertEvaluateWithArrayExpression() {
+        List<String> actual = getInlineExpressionParser("t_order_${[0, 1, 2]},t_order_item_${[0, 2]}").splitAndEvaluate();
+        List<String> expected = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_item_0", "t_order_item_2");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForRange() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_order_${0..2},t_order_item_${0..1}"))).splitAndEvaluate();
-        assertThat(expected.size(), is(5));
-        assertThat(expected, hasItems("t_order_0", "t_order_1", "t_order_2", "t_order_item_0", "t_order_item_1"));
+    void assertEvaluateWithRangeExpression() {
+        List<String> actual = getInlineExpressionParser("t_order_${0..2},t_order_item_${0..1}").splitAndEvaluate();
+        List<String> expected = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_item_0", "t_order_item_1");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForComplex() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${['new','old']}_order_${1..2}, t_config"))).splitAndEvaluate();
-        assertThat(expected.size(), is(5));
-        assertThat(expected, hasItems("t_new_order_1", "t_new_order_2", "t_old_order_1", "t_old_order_2", "t_config"));
+    void assertEvaluateWithComplexExpression() {
+        List<String> actual = getInlineExpressionParser("t_${['new','old']}_order_${1..2}, t_config").splitAndEvaluate();
+        List<String> expected = Arrays.asList("t_new_order_1", "t_new_order_2", "t_old_order_1", "t_old_order_2", "t_config");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForCalculate() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new${1+2}\",'old']}_order_${1..2}"))).splitAndEvaluate();
-        assertThat(expected.size(), is(4));
-        assertThat(expected, hasItems("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2"));
+    void assertEvaluateWithCalculateExpression() {
+        List<String> actual = getInlineExpressionParser("t_${[\"new${1+2}\",'old']}_order_${1..2}").splitAndEvaluate();
+        List<String> expected = Arrays.asList("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForExpressionPlaceHolder() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}"))).splitAndEvaluate();
-        assertThat(expected.size(), is(4));
-        assertThat(expected, hasItems("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2"));
+    void assertEvaluateWithPlaceHolderExpression() {
+        List<String> actual = getInlineExpressionParser("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}").splitAndEvaluate();
+        List<String> expected = Arrays.asList("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForLong() {
+    void assertEvaluateWithLongExpression() {
         StringBuilder expression = new StringBuilder();
         for (int i = 0; i < 1024; i++) {
             expression.append("ds_");
@@ -122,29 +113,19 @@ class GroovyInlineExpressionParserTest {
                 expression.append(",");
             }
         }
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression.toString()))).splitAndEvaluate();
-        assertThat(expected.size(), is(1024));
-        assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
+        List<String> actual = getInlineExpressionParser(expression.toString()).splitAndEvaluate();
+        assertThat(actual.size(), is(1024));
+        assertThat(actual, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
     }
     
     @Test
-    void assertHandlePlaceHolder() {
-        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_${[\"new${1+2}\"]}"));
-        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_${[\"new${1+2}\"]}"));
-    }
-    
-    @Test
-    void assertEvaluateWithArgs() {
-        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()), is("3"));
+    void assertEvaluateWithArgsExpression() {
+        assertThat(getInlineExpressionParser("${1+2}").evaluateWithArgs(new LinkedHashMap<>()), is("3"));
     }
     
     @Test
     @SneakyThrows({ExecutionException.class, InterruptedException.class})
-    void assertThreadSafety() {
+    void assertEvaluateForThreadSafety() {
         int threadCount = 10;
         ExecutorService pool = Executors.newFixedThreadPool(threadCount);
         List<Future<?>> futures = new ArrayList<>(threadCount);
@@ -161,12 +142,14 @@ class GroovyInlineExpressionParserTest {
     private void createInlineExpressionParseTask() {
         for (int j = 0; j < 5; j++) {
             String resultSuffix = Thread.currentThread().getName() + "--" + j;
-            String actual = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                    new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "ds_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
+            String actual = getInlineExpressionParser("ds_${id}").evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
             assertThat(actual, is(String.format("ds_%s", resultSuffix)));
-            String actual2 = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                    new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "account_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
+            String actual2 = getInlineExpressionParser("account_${id}").evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
             assertThat(actual2, is(String.format("account_%s", resultSuffix)));
         }
+    }
+    
+    private InlineExpressionParser getInlineExpressionParser(final String expression) {
+        return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
     }
 }

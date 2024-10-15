@@ -46,9 +46,9 @@ class LiteralInlineExpressionParserTest {
     
     @Test
     void assertEvaluateWithSimpleExpression() {
-        List<String> expected = getInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
-        assertThat(expected.size(), is(2));
-        assertThat(expected, hasItems("t_order_0", "t_order_1"));
+        List<String> actual = getInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
+        assertThat(actual.size(), is(2));
+        assertThat(actual, hasItems("t_order_0", "t_order_1"));
     }
     
     @Test
