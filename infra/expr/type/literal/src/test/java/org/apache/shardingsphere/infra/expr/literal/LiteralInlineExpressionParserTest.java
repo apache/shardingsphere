@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,20 +36,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LiteralInlineExpressionParserTest {
     
     @Test
-    void assertEvaluateWithNullExpression() {
+    void assertEvaluateWithEmptyExpression() {
         assertTrue(getInlineExpressionParser("").splitAndEvaluate().isEmpty());
     }
     
     @Test
     void assertEvaluateWithCommaExpression() {
-        assertThat(getInlineExpressionParser(",").splitAndEvaluate(), is(Collections.singletonList("")));
+        List<String> actual = getInlineExpressionParser(",").splitAndEvaluate();
+        List<String> expected = Collections.singletonList("");
+        assertThat(actual, is(expected));
     }
     
     @Test
     void assertEvaluateWithSimpleExpression() {
-        List<String> expected = getInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
-        assertThat(expected.size(), is(2));
-        assertThat(expected, hasItems("t_order_0", "t_order_1"));
+        List<String> actual = getInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
+        List<String> expected = Arrays.asList("t_order_0", "t_order_1");
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -63,9 +66,9 @@ class LiteralInlineExpressionParserTest {
                 expression.append(",");
             }
         }
-        List<String> expected = getInlineExpressionParser(expression.toString()).splitAndEvaluate();
-        assertThat(expected.size(), is(1024));
-        assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
+        List<String> actual = getInlineExpressionParser(expression.toString()).splitAndEvaluate();
+        assertThat(actual.size(), is(1024));
+        assertThat(actual, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
     }
     
     @Test
