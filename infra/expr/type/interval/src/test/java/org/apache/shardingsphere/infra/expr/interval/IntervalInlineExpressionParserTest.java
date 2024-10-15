@@ -34,49 +34,49 @@ class IntervalInlineExpressionParserTest {
     
     @Test
     void assertEvaluateWithSimpleExpression() {
-        List<String> expected = getResultList("P=ds-0.t_order;SP=yyyyMMdd;DIA=1;DIU=Days;DL=20231202;DU=20231202");
+        List<String> expected = getInlineExpressionParser("P=ds-0.t_order;SP=yyyyMMdd;DIA=1;DIU=Days;DL=20231202;DU=20231202").splitAndEvaluate();
         assertThat(expected.size(), is(1));
         assertThat(expected, hasItems("ds-0.t_order20231202"));
     }
     
     @Test
     void assertEvaluateWithLocalDateExpression() {
-        List<String> expected = getResultList("P=ds-0.t_order_;SP=yyyy_MMdd;DIA=1;DIU=Days;DL=2023_1202;DU=2023_1204");
+        List<String> expected = getInlineExpressionParser("P=ds-0.t_order_;SP=yyyy_MMdd;DIA=1;DIU=Days;DL=2023_1202;DU=2023_1204").splitAndEvaluate();
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_2023_1202", "ds-0.t_order_2023_1203", "ds-0.t_order_2023_1204"));
     }
     
     @Test
     void assertEvaluateWithYearMonthExpression() {
-        List<String> expected = getResultList("P=ds-0.t_order_;SP=yyyy_MM;DIA=1;DIU=Months;DL=2023_10;DU=2023_12");
+        List<String> expected = getInlineExpressionParser("P=ds-0.t_order_;SP=yyyy_MM;DIA=1;DIU=Months;DL=2023_10;DU=2023_12").splitAndEvaluate();
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_2023_10", "ds-0.t_order_2023_11", "ds-0.t_order_2023_12"));
     }
     
     @Test
     void assertEvaluateWithYearExpression() {
-        List<String> expected = getResultList("P=ds-0.t_order_;SP=yyyy;DIA=1;DIU=Years;DL=2021;DU=2023");
+        List<String> expected = getInlineExpressionParser("P=ds-0.t_order_;SP=yyyy;DIA=1;DIU=Years;DL=2021;DU=2023").splitAndEvaluate();
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_2021", "ds-0.t_order_2022", "ds-0.t_order_2023"));
     }
     
     @Test
     void assertEvaluateWithLocalTimeExpression() {
-        List<String> expected = getResultList("P=ds-0.t_order_;SP=HH_mm_ss_SSS;DIA=1;DIU=Millis;DL=22_48_52_131;DU=22_48_52_133");
+        List<String> expected = getInlineExpressionParser("P=ds-0.t_order_;SP=HH_mm_ss_SSS;DIA=1;DIU=Millis;DL=22_48_52_131;DU=22_48_52_133").splitAndEvaluate();
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_22_48_52_131", "ds-0.t_order_22_48_52_132", "ds-0.t_order_22_48_52_133"));
     }
     
     @Test
     void assertEvaluateWithLocalDateTimeExpression() {
-        List<String> expected = getResultList("P=ds-0.t_order_;SP=yyyy_MM_dd_HH_mm_ss_SSS;DIA=1;DIU=Days;DL=2023_12_04_22_48_52_131;DU=2023_12_06_22_48_52_131");
+        List<String> expected = getInlineExpressionParser("P=ds-0.t_order_;SP=yyyy_MM_dd_HH_mm_ss_SSS;DIA=1;DIU=Days;DL=2023_12_04_22_48_52_131;DU=2023_12_06_22_48_52_131").splitAndEvaluate();
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_2023_12_04_22_48_52_131", "ds-0.t_order_2023_12_05_22_48_52_131", "ds-0.t_order_2023_12_06_22_48_52_131"));
     }
     
     @Test
     void assertEvaluateWithMonthExpression() {
-        List<String> expected = getResultList("P=ds-0.t_order_;SP=MM;DIA=1;DIU=Months;DL=10;DU=12");
+        List<String> expected = getInlineExpressionParser("P=ds-0.t_order_;SP=MM;DIA=1;DIU=Months;DL=10;DU=12").splitAndEvaluate();
         assertThat(expected.size(), is(3));
         assertThat(expected, hasItems("ds-0.t_order_10", "ds-0.t_order_11", "ds-0.t_order_12"));
     }
@@ -92,23 +92,23 @@ class IntervalInlineExpressionParserTest {
         Locale originLocale = Locale.getDefault();
         try {
             Locale.setDefault(Locale.JAPAN);
-            List<String> expectedBYGGGGyyyy = getResultList("P=ds-0.t_order_;SP=GGGGyyyy_MM_dd;DIA=1;DIU=Days;DL=平成0001_12_05;DU=平成0001_12_06;C=Japanese");
+            List<String> expectedBYGGGGyyyy = getInlineExpressionParser("P=ds-0.t_order_;SP=GGGGyyyy_MM_dd;DIA=1;DIU=Days;DL=平成0001_12_05;DU=平成0001_12_06;C=Japanese").splitAndEvaluate();
             assertThat(expectedBYGGGGyyyy.size(), is(2));
             assertThat(expectedBYGGGGyyyy, hasItems("ds-0.t_order_平成0001_12_05", "ds-0.t_order_平成0001_12_06"));
-            List<String> expectedByGGGGyyy = getResultList("P=ds-0.t_order_;SP=GGGGyyy_MM_dd;DIA=1;DIU=Days;DL=平成001_12_05;DU=平成001_12_06;C=Japanese");
+            List<String> expectedByGGGGyyy = getInlineExpressionParser("P=ds-0.t_order_;SP=GGGGyyy_MM_dd;DIA=1;DIU=Days;DL=平成001_12_05;DU=平成001_12_06;C=Japanese").splitAndEvaluate();
             assertThat(expectedByGGGGyyy.size(), is(2));
             assertThat(expectedByGGGGyyy, hasItems("ds-0.t_order_平成001_12_05", "ds-0.t_order_平成001_12_06"));
-            List<String> expectedByGGGGy = getResultList("P=ds-0.t_order_;SP=GGGGy_MM_dd;DIA=1;DIU=Days;DL=平成1_12_05;DU=平成1_12_06;C=Japanese");
+            List<String> expectedByGGGGy = getInlineExpressionParser("P=ds-0.t_order_;SP=GGGGy_MM_dd;DIA=1;DIU=Days;DL=平成1_12_05;DU=平成1_12_06;C=Japanese").splitAndEvaluate();
             assertThat(expectedByGGGGy.size(), is(2));
             assertThat(expectedByGGGGy, hasItems("ds-0.t_order_平成1_12_05", "ds-0.t_order_平成1_12_06"));
-            assertThrows(RuntimeException.class, () -> getResultList("P=ds-0.t_order_;SP=GGGGyy_MM_dd;DIA=1;DIU=Days;DL=平成01_12_05;DU=平成01_12_06;C=Japanese"));
+            assertThrows(RuntimeException.class, () -> getInlineExpressionParser("P=ds-0.t_order_;SP=GGGGyy_MM_dd;DIA=1;DIU=Days;DL=平成01_12_05;DU=平成01_12_06;C=Japanese"));
         } finally {
             Locale.setDefault(originLocale);
         }
     }
     
-    private List<String> getResultList(final String inlineExpression) {
+    private InlineExpressionParser getInlineExpressionParser(final String inlineExpression) {
         return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression))).splitAndEvaluate();
+                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression)));
     }
 }
