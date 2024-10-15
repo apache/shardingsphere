@@ -86,6 +86,6 @@ public final class ComputeNodeStateSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
         // TODO labels may be empty
-        contextManager.getComputeNodeInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
+        contextManager.getComputeNodeInstanceContext().updateLabels(event.getInstanceId(), event.getLabels());
     }
 }

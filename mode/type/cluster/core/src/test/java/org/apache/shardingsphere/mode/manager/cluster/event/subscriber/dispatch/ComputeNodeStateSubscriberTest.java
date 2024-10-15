@@ -82,6 +82,6 @@ class ComputeNodeStateSubscriberTest {
     @Test
     void assertRenewWithLabelsEvent() {
         subscriber.renew(new LabelsEvent("foo_instance_id", Collections.emptyList()));
-        verify(contextManager.getComputeNodeInstanceContext()).updateLabel("foo_instance_id", Collections.emptyList());
+        verify(contextManager.getComputeNodeInstanceContext()).updateLabels("foo_instance_id", Collections.emptyList());
     }
 }
