@@ -79,8 +79,7 @@ class LiteralInlineExpressionParserTest {
         assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("${1+2}").evaluateWithArgs(new LinkedHashMap<>()));
     }
     
-    private InlineExpressionParser getInlineExpressionParser(final String inlineExpression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression)));
+    private InlineExpressionParser getInlineExpressionParser(final String expression) {
+        return TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
     }
 }
