@@ -83,6 +83,17 @@ class ComputeNodeInstanceContextTest {
     }
     
     @Test
+    void assertUpdateLabels() {
+        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
+        when(instanceMetaData.getId()).thenReturn("foo_instance_id");
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        Collection<String> expected = Arrays.asList("label_1", "label_2");
+        context.updateLabels("foo_instance_id", expected);
+        Collection<String> actual = context.getInstance().getLabels();
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
     void assertUpdateWorkerIdWithOtherInstance() {
         ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
         ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
@@ -105,17 +116,6 @@ class ComputeNodeInstanceContextTest {
         ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
         assertThat(context.generateWorkerId(new Properties()), is(0));
-    }
-    
-    @Test
-    void assertUpdateLabels() {
-        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        when(instanceMetaData.getId()).thenReturn("foo_instance_id");
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
-        Collection<String> expected = Arrays.asList("label_1", "label_2");
-        context.updateLabels("foo_instance_id", expected);
-        Collection<String> actual = context.getInstance().getLabels();
-        assertThat(actual, is(expected));
     }
     
     @Test

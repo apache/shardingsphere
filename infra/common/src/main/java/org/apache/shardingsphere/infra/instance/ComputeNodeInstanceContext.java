@@ -100,19 +100,6 @@ public final class ComputeNodeInstanceContext {
     }
     
     /**
-     * Update instance worker ID.
-     *
-     * @param instanceId instance ID
-     * @param workerId worker ID
-     */
-    public void updateWorkerId(final String instanceId, final Integer workerId) {
-        if (instance.getMetaData().getId().equals(instanceId)) {
-            instance.setWorkerId(workerId);
-        }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setWorkerId(workerId));
-    }
-    
-    /**
      * Update instance labels.
      *
      * @param instanceId instance ID
@@ -128,6 +115,19 @@ public final class ComputeNodeInstanceContext {
     private void updateLabels(final ComputeNodeInstance computeNodeInstance, final Collection<String> labels) {
         computeNodeInstance.getLabels().clear();
         computeNodeInstance.getLabels().addAll(labels);
+    }
+    
+    /**
+     * Update instance worker ID.
+     *
+     * @param instanceId instance ID
+     * @param workerId worker ID
+     */
+    public void updateWorkerId(final String instanceId, final Integer workerId) {
+        if (instance.getMetaData().getId().equals(instanceId)) {
+            instance.setWorkerId(workerId);
+        }
+        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setWorkerId(workerId));
     }
     
     /**
