@@ -147,7 +147,7 @@ class ComputeNodeInstanceContextTest {
         ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
         ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
-        Optional<ComputeNodeInstance> actual =  context.getComputeNodeInstanceById("bar_instance_id");
+        Optional<ComputeNodeInstance> actual = context.getComputeNodeInstanceById("bar_instance_id");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getMetaData().getId(), is("bar_instance_id"));
     }
