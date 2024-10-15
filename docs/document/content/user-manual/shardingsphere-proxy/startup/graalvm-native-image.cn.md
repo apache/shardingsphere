@@ -149,7 +149,8 @@ services:
       - "3307:3307"
 ```
 
-如果用户不对 Git Source 做任何更改，上文提及的命令将使用 `oraclelinux:9-slim` 作为 Base Docker Image。
+如果用户不对 Git Source 做任何更改，
+上文提及的命令将使用 https://container-registry.oracle.com/ords/ocr/ba/os/oraclelinux 中的 `container-registry.oracle.com/os/oraclelinux:9-slim` 作为 Base Docker Image。
 但如果用户希望使用 `scratch`，`alpine:3`，`gcr.io/distroless/base-debian12`，
 `gcr.io/distroless/java-base-debian12` 或 `gcr.io/distroless/static-debian12` 等更小体积的 Docker Image 作为 Base Docker Image，
 用户可能需要根据 https://www.graalvm.org/jdk23/reference-manual/native-image/guides/build-static-executables/ 的要求，
