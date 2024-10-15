@@ -37,6 +37,7 @@ class JsonUtilsTest {
     void assertFromJsonStringToClass() {
         assertThat(JsonUtils.fromJsonString("{\"name\":\"foo\"}", JsonConfigurationFixture.class).getName(), is("foo"));
     }
+    
     @Test
     void assertFromJsonStringToTypeReference() {
         List<JsonConfigurationFixture> actual = JsonUtils.fromJsonString("[{\"name\":\"foo\"}]", new TypeReference<List<JsonConfigurationFixture>>() {
