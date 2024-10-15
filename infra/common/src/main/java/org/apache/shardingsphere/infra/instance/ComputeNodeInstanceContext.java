@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.instance;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
