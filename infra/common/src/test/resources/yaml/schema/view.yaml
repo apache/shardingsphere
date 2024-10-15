@@ -15,27 +15,5 @@
 # limitations under the License.
 #
 
-name: foo_schema
-tables:
-  foo_tbl:
-    columns:
-      foo_col:
-        name: foo_col
-        dataType: 0
-        primaryKey: true
-        generated: false
-        caseSensitive: false
-        visible: true
-        unsigned: false
-        nullable: false
-    indexes:
-       primary:
-          name: PRIMARY
-    constraints:
-      foo_constraint:
-          name: foo_constraint
-          referencedTableName: foo_tbl
-views:
-  foo_view:
-    name: foo_view
-    viewDefinition: SELECT 1
+name: foo_view
+viewDefinition: SELECT 1
