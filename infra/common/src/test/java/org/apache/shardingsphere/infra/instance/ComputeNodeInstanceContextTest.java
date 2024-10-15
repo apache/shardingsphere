@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 
 class ComputeNodeInstanceContextTest {
     
-    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null);
+    private final ModeConfiguration modeConfig = new ModeConfiguration("FIXTURE", null);
     
     private final LockContext<?> lockContext = mock(LockContext.class);
     
