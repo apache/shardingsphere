@@ -21,11 +21,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereSchema;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -38,48 +36,46 @@ import java.util.stream.Collectors;
 import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class YamlSchemaSwapperTest {
+class YamlTableSwapperTest {
     
-    private static final String YAML_FILE = "yaml/schema/schema.yaml";
+    private static final String YAML_FILE = "yaml/schema/table.yaml";
     
-    private static final String EMPTY_YAML_FILE = "yaml/schema/empty-schema.yaml";
+    private static final String EMPTY_YAML_FILE = "yaml/schema/empty-table.yaml";
     
-    private final YamlSchemaSwapper swapper = new YamlSchemaSwapper();
+    private final YamlTableSwapper swapper = new YamlTableSwapper();
     
     @Test
     void assertSwapToYamlConfiguration() {
-        ShardingSphereSchema schema = createShardingSphereSchema();
-        YamlShardingSphereSchema actual = swapper.swapToYamlConfiguration(schema);
-        YamlShardingSphereSchema expected = unmarshal(YAML_FILE);
+        ShardingSphereTable table = createShardingSphereTable();
+        YamlShardingSphereTable actual = swapper.swapToYamlConfiguration(table);
+        YamlShardingSphereTable expected = unmarshal(YAML_FILE);
         assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObject() {
-        ShardingSphereSchema actual = swapper.swapToObject(unmarshal(YAML_FILE));
-        ShardingSphereSchema expected = createShardingSphereSchema();
+        ShardingSphereTable actual = swapper.swapToObject(unmarshal(YAML_FILE));
+        ShardingSphereTable expected = createShardingSphereTable();
         assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObjectWithEmptySchema() {
-        ShardingSphereSchema actual = swapper.swapToObject(unmarshal(EMPTY_YAML_FILE));
-        ShardingSphereSchema expected = new ShardingSphereSchema("foo_schema");
+        ShardingSphereTable actual = swapper.swapToObject(unmarshal(EMPTY_YAML_FILE));
+        ShardingSphereTable expected = new ShardingSphereTable();
         assertThat(actual, deepEqual(expected));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
-    private YamlShardingSphereSchema unmarshal(final String yamlFile) {
+    private YamlShardingSphereTable unmarshal(final String yamlFile) {
         String yamlContent = Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().collect(Collectors.joining(System.lineSeparator()));
-        return YamlEngine.unmarshal(yamlContent, YamlShardingSphereSchema.class);
+        return YamlEngine.unmarshal(yamlContent, YamlShardingSphereTable.class);
     }
     
-    private ShardingSphereSchema createShardingSphereSchema() {
-        ShardingSphereTable table = new ShardingSphereTable(null,
+    private ShardingSphereTable createShardingSphereTable() {
+        return new ShardingSphereTable("foo_tbl",
                 Collections.singleton(new ShardingSphereColumn("foo_col", 0, true, false, false, true, false, false)),
                 Collections.singleton(new ShardingSphereIndex("PRIMARY")),
                 Collections.singleton(new ShardingSphereConstraint("foo_constraint", "foo_tbl")), null);
-        ShardingSphereView view = new ShardingSphereView("foo_view", "SELECT 1");
-        return new ShardingSphereSchema("foo_schema", Collections.singletonMap("foo_tbl", table), Collections.singletonMap("foo_view", view));
     }
 }
