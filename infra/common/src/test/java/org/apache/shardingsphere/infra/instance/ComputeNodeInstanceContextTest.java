@@ -83,11 +83,21 @@ class ComputeNodeInstanceContextTest {
     }
     
     @Test
-    void assertGetWorkerId() {
-        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
-        when(computeNodeInstance.getWorkerId()).thenReturn(0);
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(computeNodeInstance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
-        assertThat(context.getWorkerId(), is(0));
+    void assertUpdateWorkerIdWithOtherInstance() {
+        ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
+        context.updateWorkerId("bar_instance_id", 10);
+        assertThat(context.getWorkerId(), is(-1));
+        assertThat(context.getAllClusterInstances().iterator().next().getWorkerId(), is(10));
+    }
+    
+    @Test
+    void assertUpdateWorkerIdWithCurrentInstance() {
+        ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        context.updateWorkerId("foo_instance_id", 10);
+        assertThat(context.getWorkerId(), is(10));
     }
     
     @Test
