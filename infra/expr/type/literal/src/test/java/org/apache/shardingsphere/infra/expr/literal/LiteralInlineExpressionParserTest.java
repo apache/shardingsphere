@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -37,21 +36,17 @@ class LiteralInlineExpressionParserTest {
     
     @Test
     void assertEvaluateWithNullExpression() {
-        InlineExpressionParser parser = TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", new Properties());
-        assertTrue(parser.splitAndEvaluate().isEmpty());
+        assertTrue(getInlineExpressionParser("").splitAndEvaluate().isEmpty());
     }
     
     @Test
     void assertEvaluateWithCommaExpression() {
-        InlineExpressionParser parser = TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, ",")));
-        assertThat(parser.splitAndEvaluate(), is(Collections.singletonList("")));
+        assertThat(getInlineExpressionParser(",").splitAndEvaluate(), is(Collections.singletonList("")));
     }
     
     @Test
     void assertEvaluateWithSimpleExpression() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, " t_order_0, t_order_1 "))).splitAndEvaluate();
+        List<String> expected = getInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
         assertThat(expected.size(), is(2));
         assertThat(expected, hasItems("t_order_0", "t_order_1"));
     }
@@ -68,23 +63,24 @@ class LiteralInlineExpressionParserTest {
                 expression.append(",");
             }
         }
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression.toString()))).splitAndEvaluate();
+        List<String> expected = getInlineExpressionParser(expression.toString()).splitAndEvaluate();
         assertThat(expected.size(), is(1024));
         assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
     }
     
     @Test
     void assertEvaluateWithPlaceholderExpression() {
-        assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\"]}"))).handlePlaceHolder());
-        assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder());
+        assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("t_$->{[\"new$->{1+2}\"]}").handlePlaceHolder());
+        assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("t_${[\"new$->{1+2}\"]}").handlePlaceHolder());
     }
     
     @Test
     void assertEvaluateWithArgumentsExpression() {
-        assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()));
+        assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("${1+2}").evaluateWithArgs(new LinkedHashMap<>()));
+    }
+    
+    private InlineExpressionParser getInlineExpressionParser(final String inlineExpression) {
+        return TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL",
+                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression)));
     }
 }

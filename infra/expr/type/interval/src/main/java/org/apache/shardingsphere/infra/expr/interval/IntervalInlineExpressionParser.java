@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.expr.interval;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
@@ -35,7 +34,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -94,11 +92,9 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     
     private ChronoUnit stepUnit;
     
-    private String inlineExpression;
-    
     @Override
     public void init(final Properties props) {
-        inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
+        String inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
         Map<String, String> propsMap = Arrays.stream(inlineExpression.split(";")).collect(Collectors.toMap(key -> key.split("=")[0], value -> value.split("=")[1]));
         prefix = getPrefix(propsMap);
         dateTimeFormatterForSuffixPattern = getSuffixPattern(propsMap);
@@ -106,11 +102,6 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
         endTime = getDateTimeUpper(propsMap);
         stepAmount = getStepAmount(propsMap);
         stepUnit = getStepUnit(propsMap);
-    }
-    
-    @Override
-    public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : split();
     }
     
     private String getPrefix(final Map<String, String> props) {
@@ -165,7 +156,8 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
         return IsoChronology.INSTANCE;
     }
     
-    private List<String> split() {
+    @Override
+    public List<String> splitAndEvaluate() {
         TemporalAccessor calculateTime = startTime;
         if (!calculateTime.isSupported(ChronoField.NANO_OF_DAY)) {
             if (calculateTime.isSupported(ChronoField.EPOCH_DAY)) {
