@@ -85,33 +85,25 @@ public final class ComputeNodeInstanceContext {
     /**
      * Update instance status.
      *
-     * @param id instance ID
+     * @param instanceId instance ID
      * @param status status
      */
-    public void updateStatus(final String id, final String status) {
+    public void updateStatus(final String instanceId, final String status) {
         Optional<InstanceState> instanceState = InstanceState.get(status);
         if (!instanceState.isPresent()) {
             return;
         }
-        if (instance.getMetaData().getId().equals(id)) {
+        if (instance.getMetaData().getId().equals(instanceId)) {
             instance.switchState(instanceState.get());
         }
-        updateRelatedComputeNodeInstancesStatus(id, instanceState.get());
-    }
-    
-    private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final InstanceState instanceState) {
-        for (ComputeNodeInstance each : allClusterInstances) {
-            if (each.getMetaData().getId().equals(instanceId)) {
-                each.switchState(instanceState);
-            }
-        }
+        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.switchState(instanceState.get()));
     }
     
     /**
-     * Update instance worker id.
+     * Update instance worker ID.
      *
-     * @param instanceId instance id
-     * @param workerId worker id
+     * @param instanceId instance ID
+     * @param workerId worker ID
      */
     public void updateWorkerId(final String instanceId, final Integer workerId) {
         if (instance.getMetaData().getId().equals(instanceId)) {
@@ -121,38 +113,37 @@ public final class ComputeNodeInstanceContext {
     }
     
     /**
-     * Update instance label.
+     * Update instance labels.
      *
-     * @param instanceId instance id
-     * @param labels collection of label
+     * @param instanceId instance ID
+     * @param labels labels
      */
-    public void updateLabel(final String instanceId, final Collection<String> labels) {
+    public void updateLabels(final String instanceId, final Collection<String> labels) {
         if (instance.getMetaData().getId().equals(instanceId)) {
-            instance.getLabels().clear();
-            instance.getLabels().addAll(labels);
+            updateLabels(instance, labels);
         }
-        for (ComputeNodeInstance each : allClusterInstances) {
-            if (each.getMetaData().getId().equals(instanceId)) {
-                each.getLabels().clear();
-                each.getLabels().addAll(labels);
-            }
-        }
+        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> updateLabels(each, labels));
+    }
+    
+    private void updateLabels(final ComputeNodeInstance computeNodeInstance, final Collection<String> labels) {
+        computeNodeInstance.getLabels().clear();
+        computeNodeInstance.getLabels().addAll(labels);
     }
     
     /**
-     * Get worker id.
+     * Get worker ID.
      *
-     * @return worker id
+     * @return worker ID
      */
     public int getWorkerId() {
         return instance.getWorkerId();
     }
     
     /**
-     * Generate worker id.
+     * Generate worker ID.
      *
      * @param props properties
-     * @return worker id
+     * @return worker ID
      */
     public int generateWorkerId(final Properties props) {
         ShardingSpherePreconditions.checkNotNull(workerIdGenerator.get(), () -> new IllegalArgumentException("Worker id generator is not initialized."));
@@ -184,7 +175,7 @@ public final class ComputeNodeInstanceContext {
      * Get compute node instances by instance type and labels.
      *
      * @param instanceType instance type
-     * @param labels collection of contained label
+     * @param labels contained labels
      * @return compute node instances
      */
     public Map<String, InstanceMetaData> getAllClusterInstances(final InstanceType instanceType, final Collection<String> labels) {
@@ -198,9 +189,9 @@ public final class ComputeNodeInstanceContext {
     }
     
     /**
-     * Get compute node instance by instance id.
+     * Get compute node instance by instance ID.
      *
-     * @param instanceId instance id
+     * @param instanceId instance ID
      * @return compute node instance
      */
     public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
