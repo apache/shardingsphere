@@ -108,8 +108,7 @@ class IntervalInlineExpressionParserTest {
         }
     }
     
-    private InlineExpressionParser getInlineExpressionParser(final String inlineExpression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression)));
+    private InlineExpressionParser getInlineExpressionParser(final String expression) {
+        return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL", PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
     }
 }
