@@ -51,17 +51,15 @@ public final class ComputeNodeInstanceContext {
     
     private final ModeConfiguration modeConfiguration;
     
-    @SuppressWarnings("rawtypes")
     @Getter(AccessLevel.NONE)
-    private final AtomicReference<LockContext> lockContext = new AtomicReference<>();
+    private final AtomicReference<LockContext<?>> lockContext = new AtomicReference<>();
     
     private final EventBusContext eventBusContext;
     
     private final Collection<ComputeNodeInstance> allClusterInstances = new CopyOnWriteArrayList<>();
     
-    @SuppressWarnings("rawtypes")
     public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator,
-                                      final ModeConfiguration modeConfig, final LockContext lockContext, final EventBusContext eventBusContext) {
+                                      final ModeConfiguration modeConfig, final LockContext<?> lockContext, final EventBusContext eventBusContext) {
         this.instance = instance;
         this.workerIdGenerator.set(workerIdGenerator);
         this.modeConfiguration = modeConfig;
@@ -79,8 +77,7 @@ public final class ComputeNodeInstanceContext {
      * @param workerIdGenerator worker id generator
      * @param lockContext lock context
      */
-    @SuppressWarnings("rawtypes")
-    public void init(final WorkerIdGenerator workerIdGenerator, final LockContext lockContext) {
+    public void init(final WorkerIdGenerator workerIdGenerator, final LockContext<?> lockContext) {
         this.workerIdGenerator.set(workerIdGenerator);
         this.lockContext.set(lockContext);
     }
@@ -216,8 +213,7 @@ public final class ComputeNodeInstanceContext {
      * @return lock context
      * @throws IllegalStateException if lock context is not initialized
      */
-    @SuppressWarnings("rawtypes")
-    public LockContext getLockContext() throws IllegalStateException {
+    public LockContext<?> getLockContext() throws IllegalStateException {
         return Optional.ofNullable(lockContext.get()).orElseThrow(() -> new IllegalStateException("Lock context is not initialized."));
     }
 }
