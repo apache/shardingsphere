@@ -40,16 +40,11 @@ import static org.mockito.Mockito.verify;
 
 class ComputeNodeInstanceContextTest {
     
-    private final ModeConfiguration modeConfig = new ModeConfiguration("FIXTURE", null);
-    
-    private final LockContext<?> lockContext = mock(LockContext.class);
-    
-    private final EventBusContext eventBusContext = new EventBusContext();
-    
     @Test
     void assertInit() {
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), modeConfig, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(ModeConfiguration.class), new EventBusContext());
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
+        LockContext<?> lockContext = mock(LockContext.class);
         context.init(workerIdGenerator, lockContext);
         context.generateWorkerId(new Properties());
         verify(workerIdGenerator).generate(new Properties());
@@ -59,7 +54,8 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertUpdateStatusWithInvalidInstanceState() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
+                new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.updateStatus("id", "INVALID");
         verify(instanceMetaData, times(0)).getId();
     }
@@ -67,7 +63,8 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertUpdateStatusWithCurrentInstance() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3306);
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
+                new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         context.updateStatus("foo_instance_id", InstanceState.CIRCUIT_BREAK.name());
         assertThat(context.getInstance().getState().getCurrentState(), is(InstanceState.CIRCUIT_BREAK));
@@ -76,7 +73,8 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertUpdateStatusWithOtherInstance() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3306);
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
+                new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         context.updateStatus("bar_instance_id", InstanceState.CIRCUIT_BREAK.name());
         assertThat(context.getInstance().getState().getCurrentState(), is(InstanceState.OK));
@@ -85,7 +83,8 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertUpdateLabelsWithCurrentInstance() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3306);
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
+                new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.updateLabels("foo_instance_id", Arrays.asList("label_1", "label_2"));
         assertThat(context.getInstance().getLabels(), is(Arrays.asList("label_1", "label_2")));
     }
@@ -93,7 +92,8 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertUpdateLabelsWithOtherInstance() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3306);
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
+                new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         context.updateLabels("bar_instance_id", Arrays.asList("label_1", "label_2"));
         assertTrue(context.getInstance().getLabels().isEmpty());
@@ -103,7 +103,7 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertUpdateWorkerIdWithCurrentInstance() {
         ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.updateWorkerId("foo_instance_id", 10);
         assertThat(context.getWorkerId(), is(10));
     }
@@ -111,7 +111,7 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertUpdateWorkerIdWithOtherInstance() {
         ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         context.updateWorkerId("bar_instance_id", 10);
         assertThat(context.getWorkerId(), is(-1));
@@ -121,14 +121,14 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertGenerateWorkerId() {
         ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(
-                new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+                new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         assertThat(context.generateWorkerId(new Properties()), is(0));
     }
     
     @Test
     void assertAddComputeNodeInstance() {
         ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         assertFalse(context.getAllClusterInstances().isEmpty());
     }
@@ -136,7 +136,7 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertDeleteComputeNodeInstance() {
         ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         context.deleteComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         assertTrue(context.getAllClusterInstances().isEmpty());
@@ -145,7 +145,7 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertGetComputeNodeInstanceById() {
         ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
-        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(instance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), mock(LockContext.class), new EventBusContext());
         context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         Optional<ComputeNodeInstance> actual =  context.getComputeNodeInstanceById("bar_instance_id");
         assertTrue(actual.isPresent());
