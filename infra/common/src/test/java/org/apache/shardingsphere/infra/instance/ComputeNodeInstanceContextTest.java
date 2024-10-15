@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
@@ -33,6 +34,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,18 +57,29 @@ class ComputeNodeInstanceContextTest {
     }
     
     @Test
-    void assertUpdateComputeNodeState() {
+    void assertUpdateStatusWithoutInstanceState() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        when(instanceMetaData.getId()).thenReturn("foo_instance_id");
         ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
-        InstanceState actual = context.getInstance().getState().getCurrentState();
-        assertThat(actual, is(InstanceState.OK));
-        context.updateStatus(instanceMetaData.getId(), InstanceState.CIRCUIT_BREAK.name());
-        actual = context.getInstance().getState().getCurrentState();
-        assertThat(actual, is(InstanceState.CIRCUIT_BREAK));
-        context.updateStatus(instanceMetaData.getId(), InstanceState.OK.name());
-        actual = context.getInstance().getState().getCurrentState();
-        assertThat(actual, is(InstanceState.OK));
+        context.updateStatus("id", "INVALID");
+        verify(instanceMetaData, times(0)).getId();
+    }
+    
+    @Test
+    void assertUpdateStatusWithOtherInstance() {
+        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3306);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
+        context.updateStatus("bar_instance_id", InstanceState.CIRCUIT_BREAK.name());
+        assertThat(context.getInstance().getState().getCurrentState(), is(InstanceState.OK));
+    }
+    
+    @Test
+    void assertUpdateStatusWithCurrentInstance() {
+        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3306);
+        ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(instanceMetaData), mock(WorkerIdGenerator.class), modeConfig, lockContext, eventBusContext);
+        context.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
+        context.updateStatus("foo_instance_id", InstanceState.CIRCUIT_BREAK.name());
+        assertThat(context.getInstance().getState().getCurrentState(), is(InstanceState.CIRCUIT_BREAK));
     }
     
     @Test
