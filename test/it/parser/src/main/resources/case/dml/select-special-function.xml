@@ -4213,7 +4213,6 @@
                     <function start-index="7" stop-index="20" function-name="LENGTH" text="LENGTH('text')">
                         <parameter>
                             <literal-expression start-index="14" stop-index="19" value="text"/>
->>>>>>> 30b4c67dc8a (Verified parsing for MySQL methods)
                         </parameter>
                     </function>
                 </expr>
