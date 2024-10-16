@@ -18,50 +18,34 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-class MySQLAuthSwitchRequestPacketTest {
-    
-    @Mock
-    private MySQLAuthenticationPluginData authPluginData;
-    
-    @Mock
-    private MySQLPacketPayload payload;
+class MySQLAuthMoreDataPacketTest {
     
     @Test
     void assertNewWithInvalidHeader() {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        assertThrows(IllegalArgumentException.class, () -> new MySQLAuthSwitchRequestPacket(payload));
+        assertThrows(IllegalArgumentException.class, () -> new MySQLAuthMoreDataPacket(payload));
     }
     
     @Test
     void assertNewWithValidHeader() {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        when(payload.readInt1()).thenReturn(MySQLAuthSwitchRequestPacket.HEADER);
-        when(payload.readStringNul()).thenReturn("foo_auth");
-        MySQLAuthSwitchRequestPacket packet = new MySQLAuthSwitchRequestPacket(payload);
-        assertThat(packet.getAuthPluginName(), is("foo_auth"));
+        when(payload.readInt1()).thenReturn(MySQLAuthMoreDataPacket.HEADER);
+        when(payload.readStringEOFByBytes()).thenReturn(new byte[0]);
+        MySQLAuthMoreDataPacket packet = new MySQLAuthMoreDataPacket(payload);
+        assertThat(packet.getPluginData(), is(new byte[0]));
     }
     
     @Test
     void assertWrite() {
-        when(authPluginData.getAuthenticationPluginData()).thenReturn(new byte[]{0x11, 0x22});
-        MySQLAuthSwitchRequestPacket authSwitchRequestPacket = new MySQLAuthSwitchRequestPacket("plugin", authPluginData);
-        authSwitchRequestPacket.write(payload);
-        verify(payload).writeInt1(0xfe);
-        verify(payload, times(2)).writeStringNul(anyString());
+        assertThrows(UnsupportedSQLOperationException.class, () -> new MySQLAuthMoreDataPacket(new byte[0]).write(mock(MySQLPacketPayload.class)));
     }
 }

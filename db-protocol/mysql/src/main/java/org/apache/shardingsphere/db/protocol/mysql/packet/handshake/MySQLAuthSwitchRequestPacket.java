@@ -47,8 +47,7 @@ public final class MySQLAuthSwitchRequestPacket extends MySQLPacket {
         Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL auth switch request packet must be `0xfe`.");
         authPluginName = payload.readStringNul();
         String strAuthPluginData = payload.readStringNul();
-        authPluginData = new MySQLAuthenticationPluginData(Arrays.copyOfRange(strAuthPluginData.getBytes(), 0, 8),
-                Arrays.copyOfRange(strAuthPluginData.getBytes(), 8, 20));
+        authPluginData = new MySQLAuthenticationPluginData(Arrays.copyOfRange(strAuthPluginData.getBytes(), 0, 8), Arrays.copyOfRange(strAuthPluginData.getBytes(), 8, 20));
     }
     
     @Override
