@@ -127,6 +127,10 @@ ASSIGN_GTIDS_TO_ANONYMOUS_TRANSACTIONS
     : A S S I G N UL_ G T I D S UL_ T O UL_ A N O N Y M O U S UL_ T R A N S A C T I O N S
     ;
 
+BITXOR
+    : B I T X O R
+    ;
+
 BIT_XOR
     : B I T UL_ X O R
     ;
