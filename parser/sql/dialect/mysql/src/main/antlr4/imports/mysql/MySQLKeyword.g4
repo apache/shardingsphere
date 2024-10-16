@@ -1927,6 +1927,10 @@ QUICK
     : Q U I C K
     ;
 
+QUOTE
+    : Q U O T E
+    ;
+
 RANDOM
     : R A N D O M
     ;
