@@ -1001,6 +1001,9 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.convertFunction()) {
             return visit(ctx.convertFunction());
         }
+        if (null != ctx.instrFunction()) {
+            return visit(ctx.instrFunction());
+        }
         if (null != ctx.positionFunction()) {
             return visit(ctx.positionFunction());
         }
@@ -1185,6 +1188,15 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public final ASTNode visitBitwiseFunction(final BitwiseFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.bitwiseBinaryFunctionName().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitInstrFunction(final InstrFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.INSTR().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
         }

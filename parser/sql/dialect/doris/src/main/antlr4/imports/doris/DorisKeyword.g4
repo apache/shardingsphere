@@ -1071,6 +1071,10 @@ INSTANCE
     : I N S T A N C E
     ;
 
+INSTR
+    : I N S T R
+    ;
+
 INT
     : I N T
     ;

@@ -261,6 +261,7 @@ identifierKeywordsUnambiguous
     | INITIAL_SIZE
     | INSERT_METHOD
     | INSTANCE
+    | INSTR
     | INVISIBLE
     | INVOKER
     | IO
@@ -1037,6 +1038,7 @@ specialFunction
     | charFunction
     | extractFunction
     | groupConcatFunction
+    | instrFunction
     | positionFunction
     | substringFunction
     | trimFunction
@@ -1062,6 +1064,10 @@ timeStampDiffFunction
 
 groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
+    ;
+
+instrFunction
+    : INSTR LP_ expr COMMA_ expr RP_
     ;
 
 windowFunction
