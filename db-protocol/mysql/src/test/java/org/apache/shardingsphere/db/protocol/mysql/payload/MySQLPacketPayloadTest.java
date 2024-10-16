@@ -171,6 +171,12 @@ class MySQLPacketPayloadTest {
     }
     
     @Test
+    void assertReadLong() {
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 1);
+        assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readLong(1), is(1L));
+    }
+    
+    @Test
     void assertReadStringLenenc() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringLenenc(), is(""));
