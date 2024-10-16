@@ -23,8 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,9 +35,9 @@ class MySQLAuthSwitchResponsePacketTest {
     private final byte[] authPluginResponse = {0x22, 0x33};
     
     @Test
-    void assertMySQLAuthSwitchResponsePacket() {
+    void assertWrite() {
         when(payload.readStringEOFByBytes()).thenReturn(authPluginResponse);
-        MySQLAuthSwitchResponsePacket authSwitchResponsePacket = new MySQLAuthSwitchResponsePacket(payload);
-        assertThat(authSwitchResponsePacket.getAuthPluginResponse(), is(authPluginResponse));
+        new MySQLAuthSwitchResponsePacket(payload).write(payload);
+        verify(payload).writeBytes(authPluginResponse);
     }
 }
