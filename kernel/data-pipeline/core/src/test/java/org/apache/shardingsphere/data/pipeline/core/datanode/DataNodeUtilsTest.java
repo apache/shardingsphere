@@ -18,25 +18,34 @@
 package org.apache.shardingsphere.data.pipeline.core.datanode;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataNodeUtilsTest {
     
     @Test
-    void assertFormatWithSchema() {
-        DataNode dataNode = new DataNode("ds_0.tbl_0");
-        dataNode.setSchemaName("public");
-        assertThat(DataNodeUtils.formatWithSchema(dataNode), is("ds_0.public.tbl_0"));
+    void assertParseWithSchemaForInvalidText() {
+        assertThrows(InvalidDataNodeFormatException.class, () -> DataNodeUtils.parseWithSchema("ds_0"));
     }
     
     @Test
     void assertParseWithSchema() {
         DataNode actual = DataNodeUtils.parseWithSchema("ds_0.public.tbl_0");
         assertThat(actual.getDataSourceName(), is("ds_0"));
-        assertThat(actual.getSchemaName(), is("public"));
         assertThat(actual.getTableName(), is("tbl_0"));
+        assertThat(actual.getSchemaName(), is("public"));
+    }
+    
+    @Test
+    void assertParseWithoutSchema() {
+        DataNode actual = DataNodeUtils.parseWithSchema("ds_0.tbl_0");
+        assertThat(actual.getDataSourceName(), is("ds_0"));
+        assertThat(actual.getTableName(), is("tbl_0"));
+        assertNull(actual.getSchemaName());
     }
 }

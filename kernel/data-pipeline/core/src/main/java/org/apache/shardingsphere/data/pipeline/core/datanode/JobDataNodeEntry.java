@@ -55,6 +55,6 @@ public final class JobDataNodeEntry {
      * @return text, format: logicTableName:dataNode1,dataNode2, e.g. t_order:ds_0.t_order_0,ds_0.t_order_1
      */
     public String marshal() {
-        return logicTableName + ':' + dataNodes.stream().map(DataNodeUtils::formatWithSchema).collect(Collectors.joining(","));
+        return logicTableName + ':' + dataNodes.stream().map(DataNode::format).collect(Collectors.joining(","));
     }
 }
