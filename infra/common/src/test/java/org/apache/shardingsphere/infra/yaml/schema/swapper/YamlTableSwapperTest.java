@@ -17,21 +17,16 @@
 
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
+import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,28 +43,22 @@ class YamlTableSwapperTest {
     void assertSwapToYamlConfiguration() {
         ShardingSphereTable table = createShardingSphereTable();
         YamlShardingSphereTable actual = swapper.swapToYamlConfiguration(table);
-        YamlShardingSphereTable expected = unmarshal(YAML_FILE);
+        YamlShardingSphereTable expected = YamlEngine.unmarshal(ConfigurationFileUtils.readFile(YAML_FILE), YamlShardingSphereTable.class);
         assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObject() {
-        ShardingSphereTable actual = swapper.swapToObject(unmarshal(YAML_FILE));
+        ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile(YAML_FILE), YamlShardingSphereTable.class));
         ShardingSphereTable expected = createShardingSphereTable();
         assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObjectWithEmptySchema() {
-        ShardingSphereTable actual = swapper.swapToObject(unmarshal(EMPTY_YAML_FILE));
+        ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile(EMPTY_YAML_FILE), YamlShardingSphereTable.class));
         ShardingSphereTable expected = new ShardingSphereTable();
         assertThat(actual, deepEqual(expected));
-    }
-    
-    @SneakyThrows({URISyntaxException.class, IOException.class})
-    private YamlShardingSphereTable unmarshal(final String yamlFile) {
-        String yamlContent = Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().collect(Collectors.joining(System.lineSeparator()));
-        return YamlEngine.unmarshal(yamlContent, YamlShardingSphereTable.class);
     }
     
     private ShardingSphereTable createShardingSphereTable() {
