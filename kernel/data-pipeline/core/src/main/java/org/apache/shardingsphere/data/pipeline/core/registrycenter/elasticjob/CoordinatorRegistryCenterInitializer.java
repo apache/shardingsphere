@@ -51,7 +51,7 @@ public final class CoordinatorRegistryCenterInitializer {
         // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use SPI to load impl
         Properties props = repositoryConfig.getProps();
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
-        String namespace = repositoryConfig.getNamespace() + (null != namespaceRelativePath ? namespaceRelativePath : "");
+        String namespace = repositoryConfig.getNamespace() + (null == namespaceRelativePath ? "" : namespaceRelativePath);
         ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), namespace);
         int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
         result.setBaseSleepTimeMilliseconds(retryIntervalMilliseconds);
