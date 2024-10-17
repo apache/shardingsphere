@@ -35,7 +35,7 @@ public enum InstanceType {
     
     /**
      * Value of instance type.
-     * 
+     *
      * @param code instance type code
      * @return instance type
      */
