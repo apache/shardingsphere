@@ -67,6 +67,9 @@ public final class DataNode {
         }
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
+        if (isIncludeInstance) {
+            schemaName = segments.get(1);
+        }
         tableName = segments.get(isIncludeInstance ? 2 : 1);
     }
     
