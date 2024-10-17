@@ -17,10 +17,34 @@
 
 package org.apache.shardingsphere.infra.instance.metadata;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Instance type.
  */
+@RequiredArgsConstructor
+@Getter
 public enum InstanceType {
     
-    JDBC, PROXY
+    JDBC('j'),
+    
+    PROXY('p');
+    
+    private final char code;
+    
+    /**
+     * Value of instance type.
+     * 
+     * @param code instance type code
+     * @return instance type
+     */
+    public static InstanceType valueOf(final char code) {
+        for (InstanceType each : values()) {
+            if (each.code == code) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException(String.format("Unknown instance type code: '%s'.", code));
+    }
 }
