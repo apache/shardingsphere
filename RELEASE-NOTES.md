@@ -1,3 +1,17 @@
+## Release 5.5.2-SNAPSHOT
+
+### API Change
+
+### New Feature
+
+### Enhancement
+1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
+
+### Bug Fix
+
+### Change Log
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/30)
+
 ## Release 5.5.1-SNAPSHOT
 
 ### API Change

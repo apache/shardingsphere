@@ -479,6 +479,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         } else {
             result.setProcessId(ctx.IDENTIFIER_().getText());
         }
+        if (null != ctx.QUERY()) {
+            result.setScope(ctx.QUERY().getText());
+        }
+        if (null != ctx.CONNECTION()) {
+            result.setScope(ctx.CONNECTION().getText());
+        }
         return result;
     }
     
