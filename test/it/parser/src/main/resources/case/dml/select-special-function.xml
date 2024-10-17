@@ -4145,7 +4145,7 @@
             </function-table>
         </from>
     </select>
-        <select sql-case-id="select_bitxor" db-types="Doris">
+    <select sql-case-id="select_bitxor" db-types="Doris">
         <projections start-index="7" stop-index="17">
             <expression-projection text="BITXOR(3,5)" start-index="7" stop-index="17">
                 <expr>
@@ -4155,6 +4155,22 @@
                         </parameter>
                         <parameter>
                             <literal-expression value="5" start-index="16" stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_instr" db-types="Doris">
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="INSTR('foobar','bar')" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="INSTR" start-index="7" stop-index="27" text="INSTR('foobar','bar')">
+                        <parameter>
+                            <literal-expression value="'foobar'" start-index="13" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'bar'" start-index="22" stop-index="26" />
                         </parameter>
                     </function>
                 </expr>

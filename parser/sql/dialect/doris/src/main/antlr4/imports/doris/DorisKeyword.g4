@@ -127,9 +127,11 @@ ASSIGN_GTIDS_TO_ANONYMOUS_TRANSACTIONS
     : A S S I G N UL_ G T I D S UL_ T O UL_ A N O N Y M O U S UL_ T R A N S A C T I O N S
     ;
 
+// DORIS ADDED BEGIN
 BITXOR
     : B I T X O R
     ;
+// DORIS ADDED END
 
 BIT_XOR
     : B I T UL_ X O R
@@ -1070,6 +1072,13 @@ INSTALL
 INSTANCE
     : I N S T A N C E
     ;
+
+// DORIS ADDED BEOIM
+INSTR
+    : I N S T R
+    ;
+// DORIS ADDED END
+
 
 INT
     : I N T
