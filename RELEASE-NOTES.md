@@ -10,6 +10,7 @@
 ### Bug Fix
 
 ### Change Log
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/30)
 
 ## Release 5.5.1-SNAPSHOT
 
