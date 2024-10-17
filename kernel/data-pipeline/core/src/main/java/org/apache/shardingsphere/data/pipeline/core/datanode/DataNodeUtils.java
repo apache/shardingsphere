@@ -33,16 +33,6 @@ import java.util.List;
 public final class DataNodeUtils {
     
     /**
-     * Format data node as string with schema.
-     *
-     * @param dataNode data node
-     * @return formatted data node
-     */
-    public static String formatWithSchema(final DataNode dataNode) {
-        return dataNode.getDataSourceName() + (null == dataNode.getSchemaName() ? "" : "." + dataNode.getSchemaName()) + "." + dataNode.getTableName();
-    }
-    
-    /**
      * Parse data node from text.
      *
      * @param text data node text

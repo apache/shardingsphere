@@ -85,8 +85,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     @Override
     public Map<String, TableDataConsistencyCheckResult> check(final String algorithmType, final Properties algorithmProps) {
         List<String> sourceTableNames = new LinkedList<>();
-        jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
-                .forEach(dataNode -> sourceTableNames.add(DataNodeUtils.formatWithSchema(dataNode)))));
+        jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTableNames.add(dataNode.format()))));
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobUpdateProgress(0));
@@ -116,7 +115,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
                 checkResultMap.put(new CaseInsensitiveQualifiedTable(each.getSchemaName(), each.getTableName()), checkResult);
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
-                    log.info("Unmatched on table '{}', ignore left tables", DataNodeUtils.formatWithSchema(each));
+                    log.info("Unmatched on table '{}', ignore left tables", each.format());
                     return true;
                 }
             }

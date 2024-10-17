@@ -29,19 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DataNodeUtilsTest {
     
     @Test
-    void assertFormatWithSchema() {
-        DataNode dataNode = new DataNode("ds_0.tbl_0");
-        dataNode.setSchemaName("public");
-        assertThat(DataNodeUtils.formatWithSchema(dataNode), is("ds_0.public.tbl_0"));
-    }
-    
-    @Test
-    void assertFormatWithoutSchema() {
-        DataNode dataNode = new DataNode("ds_0.tbl_0");
-        assertThat(DataNodeUtils.formatWithSchema(dataNode), is("ds_0.tbl_0"));
-    }
-    
-    @Test
     void assertParseWithSchemaForInvalidText() {
         assertThrows(InvalidDataNodeFormatException.class, () -> DataNodeUtils.parseWithSchema("ds_0"));
     }
