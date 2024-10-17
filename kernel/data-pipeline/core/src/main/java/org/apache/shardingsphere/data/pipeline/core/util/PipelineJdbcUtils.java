@@ -37,7 +37,15 @@ public final class PipelineJdbcUtils {
      * @return true or false
      */
     public static boolean isIntegerColumn(final int columnType) {
-        return Types.INTEGER == columnType || Types.BIGINT == columnType || Types.SMALLINT == columnType || Types.TINYINT == columnType;
+        switch (columnType) {
+            case Types.INTEGER:
+            case Types.BIGINT:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+                return true;
+            default:
+                return false;
+        }
     }
     
     /**
