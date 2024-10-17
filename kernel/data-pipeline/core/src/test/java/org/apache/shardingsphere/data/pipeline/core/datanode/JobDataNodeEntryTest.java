@@ -24,7 +24,6 @@ import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class JobDataNodeEntryTest {
     
@@ -39,15 +38,12 @@ class JobDataNodeEntryTest {
     void assertUnmarshalWithSchema() {
         JobDataNodeEntry actual = JobDataNodeEntry.unmarshal("t_order:ds_0.public.t_order_0,ds_1.test.t_order_1");
         assertThat(actual.getLogicTableName(), is("t_order"));
-        assertNotNull(actual.getDataNodes());
         assertThat(actual.getDataNodes().size(), is(2));
-        DataNode first = actual.getDataNodes().get(0);
-        assertThat(first.getDataSourceName(), is("ds_0"));
-        assertThat(first.getSchemaName(), is("public"));
-        assertThat(first.getTableName(), is("t_order_0"));
-        DataNode second = actual.getDataNodes().get(1);
-        assertThat(second.getDataSourceName(), is("ds_1"));
-        assertThat(second.getSchemaName(), is("test"));
-        assertThat(second.getTableName(), is("t_order_1"));
+        assertThat(actual.getDataNodes().get(0).getDataSourceName(), is("ds_0"));
+        assertThat(actual.getDataNodes().get(0).getSchemaName(), is("public"));
+        assertThat(actual.getDataNodes().get(0).getTableName(), is("t_order_0"));
+        assertThat(actual.getDataNodes().get(1).getDataSourceName(), is("ds_1"));
+        assertThat(actual.getDataNodes().get(1).getSchemaName(), is("test"));
+        assertThat(actual.getDataNodes().get(1).getTableName(), is("t_order_1"));
     }
 }
