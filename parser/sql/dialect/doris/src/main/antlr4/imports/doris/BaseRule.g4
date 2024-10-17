@@ -150,7 +150,9 @@ identifierKeywordsUnambiguous
     | BEFORE
     | BINLOG
     | BIT
+    // DORIS ADDED BEGIN
     | BITXOR
+    // DORIS ADDED END
     | BLOCK
     | BOOLEAN
     | BOOL
@@ -962,9 +964,11 @@ aggregationFunction
     : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;
 
+// DORIS ADDED BEGIN
 bitwiseFunction
     : bitwiseBinaryFunctionName LP_ expr COMMA_ expr RP_
     ;
+// DORIS ADDED END
 
 jsonFunction
     : jsonTableFunction
@@ -999,9 +1003,11 @@ aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | BIT_XOR | GROUP_CONCAT
     ;
 
+// DORIS ADDED BEGIN
 bitwiseBinaryFunctionName
     : BITXOR
     ;
+// DORIS ADDED END
 
 distinct
     : DISTINCT
@@ -1034,11 +1040,16 @@ frameBetween
 specialFunction
     : castFunction
     | convertFunction
+    // DORIS ADDED BEGIN
+    | bitwiseFunction
+    // DORIS ADDED END
     | currentUserFunction
     | charFunction
     | extractFunction
     | groupConcatFunction
+    // DORIS ADDED BEGIN
     | instrFunction
+    // DORIS ADDED END
     | positionFunction
     | substringFunction
     | trimFunction
@@ -1047,7 +1058,6 @@ specialFunction
     | windowFunction
     | groupingFunction
     | timeStampDiffFunction
-    | bitwiseFunction
     ;
 
 currentUserFunction
@@ -1066,9 +1076,11 @@ groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
 
+// DORIS ADDED BEGIN
 instrFunction
     : INSTR LP_ expr COMMA_ expr RP_
     ;
+// DORIS ADDED END
 
 windowFunction
     : funcName = (ROW_NUMBER | RANK | DENSE_RANK | CUME_DIST | PERCENT_RANK) LP_ RP_ windowingClause
