@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.type;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -28,13 +29,21 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,7 +56,27 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
     
     @Test
     void assertNewInstance() {
-        ShardingSpherePipelineDataSourceConfiguration actual = createShardingSpherePipelineDataSourceConfiguration();
+        JdbcQueryPropertiesExtension queryPropsExtension = mock(JdbcQueryPropertiesExtension.class);
+        when(DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType)).thenReturn(Optional.of(queryPropsExtension));
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(getDataSourceYAML(), YamlRootConfiguration.class, true);
+        Map<String, Object> backupDataSource0 = new HashMap<>(rootConfig.getDataSources().get("ds_0"));
+        Map<String, Object> backupDataSource1 = new HashMap<>(rootConfig.getDataSources().get("ds_1"));
+        ShardingSpherePipelineDataSourceConfiguration actual = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
+        assertParameterUnchanged(backupDataSource0, rootConfig.getDataSources().get("ds_0"));
+        assertParameterUnchanged(backupDataSource1, rootConfig.getDataSources().get("ds_1"));
+        assertPipelineDataSourceConfiguration(actual);
+    }
+    
+    private void assertParameterUnchanged(final Map<String, Object> backupDataSource, final Map<String, Object> handledDataSource) {
+        assertThat(handledDataSource.size(), is(backupDataSource.size()));
+        for (Entry<String, Object> entry : backupDataSource.entrySet()) {
+            Object actual = handledDataSource.get(entry.getKey());
+            assertNotNull(actual, "value of '" + entry.getKey() + "' doesn't exist");
+            assertThat("value of '" + entry.getKey() + "' doesn't match", actual, is(entry.getValue()));
+        }
+    }
+    
+    private void assertPipelineDataSourceConfiguration(final ShardingSpherePipelineDataSourceConfiguration actual) {
         assertThat(actual.getDatabaseType().getType(), is("FIXTURE"));
         assertThat(actual.getType(), is(ShardingSpherePipelineDataSourceConfiguration.TYPE));
         assertThat(actual.getDataSourceConfiguration(), instanceOf(YamlRootConfiguration.class));
@@ -64,30 +93,17 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
     
     @Test
     void assertGetActualDataSourceConfiguration() {
-        ShardingSpherePipelineDataSourceConfiguration config = createShardingSpherePipelineDataSourceConfiguration();
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(getDataSourceYAML(), YamlRootConfiguration.class, true);
+        ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
         StandardPipelineDataSourceConfiguration actual = config.getActualDataSourceConfiguration("ds_0");
         assertThat(actual.getDatabaseType().getType(), is("FIXTURE"));
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
     }
     
-    private ShardingSpherePipelineDataSourceConfiguration createShardingSpherePipelineDataSourceConfiguration() {
-        JdbcQueryPropertiesExtension queryPropsExtension = mock(JdbcQueryPropertiesExtension.class);
-        when(DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType)).thenReturn(Optional.of(queryPropsExtension));
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(getDataSourceYAML(), YamlRootConfiguration.class, true);
-        return new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
-    }
-    
+    @SneakyThrows({URISyntaxException.class, IOException.class})
     private String getDataSourceYAML() {
-        return "dataSources:\n"
-                + "  ds_0:\n"
-                + "    minPoolSize: 20\n"
-                + "    minimumIdle: 20\n"
-                + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    url: jdbc:mock://127.0.0.1/ds_0\n"
-                + "  ds_1:\n"
-                + "    minPoolSize: 20\n"
-                + "    minimumIdle: 20\n"
-                + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    jdbcUrl: jdbc:mock://127.0.0.1/ds_1\n";
+        URL url = getClass().getClassLoader().getResource("yaml/shardingsphere-pipeline-datasource-config.yaml");
+        assertNotNull(url);
+        return String.join(System.lineSeparator(), Files.readAllLines(Paths.get(url.toURI())));
     }
 }

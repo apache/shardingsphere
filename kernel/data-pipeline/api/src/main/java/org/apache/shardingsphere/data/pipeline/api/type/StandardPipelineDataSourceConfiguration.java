@@ -99,12 +99,12 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     }
     
     @Override
-    public String getType() {
-        return TYPE;
+    public Object getDataSourceConfiguration() {
+        return dataSourcePoolProps;
     }
     
     @Override
-    public Object getDataSourceConfiguration() {
-        return dataSourcePoolProps;
+    public String getType() {
+        return TYPE;
     }
 }
