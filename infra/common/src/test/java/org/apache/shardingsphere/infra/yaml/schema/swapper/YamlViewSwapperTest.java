@@ -17,17 +17,11 @@
 
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
+import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,21 +36,15 @@ class YamlViewSwapperTest {
     void assertSwapToYamlConfiguration() {
         ShardingSphereView view = createShardingSphereView();
         YamlShardingSphereView actual = swapper.swapToYamlConfiguration(view);
-        YamlShardingSphereView expected = unmarshal(YAML_FILE);
+        YamlShardingSphereView expected = YamlEngine.unmarshal(ConfigurationFileUtils.readFile(YAML_FILE), YamlShardingSphereView.class);
         assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObject() {
-        ShardingSphereView actual = swapper.swapToObject(unmarshal(YAML_FILE));
+        ShardingSphereView actual = swapper.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile(YAML_FILE), YamlShardingSphereView.class));
         ShardingSphereView expected = createShardingSphereView();
         assertThat(actual, deepEqual(expected));
-    }
-    
-    @SneakyThrows({URISyntaxException.class, IOException.class})
-    private YamlShardingSphereView unmarshal(final String yamlFile) {
-        String yamlContent = Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().collect(Collectors.joining(System.lineSeparator()));
-        return YamlEngine.unmarshal(yamlContent, YamlShardingSphereView.class);
     }
     
     private ShardingSphereView createShardingSphereView() {
