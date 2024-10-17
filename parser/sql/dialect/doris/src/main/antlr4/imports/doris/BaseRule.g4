@@ -263,7 +263,9 @@ identifierKeywordsUnambiguous
     | INITIAL_SIZE
     | INSERT_METHOD
     | INSTANCE
+    // DORIS ADDED BEGIN
     | INSTR
+    // DORIS ADDED END
     | INVISIBLE
     | INVOKER
     | IO
