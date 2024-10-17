@@ -102,11 +102,6 @@ class DataNodeTest {
     
     @Test
     void assertHashCodeIncludeInstance() {
-        assertThat(new DataNode("ds_0.db_0.tbl_0").hashCode(), is(new DataNode("ds_0.db_0.tbl_0").hashCode()));
-    }
-    
-    @Test
-    void assertToStringIncludeInstance() {
-        assertThat(new DataNode("ds_0.db_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0.db_0, tableName=tbl_0, schemaName=null)"));
+        assertThat(new DataNode("ds_0.db_0.tbl_0").hashCode(), is(new DataNode("Ds_0.Db_0.Tbl_0").hashCode()));
     }
 }
