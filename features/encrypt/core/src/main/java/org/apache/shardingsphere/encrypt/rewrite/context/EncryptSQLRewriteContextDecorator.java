@@ -78,7 +78,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     private Collection<EncryptCondition> createEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {
         SQLStatementContext sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
-                && !((WhereAvailable) ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()).getWhereSegments().isEmpty()) {
+                && !(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()).getWhereSegments().isEmpty()) {
             return doCreateEncryptConditions(encryptRule, sqlRewriteContext, ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext());
         }
         return doCreateEncryptConditions(encryptRule, sqlRewriteContext, sqlStatementContext);
