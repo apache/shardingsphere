@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and 。///。。g
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="recover_database_by_name" value="=RECOVER DATABASE db_name" db-types="Doris" />
+    <sql-case id="recover_table_by_name" value="=RECOVER TABLE example_db.example_tbl" db-types="Doris" />
+    <sql-case id="recover_partition_by_name" value="=RECOVER PARTITION p1 FROM example_tbl" db-types="Doris" />
+    <sql-case id="recover_database_by_name_and_id" value="=RECOVER DATABASE example_db example_db_id" db-types="Doris" />
+    <sql-case id="recover_table_by_name_and_id" value="=RECOVER TABLE example_db.example_tbl example_tbl_id" db-types="Doris" />
+    <sql-case id="recover_partition_by_name_and_id" value="=RECOVER PARTITION p1 p1_id FROM example_tbl" db-types="Doris" />
+    <sql-case id="recover_database_by_name_as" value="=RECOVER DATABASE example_db example_db_id AS new_example_db" db-types="Doris" />
+    <sql-case id="recover_table_by_name_and_id_as" value="=RECOVER TABLE example_db.example_tbl AS new_example_tbl" db-types="Doris" />
+</sql-cases>
