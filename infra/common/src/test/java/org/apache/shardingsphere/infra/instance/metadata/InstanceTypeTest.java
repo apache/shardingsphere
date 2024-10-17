@@ -33,6 +33,6 @@ class InstanceTypeTest {
     
     @Test
     void assertValueOfInvalidCode() {
-        assertThrows(UnsupportedOperationException.class, () -> InstanceType.valueOf('a'));
+        assertThrows(IllegalArgumentException.class, () -> InstanceType.valueOf('a'));
     }
 }

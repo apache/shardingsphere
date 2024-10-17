@@ -38,6 +38,7 @@ public enum InstanceType {
      *
      * @param code instance type code
      * @return instance type
+     * @throws IllegalArgumentException unknown instance type code
      */
     public static InstanceType valueOf(final char code) {
         for (InstanceType each : values()) {
@@ -45,6 +46,6 @@ public enum InstanceType {
                 return each;
             }
         }
-        throw new UnsupportedOperationException(String.format("Unknown instance type code: '%s'.", code));
+        throw new IllegalArgumentException(String.format("Unknown instance type code: '%s'.", code));
     }
 }
