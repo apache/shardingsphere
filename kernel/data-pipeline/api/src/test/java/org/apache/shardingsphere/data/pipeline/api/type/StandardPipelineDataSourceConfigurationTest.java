@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.type;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -26,14 +25,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,7 +54,7 @@ class StandardPipelineDataSourceConfigurationTest {
     
     @Test
     void assertNewInstanceWithYAML() {
-        assertPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(getDataSourceYAML()));
+        assertPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtils.readFile("yaml/standard-pipeline-datasource-config.yaml")));
     }
     
     @Test
@@ -101,12 +96,5 @@ class StandardPipelineDataSourceConfigurationTest {
     private void assertDataSourcePoolProperties(final DataSourcePoolProperties props) {
         Map<String, Object> actual = new YamlDataSourceConfigurationSwapper().swapToMap(props);
         assertThat(actual.get("minPoolSize"), is("1"));
-    }
-    
-    @SneakyThrows({URISyntaxException.class, IOException.class})
-    private String getDataSourceYAML() {
-        URL url = getClass().getClassLoader().getResource("yaml/standard-pipeline-datasource-config.yaml");
-        assertNotNull(url);
-        return String.join(System.lineSeparator(), Files.readAllLines(Paths.get(url.toURI())));
     }
 }
