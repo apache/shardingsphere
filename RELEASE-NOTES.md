@@ -5,7 +5,9 @@
 ### New Feature
 
 ### Enhancement
+
 1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
+1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
 
 ### Bug Fix
 
