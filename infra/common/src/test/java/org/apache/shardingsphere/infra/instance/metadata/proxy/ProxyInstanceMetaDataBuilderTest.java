@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
+package org.apache.shardingsphere.infra.instance.metadata.proxy;
 
-import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@ExtendWith(MockitoExtension.class)
-class MySQLAuthSwitchResponsePacketTest {
+class ProxyInstanceMetaDataBuilderTest {
     
-    @Mock
-    private MySQLPacketPayload payload;
-    
-    private final byte[] authPluginResponse = {0x22, 0x33};
+    private final InstanceMetaDataBuilder instanceMetaDataBuilder = TypedSPILoader.getService(InstanceMetaDataBuilder.class, "Proxy");
     
     @Test
-    void assertWrite() {
-        when(payload.readStringEOFByBytes()).thenReturn(authPluginResponse);
-        new MySQLAuthSwitchResponsePacket(payload).write(payload);
-        verify(payload).writeBytes(authPluginResponse);
+    void assertBuild() {
+        assertThat(instanceMetaDataBuilder.build(3306).getType(), is(InstanceType.PROXY));
     }
 }

@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
+package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@ExtendWith(MockitoExtension.class)
-class MySQLAuthSwitchResponsePacketTest {
-    
-    @Mock
-    private MySQLPacketPayload payload;
-    
-    private final byte[] authPluginResponse = {0x22, 0x33};
+class MySQLAuthenticationPluginTest {
     
     @Test
-    void assertWrite() {
-        when(payload.readStringEOFByBytes()).thenReturn(authPluginResponse);
-        new MySQLAuthSwitchResponsePacket(payload).write(payload);
-        verify(payload).writeBytes(authPluginResponse);
+    void assertGetPluginByName() {
+        assertThat(MySQLAuthenticationPlugin.getPluginByName("mysql_native_password"), is(MySQLAuthenticationPlugin.NATIVE));
+    }
+    
+    @Test
+    void assertGetPluginByNameWithDefault() {
+        assertThat(MySQLAuthenticationPlugin.getPluginByName("invalid"), is(MySQLAuthenticationPlugin.DEFAULT));
     }
 }
