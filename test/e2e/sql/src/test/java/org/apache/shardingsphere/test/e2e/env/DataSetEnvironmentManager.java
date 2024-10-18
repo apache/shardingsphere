@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.env;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
@@ -37,8 +39,6 @@ import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValueGroup;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
