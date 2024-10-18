@@ -284,7 +284,13 @@ installComponent
     ;
 
 installPlugin
-    : INSTALL PLUGIN pluginName SONAME shardLibraryName
+//    : INSTALL PLUGIN pluginName SONAME shardLibraryName
+    : INSTALL PLUGIN FROM pluginSource=expr propertyClause?
+    ;
+
+propertyClause
+    : PROPERTIES LP_ expr EQ_ md5sum=expr RP_
+
     ;
 
 uninstallComponent
@@ -475,4 +481,8 @@ show
     | showVariables
     | showReplicas
     | showReplicaStatus
+    ;
+
+dbManageStatement
+    : ADMIN CANCEL REBALANCE DISK (ON LP_ backends+=stringLiterals (COMMA_ backends+=stringLiterals) RP_)?
     ;
