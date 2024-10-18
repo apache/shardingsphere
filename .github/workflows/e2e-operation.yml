@@ -37,7 +37,7 @@ jobs:
 
   detect-changed-files:
     name: Detect Changed Files
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -53,7 +53,7 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     needs: [ detect-changed-files, global-environment ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     strategy:
       max-parallel: 20
