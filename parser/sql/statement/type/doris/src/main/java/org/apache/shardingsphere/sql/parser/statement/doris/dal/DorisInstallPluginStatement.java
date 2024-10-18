@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.InstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**
  * Doris install plugin statement.
  */
+@Setter
 public final class DorisInstallPluginStatement extends InstallPluginStatement implements DorisStatement {
+    private String source;
+    private String md5sum;
 }
