@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.projection.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -25,9 +28,6 @@ import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableS
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Column projection segment binder.
@@ -44,8 +44,8 @@ public final class ColumnProjectionSegmentBinder {
      * @return bound column projection segment
      */
     public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment,
-                                               final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment boundColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, binderContext, tableBinderContexts, Collections.emptyMap());
+                                               final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment boundColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, binderContext, tableBinderContexts, LinkedHashMultimap.create());
         ColumnProjectionSegment result = new ColumnProjectionSegment(boundColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
         result.setVisible(segment.isVisible());
