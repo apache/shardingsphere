@@ -95,13 +95,13 @@ public final class PipelineDataSource implements DataSource, AutoCloseable {
     }
     
     @Override
-    public void setLoginTimeout(final int seconds) throws SQLException {
-        dataSource.setLoginTimeout(seconds);
+    public int getLoginTimeout() throws SQLException {
+        return dataSource.getLoginTimeout();
     }
     
     @Override
-    public int getLoginTimeout() throws SQLException {
-        return dataSource.getLoginTimeout();
+    public void setLoginTimeout(final int seconds) throws SQLException {
+        dataSource.setLoginTimeout(seconds);
     }
     
     @Override
@@ -118,13 +118,7 @@ public final class PipelineDataSource implements DataSource, AutoCloseable {
             log.warn("Data source is not closed, it might cause connection leak, data source: {}", dataSource);
             return;
         }
-        try {
-            new DataSourcePoolDestroyer(dataSource).asyncDestroy();
-            closed.set(true);
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            throw new SQLException("Data source close failed.", ex);
-        }
+        new DataSourcePoolDestroyer(dataSource).asyncDestroy();
+        closed.set(true);
     }
 }
