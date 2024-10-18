@@ -123,7 +123,7 @@ public final class SimpleTableSegmentBinder {
         if (SystemSchemaManager.isSystemTable(schemaName, tableName)) {
             return;
         }
-        if (binderContext.getExternalTableBinderContexts().containsKey(tableName)) {
+        if (binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString(tableName))) {
             return;
         }
         ShardingSpherePreconditions.checkState(binderContext.getMetaData().containsDatabase(databaseName)
