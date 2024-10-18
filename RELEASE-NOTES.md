@@ -11,6 +11,7 @@
 ### Bug Fix
 
 1. Mode: Fixes `JDBCRepository` improper handling of H2database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
+1. SQL Binder: Use Multimap and CaseInsensitiveString to replace CaseInsensitiveMap for supporting mysql multi table join with same table alias - [#33303](https://github.com/apache/shardingsphere/pull/33303)
 
 ### Change Log
 1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/30)

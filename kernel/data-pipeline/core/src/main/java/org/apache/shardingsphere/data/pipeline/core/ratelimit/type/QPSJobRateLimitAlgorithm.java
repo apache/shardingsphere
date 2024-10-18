@@ -49,10 +49,9 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     @Override
     public void intercept(final PipelineSQLOperationType type, final Number data) {
-        if (type != PipelineSQLOperationType.SELECT) {
-            return;
+        if (type == PipelineSQLOperationType.SELECT) {
+            rateLimiter.acquire(null == data ? 1 : data.intValue());
         }
-        rateLimiter.acquire(null != data ? data.intValue() : 1);
     }
     
     @Override

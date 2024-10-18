@@ -18,8 +18,6 @@
 name: E2E - Operation
 
 on:
-  push:
-    branches: [ dev ]
   pull_request:
   workflow_dispatch:
 
@@ -37,6 +35,7 @@ jobs:
 
   detect-changed-files:
     name: Detect Changed Files
+    if: github.repository == 'apache/shardingsphere'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -50,8 +49,8 @@ jobs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
   e2e-operation:
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
+    if: github.repository == 'apache/shardingsphere'
     needs: [ detect-changed-files, global-environment ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -94,10 +93,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: apache-shardingsphere-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+            apache-shardingsphere-maven-third-party-e2e-cache-
+            apache-shardingsphere-maven-third-party-
       - if: (env.skip_current_step == 'false')
         uses: actions/setup-java@v4
         with:

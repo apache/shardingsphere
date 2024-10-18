@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
@@ -35,50 +34,50 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineImportSQLBuilderTest {
     
-    private final PipelineImportSQLBuilder importSQLBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+    private final PipelineImportSQLBuilder sqlBuilder = new PipelineImportSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     
     @Test
     void assertBuildInsertSQL() {
-        String actual = importSQLBuilder.buildInsertSQL(null, createDataRecordWithUniqueKey());
+        String actual = sqlBuilder.buildInsertSQL(null, createDataRecordWithUniqueKey());
         assertThat(actual, is("INSERT INTO foo_tbl(id,foo_col,col1,col2,col3) VALUES(?,?,?,?,?)"));
     }
     
     @Test
     void assertBuildUpdateSQLWithUniqueKey() {
         DataRecord dataRecord = createDataRecordWithUniqueKey();
-        String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = sqlBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE foo_tbl SET col1 = ?,col2 = ?,col3 = ? WHERE id = ? AND foo_col = ?"));
     }
     
     @Test
     void assertBuildUpdateSQLWithoutUniqueKey() {
         DataRecord dataRecord = createDataRecordWithoutUniqueKey();
-        String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = sqlBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE foo_tbl SET foo_col = ? WHERE id = ? AND foo_col = ?"));
     }
     
     @Test
     void assertBuildUpdateSQLWithoutConditionColumns() {
-        String actual = importSQLBuilder.buildUpdateSQL(null, createDataRecordWithUniqueKey(), Collections.emptyList());
+        String actual = sqlBuilder.buildUpdateSQL(null, createDataRecordWithUniqueKey(), Collections.emptyList());
         assertThat(actual, is("UPDATE foo_tbl SET col1 = ?,col2 = ?,col3 = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithUniqueKey() {
         DataRecord dataRecord = createDataRecordWithUniqueKey();
-        String actual = importSQLBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        String actual = sqlBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("DELETE FROM foo_tbl WHERE id = ? AND foo_col = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithoutUniqueKey() {
-        String actual = importSQLBuilder.buildDeleteSQL(null, createDataRecordWithoutUniqueKey(), RecordUtils.extractConditionColumns(createDataRecordWithoutUniqueKey(), Collections.emptySet()));
+        String actual = sqlBuilder.buildDeleteSQL(null, createDataRecordWithoutUniqueKey(), RecordUtils.extractConditionColumns(createDataRecordWithoutUniqueKey(), Collections.emptySet()));
         assertThat(actual, is("DELETE FROM foo_tbl WHERE id = ? AND foo_col = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithoutConditionColumns() {
-        String actual = importSQLBuilder.buildDeleteSQL(null, createDataRecordWithUniqueKey(), Collections.emptyList());
+        String actual = sqlBuilder.buildDeleteSQL(null, createDataRecordWithUniqueKey(), Collections.emptyList());
         assertThat(actual, is("DELETE FROM foo_tbl"));
     }
     

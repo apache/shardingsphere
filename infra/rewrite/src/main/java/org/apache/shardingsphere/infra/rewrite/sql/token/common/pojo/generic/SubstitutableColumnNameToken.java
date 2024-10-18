@@ -39,7 +39,8 @@ import java.util.Map;
 /**
  * Substitutable column name token.
  */
-@EqualsAndHashCode(callSuper = false)
+// TODO remove @EqualsAndHashCode in token rewriter
+@EqualsAndHashCode(callSuper = false, exclude = "projections")
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable, RouteUnitAware {
     
     private static final String COLUMN_NAME_SPLITTER = ", ";

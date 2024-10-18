@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.column;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -27,8 +30,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -45,9 +46,10 @@ public final class InsertColumnsSegmentBinder {
      * @param tableBinderContexts table binder contexts
      * @return bound insert columns segment
      */
-    public static InsertColumnsSegment bind(final InsertColumnsSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static InsertColumnsSegment bind(final InsertColumnsSegment segment, final SQLStatementBinderContext binderContext,
+                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Collection<ColumnSegment> boundColumns = segment.getColumns().stream()
-                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.INSERT_COLUMNS, binderContext, tableBinderContexts, Collections.emptyMap())).collect(Collectors.toList());
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.INSERT_COLUMNS, binderContext, tableBinderContexts, LinkedHashMultimap.create())).collect(Collectors.toList());
         return new InsertColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), boundColumns);
     }
 }
