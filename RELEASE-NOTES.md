@@ -1,3 +1,20 @@
+## Release 5.5.2-SNAPSHOT
+
+### API Change
+
+### New Feature
+
+### Enhancement
+1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
+1. Proxy Native: Change the Base Docker Image of ShardingSphere Proxy Native - [#33263](https://github.com/apache/shardingsphere/issues/33263)
+
+### Bug Fix
+
+1. Mode: Fixes `JDBCRepository` improper handling of H2database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
+
+### Change Log
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/30)
+
 ## Release 5.5.1-SNAPSHOT
 
 ### API Change
@@ -45,7 +62,6 @@
 1. Infra: Support compiling and using ShardingSphere under OpenJDK 23 - [#33025](https://github.com/apache/shardingsphere/pull/33025)
 1. Hive: Support Hive integration module to connect to HiveServer2 4.0.1 - [#33212](https://github.com/apache/shardingsphere/pull/33212)
 1. Infra: Support building Example module with OpenJDK 23 - [#33224](https://github.com/apache/shardingsphere/pull/33224)
-1. Proxy Native: Change the Base Docker Image of ShardingSphere Proxy Native - [#33263](https://github.com/apache/shardingsphere/issues/33263)
 
 ### Bug Fix
 

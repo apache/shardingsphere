@@ -39,59 +39,67 @@ class PipelineImportSQLBuilderTest {
     
     @Test
     void assertBuildInsertSQL() {
-        String actual = importSQLBuilder.buildInsertSQL(null, mockDataRecord("t2", 3));
-        assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?)"));
+        String actual = importSQLBuilder.buildInsertSQL(null, createDataRecordWithUniqueKey());
+        assertThat(actual, is("INSERT INTO foo_tbl(id,foo_col,col1,col2,col3) VALUES(?,?,?,?,?)"));
     }
     
     @Test
-    void assertBuildUpdateSQLWithShardingColumns() {
-        DataRecord dataRecord = mockDataRecord("t2", 3);
+    void assertBuildUpdateSQLWithUniqueKey() {
+        DataRecord dataRecord = createDataRecordWithUniqueKey();
         String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? AND sc = ?"));
-        dataRecord = mockDataRecord("t2", 2);
-        actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ? WHERE id = ? AND sc = ?"));
+        assertThat(actual, is("UPDATE foo_tbl SET col1 = ?,col2 = ?,col3 = ? WHERE id = ? AND foo_col = ?"));
     }
     
     @Test
-    void assertBuildDeleteSQLWithConditionColumns() {
-        DataRecord dataRecord = mockDataRecord("t3", 3);
+    void assertBuildUpdateSQLWithoutUniqueKey() {
+        DataRecord dataRecord = createDataRecordWithoutUniqueKey();
+        String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        assertThat(actual, is("UPDATE foo_tbl SET foo_col = ? WHERE id = ? AND foo_col = ?"));
+    }
+    
+    @Test
+    void assertBuildUpdateSQLWithoutConditionColumns() {
+        String actual = importSQLBuilder.buildUpdateSQL(null, createDataRecordWithUniqueKey(), Collections.emptyList());
+        assertThat(actual, is("UPDATE foo_tbl SET col1 = ?,col2 = ?,col3 = ?"));
+    }
+    
+    @Test
+    void assertBuildDeleteSQLWithUniqueKey() {
+        DataRecord dataRecord = createDataRecordWithUniqueKey();
         String actual = importSQLBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("DELETE FROM t3 WHERE id = ? AND sc = ?"));
-    }
-    
-    private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("sc"));
-    }
-    
-    private DataRecord mockDataRecord(final String tableName, final int extraColumnCount) {
-        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, tableName, new IngestPlaceholderPosition(), 4);
-        result.addColumn(new Column("id", "", false, true));
-        result.addColumn(new Column("sc", "", false, false));
-        for (int i = 1; i <= extraColumnCount; i++) {
-            result.addColumn(new Column("c" + i, "", true, false));
-        }
-        return result;
+        assertThat(actual, is("DELETE FROM foo_tbl WHERE id = ? AND foo_col = ?"));
     }
     
     @Test
     void assertBuildDeleteSQLWithoutUniqueKey() {
-        String actual = importSQLBuilder.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey(),
-                RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey(), Collections.emptySet()));
-        assertThat(actual, is("DELETE FROM t_order WHERE id = ? AND name = ?"));
+        String actual = importSQLBuilder.buildDeleteSQL(null, createDataRecordWithoutUniqueKey(), RecordUtils.extractConditionColumns(createDataRecordWithoutUniqueKey(), Collections.emptySet()));
+        assertThat(actual, is("DELETE FROM foo_tbl WHERE id = ? AND foo_col = ?"));
     }
     
     @Test
-    void assertBuildUpdateSQLWithoutShardingColumns() {
-        DataRecord dataRecord = mockDataRecordWithoutUniqueKey();
-        String actual = importSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("UPDATE t_order SET name = ? WHERE id = ? AND name = ?"));
+    void assertBuildDeleteSQLWithoutConditionColumns() {
+        String actual = importSQLBuilder.buildDeleteSQL(null, createDataRecordWithUniqueKey(), Collections.emptyList());
+        assertThat(actual, is("DELETE FROM foo_tbl"));
     }
     
-    private DataRecord mockDataRecordWithoutUniqueKey() {
-        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "t_order", new IngestPlaceholderPosition(), 4);
+    private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
+        return RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("foo_col"));
+    }
+    
+    private DataRecord createDataRecordWithUniqueKey() {
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new IngestPlaceholderPosition(), 4);
+        result.addColumn(new Column("id", "", false, true));
+        result.addColumn(new Column("foo_col", "", false, false));
+        for (int i = 1; i <= 3; i++) {
+            result.addColumn(new Column("col" + i, "", true, false));
+        }
+        return result;
+    }
+    
+    private DataRecord createDataRecordWithoutUniqueKey() {
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new IngestPlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, false));
-        result.addColumn(new Column("name", "", true, false));
+        result.addColumn(new Column("foo_col", "", true, false));
         return result;
     }
 }

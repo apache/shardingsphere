@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Job data node entry.
@@ -45,10 +45,7 @@ public final class JobDataNodeEntry {
     public static JobDataNodeEntry unmarshal(final String text) {
         List<String> segments = Splitter.on(":").splitToList(text);
         String logicTableName = segments.get(0);
-        List<DataNode> dataNodes = new LinkedList<>();
-        for (String each : Splitter.on(",").omitEmptyStrings().splitToList(segments.get(1))) {
-            dataNodes.add(DataNodeUtils.parseWithSchema(each));
-        }
+        List<DataNode> dataNodes = Splitter.on(",").omitEmptyStrings().splitToList(segments.get(1)).stream().map(DataNodeUtils::parseWithSchema).collect(Collectors.toList());
         return new JobDataNodeEntry(logicTableName, dataNodes);
     }
     
@@ -58,14 +55,6 @@ public final class JobDataNodeEntry {
      * @return text, format: logicTableName:dataNode1,dataNode2, e.g. t_order:ds_0.t_order_0,ds_0.t_order_1
      */
     public String marshal() {
-        StringBuilder result = new StringBuilder();
-        result.append(logicTableName).append(':');
-        for (DataNode each : dataNodes) {
-            result.append(DataNodeUtils.formatWithSchema(each)).append(',');
-        }
-        if (!dataNodes.isEmpty()) {
-            result.setLength(result.length() - 1);
-        }
-        return result.toString();
+        return logicTableName + ':' + dataNodes.stream().map(DataNode::format).collect(Collectors.joining(","));
     }
 }

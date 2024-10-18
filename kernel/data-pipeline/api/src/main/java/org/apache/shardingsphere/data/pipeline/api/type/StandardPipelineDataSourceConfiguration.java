@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.type;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
@@ -40,27 +41,24 @@ import java.util.Properties;
  * Pipeline data source configuration for standard JDBC.
  */
 @EqualsAndHashCode(of = "parameter")
+@Getter
 public final class StandardPipelineDataSourceConfiguration implements PipelineDataSourceConfiguration {
     
     public static final String TYPE = "JDBC";
     
     private static final String DATA_SOURCE_CLASS_NAME = "dataSourceClassName";
     
-    @Getter
     private final String parameter;
     
-    @Getter
     private final DatabaseType databaseType;
     
-    @Getter
     private final String url;
     
-    @Getter
     private final String username;
     
-    @Getter
     private final String password;
     
+    @Getter(AccessLevel.NONE)
     private final DataSourcePoolProperties dataSourcePoolProps;
     
     @SuppressWarnings("unchecked")
@@ -101,12 +99,12 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     }
     
     @Override
-    public String getType() {
-        return TYPE;
+    public Object getDataSourceConfiguration() {
+        return dataSourcePoolProps;
     }
     
     @Override
-    public Object getDataSourceConfiguration() {
-        return dataSourcePoolProps;
+    public String getType() {
+        return TYPE;
     }
 }

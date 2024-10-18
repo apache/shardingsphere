@@ -17,59 +17,77 @@
 
 package org.apache.shardingsphere.data.pipeline.api.type;
 
+import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class StandardPipelineDataSourceConfigurationTest {
     
-    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?useSSL=false";
+    private static final String JDBC_URL = "jdbc:mock://127.0.0.1/foo_ds";
     
-    private static final String USERNAME = "userName";
+    private static final String USERNAME = "root";
     
-    private static final String PASSWORD = "password";
+    private static final String PASSWORD = "123456";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertCreateWithYamlDataSourceConfiguration() {
-        Map<String, Object> yamlDataSourceConfig = new HashMap<>(5, 1F);
-        yamlDataSourceConfig.put("url", JDBC_URL);
-        yamlDataSourceConfig.put("username", USERNAME);
-        yamlDataSourceConfig.put("password", PASSWORD);
-        yamlDataSourceConfig.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
-        yamlDataSourceConfig.put("minPoolSize", "20");
-        Map<String, Object> backup = new HashMap<>(yamlDataSourceConfig);
-        StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
-        assertParameterUnchanged(backup, yamlDataSourceConfig);
-        assertGetConfig(actual);
-        yamlDataSourceConfig.remove("url");
-        yamlDataSourceConfig.put("jdbcUrl", JDBC_URL);
-        actual = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
-        assertGetConfig(actual);
+    void assertNewInstanceWithYAML() {
+        assertPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtils.readFile("yaml/standard-pipeline-datasource-config.yaml")));
     }
     
-    private void assertParameterUnchanged(final Map<String, Object> backup, final Map<String, Object> handled) {
-        assertThat(handled.size(), is(backup.size()));
-        for (Entry<String, Object> entry : backup.entrySet()) {
-            Object actual = handled.get(entry.getKey());
+    @Test
+    void assertNewInstanceWithMap() {
+        JdbcQueryPropertiesExtension queryPropsExtension = mock(JdbcQueryPropertiesExtension.class);
+        when(DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType)).thenReturn(Optional.of(queryPropsExtension));
+        Map<String, Object> yamlDataSourceConfig = new HashMap<>(5, 1F);
+        yamlDataSourceConfig.put("url", JDBC_URL);
+        yamlDataSourceConfig.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
+        yamlDataSourceConfig.put("username", USERNAME);
+        yamlDataSourceConfig.put("password", PASSWORD);
+        yamlDataSourceConfig.put("minPoolSize", "20");
+        Map<String, Object> backupDataSource = new HashMap<>(yamlDataSourceConfig);
+        StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
+        assertParameterUnchanged(backupDataSource, yamlDataSourceConfig);
+        assertPipelineDataSourceConfiguration(actual);
+    }
+    
+    private void assertParameterUnchanged(final Map<String, Object> backupDataSource, final Map<String, Object> handledDataSource) {
+        assertThat(handledDataSource.size(), is(backupDataSource.size()));
+        for (Entry<String, Object> entry : backupDataSource.entrySet()) {
+            Object actual = handledDataSource.get(entry.getKey());
             assertNotNull(actual, "value of '" + entry.getKey() + "' doesn't exist");
             assertThat("value of '" + entry.getKey() + "' doesn't match", actual, is(entry.getValue()));
         }
     }
     
-    private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {
-        assertThat(actual.getDatabaseType().getType(), is("MySQL"));
+    private void assertPipelineDataSourceConfiguration(final StandardPipelineDataSourceConfiguration actual) {
+        assertThat(actual.getDatabaseType().getType(), is("FIXTURE"));
         assertThat(actual.getType(), is(StandardPipelineDataSourceConfiguration.TYPE));
         DataSourcePoolProperties props = (DataSourcePoolProperties) actual.getDataSourceConfiguration();
-        assertThat(props.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(actual.getUrl(), is(JDBC_URL));
+        assertThat(props.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(actual.getUsername(), is(USERNAME));
         assertThat(actual.getPassword(), is(PASSWORD));
         assertDataSourcePoolProperties(props);

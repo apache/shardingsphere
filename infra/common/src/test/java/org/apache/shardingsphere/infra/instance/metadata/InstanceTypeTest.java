@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.util;
+package org.apache.shardingsphere.infra.instance.metadata;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class InstanceTypeUtilsTest {
+class InstanceTypeTest {
     
     @Test
-    void assertEncodeAndDecode() {
-        for (InstanceType each : InstanceType.values()) {
-            assertThat(InstanceTypeUtils.decode(InstanceTypeUtils.encode(each)), is(each));
-        }
+    void assertValueOfValidCode() {
+        assertThat(InstanceType.valueOf('j'), is(InstanceType.JDBC));
+        assertThat(InstanceType.valueOf('p'), is(InstanceType.PROXY));
+    }
+    
+    @Test
+    void assertValueOfInvalidCode() {
+        assertThrows(IllegalArgumentException.class, () -> InstanceType.valueOf('a'));
     }
 }
