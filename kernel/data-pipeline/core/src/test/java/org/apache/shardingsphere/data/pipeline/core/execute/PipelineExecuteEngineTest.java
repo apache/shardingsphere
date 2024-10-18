@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,15 +39,25 @@ import static org.mockito.Mockito.verify;
 class PipelineExecuteEngineTest {
     
     @Test
+    void assertSubmitWithoutExecuteCallback() {
+        PipelineLifecycleRunnable pipelineLifecycleRunnable = mock(PipelineLifecycleRunnable.class);
+        PipelineExecuteEngine executeEngine = PipelineExecuteEngine.newFixedThreadInstance(1, PipelineExecuteEngineTest.class.getSimpleName());
+        Future<?> future = executeEngine.submit(pipelineLifecycleRunnable);
+        assertTimeout(Duration.ofSeconds(30L), () -> future.get());
+        verify(pipelineLifecycleRunnable).run();
+        executeEngine.shutdown();
+    }
+    
+    @Test
     void assertSubmitAndTaskSucceeded() {
         PipelineLifecycleRunnable pipelineLifecycleRunnable = mock(PipelineLifecycleRunnable.class);
         ExecuteCallback callback = mock(ExecuteCallback.class);
         PipelineExecuteEngine executeEngine = PipelineExecuteEngine.newCachedThreadInstance(PipelineExecuteEngineTest.class.getSimpleName());
         Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
         assertTimeout(Duration.ofSeconds(30L), () -> future.get());
-        shutdownAndAwaitTerminal(executeEngine);
         verify(pipelineLifecycleRunnable).run();
         verify(callback).onSuccess();
+        executeEngine.shutdown();
     }
     
     @Test
@@ -65,8 +71,8 @@ class PipelineExecuteEngineTest {
         Optional<Throwable> actualCause = assertTimeout(Duration.ofSeconds(30L), () -> execute(future));
         assertTrue(actualCause.isPresent());
         assertThat(actualCause.get(), is(expectedException));
-        shutdownAndAwaitTerminal(executeEngine);
         verify(callback).onFailure(expectedException);
+        executeEngine.shutdown();
     }
     
     private Optional<Throwable> execute(final Future<?> future) throws InterruptedException {
@@ -76,13 +82,6 @@ class PipelineExecuteEngineTest {
         } catch (final ExecutionException ex) {
             return Optional.of(ex.getCause());
         }
-    }
-    
-    @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
-    private void shutdownAndAwaitTerminal(final PipelineExecuteEngine executeEngine) {
-        ExecutorService executorService = (ExecutorService) Plugins.getMemberAccessor().get(PipelineExecuteEngine.class.getDeclaredField("executorService"), executeEngine);
-        executorService.shutdown();
-        executorService.awaitTermination(30L, TimeUnit.SECONDS);
     }
     
     @Test
