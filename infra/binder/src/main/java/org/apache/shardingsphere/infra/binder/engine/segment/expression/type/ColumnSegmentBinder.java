@@ -99,7 +99,7 @@ public final class ColumnSegmentBinder {
                                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment.getOwner().isPresent()) {
-            String owner = segment.getOwner().get().getIdentifier().getValue().toLowerCase();
+            String owner = segment.getOwner().get().getIdentifier().getValue();
             return getTableBinderContextByOwner(owner, tableBinderContexts, outerTableBinderContexts, binderContext.getExternalTableBinderContexts());
         }
         if (!binderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, binderContext)) {
@@ -126,7 +126,7 @@ public final class ColumnSegmentBinder {
     
     private static boolean isNeedUseJoinTableProjectionBind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext) {
         return SegmentType.PROJECTION == parentSegmentType
-                || SegmentType.PREDICATE == parentSegmentType && binderContext.getUsingColumnNames().contains(segment.getIdentifier().getValue().toLowerCase());
+                || SegmentType.PREDICATE == parentSegmentType && binderContext.getUsingColumnNames().contains(segment.getIdentifier().getValue());
     }
     
     private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
@@ -176,7 +176,7 @@ public final class ColumnSegmentBinder {
         if (pivotColumnNames.isEmpty()) {
             return Optional.empty();
         }
-        if (pivotColumnNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
+        if (pivotColumnNames.contains(segment.getIdentifier().getValue())) {
             return Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
         }
         return Optional.empty();
@@ -210,7 +210,7 @@ public final class ColumnSegmentBinder {
         if (variableNames.isEmpty()) {
             return Optional.empty();
         }
-        if (variableNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
+        if (variableNames.contains(segment.getIdentifier().getValue())) {
             ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
             result.setVariable(true);
             return Optional.of(result);

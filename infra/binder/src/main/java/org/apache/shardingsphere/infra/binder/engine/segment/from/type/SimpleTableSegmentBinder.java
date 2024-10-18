@@ -95,7 +95,7 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static void fillPivotColumnNamesInBinderContext(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
-        segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> binderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase())));
+        segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> binderContext.getPivotColumnNames().add(each.getIdentifier().getValue())));
     }
     
     private static IdentifierValue getDatabaseName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
