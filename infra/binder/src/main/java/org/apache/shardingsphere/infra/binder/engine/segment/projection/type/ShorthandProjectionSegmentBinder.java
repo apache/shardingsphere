@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.projection.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
@@ -29,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Shorthand projection segment binder.
@@ -46,7 +47,7 @@ public final class ShorthandProjectionSegmentBinder {
      * @return bound shorthand projection segment
      */
     public static ShorthandProjectionSegment bind(final ShorthandProjectionSegment segment, final TableSegment boundTableSegment,
-                                                  final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+                                                  final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         ShorthandProjectionSegment result = copy(segment);
         if (segment.getOwner().isPresent()) {
             expandVisibleColumns(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, segment.getOwner().get().getIdentifier().getValue()), result);
@@ -63,10 +64,11 @@ public final class ShorthandProjectionSegmentBinder {
         return result;
     }
     
-    private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Map<String, TableSegmentBinderContext> tableBinderContexts, final String tableAliasOrName) {
-        ShardingSpherePreconditions.checkContainsKey(tableBinderContexts, tableAliasOrName.toLowerCase(),
+    private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                         final String tableAliasOrName) {
+        ShardingSpherePreconditions.checkContains(tableBinderContexts.keySet(), new CaseInsensitiveString(tableAliasOrName),
                 () -> new IllegalStateException(String.format("Can not find table binder context by table alias or name %s.", tableAliasOrName)));
-        return tableBinderContexts.get(tableAliasOrName.toLowerCase()).getProjectionSegments();
+        return tableBinderContexts.get(new CaseInsensitiveString(tableAliasOrName)).iterator().next().getProjectionSegments();
     }
     
     private static void expandVisibleColumns(final Collection<ProjectionSegment> projectionSegments, final ShorthandProjectionSegment segment) {
@@ -77,7 +79,7 @@ public final class ShorthandProjectionSegmentBinder {
         }
     }
     
-    private static void expandNoOwnerProjections(final TableSegment boundTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+    private static void expandNoOwnerProjections(final TableSegment boundTableSegment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                  final ShorthandProjectionSegment segment) {
         if (boundTableSegment instanceof SimpleTableSegment) {
             String tableAliasOrName = boundTableSegment.getAliasName().orElseGet(() -> ((SimpleTableSegment) boundTableSegment).getTableName().getIdentifier().getValue());

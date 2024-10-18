@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
@@ -29,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * SQL statement binder context.
@@ -50,7 +51,7 @@ public final class SQLStatementBinderContext {
     
     private final Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();
     
-    private final Map<String, TableSegmentBinderContext> externalTableBinderContexts = new CaseInsensitiveMap<>();
+    private final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts = LinkedHashMultimap.create();
     
     private final Collection<String> pivotColumnNames = new HashSet<>();
     

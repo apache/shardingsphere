@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.from.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
@@ -62,7 +63,8 @@ public final class JoinTableSegmentBinder {
      * @return bound join table segment
      */
     public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext binderContext,
-                                        final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());
@@ -71,7 +73,7 @@ public final class JoinTableSegmentBinder {
         result.setJoinType(segment.getJoinType());
         result.setLeft(TableSegmentBinder.bind(segment.getLeft(), binderContext, tableBinderContexts, outerTableBinderContexts));
         result.setRight(TableSegmentBinder.bind(segment.getRight(), binderContext, tableBinderContexts, outerTableBinderContexts));
-        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, binderContext, tableBinderContexts, Collections.emptyMap()));
+        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create()));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
         result.getUsing().forEach(each -> binderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
         Map<String, ProjectionSegment> usingColumnsByNaturalJoin = Collections.emptyMap();
@@ -97,7 +99,7 @@ public final class JoinTableSegmentBinder {
         return result;
     }
     
-    private static List<ColumnSegment> bindUsingColumns(final Collection<ColumnSegment> usingColumns, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    private static List<ColumnSegment> bindUsingColumns(final Collection<ColumnSegment> usingColumns, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         List<ColumnSegment> result = new LinkedList<>();
         for (ColumnSegment each : usingColumns) {
             result.add(ColumnSegmentBinder.bindUsingColumn(each, SegmentType.JOIN_USING, tableBinderContexts));
@@ -107,7 +109,7 @@ public final class JoinTableSegmentBinder {
     
     private static Collection<ProjectionSegment> getDerivedJoinTableProjectionSegments(final JoinTableSegment segment, final DatabaseType databaseType,
                                                                                        final Map<String, ProjectionSegment> usingColumnsByNaturalJoin,
-                                                                                       final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+                                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Collection<ProjectionSegment> projectionSegments = getProjectionSegments(segment, databaseType, tableBinderContexts);
         if (segment.getUsing().isEmpty() && !segment.isNatural()) {
             return projectionSegments;
@@ -122,7 +124,7 @@ public final class JoinTableSegmentBinder {
     }
     
     private static Collection<ProjectionSegment> getProjectionSegments(final JoinTableSegment segment, final DatabaseType databaseType,
-                                                                       final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Collection<ProjectionSegment> result = new LinkedList<>();
         if (databaseType instanceof MySQLDatabaseType && JoinType.RIGHT.name().equalsIgnoreCase(segment.getJoinType()) && (!segment.getUsing().isEmpty() || segment.isNatural())) {
             result.addAll(getProjectionSegments(segment.getRight(), tableBinderContexts));
@@ -134,7 +136,7 @@ public final class JoinTableSegmentBinder {
         return result;
     }
     
-    private static Collection<ProjectionSegment> getProjectionSegments(final TableSegment tableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    private static Collection<ProjectionSegment> getProjectionSegments(final TableSegment tableSegment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Collection<ProjectionSegment> result = new LinkedList<>();
         if (tableSegment instanceof SimpleTableSegment) {
             String tableAliasOrName = tableSegment.getAliasName().orElseGet(() -> ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue());
@@ -147,13 +149,14 @@ public final class JoinTableSegmentBinder {
         return result;
     }
     
-    private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Map<String, TableSegmentBinderContext> tableBinderContexts, final String tableAliasOrName) {
-        ShardingSpherePreconditions.checkContainsKey(tableBinderContexts, tableAliasOrName.toLowerCase(),
+    private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                         final String tableAliasOrName) {
+        ShardingSpherePreconditions.checkContains(tableBinderContexts.keySet(), new CaseInsensitiveString(tableAliasOrName),
                 () -> new IllegalStateException(String.format("Can not find table binder context by table alias or name %s.", tableAliasOrName)));
-        return tableBinderContexts.get(tableAliasOrName.toLowerCase()).getProjectionSegments();
+        return tableBinderContexts.get(new CaseInsensitiveString(tableAliasOrName)).iterator().next().getProjectionSegments();
     }
     
-    private static Map<String, ProjectionSegment> getUsingColumnsByNaturalJoin(final JoinTableSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    private static Map<String, ProjectionSegment> getUsingColumnsByNaturalJoin(final JoinTableSegment segment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Map<String, ProjectionSegment> result = new LinkedHashMap<>();
         Collection<ProjectionSegment> leftProjections = getProjectionSegments(segment.getLeft(), tableBinderContexts);
         Map<String, ProjectionSegment> rightProjections = new LinkedHashMap<>();

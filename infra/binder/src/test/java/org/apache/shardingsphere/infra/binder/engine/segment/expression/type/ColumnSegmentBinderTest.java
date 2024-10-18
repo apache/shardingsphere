@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.SimpleTableSegmentBinderContext;
@@ -32,8 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,19 +46,19 @@ class ColumnSegmentBinderTest {
     
     @Test
     void assertBindWithMultiTablesJoinAndNoOwner() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>(2, 1F);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id")));
-        tableBinderContexts.put("t_order", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn))));
+        tableBinderContexts.put(new CaseInsensitiveString("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn))));
         ColumnSegment boundItemIdColumn = new ColumnSegment(0, 0, new IdentifierValue("item_id"));
         boundItemIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order_item"), new IdentifierValue("item_id")));
-        tableBinderContexts.put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn))));
+        tableBinderContexts.put(new CaseInsensitiveString("t_order_item"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         SQLStatementBinderContext binderContext =
                 new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
-        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, binderContext, tableBinderContexts, Collections.emptyMap());
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create());
         assertNotNull(actual.getColumnBoundInfo());
         assertNull(actual.getOtherUsingColumnBoundInfo());
         assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
@@ -68,19 +69,19 @@ class ColumnSegmentBinderTest {
     
     @Test
     void assertBindFromOuterTable() {
-        Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>(2, 1F);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         boundOrderStatusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order"), new IdentifierValue("status")));
-        outerTableBinderContexts.put("t_order", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderStatusColumn))));
+        outerTableBinderContexts.put(new CaseInsensitiveString("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderStatusColumn))));
         ColumnSegment boundOrderItemStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         boundOrderItemStatusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order_item"), new IdentifierValue("status")));
-        outerTableBinderContexts.put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemStatusColumn))));
+        outerTableBinderContexts.put(new CaseInsensitiveString("t_order_item"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemStatusColumn))));
         SQLStatementBinderContext binderContext =
                 new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
-        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, Collections.emptyMap(), outerTableBinderContexts);
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), outerTableBinderContexts);
         assertNotNull(actual.getColumnBoundInfo());
         assertNull(actual.getOtherUsingColumnBoundInfo());
         assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));

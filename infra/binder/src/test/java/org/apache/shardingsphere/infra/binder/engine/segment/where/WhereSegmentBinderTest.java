@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.where;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,8 +36,8 @@ class WhereSegmentBinderTest {
     void assertBind() {
         SQLStatementBinderContext sqlStatementBinderContext = mock(SQLStatementBinderContext.class);
         WhereSegment expectedWhereSegment = new WhereSegment(1, 2, mock(ExpressionSegment.class));
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new HashMap<>();
-        Map<String, TableSegmentBinderContext> outerTableBinderContexts = new HashMap<>();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
         WhereSegment actualWhereSegment = WhereSegmentBinder.bind(expectedWhereSegment, sqlStatementBinderContext, tableBinderContexts, outerTableBinderContexts);
         assertThat(actualWhereSegment.getStopIndex(), is(expectedWhereSegment.getStopIndex()));
         assertThat(actualWhereSegment.getStartIndex(), is(expectedWhereSegment.getStartIndex()));
