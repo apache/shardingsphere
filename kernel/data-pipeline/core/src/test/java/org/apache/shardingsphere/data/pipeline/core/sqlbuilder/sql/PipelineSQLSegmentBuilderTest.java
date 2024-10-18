@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -27,27 +27,27 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineSQLSegmentBuilderTest {
     
+    private final PipelineSQLSegmentBuilder mySQLBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    
+    private final PipelineSQLSegmentBuilder postgreSQLBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    
     @Test
     void assertGetEscapedIdentifier() {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        assertThat(sqlSegmentBuilder.getEscapedIdentifier("SELECT"), is("`SELECT`"));
+        assertThat(mySQLBuilder.getEscapedIdentifier("SELECT"), is("`SELECT`"));
     }
     
     @Test
     void assertGetUnescapedIdentifier() {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        assertThat(sqlSegmentBuilder.getEscapedIdentifier("SELECT1"), is("SELECT1"));
+        assertThat(mySQLBuilder.getEscapedIdentifier("SELECT1"), is("SELECT1"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithUnsupportedSchema() {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        assertThat(sqlSegmentBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_tbl"));
+        assertThat(mySQLBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_tbl"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchema() {
-        PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        assertThat(sqlSegmentBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
+        assertThat(postgreSQLBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
     }
 }
