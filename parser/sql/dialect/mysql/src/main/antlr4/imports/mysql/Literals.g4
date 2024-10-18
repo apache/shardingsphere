@@ -35,10 +35,6 @@ BQUOTA_STRING
     : BQ_ ( '\\'. | '``' | ~('`'|'\\'))* BQ_
     ;
 
-QUOTE_STRING
-    :SQ_ (~('\'' | '\\') | '\\' .)* SQ_
-    ;
-
 NCHAR_TEXT
     : N SINGLE_QUOTED_TEXT
     ;

@@ -1049,7 +1049,6 @@ specialFunction
     | windowFunction
     | groupingFunction
     | timeStampDiffFunction
-    | quoteFunction
     ;
 
 currentUserFunction
@@ -1404,7 +1403,4 @@ noWriteToBinLog
 
 channelOption
     : FOR CHANNEL string_
-    ;
-quoteFunction
-    : QUTOE QUTOE_STRING
     ;
