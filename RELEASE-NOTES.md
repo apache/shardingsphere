@@ -63,6 +63,8 @@
 1. Infra: Support compiling and using ShardingSphere under OpenJDK 23 - [#33025](https://github.com/apache/shardingsphere/pull/33025)
 1. Hive: Support Hive integration module to connect to HiveServer2 4.0.1 - [#33212](https://github.com/apache/shardingsphere/pull/33212)
 1. Infra: Support building Example module with OpenJDK 23 - [#33224](https://github.com/apache/shardingsphere/pull/33224)
+1. SQL Parser: Support parsing Doris BITXOR - [#33258](https://github.com/apache/shardingsphere/pull/33258)
+1. SQL Parser: Support parsing Doris INSTR - [#33289](3325://github.com/apache/shardingsphere/pull/33289)
 
 ### Bug Fix
 
