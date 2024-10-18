@@ -50,4 +50,9 @@ class PipelineSQLSegmentBuilderTest {
     void assertGetQualifiedTableNameWithSupportedSchema() {
         assertThat(postgreSQLBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
     }
+    
+    @Test
+    void assertGetQualifiedTableNameWithSupportedSchemaAndNullSchema() {
+        assertThat(postgreSQLBuilder.getQualifiedTableName(null, "foo_tbl"), is("foo_tbl"));
+    }
 }
