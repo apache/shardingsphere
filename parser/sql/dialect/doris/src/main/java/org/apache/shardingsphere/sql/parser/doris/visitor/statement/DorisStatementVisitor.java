@@ -1045,7 +1045,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     }
     
     @Override
-    public ASTNode visitRtrimFunction(DorisStatementParser.RtrimFunctionContext ctx) {
+    public ASTNode visitRtrimFunction(final DorisStatementParser.RtrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.RTRIM().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             result.getParameters().add((ExpressionSegment) visit(each));
@@ -1054,11 +1054,12 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     }
     
     @Override
-    public ASTNode visitStrrightFunction(DorisStatementParser.StrrightFunctionContext ctx) {
+    public ASTNode visitStrrightFunction(final DorisStatementParser.StrrightFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.STRRIGHT().getText(), getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
+
     @Override
     public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
@@ -1157,7 +1158,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     }
     
     @Override
-    public ASTNode visitDateFunction(DorisStatementParser.DateFunctionContext ctx) {
+    public ASTNode visitDateFunction(final DorisStatementParser.DateFunctionContext ctx) {
         if (null != ctx.yearWeekFunction()) {
             return visit(ctx.yearWeekFunction());
         }
@@ -1165,7 +1166,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     }
     
     @Override
-    public ASTNode visitYearWeekFunction(DorisStatementParser.YearWeekFunctionContext ctx) {
+    public ASTNode visitYearWeekFunction(final DorisStatementParser.YearWeekFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.YEARWEEK().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             result.getParameters().add((ExpressionSegment) visit(each));
