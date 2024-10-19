@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,11 +16,20 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="install_component" value="INSTALL COMPONENT 'file://component1'" db-types="MySQL" />
-    <sql-case id="install_components" value="INSTALL COMPONENT 'file://component1', 'file://component2'" db-types="MySQL" />
-    <sql-case id="install_plugin" value="INSTALL PLUGIN binlog SONAME 'shared_library_name'" db-types="MySQL" />
-
-    <sql-case id="install_plugin_doris" value="INSTALL PLUGIN FROM &quot;http://mywebsite.com/plugin.zip&quot; PROPERTIES( &quot;md5sum &quot; =  &quot;73877f6029216f4314d712086a146570 &quot;)" db-types="Doris" />
-
-</sql-cases>
+<configuration>
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <logger name="org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource" level="off" />
+    
+    <root>
+        <level value="error" />
+        <appender-ref ref="console" />
+    </root>
+</configuration> 

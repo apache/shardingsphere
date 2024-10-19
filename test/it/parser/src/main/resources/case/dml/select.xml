@@ -113,6 +113,52 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_rtrim_function">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="rtrim('ababccaab','ab')" start-index="7" stop-index="29">
+                <expr>
+                    <function start-index="7" stop-index="29" text="rtrim('ababccaab','ab')" function-name="rtrim">
+                        <parameter>
+                            <literal-expression start-index="13" stop-index="23" value="ababccaab" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="25" stop-index="28" value="ab" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_strright_function">
+        <projections start-index="7" stop-index="31">
+            <expression-projection text="strright(&quot;Hello doris&quot;,5)" start-index="7" stop-index="31">
+                <expr>
+                    <function start-index="7" stop-index="31" text="strright(&quot;Hello doris&quot;,5)" function-name="strright">
+                        <parameter>
+                            <literal-expression start-index="16" stop-index="28" value="Hello doris" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="30" stop-index="30" value="5" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_yearweek_function">
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="yearweek('2021-1-1')" start-index="7" stop-index="26">
+                <expr>
+                    <function start-index="7" stop-index="26" text="yearweek('2021-1-1')" function-name="yearweek">
+                        <parameter>
+                            <literal-expression start-index="16" stop-index="25" value="2021-1-1" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     
     <select sql-case-id="select_with_latin1">
         <projections start-index="7" stop-index="62">

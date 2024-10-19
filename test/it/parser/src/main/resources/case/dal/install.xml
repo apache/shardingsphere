@@ -29,4 +29,8 @@
     <install-plugin sql-case-id="install_plugin">
         <plugin name="binlog" start-index="15" stop-index="20" />
     </install-plugin>
+    <install-plugin sql-case-id="install_plugin_doris">
+        <plugin source="http://mywebsite.com/plugin.zip"  start-index="20" stop-index="52" />
+        <plugin md5sum="73877f6029216f4314d712086a146570"  start-index="76" stop-index="109" />
+    </install-plugin>
 </sql-parser-test-cases>

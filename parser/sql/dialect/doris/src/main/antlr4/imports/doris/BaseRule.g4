@@ -1046,8 +1046,23 @@ specialFunction
     | groupingFunction
     | timeStampDiffFunction
     | bitwiseFunction
+    | dateFunction
+    | strrightFunction
+    | rtrimFunction
     ;
 
+dateFunction
+    : yearWeekFunction
+    ;
+yearWeekFunction
+    : YEARWEEK LP_ expr (COMMA_ expr)? RP_
+    ;
+rtrimFunction
+    : RTRIM LP_ expr (COMMA_ expr)? RP_
+    ;
+strrightFunction
+    : (STRRIGHT | RIGHT) LP_ expr COMMA_ expr RP_
+    ;
 currentUserFunction
     : CURRENT_USER (LP_ RP_)?
     ;

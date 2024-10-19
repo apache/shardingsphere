@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.doris.dal;
+package org.apache.shardingsphere.data.pipeline.core.channel;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.InstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
+import org.apache.shardingsphere.data.pipeline.core.channel.memory.MemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.junit.jupiter.api.Test;
 
-/**
- * Doris install plugin statement.
- */
-@Setter
-@Getter
-public final class DorisInstallPluginStatement extends InstallPluginStatement implements DorisStatement {
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
+class IncrementalChannelCreatorTest {
     
-    private String source;
-    private String md5sum;
+    @Test
+    void assertCreate() {
+        assertThat(IncrementalChannelCreator.create(new AlgorithmConfiguration("MEMORY", new Properties()), mock(IncrementalTaskProgress.class)), instanceOf(MemoryPipelineChannel.class));
+    }
 }
