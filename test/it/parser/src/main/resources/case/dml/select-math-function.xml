@@ -79,10 +79,10 @@
                 <expr>
                     <function function-name="POW" start-index="7" stop-index="14" text="POW(2,2)" >
                         <parameter>
-                            <literal-expression value="2" start-index="12" stop-index="12" />
+                            <literal-expression value="2" start-index="11" stop-index="11" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="2" start-index="14" stop-index="14" />
+                            <literal-expression value="2" start-index="13" stop-index="13" />
                         </parameter>
                     </function>
                 </expr>
@@ -123,7 +123,7 @@
                 <expr>
                     <function function-name="RADIANS" start-index="7" stop-index="17" text="RADIANS(90)" >
                         <parameter>
-                            <literal-expression value="90" start-index="16" stop-index="16" />
+                            <literal-expression value="90" start-index="15" stop-index="16" />
                         </parameter>
                     </function>
                 </expr>
