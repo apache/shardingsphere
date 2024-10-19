@@ -70,11 +70,6 @@ public final class PipelineJobIdUtils {
         return JobCodeRegistry.getJobType(jobId.substring(1, 3));
     }
     
-    private static void verifyJobId(final String jobId) {
-        Preconditions.checkArgument(jobId.length() > 10, "Invalid job id length, job id: `%s`", jobId);
-        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid job id, first char: `%s`", jobId.charAt(0));
-    }
-    
     /**
      * Parse context key.
      *
@@ -90,6 +85,11 @@ public final class PipelineJobIdUtils {
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
         return new PipelineContextKey(databaseName, InstanceType.valueOf(instanceTypeCode));
+    }
+    
+    private static void verifyJobId(final String jobId) {
+        Preconditions.checkArgument(jobId.length() > 10, "Invalid job id length, job id: `%s`", jobId);
+        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid job id, first char: `%s`", jobId.charAt(0));
     }
     
     /**
