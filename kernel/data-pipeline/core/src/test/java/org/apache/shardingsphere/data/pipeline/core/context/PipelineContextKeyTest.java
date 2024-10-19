@@ -23,22 +23,53 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class PipelineContextKeyTest {
     
     @Test
-    void assertHashCodeEqualsForProxyMode() {
-        PipelineContextKey contextKey1 = new PipelineContextKey(null, InstanceType.PROXY);
-        PipelineContextKey contextKey2 = new PipelineContextKey("sharding_db", InstanceType.PROXY);
-        assertThat(contextKey1.hashCode(), is(contextKey2.hashCode()));
-        assertThat(contextKey1, is(contextKey2));
+    void assertEqualsWithSameObject() {
+        PipelineContextKey pipelineContextKey = new PipelineContextKey(InstanceType.JDBC);
+        assertThat(pipelineContextKey, is(pipelineContextKey));
     }
     
     @Test
-    void assertHashCodeEqualsForJdbcMode() {
-        PipelineContextKey contextKey1 = new PipelineContextKey("logic_db", InstanceType.JDBC);
-        PipelineContextKey contextKey2 = new PipelineContextKey("sharding_db", InstanceType.JDBC);
-        assertThat(contextKey1.hashCode(), not(contextKey2.hashCode()));
-        assertThat(contextKey1, not(contextKey2));
+    void assertEqualsWithNull() {
+        assertNotEquals(null, new PipelineContextKey(InstanceType.JDBC));
+    }
+    
+    @Test
+    void assertEqualsWithDifferentClassTypes() {
+        assertThat(new PipelineContextKey(InstanceType.JDBC), not(new Object()));
+    }
+    
+    @Test
+    void assertEqualsWithDifferentInstanceTypes() {
+        assertThat(new PipelineContextKey(InstanceType.JDBC), not(new PipelineContextKey(InstanceType.PROXY)));
+    }
+    
+    @Test
+    void assertEqualsWithProxyMode() {
+        assertThat(new PipelineContextKey(null, InstanceType.PROXY), is(new PipelineContextKey("foo_db", InstanceType.PROXY)));
+    }
+    
+    @Test
+    void assertEqualsWithJDBCMode() {
+        assertThat(new PipelineContextKey("foo_db", InstanceType.JDBC), is(new PipelineContextKey("foo_db", InstanceType.JDBC)));
+    }
+    
+    @Test
+    void assertNotEqualsWithJDBCMode() {
+        assertThat(new PipelineContextKey("foo_db", InstanceType.JDBC), not(new PipelineContextKey("bar_db", InstanceType.JDBC)));
+    }
+    
+    @Test
+    void assertHashCodeWithProxyMode() {
+        assertThat(new PipelineContextKey(InstanceType.PROXY).hashCode(), is(new PipelineContextKey("foo_db", InstanceType.PROXY).hashCode()));
+    }
+    
+    @Test
+    void assertHashCodeWithJDBCMode() {
+        assertThat(new PipelineContextKey("foo_db", InstanceType.JDBC).hashCode(), not(new PipelineContextKey("bar_db", InstanceType.JDBC).hashCode()));
     }
 }
