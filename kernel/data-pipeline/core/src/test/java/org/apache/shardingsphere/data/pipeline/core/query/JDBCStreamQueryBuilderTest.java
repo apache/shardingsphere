@@ -56,6 +56,7 @@ class JDBCStreamQueryBuilderTest {
         when(DatabaseTypedSPILoader.findService(DialectJDBCStreamQueryBuilder.class, databaseType)).thenReturn(Optional.of(builder));
         assertThat(JDBCStreamQueryBuilder.build(databaseType, connection, "SELECT 1", 1), is(preparedStatement));
     }
+    
     @Test
     void assertBuildWithoutDialectJDBCStreamQueryBuilder() throws SQLException {
         when(connection.prepareStatement("SELECT 1", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)).thenReturn(preparedStatement);
