@@ -30,6 +30,6 @@ import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 public final class DorisInstallPluginStatement extends InstallPluginStatement implements DorisStatement {
     
     private String source;
-
+    
     private String md5sum;
 }

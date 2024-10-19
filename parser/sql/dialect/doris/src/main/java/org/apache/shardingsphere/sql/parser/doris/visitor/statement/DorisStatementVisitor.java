@@ -1059,7 +1059,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
-
+    
     @Override
     public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
