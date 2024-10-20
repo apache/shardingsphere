@@ -240,4 +240,5 @@
     <sql-case id="select_st_convexhull" value="SELECT ST_ConvexHull(ST_GeomFromText('MULTIPOINT(5 0,25 0,15 10,15 25)'))" db-types="MySQL,Doris" />
     <sql-case id="select_st_crosses" value="SELECT ST_Crosses(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 2)'))" db-types="MySQL,Doris" />
     <sql-case id="select_bitxor" value="SELECT BITXOR(3,5)" db-types="Doris" />
+    <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
 </sql-cases>
