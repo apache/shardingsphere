@@ -284,7 +284,9 @@ installComponent
     ;
 
 installPlugin
+    // DORIS CHANGED BEGIN
     : INSTALL PLUGIN FROM pluginSource=expr propertyClause?
+    // DORIS CHANGED END
     ;
 
 propertyClause
