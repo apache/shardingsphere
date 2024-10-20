@@ -1047,7 +1047,9 @@ specialFunction
     | timeStampDiffFunction
     | bitwiseFunction
     | dateFunction
+    // DORIS ADDED BEGIN
     | strrightFunction
+    // DORIS ADDED END
     | rtrimFunction
     ;
 
@@ -1063,9 +1065,11 @@ rtrimFunction
     : RTRIM LP_ expr (COMMA_ expr)? RP_
     ;
 
+// DORIS ADDED BEGIN
 strrightFunction
     : (STRRIGHT | RIGHT) LP_ expr COMMA_ expr RP_
     ;
+// DORIS ADDED END
 
 currentUserFunction
     : CURRENT_USER (LP_ RP_)?
