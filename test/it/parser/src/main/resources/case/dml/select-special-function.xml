@@ -3223,6 +3223,76 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_polygon">
+        <projections start-index="7" stop-index="59">
+            <expression-projection start-index="7" stop-index="59" text="ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))')">
+                <expr>
+                    <function function-name="ST_GeomFromText" text="ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))')" start-index="7" stop-index="59">
+                        <parameter>
+                            <literal-expression value="Polygon((0 0, 1 0, 1 1, 0 1, 0 0))" start-index="23" stop-index="58" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_point">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="Point(1,1)">
+                <expr>
+                    <function function-name="Point" text="Point(1,1)" start-index="7" stop-index="16">
+                        <parameter>
+                            <literal-expression value="1" start-index="13" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="15" stop-index="15" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ps_current_thread_id">
+        <projections start-index="7" stop-index="28">
+            <expression-projection start-index="7" stop-index="28" text="PS_CURRENT_THREAD_ID()">
+                <expr>
+                    <function function-name="PS_CURRENT_THREAD_ID" text="PS_CURRENT_THREAD_ID()" start-index="7" stop-index="28"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ps_thread_id">
+        <projections start-index="7" stop-index="21">
+            <expression-projection start-index="7" stop-index="21" text="PS_THREAD_ID(5)">
+                <expr>
+                    <function function-name="PS_THREAD_ID" text="PS_THREAD_ID(5)" start-index="7" stop-index="21">
+                        <parameter>
+                            <literal-expression value="5" start-index="20" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_quote">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="QUOTE('Don\'t!')">
+                <expr>
+                    <function function-name="QUOTE" text="QUOTE('Don\'t!')" start-index="7" stop-index="22">
+                        <parameter>
+                            <literal-expression value="Don\'t!" start-index="13" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+
     <select sql-case-id="select_json_objectagg">
         <projections start-index="7" stop-index="38">
             <expression-projection start-index="7" stop-index="38" text="JSON_OBJECTAGG(attribute, value)">
