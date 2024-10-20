@@ -284,7 +284,6 @@ installComponent
     ;
 
 installPlugin
-//    : INSTALL PLUGIN pluginName SONAME shardLibraryName
     : INSTALL PLUGIN FROM pluginSource=expr propertyClause?
     ;
 

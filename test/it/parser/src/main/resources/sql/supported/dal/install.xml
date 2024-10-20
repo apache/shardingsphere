@@ -20,7 +20,5 @@
     <sql-case id="install_component" value="INSTALL COMPONENT 'file://component1'" db-types="MySQL" />
     <sql-case id="install_components" value="INSTALL COMPONENT 'file://component1', 'file://component2'" db-types="MySQL" />
     <sql-case id="install_plugin" value="INSTALL PLUGIN binlog SONAME 'shared_library_name'" db-types="MySQL" />
-
     <sql-case id="install_plugin_doris" value="INSTALL PLUGIN FROM &quot;http://mywebsite.com/plugin.zip&quot; PROPERTIES( &quot;md5sum &quot; =  &quot;73877f6029216f4314d712086a146570 &quot;)" db-types="Doris" />
-
 </sql-cases>
