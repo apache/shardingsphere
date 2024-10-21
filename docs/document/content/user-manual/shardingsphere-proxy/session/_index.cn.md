@@ -3,7 +3,7 @@ title = "会话管理"
 weight = 7
 +++
 
-ShardingSphere 支持会话管理，可通过原生数据库的 SQL 查看当前会话或杀掉会话。目前此功能仅限于存储节点为 MySQL 的情况，支持 MySQL `SHOW PROCESSLIST` 命令和 `KILL` 命令。
+ShardingSphere 支持会话管理，可通过原生数据库的 SQL 查看当前会话或终止会话里面执行的 SQL。目前此功能仅限于存储节点为 MySQL 的情况，支持 MySQL `SHOW PROCESSLIST` 命令和 `KILL QUERY` 命令。
 
 ## 相关操作
 
@@ -25,12 +25,13 @@ mysql> show processlist;
 
 模拟原生 MySQL 的输出，但 `Id` 字段较为特殊为随机字符串。
 
-### 杀掉会话
+### 终止会话语句
 
-用户根据 `SHOW PROCESSLIST` 返回的结果，判断是否需要执行 `KILL` 语句，ShardingSphere 会根据 `KILL` 语句中的 ID 取消正在执行中的 SQL。
+用户根据 `SHOW PROCESSLIST` 返回的结果，判断是否需要执行 `KILL QUERY` 语句，ShardingSphere 会根据 `KILL QUERY` 语句中的 ID 取消该 PROCESS ID 正在执行中的 SQL。
 
 ```sql
-mysql> kill 05ede3bd584fd4a429dcaac382be2973;
+-- 取消指定会话里正在执行中的 SQL 语句。
+mysql> KILL QUERY 05ede3bd584fd4a429dcaac382be2973;
 Query OK, 0 rows affected (0.04 sec)
 
 mysql> show processlist;
