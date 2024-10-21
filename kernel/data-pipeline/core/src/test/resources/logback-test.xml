@@ -27,6 +27,7 @@
         <appender-ref ref="console" />
     </logger>
     <logger name="org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource" level="off" />
+    <logger name="org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder" level="off" />
     
     <root>
         <level value="error" />
