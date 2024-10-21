@@ -29,7 +29,7 @@ Simulates the output of native MySQL, but the `Id` field is a special random str
 The user determines whether the `KILL QUERY` statement needs to be executed according to the results returned by `SHOW PROCESSLIST`. ShardingSphere cancels the SQL being executed according to the ID in the `KILL QUERY` statement.
 
 ```sql
---Cancel the SQL statement currently executing in the specified session.
+-- Cancel the SQL statement currently executing in the specified session.
 mysql> KILL QUERY 05ede3bd584fd4a429dcaac382be2973;
 Query OK, 0 rows affected (0.04 sec)
 
