@@ -80,7 +80,7 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         }
         Map<String, String> result = new CaseInsensitiveMap<>();
         for (RouteMapper each : routeUnit.getTableMappers()) {
-            result.put(each.getLogicName().toLowerCase(), each.getActualName());
+            result.put(each.getLogicName(), each.getActualName());
         }
         return result;
     }
