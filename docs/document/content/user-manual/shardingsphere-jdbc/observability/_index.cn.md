@@ -24,7 +24,7 @@ Agent 制品 `distribution/agent/target/apache-shardingsphere-${latest.release.v
 mkdir agent
 tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz -C agent
 cd agent
-tree 
+tree
 ├── LICENSE
 ├── NOTICE
 ├── conf
@@ -175,7 +175,7 @@ plugins:
 FROM ghcr.io/apache/shardingsphere-agent:latest
 COPY ./target/example.jar /app.jar
 COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
-ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar","-jar","/app.jar"]
+ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.2-SNAPSHOT.jar","-jar","/app.jar"]
 ```
 
 如果是通过本地构建 `apache/shardingsphere-agent:latest` 的 Docker Image，`Dockerfile` 可能如下，
@@ -184,7 +184,7 @@ ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.ja
 FROM apache/shardingsphere-agent:latest
 COPY ./target/example.jar /app.jar
 COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
-ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar","-jar","/app.jar"]
+ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.2-SNAPSHOT.jar","-jar","/app.jar"]
 ```
 
 4. 享受它，
