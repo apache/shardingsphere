@@ -1073,7 +1073,7 @@ INSTANCE
     : I N S T A N C E
     ;
 
-// DORIS ADDED BEOIM
+// DORIS ADDED BEGIN
 INSTR
     : I N S T R
     ;
@@ -2557,6 +2557,12 @@ STREAM
 STRING
     : S T R I N G
     ;
+
+// DORIS ADDED BEGIN
+STRRIGHT
+    : S T R R I G H T
+    ;
+// DORIS ADDED END
 
 SUBCLASS_ORIGIN
     : S U B C L A S S UL_ O R I G I N
