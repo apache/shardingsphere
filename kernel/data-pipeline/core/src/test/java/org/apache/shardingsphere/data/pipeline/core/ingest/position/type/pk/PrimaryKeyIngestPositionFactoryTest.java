@@ -94,7 +94,6 @@ class PrimaryKeyIngestPositionFactoryTest {
         assertNull(actual.getEndValue());
     }
     
-    
     @Test
     void assertNewInstanceWithUnsupportedRange() {
         UnsupportedKeyIngestPosition actual = (UnsupportedKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance(Collections.emptyList(), Collections.emptyList());
