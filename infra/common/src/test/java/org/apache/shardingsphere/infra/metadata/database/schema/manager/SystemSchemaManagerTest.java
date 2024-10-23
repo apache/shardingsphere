@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema;
+package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
