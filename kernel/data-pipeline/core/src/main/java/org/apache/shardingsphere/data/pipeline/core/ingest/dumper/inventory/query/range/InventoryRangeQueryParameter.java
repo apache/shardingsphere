@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.InventoryQueryParameter;
 
 /**
- * Inventory query parameter.
- * 
- * @param <T> type of parameter value
+ * Inventory range query parameter.
  */
-public interface InventoryQueryParameter<T> {
+@RequiredArgsConstructor
+@Getter
+public final class InventoryRangeQueryParameter implements InventoryQueryParameter<QueryRange> {
     
-    /**
-     * Get parameter value.
-     * 
-     * @return parameter value
-     */
-    T getValue();
+    private final QueryRange value;
 }
