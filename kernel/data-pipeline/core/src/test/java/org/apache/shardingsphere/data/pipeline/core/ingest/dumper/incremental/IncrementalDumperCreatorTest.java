@@ -32,14 +32,14 @@ import static org.mockito.Mockito.when;
 
 class IncrementalDumperCreatorTest {
     
-     @Test
-     void assertCreateWithStandardPipelineDataSourceConfiguration() {
-         StandardPipelineDataSourceConfiguration dataSourceConfig = mock(StandardPipelineDataSourceConfiguration.class);
-         when(dataSourceConfig.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-         CreateIncrementalDumperParameter param = mock(CreateIncrementalDumperParameter.class, RETURNS_DEEP_STUBS);
-         when(param.getContext().getCommonContext().getDataSourceConfig()).thenReturn(dataSourceConfig);
-         assertDoesNotThrow(() -> IncrementalDumperCreator.create(param));
-     }
+    @Test
+    void assertCreateWithStandardPipelineDataSourceConfiguration() {
+        StandardPipelineDataSourceConfiguration dataSourceConfig = mock(StandardPipelineDataSourceConfiguration.class);
+        when(dataSourceConfig.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        CreateIncrementalDumperParameter param = mock(CreateIncrementalDumperParameter.class, RETURNS_DEEP_STUBS);
+        when(param.getContext().getCommonContext().getDataSourceConfig()).thenReturn(dataSourceConfig);
+        assertDoesNotThrow(() -> IncrementalDumperCreator.create(param));
+    }
     
     @Test
     void assertCreateWithShardingSpherePipelineDataSourceConfiguration() {
