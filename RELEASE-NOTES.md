@@ -18,6 +18,7 @@
 1. SQL Binder: Use Multimap and CaseInsensitiveString to replace CaseInsensitiveMap for supporting mysql multi table join with same table alias - [#33303](https://github.com/apache/shardingsphere/pull/33303)
 1. SQL Binder: Fix the combine statement cannot find the outer table when bind - [#33357](https://github.com/apache/shardingsphere/pull/33357)
 1. SQL Binder: Fix SQL performance issues caused by repeated subquery fetches - [#33361](https://github.com/apache/shardingsphere/pull/33361)
+1. Sharding: Remove ShardingRouteAlgorithmException check logic temporarily to support different actual table name config - [#33367](https://github.com/apache/shardingsphere/pull/33367)
 
 ### Change Logs
 

@@ -77,7 +77,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
             if (null != target && availableTargetNames.contains(target)) {
                 result.add(target);
             }
-            // TODO add ShardingRouteAlgorithmException check when autoTable support config actualDataNodes
+            // TODO add ShardingRouteAlgorithmException check when autoTable support config actualDataNodes in #33364
         }
         return result;
     }
