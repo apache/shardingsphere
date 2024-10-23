@@ -71,23 +71,9 @@ public final class WhereExtractUtils {
      */
     public static Collection<WhereSegment> getSubqueryWhereSegments(final SelectStatement selectStatement) {
         Collection<WhereSegment> result = new LinkedList<>();
-        for (SubquerySegment each : SubqueryExtractUtils.getSubquerySegments(selectStatement)) {
+        for (SubquerySegment each : SubqueryExtractUtils.getSubquerySegments(selectStatement, false)) {
             each.getSelect().getWhere().ifPresent(result::add);
             result.addAll(getJoinWhereSegments(each.getSelect()));
-        }
-        return result;
-    }
-    
-    /**
-     * Get subquery where segment without join conditions from SelectStatement.
-     *
-     * @param selectStatement SelectStatement
-     * @return subquery where segment collection
-     */
-    public static Collection<WhereSegment> getSubqueryWhereSegmentsWithoutJoinConditions(final SelectStatement selectStatement) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        for (SubquerySegment each : SubqueryExtractUtils.getSubquerySegments(selectStatement)) {
-            each.getSelect().getWhere().ifPresent(result::add);
         }
         return result;
     }

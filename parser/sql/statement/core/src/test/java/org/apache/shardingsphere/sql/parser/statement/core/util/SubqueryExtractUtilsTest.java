@@ -72,7 +72,7 @@ class SubqueryExtractUtilsTest {
         SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(51, 100, subquerySelectStatement, ""));
         WhereSegment whereSegment = new WhereSegment(34, 100, new BinaryOperationExpression(40, 100, left, right, "=", "order_id = (SELECT order_id FROM t_order WHERE status = 'OK')"));
         when(selectStatement.getWhere()).thenReturn(Optional.of(whereSegment));
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(right.getSubquery()));
     }
@@ -89,7 +89,7 @@ class SubqueryExtractUtilsTest {
         ProjectionsSegment projections = new ProjectionsSegment(7, 79);
         when(selectStatement.getProjections()).thenReturn(projections);
         projections.getProjections().add(subqueryProjectionSegment);
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(subquerySegment));
     }
@@ -110,7 +110,7 @@ class SubqueryExtractUtilsTest {
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 16, new IdentifierValue("order_id"))));
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(23, 71, subquery, ""));
         when(selectStatement.getFrom()).thenReturn(Optional.of(subqueryTableSegment));
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(subqueryTableSegment.getSubquery()));
     }
@@ -154,7 +154,7 @@ class SubqueryExtractUtilsTest {
         from.setLeft(leftSubquerySegment);
         from.setRight(rightSubquerySegment);
         when(selectStatement.getFrom()).thenReturn(Optional.of(from));
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(2));
         Iterator<SubquerySegment> iterator = actual.iterator();
         assertThat(iterator.next(), is(leftSubquerySegment.getSubquery()));
@@ -166,7 +166,7 @@ class SubqueryExtractUtilsTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         SubquerySegment subquerySelect = createSubquerySegment();
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 0, subquerySelect)));
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(2));
     }
     
@@ -176,7 +176,7 @@ class SubqueryExtractUtilsTest {
         SubquerySegment left = new SubquerySegment(0, 0, mock(SelectStatement.class), "");
         SubquerySegment right = createSubquerySegment();
         when(selectStatement.getCombine()).thenReturn(Optional.of(new CombineSegment(0, 0, left, CombineType.UNION, right)));
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(3));
     }
     
@@ -197,7 +197,7 @@ class SubqueryExtractUtilsTest {
         functionSegment.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")));
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "", functionSegment);
         projections.getProjections().add(expressionProjectionSegment);
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(1));
     }
 }
