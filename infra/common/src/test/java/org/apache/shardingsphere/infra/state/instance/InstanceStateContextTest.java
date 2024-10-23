@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.infra.state.instance;
 
-import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
-import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
