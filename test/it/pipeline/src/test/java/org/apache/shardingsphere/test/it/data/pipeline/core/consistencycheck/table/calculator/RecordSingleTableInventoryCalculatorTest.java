@@ -24,8 +24,8 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Sing
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryRange;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
