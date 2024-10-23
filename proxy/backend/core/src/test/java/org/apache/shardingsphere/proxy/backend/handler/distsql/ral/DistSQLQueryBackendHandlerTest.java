@@ -61,7 +61,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class QueryableRALBackendHandlerTest {
+class DistSQLQueryBackendHandlerTest {
     
     @Test
     void assertExecuteWithNoDatabase() {

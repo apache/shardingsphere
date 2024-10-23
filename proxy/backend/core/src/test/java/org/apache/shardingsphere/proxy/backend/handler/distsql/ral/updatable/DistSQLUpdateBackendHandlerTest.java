@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class RefreshTableMetaDataUpdaterTest {
+class DistSQLUpdateBackendHandlerTest {
     
     @Test
     void assertEmptyResource() {

@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.condition;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import io.prometheus.client.Summary;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptBinaryOperationConditionTest {
+class PrometheusMetricsSummaryCollectorTest {
     
     @Test
-    void assertGetConditionValues() {
-        List<Object> actual = new EncryptBinaryCondition("col", null, null,
-                0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(1));
+    void assertCreate() throws ReflectiveOperationException {
+        PrometheusMetricsSummaryCollector collector = new PrometheusMetricsSummaryCollector(new MetricConfiguration("foo_summary",
+                MetricCollectorType.SUMMARY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        collector.observe(1D);
+        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusMetricsSummaryCollector.class.getDeclaredField("summary"), collector);
+        assertThat(summary.collect().size(), is(1));
     }
 }

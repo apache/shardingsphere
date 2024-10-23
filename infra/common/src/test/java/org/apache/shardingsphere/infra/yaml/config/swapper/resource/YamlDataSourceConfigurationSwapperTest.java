@@ -29,7 +29,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class YamlDataSourcePoolPropertiesSwapperTest {
+class YamlDataSourceConfigurationSwapperTest {
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     

@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ColumnRegexMatchShadowAlgorithmTest {
+class ColumnRegexMatchedShadowAlgorithmTest {
     
     private static final String SHADOW_TABLE = "t_user";
     

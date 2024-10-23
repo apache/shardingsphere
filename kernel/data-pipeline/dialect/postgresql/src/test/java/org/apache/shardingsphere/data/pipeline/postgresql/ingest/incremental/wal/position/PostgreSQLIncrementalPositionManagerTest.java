@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class PostgreSQLIngestPositionManagerTest {
+class PostgreSQLIncrementalPositionManagerTest {
     
     private static final String POSTGRESQL_96_LSN = "0/14EFDB8";
     

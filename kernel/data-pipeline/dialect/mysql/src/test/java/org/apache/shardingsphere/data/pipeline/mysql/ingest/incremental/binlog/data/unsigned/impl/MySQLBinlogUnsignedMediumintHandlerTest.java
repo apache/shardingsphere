@@ -20,20 +20,19 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.
 import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MySQLUnsignedBigintHandlerTest {
+class MySQLBinlogUnsignedMediumintHandlerTest {
     
-    private final MySQLBinlogUnsignedBigintHandler handler = new MySQLBinlogUnsignedBigintHandler();
+    private final MySQLBinlogUnsignedMediumintHandler handler = new MySQLBinlogUnsignedMediumintHandler();
     
     @Test
     void assertHandle() {
-        Serializable actual = handler.handle(1L);
-        assertThat(actual, is(1L));
-        actual = handler.handle(-1L);
-        assertThat(actual, is(new BigInteger("18446744073709551615")));
+        Serializable actual = handler.handle(1);
+        assertThat(actual, is(1));
+        actual = handler.handle(-1);
+        assertThat(actual, is(16777215));
     }
 }

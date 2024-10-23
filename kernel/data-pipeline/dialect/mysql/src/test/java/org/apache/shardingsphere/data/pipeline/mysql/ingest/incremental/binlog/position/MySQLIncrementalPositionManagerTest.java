@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MySQLIngestPositionManagerTest {
+class MySQLIncrementalPositionManagerTest {
     
     private static final String LOG_FILE_NAME = "binlog-000001";
     
@@ -56,8 +56,8 @@ class MySQLIngestPositionManagerTest {
     
     @Test
     void assertGetCurrentPosition() throws SQLException {
-        MySQLIncrementalPositionManager positionInitializer = new MySQLIncrementalPositionManager();
-        MySQLBinlogPosition actual = positionInitializer.init(dataSource, "");
+        MySQLIncrementalPositionManager incrementalPositionManager = new MySQLIncrementalPositionManager();
+        MySQLBinlogPosition actual = incrementalPositionManager.init(dataSource, "");
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
     }
