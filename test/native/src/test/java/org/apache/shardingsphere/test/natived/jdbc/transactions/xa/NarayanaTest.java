@@ -36,7 +36,7 @@ class NarayanaTest {
         arjPropertyManager.getCoreEnvironmentBean().setNodeIdentifier("1");
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/transactions/xa/narayana.yaml");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/transactions/xa/narayana.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
         initEnvironment();

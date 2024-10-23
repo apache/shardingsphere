@@ -35,7 +35,7 @@ class SQLServerTest {
     void assertShardingInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/sqlserver.yaml");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/sqlserver.yaml");
         DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
         initEnvironment();

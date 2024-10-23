@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 
+import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,7 +34,7 @@ class NotExpressionBinderTest {
     void assertBind() {
         NotExpression notExpression = new NotExpression(0, 10, new LiteralExpressionSegment(0, 0, "test"), true);
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
-        NotExpression actual = NotExpressionBinder.bind(notExpression, SegmentType.PROJECTION, binderContext, Collections.emptyMap());
+        NotExpression actual = NotExpressionBinder.bind(notExpression, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create());
         assertThat(actual.getNotSign(), is(notExpression.getNotSign()));
         assertThat(actual.getStartIndex(), is(notExpression.getStartIndex()));
         assertThat(actual.getStopIndex(), is(notExpression.getStopIndex()));

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.from;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
@@ -34,8 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
-import java.util.Map;
-
 /**
  * Table segment binder.
  */
@@ -51,8 +51,8 @@ public final class TableSegmentBinder {
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound table segment
      */
-    public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                    final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+    public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment instanceof SimpleTableSegment) {
             return SimpleTableSegmentBinder.bind((SimpleTableSegment) segment, binderContext, tableBinderContexts);
         }
@@ -66,11 +66,13 @@ public final class TableSegmentBinder {
             return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, binderContext, tableBinderContexts);
         }
         if (segment instanceof FunctionTableSegment) {
-            tableBinderContexts.put(segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText()).toLowerCase(), new FunctionTableSegmentBinderContext());
+            tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText())),
+                    new FunctionTableSegmentBinderContext());
             return segment;
         }
         if (segment instanceof CollectionTableSegment) {
-            tableBinderContexts.put(segment.getAliasName().orElseGet(() -> ((CollectionTableSegment) segment).getExpressionSegment().getText()).toLowerCase(), new FunctionTableSegmentBinderContext());
+            tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(() -> ((CollectionTableSegment) segment).getExpressionSegment().getText())),
+                    new FunctionTableSegmentBinderContext());
             return segment;
         }
         return segment;

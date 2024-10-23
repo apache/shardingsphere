@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.assign;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -33,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -51,9 +53,9 @@ class AssignmentSegmentBinderTest {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         assignments.add(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
-        Map<String, TableSegmentBinderContext> tableBinderContexts = Collections.singletonMap(
-                "t_order", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn))));
-        SetAssignmentSegment actual = AssignmentSegmentBinder.bind(setAssignmentSegment, mock(SQLStatementBinderContext.class), tableBinderContexts, Collections.emptyMap());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(new CaseInsensitiveString("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn))));
+        SetAssignmentSegment actual = AssignmentSegmentBinder.bind(setAssignmentSegment, mock(SQLStatementBinderContext.class), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual, not(setAssignmentSegment));
         assertThat(actual.getAssignments().iterator().next(), not(setAssignmentSegment.getAssignments().iterator().next()));
         assertThat(actual.getAssignments().iterator().next().getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));

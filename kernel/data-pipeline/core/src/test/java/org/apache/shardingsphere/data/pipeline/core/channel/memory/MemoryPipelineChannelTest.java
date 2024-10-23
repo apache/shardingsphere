@@ -33,6 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class MemoryPipelineChannelTest {
     
@@ -57,5 +59,39 @@ class MemoryPipelineChannelTest {
         List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
         channel.push(records);
         assertThat(channel.fetch(10, 0L), is(records));
+    }
+    
+    @Test
+    void assertPeekWithRecords() {
+        MemoryPipelineChannel channel = new MemoryPipelineChannel(100, new InventoryTaskAckCallback(new AtomicReference<>()));
+        List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
+        channel.push(records);
+        assertThat(channel.peek(), is(records));
+    }
+    
+    @Test
+    void assertPeekWithoutRecords() {
+        assertThat(new MemoryPipelineChannel(100, new InventoryTaskAckCallback(new AtomicReference<>())).peek(), is(Collections.emptyList()));
+    }
+    
+    @Test
+    void assertPollWithRecords() {
+        MemoryPipelineChannel channel = new MemoryPipelineChannel(100, new InventoryTaskAckCallback(new AtomicReference<>()));
+        List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
+        channel.push(records);
+        assertThat(channel.poll(), is(records));
+    }
+    
+    @Test
+    void assertPollWithoutRecords() {
+        assertThat(new MemoryPipelineChannel(100, new InventoryTaskAckCallback(new AtomicReference<>())).poll(), is(Collections.emptyList()));
+    }
+    
+    @Test
+    void assertAck() {
+        InventoryTaskAckCallback callback = mock(InventoryTaskAckCallback.class);
+        List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
+        new MemoryPipelineChannel(100, callback).ack(records);
+        verify(callback).onAck(records);
     }
 }

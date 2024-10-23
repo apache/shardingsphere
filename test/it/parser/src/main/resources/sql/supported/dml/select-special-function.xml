@@ -191,6 +191,11 @@
     <sql-case id="select_multilinestring" value="SELECT MultiLineString(ST_GeomFromText('LineString(1 1, 2 2)'),ST_GeomFromText('LineString(1 1, 2 2)'))" db-types="MySQL" />
     <sql-case id="select_multipoint" value="SELECT MultiPoint(point(1,1),point(1,1))" db-types="MySQL" />
     <sql-case id="select_multipolygon" value="SELECT MultiPolygon(ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'),ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'))" db-types="MySQL" />
+    <sql-case id="select_polygon" value="SELECT ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))')" db-types="MySQL" />
+    <sql-case id="select_point" value="SELECT Point(1,1)" db-types="MySQL" />
+    <sql-case id="select_ps_current_thread_id" value="SELECT PS_CURRENT_THREAD_ID()" db-types="MySQL" />
+    <sql-case id="select_ps_thread_id" value="SELECT PS_THREAD_ID(5)" db-types="MySQL" />
+    <sql-case id="select_quote" value="SELECT QUOTE('Don\'t!')" db-types="MySQL" />
     <sql-case id="select_from_table_function" value="SELECT * FROM GENERATE_SERIES(1, name)" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_json_objectagg" value="SELECT JSON_OBJECTAGG(attribute, value) FROM t GROUP BY id" db-types="MySQL" />
     <sql-case id="select_json_overlaps" value="SELECT JSON_OVERLAPS(&quot;[1,3,5,7]&quot;, &quot;[2,5,7]&quot;)" db-types="MySQL" />
@@ -240,4 +245,5 @@
     <sql-case id="select_st_convexhull" value="SELECT ST_ConvexHull(ST_GeomFromText('MULTIPOINT(5 0,25 0,15 10,15 25)'))" db-types="MySQL,Doris" />
     <sql-case id="select_st_crosses" value="SELECT ST_Crosses(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 2)'))" db-types="MySQL,Doris" />
     <sql-case id="select_bitxor" value="SELECT BITXOR(3,5)" db-types="Doris" />
+    <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
 </sql-cases>

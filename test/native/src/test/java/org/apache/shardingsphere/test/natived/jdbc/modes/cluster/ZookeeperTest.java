@@ -94,7 +94,7 @@ class ZookeeperTest {
         });
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/modes/cluster/zookeeper.yaml?placeholder-type=system_props");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/modes/cluster/zookeeper.yaml?placeholder-type=system_props");
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", connectString);
         return new HikariDataSource(config);
     }

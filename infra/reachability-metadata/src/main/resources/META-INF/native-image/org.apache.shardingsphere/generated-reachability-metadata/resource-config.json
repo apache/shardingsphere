@@ -1979,52 +1979,52 @@
     "pattern":"\\Qtest-native/sql/test-native-databases-clickhouse.sql\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/clickhouse.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/clickhouse.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/hive.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/mysql.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/mysql.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/opengauss.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/opengauss.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/postgresql.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/postgresql.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/sqlserver.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/sqlserver.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/encrypt.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/encrypt.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/mask.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/mask.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/readwrite-splitting.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/readwrite-splitting.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/shadow.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/shadow.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/sharding.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/sharding.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/modes/cluster/etcd.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/modes/cluster/etcd.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/modes/cluster/zookeeper.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/modes/cluster/zookeeper.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/transactions/base/seata.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/transactions/base/seata.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/transactions/xa/atomikos.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/transactions/xa/atomikos.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/transactions/xa/narayana.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/transactions/xa/narayana.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qtransactions-defaults.properties\\E"

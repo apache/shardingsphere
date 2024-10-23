@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.projection.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.expression.type.SubquerySegmentBinder;
@@ -24,8 +26,6 @@ import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableS
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
-
-import java.util.Map;
 
 /**
  * Subquery projection segment binder.
@@ -42,7 +42,7 @@ public final class SubqueryProjectionSegmentBinder {
      * @return bound subquery projection segment
      */
     public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment,
-                                                 final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+                                                 final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         SubquerySegment boundSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
         SubqueryProjectionSegment result = new SubqueryProjectionSegment(boundSubquerySegment, segment.getText());
         segment.getAliasSegment().ifPresent(result::setAlias);

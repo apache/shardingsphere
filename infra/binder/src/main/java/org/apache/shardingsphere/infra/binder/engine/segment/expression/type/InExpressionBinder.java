@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -25,8 +27,6 @@ import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableS
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
-
-import java.util.Map;
 
 /**
  * In expression binder.
@@ -45,7 +45,8 @@ public final class InExpressionBinder {
      * @return bound in expression
      */
     public static InExpression bind(final InExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
-                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         ExpressionSegment boundLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         ExpressionSegment boundRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         return new InExpression(segment.getStartIndex(), segment.getStopIndex(), boundLeft, boundRight, segment.isNot());

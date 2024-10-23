@@ -126,7 +126,7 @@ cd ./shardingsphere/
 
 ```bash
 cd ./shardingsphere/
-cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.1-SNAPSHOT-shardingsphere-proxy-native-bin/
+cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.2-SNAPSHOT-shardingsphere-proxy-native-bin/
 ./proxy-native "3307" "/customAbsolutePath/conf" "0.0.0.0" "false"
 ```
 
@@ -150,7 +150,7 @@ services:
 ```
 
 如果用户不对 Git Source 做任何更改，
-上文提及的命令将使用 https://container-registry.oracle.com/ords/ocr/ba/os/oraclelinux 中的 `container-registry.oracle.com/os/oraclelinux:9-slim` 作为 Base Docker Image。
+上文提及的命令将使用 https://yum.oracle.com/oracle-linux-downloads.html 中的 `container-registry.oracle.com/os/oraclelinux:9-slim` 作为 Base Docker Image。
 但如果用户希望使用 `scratch`，`alpine:3`，`gcr.io/distroless/base-debian12`，
 `gcr.io/distroless/java-base-debian12` 或 `gcr.io/distroless/static-debian12` 等更小体积的 Docker Image 作为 Base Docker Image，
 用户可能需要根据 https://www.graalvm.org/jdk23/reference-manual/native-image/guides/build-static-executables/ 的要求，

@@ -18,43 +18,37 @@
 package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.ratelimit.type.TPSJobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TPSJobRateLimitAlgorithmTest {
     
-    private TPSJobRateLimitAlgorithm tpsJobRateLimitAlgorithm;
-    
-    @BeforeEach
-    void setup() {
-        tpsJobRateLimitAlgorithm = (TPSJobRateLimitAlgorithm) TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS");
-    }
+    private final JobRateLimitAlgorithm algorithm = TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS");
     
     @Test
-    void assertInit() {
-        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("tps", "1"));
-        assertThat(TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS", props), instanceOf(TPSJobRateLimitAlgorithm.class));
-    }
-    
-    @Test
-    void assertJobRateLimitWithWrongArgumentForTPS() {
+    void assertInitFailed() {
         Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("tps", "0"));
         assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS", props));
     }
     
     @Test
+    void assertInitSuccess() {
+        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("tps", "1"));
+        assertDoesNotThrow(() -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS", props));
+    }
+    
+    @Test
     void assertIntercept() {
-        assertDoesNotThrow(() -> tpsJobRateLimitAlgorithm.intercept(PipelineSQLOperationType.UPDATE, 1));
+        assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.INSERT, null));
+        assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.UPDATE, 1));
+        assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.DELETE, 2));
+        assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.SELECT, null));
     }
 }

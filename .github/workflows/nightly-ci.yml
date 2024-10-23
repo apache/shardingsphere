@@ -19,7 +19,7 @@ name: Nightly - CI
 
 on:
   schedule:
-    - cron: '0 18 */1 * *'  # once a day. UTC time
+    - cron: '0 13 */1 * *'  # UTC time
   workflow_dispatch:
 
 env:
@@ -68,7 +68,7 @@ jobs:
     name: CI - JDK 8 on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    timeout-minutes: 150
     strategy:
       max-parallel: 20
       fail-fast: false

@@ -35,11 +35,6 @@ public final class UnsupportedKeyIngestPosition implements PrimaryKeyIngestPosit
     }
     
     @Override
-    public Void convert(final String value) {
-        throw new UnsupportedOperationException("");
-    }
-    
-    @Override
     public char getType() {
         return 'u';
     }

@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.from.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
@@ -41,9 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -67,14 +68,14 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getLeft()).thenReturn(leftTable);
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, Collections.emptyMap());
+                new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
-        assertTrue(tableBinderContexts.containsKey("o"));
-        assertTrue(tableBinderContexts.containsKey("i"));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
     }
     
     private void assertJoinTableProjectionSegments(final Collection<ProjectionSegment> joinTableProjectionSegments) {
@@ -105,14 +106,14 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getLeft()).thenReturn(leftTable);
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
-                tableBinderContexts, Collections.emptyMap());
+                tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
-        assertTrue(tableBinderContexts.containsKey("t_order"));
-        assertTrue(tableBinderContexts.containsKey("t_order_item"));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("t_order")));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("t_order_item")));
     }
     
     @Test
@@ -127,14 +128,14 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.isNatural()).thenReturn(true);
         when(joinTableSegment.getJoinType()).thenReturn(JoinType.RIGHT.name());
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
-                tableBinderContexts, Collections.emptyMap());
+                tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegmentsWithNaturalJoin(actual.getDerivedJoinTableProjectionSegments());
-        assertTrue(tableBinderContexts.containsKey("o"));
-        assertTrue(tableBinderContexts.containsKey("i"));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
     }
     
     private void assertJoinTableProjectionSegmentsWithNaturalJoin(final Collection<ProjectionSegment> joinTableProjectionSegments) {
@@ -163,14 +164,14 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getJoinType()).thenReturn(JoinType.RIGHT.name());
         when(joinTableSegment.getUsing()).thenReturn(Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("status")), new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
-                tableBinderContexts, Collections.emptyMap());
+                tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegmentsWithUsing(actual.getDerivedJoinTableProjectionSegments());
-        assertTrue(tableBinderContexts.containsKey("o"));
-        assertTrue(tableBinderContexts.containsKey("i"));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
     }
     
     private void assertJoinTableProjectionSegmentsWithUsing(final Collection<ProjectionSegment> joinTableProjectionSegments) {
@@ -198,17 +199,17 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getLeft()).thenReturn(leftTable);
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, Collections.emptyMap());
+                new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(JoinTableSegment.class));
         assertThat(((JoinTableSegment) actual.getLeft()).getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(((JoinTableSegment) actual.getLeft()).getRight(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getDerivedJoinTableProjectionSegments().size(), is(10));
-        assertTrue(tableBinderContexts.containsKey("o"));
-        assertTrue(tableBinderContexts.containsKey("o2"));
-        assertTrue(tableBinderContexts.containsKey("i"));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o2")));
+        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
     }
     
     private JoinTableSegment mockLeftJoinSegment() {

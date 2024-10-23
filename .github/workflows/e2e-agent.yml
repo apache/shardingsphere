@@ -18,20 +18,6 @@
 name: E2E - Agent
 
 on:
-  push:
-    branches: [ dev ]
-    paths:
-      - '.github/workflows/e2e-agent.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - '!test/**'
-      - 'test/pom.xml'
-      - 'test/e2e/agent/**'
-      - '!distribution/**'
-      - 'distribution/proxy/**'
-      - 'distribution/jdbc/**'
-      - '!examples/**'
-      - '!*.md'
   pull_request:
     branches: [ master ]
     paths:
@@ -61,9 +47,10 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
   
   build-e2e-image:
+    if: github.repository == 'apache/shardingsphere'
     name: Build E2E Image
     needs: global-environment
-    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -74,36 +61,36 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: apache-shardingsphere-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+            apache-shardingsphere-maven-third-party-e2e-cache-
+            apache-shardingsphere-maven-third-party-
       - name: Build Project
         run: ./mvnw -B clean install -DskipTests -Prelease
       - name: Build Proxy E2E Image
         run: ./mvnw clean install -DskipTests -Pit.env.proxy -f test/e2e/agent/engine/pom.xml
       - name: Save Proxy E2E Image
-        run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-agent-test.tar apache/shardingsphere-proxy-agent-test:latest
+        run: docker save -o /tmp/apache-shardingsphere-proxy-agent-test.tar apache/shardingsphere-proxy-agent-test:latest
       - uses: actions/upload-artifact@v4
         with:
           name: proxy-e2e-image
-          path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-agent-test.tar
+          path: /tmp/apache-shardingsphere-proxy-agent-test.tar
           retention-days: 10
       - name: Build JDBC E2E Image
         run: ./mvnw clean install -DskipTests -Pit.env.jdbc -f test/e2e/agent/engine/pom.xml
       - name: Save JDBC E2E Image
-        run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-jdbc-agent-test.tar apache/shardingsphere-jdbc-agent-test:latest
+        run: docker save -o /tmp/apache-shardingsphere-jdbc-agent-test.tar apache/shardingsphere-jdbc-agent-test:latest
       - uses: actions/upload-artifact@v4
         with:
           name: jdbc-e2e-image
-          path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-jdbc-agent-test.tar
+          path: /tmp/apache-shardingsphere-jdbc-agent-test.tar
           retention-days: 10
           
   agent-mysql:
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - Agent with MySQL
+    if: github.repository == 'apache/shardingsphere'
     needs: [ global-environment, build-e2e-image ]
-    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       max-parallel: 20
@@ -143,9 +130,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: apache-shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+            apache-shardingsphere-maven-third-party-
       - name: Download Proxy E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v4
@@ -154,7 +141,7 @@ jobs:
           path: /tmp/
       - name: Load Proxy E2E Image
         if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-agent-test.tar
+        run: docker load -i /tmp/apache-shardingsphere-proxy-agent-test.tar
       - name: Download JDBC E2E Image
         if: matrix.adapter == 'jdbc'
         uses: actions/download-artifact@v4
@@ -163,7 +150,7 @@ jobs:
           path: /tmp/
       - name: Load JDBC E2E Image
         if: matrix.adapter == 'jdbc'
-        run: docker load -i /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-jdbc-agent-test.tar
+        run: docker load -i /tmp/apache-shardingsphere-jdbc-agent-test.tar
       - name: Build Project
         run: ./mvnw -B clean install -am -pl test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }} -DskipTests
       - name: Run E2E Test

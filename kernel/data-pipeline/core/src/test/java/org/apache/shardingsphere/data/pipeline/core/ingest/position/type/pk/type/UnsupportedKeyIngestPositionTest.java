@@ -17,21 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UnsupportedKeyIngestPositionTest {
-    
-    @Test
-    void assertInit() {
-        UnsupportedKeyIngestPosition position = (UnsupportedKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("u,,");
-        assertNull(position.getBeginValue());
-        assertNull(position.getEndValue());
-    }
     
     @Test
     void assertToString() {

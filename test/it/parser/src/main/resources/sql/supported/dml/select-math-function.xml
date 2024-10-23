@@ -21,4 +21,8 @@
     <sql-case id="select_acos" value="SELECT ACOS(0)" db-types="MySQL" />
     <sql-case id="select_asin" value="SELECT ASIN(0.2)" db-types="MySQL" />
     <sql-case id="select_atan" value="SELECT ATAN(2)" db-types="MySQL" />
+    <sql-case id="select_pow" value="SELECT POW(2,2)" db-types="MySQL" />
+    <sql-case id="select_power" value="SELECT POWER(2,2)" db-types="MySQL" />
+    <sql-case id="select_rand" value="SELECT RAND()" db-types="MySQL" />
+    <sql-case id="select_radians" value="SELECT RADIANS(90)" db-types="MySQL" />
 </sql-cases>

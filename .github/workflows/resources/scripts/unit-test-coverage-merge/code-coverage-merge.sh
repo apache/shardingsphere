@@ -89,8 +89,7 @@ done
 # delete useless packages or files to avoid useless packages analysis
 # delete the build/libs/groovy.jar file, this will include useless packages
 find . -type f -regex '.*/groovy.jar' -exec rm -f {} +
-find . -type d -regex '.*/parser/autogen/*' -exec rm -rf {} +
-find . -type d -regex '.*/src/main/templates/*' -exec rm -rf {} +
+find . -type d -regex '.*/autogen/*' -exec rm -rf {} +
 
 echo "Copy Success, the compilation merge output folder is located at: $classOutPutDir"
 echo "Start generating overall coverage reports"

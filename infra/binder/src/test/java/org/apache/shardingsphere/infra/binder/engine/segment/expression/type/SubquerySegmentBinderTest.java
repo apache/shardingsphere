@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -43,8 +46,6 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,8 +74,9 @@ class SubquerySegmentBinderTest {
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
         boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(
                 new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_order_item"), new IdentifierValue("user_id")));
-        sqlStatementBinderContext.getExternalTableBinderContexts().put("t_order_item", new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundNameColumn))));
-        Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
+        sqlStatementBinderContext.getExternalTableBinderContexts().put(new CaseInsensitiveString("t_order_item"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundNameColumn))));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
         SubquerySegment actual = SubquerySegmentBinder.bind(subquerySegment, sqlStatementBinderContext, outerTableBinderContexts);
         assertNotNull(actual.getSelect());
         assertTrue(actual.getSelect().getFrom().isPresent());

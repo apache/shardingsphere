@@ -3610,6 +3610,20 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_quarter">
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="QUARTER('2008-04-01')" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="QUARTER" start-index="7" stop-index="27" text="QUARTER('2008-04-01')">
+                        <parameter>
+                            <literal-expression value="2008-04-01" start-index="15" stop-index="26" />
+                        </parameter>>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_mod_function">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />

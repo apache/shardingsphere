@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.assign;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -30,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -49,14 +50,15 @@ public final class AssignmentSegmentBinder {
      * @return bound assignment segment
      */
     public static SetAssignmentSegment bind(final SetAssignmentSegment segment, final SQLStatementBinderContext binderContext,
-                                            final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         return new SetAssignmentSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getAssignments().stream()
                 .map(each -> bindColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
     }
     
     private static ColumnAssignmentSegment bindColumnAssignmentSegment(final ColumnAssignmentSegment columnAssignmentSegment, final SQLStatementBinderContext binderContext,
-                                                                       final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                                                       final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         List<ColumnSegment> boundColumns = columnAssignmentSegment.getColumns().stream()
                 .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
         ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);

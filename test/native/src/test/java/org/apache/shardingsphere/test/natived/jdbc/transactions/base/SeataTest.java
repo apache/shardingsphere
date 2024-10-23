@@ -82,7 +82,7 @@ class SeataTest {
         System.setProperty(SERVICE_DEFAULT_GROUP_LIST_KEY, "127.0.0.1:" + hostPort);
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/transactions/base/seata.yaml");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/transactions/base/seata.yaml");
         return new HikariDataSource(config);
     }
 }

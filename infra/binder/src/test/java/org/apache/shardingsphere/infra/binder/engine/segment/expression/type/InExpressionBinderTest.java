@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 
+import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,7 +37,7 @@ class InExpressionBinderTest {
                 new LiteralExpressionSegment(0, 0, "left"),
                 new LiteralExpressionSegment(0, 0, "right"), true);
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
-        InExpression actual = InExpressionBinder.bind(inExpression, SegmentType.PROJECTION, binderContext, Collections.emptyMap(), Collections.emptyMap());
+        InExpression actual = InExpressionBinder.bind(inExpression, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
         assertThat(actual.getText(), is("leftright"));
         assertTrue(actual.isNot());
     }

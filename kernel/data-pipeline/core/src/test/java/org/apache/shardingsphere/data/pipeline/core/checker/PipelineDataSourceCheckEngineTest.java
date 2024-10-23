@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
+package org.apache.shardingsphere.data.pipeline.core.checker;
 
-import org.apache.shardingsphere.data.pipeline.core.checker.PipelineDataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -39,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -84,13 +84,20 @@ class PipelineDataSourceCheckEngineTest {
     }
     
     @Test
+    void assertCheckSourceDataSources() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        pipelineDataSourceCheckEngine.checkSourceDataSources(dataSources);
+        verify(dataSource).getConnection();
+    }
+    
+    @Test
     void assertCheckTargetDataSources() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
         when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new CaseInsensitiveQualifiedTable(null, "t_order")));
-        pipelineDataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig);
+        assertDoesNotThrow(() -> pipelineDataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
     }
     
     @Test
@@ -102,5 +109,11 @@ class PipelineDataSourceCheckEngineTest {
         ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
         when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new CaseInsensitiveQualifiedTable(null, "t_order")));
         assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> pipelineDataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
+    }
+    
+    @Test
+    void assertCheckTargetDataSourcesWhenSQLExceptionThrown() throws SQLException {
+        when(dataSource.getConnection()).thenThrow(new SQLException(""));
+        assertThrows(SQLWrapperException.class, () -> pipelineDataSourceCheckEngine.checkTargetDataSources(dataSources, mock(ImporterConfiguration.class)));
     }
 }

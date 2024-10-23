@@ -46,8 +46,7 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     public StandaloneContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
         containers = new ITContainers(scenario);
-        // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, "", StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
         adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario,
                 ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, databaseType), storageContainer));
         if (adapterContainer instanceof DockerITContainer) {

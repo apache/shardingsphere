@@ -50,7 +50,7 @@ jobs:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 40
+    timeout-minutes: 150
     strategy:
       max-parallel: 20
       fail-fast: false

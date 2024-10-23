@@ -69,10 +69,10 @@ public final class PrimaryKeyIngestPositionFactory {
      */
     public static IngestPosition newInstance(final Object beginValue, final Object endValue) {
         if (beginValue instanceof Number) {
-            return new IntegerPrimaryKeyIngestPosition(((Number) beginValue).longValue(), null != endValue ? ((Number) endValue).longValue() : Long.MAX_VALUE);
+            return new IntegerPrimaryKeyIngestPosition(((Number) beginValue).longValue(), null == endValue ? Long.MAX_VALUE : ((Number) endValue).longValue());
         }
         if (beginValue instanceof CharSequence) {
-            return new StringPrimaryKeyIngestPosition(beginValue.toString(), null != endValue ? endValue.toString() : null);
+            return new StringPrimaryKeyIngestPosition(beginValue.toString(), null == endValue ? null : endValue.toString());
         }
         // TODO support more types, e.g. byte[] (MySQL varbinary)
         return new UnsupportedKeyIngestPosition();

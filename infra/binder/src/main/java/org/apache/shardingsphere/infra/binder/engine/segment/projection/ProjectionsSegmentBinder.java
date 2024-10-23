@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.projection;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
-import org.apache.shardingsphere.infra.binder.engine.segment.projection.type.ColumnProjectionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.projection.type.ShorthandProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.projection.type.ColumnProjectionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.projection.type.ShorthandProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.projection.type.SubqueryProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -35,8 +38,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Shor
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +57,8 @@ public final class ProjectionsSegmentBinder {
      * @return bound projections segment
      */
     public static ProjectionsSegment bind(final ProjectionsSegment segment, final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment,
-                                          final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
         result.getProjections().addAll(segment.getProjections().stream()
@@ -65,7 +67,8 @@ public final class ProjectionsSegmentBinder {
     }
     
     private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment,
-                                          final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, binderContext, tableBinderContexts);
         }
@@ -73,7 +76,7 @@ public final class ProjectionsSegmentBinder {
             return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundTableSegment, tableBinderContexts);
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
-            Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>(outerTableBinderContexts.size() + tableBinderContexts.size(), 1F);
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
             newOuterTableBinderContexts.putAll(outerTableBinderContexts);
             newOuterTableBinderContexts.putAll(tableBinderContexts);
             return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, binderContext, newOuterTableBinderContexts);

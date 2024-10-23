@@ -25,7 +25,7 @@ Create agent directory, and unzip agent distribution package to the directory.
 mkdir agent
 tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz -C agent
 cd agent
-tree 
+tree
 ├── LICENSE
 ├── NOTICE
 ├── conf
@@ -170,14 +170,14 @@ plugins:
         otel.exporter.otlp.traces.endpoint: "http://jaeger:4318"
 ```
 
-3. Assuming `./target/example.jar` is an Uber JAR of Spring Boot that will use ShardingSphere Agent, 
+3. Assuming `./target/example.jar` is an Uber JAR of Spring Boot that will use ShardingSphere Agent,
 you can use the ShardingSphere Agent in the nightly built Docker Image for a JAR like `example.jar` through a `Dockerfile` like the following.
 
-```dockerfile 
-FROM ghcr.io/apache/shardingsphere-agent:latest 
-COPY ./target/example.jar /app.jar 
-COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml 
-ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar","-jar","/app.jar "] 
+```dockerfile
+FROM ghcr.io/apache/shardingsphere-agent:latest
+COPY ./target/example.jar /app.jar
+COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
+ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.2-SNAPSHOT.jar","-jar","/app.jar "]
 ```
 
 If you build the Docker Image of `apache/shardingsphere-agent:latest` locally, the `Dockerfile` may be as follows,
@@ -186,14 +186,14 @@ If you build the Docker Image of `apache/shardingsphere-agent:latest` locally, t
 FROM apache/shardingsphere-agent:latest
 COPY ./target/example.jar /app.jar
 COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
-ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar","-jar","/app.jar"]
+ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.2-SNAPSHOT.jar","-jar","/app.jar"]
 ```
 
-4. Enjoy it, 
+4. Enjoy it,
 
-```shell 
-docker build -t example/gs-spring-boot-docker:latest . 
-docker run --network example-net example/gs-spring-boot-docker:latest 
+```shell
+docker build -t example/gs-spring-boot-docker:latest .
+docker run --network example-net example/gs-spring-boot-docker:latest
 ```
 
 ## Metrics
