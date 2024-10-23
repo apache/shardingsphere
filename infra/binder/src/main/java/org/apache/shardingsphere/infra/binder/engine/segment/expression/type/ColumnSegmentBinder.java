@@ -136,14 +136,15 @@ public final class ColumnSegmentBinder {
         boolean isFindInputColumn = false;
         for (TableSegmentBinderContext each : tableBinderContexts) {
             Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
-            if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
+            if (!projectionSegment.isPresent()) {
+                continue;
+            }
+            if (projectionSegment.get() instanceof ColumnProjectionSegment) {
                 ShardingSpherePreconditions.checkState(null == result,
                         () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
-                result = ((ColumnProjectionSegment) projectionSegment.get()).getColumn();
             }
-            if (!isFindInputColumn && projectionSegment.isPresent()) {
-                isFindInputColumn = true;
-            }
+            result = getColumnSegment(projectionSegment.get());
+            isFindInputColumn = true;
         }
         if (!isFindInputColumn) {
             Optional<ProjectionSegment> projectionSegment = findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts);
@@ -170,6 +171,13 @@ public final class ColumnSegmentBinder {
         ShardingSpherePreconditions.checkState(isFindInputColumn || containsFunctionTable(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return Optional.ofNullable(result);
+    }
+    
+    private static ColumnSegment getColumnSegment(final ProjectionSegment projectionSegment) {
+        if (projectionSegment instanceof ColumnProjectionSegment) {
+            return ((ColumnProjectionSegment) projectionSegment).getColumn();
+        }
+        return null;
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentByPivotColumns(final ColumnSegment segment, final Collection<String> pivotColumnNames) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -89,6 +90,29 @@ class ShardingSphereDriverTest {
                 assertTrue(resultSet.next());
                 assertThat(resultSet.getInt(1), is(1));
             }
+        }
+    }
+    
+    @Test
+    void assertDatabaseNameTransparentWithHintManager() throws SQLException {
+        try (
+                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
+                Statement statement = connection.createStatement()) {
+            assertThat(connection, instanceOf(ShardingSphereConnection.class));
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");
+            try (HintManager hintManager = HintManager.getInstance()) {
+                executeQueryWithHintManager(hintManager, statement);
+            }
+        }
+    }
+    
+    private void executeQueryWithHintManager(final HintManager hintManager, final Statement statement) throws SQLException {
+        hintManager.setDataSourceName("ds_0");
+        try (ResultSet resultSet = statement.executeQuery("SELECT COUNT(1) FROM t_order_0")) {
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt(1), is(1));
         }
     }
 }
