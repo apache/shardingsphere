@@ -171,11 +171,11 @@ public final class JoinTableSegmentBinder {
     }
     
     private static Map<String, ProjectionSegment> getUsingColumns(final Collection<ProjectionSegment> projectionSegments, final Collection<ColumnSegment> usingColumns, final String joinType) {
-        Multimap<String, ProjectionSegment> columnLabelProjectionSegments = LinkedHashMultimap.create();
-        projectionSegments.forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel(), each));
+        Multimap<CaseInsensitiveString, ProjectionSegment> columnLabelProjectionSegments = LinkedHashMultimap.create();
+        projectionSegments.forEach(each -> columnLabelProjectionSegments.put(new CaseInsensitiveString(each.getColumnLabel()), each));
         Map<String, ProjectionSegment> result = new CaseInsensitiveMap<>();
         for (ColumnSegment each : usingColumns) {
-            LinkedList<ProjectionSegment> groupProjectionSegments = new LinkedList<>(columnLabelProjectionSegments.get(each.getIdentifier().getValue()));
+            LinkedList<ProjectionSegment> groupProjectionSegments = new LinkedList<>(columnLabelProjectionSegments.get(new CaseInsensitiveString(each.getIdentifier().getValue())));
             if (!groupProjectionSegments.isEmpty()) {
                 ProjectionSegment targetProjectionSegment =
                         JoinType.RIGHT.name().equalsIgnoreCase(joinType) ? groupProjectionSegments.descendingIterator().next() : groupProjectionSegments.iterator().next();

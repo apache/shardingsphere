@@ -60,37 +60,44 @@ public final class SubqueryExtractUtils {
      * Get subquery segment from SelectStatement.
      *
      * @param selectStatement SelectStatement
+     * @param needRecursive need recursive
      * @return subquery segment collection
      */
-    public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement) {
+    public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement, final boolean needRecursive) {
         List<SubquerySegment> result = new LinkedList<>();
-        extractSubquerySegments(result, selectStatement);
+        extractSubquerySegments(result, selectStatement, needRecursive);
         return result;
     }
     
-    private static void extractSubquerySegments(final List<SubquerySegment> result, final SelectStatement selectStatement) {
-        extractSubquerySegmentsFromProjections(result, selectStatement.getProjections());
-        selectStatement.getFrom().ifPresent(optional -> extractSubquerySegmentsFromTableSegment(result, optional));
+    private static void extractSubquerySegments(final List<SubquerySegment> result, final SelectStatement selectStatement, final boolean needRecursive) {
+        extractSubquerySegmentsFromProjections(result, selectStatement.getProjections(), needRecursive);
+        selectStatement.getFrom().ifPresent(optional -> extractSubquerySegmentsFromTableSegment(result, optional, needRecursive));
         if (selectStatement.getWhere().isPresent()) {
-            extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr());
+            extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr(), needRecursive);
         }
         if (selectStatement.getCombine().isPresent()) {
-            extractSubquerySegmentsFromCombine(result, selectStatement.getCombine().get());
+            extractSubquerySegmentsFromCombine(result, selectStatement.getCombine().get(), needRecursive);
         }
         if (selectStatement.getWithSegment().isPresent()) {
-            extractSubquerySegmentsFromCTEs(result, selectStatement.getWithSegment().get().getCommonTableExpressions());
+            extractSubquerySegmentsFromCTEs(result, selectStatement.getWithSegment().get().getCommonTableExpressions(), needRecursive);
         }
     }
     
-    private static void extractSubquerySegmentsFromCTEs(final List<SubquerySegment> result, final Collection<CommonTableExpressionSegment> withSegment) {
+    private static void extractSubquerySegmentsFromCTEs(final List<SubquerySegment> result, final Collection<CommonTableExpressionSegment> withSegment, final boolean needRecursive) {
         for (CommonTableExpressionSegment each : withSegment) {
             each.getSubquery().setSubqueryType(SubqueryType.WITH);
             result.add(each.getSubquery());
-            extractSubquerySegments(result, each.getSubquery().getSelect());
+            extractRecursive(needRecursive, result, each.getSubquery().getSelect());
         }
     }
     
-    private static void extractSubquerySegmentsFromProjections(final List<SubquerySegment> result, final ProjectionsSegment projections) {
+    private static void extractRecursive(final boolean needRecursive, final List<SubquerySegment> result, final SelectStatement select) {
+        if (needRecursive) {
+            extractSubquerySegments(result, select, true);
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromProjections(final List<SubquerySegment> result, final ProjectionsSegment projections, final boolean needRecursive) {
         if (null == projections || projections.getProjections().isEmpty()) {
             return;
         }
@@ -99,112 +106,114 @@ public final class SubqueryExtractUtils {
                 SubquerySegment subquery = ((SubqueryProjectionSegment) each).getSubquery();
                 subquery.setSubqueryType(SubqueryType.PROJECTION);
                 result.add(subquery);
-                extractSubquerySegments(result, subquery.getSelect());
+                extractRecursive(needRecursive, result, subquery.getSelect());
             } else if (each instanceof ExpressionProjectionSegment) {
-                extractSubquerySegmentsFromExpression(result, ((ExpressionProjectionSegment) each).getExpr(), SubqueryType.PROJECTION);
+                extractSubquerySegmentsFromExpression(result, ((ExpressionProjectionSegment) each).getExpr(), SubqueryType.PROJECTION, needRecursive);
             }
         }
     }
     
-    private static void extractSubquerySegmentsFromTableSegment(final List<SubquerySegment> result, final TableSegment tableSegment) {
+    private static void extractSubquerySegmentsFromTableSegment(final List<SubquerySegment> result, final TableSegment tableSegment, final boolean needRecursive) {
         if (tableSegment instanceof SubqueryTableSegment) {
-            extractSubquerySegmentsFromSubqueryTableSegment(result, (SubqueryTableSegment) tableSegment);
+            extractSubquerySegmentsFromSubqueryTableSegment(result, (SubqueryTableSegment) tableSegment, needRecursive);
         }
         if (tableSegment instanceof JoinTableSegment) {
-            extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getLeft());
-            extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getRight());
+            extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getLeft(), needRecursive);
+            extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getRight(), needRecursive);
         }
     }
     
-    private static void extractSubquerySegmentsFromJoinTableSegment(final List<SubquerySegment> result, final TableSegment tableSegment) {
+    private static void extractSubquerySegmentsFromJoinTableSegment(final List<SubquerySegment> result, final TableSegment tableSegment, final boolean needRecursive) {
         if (tableSegment instanceof SubqueryTableSegment) {
             SubquerySegment subquery = ((SubqueryTableSegment) tableSegment).getSubquery();
             subquery.setSubqueryType(SubqueryType.JOIN);
             result.add(subquery);
-            extractSubquerySegments(result, subquery.getSelect());
+            extractRecursive(needRecursive, result, subquery.getSelect());
         } else if (tableSegment instanceof JoinTableSegment) {
-            extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getLeft());
-            extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getRight());
+            extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getLeft(), needRecursive);
+            extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getRight(), needRecursive);
         }
     }
     
-    private static void extractSubquerySegmentsFromSubqueryTableSegment(final List<SubquerySegment> result, final SubqueryTableSegment subqueryTableSegment) {
+    private static void extractSubquerySegmentsFromSubqueryTableSegment(final List<SubquerySegment> result, final SubqueryTableSegment subqueryTableSegment, final boolean needRecursive) {
         SubquerySegment subquery = subqueryTableSegment.getSubquery();
         subquery.setSubqueryType(SubqueryType.TABLE);
         result.add(subquery);
-        extractSubquerySegments(result, subquery.getSelect());
+        extractRecursive(needRecursive, result, subquery.getSelect());
     }
     
-    private static void extractSubquerySegmentsFromWhere(final List<SubquerySegment> result, final ExpressionSegment expressionSegment) {
-        extractSubquerySegmentsFromExpression(result, expressionSegment, SubqueryType.PREDICATE);
+    private static void extractSubquerySegmentsFromWhere(final List<SubquerySegment> result, final ExpressionSegment expressionSegment, final boolean needRecursive) {
+        extractSubquerySegmentsFromExpression(result, expressionSegment, SubqueryType.PREDICATE, needRecursive);
     }
     
-    private static void extractSubquerySegmentsFromExpression(final List<SubquerySegment> result, final ExpressionSegment expressionSegment, final SubqueryType subqueryType) {
+    private static void extractSubquerySegmentsFromExpression(final List<SubquerySegment> result, final ExpressionSegment expressionSegment, final SubqueryType subqueryType,
+                                                              final boolean needRecursive) {
         if (expressionSegment instanceof SubqueryExpressionSegment) {
             SubquerySegment subquery = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
             subquery.setSubqueryType(subqueryType);
             result.add(subquery);
-            extractSubquerySegments(result, subquery.getSelect());
+            extractRecursive(needRecursive, result, subquery.getSelect());
         }
         if (expressionSegment instanceof ExistsSubqueryExpression) {
             SubquerySegment subquery = ((ExistsSubqueryExpression) expressionSegment).getSubquery();
             subquery.setSubqueryType(subqueryType);
             result.add(subquery);
-            extractSubquerySegments(result, subquery.getSelect());
+            extractRecursive(needRecursive, result, subquery.getSelect());
         }
         if (expressionSegment instanceof ListExpression) {
-            ((ListExpression) expressionSegment).getItems().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
+            ((ListExpression) expressionSegment).getItems().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType, needRecursive));
         }
         if (expressionSegment instanceof BinaryOperationExpression) {
-            extractSubquerySegmentsFromExpression(result, ((BinaryOperationExpression) expressionSegment).getLeft(), subqueryType);
-            extractSubquerySegmentsFromExpression(result, ((BinaryOperationExpression) expressionSegment).getRight(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((BinaryOperationExpression) expressionSegment).getLeft(), subqueryType, needRecursive);
+            extractSubquerySegmentsFromExpression(result, ((BinaryOperationExpression) expressionSegment).getRight(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof InExpression) {
-            extractSubquerySegmentsFromExpression(result, ((InExpression) expressionSegment).getLeft(), subqueryType);
-            extractSubquerySegmentsFromExpression(result, ((InExpression) expressionSegment).getRight(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((InExpression) expressionSegment).getLeft(), subqueryType, needRecursive);
+            extractSubquerySegmentsFromExpression(result, ((InExpression) expressionSegment).getRight(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof BetweenExpression) {
-            extractSubquerySegmentsFromExpression(result, ((BetweenExpression) expressionSegment).getBetweenExpr(), subqueryType);
-            extractSubquerySegmentsFromExpression(result, ((BetweenExpression) expressionSegment).getAndExpr(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((BetweenExpression) expressionSegment).getBetweenExpr(), subqueryType, needRecursive);
+            extractSubquerySegmentsFromExpression(result, ((BetweenExpression) expressionSegment).getAndExpr(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof NotExpression) {
-            extractSubquerySegmentsFromExpression(result, ((NotExpression) expressionSegment).getExpression(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((NotExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof FunctionSegment) {
-            ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
+            ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType, needRecursive));
         }
         if (expressionSegment instanceof MatchAgainstExpression) {
-            extractSubquerySegmentsFromExpression(result, ((MatchAgainstExpression) expressionSegment).getExpr(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((MatchAgainstExpression) expressionSegment).getExpr(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof CaseWhenExpression) {
-            extractSubquerySegmentsFromCaseWhenExpression(result, (CaseWhenExpression) expressionSegment, subqueryType);
+            extractSubquerySegmentsFromCaseWhenExpression(result, (CaseWhenExpression) expressionSegment, subqueryType, needRecursive);
         }
         if (expressionSegment instanceof CollateExpression) {
-            extractSubquerySegmentsFromExpression(result, ((CollateExpression) expressionSegment).getCollateName(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((CollateExpression) expressionSegment).getCollateName(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof DatetimeExpression) {
-            extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getLeft(), subqueryType);
-            extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getRight(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getLeft(), subqueryType, needRecursive);
+            extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getRight(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof NotExpression) {
-            extractSubquerySegmentsFromExpression(result, ((NotExpression) expressionSegment).getExpression(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((NotExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof TypeCastExpression) {
-            extractSubquerySegmentsFromExpression(result, ((TypeCastExpression) expressionSegment).getExpression(), subqueryType);
+            extractSubquerySegmentsFromExpression(result, ((TypeCastExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
         }
     }
     
-    private static void extractSubquerySegmentsFromCaseWhenExpression(final List<SubquerySegment> result, final CaseWhenExpression expressionSegment, final SubqueryType subqueryType) {
-        extractSubquerySegmentsFromExpression(result, expressionSegment.getCaseExpr(), subqueryType);
-        expressionSegment.getWhenExprs().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
-        expressionSegment.getThenExprs().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
-        extractSubquerySegmentsFromExpression(result, expressionSegment.getElseExpr(), subqueryType);
+    private static void extractSubquerySegmentsFromCaseWhenExpression(final List<SubquerySegment> result, final CaseWhenExpression expressionSegment, final SubqueryType subqueryType,
+                                                                      final boolean needRecursive) {
+        extractSubquerySegmentsFromExpression(result, expressionSegment.getCaseExpr(), subqueryType, needRecursive);
+        expressionSegment.getWhenExprs().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType, needRecursive));
+        expressionSegment.getThenExprs().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType, needRecursive));
+        extractSubquerySegmentsFromExpression(result, expressionSegment.getElseExpr(), subqueryType, needRecursive);
     }
     
-    private static void extractSubquerySegmentsFromCombine(final List<SubquerySegment> result, final CombineSegment combineSegment) {
+    private static void extractSubquerySegmentsFromCombine(final List<SubquerySegment> result, final CombineSegment combineSegment, final boolean needRecursive) {
         result.add(combineSegment.getLeft());
         result.add(combineSegment.getRight());
-        extractSubquerySegments(result, combineSegment.getLeft().getSelect());
-        extractSubquerySegments(result, combineSegment.getRight().getSelect());
+        extractRecursive(needRecursive, result, combineSegment.getLeft().getSelect());
+        extractRecursive(needRecursive, result, combineSegment.getRight().getSelect());
     }
 }

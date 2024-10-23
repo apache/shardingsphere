@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
@@ -32,13 +33,10 @@ import java.util.Optional;
 /**
  * Inventory column value reader engine.
  */
+@RequiredArgsConstructor
 public final class InventoryColumnValueReaderEngine {
     
-    private final DialectInventoryColumnValueReader columnReader;
-    
-    public InventoryColumnValueReaderEngine(final DatabaseType databaseType) {
-        columnReader = DatabaseTypedSPILoader.findService(DialectInventoryColumnValueReader.class, databaseType).orElse(null);
-    }
+    private final DatabaseType databaseType;
     
     /**
      * Read column value.
@@ -56,10 +54,11 @@ public final class InventoryColumnValueReaderEngine {
     }
     
     private Optional<Object> readDialectValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return null == columnReader ? Optional.empty() : columnReader.read(resultSet, metaData, columnIndex);
+        Optional<DialectInventoryColumnValueReader> dialectColumnReader = DatabaseTypedSPILoader.findService(DialectInventoryColumnValueReader.class, databaseType);
+        return dialectColumnReader.isPresent() ? dialectColumnReader.get().read(resultSet, metaData, columnIndex) : Optional.empty();
     }
     
-    private static Object readStandardValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+    private Object readStandardValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         int columnType = metaData.getColumnType(columnIndex);
         switch (columnType) {
             case Types.BOOLEAN:
@@ -129,7 +128,7 @@ public final class InventoryColumnValueReaderEngine {
         }
     }
     
-    private static boolean isSigned(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+    private boolean isSigned(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         return metaData.isSigned(columnIndex);
     }
 }
