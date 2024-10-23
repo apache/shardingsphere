@@ -26,7 +26,7 @@ public interface InventoryQueryParameter<T> {
     
     /**
      * Get parameter value.
-     * 
+     *
      * @return parameter value
      */
     T getValue();
