@@ -15,50 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.route;
+package org.apache.shardingsphere.broadcast.route.engine;
 
-import org.apache.shardingsphere.broadcast.route.engine.BroadcastRouteEngineFactory;
-import org.apache.shardingsphere.broadcast.route.engine.type.BroadcastRouteEngine;
 import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastDatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class BroadcastRouteEngineFactoryTest {
     
+    @Mock
     private BroadcastRule broadcastRule;
     
+    @Mock
     private ShardingSphereDatabase database;
     
+    @Mock
     private QueryContext queryContext;
-    
-    private ConnectionContext connectionContext;
-    
-    @BeforeEach
-    void setUp() {
-        broadcastRule = mock(BroadcastRule.class);
-        database = mock(ShardingSphereDatabase.class);
-        queryContext = mock(QueryContext.class);
-        connectionContext = mock(ConnectionContext.class);
-    }
     
     @Test
     void assertNewInstanceWithTCLStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(TCLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        when(queryContext.getConnectionContext()).thenReturn(connectionContext);
-        BroadcastRouteEngine engine = BroadcastRouteEngineFactory.newInstance(broadcastRule, database, queryContext);
-        assertThat(engine, instanceOf(BroadcastDatabaseBroadcastRoutingEngine.class));
+        assertThat(BroadcastRouteEngineFactory.newInstance(broadcastRule, database, queryContext), instanceOf(BroadcastDatabaseBroadcastRoutingEngine.class));
     }
 }

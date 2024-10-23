@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement;
+package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
-import org.apache.shardingsphere.infra.binder.engine.statement.dml.InsertStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.batch.statement;
+package org.apache.shardingsphere.driver.executor.engine.batch.statement;
 
-import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchStatementExecutor;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;

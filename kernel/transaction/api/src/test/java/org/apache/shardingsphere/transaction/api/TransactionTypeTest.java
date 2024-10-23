@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.transaction.api;
 
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
