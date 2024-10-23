@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.exception.algorithm.ShardingRouteAlgorithmException;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
@@ -76,9 +75,8 @@ public final class StandardShardingStrategy implements ShardingStrategy {
                     new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, each));
             if (null != target && availableTargetNames.contains(target)) {
                 result.add(target);
-            } else if (null != target && !availableTargetNames.contains(target)) {
-                throw new ShardingRouteAlgorithmException(target, availableTargetNames);
             }
+            // TODO add ShardingRouteAlgorithmException check when autoTables support config actualDataNodes in #33364
         }
         return result;
     }
