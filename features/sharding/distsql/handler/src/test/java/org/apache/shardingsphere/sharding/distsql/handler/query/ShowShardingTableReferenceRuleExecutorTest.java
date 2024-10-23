@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.query;
+package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingKeyGeneratorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -37,14 +35,13 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class ShowUnusedShardingKeyGeneratorExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
+class ShowShardingTableReferenceRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    ShowUnusedShardingKeyGeneratorExecutorTest() {
+    ShowShardingTableReferenceRuleExecutorTest() {
         super(mock(ShardingRule.class));
     }
     
@@ -59,31 +56,19 @@ class ShowUnusedShardingKeyGeneratorExecutorTest extends DistSQLDatabaseRuleQuer
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowUnusedShardingKeyGeneratorsStatement(null),
-                    Collections.singleton(new LocalDataQueryResultRow("uuid_key_generator", "UUID", ""))));
+            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShardingTableReferenceRulesStatement(null, null),
+                    Collections.singleton(new LocalDataQueryResultRow("foo", "t_order,t_order_item"))),
+                    Arguments.arguments("withSpecifiedRuleName", createRuleConfiguration(), new ShowShardingTableReferenceRulesStatement("foo", null),
+                            Collections.singleton(new LocalDataQueryResultRow("foo", "t_order,t_order_item"))));
         }
         
         private ShardingRuleConfiguration createRuleConfiguration() {
             ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-            result.getKeyGenerators().put("snowflake_key_generator", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
-            result.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
-            result.getTables().add(createShardingTableRuleConfiguration());
-            result.getTables().add(new ShardingTableRuleConfiguration("bar_table", null));
-            result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
-            result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("bar_auto_table", null));
-            result.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration(null, "snowflake_key_generator"));
-            return result;
-        }
-        
-        private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
-            ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_table", null);
-            result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("foo_col", "snowflake_key_generator"));
-            return result;
-        }
-        
-        private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-            ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("foo_auto_table", null);
-            result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("foo_col", "snowflake_key_generator"));
+            result.getTables().add(new ShardingTableRuleConfiguration("t_order", null));
+            result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", null));
+            result.getTables().add(new ShardingTableRuleConfiguration("t_1", null));
+            result.getTables().add(new ShardingTableRuleConfiguration("t_2", null));
+            result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
             return result;
         }
     }

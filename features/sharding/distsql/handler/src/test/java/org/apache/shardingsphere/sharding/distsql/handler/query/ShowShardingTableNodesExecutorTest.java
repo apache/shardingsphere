@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.query;
+package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.SneakyThrows;
 import org.apache.groovy.util.Maps;

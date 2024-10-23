@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.query;
+package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAuditorsStatement;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -36,13 +38,14 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class ShowShardingAuditorsExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
+class ShowUnusedShardingAuditorsExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    ShowShardingAuditorsExecutorTest() {
+    ShowUnusedShardingAuditorsExecutorTest() {
         super(mock(ShardingRule.class));
     }
     
@@ -57,13 +60,21 @@ class ShowShardingAuditorsExecutorTest extends DistSQLDatabaseRuleQueryExecutorT
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShardingAuditorsStatement(null),
-                    Collections.singleton(new LocalDataQueryResultRow("sharding_key_required_auditor", "DML_SHARDING_CONDITIONS", "{\"key\":\"value\"}"))));
+            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowUnusedShardingAuditorsStatement(null),
+                    Collections.singleton(new LocalDataQueryResultRow("fixture", "FIXTURE", "{\"key\":\"value\"}"))));
         }
         
         private ShardingRuleConfiguration createRuleConfiguration() {
             ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-            result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", PropertiesBuilder.build(new Property("key", "value"))));
+            result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+            result.getAuditors().put("fixture", new AlgorithmConfiguration("FIXTURE", PropertiesBuilder.build(new Property("key", "value"))));
+            result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
+            return result;
+        }
+        
+        private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
+            ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
+            result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), false));
             return result;
         }
     }

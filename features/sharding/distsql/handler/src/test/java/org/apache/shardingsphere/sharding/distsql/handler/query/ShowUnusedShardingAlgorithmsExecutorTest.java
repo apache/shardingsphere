@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.query;
+package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -41,14 +38,13 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class ShowShardingTableRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
+class ShowUnusedShardingAlgorithmsExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    ShowShardingTableRuleExecutorTest() {
+    ShowUnusedShardingAlgorithmsExecutorTest() {
         super(mock(ShardingRule.class));
     }
     
@@ -63,32 +59,21 @@ class ShowShardingTableRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutor
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShardingTableRulesStatement(null, null),
-                    Collections.singleton(new LocalDataQueryResultRow("t_order", "ds_${0..1}.t_order_${0..1}", "",
-                            "STANDARD", "user_id",
-                            "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}", "STANDARD", "order_id",
-                            "INLINE", "{\"algorithm-expression\":\"t_order_${order_id % 2}\"}",
-                            "order_id", "SNOWFLAKE",
-                            "", "DML_SHARDING_CONDITIONS", "true"))));
+            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowUnusedShardingAlgorithmsStatement(null),
+                    Collections.singleton(new LocalDataQueryResultRow("database_inline", "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}"))));
         }
         
         private ShardingRuleConfiguration createRuleConfiguration() {
             ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-            result.getTables().add(createShardingTableRuleConfiguration());
-            result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));
-            result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
             result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
-            result.getShardingAlgorithms().put("t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
-            result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
-            result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+            result.getShardingAlgorithms().put("t_order_hash_mod", new AlgorithmConfiguration("hash_mod", PropertiesBuilder.build(new Property("sharding-count", "4"))));
+            result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
             return result;
         }
         
-        private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
-            ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
-            result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_inline"));
-            result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
-            result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), true));
+        private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
+            ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
+            result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_hash_mod"));
             return result;
         }
     }

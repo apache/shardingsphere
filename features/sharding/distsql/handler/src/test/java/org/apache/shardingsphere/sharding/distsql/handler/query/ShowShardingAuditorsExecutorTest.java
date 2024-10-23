@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.query;
+package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -40,9 +40,9 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class ShowShardingAlgorithmExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
+class ShowShardingAuditorsExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    ShowShardingAlgorithmExecutorTest() {
+    ShowShardingAuditorsExecutorTest() {
         super(mock(ShardingRule.class));
     }
     
@@ -57,13 +57,13 @@ class ShowShardingAlgorithmExecutorTest extends DistSQLDatabaseRuleQueryExecutor
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShardingAlgorithmsStatement(null),
-                    Collections.singleton(new LocalDataQueryResultRow("database_inline", "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}"))));
+            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShardingAuditorsStatement(null),
+                    Collections.singleton(new LocalDataQueryResultRow("sharding_key_required_auditor", "DML_SHARDING_CONDITIONS", "{\"key\":\"value\"}"))));
         }
         
         private ShardingRuleConfiguration createRuleConfiguration() {
             ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-            result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
+            result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", PropertiesBuilder.build(new Property("key", "value"))));
             return result;
         }
     }
