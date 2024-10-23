@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dml;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

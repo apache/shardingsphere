@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.registrycenter.repository;
+package org.apache.shardingsphere.data.pipeline.core.registrycenter.repository;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeho
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineNodePath;
-import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemErrorMessageGovernanceRepository;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemProcessGovernanceRepository;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
