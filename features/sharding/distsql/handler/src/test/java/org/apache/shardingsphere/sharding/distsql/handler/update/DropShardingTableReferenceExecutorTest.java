@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.update;
+package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableReferenceExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.BeforeEach;

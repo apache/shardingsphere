@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.update;
+package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.UnusedAlgorithmFinder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

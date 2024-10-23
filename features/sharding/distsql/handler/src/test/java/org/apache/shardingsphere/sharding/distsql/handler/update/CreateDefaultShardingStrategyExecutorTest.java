@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.update;
+package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.CreateDefaultShardingStrategyExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;

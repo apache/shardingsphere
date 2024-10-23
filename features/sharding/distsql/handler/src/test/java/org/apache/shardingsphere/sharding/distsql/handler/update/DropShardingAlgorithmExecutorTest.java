@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.update;
+package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InUsedAlgorithmException;
@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAlgorithmExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.BeforeEach;

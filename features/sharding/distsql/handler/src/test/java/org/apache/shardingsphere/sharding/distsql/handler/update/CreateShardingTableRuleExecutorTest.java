@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.update;
+package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLParserFacade;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrategySegment;
