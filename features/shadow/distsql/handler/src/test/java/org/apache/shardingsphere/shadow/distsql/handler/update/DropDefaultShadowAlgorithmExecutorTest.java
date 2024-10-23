@@ -15,28 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.update;
+package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowAlgorithmExecutor;
-import org.apache.shardingsphere.shadow.distsql.statement.DropShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.distsql.statement.DropDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DropShadowAlgorithmExecutorTest {
+@ExtendWith(MockitoExtension.class)
+class DropDefaultShadowAlgorithmExecutorTest {
     
-    private final DropShadowAlgorithmExecutor executor = new DropShadowAlgorithmExecutor();
+    private final DropDefaultShadowAlgorithmExecutor executor = new DropDefaultShadowAlgorithmExecutor();
+    
+    @Mock
+    private ShadowRuleConfiguration currentConfig;
     
     @BeforeEach
     void setUp() {
@@ -44,32 +51,31 @@ class DropShadowAlgorithmExecutorTest {
     }
     
     @Test
-    void assertExecuteWithIfExists() {
-        DropShadowAlgorithmStatement sqlStatement = createSQLStatement(true, "ruleSegment");
+    void assertCheckWithoutDefaultAlgorithm() {
         ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(new ShadowRuleConfiguration());
+        when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        executor.checkBeforeUpdate(sqlStatement);
+        assertThrows(UnregisteredAlgorithmException.class, () -> executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(false)));
+    }
+    
+    @Test
+    void assertCheckWithIfExists() {
+        executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true));
     }
     
     @Test
     void assertUpdate() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.getShadowAlgorithms().put("shadow_algorithm", new AlgorithmConfiguration("type", null));
+        ruleConfig.setDefaultShadowAlgorithmName("default");
+        ruleConfig.getShadowAlgorithms().put(ruleConfig.getDefaultShadowAlgorithmName(), mock(AlgorithmConfiguration.class));
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        DropShadowAlgorithmStatement sqlStatement = createSQLStatement("shadow_algorithm");
-        executor.checkBeforeUpdate(sqlStatement);
+        executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true));
+        DropDefaultShadowAlgorithmStatement sqlStatement = new DropDefaultShadowAlgorithmStatement(false);
+        assertTrue(executor.hasAnyOneToBeDropped(sqlStatement));
         ShadowRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
+        assertThat(toBeDroppedRuleConfig.getDefaultShadowAlgorithmName(), is("default"));
         assertThat(toBeDroppedRuleConfig.getShadowAlgorithms().size(), is(1));
-    }
-    
-    private DropShadowAlgorithmStatement createSQLStatement(final String... ruleName) {
-        return new DropShadowAlgorithmStatement(false, Arrays.asList(ruleName));
-    }
-    
-    private DropShadowAlgorithmStatement createSQLStatement(final boolean ifExists, final String... ruleName) {
-        return new DropShadowAlgorithmStatement(ifExists, Arrays.asList(ruleName));
     }
 }
