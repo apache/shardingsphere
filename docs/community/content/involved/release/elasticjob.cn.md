@@ -345,7 +345,7 @@ Checklist for reference:
 正文：
 
 ```
-We’ve received 3 +1 binding votes and one "+1 non-binding" vote:
+We’ve received 3 "+1 binding votes" and one "+1 non-binding" vote:
 
 +1 binding, xxx
 +1 binding, xxx
