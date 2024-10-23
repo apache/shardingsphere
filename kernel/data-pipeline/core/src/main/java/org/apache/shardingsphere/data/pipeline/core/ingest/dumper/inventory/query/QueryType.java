@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
 /**
- * Query range.
+ * Query type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class QueryRange {
+public enum QueryType {
     
-    private final Object lower;
-    
-    private final boolean lowerInclusive;
-    
-    private final Object upper;
+    RANGE_QUERY, POINT_QUERY
 }

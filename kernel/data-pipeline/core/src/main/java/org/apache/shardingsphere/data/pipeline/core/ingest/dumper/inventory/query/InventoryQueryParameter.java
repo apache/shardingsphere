@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query;
 
 import lombok.AccessLevel;
 import lombok.Getter;
