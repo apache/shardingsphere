@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type.enums;
+package org.apache.shardingsphere.infra.database.core.metadata.database.enums;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
