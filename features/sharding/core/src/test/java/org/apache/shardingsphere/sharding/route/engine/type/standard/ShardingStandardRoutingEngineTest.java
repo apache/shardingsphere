@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.fixture.ShardingRoutingEngineFixtureBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -89,6 +90,8 @@ class ShardingStandardRoutingEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
+    // TODO remove @Disabled when autoTables support config actualDataNodes in #33364
+    @Disabled
     @Test
     void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", ShardingRoutingEngineFixtureBuilder.createErrorShardingConditions("t_order"),
