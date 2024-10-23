@@ -4249,9 +4249,9 @@
     </select>
     <select sql-case-id="select_strright" db-types="MySQL, Doris">
         <projections start-index="7" stop-index="30">
-            <expression-projection start-index="7" stop-index="30" text="STRRIGHT('foobarbar', 4)">
+            <expression-projection start-index="7" stop-index="30" text="STRRIGHT('foobar', 4)">
                 <expr>
-                    <function function-name="STRRIGHT" text="STRRIGHT('foobarbar', 4)" start-index="7" stop-index="30">
+                    <function function-name="STRRIGHT" text="STRRIGHT('foobar', 4)" start-index="7" stop-index="30">
                         <parameter>
                             <literal-expression value="foobarbar" start-index="16" stop-index="26" />
                         </parameter>
