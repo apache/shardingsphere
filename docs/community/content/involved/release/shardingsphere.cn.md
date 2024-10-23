@@ -483,7 +483,7 @@ Please vote accordingly:
 
 [ ] -1 disapprove with the reason
 
-PMC vote is +1 binding, all others is "+1 non-binding".
+PMC vote is "+1 binding", all others is "+1 non-binding".
 
 Checklist for reference:
 
