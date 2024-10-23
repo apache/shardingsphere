@@ -143,22 +143,10 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
-            Object[] data = generateReturnData(selectStatementContext);
-            return Arrays.stream(data).anyMatch(Objects::nonNull) ? Collections.singletonList(new MemoryQueryResultRow(data)) : Collections.emptyList();
+            return Collections.emptyList();
         }
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
-        return result;
-    }
-    
-    private Object[] generateReturnData(final SelectStatementContext selectStatementContext) {
-        List<Projection> projections = new LinkedList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
-        Object[] result = new Object[projections.size()];
-        for (int i = 0; i < projections.size(); i++) {
-            if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
-                result[i] = 0;
-            }
-        }
         return result;
     }
 }
