@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MySQLDatabaseEnvironmentCheckerTest {
+class MySQLDatabasePrivilegeCheckerTest {
     
     @Mock
     private PreparedStatement preparedStatement;

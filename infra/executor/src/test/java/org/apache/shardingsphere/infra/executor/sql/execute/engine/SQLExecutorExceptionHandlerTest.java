@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ExecutorExceptionHandlerTest {
+class SQLExecutorExceptionHandlerTest {
     
     @AfterEach
     void tearDown() throws NoSuchFieldException, IllegalAccessException {

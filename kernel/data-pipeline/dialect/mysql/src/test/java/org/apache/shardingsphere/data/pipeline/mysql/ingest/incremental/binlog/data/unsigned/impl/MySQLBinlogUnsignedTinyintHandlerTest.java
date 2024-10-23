@@ -24,15 +24,15 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MySQLUnsignedSmallintHandlerTest {
+class MySQLBinlogUnsignedTinyintHandlerTest {
     
-    private final MySQLBinlogUnsignedSmallintHandler handler = new MySQLBinlogUnsignedSmallintHandler();
+    private final MySQLBinlogUnsignedTinyintHandler handler = new MySQLBinlogUnsignedTinyintHandler();
     
     @Test
     void assertHandle() {
-        Serializable actual = handler.handle((short) 1);
+        Serializable actual = handler.handle((byte) 1);
         assertThat(actual, is(1));
-        actual = handler.handle((short) -1);
-        assertThat(actual, is(65535));
+        actual = handler.handle((byte) -1);
+        assertThat(actual, is(255));
     }
 }

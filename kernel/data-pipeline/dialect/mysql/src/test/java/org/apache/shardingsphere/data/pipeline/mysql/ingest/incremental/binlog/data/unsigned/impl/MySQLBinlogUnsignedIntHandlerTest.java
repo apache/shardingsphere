@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.data.unsigned.impl;
 
-import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.util.Collections;
+import java.io.Serializable;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PrometheusSummaryWrapperTest {
+class MySQLBinlogUnsignedIntHandlerTest {
+    
+    private final MySQLBinlogUnsignedIntHandler handler = new MySQLBinlogUnsignedIntHandler();
     
     @Test
-    void assertCreate() throws ReflectiveOperationException {
-        PrometheusMetricsSummaryCollector collector = new PrometheusMetricsSummaryCollector(new MetricConfiguration("foo_summary",
-                MetricCollectorType.SUMMARY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
-        collector.observe(1D);
-        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusMetricsSummaryCollector.class.getDeclaredField("summary"), collector);
-        assertThat(summary.collect().size(), is(1));
+    void assertHandle() {
+        Serializable actual = handler.handle(1);
+        assertThat(actual, is(1L));
+        actual = handler.handle(-1);
+        assertThat(actual, is(4294967295L));
     }
 }

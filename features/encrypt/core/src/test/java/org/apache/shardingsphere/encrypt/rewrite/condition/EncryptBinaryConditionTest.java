@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.data.unsigned.impl;
+package org.apache.shardingsphere.encrypt.rewrite.condition;
 
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
-import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MySQLUnsignedMediumintHandlerTest {
-    
-    private final MySQLBinlogUnsignedMediumintHandler handler = new MySQLBinlogUnsignedMediumintHandler();
+class EncryptBinaryConditionTest {
     
     @Test
-    void assertHandle() {
-        Serializable actual = handler.handle(1);
-        assertThat(actual, is(1));
-        actual = handler.handle(-1);
-        assertThat(actual, is(16777215));
+    void assertGetConditionValues() {
+        List<Object> actual = new EncryptBinaryCondition("col", null, null,
+                0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(1));
     }
 }
