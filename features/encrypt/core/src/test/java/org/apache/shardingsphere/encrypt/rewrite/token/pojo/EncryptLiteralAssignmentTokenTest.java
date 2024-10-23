@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.condition;
+package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptInConditionTest {
+class EncryptLiteralAssignmentTokenTest {
     
     @Test
-    void assertGetConditionValues() {
-        List<ExpressionSegment> expressions = Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
-        List<Object> actual = new EncryptInCondition("col", null, 0, 0, expressions).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(2));
-        assertThat(actual.get(0), is(1));
-        assertThat(actual.get(1), is(2));
+    void assertToString() {
+        EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1);
+        actual.addAssignment("c1", "c1");
+        actual.addAssignment("c2", 1);
+        assertThat(actual.toString(), is("c1 = 'c1', c2 = 1"));
     }
 }

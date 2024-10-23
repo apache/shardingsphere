@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.pojo;
+package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptPredicateEqualRightValueTokenTest {
+class EncryptParameterAssignmentTokenTest {
     
     @Test
-    void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
-        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.singletonMap(0, "a"), Collections.emptyList());
-        assertThat(actual.toString(), is("'a'"));
-    }
-    
-    @Test
-    void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
-        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.emptyMap(), Collections.singleton(0));
-        assertThat(actual.toString(), is("?"));
+    void assertToString() {
+        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
+        actual.addColumnName("c1");
+        actual.addColumnName("c2");
+        assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
     }
 }

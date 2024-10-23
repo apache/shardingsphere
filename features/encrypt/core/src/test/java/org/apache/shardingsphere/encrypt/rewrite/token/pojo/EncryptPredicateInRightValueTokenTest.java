@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.pojo;
+package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptParameterAssignmentToken;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptParameterAssignmentTokenTest {
+class EncryptPredicateInRightValueTokenTest {
     
     @Test
-    void assertToString() {
-        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
-        actual.addColumnName("c1");
-        actual.addColumnName("c2");
-        assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
+    void assertToStringWithoutPlaceholderWithoutTableOwnerWithIn() {
+        Map<Integer, Object> indexValues = new LinkedHashMap<>(2, 1F);
+        indexValues.put(0, "a");
+        indexValues.put(1, "b");
+        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, indexValues, Collections.emptyList());
+        assertThat(actual.toString(), is("('a', 'b')"));
+    }
+    
+    @Test
+    void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
+        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, Collections.emptyMap(), Collections.singleton(0));
+        assertThat(actual.toString(), is("(?)"));
     }
 }
