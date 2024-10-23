@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.provider;
+package org.apache.shardingsphere.shadow.distsql.handler.provider;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.distsql.handler.provider.ShadowRuleConfigurationToDistSQLConverter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

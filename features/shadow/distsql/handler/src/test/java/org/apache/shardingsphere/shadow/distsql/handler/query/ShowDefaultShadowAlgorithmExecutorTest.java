@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.query;
+package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
+import org.apache.shardingsphere.shadow.distsql.statement.ShowDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorTest;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -35,16 +35,15 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class ShowShadowTableRulesExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
+class ShowDefaultShadowAlgorithmExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
     
-    ShowShadowTableRulesExecutorTest() {
+    ShowDefaultShadowAlgorithmExecutorTest() {
         super(mock(ShadowRule.class));
     }
     
@@ -59,14 +58,15 @@ class ShowShadowTableRulesExecutorTest extends DistSQLDatabaseRuleQueryExecutorT
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShadowTableRulesStatement(null, null),
-                    Collections.singleton(new LocalDataQueryResultRow("t_order", "shadowAlgorithmName_1,shadowAlgorithmName_2"))));
+            return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowDefaultShadowAlgorithmStatement(null),
+                    Collections.singleton(new LocalDataQueryResultRow("shadowAlgorithmName", "sql_hint", "{\"foo\":\"bar\"}"))));
         }
         
         private ShadowRuleConfiguration createRuleConfiguration() {
             ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-            result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Arrays.asList("shadowAlgorithmName_1", "shadowAlgorithmName_2")));
+            result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Collections.singleton("shadowAlgorithmName")));
             result.getShadowAlgorithms().put("shadowAlgorithmName", new AlgorithmConfiguration("sql_hint", PropertiesBuilder.build(new Property("foo", "bar"))));
+            result.setDefaultShadowAlgorithmName("shadowAlgorithmName");
             return result;
         }
     }
