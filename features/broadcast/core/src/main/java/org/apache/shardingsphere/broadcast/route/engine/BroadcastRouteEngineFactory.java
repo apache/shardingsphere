@@ -71,10 +71,9 @@ public final class BroadcastRouteEngineFactory {
             return new BroadcastDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatement instanceof DDLStatement) {
-            if (sqlStatementContext instanceof CursorAvailable) {
-                return getCursorRouteEngine(broadcastRule, sqlStatementContext, queryContext.getConnectionContext());
-            }
-            return getDDLRoutingEngine(broadcastRule, database, queryContext);
+            return sqlStatementContext instanceof CursorAvailable
+                    ? getCursorRouteEngine(broadcastRule, sqlStatementContext, queryContext.getConnectionContext())
+                    : getDDLRoutingEngine(broadcastRule, database, queryContext);
         }
         if (sqlStatement instanceof DALStatement) {
             return getDALRoutingEngine(broadcastRule, queryContext);

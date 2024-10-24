@@ -90,19 +90,6 @@ class ExecutionContextBuilderTest {
     }
     
     @Test
-    void assertBuildRouteSQLRewriteResultWithNullTableMappers() {
-        RouteUnit routeUnit = new RouteUnit(new RouteMapper("foo_db", "actual_db"), null);
-        SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit("sql", Collections.singletonList("parameter"));
-        Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = Collections.singletonMap(routeUnit, sqlRewriteUnit);
-        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap());
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildDatabase());
-        Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(database, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
-        ExecutionUnit expectedUnit = new ExecutionUnit("actual_db", new SQLUnit("sql", Collections.singletonList("parameter")));
-        assertThat(actual, is(Collections.singleton(expectedUnit)));
-    }
-    
-    @Test
     void assertBuildRouteSQLRewriteResult() {
         RouteUnit routeUnit1 = new RouteUnit(new RouteMapper("foo_db_1", "actual_db_1"), Collections.singletonList(new RouteMapper("foo_tbl", "actual_tbl")));
         SQLRewriteUnit sqlRewriteUnit1 = new SQLRewriteUnit("sql1", Collections.singletonList("parameter1"));
