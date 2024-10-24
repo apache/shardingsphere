@@ -579,6 +579,28 @@ git checkout ${RELEASE.VERSION}
 docker logout
 ```
 
+3.5 登录 GitHub Packages Container Registry
+
+```shell
+docker login ghcr.io/apache/shardingsphere
+```
+
+3.6 构建并推送 ShardingSphere Agent Docker image
+
+```shell
+cd ~/shardingsphere
+git checkout ${RELEASE.VERSION}
+./mvnw -am -pl distribution/agent -Prelease,docker.buildx.push -T 1C -DskipTests clean package
+```
+
+3.7 确认发布成功
+
+查看 [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-agent) 是否有发布的镜像，确保镜像同时支持 `linux/amd64` 和 `linux/arm64`。
+
+```shell
+docker logout
+```
+
 ### 4. GitHub 版本发布
 
 在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面创建新版本。

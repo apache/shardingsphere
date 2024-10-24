@@ -57,7 +57,7 @@ please enable LLVM backend according to the content of https://medium.com/graalv
 Users must build the different GraalVM Native Image for each target operating system and target architecture that they need to run the GraalVM Native Image on.
 Users can consider partially circumventing this limitation by using Docker Image.
 
-This section is still limited by the documented content of the [GraalVM Native Image](/us/user-manual/shardingsphere-jdbc/graalvm-native-image) on the ShardingSphere JDBC side.
+This section is still limited by the documented content of the [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image) on the ShardingSphere JDBC side.
 
 ## Premise
 

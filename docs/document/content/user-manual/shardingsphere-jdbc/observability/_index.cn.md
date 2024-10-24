@@ -125,7 +125,7 @@ cd ./shardingsphere/
 此后若在自定义 `Dockerfile` 中添加以下语句，这会将 ShardingSphere Agent 的目录复制到 `/shardingsphere-agent/` 。
 
 ```dockerfile
-COPY --from=apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
+COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
 ```
 
 #### 夜间构建
@@ -174,10 +174,10 @@ COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
 ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent.jar","-jar","/app.jar"]
 ```
 
-如果是通过本地构建 `apache/shardingsphere-agent:latest` 的 Docker Image，`Dockerfile` 可能如下，
+如果是通过本地构建 `ghcr.io/apache/shardingsphere-agent:latest` 的 Docker Image，`Dockerfile` 可能如下，
 
 ```dockerfile
-FROM apache/shardingsphere-agent:latest
+FROM ghcr.io/apache/shardingsphere-agent:latest
 COPY ./target/example.jar /app.jar
 COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
 ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent.jar","-jar","/app.jar"]
