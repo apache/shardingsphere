@@ -23,8 +23,8 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Reco
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryRange;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.InventoryColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineDataConsistencyCalculateSQLBuilder;

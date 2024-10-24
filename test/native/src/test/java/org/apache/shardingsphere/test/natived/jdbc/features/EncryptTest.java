@@ -50,7 +50,7 @@ class EncryptTest {
     void assertEncryptInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/features/encrypt.yaml");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/features/encrypt.yaml");
         DataSource dataSource = new HikariDataSource(config);
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);

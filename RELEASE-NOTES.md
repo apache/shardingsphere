@@ -10,11 +10,16 @@
 1. Proxy Native: Change the Base Docker Image of ShardingSphere Proxy Native - [#33263](https://github.com/apache/shardingsphere/issues/33263)
 1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
 1. SQL Parser: Support parsing Doris INSTR - [#33289](https://github.com/apache/shardingsphere/pull/33289)
+1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 
 ### Bug Fixes
 
 1. Mode: Fixes `JDBCRepository` improper handling of H2-database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
 1. SQL Binder: Use Multimap and CaseInsensitiveString to replace CaseInsensitiveMap for supporting mysql multi table join with same table alias - [#33303](https://github.com/apache/shardingsphere/pull/33303)
+1. SQL Binder: Fix the combine statement cannot find the outer table when bind - [#33357](https://github.com/apache/shardingsphere/pull/33357)
+1. SQL Binder: Fix SQL performance issues caused by repeated subquery fetches - [#33361](https://github.com/apache/shardingsphere/pull/33361)
+1. Sharding: Remove ShardingRouteAlgorithmException check logic temporarily to support different actual table name config - [#33367](https://github.com/apache/shardingsphere/pull/33367)
+1. SQL Binder: Fix table does not exist exception when use HintManager#setDatabaseName to transparent - [#33370](https://github.com/apache/shardingsphere/pull/33370)
 
 ### Change Logs
 

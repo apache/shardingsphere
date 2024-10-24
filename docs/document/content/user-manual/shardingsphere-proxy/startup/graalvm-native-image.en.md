@@ -154,7 +154,7 @@ services:
 ```
 
 If the user does not make any changes to the Git Source,
-the above mentioned command will use `container-registry.oracle.com/os/oraclelinux:9-slim` in https://container-registry.oracle.com/ords/ocr/ba/os/oraclelinux as the Base Docker Image.
+the above mentioned command will use `container-registry.oracle.com/os/oraclelinux:9-slim` in https://yum.oracle.com/oracle-linux-downloads.html as the Base Docker Image.
 But if the user wants to use a smaller Docker Image such as `scratch`, `alpine:3`, `gcr.io/distroless/base-debian12`,
 `gcr.io/distroless/java-base-debian12` or `gcr.io/distroless/static-debian12` as the Base Docker Image,
 the user may need to add `--static`,

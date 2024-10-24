@@ -142,7 +142,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) throws SQLException {
         ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
         Collection<String> catalogs = getCatalogs(resourceMetaData);
-        schemaNameAlias = alias.getOrDefault(SCHEMA_NAME, "");
+        schemaNameAlias = alias.getOrDefault(SCHEMA_NAME, alias.getOrDefault(schemaNameAlias, schemaNameAlias));
         String rowValue = rows.getOrDefault(schemaNameAlias, "").toString();
         queryDatabase = !rowValue.isEmpty();
         if (catalogs.contains(rowValue)) {

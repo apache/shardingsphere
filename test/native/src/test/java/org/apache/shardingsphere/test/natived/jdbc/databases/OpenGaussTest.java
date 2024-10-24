@@ -119,7 +119,7 @@ class OpenGaussTest {
         }
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/opengauss.yaml?placeholder-type=system_props");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/opengauss.yaml?placeholder-type=system_props");
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");

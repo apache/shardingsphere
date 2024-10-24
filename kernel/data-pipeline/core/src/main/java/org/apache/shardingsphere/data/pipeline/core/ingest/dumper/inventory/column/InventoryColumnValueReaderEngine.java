@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
@@ -32,13 +33,10 @@ import java.util.Optional;
 /**
  * Inventory column value reader engine.
  */
+@RequiredArgsConstructor
 public final class InventoryColumnValueReaderEngine {
     
-    private final DialectInventoryColumnValueReader columnReader;
-    
-    public InventoryColumnValueReaderEngine(final DatabaseType databaseType) {
-        columnReader = DatabaseTypedSPILoader.findService(DialectInventoryColumnValueReader.class, databaseType).orElse(null);
-    }
+    private final DatabaseType databaseType;
     
     /**
      * Read column value.
@@ -56,10 +54,11 @@ public final class InventoryColumnValueReaderEngine {
     }
     
     private Optional<Object> readDialectValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return null == columnReader ? Optional.empty() : columnReader.read(resultSet, metaData, columnIndex);
+        Optional<DialectInventoryColumnValueReader> dialectColumnReader = DatabaseTypedSPILoader.findService(DialectInventoryColumnValueReader.class, databaseType);
+        return dialectColumnReader.isPresent() ? dialectColumnReader.get().read(resultSet, metaData, columnIndex) : Optional.empty();
     }
     
-    private static Object readStandardValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+    private Object readStandardValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         int columnType = metaData.getColumnType(columnIndex);
         switch (columnType) {
             case Types.BOOLEAN:
@@ -113,15 +112,15 @@ public final class InventoryColumnValueReaderEngine {
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
                 return resultSet.getBytes(columnIndex);
+            case Types.BLOB:
+                Blob blob = resultSet.getBlob(columnIndex);
+                return null == blob ? null : blob.getBytes(1L, (int) blob.length());
             case Types.CLOB:
                 Clob clob = resultSet.getClob(columnIndex);
                 return null == clob ? null : clob.getSubString(1L, (int) clob.length());
             case Types.NCLOB:
                 NClob nClob = resultSet.getNClob(columnIndex);
                 return null == nClob ? null : nClob.getSubString(1L, (int) nClob.length());
-            case Types.BLOB:
-                Blob blob = resultSet.getBlob(columnIndex);
-                return null == blob ? null : blob.getBytes(1L, (int) blob.length());
             case Types.ARRAY:
                 return resultSet.getArray(columnIndex);
             default:
@@ -129,7 +128,7 @@ public final class InventoryColumnValueReaderEngine {
         }
     }
     
-    private static boolean isSigned(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+    private boolean isSigned(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         return metaData.isSigned(columnIndex);
     }
 }

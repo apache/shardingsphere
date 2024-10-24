@@ -125,7 +125,7 @@ class HiveTest {
         }
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/hive.yaml?placeholder-type=system_props");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive.yaml?placeholder-type=system_props");
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0" + ";initFile=" + ABSOLUTE_PATH);
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1" + ";initFile=" + ABSOLUTE_PATH);
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2" + ";initFile=" + ABSOLUTE_PATH);

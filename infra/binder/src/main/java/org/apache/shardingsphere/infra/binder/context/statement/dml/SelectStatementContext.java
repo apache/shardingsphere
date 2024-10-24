@@ -187,7 +187,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String currentDatabaseName,
                                                                         final Collection<TableSegment> tableSegments) {
-        Collection<SubquerySegment> subquerySegments = SubqueryExtractUtils.getSubquerySegments(getSqlStatement());
+        Collection<SubquerySegment> subquerySegments = SubqueryExtractUtils.getSubquerySegments(getSqlStatement(), false);
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);
         for (SubquerySegment each : subquerySegments) {
             SelectStatementContext subqueryContext = new SelectStatementContext(metaData, params, each.getSelect(), currentDatabaseName, tableSegments);

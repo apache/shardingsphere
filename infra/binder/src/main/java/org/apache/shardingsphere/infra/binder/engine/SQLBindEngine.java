@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -55,7 +56,7 @@ public final class SQLBindEngine {
     }
     
     private boolean isNeedBind() {
-        return !hintValueContext.findHintDataSourceName().isPresent();
+        return !hintValueContext.findHintDataSourceName().isPresent() && !HintManager.getDataSourceName().isPresent();
     }
     
     private SQLStatement bindSQLStatement(final SQLStatement statement) {
