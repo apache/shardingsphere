@@ -66,8 +66,4 @@ public final class IncrementalTask implements PipelineTask {
             each.stop();
         }
     }
-    
-    @Override
-    public void close() {
-    }
 }
