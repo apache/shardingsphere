@@ -9,6 +9,7 @@
 1. SQL Parser: Support parsing Doris BITXOR - [#33258](https://github.com/apache/shardingsphere/pull/33258)
 1. Proxy Native: Change the Base Docker Image of ShardingSphere Proxy Native - [#33263](https://github.com/apache/shardingsphere/issues/33263)
 1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
+1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
 1. SQL Parser: Support parsing Doris INSTR - [#33289](https://github.com/apache/shardingsphere/pull/33289)
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Add arguments not null check when creating RouteUnit - [#33382](https://github.com/apache/shardingsphere/pull/33382)

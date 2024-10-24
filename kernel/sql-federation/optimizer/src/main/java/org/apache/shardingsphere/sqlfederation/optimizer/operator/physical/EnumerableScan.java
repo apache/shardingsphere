@@ -35,8 +35,8 @@ import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.util.SqlString;
-import org.apache.shardingsphere.sqlfederation.optimizer.sql.SQLDialectFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.sql.SQLDialectFactory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -54,15 +54,13 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     private final RelDataType pushDownRowType;
     
     public EnumerableScan(final RelOptCluster cluster, final RelTraitSet traitSet, final RelOptTable table, final RelNode pushDownRelNode, final String databaseType) {
-        super(cluster, traitSet, Collections.emptyList(), table);
-        this.traitSet = this.traitSet.replace(EnumerableConvention.INSTANCE);
+        super(cluster, traitSet.replace(EnumerableConvention.INSTANCE), Collections.emptyList(), table);
         sqlString = createSQLString(pushDownRelNode, databaseType);
         pushDownRowType = pushDownRelNode.getRowType();
     }
     
     public EnumerableScan(final RelOptCluster cluster, final RelTraitSet traitSet, final RelOptTable table, final SqlString sqlString, final RelDataType pushDownRowType) {
-        super(cluster, traitSet, Collections.emptyList(), table);
-        this.traitSet = this.traitSet.replace(EnumerableConvention.INSTANCE);
+        super(cluster, traitSet.replace(EnumerableConvention.INSTANCE), Collections.emptyList(), table);
         this.sqlString = sqlString;
         this.pushDownRowType = pushDownRowType;
     }

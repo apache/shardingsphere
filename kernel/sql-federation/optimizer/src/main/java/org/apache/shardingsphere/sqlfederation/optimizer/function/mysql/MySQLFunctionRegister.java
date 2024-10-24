@@ -22,7 +22,6 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.shardingsphere.sqlfederation.optimizer.function.SQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBinFunction;
-import org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBitCountFunction;
 
 /**
  * MySQL function register.
@@ -32,7 +31,6 @@ public final class MySQLFunctionRegister implements SQLFederationFunctionRegiste
     @Override
     public void registerFunction(final SchemaPlus schemaPlus, final String schemaName) {
         schemaPlus.add("bin", ScalarFunctionImpl.create(MySQLBinFunction.class, "bin"));
-        schemaPlus.add("bit_count", ScalarFunctionImpl.create(MySQLBitCountFunction.class, "bitCount"));
         schemaPlus.add("atan", ScalarFunctionImpl.create(SqlFunctions.class, "atan2"));
         schemaPlus.add("atan2", ScalarFunctionImpl.create(SqlFunctions.class, "atan"));
     }
