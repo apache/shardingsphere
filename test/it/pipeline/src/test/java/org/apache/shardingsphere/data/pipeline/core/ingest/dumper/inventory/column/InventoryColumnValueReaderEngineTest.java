@@ -80,7 +80,7 @@ class InventoryColumnValueReaderEngineTest {
         when(metaData.isSigned(1)).thenReturn(true);
         when(metaData.getColumnType(1)).thenReturn(Types.TINYINT);
         when(resultSet.getByte(1)).thenReturn((byte) 1);
-        assertThat(engine.read(resultSet, metaData, 1), is((short) 1));
+        assertThat(engine.read(resultSet, metaData, 1), is((byte) 1));
     }
     
     @Test
@@ -95,7 +95,7 @@ class InventoryColumnValueReaderEngineTest {
         when(metaData.isSigned(1)).thenReturn(true);
         when(metaData.getColumnType(1)).thenReturn(Types.SMALLINT);
         when(resultSet.getShort(1)).thenReturn((short) 1);
-        assertThat(engine.read(resultSet, metaData, 1), is(1));
+        assertThat(engine.read(resultSet, metaData, 1), is((short) 1));
     }
     
     @Test
@@ -110,7 +110,7 @@ class InventoryColumnValueReaderEngineTest {
         when(metaData.isSigned(1)).thenReturn(true);
         when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
         when(resultSet.getInt(1)).thenReturn(1);
-        assertThat(engine.read(resultSet, metaData, 1), is(1L));
+        assertThat(engine.read(resultSet, metaData, 1), is(1));
     }
     
     @Test
