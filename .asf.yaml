@@ -36,10 +36,10 @@ github:
     - postgresql
     - shard
     - encrypt
+    - data-encryption
     - dba
     - oltp
     - bigdata
-    - hacktoberfest
   features:
     issues: true
     projects: true
