@@ -22,23 +22,23 @@ notifications:
   jobs: notifications@shardingsphere.apache.org
 
 github:
-  description: Distributed SQL transaction & query engine for data sharding, scaling, encryption, and more - on any database.
+  description: Empowering Data Intelligence with Distributed SQL for Sharding, Scalability, and Security Across All Databases.
   labels:
-    - database-plus
     - database
+    - database-cluster
     - distributed-database
     - distributed-sql-database
-    - distributed-transactions
-    - database-cluster
-    - rdbms
+    - distributed-transaction
+    - database-gateway
+    - database-middleware
     - sql
     - mysql
     - postgresql
     - shard
+    - read-write-splitting
     - encrypt
     - data-encryption
-    - dba
-    - oltp
+    - data-pipeline
     - bigdata
   features:
     issues: true
