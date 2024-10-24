@@ -17,46 +17,310 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 
-import java.sql.Connection;
+import java.math.BigDecimal;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
+import java.sql.NClob;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class InventoryColumnValueReaderEngineTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final InventoryColumnValueReaderEngine engine = new InventoryColumnValueReaderEngine(databaseType);
+    
+    @Mock
+    private ResultSet resultSet;
+    
+    @Mock
+    private ResultSetMetaData metaData;
+    
     @Test
-    void assertReadValue() throws SQLException {
-        InventoryColumnValueReaderEngine columnValueReaderEngine = new InventoryColumnValueReaderEngine(TypedSPILoader.getService(DatabaseType.class, "H2"));
-        try (
-                HikariDataSource dataSource = createDataSource(RandomStringUtils.randomAlphanumeric(6));
-                Connection connection = dataSource.getConnection()) {
-            connection.createStatement().execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT, status VARCHAR(12), c_year year)");
-            connection.createStatement().executeUpdate("INSERT INTO t_order(order_id, user_id, status, c_year) VALUES (1, 2,'ok', null)");
-            ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM t_order");
-            resultSet.next();
-            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 1), is(1));
-            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 2), is(2));
-            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 3), is("ok"));
-            assertNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 4));
-        }
+    void assertReadWithDialectInventoryColumnValueReader() throws SQLException {
+        DialectInventoryColumnValueReader dialectReader = mock(DialectInventoryColumnValueReader.class);
+        when(dialectReader.read(resultSet, metaData, 1)).thenReturn(Optional.of("foo"));
+        when(DatabaseTypedSPILoader.findService(DialectInventoryColumnValueReader.class, databaseType)).thenReturn(Optional.of(dialectReader));
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
     }
     
-    private static HikariDataSource createDataSource(final String databaseName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", databaseName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaximumPoolSize(10);
-        result.setMinimumIdle(2);
-        return result;
+    @Test
+    void assertReadWithBooleanValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.BOOLEAN);
+        when(resultSet.getBoolean(1)).thenReturn(true);
+        assertThat(engine.read(resultSet, metaData, 1), is(true));
+    }
+    
+    @Test
+    void assertReadWithSingedTinyIntValue() throws SQLException {
+        when(metaData.isSigned(1)).thenReturn(true);
+        when(metaData.getColumnType(1)).thenReturn(Types.TINYINT);
+        when(resultSet.getByte(1)).thenReturn((byte) 1);
+        assertThat(engine.read(resultSet, metaData, 1), is((byte) 1));
+    }
+    
+    @Test
+    void assertReadWithUnSingedTinyIntValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TINYINT);
+        when(resultSet.getShort(1)).thenReturn((short) 1);
+        assertThat(engine.read(resultSet, metaData, 1), is((short) 1));
+    }
+    
+    @Test
+    void assertReadWithSingedSmallIntValue() throws SQLException {
+        when(metaData.isSigned(1)).thenReturn(true);
+        when(metaData.getColumnType(1)).thenReturn(Types.SMALLINT);
+        when(resultSet.getShort(1)).thenReturn((short) 1);
+        assertThat(engine.read(resultSet, metaData, 1), is((short) 1));
+    }
+    
+    @Test
+    void assertReadWithUnSingedSmallIntValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.SMALLINT);
+        when(resultSet.getInt(1)).thenReturn(1);
+        assertThat(engine.read(resultSet, metaData, 1), is(1));
+    }
+    
+    @Test
+    void assertReadWithSingedIntegerValue() throws SQLException {
+        when(metaData.isSigned(1)).thenReturn(true);
+        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(resultSet.getInt(1)).thenReturn(1);
+        assertThat(engine.read(resultSet, metaData, 1), is(1));
+    }
+    
+    @Test
+    void assertReadWithUnSingedIntegerValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(resultSet.getLong(1)).thenReturn(1L);
+        assertThat(engine.read(resultSet, metaData, 1), is(1L));
+    }
+    
+    @Test
+    void assertReadWithSingedBigIntValue() throws SQLException {
+        when(metaData.isSigned(1)).thenReturn(true);
+        when(metaData.getColumnType(1)).thenReturn(Types.BIGINT);
+        when(resultSet.getLong(1)).thenReturn(1L);
+        assertThat(engine.read(resultSet, metaData, 1), is(1L));
+    }
+    
+    @Test
+    void assertReadWithUnSingedBigIntValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.BIGINT);
+        when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
+        assertThat(engine.read(resultSet, metaData, 1), is(new BigDecimal("1")));
+    }
+    
+    @Test
+    void assertReadWithNumericValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.NUMERIC);
+        when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
+        assertThat(engine.read(resultSet, metaData, 1), is(new BigDecimal("1")));
+    }
+    
+    @Test
+    void assertReadWithDecimalValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.DECIMAL);
+        when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
+        assertThat(engine.read(resultSet, metaData, 1), is(new BigDecimal("1")));
+    }
+    
+    @Test
+    void assertReadWithRealValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.REAL);
+        when(resultSet.getFloat(1)).thenReturn(1F);
+        assertThat(engine.read(resultSet, metaData, 1), is(1F));
+    }
+    
+    @Test
+    void assertReadWithFloatValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.FLOAT);
+        when(resultSet.getFloat(1)).thenReturn(1F);
+        assertThat(engine.read(resultSet, metaData, 1), is(1F));
+    }
+    
+    @Test
+    void assertReadWithDoubleValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.DOUBLE);
+        when(resultSet.getDouble(1)).thenReturn(1D);
+        assertThat(engine.read(resultSet, metaData, 1), is(1D));
+    }
+    
+    @Test
+    void assertReadWithTimeValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(resultSet.getTime(1)).thenReturn(new Time(1L));
+        assertThat(engine.read(resultSet, metaData, 1), is(new Time(1L)));
+    }
+    
+    @Test
+    void assertReadWithDateValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.DATE);
+        when(resultSet.getDate(1)).thenReturn(new Date(1L));
+        assertThat(engine.read(resultSet, metaData, 1), is(new Date(1L)));
+    }
+    
+    @Test
+    void assertReadWithTimestampValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
+        when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(1L));
+        assertThat(engine.read(resultSet, metaData, 1), is(new Timestamp(1L)));
+    }
+    
+    @Test
+    void assertReadWithCharValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.CHAR);
+        when(resultSet.getString(1)).thenReturn("foo");
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
+    }
+    
+    @Test
+    void assertReadWithVarCharValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.VARCHAR);
+        when(resultSet.getString(1)).thenReturn("foo");
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
+    }
+    
+    @Test
+    void assertReadWithLongVarCharValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.LONGVARCHAR);
+        when(resultSet.getString(1)).thenReturn("foo");
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
+    }
+    
+    @Test
+    void assertReadWithNCharValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.NCHAR);
+        when(resultSet.getString(1)).thenReturn("foo");
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
+    }
+    
+    @Test
+    void assertReadWithNVarCharValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.NVARCHAR);
+        when(resultSet.getString(1)).thenReturn("foo");
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
+    }
+    
+    @Test
+    void assertReadWithLongNVarCharValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.LONGNVARCHAR);
+        when(resultSet.getString(1)).thenReturn("foo");
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
+    }
+    
+    @Test
+    void assertReadWithBinaryValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.BINARY);
+        when(resultSet.getBytes(1)).thenReturn(new byte[]{1});
+        assertThat(engine.read(resultSet, metaData, 1), is(new byte[]{1}));
+    }
+    
+    @Test
+    void assertReadWithVarBinaryValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.VARBINARY);
+        when(resultSet.getBytes(1)).thenReturn(new byte[]{1});
+        assertThat(engine.read(resultSet, metaData, 1), is(new byte[]{1}));
+    }
+    
+    @Test
+    void assertReadWithLongVarBinaryValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.LONGVARBINARY);
+        when(resultSet.getBytes(1)).thenReturn(new byte[]{1});
+        assertThat(engine.read(resultSet, metaData, 1), is(new byte[]{1}));
+    }
+    
+    @Test
+    void assertReadWithNullBlob() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.BLOB);
+        assertNull(engine.read(resultSet, metaData, 1));
+    }
+    
+    @Test
+    void assertReadWithBlob() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.BLOB);
+        Blob blob = mock(Blob.class);
+        when(blob.length()).thenReturn(10L);
+        when(blob.getBytes(1, 10)).thenReturn(new byte[]{1});
+        when(resultSet.getBlob(1)).thenReturn(blob);
+        assertThat(engine.read(resultSet, metaData, 1), is(new byte[]{1}));
+    }
+    
+    @Test
+    void assertReadWithNullClob() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.CLOB);
+        assertNull(engine.read(resultSet, metaData, 1));
+    }
+    
+    @Test
+    void assertReadWithClob() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.CLOB);
+        Clob clob = mock(Clob.class);
+        when(clob.length()).thenReturn(10L);
+        when(clob.getSubString(1, 10)).thenReturn("foo");
+        when(resultSet.getClob(1)).thenReturn(clob);
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
+    }
+    
+    @Test
+    void assertReadWithNullNClob() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.NCLOB);
+        assertNull(engine.read(resultSet, metaData, 1));
+    }
+    
+    @Test
+    void assertReadWithNClob() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.NCLOB);
+        NClob nClob = mock(NClob.class);
+        when(nClob.length()).thenReturn(10L);
+        when(nClob.getSubString(1, 10)).thenReturn("foo");
+        when(resultSet.getNClob(1)).thenReturn(nClob);
+        assertThat(engine.read(resultSet, metaData, 1), is("foo"));
+    }
+    
+    @Test
+    void assertReadWithArray() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.ARRAY);
+        Array array = mock(Array.class);
+        when(resultSet.getArray(1)).thenReturn(array);
+        assertThat(engine.read(resultSet, metaData, 1), is(array));
+    }
+    
+    @Test
+    void assertReadWithObject() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        Object object = new Object();
+        when(resultSet.getObject(1)).thenReturn(object);
+        assertThat(engine.read(resultSet, metaData, 1), is(object));
+    }
+    
+    @Test
+    void assertReadWithNull() throws SQLException {
+        when(resultSet.wasNull()).thenReturn(true);
+        assertNull(engine.read(resultSet, metaData, 1));
     }
 }

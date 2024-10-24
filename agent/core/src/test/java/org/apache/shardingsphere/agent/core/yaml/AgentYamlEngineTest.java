@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.yaml;
+package org.apache.shardingsphere.agent.core.yaml;
 
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorConfiguration;
@@ -26,7 +26,6 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdvi
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.swapper.YamlPluginsConfigurationSwapper;
-import org.apache.shardingsphere.agent.core.yaml.AgentYamlEngine;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
