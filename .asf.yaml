@@ -22,7 +22,7 @@ notifications:
   jobs: notifications@shardingsphere.apache.org
 
 github:
-  description: Distributed SQL transaction & query engine for data sharding, scaling, encryption, and more - on any database.
+  description: Empowering Data Intelligence with Distributed SQL for Sharding, Scalability, and Security for Any Databases.
   labels:
     - database
     - database-cluster
