@@ -20,10 +20,14 @@ package org.apache.shardingsphere.test.e2e.env.runtime.cluster;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -39,10 +43,21 @@ public final class ClusterEnvironment {
     
     private final Collection<DatabaseType> databaseTypes;
     
+    private final Map<DatabaseType, String> databaseImages;
+    
     public ClusterEnvironment(final Properties props) {
         type = getType(props);
         adapters = getAdapters(props);
         databaseTypes = getDatabaseTypes(props);
+        databaseImages = getDatabaseImages(props);
+    }
+    
+    private Map<DatabaseType, String> getDatabaseImages(final Properties props) {
+        Map<DatabaseType, String> result = new HashMap<>();
+        for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
+            Optional.ofNullable(props.getProperty(String.format("it.cluster.database.%s.image", each.getType().toLowerCase()))).ifPresent(value -> result.put(each, value));
+        }
+        return result;
     }
     
     private Type getType(final Properties props) {

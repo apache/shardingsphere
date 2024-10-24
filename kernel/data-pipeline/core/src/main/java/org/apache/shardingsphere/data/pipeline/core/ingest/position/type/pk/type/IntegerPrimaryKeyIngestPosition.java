@@ -44,11 +44,6 @@ public final class IntegerPrimaryKeyIngestPosition implements PrimaryKeyIngestPo
     }
     
     @Override
-    public Long convert(final String value) {
-        return Long.parseLong(value);
-    }
-    
-    @Override
     public char getType() {
         return 'i';
     }

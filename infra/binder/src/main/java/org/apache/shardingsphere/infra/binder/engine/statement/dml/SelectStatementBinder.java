@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.combine.CombineSegmentBinder;
@@ -30,9 +33,6 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -41,21 +41,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class SelectStatementBinder implements SQLStatementBinder<SelectStatement> {
     
-    private final Map<String, TableSegmentBinderContext> outerTableBinderContexts;
+    private final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts;
     
     public SelectStatementBinder() {
-        outerTableBinderContexts = Collections.emptyMap();
+        outerTableBinderContexts = LinkedHashMultimap.create();
     }
     
     @Override
     public SelectStatement bind(final SelectStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         SelectStatement result = copy(sqlStatement);
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         Optional<TableSegment> boundTableSegment = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts));
         boundTableSegment.ifPresent(result::setFrom);
         result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), binderContext, boundTableSegment.orElse(null), tableBinderContexts, outerTableBinderContexts));
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
-        sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, binderContext)));
+        sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)));
         sqlStatement.getLock().ifPresent(optional -> result.setLock(LockSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
         // TODO support other segment bind in select statement
         return result;

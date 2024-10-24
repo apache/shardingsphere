@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
-
-import java.util.Map;
 
 /**
  * Exists subquery expression binder.
@@ -41,7 +41,7 @@ public final class ExistsSubqueryExpressionBinder {
      * @return bound exists subquery expression segment
      */
     public static ExistsSubqueryExpression bind(final ExistsSubqueryExpression segment, final SQLStatementBinderContext binderContext,
-                                                final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+                                                final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         SubquerySegment boundSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts);
         ExistsSubqueryExpression result = new ExistsSubqueryExpression(segment.getStartIndex(), segment.getStopIndex(), boundSubquery);
         result.setNot(segment.isNot());

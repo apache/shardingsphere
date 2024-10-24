@@ -66,6 +66,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
+            statement.execute(repositorySQL.getCreateTableSQL());
             // TODO remove it later. Add for reset standalone test e2e's env. Need to close DataSource to release H2's memory data
             if (jdbcRepositoryProps.<String>getValue(JDBCRepositoryPropertyKey.JDBC_URL).contains("h2:mem:")) {
                 try {
@@ -74,7 +75,6 @@ public final class JDBCRepository implements StandalonePersistRepository {
                 }
             }
             // Finish TODO
-            statement.execute(repositorySQL.getCreateTableSQL());
         }
     }
     
@@ -185,8 +185,18 @@ public final class JDBCRepository implements StandalonePersistRepository {
         }
     }
     
+    /**
+     * Delete the specified row.
+     * Once the database connection involved in this row of data has been closed by other threads and this row of data is located in the H2Database started in memory mode,
+     * the data is actually deleted.
+     *
+     * @param key key of data
+     */
     @Override
     public void delete(final String key) {
+        if (dataSource.isClosed() && dataSource.getJdbcUrl().startsWith("jdbc:h2:mem:")) {
+            return;
+        }
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(repositorySQL.getDeleteSQL())) {

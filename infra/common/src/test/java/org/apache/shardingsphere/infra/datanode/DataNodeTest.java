@@ -50,6 +50,19 @@ class DataNodeTest {
         assertThrows(InvalidDataNodeFormatException.class, () -> new DataNode("ds_0,tbl_0"));
     }
     
+    @Test
+    void assertFormatWithSchema() {
+        DataNode dataNode = new DataNode("foo_ds", "foo_tbl");
+        dataNode.setSchemaName("foo_schema");
+        assertThat(dataNode.format(), is("foo_ds.foo_schema.foo_tbl"));
+    }
+    
+    @Test
+    void assertFormatWithoutSchema() {
+        DataNode dataNode = new DataNode("foo_ds", "foo_tbl");
+        assertThat(dataNode.format(), is("foo_ds.foo_tbl"));
+    }
+    
     @SuppressWarnings({"SimplifiableAssertion", "ConstantValue"})
     @Test
     void assertEquals() {

@@ -84,6 +84,7 @@
     <sql-case id="select_with_interval_function" value="SELECT INTERVAL(status,1,5) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_left_function" value="SELECT CONCAT(LEFT(status, 7), 'test') FROM t_order_item WHERE user_id = 10" db-types="MySQL" />
     <sql-case id="select_database" value="SELECT DATABASE()" db-types="MySQL" />
+    <sql-case id="select_quarter" value="SELECT QUARTER('2008-04-01')" db-types="MySQL" />
     <sql-case id="select_with_mod_function" value="SELECT * FROM t_order WHERE MOD(order_id, 1) = 1" db-types="MySQL" />
     <sql-case id="select_with_date_format_function" value="SELECT * FROM t_order WHERE DATE_FORMAT(current_date, '%Y-%m-%d') = '2019-12-18'" db-types="MySQL" />
     <sql-case id="select_with_spatial_function" value="SELECT * FROM t_order WHERE ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id)) != 0" db-types="MySQL" />

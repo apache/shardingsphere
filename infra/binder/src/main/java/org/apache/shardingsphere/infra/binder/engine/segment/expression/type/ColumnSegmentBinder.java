@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Strings;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.groovy.util.Maps;
@@ -71,7 +73,8 @@ public final class ColumnSegmentBinder {
      * @return bound column segment
      */
     public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
-                                     final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         if (EXCLUDE_BIND_COLUMNS.contains(segment.getIdentifier().getValue().toUpperCase())) {
             return segment;
         }
@@ -93,12 +96,11 @@ public final class ColumnSegmentBinder {
     
     private static Collection<TableSegmentBinderContext> getTableSegmentBinderContexts(final ColumnSegment segment, final SegmentType parentSegmentType,
                                                                                        final SQLStatementBinderContext binderContext,
-                                                                                       final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                                                                       final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment.getOwner().isPresent()) {
-            String owner = segment.getOwner().get().getIdentifier().getValue().toLowerCase();
-            return findTableBinderContextByOwner(owner, tableBinderContexts, outerTableBinderContexts, binderContext.getExternalTableBinderContexts())
-                    .map(Collections::singletonList).orElse(Collections.emptyList());
+            String owner = segment.getOwner().get().getIdentifier().getValue();
+            return getTableBinderContextByOwner(owner, tableBinderContexts, outerTableBinderContexts, binderContext.getExternalTableBinderContexts());
         }
         if (!binderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, binderContext)) {
             return Collections.singleton(new SimpleTableSegmentBinderContext(binderContext.getJoinTableProjectionSegments()));
@@ -106,40 +108,43 @@ public final class ColumnSegmentBinder {
         return tableBinderContexts.values();
     }
     
-    private static Optional<TableSegmentBinderContext> findTableBinderContextByOwner(final String owner, final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                                                                     final Map<String, TableSegmentBinderContext> outerTableBinderContexts,
-                                                                                     final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        if (tableBinderContexts.containsKey(owner)) {
-            return Optional.of(tableBinderContexts.get(owner));
+    private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
+                                                                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts) {
+        CaseInsensitiveString caseInsensitiveOwner = new CaseInsensitiveString(owner);
+        if (tableBinderContexts.containsKey(caseInsensitiveOwner)) {
+            return tableBinderContexts.get(caseInsensitiveOwner);
         }
-        if (outerTableBinderContexts.containsKey(owner)) {
-            return Optional.of(outerTableBinderContexts.get(owner));
+        if (outerTableBinderContexts.containsKey(caseInsensitiveOwner)) {
+            return outerTableBinderContexts.get(caseInsensitiveOwner);
         }
-        if (externalTableBinderContexts.containsKey(owner)) {
-            return Optional.of(externalTableBinderContexts.get(owner));
+        if (externalTableBinderContexts.containsKey(caseInsensitiveOwner)) {
+            return externalTableBinderContexts.get(caseInsensitiveOwner);
         }
-        return Optional.empty();
+        return Collections.emptyList();
     }
     
     private static boolean isNeedUseJoinTableProjectionBind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext) {
         return SegmentType.PROJECTION == parentSegmentType
-                || SegmentType.PREDICATE == parentSegmentType && binderContext.getUsingColumnNames().contains(segment.getIdentifier().getValue().toLowerCase());
+                || SegmentType.PREDICATE == parentSegmentType && binderContext.getUsingColumnNames().contains(segment.getIdentifier().getValue());
     }
     
     private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
-                                                                  final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final SQLStatementBinderContext binderContext) {
+                                                                  final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
+                                                                  final SQLStatementBinderContext binderContext) {
         ColumnSegment result = null;
         boolean isFindInputColumn = false;
         for (TableSegmentBinderContext each : tableBinderContexts) {
             Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
-            if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
+            if (!projectionSegment.isPresent()) {
+                continue;
+            }
+            if (projectionSegment.get() instanceof ColumnProjectionSegment) {
                 ShardingSpherePreconditions.checkState(null == result,
                         () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
-                result = ((ColumnProjectionSegment) projectionSegment.get()).getColumn();
             }
-            if (!isFindInputColumn && projectionSegment.isPresent()) {
-                isFindInputColumn = true;
-            }
+            result = getColumnSegment(projectionSegment.get());
+            isFindInputColumn = true;
         }
         if (!isFindInputColumn) {
             Optional<ProjectionSegment> projectionSegment = findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts);
@@ -168,17 +173,25 @@ public final class ColumnSegmentBinder {
         return Optional.ofNullable(result);
     }
     
+    private static ColumnSegment getColumnSegment(final ProjectionSegment projectionSegment) {
+        if (projectionSegment instanceof ColumnProjectionSegment) {
+            return ((ColumnProjectionSegment) projectionSegment).getColumn();
+        }
+        return null;
+    }
+    
     private static Optional<ColumnSegment> findInputColumnSegmentByPivotColumns(final ColumnSegment segment, final Collection<String> pivotColumnNames) {
         if (pivotColumnNames.isEmpty()) {
             return Optional.empty();
         }
-        if (pivotColumnNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
+        if (pivotColumnNames.contains(segment.getIdentifier().getValue())) {
             return Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
         }
         return Optional.empty();
     }
     
-    private static Optional<ProjectionSegment> findInputColumnSegmentFromOuterTable(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+    private static Optional<ProjectionSegment> findInputColumnSegmentFromOuterTable(final ColumnSegment segment,
+                                                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         ListIterator<TableSegmentBinderContext> listIterator = new ArrayList<>(outerTableBinderContexts.values()).listIterator(outerTableBinderContexts.size());
         while (listIterator.hasPrevious()) {
             TableSegmentBinderContext each = listIterator.previous();
@@ -190,7 +203,8 @@ public final class ColumnSegmentBinder {
         return Optional.empty();
     }
     
-    private static Optional<ProjectionSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+    private static Optional<ProjectionSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment,
+                                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts) {
         for (TableSegmentBinderContext each : externalTableBinderContexts.values()) {
             Optional<ProjectionSegment> result = each.findProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
             if (result.isPresent()) {
@@ -204,7 +218,7 @@ public final class ColumnSegmentBinder {
         if (variableNames.isEmpty()) {
             return Optional.empty();
         }
-        if (variableNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
+        if (variableNames.contains(segment.getIdentifier().getValue())) {
             ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
             result.setVariable(true);
             return Optional.of(result);
@@ -246,7 +260,8 @@ public final class ColumnSegmentBinder {
      * @param tableBinderContexts table binder contexts
      * @return bound using column segment
      */
-    public static ColumnSegment bindUsingColumn(final ColumnSegment segment, final SegmentType parentSegmentType, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static ColumnSegment bindUsingColumn(final ColumnSegment segment, final SegmentType parentSegmentType,
+                                                final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         ColumnSegment result = copy(segment);
         List<ColumnSegment> usingInputColumnSegments = findUsingInputColumnSegments(segment.getIdentifier().getValue(), tableBinderContexts.values());
         ShardingSpherePreconditions.checkState(usingInputColumnSegments.size() >= 2,

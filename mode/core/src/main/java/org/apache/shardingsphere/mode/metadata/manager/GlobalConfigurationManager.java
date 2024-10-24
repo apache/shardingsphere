@@ -36,7 +36,6 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -82,10 +81,7 @@ public final class GlobalConfigurationManager {
         if (!"transaction".equals(Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value())) {
             return;
         }
-        Optional<TransactionRule> transactionRule = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        if (transactionRule.isPresent()) {
-            ((AutoCloseable) transactionRule.get()).close();
-        }
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class).ifPresent(TransactionRule::close);
     }
     
     /**

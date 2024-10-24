@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-distribution</artifactId>
-        <version>5.5.1-SNAPSHOT</version>
+        <version>5.5.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-distribution</artifactId>
     <packaging>pom</packaging>
@@ -120,7 +120,9 @@
                                     <arguments>
                                         <argument>build</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=apache-shardingsphere-${project.version}-shardingsphere-agent-bin</argument>
+                                        <argument>DIRECTORY_NAME=apache-shardingsphere-${project.version}-shardingsphere-agent-bin</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>JAR_NAME=shardingsphere-agent-${project.version}.jar</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
                                         <argument>apache/shardingsphere-agent:${project.version}</argument>
@@ -184,7 +186,9 @@
                                         <argument>--platform</argument>
                                         <argument>linux/amd64,linux/arm64</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=apache-shardingsphere-${project.version}-shardingsphere-agent-bin</argument>
+                                        <argument>DIRECTORY_NAME=apache-shardingsphere-${project.version}-shardingsphere-agent-bin</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>JAR_NAME=shardingsphere-agent-${project.version}.jar</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
                                         <argument>${agent.image.repository}:${agent.image.tag}</argument>

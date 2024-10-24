@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.from.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Delete multi table segment binder.
@@ -42,12 +42,12 @@ public final class DeleteMultiTableSegmentBinder {
      * @return bound delete multi table segment
      */
     public static DeleteMultiTableSegment bind(final DeleteMultiTableSegment segment,
-                                               final SQLStatementBinderContext binderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+                                               final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());
         result.getActualDeleteTables().addAll(segment.getActualDeleteTables());
-        result.setRelationTable(TableSegmentBinder.bind(segment.getRelationTable(), binderContext, tableBinderContexts, Collections.emptyMap()));
+        result.setRelationTable(TableSegmentBinder.bind(segment.getRelationTable(), binderContext, tableBinderContexts, LinkedHashMultimap.create()));
         return result;
     }
 }

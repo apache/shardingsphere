@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 
+import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -41,7 +42,7 @@ class ExistsSubqueryExpressionBinderTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, selectStatement, "t_test"));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, new MockedDatabaseType(), Collections.emptyList());
-        ExistsSubqueryExpression actual = ExistsSubqueryExpressionBinder.bind(existsSubqueryExpression, binderContext, Collections.emptyMap());
+        ExistsSubqueryExpression actual = ExistsSubqueryExpressionBinder.bind(existsSubqueryExpression, binderContext, LinkedHashMultimap.create());
         assertThat(actual.getStartIndex(), is(existsSubqueryExpression.getStartIndex()));
         assertThat(actual.getStopIndex(), is(existsSubqueryExpression.getStopIndex()));
         assertThat(actual.getText(), is("t_test"));
