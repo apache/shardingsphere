@@ -22,7 +22,7 @@ notifications:
   jobs: notifications@shardingsphere.apache.org
 
 github:
-  description: Empowering Data Intelligence with Distributed SQL for Sharding, Scalability, and Security for Any Databases.
+  description: Empowering Data Intelligence with Distributed SQL for Sharding, Scalability, and Security Across All Databases.
   labels:
     - database
     - database-cluster
