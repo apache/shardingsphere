@@ -78,7 +78,6 @@ class InventoryTaskTest {
                 PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), mock(Dumper.class), mock(Importer.class), position);
         CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
         assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyIngestPosition.class));
-        inventoryTask.close();
     }
     
     private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
