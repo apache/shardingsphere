@@ -52,4 +52,9 @@
                scenario-comments="Test single table's LIKE operator underscore wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT COUNT(1) FROM t_user WHERE 1 = 2 GROUP BY id,username ORDER BY id" db-types="MySQL" scenario-types="db,tbl"
+               scenario-comments="Test GROUP BY with ORDER BY different fields returns no rows when WHERE condition matches no data">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>
