@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,7 +45,7 @@ public final class RouteUnit {
         ShardingSpherePreconditions.checkNotNull(dataSourceMapper, () -> new IllegalArgumentException("`dataSourceMapper` is required"));
         ShardingSpherePreconditions.checkNotNull(tableMappers, () -> new IllegalArgumentException("`tableMappers` is required"));
         this.dataSourceMapper = dataSourceMapper;
-        this.tableMappers = tableMappers;
+        this.tableMappers = new LinkedHashSet<>(tableMappers);
     }
     
     /**
