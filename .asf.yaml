@@ -29,6 +29,7 @@ github:
     - distributed-database
     - distributed-sql-database
     - distributed-transaction
+    - database-gateway
     - database-middleware
     - sql
     - mysql
@@ -38,7 +39,6 @@ github:
     - encrypt
     - data-encryption
     - data-pipeline
-    - oltp
     - bigdata
   features:
     issues: true
