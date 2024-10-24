@@ -122,11 +122,15 @@ public final class TransmissionTasksRunner implements PipelineTasksRunner {
         jobItemContext.setStopping(true);
         for (PipelineTask each : inventoryTasks) {
             each.stop();
-            QuietlyCloser.close(each);
+            if (each instanceof AutoCloseable) {
+                QuietlyCloser.close((AutoCloseable) each);
+            }
         }
         for (PipelineTask each : incrementalTasks) {
             each.stop();
-            QuietlyCloser.close(each);
+            if (each instanceof AutoCloseable) {
+                QuietlyCloser.close((AutoCloseable) each);
+            }
         }
     }
     
