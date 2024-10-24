@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
 
+import jakarta.xml.bind.annotation.XmlAttribute;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Alter compute node statement test case.

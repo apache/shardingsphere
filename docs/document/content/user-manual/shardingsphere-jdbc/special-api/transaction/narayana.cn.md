@@ -14,8 +14,7 @@ Apache ShardingSphere 提供 XA 事务，集成了 Narayana 的实现。
 ```xml
 <properties>
     <narayana.version>5.12.7.Final</narayana.version>
-    <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
-    <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+    <jboss-logging.version>3.4.3.Final</jboss-logging.version>
 </properties>
 
 <dependency>
@@ -38,23 +37,18 @@ Apache ShardingSphere 提供 XA 事务，集成了 Narayana 的实现。
 </dependency>
 <dependency>
       <groupId>org.jboss.narayana.jta</groupId>
-      <artifactId>jta</artifactId>
+      <artifactId>narayana-jta-jakarta</artifactId>
       <version>${narayana.version}</version>
 </dependency>
 <dependency>
-       <groupId>org.jboss.narayana.jts</groupId>
-       <artifactId>narayana-jts-integration</artifactId>
-       <version>${narayana.version}</version>
+      <groupId>org.jboss.narayana.jts</groupId>
+      <artifactId>narayana-jts-integration-jakarta</artifactId>
+      <version>${narayana.version}</version>
 </dependency>
 <dependency>
-       <groupId>org.jboss</groupId>
-       <artifactId>jboss-transaction-spi</artifactId>
-       <version>${jboss-transaction-spi.version}</version>
-</dependency>
-<dependency>
-       <groupId>org.jboss.logging</groupId>
-       <artifactId>jboss-logging</artifactId>
-       <version>${jboss-logging.version}</version>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <version>${jboss-logging.version}</version>
 </dependency>
 ```
 ## 操作步骤
