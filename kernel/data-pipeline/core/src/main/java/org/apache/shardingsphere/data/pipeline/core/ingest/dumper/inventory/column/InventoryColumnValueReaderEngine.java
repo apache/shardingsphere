@@ -64,29 +64,13 @@ public final class InventoryColumnValueReaderEngine {
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
-                if (isSigned(metaData, columnIndex)) {
-                    return resultSet.getByte(columnIndex);
-                } else {
-                    return resultSet.getShort(columnIndex);
-                }
+                return isSigned(metaData, columnIndex) ? resultSet.getByte(columnIndex) : resultSet.getShort(columnIndex);
             case Types.SMALLINT:
-                if (isSigned(metaData, columnIndex)) {
-                    return resultSet.getShort(columnIndex);
-                } else {
-                    return resultSet.getInt(columnIndex);
-                }
+                return isSigned(metaData, columnIndex) ? resultSet.getShort(columnIndex) : resultSet.getInt(columnIndex);
             case Types.INTEGER:
-                if (isSigned(metaData, columnIndex)) {
-                    return resultSet.getInt(columnIndex);
-                } else {
-                    return resultSet.getLong(columnIndex);
-                }
+                return isSigned(metaData, columnIndex) ? resultSet.getInt(columnIndex) : resultSet.getLong(columnIndex);
             case Types.BIGINT:
-                if (isSigned(metaData, columnIndex)) {
-                    return resultSet.getLong(columnIndex);
-                } else {
-                    return resultSet.getBigDecimal(columnIndex);
-                }
+                return isSigned(metaData, columnIndex) ? Long.valueOf(resultSet.getLong(columnIndex)) : resultSet.getBigDecimal(columnIndex);
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);
@@ -112,15 +96,15 @@ public final class InventoryColumnValueReaderEngine {
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
                 return resultSet.getBytes(columnIndex);
+            case Types.BLOB:
+                Blob blob = resultSet.getBlob(columnIndex);
+                return null == blob ? null : blob.getBytes(1L, (int) blob.length());
             case Types.CLOB:
                 Clob clob = resultSet.getClob(columnIndex);
                 return null == clob ? null : clob.getSubString(1L, (int) clob.length());
             case Types.NCLOB:
                 NClob nClob = resultSet.getNClob(columnIndex);
                 return null == nClob ? null : nClob.getSubString(1L, (int) nClob.length());
-            case Types.BLOB:
-                Blob blob = resultSet.getBlob(columnIndex);
-                return null == blob ? null : blob.getBytes(1L, (int) blob.length());
             case Types.ARRAY:
                 return resultSet.getArray(columnIndex);
             default:
