@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.preconditions;
+package org.apache.shardingsphere.agent.core.preconditions;
 
-import org.apache.shardingsphere.agent.core.preconditions.AgentPreconditions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
