@@ -24,20 +24,20 @@ notifications:
 github:
   description: Distributed SQL transaction & query engine for data sharding, scaling, encryption, and more - on any database.
   labels:
-    - database-plus
     - database
+    - database-cluster
     - distributed-database
     - distributed-sql-database
-    - distributed-transactions
-    - database-cluster
-    - rdbms
+    - distributed-transaction
+    - database-middleware
     - sql
     - mysql
     - postgresql
     - shard
+    - read-write-splitting
     - encrypt
     - data-encryption
-    - dba
+    - data-pipeline
     - oltp
     - bigdata
   features:
