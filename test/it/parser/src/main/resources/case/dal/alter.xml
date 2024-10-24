@@ -22,4 +22,7 @@
     </alter-resource-group>
     <alter-resource-group sql-case-id="alter_resource_cost_cpu_time" />
     <alter-resource-group sql-case-id="alter_resource_cost_cpu" />
+    <alter-system sql-case-id = "alter_system_add_follower">
+        <host name="&quot;host_ip:9010&quot;" start-index = "27" stop-index = "48"/>
+    </alter-system>
 </sql-parser-test-cases>

@@ -41,6 +41,16 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_array_cum_sum">
+        <from>
+            <table name="array_type_table" start-index="34" stop-index="49"/>
+        </from>
+        <projections start-index="11" stop-index="27">
+            <simple-projection expression="k2" start-index="25" stop-index="26"/>
+            <aggregation-projection type="ARRAY_CUM_SUM" expression="ARRAY_CUM_SUM(k2)" start-index="11" stop-index="27" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_count">
         <from>
             <simple-table name="t_order" start-index="37" stop-index="43" />
