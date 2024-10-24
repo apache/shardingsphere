@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ratelimit;
+package org.apache.shardingsphere.data.pipeline.core.ratelimit.type;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -28,9 +29,9 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class TPSJobRateLimitAlgorithmTest {
+class QPSJobRateLimitAlgorithmTest {
     
-    private final JobRateLimitAlgorithm algorithm = TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS");
+    private final JobRateLimitAlgorithm algorithm = TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS");
     
     @Test
     void assertInitFailed() {
@@ -46,9 +47,10 @@ class TPSJobRateLimitAlgorithmTest {
     
     @Test
     void assertIntercept() {
+        assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.SELECT, null));
+        assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.SELECT, 1));
         assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.INSERT, null));
         assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.UPDATE, 1));
         assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.DELETE, 2));
-        assertDoesNotThrow(() -> algorithm.intercept(PipelineSQLOperationType.SELECT, null));
     }
 }
