@@ -29,6 +29,8 @@
     <logger name="org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource" level="off" />
     <logger name="org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder" level="off" />
     <logger name="org.apache.shardingsphere.data.pipeline.core.task.TaskExecuteCallback" level="off" />
+    <logger name="org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult" level="off" />
+    <logger name="org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCheckUtils" level="off" />
     
     <root>
         <level value="error" />
