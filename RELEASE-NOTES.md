@@ -34,6 +34,7 @@
 
 1. Authority: Mark privilege provider ALL_PERMITTED as deprecated and will be removed in future
 1. DistSQL: Remove optional param usageCount from show storage units
+1. Readwrite-splitting: Change dataSources to dataSourceGroups for YAML
 
 ### New Features
 
