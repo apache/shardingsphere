@@ -112,15 +112,15 @@ public final class InventoryColumnValueReaderEngine {
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
                 return resultSet.getBytes(columnIndex);
+            case Types.BLOB:
+                Blob blob = resultSet.getBlob(columnIndex);
+                return null == blob ? null : blob.getBytes(1L, (int) blob.length());
             case Types.CLOB:
                 Clob clob = resultSet.getClob(columnIndex);
                 return null == clob ? null : clob.getSubString(1L, (int) clob.length());
             case Types.NCLOB:
                 NClob nClob = resultSet.getNClob(columnIndex);
                 return null == nClob ? null : nClob.getSubString(1L, (int) nClob.length());
-            case Types.BLOB:
-                Blob blob = resultSet.getBlob(columnIndex);
-                return null == blob ? null : blob.getBytes(1L, (int) blob.length());
             case Types.ARRAY:
                 return resultSet.getArray(columnIndex);
             default:

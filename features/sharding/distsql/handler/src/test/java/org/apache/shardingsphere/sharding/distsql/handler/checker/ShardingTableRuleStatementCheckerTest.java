@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.checker;
+package org.apache.shardingsphere.sharding.distsql.handler.checker;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReference
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingAuditorSegment;
