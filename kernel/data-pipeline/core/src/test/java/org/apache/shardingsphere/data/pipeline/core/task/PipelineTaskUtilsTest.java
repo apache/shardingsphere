@@ -19,10 +19,17 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskDelay;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PipelineTaskUtilsTest {
     
@@ -32,5 +39,34 @@ class PipelineTaskUtilsTest {
         dumperContext.setActualTableName("foo_actual_tbl");
         dumperContext.setShardingItem(1);
         assertThat(PipelineTaskUtils.generateInventoryTaskId(dumperContext), is("foo_ds.foo_actual_tbl#1"));
+    }
+    
+    @Test
+    void assertCreateIncrementalTaskProgressWithNullInitProgress() {
+        IncrementalTaskProgress actual = PipelineTaskUtils.createIncrementalTaskProgress(mock(IngestPosition.class), null);
+        assertThat(actual.getIncrementalTaskDelay().getLastEventTimestamps(), is(0L));
+    }
+    
+    @Test
+    void assertCreateIncrementalTaskProgressWithNullIncremental() {
+        IncrementalTaskProgress actual = PipelineTaskUtils.createIncrementalTaskProgress(mock(IngestPosition.class), mock(TransmissionJobItemProgress.class));
+        assertThat(actual.getIncrementalTaskDelay().getLastEventTimestamps(), is(0L));
+    }
+    
+    @Test
+    void assertCreateIncrementalTaskProgress() {
+        IncrementalTaskProgress actual = PipelineTaskUtils.createIncrementalTaskProgress(mock(IngestPosition.class), mockTransmissionJobItemProgress());
+        assertThat(actual.getIncrementalTaskDelay().getLastEventTimestamps(), is(1L));
+    }
+    
+    private static TransmissionJobItemProgress mockTransmissionJobItemProgress() {
+        TransmissionJobItemProgress result = mock(TransmissionJobItemProgress.class);
+        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(null);
+        IncrementalTaskDelay taskDelay = new IncrementalTaskDelay();
+        taskDelay.setLastEventTimestamps(1L);
+        incrementalTaskProgress.setIncrementalTaskDelay(taskDelay);
+        JobItemIncrementalTasksProgress itemIncrementalTasksProgress = new JobItemIncrementalTasksProgress(incrementalTaskProgress);
+        when(result.getIncremental()).thenReturn(itemIncrementalTasksProgress);
+        return result;
     }
 }
