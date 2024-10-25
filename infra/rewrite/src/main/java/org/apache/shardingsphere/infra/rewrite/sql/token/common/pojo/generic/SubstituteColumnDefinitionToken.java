@@ -53,13 +53,4 @@ public final class SubstituteColumnDefinitionToken extends SQLToken implements S
         }
         return builder.toString();
     }
-    
-    /**
-     * Add column definition token.
-     *
-     * @param columnDefinitionToken column definition token
-     */
-    public void addColumnDefinitionToken(final ColumnDefinitionToken columnDefinitionToken) {
-        columnDefinitionTokens.add(columnDefinitionToken);
-    }
 }
