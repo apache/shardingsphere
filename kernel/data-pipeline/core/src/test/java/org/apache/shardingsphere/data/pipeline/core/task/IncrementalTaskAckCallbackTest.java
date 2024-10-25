@@ -47,8 +47,7 @@ class IncrementalTaskAckCallbackTest {
     
     @Test
     void assertOnAckWithIngestPlaceholderPosition() {
-        PlaceholderRecord record = new PlaceholderRecord(new IngestPlaceholderPosition());
-        callback.onAck(Collections.singletonList(record));
+        callback.onAck(Collections.singletonList(new PlaceholderRecord(new IngestPlaceholderPosition())));
         assertNull(taskProgress.getPosition());
         assertThat(taskProgress.getIncrementalTaskDelay().getLastEventTimestamps(), is(0L));
         assertThat(System.currentTimeMillis() - taskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis(), lessThan(10000L));
@@ -57,9 +56,9 @@ class IncrementalTaskAckCallbackTest {
     @Test
     void assertOnAckWithNotIngestPlaceholderPosition() {
         IngestFinishedPosition position = new IngestFinishedPosition();
-        FinishedRecord record = new FinishedRecord(position);
-        record.setCommitTime(1L);
-        callback.onAck(Collections.singletonList(record));
+        FinishedRecord finishedRecord = new FinishedRecord(position);
+        finishedRecord.setCommitTime(1L);
+        callback.onAck(Collections.singletonList(finishedRecord));
         assertThat(taskProgress.getPosition(), is(position));
         assertThat(taskProgress.getIncrementalTaskDelay().getLastEventTimestamps(), is(1L));
         assertThat(System.currentTimeMillis() - taskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis(), lessThan(10000L));
