@@ -19,14 +19,18 @@ package org.apache.shardingsphere.sqlfederation.optimizer.function.mysql;
 
 import org.apache.calcite.sql.util.ReflectiveSqlOperatorTable;
 import org.apache.calcite.sql.validate.SqlUserDefinedFunction;
+import org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBitCountFunction;
 import org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLNotFunction;
 
 /**
  * MySQL operator table.
  */
+@SuppressWarnings("unused")
 public final class MySQLOperatorTable extends ReflectiveSqlOperatorTable {
     
     public static final SqlUserDefinedFunction NOT = new MySQLNotFunction();
+    
+    public static final SqlUserDefinedFunction BIT_COUNT = new MySQLBitCountFunction();
     
     public MySQLOperatorTable() {
         init();
