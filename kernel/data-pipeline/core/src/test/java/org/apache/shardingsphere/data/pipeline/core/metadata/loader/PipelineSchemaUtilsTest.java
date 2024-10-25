@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.fixture;
+package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 
-import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class FixturePipelineDataSourceCreator implements PipelineDataSourceCreator {
+class PipelineSchemaUtilsTest {
     
-    @Override
-    public DataSource create(final Object dataSourceConfig) {
-        return new MockedDataSource();
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    @Test
+    void assertGetDefaultSchema() {
+        PipelineDataSourceConfiguration pipelineDataSourceConfig = mock(PipelineDataSourceConfiguration.class);
+        when(pipelineDataSourceConfig.getType()).thenReturn("FIXTURE");
+        assertDoesNotThrow(() -> PipelineSchemaUtils.getDefaultSchema(pipelineDataSourceConfig));
     }
 }
