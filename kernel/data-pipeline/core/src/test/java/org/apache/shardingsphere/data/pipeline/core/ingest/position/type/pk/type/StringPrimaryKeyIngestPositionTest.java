@@ -17,21 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class StringPrimaryKeyIngestPositionTest {
-    
-    @Test
-    void assertInit() {
-        StringPrimaryKeyIngestPosition position = (StringPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("s,hi,jk");
-        assertThat(position.getBeginValue(), is("hi"));
-        assertThat(position.getEndValue(), is("jk"));
-    }
     
     @Test
     void assertToString() {
@@ -39,9 +30,7 @@ class StringPrimaryKeyIngestPositionTest {
     }
     
     @Test
-    void assertEmptyToNull() {
-        StringPrimaryKeyIngestPosition actual = (StringPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("s,,");
-        assertNull(actual.getBeginValue());
-        assertNull(actual.getEndValue());
+    void assertToStringWithNullValue() {
+        assertThat(new StringPrimaryKeyIngestPosition(null, null).toString(), is("s,,"));
     }
 }

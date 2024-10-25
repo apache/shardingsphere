@@ -19,14 +19,13 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import org.apache.shardingsphere.data.pipeline.core.task.progress.TaskProgress;
 
-import java.io.Closeable;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Pipeline task interface.
  */
-public interface PipelineTask extends Closeable {
+public interface PipelineTask {
     
     /**
      * Start task.
@@ -53,9 +52,4 @@ public interface PipelineTask extends Closeable {
      * @return task progress
      */
     TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AbsoluteCountContext;
@@ -445,13 +447,17 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.columnConstraint().stream().anyMatch(each -> null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey());
         // TODO parse not null
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false);
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false, getText(ctx));
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
             if (null != each.columnConstraintOption().tableName()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.columnConstraintOption().tableName()));
             }
         }
         return result;
+    }
+    
+    private String getText(final ParserRuleContext ctx) {
+        return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
     
     @Override
@@ -487,7 +493,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         // TODO visit pk and table ref
         ColumnSegment column = (ColumnSegment) visit(ctx.modifyColumn().columnName());
         DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
-        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false);
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false, getText(ctx));
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     

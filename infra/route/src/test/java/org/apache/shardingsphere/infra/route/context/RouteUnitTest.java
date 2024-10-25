@@ -26,6 +26,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RouteUnitTest {
@@ -69,5 +70,15 @@ class RouteUnitTest {
     @Test
     void assertTableMapperNotFound() {
         assertFalse(routeUnit.findTableMapper("invalid_ds", "invalid_tbl").isPresent());
+    }
+    
+    @Test
+    void assertTableMapperIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> new RouteUnit(new RouteMapper(LOGIC_DATA_SOURCE, ACTUAL_DATA_SOURCE), null));
+    }
+    
+    @Test
+    void assertDataSourceMapperIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> new RouteUnit(null, Arrays.asList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_0), new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_1))));
     }
 }
