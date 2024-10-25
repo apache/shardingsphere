@@ -115,7 +115,7 @@ class EncryptAlterTableTokenGeneratorTest {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
-                33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
+                33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
         when(result.getSqlStatement().getAddColumnDefinitions()).thenReturn(Collections.singleton(new AddColumnDefinitionSegment(22, 67, Collections.singleton(columnDefinitionSegment))));
         return result;
     }
@@ -129,7 +129,7 @@ class EncryptAlterTableTokenGeneratorTest {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
-                36, 70, new ColumnSegment(36, 53, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
+                36, 70, new ColumnSegment(36, 53, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
         when(result.getSqlStatement().getModifyColumnDefinitions()).thenReturn(Collections.singleton(new ModifyColumnDefinitionSegment(22, 70, columnDefinitionSegment)));
         return result;
     }
@@ -143,7 +143,7 @@ class EncryptAlterTableTokenGeneratorTest {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
-                55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false);
+                55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false, "");
         ChangeColumnDefinitionSegment changeColumnDefinitionSegment = new ChangeColumnDefinitionSegment(22, 93, columnDefinitionSegment);
         changeColumnDefinitionSegment.setPreviousColumn(new ColumnSegment(36, 53, new IdentifierValue("certificate_number")));
         when(result.getSqlStatement().getChangeColumnDefinitions()).thenReturn(Collections.singleton(changeColumnDefinitionSegment));
