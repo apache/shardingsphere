@@ -82,28 +82,24 @@ public final class IncrementalTaskPositionManager {
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup position, database type: {}, pipeline data source type: {}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
-            destroyPosition(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig, dialectPositionManager);
+            destroyPosition(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig);
         } else if (pipelineDataSourceConfig instanceof StandardPipelineDataSourceConfiguration) {
-            destroyPosition(jobId, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig, dialectPositionManager);
+            destroyPosition(jobId, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig);
         }
         log.info("Destroy position cost {} ms.", System.currentTimeMillis() - startTimeMillis);
     }
     
-    private void destroyPosition(final String jobId,
-                                 final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig, final DialectIncrementalPositionManager positionInitializer) throws SQLException {
+    private void destroyPosition(final String jobId, final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         for (DataSourcePoolProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(pipelineDataSourceConfig.getRootConfig()).values()) {
             try (PipelineDataSource dataSource = new PipelineDataSource(DataSourcePoolCreator.create(each), databaseType)) {
-                positionInitializer.destroy(dataSource, jobId);
+                dialectPositionManager.destroy(dataSource, jobId);
             }
         }
     }
     
-    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig,
-                                 final DialectIncrementalPositionManager positionInitializer) throws SQLException {
-        try (
-                PipelineDataSource dataSource = new PipelineDataSource(
-                        DataSourcePoolCreator.create((DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration()), databaseType)) {
-            positionInitializer.destroy(dataSource, jobId);
+    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
+        try (PipelineDataSource dataSource = new PipelineDataSource(DataSourcePoolCreator.create((DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration()), databaseType)) {
+            dialectPositionManager.destroy(dataSource, jobId);
         }
     }
 }
