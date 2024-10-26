@@ -120,6 +120,16 @@ public final class PipelineJobDataSourcePreparer {
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
+    private List<String> getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig,
+                                                 final PipelineDataSourceManager dataSourceManager, final SQLParserEngine sqlParserEngine) throws SQLException {
+        DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
+        DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
+        String schemaName = createTableConfig.getSourceName().getSchemaName().toString();
+        String sourceTableName = createTableConfig.getSourceName().getTableName().toString();
+        String targetTableName = createTableConfig.getTargetName().getTableName().toString();
+        return new PipelineDDLGenerator().generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine);
+    }
+    
     private void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
         log.info("Execute target table SQL: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
@@ -137,15 +147,5 @@ public final class PipelineJobDataSourcePreparer {
     
     private String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         return PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find() ? createTableSQL : PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
-    }
-    
-    private List<String> getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig,
-                                                 final PipelineDataSourceManager dataSourceManager, final SQLParserEngine sqlParserEngine) throws SQLException {
-        DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
-        DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
-        String schemaName = createTableConfig.getSourceName().getSchemaName().toString();
-        String sourceTableName = createTableConfig.getSourceName().getTableName().toString();
-        String targetTableName = createTableConfig.getTargetName().getTableName().toString();
-        return new PipelineDDLGenerator().generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine);
     }
 }
