@@ -101,5 +101,5 @@ class MySQLPipelineSQLBuilderTest {
     @Test
     void assertWrapWithPageQuery() {
         assertThat(sqlBuilder.wrapWithPageQuery("SELECT * FROM foo_tbl"), is("SELECT * FROM foo_tbl LIMIT ?"));
-    }   
+    }
 }
