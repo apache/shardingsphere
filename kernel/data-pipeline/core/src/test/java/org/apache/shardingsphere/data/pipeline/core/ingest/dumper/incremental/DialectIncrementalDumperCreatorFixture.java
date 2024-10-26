@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 public final class DialectIncrementalDumperCreatorFixture implements DialectIncrementalDumperCreator {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final CreateIncrementalDumperParameter param) {
+    public IncrementalDumper create(final CreateIncrementalDumperParameter param) {
         return mock(IncrementalDumper.class);
     }
     
