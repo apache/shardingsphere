@@ -163,6 +163,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisInstallPlug
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisKillStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisOptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverPartitionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisResetStatement;
@@ -215,10 +216,17 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShutdownSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetMasterOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetSlaveOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverTableStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.*;
 
 /**
  * DAL statement visitor for Doris.
@@ -928,17 +936,17 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
                 ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText());
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
-    
+
     private VariableAssignSegment getVariableAssignSegment(final OptionValueListContext ctx) {
         VariableSegment variable = new VariableSegment(
                 ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText());
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.setExprOrDefault().stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
-    
+
     private VariableAssignSegment getVariableAssignSegment(final OptionValueNoOptionTypeContext ctx) {
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getVariableSegment(ctx), getAssignValue(ctx));
     }
-    
+
     private VariableSegment getVariableSegment(final OptionValueNoOptionTypeContext ctx) {
         if (null != ctx.NAMES()) {
             // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
@@ -1071,6 +1079,46 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitHelp(final HelpContext ctx) {
         DorisHelpStatement result = new DorisHelpStatement();
         result.setSearchString(ctx.textOrIdentifier().getText());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitRecoverDatabase(final RecoverDatabaseContext ctx) {
+        DorisRecoverDatabaseStatement result = new DorisRecoverDatabaseStatement();
+        result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        if (null != ctx.databaseId()) {
+            result.setDatabaseId(new IdentifierValue(ctx.databaseId().getText()).getValue());
+        }
+        if (null != ctx.newDatabaseName()) {
+            result.setDatabaseName(new IdentifierValue(ctx.newDatabaseName().getText()).getValue());
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitRecoverPartition(final RecoverPartitionContext ctx) {
+        DorisRecoverPartitionStatement result = new DorisRecoverPartitionStatement();
+        result.setPartitionName(new IdentifierValue(ctx.partitionName().getText()).getValue());
+        if (null != ctx.partitionId()) {
+            result.setPartitionId(new IdentifierValue(ctx.partitionId().getText()).getValue());
+        }
+        if (null != ctx.newPartitionName()) {
+            result.setNewPartitionName(new IdentifierValue(ctx.newPartitionName().getText()).getValue());
+        }
+        if (null != ctx.tableName().owner()) {
+            result.setOwner(new IdentifierValue(ctx.tableName().owner().getText()).getValue());
+        }
+        result.setTableName(new IdentifierValue(ctx.tableName().name().getText()).getValue());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitRecoverTable(final RecoverTableContext ctx) {
+        DorisRecoverTableStatement result = new DorisRecoverTableStatement();
+        result.setTableName(new IdentifierValue(ctx.tableName().getText()).getValue());
+        if (null != ctx.tableId()) {
+            result.setTableName(new IdentifierValue(ctx.tableId().getText()).getValue());
+        }
         return result;
     }
 }

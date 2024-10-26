@@ -85,6 +85,8 @@ public enum SQLVisitorRule {
     
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
+    RECOVER_TABLE("RecoverTable", SQLStatementType.DAL),
+    
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
     
     CREATE_INDEX("CreateIndex", SQLStatementType.DDL),
@@ -136,6 +138,8 @@ public enum SQLVisitorRule {
     ALTER_DATABASE_LINK("AlterDatabaseLink", SQLStatementType.DDL),
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
+    
+    RECOVER_DATABASE("RecoverDatabase", SQLStatementType.DAL),
     
     DROP_DATABASE_LINK("DropDatabaseLink", SQLStatementType.DDL),
     
@@ -711,7 +715,9 @@ public enum SQLVisitorRule {
     
     START_REPLICA("StartReplica", SQLStatementType.RL),
     
-    OPEN("Open", SQLStatementType.DDL);
+    OPEN("Open", SQLStatementType.DDL),
+    
+    RECOVER_PARTITION("RecoverPartition", SQLStatementType.DAL);
     
     private final String name;
     
