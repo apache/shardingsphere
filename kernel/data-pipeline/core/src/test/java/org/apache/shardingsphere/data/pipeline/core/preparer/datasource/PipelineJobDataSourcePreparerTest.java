@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 class PipelineJobDataSourcePreparerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-            
+    
     @Test
     void assertPrepareTargetSchemasWithSchemaNotAvailable() {
         PrepareTargetSchemasParameter parameter = new PrepareTargetSchemasParameter(databaseType, null, null);
