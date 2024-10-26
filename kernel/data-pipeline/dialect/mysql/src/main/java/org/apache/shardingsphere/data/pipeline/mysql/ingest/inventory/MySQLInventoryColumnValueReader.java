@@ -33,10 +33,10 @@ public final class MySQLInventoryColumnValueReader implements DialectInventoryCo
     
     @Override
     public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return isYearDataType(metaData.getColumnTypeName(columnIndex)) ? Optional.of(resultSet.getShort(columnIndex)) : Optional.empty();
+        return isYearType(metaData.getColumnTypeName(columnIndex)) ? Optional.of(resultSet.getShort(columnIndex)) : Optional.empty();
     }
     
-    private boolean isYearDataType(final String columnDataTypeName) {
+    private boolean isYearType(final String columnDataTypeName) {
         return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
     }
     
