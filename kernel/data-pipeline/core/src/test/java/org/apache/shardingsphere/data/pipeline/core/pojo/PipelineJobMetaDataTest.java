@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class PipelineJobMetaDataTest {
     
     @Test
-    void newInstance() {
+    void assertNewInstance() {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
         jobConfigPOJO.setJobName("foo_job");
         jobConfigPOJO.setDisabled(true);
