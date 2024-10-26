@@ -27,6 +27,11 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <agent.image.repository>ghcr.io/apache/shardingsphere-agent</agent.image.repository>
+        <agent.image.tag>${project.version}</agent.image.tag>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -125,9 +130,9 @@
                                         <argument>JAR_NAME=shardingsphere-agent-${project.version}.jar</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
-                                        <argument>apache/shardingsphere-agent:${project.version}</argument>
+                                        <argument>${agent.image.repository}:${agent.image.tag}</argument>
                                         <argument>-t</argument>
-                                        <argument>apache/shardingsphere-agent:latest</argument>
+                                        <argument>${agent.image.repository}:latest</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -138,10 +143,6 @@
         </profile>
         <profile>
             <id>docker.buildx.push</id>
-            <properties>
-                <agent.image.repository>apache/shardingsphere-agent</agent.image.repository>
-                <agent.image.tag>${project.version}</agent.image.tag>
-            </properties>
             <build>
                 <plugins>
                     <plugin>

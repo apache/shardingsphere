@@ -56,7 +56,8 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof IndexAvailable && sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().isEmpty();
+        return sqlStatementContext instanceof IndexAvailable && sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().isEmpty()
+                && !((IndexAvailable) sqlStatementContext).getIndexColumns().isEmpty();
     }
     
     @Override

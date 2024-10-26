@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.condition;
+package org.apache.shardingsphere.data.pipeline.core.task;
 
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-class EncryptBinaryConditionTest {
+class InventoryTaskAckCallbackTest {
     
+    @SuppressWarnings("unchecked")
     @Test
-    void assertGetConditionValues() {
-        List<Object> actual = new EncryptBinaryCondition("col", null, null,
-                0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(1));
+    void assertOnFailure() {
+        AtomicReference<IngestPosition> position = mock(AtomicReference.class);
+        IngestPosition newPosition = mock(IngestPosition.class);
+        new InventoryTaskAckCallback(position).onAck(Collections.singletonList(new FinishedRecord(newPosition)));
+        verify(position).set(newPosition);
     }
 }

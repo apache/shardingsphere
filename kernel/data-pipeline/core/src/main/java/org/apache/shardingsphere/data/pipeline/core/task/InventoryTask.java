@@ -71,8 +71,4 @@ public final class InventoryTask implements PipelineTask {
     public InventoryTaskProgress getTaskProgress() {
         return new InventoryTaskProgress(position.get());
     }
-    
-    @Override
-    public void close() {
-    }
 }

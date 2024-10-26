@@ -584,6 +584,28 @@ Go to [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) and ch
 docker logout
 ```
 
+3.5 Log in to GitHub Packages Container Registry
+
+```shell
+docker login ghcr.io/apache/shardingsphere
+```
+
+3.6 Build and push ShardingSphere Agent Docker image
+
+```shell
+cd ~/shardingsphere
+git checkout ${RELEASE.VERSION}
+./mvnw -am -pl distribution/agent -Prelease,docker.buildx.push -T 1C -DskipTests clean package
+```
+
+3.7 Confirm the successful release
+
+Check [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-agent) for released images, and make sure that the image supports both `linux/amd64` and `linux/arm64`.
+
+```shell
+docker logout
+```
+
 ### 4. Publish release on GitHub
 
 Click `Draft a new release` in [GitHub Releases](https://github.com/apache/shardingsphere/releases).
