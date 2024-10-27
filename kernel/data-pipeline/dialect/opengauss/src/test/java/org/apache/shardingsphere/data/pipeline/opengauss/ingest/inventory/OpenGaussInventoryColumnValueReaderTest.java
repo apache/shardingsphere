@@ -62,6 +62,24 @@ class OpenGaussInventoryColumnValueReaderTest {
     }
     
     @Test
+    void assertReadWithBitDataTypeValueAndMismatchedColumnType() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(metaData.getColumnType(1)).thenReturn(Types.CHAR);
+        when(metaData.getColumnTypeName(1)).thenReturn("bit");
+        assertFalse(reader.read(resultSet, metaData, 1).isPresent());
+    }
+    
+    @Test
+    void assertReadWithBitDataTypeValueAndMismatchedColumnTypeName() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(metaData.getColumnType(1)).thenReturn(Types.BIT);
+        when(metaData.getColumnTypeName(1)).thenReturn("char");
+        assertFalse(reader.read(resultSet, metaData, 1).isPresent());
+    }
+    
+    @Test
     void assertReadWithBoolDataTypeValue() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getBoolean(1)).thenReturn(true);
