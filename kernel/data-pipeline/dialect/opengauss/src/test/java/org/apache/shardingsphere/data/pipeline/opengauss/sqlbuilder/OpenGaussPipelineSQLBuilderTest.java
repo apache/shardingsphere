@@ -49,7 +49,7 @@ class OpenGaussPipelineSQLBuilderTest {
     
     @Test
     void assertBuildCreateSchemaSQL() {
-        assertThat(sqlBuilder.buildCreateSchemaSQL("foo_schema"), is(Optional.of("CREATE SCHEMA IF NOT EXISTS foo_schema")));
+        assertThat(sqlBuilder.buildCreateSchemaSQL("foo_schema"), is(Optional.of("CREATE SCHEMA foo_schema")));
     }
     
     @Test
