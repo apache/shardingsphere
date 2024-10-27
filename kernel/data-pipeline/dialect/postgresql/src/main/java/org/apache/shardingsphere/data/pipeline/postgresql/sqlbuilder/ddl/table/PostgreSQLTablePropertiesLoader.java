@@ -109,12 +109,12 @@ public final class PostgreSQLTablePropertiesLoader {
     
     private String getAutoVacuumEnabled(final Object autoVacuumEnabled) {
         if (null == autoVacuumEnabled) {
-            return  "x";
+            return "x";
         }
         if (Boolean.parseBoolean(autoVacuumEnabled.toString())) {
-            return  "t";
+            return "t";
         }
-        return  "f";
+        return "f";
     }
     
     private boolean anyIsTrue(final Collection<Object> collection) {
