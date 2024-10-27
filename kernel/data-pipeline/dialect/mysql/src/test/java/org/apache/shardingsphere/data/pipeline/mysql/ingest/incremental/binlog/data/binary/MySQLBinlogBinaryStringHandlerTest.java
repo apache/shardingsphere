@@ -34,15 +34,15 @@ class MySQLBinlogBinaryStringHandlerTest {
     void assertHandleWithBinaryColumn() {
         PipelineColumnMetaData metaData = mock(PipelineColumnMetaData.class);
         when(metaData.getDataType()).thenReturn(Types.BINARY);
-        MySQLBinaryString value = new MySQLBinaryString(new byte[] {49});
-        assertThat(MySQLBinlogBinaryStringHandler.handle(metaData, value), is(new byte[] {49}));
+        MySQLBinaryString value = new MySQLBinaryString(new byte[]{49});
+        assertThat(MySQLBinlogBinaryStringHandler.handle(metaData, value), is(new byte[]{49}));
     }
     
     @Test
     void assertHandleWithNotBinaryColumn() {
         PipelineColumnMetaData metaData = mock(PipelineColumnMetaData.class);
         when(metaData.getDataType()).thenReturn(Types.VARCHAR);
-        MySQLBinaryString value = new MySQLBinaryString(new byte[] {49});
+        MySQLBinaryString value = new MySQLBinaryString(new byte[]{49});
         assertThat(MySQLBinlogBinaryStringHandler.handle(metaData, value), is("1"));
     }
 }
