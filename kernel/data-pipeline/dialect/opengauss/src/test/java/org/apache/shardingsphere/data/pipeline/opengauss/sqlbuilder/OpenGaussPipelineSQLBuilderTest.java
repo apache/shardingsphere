@@ -48,6 +48,11 @@ class OpenGaussPipelineSQLBuilderTest {
     private final DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, TypedSPILoader.getService(DatabaseType.class, "openGauss"));
     
     @Test
+    void assertBuildCreateSchemaSQL() {
+        assertThat(sqlBuilder.buildCreateSchemaSQL("foo_schema"), is(Optional.of("CREATE SCHEMA foo_schema")));
+    }
+    
+    @Test
     void assertBuildInsertOnDuplicateClause() {
         Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord());
         assertTrue(actual.isPresent());
