@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position;
+package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.position;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.slot.PostgreSQLSlotManager;
@@ -32,30 +31,26 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.postgresql.replication.LogSequenceNumber;
+import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PostgreSQLIncrementalPositionManagerTest {
+class OpenGaussIncrementalPositionManagerTest {
     
-    private static final String POSTGRESQL_96_LSN = "0/14EFDB8";
+    private static final String LSN = "0/14EFDB8";
     
-    private static final String POSTGRESQL_10_LSN = "0/1634520";
-    
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
     
     private final DialectIncrementalPositionManager incrementalPositionManager = DatabaseTypedSPILoader.getService(DialectIncrementalPositionManager.class, databaseType);
     
@@ -65,57 +60,35 @@ class PostgreSQLIncrementalPositionManagerTest {
     private Connection connection;
     
     @Mock
-    private DatabaseMetaData databaseMetaData;
-    
-    @Mock
     private PostgreSQLSlotManager slotManager;
     
     @BeforeEach
-    void setUp() throws SQLException, ReflectiveOperationException {
+    void setUp() throws ReflectiveOperationException {
         dataSource = new MockedDataSource(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        Plugins.getMemberAccessor().set(PostgreSQLIncrementalPositionManager.class.getDeclaredField("slotManager"), incrementalPositionManager, slotManager);
+        Plugins.getMemberAccessor().set(OpenGaussIncrementalPositionManager.class.getDeclaredField("slotManager"), incrementalPositionManager, slotManager);
     }
     
     @Test
     void assertInitWithData() {
-        WALPosition actual = (WALPosition) incrementalPositionManager.init(POSTGRESQL_96_LSN);
-        assertThat(actual.getLogSequenceNumber().toString(), is("PostgreSQLLogSequenceNumber(logSequenceNumber=LSN{0/14EFDB8})"));
+        WALPosition actual = (WALPosition) incrementalPositionManager.init(LSN);
+        assertThat(actual.getLogSequenceNumber().toString(), is("OpenGaussLogSequenceNumber(logSequenceNumber=LSN{0/14EFDB8})"));
     }
     
     @Test
-    void assertInitWithPostgreSQL96() throws SQLException {
-        when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
-        when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
-        PreparedStatement preparedStatement = mockPreparedStatement(POSTGRESQL_96_LSN);
+    void assertInitWithDataSource() throws SQLException {
+        PreparedStatement preparedStatement = mockPreparedStatement();
         when(connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()")).thenReturn(preparedStatement);
         WALPosition actual = (WALPosition) incrementalPositionManager.init(dataSource, "");
-        assertThat(actual.getLogSequenceNumber().get(), is(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN)));
+        assertThat(actual.getLogSequenceNumber().get(), is(LogSequenceNumber.valueOf(LSN)));
         verify(slotManager).create(connection, "");
     }
     
-    @Test
-    void assertInitWithPostgreSQL10() throws SQLException {
-        when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
-        PreparedStatement preparedStatement = mockPreparedStatement(POSTGRESQL_10_LSN);
-        when(connection.prepareStatement("SELECT PG_CURRENT_WAL_LSN()")).thenReturn(preparedStatement);
-        WALPosition actual = (WALPosition) incrementalPositionManager.init(dataSource, "");
-        assertThat(actual.getLogSequenceNumber().get(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
-        verify(slotManager).create(connection, "");
-    }
-    
-    @Test
-    void assertInitFailed() throws SQLException {
-        when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(1);
-        assertThrows(PipelineInternalException.class, () -> incrementalPositionManager.init(dataSource, ""));
-    }
-    
-    private PreparedStatement mockPreparedStatement(final String lsn) throws SQLException {
+    private PreparedStatement mockPreparedStatement() throws SQLException {
         PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString(1)).thenReturn(lsn);
+        when(resultSet.getString(1)).thenReturn(LSN);
         return result;
     }
     
