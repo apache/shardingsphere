@@ -41,13 +41,6 @@ public interface PrimaryKeyIngestPosition<T> extends IngestPosition {
     T getEndValue();
     
     /**
-     * Convert value.
-     * @param value value to be converted
-     * @return converted value
-     */
-    T convert(String value);
-    
-    /**
      * Get type.
      *
      * @return type

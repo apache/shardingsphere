@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.combine;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
@@ -35,19 +38,23 @@ public final class CombineSegmentBinder {
      *
      * @param segment table segment
      * @param binderContext SQL statement binder context
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bound combine segment
      */
-    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext binderContext) {
+    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext binderContext,
+                                      final Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(),
-                bindSubquerySegment(segment.getLeft(), binderContext), segment.getCombineType(), bindSubquerySegment(segment.getRight(), binderContext));
+                bindSubquerySegment(segment.getLeft(), binderContext, outerTableBinderContexts), segment.getCombineType(),
+                bindSubquerySegment(segment.getRight(), binderContext, outerTableBinderContexts));
     }
     
-    private static SubquerySegment bindSubquerySegment(final SubquerySegment segment, final SQLStatementBinderContext binderContext) {
+    private static SubquerySegment bindSubquerySegment(final SubquerySegment segment, final SQLStatementBinderContext binderContext,
+                                                       final Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText());
         result.setSubqueryType(segment.getSubqueryType());
         SQLStatementBinderContext subqueryBinderContext = new SQLStatementBinderContext(segment.getSelect(), binderContext.getMetaData(), binderContext.getCurrentDatabaseName());
         subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
-        result.setSelect(new SelectStatementBinder().bind(segment.getSelect(), subqueryBinderContext));
+        result.setSelect(new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), subqueryBinderContext));
         return result;
     }
     

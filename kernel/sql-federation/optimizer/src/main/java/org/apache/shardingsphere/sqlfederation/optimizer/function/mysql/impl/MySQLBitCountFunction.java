@@ -17,18 +17,34 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.google.common.collect.ImmutableList;
+import org.apache.calcite.schema.impl.ScalarFunctionImpl;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.sql.type.InferTypes;
+import org.apache.calcite.sql.type.OperandTypes;
+import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.type.SqlTypeFamily;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.validate.SqlUserDefinedFunction;
 import org.apache.calcite.util.BitString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 /**
  * MySQL bit count function.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLBitCountFunction {
+public final class MySQLBitCountFunction extends SqlUserDefinedFunction {
+    
+    public MySQLBitCountFunction() {
+        super(new SqlIdentifier("BIT_COUNT", SqlParserPos.ZERO), SqlKind.OTHER_FUNCTION, ReturnTypes.BIGINT_NULLABLE, InferTypes.BOOLEAN,
+                OperandTypes.operandMetadata(Arrays.asList(SqlTypeFamily.NULL, SqlTypeFamily.ARRAY, SqlTypeFamily.STRING, SqlTypeFamily.NUMERIC),
+                        typeFactory -> ImmutableList.of(typeFactory.createSqlType(SqlTypeName.BIGINT)), null, arg -> false),
+                ScalarFunctionImpl.create(MySQLBitCountFunction.class, "bitCount"));
+    }
     
     /**
      * Bit count.

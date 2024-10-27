@@ -72,4 +72,62 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_pow">
+        <projections start-index="7" stop-index="14">
+            <expression-projection text="POW(2,2)" start-index="7" stop-index="14">
+                <expr>
+                    <function function-name="POW" start-index="7" stop-index="14" text="POW(2,2)" >
+                        <parameter>
+                            <literal-expression value="2" start-index="11" stop-index="11" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="13" stop-index="13" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_power">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="POWER(2,2)" start-index="7" stop-index="16">
+                <expr>
+                    <function function-name="POWER" start-index="7" stop-index="16" text="POWER(2,2)" >
+                        <parameter>
+                            <literal-expression value="2" start-index="13" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="15" stop-index="15" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_rand">
+        <projections start-index="7" stop-index="12">
+            <expression-projection text="RAND()" start-index="7" stop-index="12">
+                <expr>
+                    <function function-name="RAND" start-index="7" stop-index="12" text="RAND()" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_radians">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="RADIANS(90)" start-index="7" stop-index="17">
+                <expr>
+                    <function function-name="RADIANS" start-index="7" stop-index="17" text="RADIANS(90)" >
+                        <parameter>
+                            <literal-expression value="90" start-index="15" stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

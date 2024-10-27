@@ -24,7 +24,7 @@ Agent 制品 `distribution/agent/target/apache-shardingsphere-${latest.release.v
 mkdir agent
 tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz -C agent
 cd agent
-tree 
+tree
 ├── LICENSE
 ├── NOTICE
 ├── conf
@@ -125,7 +125,7 @@ cd ./shardingsphere/
 此后若在自定义 `Dockerfile` 中添加以下语句，这会将 ShardingSphere Agent 的目录复制到 `/shardingsphere-agent/` 。
 
 ```dockerfile
-COPY --from=apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
+COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
 ```
 
 #### 夜间构建
@@ -149,12 +149,8 @@ docker network create example-net
 docker run --rm -d \
   --name jaeger \
   -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
-  -p 16686:16686 \
-  -p 4317:4317 \
-  -p 4318:4318 \
-  -p 9411:9411 \
   --network example-net \
-  jaegertracing/all-in-one:1.60.0
+  jaegertracing/all-in-one:1.62.0
 ```
 
 2. 假设 `./custom-agent.yaml` 包含 ShardingSphere Agent 的配置，内容可能如下，
@@ -175,16 +171,16 @@ plugins:
 FROM ghcr.io/apache/shardingsphere-agent:latest
 COPY ./target/example.jar /app.jar
 COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
-ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar","-jar","/app.jar"]
+ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent.jar","-jar","/app.jar"]
 ```
 
-如果是通过本地构建 `apache/shardingsphere-agent:latest` 的 Docker Image，`Dockerfile` 可能如下，
+如果是通过本地构建 `ghcr.io/apache/shardingsphere-agent:latest` 的 Docker Image，`Dockerfile` 可能如下，
 
 ```dockerfile
-FROM apache/shardingsphere-agent:latest
+FROM ghcr.io/apache/shardingsphere-agent:latest
 COPY ./target/example.jar /app.jar
 COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
-ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent-5.5.1-SNAPSHOT.jar","-jar","/app.jar"]
+ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent.jar","-jar","/app.jar"]
 ```
 
 4. 享受它，

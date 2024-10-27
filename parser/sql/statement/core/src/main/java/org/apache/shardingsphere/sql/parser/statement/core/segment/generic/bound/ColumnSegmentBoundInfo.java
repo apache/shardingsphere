@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
  * Column segment bound info.
  */
 @RequiredArgsConstructor
-@Getter
 public final class ColumnSegmentBoundInfo {
     
     private final IdentifierValue originalDatabase;
@@ -41,5 +39,41 @@ public final class ColumnSegmentBoundInfo {
         originalSchema = new IdentifierValue("");
         originalTable = new IdentifierValue("");
         this.originalColumn = originalColumn;
+    }
+    
+    /**
+     * Get original database.
+     *
+     * @return original database
+     */
+    public IdentifierValue getOriginalDatabase() {
+        return null == originalDatabase ? new IdentifierValue("") : originalDatabase;
+    }
+    
+    /**
+     * Get original schema.
+     *
+     * @return original schema
+     */
+    public IdentifierValue getOriginalSchema() {
+        return null == originalSchema ? new IdentifierValue("") : originalSchema;
+    }
+    
+    /**
+     * Get original table.
+     *
+     * @return original table
+     */
+    public IdentifierValue getOriginalTable() {
+        return null == originalTable ? new IdentifierValue("") : originalTable;
+    }
+    
+    /**
+     * Get original column.
+     *
+     * @return original column
+     */
+    public IdentifierValue getOriginalColumn() {
+        return null == originalColumn ? new IdentifierValue("") : originalColumn;
     }
 }
