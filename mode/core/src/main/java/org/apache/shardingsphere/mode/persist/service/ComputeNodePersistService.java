@@ -56,7 +56,8 @@ public final class ComputeNodePersistService {
     public void registerOnline(final ComputeNodeInstance computeNodeInstance) {
         String instanceId = computeNodeInstance.getMetaData().getId();
         repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceId, computeNodeInstance.getMetaData().getType()), YamlEngine.marshal(
-                new YamlComputeNodeDataSwapper().swapToYamlConfiguration(new ComputeNodeData(computeNodeInstance.getMetaData().getAttributes(), computeNodeInstance.getMetaData().getVersion()))));
+                new YamlComputeNodeDataSwapper().swapToYamlConfiguration(new ComputeNodeData(computeNodeInstance.getMetaData().getAttributes(),
+                        computeNodeInstance.getMetaData().getVersion(), computeNodeInstance.getMetaData().getDatabaseName()))));
         repository.persistEphemeral(ComputeNode.getComputeNodeStateNodePath(instanceId), computeNodeInstance.getState().getCurrentState().name());
         persistInstanceLabels(instanceId, computeNodeInstance.getLabels());
     }
@@ -136,7 +137,7 @@ public final class ComputeNodePersistService {
                 continue;
             }
             ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class));
-            result.add(loadComputeNodeInstance(InstanceMetaDataFactory.create(each, instanceType, computeNodeData.getAttribute(), computeNodeData.getVersion())));
+            result.add(loadComputeNodeInstance(InstanceMetaDataFactory.create(each, instanceType, computeNodeData.getAttribute(), computeNodeData.getVersion(), computeNodeData.getDatabaseName())));
         }
         return result;
     }

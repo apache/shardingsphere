@@ -31,6 +31,6 @@ class JDBCInstanceMetaDataBuilderTest {
     
     @Test
     void assertBuild() {
-        assertThat(instanceMetaDataBuilder.build(3306).getType(), is(InstanceType.JDBC));
+        assertThat(instanceMetaDataBuilder.build(3306, "foo_db").getType(), is(InstanceType.JDBC));
     }
 }

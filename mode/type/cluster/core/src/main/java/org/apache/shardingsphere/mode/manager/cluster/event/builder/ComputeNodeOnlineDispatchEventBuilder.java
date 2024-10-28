@@ -64,7 +64,7 @@ public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEven
         }
         ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
         InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(
-                matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion());
+                matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion(), computeNodeData.getDatabaseName());
         if (Type.ADDED == event.getType()) {
             return Optional.of(new InstanceOnlineEvent(instanceMetaData));
         }

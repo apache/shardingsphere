@@ -52,9 +52,7 @@ import static org.mockito.Mockito.when;
 
 class MppdbDecodingPluginTest {
     
-    private final LogSequenceNumber pgSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
-    
-    private final OpenGaussLogSequenceNumber logSequenceNumber = new OpenGaussLogSequenceNumber(pgSequenceNumber);
+    private final OpenGaussLogSequenceNumber logSequenceNumber = new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf("0/14EFDB8"));
     
     @Test
     void assertDecodeWriteRowEvent() {
