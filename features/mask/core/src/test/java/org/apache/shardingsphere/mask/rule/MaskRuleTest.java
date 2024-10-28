@@ -27,8 +27,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MaskRuleTest {
     
@@ -54,5 +57,12 @@ class MaskRuleTest {
     @Test
     void assertFindMaskTableWhenTableNameDoesNotExist() {
         assertFalse(maskRule.findMaskTable("non_existent_table").isPresent());
+    }
+    
+    @Test
+    void assertUpdateConfiguration() {
+        MaskRuleConfiguration toBeUpdatedRuleConfig = mock(MaskRuleConfiguration.class);
+        maskRule.updateConfiguration(toBeUpdatedRuleConfig);
+        assertThat(maskRule.getConfiguration(), is(toBeUpdatedRuleConfig));
     }
 }
