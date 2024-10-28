@@ -26,6 +26,7 @@
         <column name="worker_id" />
         <column name="labels" />
         <column name="version" ignore-assert-data="true" />
+        <column name="database_name" />
     </metadata>
-    <row values=" | PROXY| | 3307| OK| Standalone| 1| |" />
+    <row values=" | PROXY| | 3307| OK| Standalone| 1| | |" />
 </dataset>
