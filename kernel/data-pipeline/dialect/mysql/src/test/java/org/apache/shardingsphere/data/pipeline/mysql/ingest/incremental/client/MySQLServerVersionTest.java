@@ -45,4 +45,10 @@ class MySQLServerVersionTest {
         MySQLServerVersion actual = new MySQLServerVersion("5.6.6");
         assertTrue(actual.greaterThanOrEqualTo(5, 6, 6));
     }
+    
+    @Test
+    void assertInvalidVersion() {
+        MySQLServerVersion actual = new MySQLServerVersion("");
+        assertTrue(actual.greaterThanOrEqualTo(0, 0, 0));
+    }
 }

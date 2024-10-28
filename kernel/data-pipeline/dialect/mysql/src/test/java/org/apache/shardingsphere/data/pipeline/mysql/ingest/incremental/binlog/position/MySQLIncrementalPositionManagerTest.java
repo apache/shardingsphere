@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.position;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,35 +32,44 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class MySQLIncrementalPositionManagerTest {
     
     private static final String LOG_FILE_NAME = "binlog-000001";
     
     private static final long LOG_POSITION = 4L;
     
-    @Mock(extraInterfaces = AutoCloseable.class)
-    private DataSource dataSource;
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
-    @Mock
-    private Connection connection;
+    private final DialectIncrementalPositionManager incrementalPositionManager = DatabaseTypedSPILoader.getService(DialectIncrementalPositionManager.class, databaseType);
     
-    @BeforeEach
-    void setUp() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
-        PreparedStatement positionStatement = mockPositionStatement();
-        when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(positionStatement);
+    @Test
+    void assertInitWithData() {
+        MySQLBinlogPosition actual = (MySQLBinlogPosition) incrementalPositionManager.init("binlog-000001#4");
+        assertThat(actual.getFilename(), is(LOG_FILE_NAME));
+        assertThat(actual.getPosition(), is(LOG_POSITION));
     }
     
     @Test
-    void assertGetCurrentPosition() throws SQLException {
-        MySQLIncrementalPositionManager incrementalPositionManager = new MySQLIncrementalPositionManager();
-        MySQLBinlogPosition actual = incrementalPositionManager.init(dataSource, "");
+    void assertInitWithDataFailed() {
+        assertThrows(IllegalArgumentException.class, () -> incrementalPositionManager.init("binlog-000001"));
+    }
+    
+    @Test
+    void assertInitWithDataSource() throws SQLException {
+        MySQLBinlogPosition actual = (MySQLBinlogPosition) incrementalPositionManager.init(createDataSource(), "");
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
+    }
+    
+    DataSource createDataSource() throws SQLException {
+        Connection connection = mock(Connection.class);
+        PreparedStatement positionStatement = mockPositionStatement();
+        when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(positionStatement);
+        return new MockedDataSource(connection);
     }
     
     private PreparedStatement mockPositionStatement() throws SQLException {

@@ -176,7 +176,7 @@
     <sql-case id="select_repeat" value="SELECT REPEAT('MySQL', 3)" db-types="MySQL" />
     <sql-case id="select_replace" value="SELECT REPLACE('www.mysql.com', 'w', 'Ww')" db-types="MySQL" />
     <sql-case id="select_reverse" value="SELECT REVERSE('abc')" db-types="MySQL" />
-    <sql-case id="select_right" value="SELECT RIGHT('foobarbar', 4)" db-types="MySQL" />
+    <sql-case id="select_right" value="SELECT RIGHT('foobarbar', 4)" db-types="MySQL, Doris" />
     <sql-case id="select_roles_graphml" value="SELECT ROLES_GRAPHML()" db-types="MySQL" />
     <sql-case id="select_round" value="SELECT ROUND(1.58)" db-types="MySQL" />
     <sql-case id="select_row_count" value="SELECT ROW_COUNT()" db-types="MySQL" />
@@ -246,4 +246,5 @@
     <sql-case id="select_st_crosses" value="SELECT ST_Crosses(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 2)'))" db-types="MySQL,Doris" />
     <sql-case id="select_bitxor" value="SELECT BITXOR(3,5)" db-types="Doris" />
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
+    <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
 </sql-cases>

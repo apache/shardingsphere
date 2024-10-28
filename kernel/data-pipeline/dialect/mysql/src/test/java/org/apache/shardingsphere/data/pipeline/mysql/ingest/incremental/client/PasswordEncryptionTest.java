@@ -62,6 +62,11 @@ class PasswordEncryptionTest {
         assertDoesNotThrow(() -> PasswordEncryption.encryptWithRSAPublicKey("123456", getRandomSeed(), "RSA/ECB/OAEPWithSHA-1AndMGF1Padding", mockPublicKey()));
     }
     
+    @Test
+    void assertEncryptRSAPublicKeyWithNullPassword() {
+        assertDoesNotThrow(() -> PasswordEncryption.encryptWithRSAPublicKey(null, getRandomSeed(), "RSA/ECB/OAEPWithSHA-1AndMGF1Padding", mockPublicKey()));
+    }
+    
     private String mockPublicKey() {
         return "-----BEGIN PUBLIC KEY-----\n"
                 + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1ealW/qDdArgzCMnE5Cz\n"
