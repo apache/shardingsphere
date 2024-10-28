@@ -612,8 +612,8 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     public ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.POSITION().getText(), getOriginalText(ctx));
-        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(0)));
-        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(1)));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
         return result;
     }
     
@@ -1172,10 +1172,10 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
             result.setAlias(alias);
             return result;
         }
-        LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
+        ExpressionSegment column = (ExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias
-                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getText()), column)
+                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getText()), column);
         result.setAlias(alias);
         return result;
     }
