@@ -79,7 +79,7 @@ class MaskTableChangedProcessorTest {
                 new LinkedList<>(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()))), Collections.emptyMap());
         MaskTableRuleConfiguration toBeChangedItemConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(mock(MaskColumnRuleConfiguration.class)));
         processor.changeRuleItemConfiguration(
-                new AlterNamedRuleItemEvent("foo_db", "foo_tbl", "key","0", ""), currentRuleConfig, toBeChangedItemConfig);
+                new AlterNamedRuleItemEvent("foo_db", "foo_tbl", "key", "0", ""), currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         assertThat(currentRuleConfig.getTables().iterator().next().getColumns().size(), is(1));
     }

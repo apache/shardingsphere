@@ -80,7 +80,7 @@ class MaskAlgorithmChangedProcessorTest {
                 new LinkedList<>(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()))), new HashMap<>());
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
         processor.changeRuleItemConfiguration(
-                new AlterNamedRuleItemEvent("foo_db", "foo_algo", "key","0", ""), currentRuleConfig, toBeChangedItemConfig);
+                new AlterNamedRuleItemEvent("foo_db", "foo_algo", "key", "0", ""), currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getMaskAlgorithms().size(), is(1));
         assertThat(currentRuleConfig.getMaskAlgorithms().get("foo_algo").getType(), is("FIXTURE"));
     }
