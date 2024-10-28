@@ -55,7 +55,6 @@ class ShowComputeNodeInfoExecutorTest {
         assertThat(row.getCell(6), is("0"));
         assertThat(row.getCell(7), is(""));
         assertThat(row.getCell(8), is("foo_version"));
-        assertThat(row.getCell(9), is(""));
     }
     
     private ComputeNodeInstanceContext createInstanceContext() {
