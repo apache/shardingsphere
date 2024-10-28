@@ -73,6 +73,38 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_interval">
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="INTERVAL(23, 1, 15, 17, 30, 44, 200)" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="INTERVAL" start-index="7" stop-index="42" text="INTERVAL(23, 1, 15, 17, 30, 44, 200)" >
+                        <parameter>
+                            <literal-expression value="23" start-index="16" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="20" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="15" start-index="23" stop-index="24" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="17" start-index="27" stop-index="28" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="30" start-index="31" stop-index="32" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="44" start-index="35" stop-index="36" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="200" start-index="39" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_pow">
         <projections start-index="7" stop-index="14">
             <expression-projection text="POW(2,2)" start-index="7" stop-index="14">
