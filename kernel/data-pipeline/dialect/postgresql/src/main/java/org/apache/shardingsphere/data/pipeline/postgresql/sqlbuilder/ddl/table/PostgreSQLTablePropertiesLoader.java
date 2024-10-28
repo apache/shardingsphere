@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,55 +51,40 @@ public final class PostgreSQLTablePropertiesLoader {
      * @throws SQLException SQL exception
      */
     public Map<String, Object> load() throws SQLException {
-        Map<String, Object> result = new LinkedHashMap<>();
-        fetchDataBaseId(result);
-        fetchSchemaId(result);
-        fetchTableId(result);
+        Map<String, Object> result = new LinkedHashMap<>(fetchDatabaseId());
+        result.putAll(fetchSchemaId());
+        result.putAll(fetchTableId());
         fetchTableProperties(result);
         return result;
     }
     
-    private void fetchDataBaseId(final Map<String, Object> context) throws SQLException {
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put("databaseName", templateExecutor.getConnection().getCatalog());
-        context.putAll(templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_database_id.ftl"));
+    private Map<String, Object> fetchDatabaseId() throws SQLException {
+        Map<String, Object> params = Collections.singletonMap("databaseName", templateExecutor.getConnection().getCatalog());
+        return templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_database_id.ftl");
     }
     
-    private void fetchTableId(final Map<String, Object> context) {
-        Map<String, Object> params = new LinkedHashMap<>();
+    private Map<String, Object> fetchSchemaId() {
+        Map<String, Object> params = Collections.singletonMap("schemaName", schemaName);
+        return templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_schema_id.ftl");
+    }
+    
+    private Map<String, Object> fetchTableId() {
+        Map<String, Object> params = new LinkedHashMap<>(2, 1F);
         params.put("schemaName", schemaName);
         params.put("tableName", tableName);
-        context.putAll(templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_table_id.ftl"));
-    }
-    
-    private void fetchSchemaId(final Map<String, Object> context) {
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put("schemaName", schemaName);
-        context.putAll(templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_schema_id.ftl"));
+        return templateExecutor.executeByTemplateForSingleRow(params, "component/table/%s/get_table_id.ftl");
     }
     
     private void fetchTableProperties(final Map<String, Object> context) throws SQLException {
         context.putAll(templateExecutor.executeByTemplateForSingleRow(context, "component/table/%s/properties.ftl"));
-        updateAutovacuumProperties(context);
-        checkRlspolicySupport(context);
+        updateAutoVacuumProperties(context);
+        updateRlspolicySupport(context);
         templateExecutor.formatSecurityLabels(context);
     }
     
-    private void updateAutovacuumProperties(final Map<String, Object> context) {
-        if (null == context.get("autovacuum_enabled")) {
-            context.put("autovacuum_enabled", "x");
-        } else if (Boolean.TRUE.toString().equalsIgnoreCase(context.get("autovacuum_enabled").toString())) {
-            context.put("autovacuum_enabled", "t");
-        } else {
-            context.put("autovacuum_enabled", "f");
-        }
-        if (null == context.get("toast_autovacuum_enabled")) {
-            context.put("toast_autovacuum_enabled", "x");
-        } else if (Boolean.TRUE.toString().equalsIgnoreCase(context.get("toast_autovacuum_enabled").toString())) {
-            context.put("toast_autovacuum_enabled", "t");
-        } else {
-            context.put("toast_autovacuum_enabled", "f");
-        }
+    private void updateAutoVacuumProperties(final Map<String, Object> context) {
+        context.put("autovacuum_enabled", getAutoVacuumEnabled(context.get("autovacuum_enabled")));
+        context.put("toast_autovacuum_enabled", getAutoVacuumEnabled(context.get("toast_autovacuum_enabled")));
         context.put("autovacuum_custom", anyIsTrue(Arrays.asList(
                 context.get("autovacuum_vacuum_threshold"),
                 context.get("autovacuum_vacuum_scale_factor"),
@@ -121,23 +107,28 @@ public final class PostgreSQLTablePropertiesLoader {
                 context.get("toast_autovacuum_freeze_table_age"))) || "t".equals(context.get("toast_autovacuum_enabled")) || "f".equals(context.get("toast_autovacuum_enabled")));
     }
     
-    private void checkRlspolicySupport(final Map<String, Object> context) {
-        if (context.containsKey("rlspolicy")) {
-            if (context.get("rlspolicy") instanceof String && Boolean.TRUE.toString().equals(context.get("rlspolicy"))) {
-                context.put("rlspolicy", true);
-            }
-            if (context.get("forcerlspolicy") instanceof String && Boolean.TRUE.toString().equals(context.get("forcerlspolicy"))) {
-                context.put("forcerlspolicy", true);
-            }
+    private String getAutoVacuumEnabled(final Object autoVacuumEnabled) {
+        if (null == autoVacuumEnabled) {
+            return "x";
         }
+        if (Boolean.parseBoolean(autoVacuumEnabled.toString())) {
+            return "t";
+        }
+        return "f";
     }
     
     private boolean anyIsTrue(final Collection<Object> collection) {
-        for (Object each : collection) {
-            if (each instanceof Boolean && (Boolean) each) {
-                return true;
+        return collection.stream().anyMatch(each -> each instanceof Boolean && (Boolean) each);
+    }
+    
+    private void updateRlspolicySupport(final Map<String, Object> context) {
+        if (context.containsKey("rlspolicy")) {
+            if (context.get("rlspolicy") instanceof String && Boolean.parseBoolean(context.get("rlspolicy").toString())) {
+                context.put("rlspolicy", true);
+            }
+            if (context.get("forcerlspolicy") instanceof String && Boolean.parseBoolean(context.get("forcerlspolicy").toString())) {
+                context.put("forcerlspolicy", true);
             }
         }
-        return false;
     }
 }
