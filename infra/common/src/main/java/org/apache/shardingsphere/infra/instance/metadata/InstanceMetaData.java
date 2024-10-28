@@ -58,7 +58,7 @@ public interface InstanceMetaData {
     String getVersion();
     
     /**
-     * Get database name
+     * Get database name.
      *
      * @return database name
      */

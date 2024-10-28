@@ -66,5 +66,4 @@ public final class JDBCInstanceMetaData implements InstanceMetaData {
         return databaseName;
     }
     
-    
 }
