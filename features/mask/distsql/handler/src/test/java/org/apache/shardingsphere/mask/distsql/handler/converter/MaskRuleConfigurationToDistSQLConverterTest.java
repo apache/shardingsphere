@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.distsql.handler.provider;
+package org.apache.shardingsphere.mask.distsql.handler.converter;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
