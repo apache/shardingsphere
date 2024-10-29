@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.distsql.handler.constant.MaskDistSQLConstants;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,11 +39,11 @@ public final class MaskRuleConfigurationToDistSQLConverter implements RuleConfig
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder(MaskDistSQLConstants.CREATE_MASK_RULE);
+        StringBuilder result = new StringBuilder(MaskConvertDistSQLConstants.CREATE_MASK_RULE);
         Iterator<MaskTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
         while (iterator.hasNext()) {
             MaskTableRuleConfiguration tableRuleConfig = iterator.next();
-            result.append(String.format(MaskDistSQLConstants.MASK_RULE, tableRuleConfig.getName(), getMaskColumns(tableRuleConfig.getColumns(), ruleConfig.getMaskAlgorithms())));
+            result.append(String.format(MaskConvertDistSQLConstants.MASK_RULE, tableRuleConfig.getName(), getMaskColumns(tableRuleConfig.getColumns(), ruleConfig.getMaskAlgorithms())));
             if (iterator.hasNext()) {
                 result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
             }
@@ -58,7 +57,7 @@ public final class MaskRuleConfigurationToDistSQLConverter implements RuleConfig
         Iterator<MaskColumnRuleConfiguration> iterator = columnRuleConfig.iterator();
         while (iterator.hasNext()) {
             MaskColumnRuleConfiguration column = iterator.next();
-            result.append(String.format(MaskDistSQLConstants.MASK_COLUMN, column.getLogicColumn(), getMaskAlgorithms(column, maskAlgorithms)));
+            result.append(String.format(MaskConvertDistSQLConstants.MASK_COLUMN, column.getLogicColumn(), getMaskAlgorithms(column, maskAlgorithms)));
             if (iterator.hasNext()) {
                 result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
             }

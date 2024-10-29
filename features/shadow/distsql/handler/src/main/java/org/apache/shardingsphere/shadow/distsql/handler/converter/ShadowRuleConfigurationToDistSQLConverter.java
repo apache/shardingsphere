@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.distsql.handler.constant.ShadowDistSQLConstants;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,13 +40,14 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
         if (ruleConfig.getDataSources().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder(ShadowDistSQLConstants.CREATE_SHADOW_RULE);
+        StringBuilder result = new StringBuilder(ShadowConvertDistSQLConstants.CREATE_SHADOW_RULE);
         Iterator<ShadowDataSourceConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
             ShadowDataSourceConfiguration dataSourceConfig = iterator.next();
             String shadowRuleName = dataSourceConfig.getName();
             String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
-            result.append(String.format(ShadowDistSQLConstants.SHADOW_RULE, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
+            result.append(
+                    String.format(ShadowConvertDistSQLConstants.SHADOW_RULE, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
             if (iterator.hasNext()) {
                 result.append(DistSQLConstants.COMMA);
             }
@@ -63,7 +63,7 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
             Entry<String, ShadowTableConfiguration> shadowTableConfig = iterator.next();
             if (shadowTableConfig.getValue().getDataSourceNames().contains(shadowRuleName)) {
                 String shadowTableTypes = getShadowTableTypes(shadowTableConfig.getValue().getShadowAlgorithmNames(), algorithmConfigs);
-                result.append(String.format(ShadowDistSQLConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
+                result.append(String.format(ShadowConvertDistSQLConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
             }
             if (iterator.hasNext()) {
                 result.append(DistSQLConstants.COMMA).append(System.lineSeparator());

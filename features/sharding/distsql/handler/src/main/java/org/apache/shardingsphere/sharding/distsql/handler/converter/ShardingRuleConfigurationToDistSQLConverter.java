@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.constant.ShardingDistSQLConstants;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -64,7 +63,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
     private void appendShardingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
         String tableRules = getTableRules(ruleConfig);
         String autoTableRules = getAutoTableRules(ruleConfig);
-        stringBuilder.append(ShardingDistSQLConstants.CREATE_SHARDING_TABLE_RULE).append(tableRules);
+        stringBuilder.append(ShardingConvertDistSQLConstants.CREATE_SHARDING_TABLE_RULE).append(tableRules);
         if (!Strings.isNullOrEmpty(tableRules) && !Strings.isNullOrEmpty(autoTableRules)) {
             stringBuilder.append(DistSQLConstants.COMMA);
         }
@@ -72,11 +71,11 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
     }
     
     private void appendShardingBindingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        stringBuilder.append(ShardingDistSQLConstants.SHARDING_BINDING_TABLE_RULES);
+        stringBuilder.append(ShardingConvertDistSQLConstants.SHARDING_BINDING_TABLE_RULES);
         Iterator<ShardingTableReferenceRuleConfiguration> iterator = ruleConfig.getBindingTableGroups().iterator();
         while (iterator.hasNext()) {
             ShardingTableReferenceRuleConfiguration referenceRuleConfig = iterator.next();
-            stringBuilder.append(String.format(ShardingDistSQLConstants.BINDING_TABLES, referenceRuleConfig.getName(), referenceRuleConfig.getReference()));
+            stringBuilder.append(String.format(ShardingConvertDistSQLConstants.BINDING_TABLES, referenceRuleConfig.getName(), referenceRuleConfig.getReference()));
             if (iterator.hasNext()) {
                 stringBuilder.append(DistSQLConstants.COMMA);
             }
@@ -86,14 +85,14 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
     
     private void appendDefaultShardingStrategy(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
         if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
-            appendStrategy(ruleConfig.getDefaultDatabaseShardingStrategy(), ShardingDistSQLConstants.DEFAULT_DATABASE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
+            appendStrategy(ruleConfig.getDefaultDatabaseShardingStrategy(), ShardingConvertDistSQLConstants.DEFAULT_DATABASE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
             result.append(DistSQLConstants.SEMI);
         }
         if (null != ruleConfig.getDefaultTableShardingStrategy()) {
             if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
                 result.append(System.lineSeparator()).append(System.lineSeparator());
             }
-            appendStrategy(ruleConfig.getDefaultTableShardingStrategy(), ShardingDistSQLConstants.DEFAULT_TABLE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
+            appendStrategy(ruleConfig.getDefaultTableShardingStrategy(), ShardingConvertDistSQLConstants.DEFAULT_TABLE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
             result.append(DistSQLConstants.SEMI);
         }
     }
@@ -104,7 +103,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
             Iterator<ShardingTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
             while (iterator.hasNext()) {
                 ShardingTableRuleConfiguration tableRuleConfig = iterator.next();
-                result.append(String.format(ShardingDistSQLConstants.SHARDING_TABLE_RULE, tableRuleConfig.getLogicTable(), tableRuleConfig.getActualDataNodes(),
+                result.append(String.format(ShardingConvertDistSQLConstants.SHARDING_TABLE_RULE, tableRuleConfig.getLogicTable(), tableRuleConfig.getActualDataNodes(),
                         appendTableStrategy(tableRuleConfig, ruleConfig)));
                 if (iterator.hasNext()) {
                     result.append(DistSQLConstants.COMMA);
@@ -120,7 +119,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
             Iterator<ShardingAutoTableRuleConfiguration> iterator = ruleConfig.getAutoTables().iterator();
             while (iterator.hasNext()) {
                 ShardingAutoTableRuleConfiguration autoTableRuleConfig = iterator.next();
-                result.append(String.format(ShardingDistSQLConstants.SHARDING_AUTO_TABLE_RULE, autoTableRuleConfig.getLogicTable(), autoTableRuleConfig.getActualDataSources(),
+                result.append(String.format(ShardingConvertDistSQLConstants.SHARDING_AUTO_TABLE_RULE, autoTableRuleConfig.getLogicTable(), autoTableRuleConfig.getActualDataSources(),
                         appendAutoTableStrategy(autoTableRuleConfig, ruleConfig)));
                 if (iterator.hasNext()) {
                     result.append(DistSQLConstants.COMMA);
@@ -132,8 +131,8 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
     
     private String appendTableStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final ShardingRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
-        appendStrategy(tableRuleConfig.getDatabaseShardingStrategy(), ShardingDistSQLConstants.DATABASE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
-        appendStrategy(tableRuleConfig.getTableShardingStrategy(), ShardingDistSQLConstants.TABLE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
+        appendStrategy(tableRuleConfig.getDatabaseShardingStrategy(), ShardingConvertDistSQLConstants.DATABASE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
+        appendStrategy(tableRuleConfig.getTableShardingStrategy(), ShardingConvertDistSQLConstants.TABLE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
         appendKeyGenerateStrategy(ruleConfig.getKeyGenerators(), tableRuleConfig.getKeyGenerateStrategy(), result);
         appendAuditStrategy(ruleConfig.getAuditors(), null != tableRuleConfig.getAuditStrategy() ? tableRuleConfig.getAuditStrategy() : ruleConfig.getDefaultAuditStrategy(), result);
         return result.toString();
@@ -143,7 +142,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
         StringBuilder result = new StringBuilder();
         StandardShardingStrategyConfiguration strategyConfig = (StandardShardingStrategyConfiguration) autoTableRuleConfig.getShardingStrategy();
         String shardingColumn = Strings.isNullOrEmpty(strategyConfig.getShardingColumn()) ? ruleConfig.getDefaultShardingColumn() : strategyConfig.getShardingColumn();
-        result.append(String.format(ShardingDistSQLConstants.AUTO_TABLE_STRATEGY,
+        result.append(String.format(ShardingConvertDistSQLConstants.AUTO_TABLE_STRATEGY,
                 shardingColumn, AlgorithmDistSQLConverter.getAlgorithmType(ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName()))));
         appendKeyGenerateStrategy(ruleConfig.getKeyGenerators(), autoTableRuleConfig.getKeyGenerateStrategy(), result);
         appendAuditStrategy(ruleConfig.getAuditors(), null != autoTableRuleConfig.getAuditStrategy() ? autoTableRuleConfig.getAuditStrategy() : ruleConfig.getDefaultAuditStrategy(), result);
@@ -155,25 +154,27 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
         if (null == strategyConfig) {
             return;
         }
-        if (Objects.equals(strategyType, ShardingDistSQLConstants.DATABASE_STRATEGY) || Objects.equals(strategyType, ShardingDistSQLConstants.TABLE_STRATEGY)) {
+        if (Objects.equals(strategyType, ShardingConvertDistSQLConstants.DATABASE_STRATEGY) || Objects.equals(strategyType, ShardingConvertDistSQLConstants.TABLE_STRATEGY)) {
             stringBuilder.append(DistSQLConstants.COMMA).append(System.lineSeparator());
         }
         String type = strategyConfig.getType().toLowerCase();
         String algorithmDefinition = AlgorithmDistSQLConverter.getAlgorithmType(shardingAlgorithms.get(strategyConfig.getShardingAlgorithmName()));
         switch (type) {
-            case ShardingDistSQLConstants.STANDARD:
+            case ShardingConvertDistSQLConstants.STANDARD:
                 StandardShardingStrategyConfiguration standardShardingStrategyConfig = (StandardShardingStrategyConfiguration) strategyConfig;
-                stringBuilder.append(String.format(ShardingDistSQLConstants.SHARDING_STRATEGY_STANDARD, strategyType, type, standardShardingStrategyConfig.getShardingColumn(), algorithmDefinition));
+                stringBuilder
+                        .append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_STANDARD, strategyType, type, standardShardingStrategyConfig.getShardingColumn(), algorithmDefinition));
                 break;
-            case ShardingDistSQLConstants.COMPLEX:
+            case ShardingConvertDistSQLConstants.COMPLEX:
                 ComplexShardingStrategyConfiguration complexShardingStrategyConfig = (ComplexShardingStrategyConfiguration) strategyConfig;
-                stringBuilder.append(String.format(ShardingDistSQLConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexShardingStrategyConfig.getShardingColumns(), algorithmDefinition));
+                stringBuilder
+                        .append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexShardingStrategyConfig.getShardingColumns(), algorithmDefinition));
                 break;
-            case ShardingDistSQLConstants.HINT:
-                stringBuilder.append(String.format(ShardingDistSQLConstants.SHARDING_STRATEGY_HINT, strategyType, type, algorithmDefinition));
+            case ShardingConvertDistSQLConstants.HINT:
+                stringBuilder.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_HINT, strategyType, type, algorithmDefinition));
                 break;
-            case ShardingDistSQLConstants.NONE:
-                stringBuilder.append(String.format(ShardingDistSQLConstants.SHARDING_STRATEGY_NONE, strategyType, "none"));
+            case ShardingConvertDistSQLConstants.NONE:
+                stringBuilder.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_NONE, strategyType, "none"));
                 break;
             default:
                 break;
@@ -187,13 +188,13 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
         }
         stringBuilder.append(DistSQLConstants.COMMA).append(System.lineSeparator());
         String algorithmDefinition = AlgorithmDistSQLConverter.getAlgorithmType(keyGenerators.get(keyGenerateStrategyConfig.getKeyGeneratorName()));
-        stringBuilder.append(String.format(ShardingDistSQLConstants.KEY_GENERATOR_STRATEGY, keyGenerateStrategyConfig.getColumn(), algorithmDefinition));
+        stringBuilder.append(String.format(ShardingConvertDistSQLConstants.KEY_GENERATOR_STRATEGY, keyGenerateStrategyConfig.getColumn(), algorithmDefinition));
     }
     
     private void appendAuditStrategy(final Map<String, AlgorithmConfiguration> auditors, final ShardingAuditStrategyConfiguration auditStrategy, final StringBuilder stringBuilder) {
         if (null != auditStrategy) {
             stringBuilder.append(DistSQLConstants.COMMA).append(System.lineSeparator());
-            stringBuilder.append(String.format(ShardingDistSQLConstants.AUDIT_STRATEGY, getAlgorithmTypes(auditors, auditStrategy.getAuditorNames()), auditStrategy.isAllowHintDisable()));
+            stringBuilder.append(String.format(ShardingConvertDistSQLConstants.AUDIT_STRATEGY, getAlgorithmTypes(auditors, auditStrategy.getAuditorNames()), auditStrategy.isAllowHintDisable()));
         }
     }
     

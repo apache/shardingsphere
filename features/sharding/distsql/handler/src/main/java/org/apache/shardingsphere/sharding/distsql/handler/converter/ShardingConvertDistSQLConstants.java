@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.constant;
+package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding DistSQL constants.
+ * Sharding convert DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingDistSQLConstants {
+public final class ShardingConvertDistSQLConstants {
     
     public static final String STANDARD = "standard";
     

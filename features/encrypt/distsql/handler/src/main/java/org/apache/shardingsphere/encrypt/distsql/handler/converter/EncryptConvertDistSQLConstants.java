@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.distsql.handler.constant;
+package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Mask DistSQL constants.
+ * Encrypt convert DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MaskDistSQLConstants {
+public final class EncryptConvertDistSQLConstants {
     
-    public static final String CREATE_MASK_RULE = "CREATE MASK RULE";
+    public static final String CREATE_ENCRYPT_RULE = "CREATE ENCRYPT RULE";
     
-    public static final String MASK_RULE = " %s ("
+    public static final String ENCRYPT_RULE = " %s ("
             + System.lineSeparator()
             + "COLUMNS("
             + System.lineSeparator()
@@ -36,5 +36,17 @@ public final class MaskDistSQLConstants {
             + System.lineSeparator()
             + "))";
     
-    public static final String MASK_COLUMN = "(NAME=%s, %s)";
+    public static final String ENCRYPT_COLUMN = "(NAME=%s, %s, %s)";
+    
+    public static final String CIPHER = "CIPHER=%s";
+    
+    public static final String ASSISTED_QUERY_COLUMN = "ASSISTED_QUERY_COLUMN=%s";
+    
+    public static final String LIKE_QUERY_COLUMN = "LIKE_QUERY_COLUMN=%s";
+    
+    public static final String ENCRYPT_ALGORITHM = "ENCRYPT_ALGORITHM(%s)";
+    
+    public static final String ASSISTED_QUERY_ALGORITHM = "ASSISTED_QUERY_ALGORITHM(%s)";
+    
+    public static final String LIKE_QUERY_ALGORITHM = "LIKE_QUERY_ALGORITHM(%s)";
 }

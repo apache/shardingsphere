@@ -15,28 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.handler.constant;
+package org.apache.shardingsphere.broadcast.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Shadow DistSQL constants.
+ * Broadcast convert DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowDistSQLConstants {
+public final class BroadcastConvertDistSQLConstants {
     
-    public static final String CREATE_SHADOW_RULE = "CREATE SHADOW RULE";
-    
-    public static final String SHADOW_RULE = " %s("
-            + System.lineSeparator()
-            + "SOURCE=%s,"
-            + System.lineSeparator()
-            + "SHADOW=%s,"
-            + System.lineSeparator()
-            + "%s"
-            + System.lineSeparator()
-            + ")";
-    
-    public static final String SHADOW_TABLE = "%s(%s)";
+    public static final String CREATE_BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s;";
 }

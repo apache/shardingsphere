@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.distsql.handler.constant;
+package org.apache.shardingsphere.mask.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Single DistSQL constants.
+ * Mask convert DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingleDistSQLConstants {
+public final class MaskConvertDistSQLConstants {
     
-    public static final String LOAD_SINGLE_TABLE = "LOAD SINGLE TABLE %s;";
+    public static final String CREATE_MASK_RULE = "CREATE MASK RULE";
     
-    public static final String SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT = "SET DEFAULT SINGLE TABLE STORAGE UNIT = %s;";
+    public static final String MASK_RULE = " %s ("
+            + System.lineSeparator()
+            + "COLUMNS("
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + "))";
+    
+    public static final String MASK_COLUMN = "(NAME=%s, %s)";
 }

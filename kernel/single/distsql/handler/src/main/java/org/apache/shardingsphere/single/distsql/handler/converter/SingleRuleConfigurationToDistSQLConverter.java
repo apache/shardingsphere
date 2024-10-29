@@ -20,7 +20,6 @@ package org.apache.shardingsphere.single.distsql.handler.converter;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.distsql.handler.constant.SingleDistSQLConstants;
 
 /**
  * Single rule configuration to DistSQL converter.
@@ -46,11 +45,11 @@ public final class SingleRuleConfigurationToDistSQLConverter implements RuleConf
     }
     
     private String convertLoadTable(final SingleRuleConfiguration ruleConfig) {
-        return String.format(SingleDistSQLConstants.LOAD_SINGLE_TABLE, Joiner.on(",").join(ruleConfig.getTables()));
+        return String.format(SingleConvertDistSQLConstants.LOAD_SINGLE_TABLE, Joiner.on(",").join(ruleConfig.getTables()));
     }
     
     private String convertSetDefaultSingleTableStorageUnit(final String defaultStorageUnitName) {
-        return String.format(SingleDistSQLConstants.SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT, defaultStorageUnitName);
+        return String.format(SingleConvertDistSQLConstants.SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT, defaultStorageUnitName);
     }
     
     @Override
