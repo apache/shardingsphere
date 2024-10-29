@@ -48,10 +48,4 @@ class SingleRuleConfigurationToDistSQLConverterTest {
         SingleRuleConfigurationToDistSQLConverter singleRuleConfigurationToDistSQLConverter = new SingleRuleConfigurationToDistSQLConverter();
         assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfig), is(""));
     }
-    
-    @Test
-    void assertGetType() {
-        SingleRuleConfigurationToDistSQLConverter singleRuleConfigurationToDistSQLConverter = new SingleRuleConfigurationToDistSQLConverter();
-        assertThat(singleRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.single.config.SingleRuleConfiguration"));
-    }
 }

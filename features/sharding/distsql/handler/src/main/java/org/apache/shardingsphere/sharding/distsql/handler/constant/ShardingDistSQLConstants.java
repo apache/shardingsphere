@@ -34,15 +34,15 @@ public final class ShardingDistSQLConstants {
     
     public static final String NONE = "";
     
-    public static final String CREATE_SHARDING_TABLE = "CREATE SHARDING TABLE RULE";
+    public static final String CREATE_SHARDING_TABLE_RULE = "CREATE SHARDING TABLE RULE";
     
-    public static final String SHARDING_TABLE = " %s ("
+    public static final String SHARDING_TABLE_RULE = " %s ("
             + System.lineSeparator()
             + "DATANODES('%s')%s"
             + System.lineSeparator()
             + ")";
     
-    public static final String SHARDING_AUTO_TABLE = " %s ("
+    public static final String SHARDING_AUTO_TABLE_RULE = " %s ("
             + System.lineSeparator()
             + "STORAGE_UNITS(%s),"
             + System.lineSeparator()

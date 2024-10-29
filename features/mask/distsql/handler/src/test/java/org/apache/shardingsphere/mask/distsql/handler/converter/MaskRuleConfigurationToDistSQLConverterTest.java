@@ -49,7 +49,7 @@ class MaskRuleConfigurationToDistSQLConverterTest {
     void assertConvert() {
         MaskRuleConfiguration maskRuleConfig = getMaskRuleConfiguration();
         assertThat(converter.convert(maskRuleConfig),
-                is("CREATE MASK RULE foo_tbl (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=foo_col, TYPE(NAME='md5'))" + System.lineSeparator() + "),;"));
+                is("CREATE MASK RULE foo_tbl (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=foo_col, TYPE(NAME='md5'))" + System.lineSeparator() + "));"));
     }
     
     private MaskRuleConfiguration getMaskRuleConfiguration() {

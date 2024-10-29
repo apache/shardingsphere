@@ -42,11 +42,11 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder(EncryptDistSQLConstants.CREATE_ENCRYPT);
+        StringBuilder result = new StringBuilder(EncryptDistSQLConstants.CREATE_ENCRYPT_RULE);
         Iterator<EncryptTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
         while (iterator.hasNext()) {
             EncryptTableRuleConfiguration tableRuleConfig = iterator.next();
-            result.append(String.format(EncryptDistSQLConstants.ENCRYPT, tableRuleConfig.getName(), getEncryptColumns(tableRuleConfig.getColumns(), ruleConfig.getEncryptors())));
+            result.append(String.format(EncryptDistSQLConstants.ENCRYPT_RULE, tableRuleConfig.getName(), getEncryptColumns(tableRuleConfig.getColumns(), ruleConfig.getEncryptors())));
             if (iterator.hasNext()) {
                 result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
             }

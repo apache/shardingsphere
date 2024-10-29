@@ -19,6 +19,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.converter;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.distsql.handler.constant.BroadcastDistSQLConstants;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 
 /**
@@ -26,14 +27,12 @@ import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleCo
  */
 public final class BroadcastRuleConfigurationToDistSQLConverter implements RuleConfigurationToDistSQLConverter<BroadcastRuleConfiguration> {
     
-    public static final String CREATE_BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s;";
-    
     @Override
     public String convert(final BroadcastRuleConfiguration ruleConfig) {
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
-        return String.format(CREATE_BROADCAST_TABLE_RULE, Joiner.on(",").join(ruleConfig.getTables()));
+        return String.format(BroadcastDistSQLConstants.CREATE_BROADCAST_TABLE_RULE, Joiner.on(",").join(ruleConfig.getTables()));
     }
     
     @Override
