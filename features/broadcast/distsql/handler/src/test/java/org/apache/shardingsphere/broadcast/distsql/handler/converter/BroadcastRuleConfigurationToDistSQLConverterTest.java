@@ -23,11 +23,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class BroadcastRuleConfigurationToDistSQLConverterTest {
     
@@ -35,9 +34,14 @@ class BroadcastRuleConfigurationToDistSQLConverterTest {
     private final RuleConfigurationToDistSQLConverter<BroadcastRuleConfiguration> converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, BroadcastRuleConfiguration.class);
     
     @Test
+    void assertConvertWithEmptyTables() {
+        BroadcastRuleConfiguration ruleConfig = new BroadcastRuleConfiguration(Collections.emptyList());
+        assertThat(converter.convert(ruleConfig), is(""));
+    }
+    
+    @Test
     void assertConvert() {
-        BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
-        when(ruleConfig.getTables()).thenReturn(Arrays.asList("t_province", "t_city"));
-        assertThat(converter.convert(ruleConfig), is("CREATE BROADCAST TABLE RULE t_province,t_city;"));
+        BroadcastRuleConfiguration ruleConfig = new BroadcastRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl"));
+        assertThat(converter.convert(ruleConfig), is("CREATE BROADCAST TABLE RULE foo_tbl,bar_tbl;"));
     }
 }
