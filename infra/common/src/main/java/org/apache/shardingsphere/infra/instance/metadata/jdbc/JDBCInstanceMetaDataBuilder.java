@@ -28,8 +28,8 @@ import java.util.UUID;
 public final class JDBCInstanceMetaDataBuilder implements InstanceMetaDataBuilder {
     
     @Override
-    public InstanceMetaData build(final int port) {
-        return new JDBCInstanceMetaData(UUID.randomUUID().toString());
+    public InstanceMetaData build(final int port, final String databaseName) {
+        return new JDBCInstanceMetaData(UUID.randomUUID().toString(), databaseName);
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.distsql.handler.provider;
+package org.apache.shardingsphere.single.distsql.handler.converter;
 
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;

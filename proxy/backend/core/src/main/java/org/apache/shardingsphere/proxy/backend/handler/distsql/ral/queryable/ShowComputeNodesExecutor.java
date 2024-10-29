@@ -37,7 +37,7 @@ public final class ShowComputeNodesExecutor implements DistSQLQueryExecutor<Show
     
     @Override
     public Collection<String> getColumnNames(final ShowComputeNodesStatement sqlStatement) {
-        return Arrays.asList("instance_id", "instance_type", "host", "port", "status", "mode_type", "worker_id", "labels", "version");
+        return Arrays.asList("instance_id", "instance_type", "host", "port", "status", "mode_type", "worker_id", "labels", "version", "database_name");
     }
     
     @Override
@@ -53,7 +53,7 @@ public final class ShowComputeNodesExecutor implements DistSQLQueryExecutor<Show
         InstanceMetaData instanceMetaData = instance.getMetaData();
         return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getType(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
-                instance.getState().getCurrentState(), modeType, instance.getWorkerId(), labels, instanceMetaData.getVersion());
+                instance.getState().getCurrentState(), modeType, instance.getWorkerId(), labels, instanceMetaData.getVersion(), instanceMetaData.getDatabaseName());
     }
     
     @Override

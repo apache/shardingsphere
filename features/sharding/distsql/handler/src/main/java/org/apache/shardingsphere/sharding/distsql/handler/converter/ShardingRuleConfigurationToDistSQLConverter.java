@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.provider;
+package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;

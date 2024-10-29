@@ -31,6 +31,6 @@ class ProxyInstanceMetaDataBuilderTest {
     
     @Test
     void assertBuild() {
-        assertThat(instanceMetaDataBuilder.build(3306).getType(), is(InstanceType.PROXY));
+        assertThat(instanceMetaDataBuilder.build(3306, "").getType(), is(InstanceType.PROXY));
     }
 }

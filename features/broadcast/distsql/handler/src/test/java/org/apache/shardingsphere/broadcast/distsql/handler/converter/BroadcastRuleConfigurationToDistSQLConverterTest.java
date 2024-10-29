@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.distsql.handler.provider;
+package org.apache.shardingsphere.broadcast.distsql.handler.converter;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.junit.jupiter.api.Test;
