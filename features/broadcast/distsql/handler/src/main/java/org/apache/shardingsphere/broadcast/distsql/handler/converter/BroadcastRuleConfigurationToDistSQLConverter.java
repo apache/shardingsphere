@@ -28,10 +28,7 @@ public final class BroadcastRuleConfigurationToDistSQLConverter implements RuleC
     
     @Override
     public String convert(final BroadcastRuleConfiguration ruleConfig) {
-        if (ruleConfig.getTables().isEmpty()) {
-            return "";
-        }
-        return String.format(BroadcastConvertDistSQLConstants.CREATE_BROADCAST_TABLE_RULE, Joiner.on(",").join(ruleConfig.getTables()));
+        return ruleConfig.getTables().isEmpty() ? "" : String.format(BroadcastConvertDistSQLConstants.SQL_PATTERN, Joiner.on(",").join(ruleConfig.getTables()));
     }
     
     @Override
