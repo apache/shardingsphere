@@ -17,35 +17,38 @@
 
 package org.apache.shardingsphere.single.distsql.handler.converter;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class SingleRuleConfigurationToDistSQLConverterTest {
     
+    @SuppressWarnings("unchecked")
+    private final RuleConfigurationToDistSQLConverter<SingleRuleConfiguration> converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, SingleRuleConfiguration.class);
+    
     @Test
     void assertConvert() {
-        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration(new LinkedList<>(Arrays.asList("t_0", "t_1")), "foo_ds");
-        SingleRuleConfigurationToDistSQLConverter singleRuleConfigurationToDistSQLConverter = new SingleRuleConfigurationToDistSQLConverter();
-        assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfig),
-                is("LOAD SINGLE TABLE t_0,t_1;" + System.lineSeparator() + System.lineSeparator() + "SET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl"), "foo_ds");
+        assertThat(converter.convert(singleRuleConfig),
+                is("LOAD SINGLE TABLE foo_tbl,bar_tbl;" + System.lineSeparator() + System.lineSeparator() + "SET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
     }
     
     @Test
-    void assertConvertWithoutDefaultDatasourceAndTables() {
-        SingleRuleConfiguration singleRuleConfig = mock(SingleRuleConfiguration.class);
-        when(singleRuleConfig.getDefaultDataSource()).thenReturn(Optional.empty());
-        when(singleRuleConfig.getTables()).thenReturn(Collections.emptyList());
-        SingleRuleConfigurationToDistSQLConverter singleRuleConfigurationToDistSQLConverter = new SingleRuleConfigurationToDistSQLConverter();
-        assertThat(singleRuleConfigurationToDistSQLConverter.convert(singleRuleConfig), is(""));
+    void assertConvertWithDefaultDatasourceOnly() {
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration(Collections.emptyList(), "foo_ds");
+        assertThat(converter.convert(singleRuleConfig), is("SET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
+    }
+    
+    @Test
+    void assertConvertWithEmptyTablesAndDefaultDatasource() {
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        assertThat(converter.convert(ruleConfig), is(""));
     }
 }
