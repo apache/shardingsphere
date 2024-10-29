@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -33,12 +35,15 @@ import static org.mockito.Mockito.when;
 
 class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
     
+    @SuppressWarnings("unchecked")
+    private final RuleConfigurationToDistSQLConverter<ReadwriteSplittingRuleConfiguration> converter = TypedSPILoader.getService(
+            RuleConfigurationToDistSQLConverter.class, ReadwriteSplittingRuleConfiguration.class);
+    
     @Test
     void assertConvertWithEmptyDataSources() {
         ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = mock(ReadwriteSplittingRuleConfiguration.class);
         when(readwriteSplittingRuleConfig.getDataSourceGroups()).thenReturn(Collections.emptyList());
-        ReadwriteSplittingRuleConfigurationToDistSQLConverter readwriteSplittingRuleConfigurationToDistSQLConverter = new ReadwriteSplittingRuleConfigurationToDistSQLConverter();
-        assertThat(readwriteSplittingRuleConfigurationToDistSQLConverter.convert(readwriteSplittingRuleConfig), is(""));
+        assertThat(converter.convert(readwriteSplittingRuleConfig), is(""));
     }
     
     @Test
@@ -47,8 +52,7 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
         ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig),
                 Collections.singletonMap("test", new AlgorithmConfiguration("random", PropertiesBuilder.build(new PropertiesBuilder.Property("read_weight", "2:1")))));
-        ReadwriteSplittingRuleConfigurationToDistSQLConverter readwriteSplittingRuleConfigurationToDistSQLConverter = new ReadwriteSplittingRuleConfigurationToDistSQLConverter();
-        assertThat(readwriteSplittingRuleConfigurationToDistSQLConverter.convert(readwriteSplittingRuleConfig),
+        assertThat(converter.convert(readwriteSplittingRuleConfig),
                 is("CREATE READWRITE_SPLITTING RULE readwrite_ds (" + System.lineSeparator() + "WRITE_STORAGE_UNIT=ds_primary," + System.lineSeparator() + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),"
                         + System.lineSeparator() + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC'," + System.lineSeparator() + "TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))"
                         + System.lineSeparator() + ");"));

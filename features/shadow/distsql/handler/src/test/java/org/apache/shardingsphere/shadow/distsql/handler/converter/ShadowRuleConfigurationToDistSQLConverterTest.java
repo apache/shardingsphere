@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.converter;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
@@ -33,12 +35,14 @@ import static org.mockito.Mockito.when;
 
 class ShadowRuleConfigurationToDistSQLConverterTest {
     
+    @SuppressWarnings("unchecked")
+    private final RuleConfigurationToDistSQLConverter<ShadowRuleConfiguration> converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, ShadowRuleConfiguration.class);
+    
     @Test
     void assertConvertWithoutDataSources() {
         ShadowRuleConfiguration shadowRuleConfig = mock(ShadowRuleConfiguration.class);
         when(shadowRuleConfig.getDataSources()).thenReturn(Collections.emptyList());
-        ShadowRuleConfigurationToDistSQLConverter shadowRuleConfigurationToDistSQLConverter = new ShadowRuleConfigurationToDistSQLConverter();
-        assertThat(shadowRuleConfigurationToDistSQLConverter.convert(shadowRuleConfig), is(""));
+        assertThat(converter.convert(shadowRuleConfig), is(""));
     }
     
     @Test
@@ -48,15 +52,8 @@ class ShadowRuleConfigurationToDistSQLConverterTest {
         shadowRuleConfig.getShadowAlgorithms().put("user_id_select_match_algorithm", new AlgorithmConfiguration("REGEX_MATCH", new Properties()));
         shadowRuleConfig.getTables().put("t_order", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
         shadowRuleConfig.getTables().put("t_order_item", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
-        ShadowRuleConfigurationToDistSQLConverter shadowRuleConfigurationToDistSQLConverter = new ShadowRuleConfigurationToDistSQLConverter();
-        assertThat(shadowRuleConfigurationToDistSQLConverter.convert(shadowRuleConfig),
+        assertThat(converter.convert(shadowRuleConfig),
                 is("CREATE SHADOW RULE shadow_rule(" + System.lineSeparator() + "SOURCE=source," + System.lineSeparator() + "SHADOW=shadow," + System.lineSeparator()
                         + "t_order(TYPE(NAME='regex_match'))," + System.lineSeparator() + "t_order_item(TYPE(NAME='regex_match'))" + System.lineSeparator() + ");"));
-    }
-    
-    @Test
-    void assertGetType() {
-        ShadowRuleConfigurationToDistSQLConverter shadowRuleConfigurationToDistSQLConverter = new ShadowRuleConfigurationToDistSQLConverter();
-        assertThat(shadowRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration"));
     }
 }

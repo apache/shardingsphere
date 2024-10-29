@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.broadcast.distsql.handler.converter;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -29,11 +31,13 @@ import static org.mockito.Mockito.when;
 
 class BroadcastRuleConfigurationToDistSQLConverterTest {
     
+    @SuppressWarnings("unchecked")
+    private final RuleConfigurationToDistSQLConverter<BroadcastRuleConfiguration> converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, BroadcastRuleConfiguration.class);
+    
     @Test
     void assertConvert() {
         BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
         when(ruleConfig.getTables()).thenReturn(Arrays.asList("t_province", "t_city"));
-        String actual = new BroadcastRuleConfigurationToDistSQLConverter().convert(ruleConfig);
-        assertThat(actual, is("CREATE BROADCAST TABLE RULE t_province,t_city;"));
+        assertThat(converter.convert(ruleConfig), is("CREATE BROADCAST TABLE RULE t_province,t_city;"));
     }
 }
