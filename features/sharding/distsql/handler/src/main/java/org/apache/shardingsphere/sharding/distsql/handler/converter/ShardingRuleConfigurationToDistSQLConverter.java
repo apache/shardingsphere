@@ -64,7 +64,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
     private void appendShardingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
         String tableRules = getTableRules(ruleConfig);
         String autoTableRules = getAutoTableRules(ruleConfig);
-        stringBuilder.append(ShardingDistSQLConstants.CREATE_SHARDING_TABLE).append(tableRules);
+        stringBuilder.append(ShardingDistSQLConstants.CREATE_SHARDING_TABLE_RULE).append(tableRules);
         if (!Strings.isNullOrEmpty(tableRules) && !Strings.isNullOrEmpty(autoTableRules)) {
             stringBuilder.append(DistSQLConstants.COMMA);
         }
@@ -104,7 +104,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
             Iterator<ShardingTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
             while (iterator.hasNext()) {
                 ShardingTableRuleConfiguration tableRuleConfig = iterator.next();
-                result.append(String.format(ShardingDistSQLConstants.SHARDING_TABLE, tableRuleConfig.getLogicTable(), tableRuleConfig.getActualDataNodes(),
+                result.append(String.format(ShardingDistSQLConstants.SHARDING_TABLE_RULE, tableRuleConfig.getLogicTable(), tableRuleConfig.getActualDataNodes(),
                         appendTableStrategy(tableRuleConfig, ruleConfig)));
                 if (iterator.hasNext()) {
                     result.append(DistSQLConstants.COMMA);
@@ -120,7 +120,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
             Iterator<ShardingAutoTableRuleConfiguration> iterator = ruleConfig.getAutoTables().iterator();
             while (iterator.hasNext()) {
                 ShardingAutoTableRuleConfiguration autoTableRuleConfig = iterator.next();
-                result.append(String.format(ShardingDistSQLConstants.SHARDING_AUTO_TABLE, autoTableRuleConfig.getLogicTable(), autoTableRuleConfig.getActualDataSources(),
+                result.append(String.format(ShardingDistSQLConstants.SHARDING_AUTO_TABLE_RULE, autoTableRuleConfig.getLogicTable(), autoTableRuleConfig.getActualDataSources(),
                         appendAutoTableStrategy(autoTableRuleConfig, ruleConfig)));
                 if (iterator.hasNext()) {
                     result.append(DistSQLConstants.COMMA);
