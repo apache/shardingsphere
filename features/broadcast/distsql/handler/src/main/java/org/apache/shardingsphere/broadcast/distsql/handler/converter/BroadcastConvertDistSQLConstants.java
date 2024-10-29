@@ -26,5 +26,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BroadcastConvertDistSQLConstants {
     
-    public static final String CREATE_BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s;";
+    public static final String SQL_PATTERN = "CREATE BROADCAST TABLE RULE %s;";
 }

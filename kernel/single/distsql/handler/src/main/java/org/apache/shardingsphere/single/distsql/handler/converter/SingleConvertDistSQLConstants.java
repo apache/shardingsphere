@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleConvertDistSQLConstants {
     
-    public static final String LOAD_SINGLE_TABLE = "LOAD SINGLE TABLE %s;";
+    public static final String LOAD_SQL_PATTERN = "LOAD SINGLE TABLE %s;";
     
-    public static final String SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT = "SET DEFAULT SINGLE TABLE STORAGE UNIT = %s;";
+    public static final String SET_DEFAULT_SQL_PATTERN = "SET DEFAULT SINGLE TABLE STORAGE UNIT = %s;";
 }

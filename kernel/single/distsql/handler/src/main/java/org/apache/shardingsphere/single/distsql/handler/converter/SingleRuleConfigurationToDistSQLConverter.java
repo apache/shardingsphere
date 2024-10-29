@@ -28,9 +28,6 @@ public final class SingleRuleConfigurationToDistSQLConverter implements RuleConf
     
     @Override
     public String convert(final SingleRuleConfiguration ruleConfig) {
-        if (ruleConfig.getTables().isEmpty() && !ruleConfig.getDefaultDataSource().isPresent()) {
-            return "";
-        }
         StringBuilder result = new StringBuilder();
         if (!ruleConfig.getTables().isEmpty()) {
             result.append(convertLoadTable(ruleConfig));
@@ -45,11 +42,11 @@ public final class SingleRuleConfigurationToDistSQLConverter implements RuleConf
     }
     
     private String convertLoadTable(final SingleRuleConfiguration ruleConfig) {
-        return String.format(SingleConvertDistSQLConstants.LOAD_SINGLE_TABLE, Joiner.on(",").join(ruleConfig.getTables()));
+        return String.format(SingleConvertDistSQLConstants.LOAD_SQL_PATTERN, Joiner.on(",").join(ruleConfig.getTables()));
     }
     
     private String convertSetDefaultSingleTableStorageUnit(final String defaultStorageUnitName) {
-        return String.format(SingleConvertDistSQLConstants.SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT, defaultStorageUnitName);
+        return String.format(SingleConvertDistSQLConstants.SET_DEFAULT_SQL_PATTERN, defaultStorageUnitName);
     }
     
     @Override
