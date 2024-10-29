@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.handler.provider;
+package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;
