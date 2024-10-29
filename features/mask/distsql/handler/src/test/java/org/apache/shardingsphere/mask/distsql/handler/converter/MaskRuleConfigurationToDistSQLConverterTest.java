@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.converter;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
@@ -31,34 +33,29 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 class MaskRuleConfigurationToDistSQLConverterTest {
+    
+    private final RuleConfigurationToDistSQLConverter converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, MaskRuleConfiguration.class);
     
     @Test
     void assertConvertWithEmptyTables() {
         MaskRuleConfiguration maskRuleConfig = mock(MaskRuleConfiguration.class);
         when(maskRuleConfig.getTables()).thenReturn(Collections.emptyList());
-        MaskRuleConfigurationToDistSQLConverter maskRuleConfigurationToDistSQLConverter = new MaskRuleConfigurationToDistSQLConverter();
-        assertThat(maskRuleConfigurationToDistSQLConverter.convert(maskRuleConfig), is(""));
+        assertThat(converter.convert(maskRuleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
         MaskRuleConfiguration maskRuleConfig = getMaskRuleConfiguration();
-        MaskRuleConfigurationToDistSQLConverter maskRuleConfigurationToDistSQLConverter = new MaskRuleConfigurationToDistSQLConverter();
-        assertThat(maskRuleConfigurationToDistSQLConverter.convert(maskRuleConfig),
-                is("CREATE MASK RULE t_mask (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=user_id, TYPE(NAME='md5'))" + System.lineSeparator() + "),;"));
-    }
-    
-    @Test
-    void assertGetType() {
-        MaskRuleConfigurationToDistSQLConverter maskRuleConfigurationToDistSQLConverter = new MaskRuleConfigurationToDistSQLConverter();
-        assertThat(maskRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.mask.config.MaskRuleConfiguration"));
+        assertThat(converter.convert(maskRuleConfig),
+                is("CREATE MASK RULE foo_tbl (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=foo_col, TYPE(NAME='md5'))" + System.lineSeparator() + "),;"));
     }
     
     private MaskRuleConfiguration getMaskRuleConfiguration() {
-        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("user_id", "t_mask_user_id_md5");
-        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("t_mask", Collections.singleton(maskColumnRuleConfig));
+        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("foo_col", "foo_tbl_foo_col_md5");
+        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(maskColumnRuleConfig));
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
-        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
+        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("foo_tbl_foo_col_md5", algorithmConfig));
     }
 }
