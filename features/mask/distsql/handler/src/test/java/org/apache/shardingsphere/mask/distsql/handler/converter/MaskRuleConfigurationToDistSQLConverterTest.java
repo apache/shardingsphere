@@ -50,13 +50,14 @@ class MaskRuleConfigurationToDistSQLConverterTest {
     void assertConvert() {
         MaskRuleConfiguration maskRuleConfig = getMaskRuleConfiguration();
         assertThat(converter.convert(maskRuleConfig), is("CREATE MASK RULE"
-                + " foo_tbl (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=foo_col, TYPE(NAME='md5'))" + System.lineSeparator() + ")),"
-                + System.lineSeparator()
+                + " foo_tbl (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=foo_col_1, TYPE(NAME='md5'))," + System.lineSeparator() + "(NAME=foo_col_2, TYPE(NAME='md5'))"
+                + System.lineSeparator() + "))," + System.lineSeparator()
                 + " bar_tbl (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=bar_col, TYPE(NAME='md5'))" + System.lineSeparator() + "));"));
     }
     
     private MaskRuleConfiguration getMaskRuleConfiguration() {
-        MaskTableRuleConfiguration fooTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(new MaskColumnRuleConfiguration("foo_col", "md5_algo")));
+        MaskTableRuleConfiguration fooTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl",
+                Arrays.asList(new MaskColumnRuleConfiguration("foo_col_1", "md5_algo"), new MaskColumnRuleConfiguration("foo_col_2", "md5_algo")));
         MaskTableRuleConfiguration barTableRuleConfig = new MaskTableRuleConfiguration("bar_tbl", Collections.singleton(new MaskColumnRuleConfiguration("bar_col", "md5_algo")));
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
         return new MaskRuleConfiguration(Arrays.asList(fooTableRuleConfig, barTableRuleConfig), Collections.singletonMap("md5_algo", algorithmConfig));
