@@ -46,7 +46,8 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
             ShadowDataSourceConfiguration dataSourceConfig = iterator.next();
             String shadowRuleName = dataSourceConfig.getName();
             String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
-            result.append(String.format(ShadowConvertDistSQLConstants.SHADOW_RULE, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
+            result.append(
+                    String.format(ShadowConvertDistSQLConstants.SHADOW_RULE, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
             if (iterator.hasNext()) {
                 result.append(DistSQLConstants.COMMA);
             }

@@ -162,11 +162,13 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
         switch (type) {
             case ShardingConvertDistSQLConstants.STANDARD:
                 StandardShardingStrategyConfiguration standardShardingStrategyConfig = (StandardShardingStrategyConfiguration) strategyConfig;
-                stringBuilder.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_STANDARD, strategyType, type, standardShardingStrategyConfig.getShardingColumn(), algorithmDefinition));
+                stringBuilder
+                        .append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_STANDARD, strategyType, type, standardShardingStrategyConfig.getShardingColumn(), algorithmDefinition));
                 break;
             case ShardingConvertDistSQLConstants.COMPLEX:
                 ComplexShardingStrategyConfiguration complexShardingStrategyConfig = (ComplexShardingStrategyConfiguration) strategyConfig;
-                stringBuilder.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexShardingStrategyConfig.getShardingColumns(), algorithmDefinition));
+                stringBuilder
+                        .append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexShardingStrategyConfig.getShardingColumns(), algorithmDefinition));
                 break;
             case ShardingConvertDistSQLConstants.HINT:
                 stringBuilder.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_HINT, strategyType, type, algorithmDefinition));
