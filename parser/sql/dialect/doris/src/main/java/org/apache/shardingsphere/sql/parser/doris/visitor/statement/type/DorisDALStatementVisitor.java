@@ -163,7 +163,9 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisInstallPlug
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisKillStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisOptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverPartitionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisResetStatement;
@@ -216,17 +218,14 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShutdownSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetMasterOptionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetSlaveOptionSegment;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverTableStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.*;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverPartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverTableContext;
 
 /**
  * DAL statement visitor for Doris.
