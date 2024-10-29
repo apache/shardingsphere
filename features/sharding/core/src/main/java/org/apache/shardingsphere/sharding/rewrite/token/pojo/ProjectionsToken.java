@@ -46,4 +46,9 @@ public final class ProjectionsToken extends SQLToken implements Attachable, Rout
         }
         return result.toString();
     }
+    
+    @Override
+    public int getStopIndex() {
+        return getStartIndex();
+    }
 }

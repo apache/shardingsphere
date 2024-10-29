@@ -36,4 +36,9 @@ public final class GeneratedKeyInsertColumnToken extends SQLToken implements Att
     public String toString() {
         return ", " + column;
     }
+    
+    @Override
+    public int getStopIndex() {
+        return getStartIndex();
+    }
 }
