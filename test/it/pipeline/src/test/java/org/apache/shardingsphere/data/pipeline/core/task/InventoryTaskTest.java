@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class InventoryTaskTest {
     
@@ -102,5 +103,18 @@ class InventoryTaskTest {
                 ? new IntegerPrimaryKeyIngestPosition(0L, 1000L)
                 : taskConfig.getDumperContext().getCommonContext().getPosition());
         return result;
+    }
+    
+    @Test
+    void assertStop() {
+        Dumper dumper = mock(Dumper.class);
+        Importer importer = mock(Importer.class);
+        InventoryDumperContext inventoryDumperContext = createInventoryDumperContext("t_order", "t_order");
+        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperContext.getCommonContext().getPosition());
+        InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperContext),
+                PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), dumper, importer, position);
+        inventoryTask.stop();
+        verify(dumper).stop();
+        verify(importer).stop();
     }
 }

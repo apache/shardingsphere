@@ -31,9 +31,9 @@ import java.util.Optional;
  */
 public final class PostgreSQLInventoryColumnValueReader implements DialectInventoryColumnValueReader {
     
-    private static final String PG_MONEY_TYPE = "money";
+    private static final String MONEY_DATA_TYPE = "money";
     
-    private static final String PG_BIT_TYPE = "bit";
+    private static final String BIT_DATA_TYPE = "bit";
     
     @Override
     public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
@@ -47,11 +47,11 @@ public final class PostgreSQLInventoryColumnValueReader implements DialectInvent
     }
     
     private boolean isMoneyType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return PG_MONEY_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
+        return MONEY_DATA_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
     private boolean isBitType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return Types.BIT == metaData.getColumnType(columnIndex) && PG_BIT_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
+        return Types.BIT == metaData.getColumnType(columnIndex) && BIT_DATA_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
     private static PGobject getBitObject(final ResultSet resultSet, final int columnIndex) throws SQLException {

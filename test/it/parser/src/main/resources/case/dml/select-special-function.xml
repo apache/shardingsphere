@@ -2967,7 +2967,7 @@
         </projections>
     </select>
 
-    <select sql-case-id="select_right">
+    <select sql-case-id="select_right" db-types="MySQL, Doris">
         <projections start-index="7" stop-index="27">
             <expression-projection start-index="7" stop-index="27" text="RIGHT('foobarbar', 4)">
                 <expr>
@@ -4241,6 +4241,22 @@
                         </parameter>
                         <parameter>
                             <literal-expression value="'bar'" start-index="22" stop-index="26" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_strright" db-types="Doris">
+        <projections start-index="7" stop-index="29">
+            <expression-projection start-index="7" stop-index="29" text="STRRIGHT('foobarbar',4)">
+                <expr>
+                    <function function-name="STRRIGHT" text="STRRIGHT('foobarbar',4)" start-index="7" stop-index="29">
+                        <parameter>
+                            <literal-expression value="foobarbar" start-index="16" stop-index="26" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="4" start-index="28" stop-index="28" />
                         </parameter>
                     </function>
                 </expr>

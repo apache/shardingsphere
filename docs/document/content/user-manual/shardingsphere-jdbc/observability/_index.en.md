@@ -127,7 +127,7 @@ cd ./shardingsphere/
 If you add the following statement in your custom `Dockerfile`, it will copy the ShardingSphere Agent directory to `/shardingsphere-agent/`.
 
 ```dockerfile
-COPY --from=apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
+COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
 ```
 
 #### Nightly Build
@@ -176,10 +176,10 @@ COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
 ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent.jar","-jar","/app.jar"]
 ```
 
-If you build the Docker Image of `apache/shardingsphere-agent:latest` locally, the `Dockerfile` may be as follows,
+If you build the Docker Image of `ghcr.io/apache/shardingsphere-agent:latest` locally, the `Dockerfile` may be as follows,
 
 ```dockerfile
-FROM apache/shardingsphere-agent:latest
+FROM ghcr.io/apache/shardingsphere-agent:latest
 COPY ./target/example.jar /app.jar
 COPY ./custom-agent.yaml /usr/agent/conf/agent.yaml
 ENTRYPOINT ["java","-javaagent:/usr/agent/shardingsphere-agent.jar","-jar","/app.jar"]

@@ -29,18 +29,37 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class RecordSingleTableInventoryCalculatedResultTest {
     
     @Test
-    void assertEmptyRecordsEquals() {
+    void assertNotEqualsWithNull() {
+        assertFalse(new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList()).equals(null));
+    }
+    
+    @Test
+    void assertEqualsWithSameObject() {
+        RecordSingleTableInventoryCalculatedResult calculatedResult = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
+        assertThat(calculatedResult, is(calculatedResult));
+    }
+    
+    @Test
+    void assertNotEqualsWithDifferentClassType() {
+        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
+        Object expected = new Object();
+        assertThat(actual, not(expected));
+    }
+    
+    @Test
+    void assertEqualsWithEmptyRecords() {
         RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
         RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
         assertThat(actual, is(expected));
     }
     
     @Test
-    void assertFullTypeRecordsEquals() {
+    void assertEqualsWithFullTypeRecords() {
         RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
         RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
         assertThat(actual, is(expected));
@@ -61,19 +80,19 @@ class RecordSingleTableInventoryCalculatedResultTest {
     }
     
     @Test
-    void assertRecordsCountNotEquals() {
+    void assertNotEqualsWithDifferentRecordsCount() {
         assertThat(new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord())),
                 not(new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList())));
     }
     
     @Test
-    void assertMaxUniqueKeyValueNotEquals() {
+    void assertNotEqualsWithDifferentMaxUniqueKeyValue() {
         assertThat(new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord())),
                 not(new RecordSingleTableInventoryCalculatedResult(1001, Collections.singletonList(buildFixedFullTypeRecord()))));
     }
     
     @Test
-    void assertRandomColumnValueNotEquals() {
+    void assertNotEqualsWithDifferentRandomColumnValue() {
         Map<String, Object> record = buildFixedFullTypeRecord();
         RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(record));
         record.forEach((key, value) -> {
@@ -89,5 +108,11 @@ class RecordSingleTableInventoryCalculatedResultTest {
     
     private Map<String, Object> modifyColumnValueRandomly(final Map<String, Object> record, final String key) {
         return ConsistencyCheckDataBuilder.modifyColumnValueRandomly(record, key);
+    }
+    
+    @Test
+    void assertHashcode() {
+        assertThat(new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList()).hashCode(),
+                is(new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList()).hashCode()));
     }
 }

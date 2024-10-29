@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.datasource.fixture;
 
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 
 import javax.sql.DataSource;
 
@@ -25,7 +26,7 @@ public final class FixturePipelineDataSourceCreator implements PipelineDataSourc
     
     @Override
     public DataSource create(final Object dataSourceConfig) {
-        return null;
+        return new MockedDataSource();
     }
     
     @Override

@@ -30,11 +30,11 @@ import java.util.Optional;
  */
 public final class OpenGaussInventoryColumnValueReader implements DialectInventoryColumnValueReader {
     
-    private static final String MONEY_TYPE = "money";
+    private static final String MONEY_DATA_TYPE = "money";
     
-    private static final String BIT_TYPE = "bit";
+    private static final String BIT_DATA_TYPE = "bit";
     
-    private static final String BOOL_TYPE = "bool";
+    private static final String BOOL_DATA_TYPE = "bool";
     
     @Override
     public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
@@ -52,15 +52,15 @@ public final class OpenGaussInventoryColumnValueReader implements DialectInvento
     }
     
     private boolean isMoneyType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return MONEY_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
-    }
-    
-    private boolean isBoolType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return BOOL_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
+        return MONEY_DATA_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
     private boolean isBitType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return Types.BIT == metaData.getColumnType(columnIndex) && BIT_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
+        return Types.BIT == metaData.getColumnType(columnIndex) && BIT_DATA_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
+    }
+    
+    private boolean isBoolType(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return BOOL_DATA_TYPE.equalsIgnoreCase(metaData.getColumnTypeName(columnIndex));
     }
     
     @Override

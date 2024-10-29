@@ -39,6 +39,6 @@ public final class IncrementalDumperCreator {
     public static IncrementalDumper create(final CreateIncrementalDumperParameter param) {
         ShardingSpherePreconditions.checkState(param.getContext().getCommonContext().getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration,
                 () -> new UnsupportedSQLOperationException("Incremental dumper only support StandardPipelineDataSourceConfiguration"));
-        return DatabaseTypedSPILoader.getService(DialectIncrementalDumperCreator.class, param.getContext().getCommonContext().getDataSourceConfig().getDatabaseType()).createIncrementalDumper(param);
+        return DatabaseTypedSPILoader.getService(DialectIncrementalDumperCreator.class, param.getContext().getCommonContext().getDataSourceConfig().getDatabaseType()).create(param);
     }
 }

@@ -32,5 +32,5 @@ public interface DialectIncrementalDumperCreator extends DatabaseTypedSPI {
      * @param param create incremental dumper parameter
      * @return incremental dumper
      */
-    IncrementalDumper createIncrementalDumper(CreateIncrementalDumperParameter param);
+    IncrementalDumper create(CreateIncrementalDumperParameter param);
 }

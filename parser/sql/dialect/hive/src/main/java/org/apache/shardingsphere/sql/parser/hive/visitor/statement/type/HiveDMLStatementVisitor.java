@@ -616,8 +616,8 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.POSITION().getText(), getOriginalText(ctx));
-        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(0)));
-        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(1)));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
         return result;
     }
     
@@ -637,7 +637,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT().getText(), getOriginalText(ctx));
         result.getParameters().add(new LiteralExpressionSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), ctx.identifier().getText()));
-        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr()));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
     
@@ -1213,10 +1213,10 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             result.setAlias(alias);
             return result;
         }
-        LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
+        ExpressionSegment column = (ExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias
-                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getText()), column)
+                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getText()), column);
         result.setAlias(alias);
         return result;
     }

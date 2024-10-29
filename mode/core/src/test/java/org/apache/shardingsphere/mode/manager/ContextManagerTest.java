@@ -162,7 +162,7 @@ class ContextManagerTest {
     
     @Test
     void assertGetPreSelectedDatabaseNameWithJDBC() {
-        when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new JDBCInstanceMetaData("foo_id"), Collections.emptyList()));
+        when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new JDBCInstanceMetaData("foo_id", "foo_db"), Collections.emptyList()));
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class)));
         assertThat(contextManager.getPreSelectedDatabaseName(), is("foo_db"));
     }

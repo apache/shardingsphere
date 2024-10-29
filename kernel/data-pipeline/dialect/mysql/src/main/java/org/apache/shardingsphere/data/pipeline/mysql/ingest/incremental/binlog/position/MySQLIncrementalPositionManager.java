@@ -40,13 +40,8 @@ public final class MySQLIncrementalPositionManager implements DialectIncremental
     
     @Override
     public MySQLBinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return getBinlogPosition(connection);
-        }
-    }
-    
-    private MySQLBinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
         try (
+                Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
