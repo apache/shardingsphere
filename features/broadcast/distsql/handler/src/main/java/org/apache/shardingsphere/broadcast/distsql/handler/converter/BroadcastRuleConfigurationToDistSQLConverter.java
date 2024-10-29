@@ -19,7 +19,6 @@ package org.apache.shardingsphere.broadcast.distsql.handler.converter;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.distsql.handler.constant.BroadcastDistSQLConstants;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 
 /**
@@ -32,7 +31,7 @@ public final class BroadcastRuleConfigurationToDistSQLConverter implements RuleC
         if (ruleConfig.getTables().isEmpty()) {
             return "";
         }
-        return String.format(BroadcastDistSQLConstants.CREATE_BROADCAST_TABLE_RULE, Joiner.on(",").join(ruleConfig.getTables()));
+        return String.format(BroadcastConvertDistSQLConstants.CREATE_BROADCAST_TABLE_RULE, Joiner.on(",").join(ruleConfig.getTables()));
     }
     
     @Override

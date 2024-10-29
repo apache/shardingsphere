@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.constant;
+package org.apache.shardingsphere.shadow.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Readwrite-splitting DistSQL constants.
+ * Shadow convert DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingDistSQLConstants {
+public final class ShadowConvertDistSQLConstants {
     
-    public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
+    public static final String CREATE_SHADOW_RULE = "CREATE SHADOW RULE";
     
-    public static final String READWRITE_SPLITTING_RULE = " %s ("
+    public static final String SHADOW_RULE = " %s("
             + System.lineSeparator()
-            + "WRITE_STORAGE_UNIT=%s,"
+            + "SOURCE=%s,"
             + System.lineSeparator()
-            + "READ_STORAGE_UNITS(%s),"
+            + "SHADOW=%s,"
             + System.lineSeparator()
-            + "TRANSACTIONAL_READ_QUERY_STRATEGY='%s'%s"
+            + "%s"
             + System.lineSeparator()
             + ")";
     
-    public static final String READ_DATA_SOURCE = "%s";
+    public static final String SHADOW_TABLE = "%s(%s)";
 }

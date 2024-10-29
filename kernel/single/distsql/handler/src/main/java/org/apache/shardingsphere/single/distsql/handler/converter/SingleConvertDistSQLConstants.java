@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.distsql.handler.constant;
+package org.apache.shardingsphere.single.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Broadcast DistSQL constants.
+ * Single convert DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BroadcastDistSQLConstants {
+public final class SingleConvertDistSQLConstants {
     
-    public static final String CREATE_BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s;";
+    public static final String LOAD_SINGLE_TABLE = "LOAD SINGLE TABLE %s;";
+    
+    public static final String SET_DEFAULT_SINGLE_TABLE_STORAGE_UNIT = "SET DEFAULT SINGLE TABLE STORAGE UNIT = %s;";
 }
