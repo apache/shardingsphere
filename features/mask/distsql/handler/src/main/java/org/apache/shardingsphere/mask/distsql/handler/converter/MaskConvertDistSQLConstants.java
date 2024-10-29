@@ -28,7 +28,7 @@ public final class MaskConvertDistSQLConstants {
     
     public static final String CREATE_MASK_RULE = "CREATE MASK RULE";
     
-    public static final String MASK_RULE = " %s ("
+    public static final String MASK_TABLE = " %s ("
             + System.lineSeparator()
             + "COLUMNS("
             + System.lineSeparator()
