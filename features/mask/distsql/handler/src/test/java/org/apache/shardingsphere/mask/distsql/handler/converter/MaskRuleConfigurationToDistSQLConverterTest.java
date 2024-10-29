@@ -33,10 +33,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 class MaskRuleConfigurationToDistSQLConverterTest {
     
-    private final RuleConfigurationToDistSQLConverter converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, MaskRuleConfiguration.class);
+    @SuppressWarnings("unchecked")
+    private final RuleConfigurationToDistSQLConverter<MaskRuleConfiguration> converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, MaskRuleConfiguration.class);
     
     @Test
     void assertConvertWithEmptyTables() {

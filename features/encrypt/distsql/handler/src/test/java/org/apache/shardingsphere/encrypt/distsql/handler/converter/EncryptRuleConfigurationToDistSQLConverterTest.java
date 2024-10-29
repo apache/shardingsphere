@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -36,19 +38,20 @@ import static org.mockito.Mockito.when;
 
 class EncryptRuleConfigurationToDistSQLConverterTest {
     
+    @SuppressWarnings("unchecked")
+    private final RuleConfigurationToDistSQLConverter<EncryptRuleConfiguration> converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, EncryptRuleConfiguration.class);
+    
     @Test
     void assertConvertWithEmptyTables() {
         EncryptRuleConfiguration encryptRuleConfig = mock(EncryptRuleConfiguration.class);
         when(encryptRuleConfig.getTables()).thenReturn(Collections.emptyList());
-        EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
-        assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfig), is(""));
+        assertThat(converter.convert(encryptRuleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
         EncryptRuleConfiguration encryptRuleConfig = getEncryptRuleConfiguration();
-        EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
-        assertThat(encryptRuleConfigurationToDistSQLConverter.convert(encryptRuleConfig),
+        assertThat(converter.convert(encryptRuleConfig),
                 is("CREATE ENCRYPT RULE t_encrypt (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator()
                         + "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
                         + "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())," + System.lineSeparator()
@@ -56,12 +59,6 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
                         + "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())" + System.lineSeparator() + "))," + System.lineSeparator() + " t_encrypt_another (" + System.lineSeparator() + "COLUMNS("
                         + System.lineSeparator() + "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
                         + "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())" + System.lineSeparator() + "));"));
-    }
-    
-    @Test
-    void assertGetType() {
-        EncryptRuleConfigurationToDistSQLConverter encryptRuleConfigurationToDistSQLConverter = new EncryptRuleConfigurationToDistSQLConverter();
-        assertThat(encryptRuleConfigurationToDistSQLConverter.getType().getName(), is("org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration"));
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
