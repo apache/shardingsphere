@@ -47,4 +47,9 @@ public final class ColumnDefinitionToken extends SQLToken {
         }
         return columnName + " " + dataType;
     }
+    
+    @Override
+    public int getStopIndex() {
+        return getStartIndex();
+    }
 }

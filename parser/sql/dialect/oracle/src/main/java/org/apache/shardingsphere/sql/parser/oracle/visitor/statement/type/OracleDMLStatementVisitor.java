@@ -614,8 +614,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         } else {
             combineType = CombineType.MINUS;
         }
+        OracleSelectStatement right = (OracleSelectStatement) visit(ctx.selectSubquery(1));
         result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createSubquerySegment(ctx.selectSubquery(0), left), combineType,
-                createSubquerySegment(ctx.selectSubquery(1), (OracleSelectStatement) visit(ctx.selectSubquery(1)))));
+                createSubquerySegment(ctx.selectSubquery(1), right)));
+        result.addParameterMarkerSegments(left.getParameterMarkerSegments());
+        result.addParameterMarkerSegments(right.getParameterMarkerSegments());
     }
     
     private SubquerySegment createSubquerySegment(final SelectSubqueryContext ctx, final OracleSelectStatement selectStatement) {

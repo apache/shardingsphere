@@ -53,4 +53,9 @@ public final class OrderByToken extends SQLToken implements Attachable {
         result.append(' ');
         return result.toString();
     }
+    
+    @Override
+    public int getStopIndex() {
+        return getStartIndex();
+    }
 }
