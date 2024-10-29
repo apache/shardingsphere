@@ -34,12 +34,14 @@ import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableV
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -139,11 +141,23 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
+        Object[] data = generateReturnData(selectStatementContext);
         if (dataMap.isEmpty()) {
             return selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty() ? Collections.emptyList() : Collections.singletonList(new MemoryQueryResultRow(data));
         }
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
+        return result;
+    }
+    
+    private Object[] generateReturnData(final SelectStatementContext selectStatementContext) {
+        List<Projection> projections = new LinkedList<>(selectStatementContext.getProjectionsContext().getExpandProjections());
+        Object[] result = new Object[projections.size()];
+        for (int i = 0; i < projections.size(); i++) {
+            if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
+                result[i] = 0;
+            }
+        }
         return result;
     }
 }
