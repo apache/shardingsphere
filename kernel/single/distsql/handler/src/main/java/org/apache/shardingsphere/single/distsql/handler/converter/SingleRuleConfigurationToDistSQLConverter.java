@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.distsql.handler.provider;
+package org.apache.shardingsphere.single.distsql.handler.converter;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
