@@ -39,7 +39,8 @@ class RouteSQLBuilderTest {
     
     @Test
     void assertToSQLWithDuplicateSQLToken() {
-        assertThat(new RouteSQLBuilder("SELECT * FROM tbl WHERE id=?", Arrays.asList(new SQLTokenFixture(14, 16), new SQLTokenFixture(14, 16)), createRouteUnit()).toSQL(), is("SELECT * FROM XXX WHERE id=?"));
+        assertThat(new RouteSQLBuilder("SELECT * FROM tbl WHERE id=?", Arrays.asList(new SQLTokenFixture(14, 16), new SQLTokenFixture(14, 16)), createRouteUnit()).toSQL(),
+                is("SELECT * FROM XXX WHERE id=?"));
     }
     
     @Test
