@@ -20,45 +20,44 @@ package org.apache.shardingsphere.broadcast.route.engine.type.broadcast;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.broadcast.route.engine.type.BroadcastRouteEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Broadcast routing engine for table.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRouteEngine {
     
-    private final Collection<String> broadcastRuleTableNames;
+    private final Collection<String> broadcastTableNames;
     
     @Override
-    public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
-        Collection<String> logicTableNames = broadcastRule.getBroadcastRuleTableNames(broadcastRuleTableNames);
-        if (logicTableNames.isEmpty()) {
-            routeContext.getRouteUnits().addAll(getRouteContext(broadcastRule).getRouteUnits());
-        } else {
-            routeContext.getRouteUnits().addAll(getRouteContext(broadcastRule, logicTableNames).getRouteUnits());
-        }
+    public RouteContext route(final RouteContext routeContext, final BroadcastRule rule) {
+        Collection<String> logicTableNames = rule.filterBroadcastTableNames(broadcastTableNames);
+        RouteContext toBeAddedRouteContext = logicTableNames.isEmpty() ? getRouteContext(rule) : getRouteContext(rule, logicTableNames);
+        routeContext.getRouteUnits().addAll(toBeAddedRouteContext.getRouteUnits());
         return routeContext;
     }
     
-    private RouteContext getRouteContext(final BroadcastRule broadcastRule) {
+    private RouteContext getRouteContext(final BroadcastRule rule) {
         RouteContext result = new RouteContext();
-        for (String each : broadcastRule.getDataSourceNames()) {
+        for (String each : rule.getDataSourceNames()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.singletonList(new RouteMapper("", ""))));
         }
         return result;
     }
     
-    private RouteContext getRouteContext(final BroadcastRule broadcastRule, final Collection<String> logicTableNames) {
+    private RouteContext getRouteContext(final BroadcastRule rule, final Collection<String> logicTableNames) {
         RouteContext result = new RouteContext();
         Collection<RouteMapper> tableRouteMappers = getTableRouteMappers(logicTableNames);
-        for (String each : broadcastRule.getDataSourceNames()) {
+        for (String each : rule.getDataSourceNames()) {
             RouteMapper dataSourceMapper = new RouteMapper(each, each);
             result.getRouteUnits().add(new RouteUnit(dataSourceMapper, tableRouteMappers));
         }
@@ -66,9 +65,9 @@ public final class BroadcastTableBroadcastRoutingEngine implements BroadcastRout
     }
     
     private Collection<RouteMapper> getTableRouteMappers(final Collection<String> logicTableNames) {
-        Collection<RouteMapper> result = new ArrayList<>(logicTableNames.size());
-        for (String logicTableName : logicTableNames) {
-            result.add(new RouteMapper(logicTableName, logicTableName));
+        Collection<RouteMapper> result = new LinkedList<>();
+        for (String each : logicTableNames) {
+            result.add(new RouteMapper(each, each));
         }
         return result;
     }
