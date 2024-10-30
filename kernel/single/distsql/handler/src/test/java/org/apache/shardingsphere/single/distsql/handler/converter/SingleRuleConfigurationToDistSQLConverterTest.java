@@ -34,21 +34,21 @@ class SingleRuleConfigurationToDistSQLConverterTest {
     private final RuleConfigurationToDistSQLConverter<SingleRuleConfiguration> converter = TypedSPILoader.getService(RuleConfigurationToDistSQLConverter.class, SingleRuleConfiguration.class);
     
     @Test
+    void assertConvertWithEmptyTablesAndDefaultDatasource() {
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        assertThat(converter.convert(ruleConfig), is(""));
+    }
+    
+    @Test
     void assertConvert() {
-        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl"), "foo_ds");
-        assertThat(converter.convert(singleRuleConfig),
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("foo_tbl", "bar_tbl"), "foo_ds");
+        assertThat(converter.convert(ruleConfig),
                 is("LOAD SINGLE TABLE foo_tbl,bar_tbl;" + System.lineSeparator() + System.lineSeparator() + "SET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
     }
     
     @Test
     void assertConvertWithDefaultDatasourceOnly() {
-        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration(Collections.emptyList(), "foo_ds");
-        assertThat(converter.convert(singleRuleConfig), is("SET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
-    }
-    
-    @Test
-    void assertConvertWithEmptyTablesAndDefaultDatasource() {
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        assertThat(converter.convert(ruleConfig), is(""));
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.emptyList(), "foo_ds");
+        assertThat(converter.convert(ruleConfig), is("SET DEFAULT SINGLE TABLE STORAGE UNIT = foo_ds;"));
     }
 }

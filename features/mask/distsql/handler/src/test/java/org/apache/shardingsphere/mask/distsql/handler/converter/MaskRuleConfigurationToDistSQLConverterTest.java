@@ -31,8 +31,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MaskRuleConfigurationToDistSQLConverterTest {
     
@@ -41,21 +39,20 @@ class MaskRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithEmptyTables() {
-        MaskRuleConfiguration maskRuleConfig = mock(MaskRuleConfiguration.class);
-        when(maskRuleConfig.getTables()).thenReturn(Collections.emptyList());
-        assertThat(converter.convert(maskRuleConfig), is(""));
+        MaskRuleConfiguration ruleConfig = new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
+        assertThat(converter.convert(ruleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
-        MaskRuleConfiguration maskRuleConfig = getMaskRuleConfiguration();
-        assertThat(converter.convert(maskRuleConfig), is("CREATE MASK RULE"
+        MaskRuleConfiguration ruleConfig = createRuleConfiguration();
+        assertThat(converter.convert(ruleConfig), is("CREATE MASK RULE"
                 + " foo_tbl (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=foo_col_1, TYPE(NAME='md5'))," + System.lineSeparator() + "(NAME=foo_col_2, TYPE(NAME='md5'))"
                 + System.lineSeparator() + "))," + System.lineSeparator()
                 + " bar_tbl (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator() + "(NAME=bar_col, TYPE(NAME='md5'))" + System.lineSeparator() + "));"));
     }
     
-    private MaskRuleConfiguration getMaskRuleConfiguration() {
+    private MaskRuleConfiguration createRuleConfiguration() {
         MaskTableRuleConfiguration fooTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl",
                 Arrays.asList(new MaskColumnRuleConfiguration("foo_col_1", "md5_algo"), new MaskColumnRuleConfiguration("foo_col_2", "md5_algo")));
         MaskTableRuleConfiguration barTableRuleConfig = new MaskTableRuleConfiguration("bar_tbl", Collections.singleton(new MaskColumnRuleConfiguration("bar_col", "md5_algo")));
