@@ -177,7 +177,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
         return null == auditStrategy
                 ? ""
                 : DistSQLConstants.COMMA + System.lineSeparator()
-                + String.format(ShardingConvertDistSQLConstants.AUDIT_STRATEGY, convertAlgorithmTypes(auditStrategy.getAuditorNames(), auditors), auditStrategy.isAllowHintDisable());
+                        + String.format(ShardingConvertDistSQLConstants.AUDIT_STRATEGY, convertAlgorithmTypes(auditStrategy.getAuditorNames(), auditors), auditStrategy.isAllowHintDisable());
     }
     
     private String convertAlgorithmTypes(final Collection<String> auditorNames, final Map<String, AlgorithmConfiguration> auditors) {
