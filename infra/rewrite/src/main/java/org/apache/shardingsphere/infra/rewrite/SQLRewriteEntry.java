@@ -69,16 +69,16 @@ public final class SQLRewriteEntry {
      * @return route unit and SQL rewrite result map
      */
     public SQLRewriteResult rewrite(final QueryContext queryContext, final RouteContext routeContext, final ConnectionContext connectionContext) {
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(queryContext, routeContext, connectionContext);
+        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(queryContext, routeContext);
         SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
         return routeContext.getRouteUnits().isEmpty()
                 ? new GenericSQLRewriteEngine(rule, database, globalRuleMetaData).rewrite(sqlRewriteContext, queryContext)
                 : new RouteSQLRewriteEngine(rule, database, globalRuleMetaData).rewrite(sqlRewriteContext, routeContext, queryContext);
     }
     
-    private SQLRewriteContext createSQLRewriteContext(final QueryContext queryContext, final RouteContext routeContext, final ConnectionContext connectionContext) {
+    private SQLRewriteContext createSQLRewriteContext(final QueryContext queryContext, final RouteContext routeContext) {
         HintValueContext hintValueContext = queryContext.getHintValueContext();
-        SQLRewriteContext result = new SQLRewriteContext(database, queryContext.getSqlStatementContext(), queryContext.getSql(), queryContext.getParameters(), connectionContext, hintValueContext);
+        SQLRewriteContext result = new SQLRewriteContext(database, queryContext);
         decorate(result, routeContext, hintValueContext);
         result.generateSQLTokens();
         return result;

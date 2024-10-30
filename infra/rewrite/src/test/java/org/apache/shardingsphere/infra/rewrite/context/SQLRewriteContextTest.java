@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardPa
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,8 +84,12 @@ class SQLRewriteContextTest {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getInsertSelectContext()).thenReturn(null);
-        SQLRewriteContext sqlRewriteContext =
-                new SQLRewriteContext(database, statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1), mock(ConnectionContext.class), hintValueContext);
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
+        when(queryContext.getSql()).thenReturn("INSERT INTO tbl VALUES (?)");
+        when(queryContext.getParameters()).thenReturn(Collections.singletonList(1));
+        when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(GroupedParameterBuilder.class));
     }
     
@@ -93,15 +97,23 @@ class SQLRewriteContextTest {
     void assertNotInsertStatementContext() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
-        SQLRewriteContext sqlRewriteContext =
-                new SQLRewriteContext(database, statementContext, "SELECT * FROM tbl WHERE id = ?", Collections.singletonList(1), mock(ConnectionContext.class), hintValueContext);
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
+        when(queryContext.getSql()).thenReturn("SELECT * FROM tbl WHERE id = ?");
+        when(queryContext.getParameters()).thenReturn(Collections.singletonList(1));
+        when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(StandardParameterBuilder.class));
     }
     
     @Test
     void assertGenerateOptionalSQLToken() {
-        SQLRewriteContext sqlRewriteContext =
-                new SQLRewriteContext(database, sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1), mock(ConnectionContext.class), hintValueContext);
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(queryContext.getSql()).thenReturn("INSERT INTO tbl VALUES (?)");
+        when(queryContext.getParameters()).thenReturn(Collections.singletonList(1));
+        when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
         sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(optionalSQLTokenGenerator));
         sqlRewriteContext.generateSQLTokens();
         assertFalse(sqlRewriteContext.getSqlTokens().isEmpty());
@@ -110,8 +122,12 @@ class SQLRewriteContextTest {
     
     @Test
     void assertGenerateCollectionSQLToken() {
-        SQLRewriteContext sqlRewriteContext =
-                new SQLRewriteContext(database, sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1), mock(ConnectionContext.class), hintValueContext);
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(queryContext.getSql()).thenReturn("INSERT INTO tbl VALUES (?)");
+        when(queryContext.getParameters()).thenReturn(Collections.singletonList(1));
+        when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
         sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(collectionSQLTokenGenerator));
         sqlRewriteContext.generateSQLTokens();
         assertFalse(sqlRewriteContext.getSqlTokens().isEmpty());
