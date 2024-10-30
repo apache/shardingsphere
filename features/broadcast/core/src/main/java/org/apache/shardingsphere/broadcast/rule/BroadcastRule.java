@@ -43,9 +43,9 @@ public final class BroadcastRule implements DatabaseRule {
     
     private final BroadcastRuleConfiguration configuration;
     
-    private final Collection<String> tables;
-    
     private final Collection<String> dataSourceNames;
+    
+    private final Collection<String> tables;
     
     private final RuleAttributes attributes;
     
@@ -84,20 +84,20 @@ public final class BroadcastRule implements DatabaseRule {
     }
     
     /**
-     * Get broadcast rule table names.
+     * Filter broadcast table names.
      *
-     * @param logicTableNames logic table names
-     * @return broadcast rule table names.
+     * @param logicTableNames to be filtered logic table names
+     * @return filtered broadcast table names
      */
-    public Collection<String> getBroadcastRuleTableNames(final Collection<String> logicTableNames) {
+    public Collection<String> filterBroadcastTableNames(final Collection<String> logicTableNames) {
         return logicTableNames.stream().filter(tables::contains).collect(Collectors.toSet());
     }
     
     /**
-     * Judge whether logic table is all broadcast tables or not.
+     * Judge whether logic tables are all broadcast tables.
      *
      * @param logicTableNames logic table names
-     * @return whether logic table is all broadcast tables or not
+     * @return logic tables are all broadcast tables or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         return !logicTableNames.isEmpty() && tables.containsAll(logicTableNames);

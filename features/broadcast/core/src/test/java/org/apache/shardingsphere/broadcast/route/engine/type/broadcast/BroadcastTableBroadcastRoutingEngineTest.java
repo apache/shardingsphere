@@ -40,10 +40,10 @@ class BroadcastTableBroadcastRoutingEngineTest {
     void assertRouteWithBroadcastRuleTable() {
         Collection<String> broadcastRuleTableNames = Collections.singleton("t_address");
         BroadcastTableBroadcastRoutingEngine engine = new BroadcastTableBroadcastRoutingEngine(broadcastRuleTableNames);
-        BroadcastRule broadcastRule = mock(BroadcastRule.class);
-        when(broadcastRule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
-        when(broadcastRule.getBroadcastRuleTableNames(any())).thenReturn(Collections.singleton("t_address"));
-        RouteContext routeContext = engine.route(new RouteContext(), broadcastRule);
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(rule.filterBroadcastTableNames(any())).thenReturn(Collections.singleton("t_address"));
+        RouteContext routeContext = engine.route(new RouteContext(), rule);
         assertThat(routeContext.getRouteUnits().size(), is(2));
         Iterator<RouteUnit> iterator = routeContext.getRouteUnits().iterator();
         assertRouteMapper(iterator.next(), "ds_0", "t_address");
@@ -54,10 +54,10 @@ class BroadcastTableBroadcastRoutingEngineTest {
     void assertRouteWithoutBroadcastRuleTable() {
         Collection<String> broadcastRuleTableNames = Collections.singleton("t_address");
         BroadcastTableBroadcastRoutingEngine engine = new BroadcastTableBroadcastRoutingEngine(broadcastRuleTableNames);
-        BroadcastRule broadcastRule = mock(BroadcastRule.class);
-        when(broadcastRule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
-        when(broadcastRule.getBroadcastRuleTableNames(any())).thenReturn(Collections.emptyList());
-        RouteContext routeContext = engine.route(new RouteContext(), broadcastRule);
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(rule.filterBroadcastTableNames(any())).thenReturn(Collections.emptyList());
+        RouteContext routeContext = engine.route(new RouteContext(), rule);
         assertThat(routeContext.getRouteUnits().size(), is(2));
         Iterator<RouteUnit> iterator = routeContext.getRouteUnits().iterator();
         assertRouteMapper(iterator.next(), "ds_0", "");
