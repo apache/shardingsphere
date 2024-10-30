@@ -33,9 +33,9 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Sharding rule configuration to DistSQL converter.
@@ -48,168 +48,140 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
             return "";
         }
         StringBuilder result = new StringBuilder();
-        appendShardingTableRules(ruleConfig, result);
+        result.append(convertShardingTableRules(ruleConfig));
         if (!ruleConfig.getBindingTableGroups().isEmpty()) {
             result.append(System.lineSeparator()).append(System.lineSeparator());
-            appendShardingBindingTableRules(ruleConfig, result);
+            result.append(convertShardingBindingTableRules(ruleConfig));
         }
         if (null != ruleConfig.getDefaultDatabaseShardingStrategy() || null != ruleConfig.getDefaultTableShardingStrategy()) {
             result.append(System.lineSeparator()).append(System.lineSeparator());
-            appendDefaultShardingStrategy(ruleConfig, result);
+            result.append(convertDefaultShardingStrategy(ruleConfig));
         }
         return result.toString();
     }
     
-    private void appendShardingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        String tableRules = getTableRules(ruleConfig);
-        String autoTableRules = getAutoTableRules(ruleConfig);
-        stringBuilder.append(ShardingConvertDistSQLConstants.CREATE_SHARDING_TABLE_RULE).append(tableRules);
-        if (!Strings.isNullOrEmpty(tableRules) && !Strings.isNullOrEmpty(autoTableRules)) {
-            stringBuilder.append(DistSQLConstants.COMMA);
+    private String convertShardingTableRules(final ShardingRuleConfiguration ruleConfig) {
+        StringBuilder result = new StringBuilder();
+        result.append(ShardingConvertDistSQLConstants.CREATE_SHARDING_TABLE_RULE).append(convertTableRules(ruleConfig));
+        if (!ruleConfig.getTables().isEmpty() && !ruleConfig.getAutoTables().isEmpty()) {
+            result.append(DistSQLConstants.COMMA);
         }
-        stringBuilder.append(autoTableRules).append(DistSQLConstants.SEMI);
+        result.append(convertAutoTableRules(ruleConfig)).append(DistSQLConstants.SEMI);
+        return result.toString();
     }
     
-    private void appendShardingBindingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        stringBuilder.append(ShardingConvertDistSQLConstants.SHARDING_BINDING_TABLE_RULES);
-        Iterator<ShardingTableReferenceRuleConfiguration> iterator = ruleConfig.getBindingTableGroups().iterator();
-        while (iterator.hasNext()) {
-            ShardingTableReferenceRuleConfiguration referenceRuleConfig = iterator.next();
-            stringBuilder.append(String.format(ShardingConvertDistSQLConstants.BINDING_TABLES, referenceRuleConfig.getName(), referenceRuleConfig.getReference()));
-            if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLConstants.COMMA);
-            }
+    private String convertTableRules(final ShardingRuleConfiguration ruleConfig) {
+        if (ruleConfig.getTables().isEmpty()) {
+            return "";
         }
-        stringBuilder.append(DistSQLConstants.SEMI);
+        return ruleConfig.getTables().stream()
+                .map(each -> String.format(ShardingConvertDistSQLConstants.SHARDING_TABLE_RULE, each.getLogicTable(), each.getActualDataNodes(), convertTableStrategy(each, ruleConfig)))
+                .collect(Collectors.joining(DistSQLConstants.COMMA));
     }
     
-    private void appendDefaultShardingStrategy(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
+    private String convertTableStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final ShardingRuleConfiguration ruleConfig) {
+        return convertShardingStrategy(tableRuleConfig.getDatabaseShardingStrategy(), ShardingConvertDistSQLConstants.DATABASE_STRATEGY, ruleConfig.getShardingAlgorithms())
+                + convertShardingStrategy(tableRuleConfig.getTableShardingStrategy(), ShardingConvertDistSQLConstants.TABLE_STRATEGY, ruleConfig.getShardingAlgorithms())
+                + convertKeyGenerateStrategy(ruleConfig.getKeyGenerators(), tableRuleConfig.getKeyGenerateStrategy())
+                + convertAuditStrategy(ruleConfig.getAuditors(), null == tableRuleConfig.getAuditStrategy() ? ruleConfig.getDefaultAuditStrategy() : tableRuleConfig.getAuditStrategy());
+    }
+    
+    private String convertAutoTableRules(final ShardingRuleConfiguration ruleConfig) {
+        if (ruleConfig.getAutoTables().isEmpty()) {
+            return "";
+        }
+        return ruleConfig.getAutoTables().stream()
+                .map(each -> String.format(ShardingConvertDistSQLConstants.SHARDING_AUTO_TABLE_RULE, each.getLogicTable(), each.getActualDataSources(), convertAutoTableStrategy(each, ruleConfig)))
+                .collect(Collectors.joining(DistSQLConstants.COMMA));
+    }
+    
+    private String convertAutoTableStrategy(final ShardingAutoTableRuleConfiguration autoTableRuleConfig, final ShardingRuleConfiguration ruleConfig) {
+        StringBuilder result = new StringBuilder();
+        StandardShardingStrategyConfiguration strategyConfig = (StandardShardingStrategyConfiguration) autoTableRuleConfig.getShardingStrategy();
+        String shardingColumn = Strings.isNullOrEmpty(strategyConfig.getShardingColumn()) ? ruleConfig.getDefaultShardingColumn() : strategyConfig.getShardingColumn();
+        result.append(String.format(ShardingConvertDistSQLConstants.AUTO_TABLE_STRATEGY,
+                shardingColumn, AlgorithmDistSQLConverter.getAlgorithmType(ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName()))));
+        result.append(convertKeyGenerateStrategy(ruleConfig.getKeyGenerators(), autoTableRuleConfig.getKeyGenerateStrategy()));
+        result.append(convertAuditStrategy(ruleConfig.getAuditors(), null == autoTableRuleConfig.getAuditStrategy() ? ruleConfig.getDefaultAuditStrategy() : autoTableRuleConfig.getAuditStrategy()));
+        return result.toString();
+    }
+    
+    private String convertKeyGenerateStrategy(final Map<String, AlgorithmConfiguration> keyGenerators, final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
+        if (null == keyGenerateStrategyConfig) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
+        String algorithmDefinition = AlgorithmDistSQLConverter.getAlgorithmType(keyGenerators.get(keyGenerateStrategyConfig.getKeyGeneratorName()));
+        result.append(String.format(ShardingConvertDistSQLConstants.KEY_GENERATOR_STRATEGY, keyGenerateStrategyConfig.getColumn(), algorithmDefinition));
+        return result.toString();
+    }
+    
+    private String convertShardingBindingTableRules(final ShardingRuleConfiguration ruleConfig) {
+        return ShardingConvertDistSQLConstants.SHARDING_BINDING_TABLE_RULES + convertShardingBindingTableRules(ruleConfig.getBindingTableGroups()) + DistSQLConstants.SEMI;
+    }
+    
+    private String convertShardingBindingTableRules(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups) {
+        return bindingTableGroups.stream()
+                .map(each -> String.format(ShardingConvertDistSQLConstants.BINDING_TABLES, each.getName(), each.getReference())).collect(Collectors.joining(DistSQLConstants.COMMA));
+    }
+    
+    private String convertDefaultShardingStrategy(final ShardingRuleConfiguration ruleConfig) {
+        StringBuilder result = new StringBuilder();
         if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
-            appendStrategy(ruleConfig.getDefaultDatabaseShardingStrategy(), ShardingConvertDistSQLConstants.DEFAULT_DATABASE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
+            result.append(convertShardingStrategy(ruleConfig.getDefaultDatabaseShardingStrategy(), ShardingConvertDistSQLConstants.DEFAULT_DATABASE_STRATEGY, ruleConfig.getShardingAlgorithms()));
             result.append(DistSQLConstants.SEMI);
         }
         if (null != ruleConfig.getDefaultTableShardingStrategy()) {
             if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
                 result.append(System.lineSeparator()).append(System.lineSeparator());
             }
-            appendStrategy(ruleConfig.getDefaultTableShardingStrategy(), ShardingConvertDistSQLConstants.DEFAULT_TABLE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
+            result.append(convertShardingStrategy(ruleConfig.getDefaultTableShardingStrategy(), ShardingConvertDistSQLConstants.DEFAULT_TABLE_STRATEGY, ruleConfig.getShardingAlgorithms()));
             result.append(DistSQLConstants.SEMI);
         }
-    }
-    
-    private String getTableRules(final ShardingRuleConfiguration ruleConfig) {
-        StringBuilder result = new StringBuilder();
-        if (!ruleConfig.getTables().isEmpty()) {
-            Iterator<ShardingTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
-            while (iterator.hasNext()) {
-                ShardingTableRuleConfiguration tableRuleConfig = iterator.next();
-                result.append(String.format(ShardingConvertDistSQLConstants.SHARDING_TABLE_RULE, tableRuleConfig.getLogicTable(), tableRuleConfig.getActualDataNodes(),
-                        appendTableStrategy(tableRuleConfig, ruleConfig)));
-                if (iterator.hasNext()) {
-                    result.append(DistSQLConstants.COMMA);
-                }
-            }
-        }
         return result.toString();
     }
     
-    private String getAutoTableRules(final ShardingRuleConfiguration ruleConfig) {
-        StringBuilder result = new StringBuilder();
-        if (!ruleConfig.getAutoTables().isEmpty()) {
-            Iterator<ShardingAutoTableRuleConfiguration> iterator = ruleConfig.getAutoTables().iterator();
-            while (iterator.hasNext()) {
-                ShardingAutoTableRuleConfiguration autoTableRuleConfig = iterator.next();
-                result.append(String.format(ShardingConvertDistSQLConstants.SHARDING_AUTO_TABLE_RULE, autoTableRuleConfig.getLogicTable(), autoTableRuleConfig.getActualDataSources(),
-                        appendAutoTableStrategy(autoTableRuleConfig, ruleConfig)));
-                if (iterator.hasNext()) {
-                    result.append(DistSQLConstants.COMMA);
-                }
-            }
-        }
-        return result.toString();
-    }
-    
-    private String appendTableStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final ShardingRuleConfiguration ruleConfig) {
-        StringBuilder result = new StringBuilder();
-        appendStrategy(tableRuleConfig.getDatabaseShardingStrategy(), ShardingConvertDistSQLConstants.DATABASE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
-        appendStrategy(tableRuleConfig.getTableShardingStrategy(), ShardingConvertDistSQLConstants.TABLE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
-        appendKeyGenerateStrategy(ruleConfig.getKeyGenerators(), tableRuleConfig.getKeyGenerateStrategy(), result);
-        appendAuditStrategy(ruleConfig.getAuditors(), null != tableRuleConfig.getAuditStrategy() ? tableRuleConfig.getAuditStrategy() : ruleConfig.getDefaultAuditStrategy(), result);
-        return result.toString();
-    }
-    
-    private String appendAutoTableStrategy(final ShardingAutoTableRuleConfiguration autoTableRuleConfig, final ShardingRuleConfiguration ruleConfig) {
-        StringBuilder result = new StringBuilder();
-        StandardShardingStrategyConfiguration strategyConfig = (StandardShardingStrategyConfiguration) autoTableRuleConfig.getShardingStrategy();
-        String shardingColumn = Strings.isNullOrEmpty(strategyConfig.getShardingColumn()) ? ruleConfig.getDefaultShardingColumn() : strategyConfig.getShardingColumn();
-        result.append(String.format(ShardingConvertDistSQLConstants.AUTO_TABLE_STRATEGY,
-                shardingColumn, AlgorithmDistSQLConverter.getAlgorithmType(ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName()))));
-        appendKeyGenerateStrategy(ruleConfig.getKeyGenerators(), autoTableRuleConfig.getKeyGenerateStrategy(), result);
-        appendAuditStrategy(ruleConfig.getAuditors(), null != autoTableRuleConfig.getAuditStrategy() ? autoTableRuleConfig.getAuditStrategy() : ruleConfig.getDefaultAuditStrategy(), result);
-        return result.toString();
-    }
-    
-    private void appendStrategy(final ShardingStrategyConfiguration strategyConfig, final String strategyType,
-                                final StringBuilder stringBuilder, final Map<String, AlgorithmConfiguration> shardingAlgorithms) {
+    private String convertShardingStrategy(final ShardingStrategyConfiguration strategyConfig, final String strategyType, final Map<String, AlgorithmConfiguration> shardingAlgorithms) {
         if (null == strategyConfig) {
-            return;
+            return "";
         }
+        StringBuilder result = new StringBuilder();
         if (Objects.equals(strategyType, ShardingConvertDistSQLConstants.DATABASE_STRATEGY) || Objects.equals(strategyType, ShardingConvertDistSQLConstants.TABLE_STRATEGY)) {
-            stringBuilder.append(DistSQLConstants.COMMA).append(System.lineSeparator());
+            result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
         }
         String type = strategyConfig.getType().toLowerCase();
         String algorithmDefinition = AlgorithmDistSQLConverter.getAlgorithmType(shardingAlgorithms.get(strategyConfig.getShardingAlgorithmName()));
         switch (type) {
             case ShardingConvertDistSQLConstants.STANDARD:
-                StandardShardingStrategyConfiguration standardShardingStrategyConfig = (StandardShardingStrategyConfiguration) strategyConfig;
-                stringBuilder
-                        .append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_STANDARD, strategyType, type, standardShardingStrategyConfig.getShardingColumn(), algorithmDefinition));
+                StandardShardingStrategyConfiguration standardConfig = (StandardShardingStrategyConfiguration) strategyConfig;
+                result.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_STANDARD, strategyType, type, standardConfig.getShardingColumn(), algorithmDefinition));
                 break;
             case ShardingConvertDistSQLConstants.COMPLEX:
-                ComplexShardingStrategyConfiguration complexShardingStrategyConfig = (ComplexShardingStrategyConfiguration) strategyConfig;
-                stringBuilder
-                        .append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexShardingStrategyConfig.getShardingColumns(), algorithmDefinition));
+                ComplexShardingStrategyConfiguration complexConfig = (ComplexShardingStrategyConfiguration) strategyConfig;
+                result.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexConfig.getShardingColumns(), algorithmDefinition));
                 break;
             case ShardingConvertDistSQLConstants.HINT:
-                stringBuilder.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_HINT, strategyType, type, algorithmDefinition));
+                result.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_HINT, strategyType, type, algorithmDefinition));
                 break;
             case ShardingConvertDistSQLConstants.NONE:
-                stringBuilder.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_NONE, strategyType, "none"));
+                result.append(String.format(ShardingConvertDistSQLConstants.SHARDING_STRATEGY_NONE, strategyType, "none"));
                 break;
             default:
                 break;
         }
-    }
-    
-    private void appendKeyGenerateStrategy(final Map<String, AlgorithmConfiguration> keyGenerators,
-                                           final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig, final StringBuilder stringBuilder) {
-        if (null == keyGenerateStrategyConfig) {
-            return;
-        }
-        stringBuilder.append(DistSQLConstants.COMMA).append(System.lineSeparator());
-        String algorithmDefinition = AlgorithmDistSQLConverter.getAlgorithmType(keyGenerators.get(keyGenerateStrategyConfig.getKeyGeneratorName()));
-        stringBuilder.append(String.format(ShardingConvertDistSQLConstants.KEY_GENERATOR_STRATEGY, keyGenerateStrategyConfig.getColumn(), algorithmDefinition));
-    }
-    
-    private void appendAuditStrategy(final Map<String, AlgorithmConfiguration> auditors, final ShardingAuditStrategyConfiguration auditStrategy, final StringBuilder stringBuilder) {
-        if (null != auditStrategy) {
-            stringBuilder.append(DistSQLConstants.COMMA).append(System.lineSeparator());
-            stringBuilder.append(String.format(ShardingConvertDistSQLConstants.AUDIT_STRATEGY, getAlgorithmTypes(auditors, auditStrategy.getAuditorNames()), auditStrategy.isAllowHintDisable()));
-        }
-    }
-    
-    private String getAlgorithmTypes(final Map<String, AlgorithmConfiguration> auditors, final Collection<String> auditorNames) {
-        StringBuilder result = new StringBuilder();
-        if (!auditorNames.isEmpty()) {
-            Iterator<String> iterator = auditorNames.iterator();
-            while (iterator.hasNext()) {
-                result.append(AlgorithmDistSQLConverter.getAlgorithmType(auditors.get(iterator.next())));
-                if (iterator.hasNext()) {
-                    result.append(DistSQLConstants.COMMA);
-                }
-            }
-        }
         return result.toString();
+    }
+    
+    private String convertAuditStrategy(final Map<String, AlgorithmConfiguration> auditors, final ShardingAuditStrategyConfiguration auditStrategy) {
+        return null == auditStrategy
+                ? ""
+                : DistSQLConstants.COMMA + System.lineSeparator()
+                        + String.format(ShardingConvertDistSQLConstants.AUDIT_STRATEGY, convertAlgorithmTypes(auditStrategy.getAuditorNames(), auditors), auditStrategy.isAllowHintDisable());
+    }
+    
+    private String convertAlgorithmTypes(final Collection<String> auditorNames, final Map<String, AlgorithmConfiguration> auditors) {
+        return auditorNames.stream().map(each -> AlgorithmDistSQLConverter.getAlgorithmType(auditors.get(each))).collect(Collectors.joining(DistSQLConstants.COMMA));
     }
     
     @Override
