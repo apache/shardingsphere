@@ -58,14 +58,11 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
     
     private String convertColumns(final EncryptColumnRuleConfiguration columnRuleConfig) {
         StringBuilder result = new StringBuilder();
-        String cipherColumnName = columnRuleConfig.getCipher().getName();
-        result.append(String.format(EncryptConvertDistSQLConstants.CIPHER, cipherColumnName));
-        if (columnRuleConfig.getAssistedQuery().isPresent()) {
-            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_COLUMN, columnRuleConfig.getAssistedQuery().get().getName()));
-        }
-        if (columnRuleConfig.getLikeQuery().isPresent()) {
-            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.LIKE_QUERY_COLUMN, columnRuleConfig.getLikeQuery().get().getName()));
-        }
+        result.append(String.format(EncryptConvertDistSQLConstants.CIPHER, columnRuleConfig.getCipher().getName()));
+        columnRuleConfig.getAssistedQuery()
+                .ifPresent(optional -> result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_COLUMN, optional.getName())));
+        columnRuleConfig.getLikeQuery()
+                .ifPresent(optional -> result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.LIKE_QUERY_COLUMN, optional.getName())));
         return result.toString();
     }
     
