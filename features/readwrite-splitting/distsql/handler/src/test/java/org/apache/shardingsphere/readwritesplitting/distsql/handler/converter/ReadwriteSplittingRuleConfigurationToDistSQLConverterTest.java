@@ -68,7 +68,7 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
                         + ");"));
     }
     
-    private static ReadwriteSplittingRuleConfiguration createRuleConfiguration() {
+    private ReadwriteSplittingRuleConfiguration createRuleConfiguration() {
         ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig0 = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
         ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig1 = new ReadwriteSplittingDataSourceGroupRuleConfiguration(

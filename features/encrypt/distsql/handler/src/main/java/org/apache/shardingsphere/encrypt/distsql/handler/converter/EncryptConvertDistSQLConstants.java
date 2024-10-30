@@ -28,7 +28,7 @@ public final class EncryptConvertDistSQLConstants {
     
     public static final String CREATE_ENCRYPT_RULE = "CREATE ENCRYPT RULE";
     
-    public static final String ENCRYPT_RULE = " %s ("
+    public static final String ENCRYPT_TABLE = " %s ("
             + System.lineSeparator()
             + "COLUMNS("
             + System.lineSeparator()

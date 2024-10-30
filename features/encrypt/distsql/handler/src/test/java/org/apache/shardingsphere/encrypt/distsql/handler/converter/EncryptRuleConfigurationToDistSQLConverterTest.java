@@ -33,8 +33,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class EncryptRuleConfigurationToDistSQLConverterTest {
     
@@ -43,8 +41,7 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithEmptyTables() {
-        EncryptRuleConfiguration encryptRuleConfig = mock(EncryptRuleConfiguration.class);
-        when(encryptRuleConfig.getTables()).thenReturn(Collections.emptyList());
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
         assertThat(converter.convert(encryptRuleConfig), is(""));
     }
     
@@ -52,26 +49,35 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
     void assertConvert() {
         EncryptRuleConfiguration encryptRuleConfig = getEncryptRuleConfiguration();
         assertThat(converter.convert(encryptRuleConfig),
-                is("CREATE ENCRYPT RULE t_encrypt (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator()
-                        + "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
-                        + "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())," + System.lineSeparator()
-                        + "(NAME=pwd, CIPHER=pwd_cipher, ASSISTED_QUERY_COLUMN=pwd_assisted, LIKE_QUERY_COLUMN=pwd_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
-                        + "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())" + System.lineSeparator() + "))," + System.lineSeparator() + " t_encrypt_another (" + System.lineSeparator() + "COLUMNS("
-                        + System.lineSeparator() + "(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='md5')), "
-                        + "ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())" + System.lineSeparator() + "));"));
+                is("CREATE ENCRYPT RULE foo_tbl ("
+                        + System.lineSeparator()
+                        + "COLUMNS("
+                        + System.lineSeparator()
+                        + "(NAME=foo_col, CIPHER=foo_col_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='md5'))),"
+                        + System.lineSeparator()
+                        + "(NAME=bar_col, CIPHER=bar_col_cipher, ASSISTED_QUERY_COLUMN=bar_col_assisted, LIKE_QUERY_COLUMN=bar_col_like,"
+                        + " ENCRYPT_ALGORITHM(TYPE(NAME='md5')), ASSISTED_QUERY_ALGORITHM(), LIKE_QUERY_ALGORITHM())"
+                        + System.lineSeparator()
+                        + ")),"
+                        + System.lineSeparator()
+                        + " t_encrypt_another ("
+                        + System.lineSeparator()
+                        + "COLUMNS("
+                        + System.lineSeparator()
+                        + "(NAME=foo_col, CIPHER=foo_col_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='md5')))"
+                        + System.lineSeparator()
+                        + "));"));
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "test"));
-        encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "foo_assist_query_encryptor"));
-        encryptColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "foo_like_encryptor"));
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig2 = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "test"));
-        encryptColumnRuleConfig2.setAssistedQuery(new EncryptColumnItemRuleConfiguration("pwd_assisted", "foo_assist_query_encryptor"));
-        encryptColumnRuleConfig2.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", "foo_like_encryptor"));
-        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", new LinkedList<>(Arrays.asList(encryptColumnRuleConfig, encryptColumnRuleConfig2)));
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig1 = new EncryptColumnRuleConfiguration("foo_col", new EncryptColumnItemRuleConfiguration("foo_col_cipher", "test"));
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig2 = new EncryptColumnRuleConfiguration("bar_col", new EncryptColumnItemRuleConfiguration("bar_col_cipher", "test"));
+        encryptColumnRuleConfig2.setAssistedQuery(new EncryptColumnItemRuleConfiguration("bar_col_assisted", "bar_assist_query_encryptor"));
+        encryptColumnRuleConfig2.setLikeQuery(new EncryptColumnItemRuleConfiguration("bar_col_like", "bar_like_encryptor"));
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("foo_tbl", new LinkedList<>(Arrays.asList(encryptColumnRuleConfig1, encryptColumnRuleConfig2)));
         AlgorithmConfiguration shardingSphereAlgorithmConfig = new AlgorithmConfiguration("md5", new Properties());
         return new EncryptRuleConfiguration(
-                new LinkedList<>(Arrays.asList(encryptTableRuleConfig, new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(encryptColumnRuleConfig)))),
+                new LinkedList<>(Arrays.asList(encryptTableRuleConfig, new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(encryptColumnRuleConfig1)))),
                 Collections.singletonMap("test", shardingSphereAlgorithmConfig));
     }
 }
