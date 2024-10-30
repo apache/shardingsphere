@@ -42,10 +42,10 @@ class InUsedShardingStorageUnitRetrieverTest {
     @Test
     void assertGetInUsedResources() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("prod_ds", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, createShardingRule()), is(Arrays.asList("foo_auto_tbl", "foo_tbl")));
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Arrays.asList("foo_auto_tbl", "foo_tbl")));
     }
     
-    private static ShardingRule createShardingRule() {
+    private ShardingRule mockRule() {
         ShardingRule result = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
         when(result.getConfiguration().getAutoTables()).thenReturn(Collections.singleton(new ShardingAutoTableRuleConfiguration("foo_auto_tbl", "")));
         when(result.getConfiguration().getTables()).thenReturn(Collections.singleton(new ShardingTableRuleConfiguration("foo_tbl", "")));

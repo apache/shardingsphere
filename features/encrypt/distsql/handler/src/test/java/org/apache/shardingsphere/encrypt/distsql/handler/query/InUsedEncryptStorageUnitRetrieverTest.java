@@ -38,8 +38,13 @@ class InUsedEncryptStorageUnitRetrieverTest {
     @Test
     void assertGetInUsedResources() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement(null, null);
+        EncryptRule rule = mockRule();
+        assertThat(retriever.getInUsedResources(sqlStatement, rule), is(Collections.singleton("foo_tbl")));
+    }
+    
+    private EncryptRule mockRule() {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getAllTableNames()).thenReturn(Collections.singleton("foo_tbl"));
-        assertThat(retriever.getInUsedResources(sqlStatement, rule), is(Collections.singleton("foo_tbl")));
+        return rule;
     }
 }

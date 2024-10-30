@@ -40,8 +40,13 @@ class InUsedMaskStorageUnitRetrieverTest {
     @Test
     void assertGetInUsedResources() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement(null, null);
-        MaskRule rule = mock(MaskRule.class, RETURNS_DEEP_STUBS);
-        when(rule.getConfiguration().getTables()).thenReturn(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())));
+        MaskRule rule = mockRule();
         assertThat(retriever.getInUsedResources(sqlStatement, rule), is(Collections.singletonList("foo_tbl")));
+    }
+    
+    private MaskRule mockRule() {
+        MaskRule result = mock(MaskRule.class, RETURNS_DEEP_STUBS);
+        when(result.getConfiguration().getTables()).thenReturn(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())));
+        return result;
     }
 }

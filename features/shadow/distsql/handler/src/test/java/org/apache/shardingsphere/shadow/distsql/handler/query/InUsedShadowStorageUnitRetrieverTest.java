@@ -47,16 +47,16 @@ class InUsedShadowStorageUnitRetrieverTest {
     @Test
     void assertGetInUsedResourcesWithShadowDataSource() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("prod_ds", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, createShadowRule()), is(Collections.singletonList("foo_ds")));
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
     }
     
     @Test
     void assertGetInUsedResourcesWithProductionDataSource() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("shadow_ds", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, createShadowRule()), is(Collections.singletonList("foo_ds")));
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
     }
     
-    private static ShadowRule createShadowRule() {
+    private ShadowRule mockRule() {
         ShadowRule result = mock(ShadowRule.class, RETURNS_DEEP_STUBS);
         ShadowDataSourceConfiguration dataSourceConfig = new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds");
         when(result.getConfiguration().getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
