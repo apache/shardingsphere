@@ -131,7 +131,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName());
         SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase);
-        return kernelProcessor.generateExecutionContext(queryContext, globalRuleMetaData, metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
+        return kernelProcessor.generateExecutionContext(queryContext, globalRuleMetaData, metaDataContexts.getMetaData().getProps());
     }
     
     /**

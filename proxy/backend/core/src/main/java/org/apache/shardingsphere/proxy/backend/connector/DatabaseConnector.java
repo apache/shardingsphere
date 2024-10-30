@@ -201,8 +201,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private ExecutionContext generateExecutionContext() {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
-        return new KernelProcessor().generateExecutionContext(
-                queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
+        return new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
     }
     
     private boolean isNeedImplicitCommitTransaction(final SQLStatement sqlStatement, final boolean multiExecutionUnits) {

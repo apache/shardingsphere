@@ -112,7 +112,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             return createMemoryEnumerable(databaseName, schemaName, table, databaseType);
         }
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), scanContext, databaseType, federationContext.getQueryContext().isUseCache());
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, globalRuleMetaData, executorContext.getProps(), new ConnectionContext(Collections::emptySet));
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, globalRuleMetaData, executorContext.getProps());
         if (federationContext.isPreview()) {
             federationContext.getPreviewExecutionUnits().addAll(executionContext.getExecutionUnits());
             return createEmptyEnumerable();
