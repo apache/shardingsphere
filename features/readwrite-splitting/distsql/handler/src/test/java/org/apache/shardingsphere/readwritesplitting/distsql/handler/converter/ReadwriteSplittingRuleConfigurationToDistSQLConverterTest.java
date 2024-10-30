@@ -30,8 +30,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
     
@@ -41,20 +39,41 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithEmptyDataSources() {
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(readwriteSplittingRuleConfig.getDataSourceGroups()).thenReturn(Collections.emptyList());
+        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
         assertThat(converter.convert(readwriteSplittingRuleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig =
-                new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig),
+        ReadwriteSplittingRuleConfiguration ruleConfig = createRuleConfiguration();
+        assertThat(converter.convert(ruleConfig),
+                is("CREATE READWRITE_SPLITTING RULE foo_ds ("
+                        + System.lineSeparator()
+                        + "WRITE_STORAGE_UNIT=ds_primary,"
+                        + System.lineSeparator()
+                        + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),"
+                        + System.lineSeparator()
+                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC',"
+                        + System.lineSeparator()
+                        + "TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))"
+                        + System.lineSeparator()
+                        + "), bar_ds ("
+                        + System.lineSeparator()
+                        + "WRITE_STORAGE_UNIT=ds_primary,"
+                        + System.lineSeparator()
+                        + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),"
+                        + System.lineSeparator()
+                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC'"
+                        + System.lineSeparator()
+                        + ");"));
+    }
+    
+    private static ReadwriteSplittingRuleConfiguration createRuleConfiguration() {
+        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig0 = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
+                "foo_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
+        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig1 = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
+                "bar_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "not_existed");
+        return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceGroupConfig0, dataSourceGroupConfig1),
                 Collections.singletonMap("test", new AlgorithmConfiguration("random", PropertiesBuilder.build(new PropertiesBuilder.Property("read_weight", "2:1")))));
-        assertThat(converter.convert(readwriteSplittingRuleConfig),
-                is("CREATE READWRITE_SPLITTING RULE readwrite_ds (" + System.lineSeparator() + "WRITE_STORAGE_UNIT=ds_primary," + System.lineSeparator() + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),"
-                        + System.lineSeparator() + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC'," + System.lineSeparator() + "TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))"
-                        + System.lineSeparator() + ");"));
     }
 }
