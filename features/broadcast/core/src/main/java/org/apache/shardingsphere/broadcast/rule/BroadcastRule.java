@@ -43,19 +43,16 @@ public final class BroadcastRule implements DatabaseRule {
     
     private final BroadcastRuleConfiguration configuration;
     
-    private final String databaseName;
-    
     private final Collection<String> tables;
     
     private final Collection<String> dataSourceNames;
     
     private final RuleAttributes attributes;
     
-    public BroadcastRule(final BroadcastRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
+    public BroadcastRule(final BroadcastRuleConfiguration config, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         configuration = config;
-        this.databaseName = databaseName;
         dataSourceNames = getAggregatedDataSourceNames(dataSources, builtRules);
-        tables = createBroadcastTables(config.getTables());
+        tables = new CaseInsensitiveSet<>(config.getTables());
         attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables), new BroadcastTableNamesRuleAttribute(tables));
     }
     
@@ -84,10 +81,6 @@ public final class BroadcastRule implements DatabaseRule {
         }
         result.addAll(dataSourceNames);
         return result;
-    }
-    
-    private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
-        return new CaseInsensitiveSet<>(broadcastTables);
     }
     
     /**
