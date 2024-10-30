@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResu
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
@@ -61,7 +60,7 @@ class SQLRewriteEntryTest {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                 database, new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
-        GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite(createQueryContext(), routeContext, mock(ConnectionContext.class));
+        GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite(createQueryContext(), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getSql(), is("SELECT ?"));
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getParameters(), is(Collections.singletonList(1)));
     }
@@ -90,7 +89,7 @@ class SQLRewriteEntryTest {
         RouteUnit secondRouteUnit = mock(RouteUnit.class);
         when(secondRouteUnit.getDataSourceMapper()).thenReturn(new RouteMapper("ds", "ds_1"));
         routeContext.getRouteUnits().addAll(Arrays.asList(firstRouteUnit, secondRouteUnit));
-        RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite(createQueryContext(), routeContext, mock(ConnectionContext.class));
+        RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite(createQueryContext(), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
     
