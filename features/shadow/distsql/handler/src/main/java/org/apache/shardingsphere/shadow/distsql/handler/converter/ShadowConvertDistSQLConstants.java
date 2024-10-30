@@ -28,7 +28,7 @@ public final class ShadowConvertDistSQLConstants {
     
     public static final String CREATE_SHADOW_RULE = "CREATE SHADOW RULE";
     
-    public static final String SHADOW_RULE = " %s("
+    public static final String SHADOW_DATA_SOURCE = " %s("
             + System.lineSeparator()
             + "SOURCE=%s,"
             + System.lineSeparator()

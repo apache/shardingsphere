@@ -30,8 +30,6 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ShadowRuleConfigurationToDistSQLConverterTest {
     
@@ -40,8 +38,7 @@ class ShadowRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithoutDataSources() {
-        ShadowRuleConfiguration shadowRuleConfig = mock(ShadowRuleConfiguration.class);
-        when(shadowRuleConfig.getDataSources()).thenReturn(Collections.emptyList());
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration();
         assertThat(converter.convert(shadowRuleConfig), is(""));
     }
     
