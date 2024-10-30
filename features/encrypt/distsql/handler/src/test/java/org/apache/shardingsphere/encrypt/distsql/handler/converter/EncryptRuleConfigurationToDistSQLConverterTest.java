@@ -41,14 +41,14 @@ class EncryptRuleConfigurationToDistSQLConverterTest {
     
     @Test
     void assertConvertWithEmptyTables() {
-        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
-        assertThat(converter.convert(encryptRuleConfig), is(""));
+        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
+        assertThat(converter.convert(ruleConfig), is(""));
     }
     
     @Test
     void assertConvert() {
-        EncryptRuleConfiguration encryptRuleConfig = getEncryptRuleConfiguration();
-        assertThat(converter.convert(encryptRuleConfig),
+        EncryptRuleConfiguration ruleConfig = getEncryptRuleConfiguration();
+        assertThat(converter.convert(ruleConfig),
                 is("CREATE ENCRYPT RULE foo_tbl ("
                         + System.lineSeparator()
                         + "COLUMNS("
