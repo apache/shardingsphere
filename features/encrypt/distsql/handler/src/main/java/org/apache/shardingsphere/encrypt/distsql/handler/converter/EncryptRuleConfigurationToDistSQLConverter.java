@@ -28,8 +28,8 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Encrypt rule configuration to DistSQL converter.
@@ -38,58 +38,44 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
     
     @Override
     public String convert(final EncryptRuleConfiguration ruleConfig) {
-        if (ruleConfig.getTables().isEmpty()) {
-            return "";
-        }
-        StringBuilder result = new StringBuilder(EncryptConvertDistSQLConstants.CREATE_ENCRYPT_RULE);
-        Iterator<EncryptTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
-        while (iterator.hasNext()) {
-            EncryptTableRuleConfiguration tableRuleConfig = iterator.next();
-            result.append(String.format(EncryptConvertDistSQLConstants.ENCRYPT_RULE, tableRuleConfig.getName(), getEncryptColumns(tableRuleConfig.getColumns(), ruleConfig.getEncryptors())));
-            if (iterator.hasNext()) {
-                result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
-            }
-        }
-        result.append(DistSQLConstants.SEMI);
-        return result.toString();
+        return ruleConfig.getTables().isEmpty() ? "" : EncryptConvertDistSQLConstants.CREATE_ENCRYPT_RULE + convertEncryptTables(ruleConfig) + DistSQLConstants.SEMI;
     }
     
-    private String getEncryptColumns(final Collection<EncryptColumnRuleConfiguration> ruleConfigs, final Map<String, AlgorithmConfiguration> encryptors) {
-        StringBuilder result = new StringBuilder();
-        Iterator<EncryptColumnRuleConfiguration> iterator = ruleConfigs.iterator();
-        while (iterator.hasNext()) {
-            EncryptColumnRuleConfiguration columnRuleConfig = iterator.next();
-            result.append(String.format(EncryptConvertDistSQLConstants.ENCRYPT_COLUMN, columnRuleConfig.getName(), getColumns(columnRuleConfig), getEncryptAlgorithms(columnRuleConfig, encryptors)));
-            if (iterator.hasNext()) {
-                result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
-            }
-        }
-        return result.toString();
+    private String convertEncryptTables(final EncryptRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().stream().map(each -> convertEncryptTable(ruleConfig, each)).collect(Collectors.joining(DistSQLConstants.COMMA + System.lineSeparator()));
     }
     
-    private String getColumns(final EncryptColumnRuleConfiguration ruleConfig) {
+    private String convertEncryptTable(final EncryptRuleConfiguration ruleConfig, final EncryptTableRuleConfiguration tableRuleConfig) {
+        return String.format(EncryptConvertDistSQLConstants.ENCRYPT_TABLE, tableRuleConfig.getName(), convertEncryptColumns(tableRuleConfig.getColumns(), ruleConfig.getEncryptors()));
+    }
+    
+    private String convertEncryptColumns(final Collection<EncryptColumnRuleConfiguration> columnRuleConfigs, final Map<String, AlgorithmConfiguration> encryptors) {
+        return columnRuleConfigs.stream().map(each -> convertEncryptColumn(each, encryptors)).collect(Collectors.joining(DistSQLConstants.COMMA + System.lineSeparator()));
+    }
+    
+    private String convertEncryptColumn(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
+        return String.format(EncryptConvertDistSQLConstants.ENCRYPT_COLUMN, columnRuleConfig.getName(), convertColumns(columnRuleConfig), convertEncryptAlgorithms(columnRuleConfig, encryptors));
+    }
+    
+    private String convertColumns(final EncryptColumnRuleConfiguration columnRuleConfig) {
         StringBuilder result = new StringBuilder();
-        String cipherColumnName = ruleConfig.getCipher().getName();
-        if (!Strings.isNullOrEmpty(cipherColumnName)) {
-            result.append(String.format(EncryptConvertDistSQLConstants.CIPHER, cipherColumnName));
+        String cipherColumnName = columnRuleConfig.getCipher().getName();
+        result.append(String.format(EncryptConvertDistSQLConstants.CIPHER, cipherColumnName));
+        if (columnRuleConfig.getAssistedQuery().isPresent()) {
+            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_COLUMN, columnRuleConfig.getAssistedQuery().get().getName()));
         }
-        if (ruleConfig.getAssistedQuery().isPresent()) {
-            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_COLUMN, ruleConfig.getAssistedQuery().get().getName()));
-        }
-        if (ruleConfig.getLikeQuery().isPresent()) {
-            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.LIKE_QUERY_COLUMN, ruleConfig.getLikeQuery().get().getName()));
+        if (columnRuleConfig.getLikeQuery().isPresent()) {
+            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.LIKE_QUERY_COLUMN, columnRuleConfig.getLikeQuery().get().getName()));
         }
         return result.toString();
     }
     
-    private String getEncryptAlgorithms(final EncryptColumnRuleConfiguration ruleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
+    private String convertEncryptAlgorithms(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
         StringBuilder result = new StringBuilder();
-        String cipherEncryptorName = ruleConfig.getCipher().getEncryptorName();
-        String assistedQueryEncryptorName = ruleConfig.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse("");
-        String likeQueryEncryptorName = ruleConfig.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse("");
-        if (!Strings.isNullOrEmpty(cipherEncryptorName)) {
-            result.append(String.format(EncryptConvertDistSQLConstants.ENCRYPT_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(cipherEncryptorName))));
-        }
+        String cipherEncryptorName = columnRuleConfig.getCipher().getEncryptorName();
+        String assistedQueryEncryptorName = columnRuleConfig.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse("");
+        String likeQueryEncryptorName = columnRuleConfig.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse("");
+        result.append(String.format(EncryptConvertDistSQLConstants.ENCRYPT_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(cipherEncryptorName))));
         if (!Strings.isNullOrEmpty(assistedQueryEncryptorName)) {
             result.append(DistSQLConstants.COMMA).append(' ')
                     .append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(assistedQueryEncryptorName))));
