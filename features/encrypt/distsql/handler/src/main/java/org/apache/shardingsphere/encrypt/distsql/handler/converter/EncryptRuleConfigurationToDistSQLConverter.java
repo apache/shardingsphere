@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.constant.DistSQLConstants;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.AlgorithmDistSQLConverter;
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
@@ -59,31 +58,21 @@ public final class EncryptRuleConfigurationToDistSQLConverter implements RuleCon
     
     private String convertColumns(final EncryptColumnRuleConfiguration columnRuleConfig) {
         StringBuilder result = new StringBuilder();
-        String cipherColumnName = columnRuleConfig.getCipher().getName();
-        result.append(String.format(EncryptConvertDistSQLConstants.CIPHER, cipherColumnName));
-        if (columnRuleConfig.getAssistedQuery().isPresent()) {
-            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_COLUMN, columnRuleConfig.getAssistedQuery().get().getName()));
-        }
-        if (columnRuleConfig.getLikeQuery().isPresent()) {
-            result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.LIKE_QUERY_COLUMN, columnRuleConfig.getLikeQuery().get().getName()));
-        }
+        result.append(String.format(EncryptConvertDistSQLConstants.CIPHER, columnRuleConfig.getCipher().getName()));
+        columnRuleConfig.getAssistedQuery()
+                .ifPresent(optional -> result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_COLUMN, optional.getName())));
+        columnRuleConfig.getLikeQuery()
+                .ifPresent(optional -> result.append(DistSQLConstants.COMMA).append(' ').append(String.format(EncryptConvertDistSQLConstants.LIKE_QUERY_COLUMN, optional.getName())));
         return result.toString();
     }
     
     private String convertEncryptAlgorithms(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
         StringBuilder result = new StringBuilder();
-        String cipherEncryptorName = columnRuleConfig.getCipher().getEncryptorName();
-        String assistedQueryEncryptorName = columnRuleConfig.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse("");
-        String likeQueryEncryptorName = columnRuleConfig.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse("");
-        result.append(String.format(EncryptConvertDistSQLConstants.ENCRYPT_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(cipherEncryptorName))));
-        if (!Strings.isNullOrEmpty(assistedQueryEncryptorName)) {
-            result.append(DistSQLConstants.COMMA).append(' ')
-                    .append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(assistedQueryEncryptorName))));
-        }
-        if (!Strings.isNullOrEmpty(likeQueryEncryptorName)) {
-            result.append(DistSQLConstants.COMMA).append(' ')
-                    .append(String.format(EncryptConvertDistSQLConstants.LIKE_QUERY_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(likeQueryEncryptorName))));
-        }
+        result.append(String.format(EncryptConvertDistSQLConstants.ENCRYPT_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(columnRuleConfig.getCipher().getEncryptorName()))));
+        columnRuleConfig.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).ifPresent(optional -> result.append(DistSQLConstants.COMMA).append(' ')
+                .append(String.format(EncryptConvertDistSQLConstants.ASSISTED_QUERY_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(optional)))));
+        columnRuleConfig.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).ifPresent(optional -> result.append(DistSQLConstants.COMMA).append(' ')
+                .append(String.format(EncryptConvertDistSQLConstants.LIKE_QUERY_ALGORITHM, AlgorithmDistSQLConverter.getAlgorithmType(encryptors.get(optional)))));
         return result.toString();
     }
     
