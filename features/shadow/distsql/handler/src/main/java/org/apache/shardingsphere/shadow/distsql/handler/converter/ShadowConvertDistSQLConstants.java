@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo;
+package org.apache.shardingsphere.shadow.distsql.handler.converter;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Generated key insert column token.
+ * Shadow convert DistSQL constants.
  */
-public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShadowConvertDistSQLConstants {
     
-    private final String column;
+    public static final String CREATE_SHADOW_RULE = "CREATE SHADOW RULE";
     
-    public GeneratedKeyInsertColumnToken(final int startIndex, final String column) {
-        super(startIndex);
-        this.column = column;
-    }
+    public static final String SHADOW_RULE = " %s("
+            + System.lineSeparator()
+            + "SOURCE=%s,"
+            + System.lineSeparator()
+            + "SHADOW=%s,"
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + ")";
     
-    @Override
-    public String toString() {
-        return ", " + column;
-    }
-    
-    @Override
-    public int getStopIndex() {
-        return getStartIndex();
-    }
+    public static final String SHADOW_TABLE = "%s(%s)";
 }

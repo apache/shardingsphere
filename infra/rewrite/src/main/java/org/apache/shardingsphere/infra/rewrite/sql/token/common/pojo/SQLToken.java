@@ -33,4 +33,11 @@ public abstract class SQLToken implements Comparable<SQLToken> {
     public final int compareTo(final SQLToken sqlToken) {
         return startIndex - sqlToken.startIndex;
     }
+    
+    /**
+     * Get stop index.
+     *
+     * @return stop index
+     */
+    public abstract int getStopIndex();
 }

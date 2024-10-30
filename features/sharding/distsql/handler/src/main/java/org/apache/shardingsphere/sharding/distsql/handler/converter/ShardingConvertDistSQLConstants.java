@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.constant;
+package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding DistSQL constants.
+ * Sharding convert DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingDistSQLConstants {
+public final class ShardingConvertDistSQLConstants {
     
     public static final String STANDARD = "standard";
     
@@ -34,15 +34,15 @@ public final class ShardingDistSQLConstants {
     
     public static final String NONE = "";
     
-    public static final String CREATE_SHARDING_TABLE = "CREATE SHARDING TABLE RULE";
+    public static final String CREATE_SHARDING_TABLE_RULE = "CREATE SHARDING TABLE RULE";
     
-    public static final String SHARDING_TABLE = " %s ("
+    public static final String SHARDING_TABLE_RULE = " %s ("
             + System.lineSeparator()
             + "DATANODES('%s')%s"
             + System.lineSeparator()
             + ")";
     
-    public static final String SHARDING_AUTO_TABLE = " %s ("
+    public static final String SHARDING_AUTO_TABLE_RULE = " %s ("
             + System.lineSeparator()
             + "STORAGE_UNITS(%s),"
             + System.lineSeparator()

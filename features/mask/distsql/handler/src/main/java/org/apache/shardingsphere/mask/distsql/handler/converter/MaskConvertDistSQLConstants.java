@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.constant;
+package org.apache.shardingsphere.mask.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Readwrite-splitting DistSQL constants.
+ * Mask convert DistSQL constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingDistSQLConstants {
+public final class MaskConvertDistSQLConstants {
     
-    public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
+    public static final String CREATE_MASK_RULE = "CREATE MASK RULE";
     
-    public static final String READWRITE_SPLITTING_FOR_STATIC = " %s ("
+    public static final String MASK_TABLE = " %s ("
             + System.lineSeparator()
-            + "WRITE_STORAGE_UNIT=%s,"
+            + "COLUMNS("
             + System.lineSeparator()
-            + "READ_STORAGE_UNITS(%s),"
+            + "%s"
             + System.lineSeparator()
-            + "TRANSACTIONAL_READ_QUERY_STRATEGY='%s'%s"
-            + System.lineSeparator()
-            + ")";
+            + "))";
     
-    public static final String READ_RESOURCE = "%s";
+    public static final String MASK_COLUMN = "(NAME=%s, %s)";
 }

@@ -15,30 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo;
+package org.apache.shardingsphere.broadcast.distsql.handler.converter;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Generated key insert column token.
+ * Broadcast convert DistSQL constants.
  */
-public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class BroadcastConvertDistSQLConstants {
     
-    private final String column;
-    
-    public GeneratedKeyInsertColumnToken(final int startIndex, final String column) {
-        super(startIndex);
-        this.column = column;
-    }
-    
-    @Override
-    public String toString() {
-        return ", " + column;
-    }
-    
-    @Override
-    public int getStopIndex() {
-        return getStartIndex();
-    }
+    public static final String SQL_PATTERN = "CREATE BROADCAST TABLE RULE %s;";
 }
