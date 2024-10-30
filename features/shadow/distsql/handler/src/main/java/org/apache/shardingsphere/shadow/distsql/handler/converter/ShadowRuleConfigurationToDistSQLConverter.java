@@ -26,9 +26,8 @@ import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfig
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Shadow rule configuration to DistSQL converter.
@@ -37,51 +36,31 @@ public final class ShadowRuleConfigurationToDistSQLConverter implements RuleConf
     
     @Override
     public String convert(final ShadowRuleConfiguration ruleConfig) {
-        if (ruleConfig.getDataSources().isEmpty()) {
-            return "";
-        }
-        StringBuilder result = new StringBuilder(ShadowConvertDistSQLConstants.CREATE_SHADOW_RULE);
-        Iterator<ShadowDataSourceConfiguration> iterator = ruleConfig.getDataSources().iterator();
-        while (iterator.hasNext()) {
-            ShadowDataSourceConfiguration dataSourceConfig = iterator.next();
-            String shadowRuleName = dataSourceConfig.getName();
-            String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
-            result.append(
-                    String.format(ShadowConvertDistSQLConstants.SHADOW_RULE, shadowRuleName, dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables));
-            if (iterator.hasNext()) {
-                result.append(DistSQLConstants.COMMA);
-            }
-        }
-        result.append(DistSQLConstants.SEMI);
-        return result.toString();
+        return ruleConfig.getDataSources().isEmpty() ? "" : ShadowConvertDistSQLConstants.CREATE_SHADOW_RULE + convertShadowDataSources(ruleConfig) + DistSQLConstants.SEMI;
     }
     
-    private String getShadowTables(final String shadowRuleName, final Map<String, ShadowTableConfiguration> ruleConfig, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
-        StringBuilder result = new StringBuilder();
-        Iterator<Entry<String, ShadowTableConfiguration>> iterator = ruleConfig.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, ShadowTableConfiguration> shadowTableConfig = iterator.next();
-            if (shadowTableConfig.getValue().getDataSourceNames().contains(shadowRuleName)) {
-                String shadowTableTypes = getShadowTableTypes(shadowTableConfig.getValue().getShadowAlgorithmNames(), algorithmConfigs);
-                result.append(String.format(ShadowConvertDistSQLConstants.SHADOW_TABLE, shadowTableConfig.getKey(), shadowTableTypes));
-            }
-            if (iterator.hasNext()) {
-                result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
-            }
-        }
-        return result.toString();
+    private String convertShadowDataSources(final ShadowRuleConfiguration ruleConfig) {
+        return ruleConfig.getDataSources().stream().map(each -> convertShadowDataSource(each, ruleConfig)).collect(Collectors.joining(DistSQLConstants.COMMA));
     }
     
-    private String getShadowTableTypes(final Collection<String> shadowAlgorithmNames, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = shadowAlgorithmNames.iterator();
-        while (iterator.hasNext()) {
-            result.append(AlgorithmDistSQLConverter.getAlgorithmType(algorithmConfigs.get(iterator.next())));
-            if (iterator.hasNext()) {
-                result.append(DistSQLConstants.COMMA).append(' ');
-            }
-        }
-        return result.toString();
+    private String convertShadowDataSource(final ShadowDataSourceConfiguration dataSourceConfig, final ShadowRuleConfiguration ruleConfig) {
+        String shadowTables = convertShadowTables(dataSourceConfig.getName(), ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
+        return String.format(ShadowConvertDistSQLConstants.SHADOW_DATA_SOURCE,
+                dataSourceConfig.getName(), dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), shadowTables);
+    }
+    
+    private String convertShadowTables(final String shadowRuleName, final Map<String, ShadowTableConfiguration> tableConfigs, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
+        return tableConfigs.entrySet().stream().filter(entry -> entry.getValue().getDataSourceNames().contains(shadowRuleName))
+                .map(entry -> convertShadowTable(entry.getKey(), entry.getValue(), algorithmConfigs)).collect(Collectors.joining(DistSQLConstants.COMMA + System.lineSeparator()));
+    }
+    
+    private String convertShadowTable(final String shadowTableName, final ShadowTableConfiguration shadowTableConfig, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
+        String shadowTableTypes = convertShadowTableTypes(shadowTableConfig.getShadowAlgorithmNames(), algorithmConfigs);
+        return String.format(ShadowConvertDistSQLConstants.SHADOW_TABLE, shadowTableName, shadowTableTypes);
+    }
+    
+    private String convertShadowTableTypes(final Collection<String> shadowAlgorithmNames, final Map<String, AlgorithmConfiguration> algorithmConfigs) {
+        return shadowAlgorithmNames.stream().map(each -> AlgorithmDistSQLConverter.getAlgorithmType(algorithmConfigs.get(each))).collect(Collectors.joining(DistSQLConstants.COMMA + ' '));
     }
     
     @Override
