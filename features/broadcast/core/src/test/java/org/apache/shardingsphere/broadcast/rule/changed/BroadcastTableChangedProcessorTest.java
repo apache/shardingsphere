@@ -50,12 +50,16 @@ class BroadcastTableChangedProcessorTest {
     
     @Test
     void assertFindRuleConfiguration() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        BroadcastRule rule = mock(BroadcastRule.class);
         BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
+        assertThat(processor.findRuleConfiguration(mockDatabase(ruleConfig)), is(ruleConfig));
+    }
+    
+    private ShardingSphereDatabase mockDatabase(final BroadcastRuleConfiguration ruleConfig) {
+        BroadcastRule rule = mock(BroadcastRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        assertThat(processor.findRuleConfiguration(database), is(ruleConfig));
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        return result;
     }
     
     @Test
