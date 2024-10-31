@@ -21,48 +21,29 @@ import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Encryptor changed processor.
  */
-public final class EncryptorChangedProcessor implements RuleItemConfigurationChangedProcessor<EncryptRuleConfiguration, AlgorithmConfiguration> {
+public final class EncryptorChangedProcessor extends AlgorithmChangedProcessor<EncryptRuleConfiguration> {
     
-    @Override
-    public AlgorithmConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
+    public EncryptorChangedProcessor() {
+        super(EncryptRule.class);
     }
     
     @Override
-    public EncryptRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(EncryptRule.class)
-                .map(optional -> getEncryptRuleConfiguration(optional.getConfiguration()))
-                .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-    }
-    
-    private EncryptRuleConfiguration getEncryptRuleConfiguration(final EncryptRuleConfiguration config) {
-        return null == config.getTables() ? new EncryptRuleConfiguration(new LinkedList<>(), config.getEncryptors()) : config;
+    protected EncryptRuleConfiguration createEmptyRuleConfiguration() {
+        return new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>());
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
-        currentRuleConfig.getEncryptors().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
-    }
-    
-    @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getEncryptors().remove(((DropNamedRuleItemEvent) event).getItemName());
+    protected Map<String, AlgorithmConfiguration> getAlgorithmConfigurations(final EncryptRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getEncryptors();
     }
     
     @Override
