@@ -72,10 +72,11 @@ class AlgorithmChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
+        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "bar_algo", "", "", "");
         AlgorithmChangedProcessorFixtureRuleConfiguration currentRuleConfig = new AlgorithmChangedProcessorFixtureRuleConfiguration();
         currentRuleConfig.getAlgorithmConfigurations().put("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()));
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
-        processor.changeRuleItemConfiguration(new AlterNamedRuleItemEvent("", "bar_algo", "", "", ""), currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getAlgorithmConfigurations().size(), is(2));
         assertThat(currentRuleConfig.getAlgorithmConfigurations().get("foo_algo").getType(), is("FOO_FIXTURE"));
         assertThat(currentRuleConfig.getAlgorithmConfigurations().get("bar_algo").getType(), is("BAR_FIXTURE"));
@@ -83,9 +84,10 @@ class AlgorithmChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
+        DropNamedRuleItemEvent event = new DropNamedRuleItemEvent("", "foo_algo", "");
         AlgorithmChangedProcessorFixtureRuleConfiguration currentRuleConfig = new AlgorithmChangedProcessorFixtureRuleConfiguration();
         currentRuleConfig.getAlgorithmConfigurations().put("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()));
-        processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("", "foo_algo", ""), currentRuleConfig);
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getAlgorithmConfigurations().isEmpty());
     }
 }
