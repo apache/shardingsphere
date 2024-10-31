@@ -144,8 +144,7 @@ public final class EncryptProjectionTokenGenerator {
         IdentifierValue owner = segment.getColumn().getOwner().map(OwnerSegment::getIdentifier).orElse(null);
         ColumnProjection result = new ColumnProjection(owner, segment.getColumn().getIdentifier(), segment.getAliasName().isPresent() ? segment.getAlias().orElse(null) : null, databaseType,
                 segment.getColumn().getLeftParentheses().orElse(null), segment.getColumn().getRightParentheses().orElse(null));
-        result.setOriginalColumn(segment.getColumn().getColumnBoundInfo().getOriginalColumn());
-        result.setOriginalTable(segment.getColumn().getColumnBoundInfo().getOriginalTable());
+        result.setColumnBoundInfo(segment.getColumn().getColumnBoundInfo());
         return result;
     }
     

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +38,7 @@ class EncryptDQLResultDecoratorTest {
     void assertDecorateQueryResult() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true);
-        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(EncryptRule.class), mock(SelectStatementContext.class));
+        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class));
         MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
         assertTrue(actual.next());
     }
@@ -46,7 +47,7 @@ class EncryptDQLResultDecoratorTest {
     void assertDecorateMergedResult() throws SQLException {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
-        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(EncryptRule.class), mock(SelectStatementContext.class));
+        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class));
         MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
         assertTrue(actual.next());
     }

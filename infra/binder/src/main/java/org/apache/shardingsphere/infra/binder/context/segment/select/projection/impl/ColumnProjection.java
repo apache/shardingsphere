@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Quo
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -39,7 +40,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"originalTable", "originalColumn"})
+@EqualsAndHashCode(exclude = "columnBoundInfo")
 @ToString
 public final class ColumnProjection implements Projection {
     
@@ -55,9 +56,7 @@ public final class ColumnProjection implements Projection {
     
     private final ParenthesesSegment rightParentheses;
     
-    private IdentifierValue originalTable;
-    
-    private IdentifierValue originalColumn;
+    private ColumnSegmentBoundInfo columnBoundInfo;
     
     public ColumnProjection(final String owner, final String name, final String alias, final DatabaseType databaseType) {
         this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
@@ -83,10 +82,10 @@ public final class ColumnProjection implements Projection {
      * @return original table
      */
     public IdentifierValue getOriginalTable() {
-        if (null == originalTable || Strings.isNullOrEmpty(originalTable.getValue())) {
+        if (null == columnBoundInfo || null == columnBoundInfo.getOriginalTable() || Strings.isNullOrEmpty(columnBoundInfo.getOriginalTable().getValue())) {
             return null == owner ? new IdentifierValue("") : owner;
         }
-        return originalTable;
+        return columnBoundInfo.getOriginalTable();
     }
     
     /**
@@ -95,7 +94,8 @@ public final class ColumnProjection implements Projection {
      * @return original column
      */
     public IdentifierValue getOriginalColumn() {
-        return null == originalColumn || Strings.isNullOrEmpty(originalColumn.getValue()) ? name : originalColumn;
+        return null == columnBoundInfo || null == columnBoundInfo.getOriginalColumn() || Strings.isNullOrEmpty(columnBoundInfo.getOriginalColumn().getValue()) ? name
+                : columnBoundInfo.getOriginalColumn();
     }
     
     /**

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.io.InputStream;
@@ -42,7 +43,7 @@ public final class EncryptMergedResult implements MergedResult {
     
     private final ShardingSphereDatabase database;
     
-    private final EncryptRule encryptRule;
+    private final ShardingSphereMetaData metaData;
     
     private final SelectStatementContext selectStatementContext;
     
@@ -61,6 +62,10 @@ public final class EncryptMergedResult implements MergedResult {
         }
         String originalTableName = columnProjection.get().getOriginalTable().getValue();
         String originalColumnName = columnProjection.get().getOriginalColumn().getValue();
+        ShardingSphereDatabase database = metaData.containsDatabase(columnProjection.get().getColumnBoundInfo().getOriginalDatabase().getValue())
+                ? metaData.getDatabase(columnProjection.get().getColumnBoundInfo().getOriginalDatabase().getValue())
+                : this.database;
+        EncryptRule encryptRule = database.getRuleMetaData().getSingleRule(EncryptRule.class);
         if (!encryptRule.findEncryptTable(originalTableName).map(optional -> optional.isEncryptColumn(originalColumnName)).orElse(false)) {
             return mergedResult.getValue(columnIndex, type);
         }
