@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMergerEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -47,7 +47,7 @@ import java.util.Optional;
 @HighFrequencyInvocation
 public final class MergeEngine {
     
-    private final RuleMetaData globalRuleMetaData;
+    private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereDatabase database;
     
@@ -58,8 +58,8 @@ public final class MergeEngine {
     
     private final ConnectionContext connectionContext;
     
-    public MergeEngine(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        this.globalRuleMetaData = globalRuleMetaData;
+    public MergeEngine(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+        this.metaData = metaData;
         this.database = database;
         this.props = props;
         engines = OrderedSPILoader.getServices(ResultProcessEngine.class, database.getRuleMetaData().getRules());
@@ -117,7 +117,7 @@ public final class MergeEngine {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private ResultDecorator getResultDecorator(final SQLStatementContext sqlStatementContext, final Entry<ShardingSphereRule, ResultProcessEngine> entry) {
-        return (ResultDecorator) ((ResultDecoratorEngine) entry.getValue()).newInstance(globalRuleMetaData, database, entry.getKey(), props, sqlStatementContext)
+        return (ResultDecorator) ((ResultDecoratorEngine) entry.getValue()).newInstance(metaData, database, entry.getKey(), props, sqlStatementContext)
                 .orElseGet(TransparentResultDecorator::new);
     }
 }

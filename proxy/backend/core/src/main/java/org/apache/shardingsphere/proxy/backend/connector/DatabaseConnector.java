@@ -314,7 +314,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
+        MergeEngine mergeEngine = new MergeEngine(contextManager.getMetaDataContexts().getMetaData(),
                 database, contextManager.getMetaDataContexts().getMetaData().getProps(), databaseConnectionManager.getConnectionSession().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }

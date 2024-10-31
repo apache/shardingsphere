@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
@@ -45,7 +45,7 @@ public final class ShardingSphereResultSetFactory {
     
     private final ConnectionContext connectionContext;
     
-    private final RuleMetaData globalRuleMetaData;
+    private final ShardingSphereMetaData metaData;
     
     private final ConfigurationProperties props;
     
@@ -65,7 +65,7 @@ public final class ShardingSphereResultSetFactory {
     public ResultSet newInstance(final ShardingSphereDatabase database, final QueryContext queryContext, final List<QueryResult> queryResults,
                                  final Statement statement, final Map<String, Integer> columnLabelAndIndexMap) throws SQLException {
         List<ResultSet> resultSets = getResultSets();
-        MergedResult mergedResult = new MergeEngine(globalRuleMetaData, database, props, connectionContext).merge(queryResults, queryContext.getSqlStatementContext());
+        MergedResult mergedResult = new MergeEngine(metaData, database, props, connectionContext).merge(queryResults, queryContext.getSqlStatementContext());
         return new ShardingSphereResultSet(resultSets, mergedResult, statement, queryContext.getSqlStatementContext(),
                 null == columnLabelAndIndexMap
                         ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), resultSets.get(0).getMetaData())
