@@ -18,21 +18,18 @@
 package org.apache.shardingsphere.readwritesplitting.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
@@ -50,49 +47,36 @@ class ReadwriteSplittingLoadBalancerChangedProcessorTest {
             RuleItemConfigurationChangedProcessor.class, "readwrite_splitting.load_balancers");
     
     @Test
-    void assertSwapRuleItemConfiguration() {
-        AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo", "", "", ""), createYAMLContent());
-        assertThat(actual, deepEqual(new AlgorithmConfiguration("foo_balancer", new Properties())));
+    void assertFindRuleConfigurationWhenAbsent() {
+        assertThat(processor.findRuleConfiguration(mockDatabase()), deepEqual(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>())));
     }
     
-    private String createYAMLContent() {
-        YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration();
-        yamlConfig.setType("foo_balancer");
-        return YamlEngine.marshal(yamlConfig);
-    }
-    
-    @Test
-    void assertFindRuleConfiguration() {
-        ReadwriteSplittingRuleConfiguration ruleConfig = mock(ReadwriteSplittingRuleConfiguration.class);
-        assertThat(processor.findRuleConfiguration(mockDatabase(ruleConfig)), is(ruleConfig));
-    }
-    
-    private ShardingSphereDatabase mockDatabase(final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getConfiguration()).thenReturn(ruleConfig);
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return result;
     }
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(
-                new LinkedList<>(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer"))),
-                new HashMap<>(Collections.singletonMap("foo_balancer", new AlgorithmConfiguration("FOO_BALANCER", new Properties()))));
-        AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_BALANCER", new Properties());
-        processor.changeRuleItemConfiguration(new AlterNamedRuleItemEvent("", "bar_balancer", "", "", ""), currentRuleConfig, toBeChangedItemConfig);
+        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "bar_algo", "", "", "");
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getLoadBalancers().size(), is(2));
-        assertThat(currentRuleConfig.getLoadBalancers().get("foo_balancer").getType(), is("FOO_BALANCER"));
-        assertThat(currentRuleConfig.getLoadBalancers().get("bar_balancer").getType(), is("BAR_BALANCER"));
+        assertThat(currentRuleConfig.getLoadBalancers().get("foo_algo").getType(), is("FOO_FIXTURE"));
+        assertThat(currentRuleConfig.getLoadBalancers().get("bar_algo").getType(), is("BAR_FIXTURE"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(
-                new LinkedList<>(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer"))),
-                new HashMap<>(Collections.singletonMap("foo_balancer", new AlgorithmConfiguration("FOO_BALANCER", new Properties()))));
-        processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("", "foo_balancer", ""), currentRuleConfig);
+        DropNamedRuleItemEvent event = new DropNamedRuleItemEvent("", "foo_algo", "");
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getLoadBalancers().isEmpty());
+    }
+    
+    private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
+        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), new HashMap<>(Collections.singletonMap("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()))));
     }
 }
