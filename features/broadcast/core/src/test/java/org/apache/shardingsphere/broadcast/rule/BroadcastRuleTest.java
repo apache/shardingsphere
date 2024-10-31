@@ -56,12 +56,12 @@ class BroadcastRuleTest {
     }
     
     private ShardingSphereRule mockBuiltRule() {
-        ShardingSphereRule result = mock(ShardingSphereRule.class);
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
         Map<String, Collection<String>> dataSourceMapper = new HashMap<>(2, 1F);
         dataSourceMapper.put("foo_ds", Arrays.asList("foo_ds_0", "foo_ds_1"));
         dataSourceMapper.put("bar_ds", Arrays.asList("bar_ds_0", "bar_ds_1"));
         when(ruleAttribute.getDataSourceMapper()).thenReturn(dataSourceMapper);
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
