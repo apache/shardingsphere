@@ -71,12 +71,8 @@ public final class BroadcastDataNodeRuleAttribute implements DataNodeRuleAttribu
     
     @Override
     public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
-        if (!tableDataNodes.containsKey(logicTable.toLowerCase())) {
-            return Optional.empty();
-        }
-        if (tableDataNodes.get(logicTable.toLowerCase()).stream().noneMatch(each -> each.getDataSourceName().equalsIgnoreCase(catalog))) {
-            return Optional.empty();
-        }
-        return Optional.of(logicTable);
+        return tableDataNodes.getOrDefault(logicTable.toLowerCase(), Collections.emptyList()).stream().anyMatch(each -> each.getDataSourceName().equalsIgnoreCase(catalog))
+                ? Optional.of(logicTable)
+                : Optional.empty();
     }
 }
