@@ -141,12 +141,12 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
-            Object[] data = generateReturnData(selectStatementContext);
             boolean hasGroupBy = !selectStatementContext.getGroupByContext().getItems().isEmpty();
             boolean hasAggregations = !selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty();
             if (hasGroupBy || !hasAggregations) {
                 return Collections.emptyList();
             }
+            Object[] data = generateReturnData(selectStatementContext);
             return Collections.singletonList(new MemoryQueryResultRow(data));
         }
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
