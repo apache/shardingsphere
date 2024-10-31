@@ -46,12 +46,7 @@ public final class MaskAlgorithmChangedProcessor implements RuleItemConfiguratio
     
     @Override
     public MaskRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(MaskRule.class)
-                .map(optional -> getConfiguration(optional.getConfiguration())).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-    }
-    
-    private MaskRuleConfiguration getConfiguration(final MaskRuleConfiguration ruleConfig) {
-        return null == ruleConfig.getMaskAlgorithms() ? new MaskRuleConfiguration(ruleConfig.getTables(), new LinkedHashMap<>()) : ruleConfig;
+        return database.getRuleMetaData().findSingleRule(MaskRule.class).map(MaskRule::getConfiguration).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     
     @Override

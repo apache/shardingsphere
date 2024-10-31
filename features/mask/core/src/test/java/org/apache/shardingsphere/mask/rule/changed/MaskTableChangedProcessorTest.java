@@ -18,59 +18,65 @@
 package org.apache.shardingsphere.mask.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MaskTableChangedProcessorTest {
     
-    private final MaskTableChangedProcessor processor = (MaskTableChangedProcessor) TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, "mask.tables");
+    @SuppressWarnings("unchecked")
+    private final RuleItemConfigurationChangedProcessor<MaskRuleConfiguration, MaskTableRuleConfiguration> processor = TypedSPILoader.getService(
+            RuleItemConfigurationChangedProcessor.class, "mask.tables");
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        assertThat(processor.swapRuleItemConfiguration(mock(AlterRuleItemEvent.class), "name: test_table").getName(), is("test_table"));
+        MaskTableRuleConfiguration actual = processor.swapRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo_tbl", "", "", ""), createYAMLContent());
+        assertThat(actual, deepEqual(new MaskTableRuleConfiguration("foo_tbl", Collections.singletonList(new MaskColumnRuleConfiguration("foo_col", "foo_algo")))));
+    }
+    
+    private String createYAMLContent() {
+        YamlMaskTableRuleConfiguration yamlConfig = new YamlMaskTableRuleConfiguration();
+        yamlConfig.setName("foo_tbl");
+        YamlMaskColumnRuleConfiguration yamlColumnRuleConfig = new YamlMaskColumnRuleConfiguration();
+        yamlColumnRuleConfig.setLogicColumn("foo_col");
+        yamlColumnRuleConfig.setMaskAlgorithm("foo_algo");
+        yamlConfig.setColumns(Collections.singletonMap("foo_col", yamlColumnRuleConfig));
+        return YamlEngine.marshal(yamlConfig);
     }
     
     @Test
-    void assertFindRuleConfigurationWhenRuleDoesNotExist() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.empty());
-        assertTrue(processor.findRuleConfiguration(database).getMaskAlgorithms().isEmpty());
+    void assertFindRuleConfiguration() {
+        MaskRuleConfiguration ruleConfig = mock(MaskRuleConfiguration.class);
+        assertThat(processor.findRuleConfiguration(mockDatabase(ruleConfig)), is(ruleConfig));
     }
     
-    @Test
-    void assertFindRuleConfigurationWhenTableDoesNotExist() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(new MaskRule(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()))));
-        assertTrue(processor.findRuleConfiguration(database).getTables().isEmpty());
-    }
-    
-    @Test
-    void assertFindRuleConfigurationWhenRuleExists() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MaskRule maskRule = mock(MaskRule.class, RETURNS_DEEP_STUBS);
-        when(maskRule.getConfiguration().getTables()).thenReturn(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())));
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(maskRule));
-        assertFalse(processor.findRuleConfiguration(database).getTables().isEmpty());
+    private ShardingSphereDatabase mockDatabase(final MaskRuleConfiguration ruleConfig) {
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        return result;
     }
     
     @Test
@@ -78,17 +84,16 @@ class MaskTableChangedProcessorTest {
         MaskRuleConfiguration currentRuleConfig = new MaskRuleConfiguration(
                 new LinkedList<>(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()))), Collections.emptyMap());
         MaskTableRuleConfiguration toBeChangedItemConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(mock(MaskColumnRuleConfiguration.class)));
-        processor.changeRuleItemConfiguration(
-                new AlterNamedRuleItemEvent("foo_db", "foo_tbl", "key", "0", ""), currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo_tbl", "", "", ""), currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
-        assertThat(currentRuleConfig.getTables().iterator().next().getColumns().size(), is(1));
+        assertThat(new ArrayList<>(currentRuleConfig.getTables()).get(0).getColumns().size(), is(1));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
         MaskRuleConfiguration currentRuleConfig = new MaskRuleConfiguration(
                 new LinkedList<>(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()))), Collections.emptyMap());
-        processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("foo_db", "foo_tbl", ""), currentRuleConfig);
+        processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("", "foo_tbl", ""), currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
 }
