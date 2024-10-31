@@ -77,7 +77,7 @@
                scenario-comments="Test MIN DISTINCT returns NULL when no data matches">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-  
+
     <test-case sql="SELECT MAX(DISTINCT order_id) AS max_id FROM t_order WHERE 1 = 2" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
                scenario-comments="Test MAX DISTINCT returns NULL when no data matches">
         <assertion expected-data-source-name="read_dataset" />
