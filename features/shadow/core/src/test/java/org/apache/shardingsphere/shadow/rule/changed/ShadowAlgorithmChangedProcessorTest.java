@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rule.changed;
+package org.apache.shardingsphere.shadow.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -41,11 +41,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingAlgorithmChangedProcessorTest {
+class ShadowAlgorithmChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
-    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "sharding.sharding_algorithms");
+    private final RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
+            RuleItemConfigurationChangedProcessor.class, "shadow.shadow_algorithms");
     
     @Test
     void assertSwapRuleItemConfiguration() {
@@ -61,12 +61,12 @@ class ShardingAlgorithmChangedProcessorTest {
     
     @Test
     void assertFindRuleConfiguration() {
-        ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
+        ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
         assertThat(processor.findRuleConfiguration(mockDatabase(ruleConfig)), is(ruleConfig));
     }
     
-    private ShardingSphereDatabase mockDatabase(final ShardingRuleConfiguration ruleConfig) {
-        ShardingRule rule = mock(ShardingRule.class);
+    private ShardingSphereDatabase mockDatabase(final ShadowRuleConfiguration ruleConfig) {
+        ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
@@ -75,20 +75,20 @@ class ShardingAlgorithmChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.setShardingAlgorithms(new HashMap<>(Collections.singletonMap("foo_algo", mock(AlgorithmConfiguration.class))));
+        ShadowRuleConfiguration currentRuleConfig = new ShadowRuleConfiguration();
+        currentRuleConfig.setShadowAlgorithms(new HashMap<>(Collections.singletonMap("foo_algo", mock(AlgorithmConfiguration.class))));
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
         processor.changeRuleItemConfiguration(
                 new AlterNamedRuleItemEvent("foo_db", "foo_algo", "", "", ""), currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(1));
-        assertThat(currentRuleConfig.getShardingAlgorithms().get("foo_algo").getType(), is("FIXTURE"));
+        assertThat(currentRuleConfig.getShadowAlgorithms().size(), is(1));
+        assertThat(currentRuleConfig.getShadowAlgorithms().get("foo_algo").getType(), is("FIXTURE"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.setShardingAlgorithms(new HashMap<>(Collections.singletonMap("foo_algo", mock(AlgorithmConfiguration.class))));
+        ShadowRuleConfiguration currentRuleConfig = new ShadowRuleConfiguration();
+        currentRuleConfig.setShadowAlgorithms(new HashMap<>(Collections.singletonMap("foo_algo", mock(AlgorithmConfiguration.class))));
         processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("", "foo_algo", ""), currentRuleConfig);
-        assertTrue(currentRuleConfig.getShardingAlgorithms().isEmpty());
+        assertTrue(currentRuleConfig.getShadowAlgorithms().isEmpty());
     }
 }
