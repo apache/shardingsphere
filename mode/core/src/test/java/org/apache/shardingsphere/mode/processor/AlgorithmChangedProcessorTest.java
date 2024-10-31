@@ -48,7 +48,8 @@ class AlgorithmChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo", "", "", ""), createYAMLContent());
+        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "foo", "", "", "");
+        AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
         assertThat(actual, deepEqual(new AlgorithmConfiguration("foo_algo", new Properties())));
     }
     
