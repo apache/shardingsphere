@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -140,10 +141,18 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
+        Object[] data = generateReturnData(selectStatementContext);
+        
         if (dataMap.isEmpty()) {
-            Object[] data = generateReturnData(selectStatementContext);
-            return selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty() ? Collections.emptyList() : Collections.singletonList(new MemoryQueryResultRow(data));
+            boolean hasGroupBy = !selectStatementContext.getGroupByContext().getItems().isEmpty();
+            boolean hasAggregations = !selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty();
+            
+            if (hasGroupBy || !hasAggregations) {
+                return Collections.emptyList();
+            }
+            return Collections.singletonList(new MemoryQueryResultRow(data));
         }
+        
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
         return result;
