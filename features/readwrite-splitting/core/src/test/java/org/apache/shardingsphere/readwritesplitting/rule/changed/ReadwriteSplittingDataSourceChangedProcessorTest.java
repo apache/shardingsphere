@@ -95,7 +95,7 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
         processor.changeRuleItemConfiguration(mock(AlterNamedRuleItemEvent.class), currentRuleConfig, toBeChangedItemConfig);
         assertThat(new ArrayList<>(currentRuleConfig.getDataSourceGroups()).get(0).getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.FIXED));
     }
-
+    
     @Test
     void assertDropRuleItemConfiguration() {
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(
