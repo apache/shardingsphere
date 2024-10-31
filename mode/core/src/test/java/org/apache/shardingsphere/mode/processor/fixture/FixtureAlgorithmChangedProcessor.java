@@ -15,39 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.rule.changed;
+package org.apache.shardingsphere.mode.processor.fixture;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
-import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
-/**
- * Mask algorithm changed processor.
- */
-public final class MaskAlgorithmChangedProcessor extends AlgorithmChangedProcessor<MaskRuleConfiguration> {
+public final class FixtureAlgorithmChangedProcessor extends AlgorithmChangedProcessor<AlgorithmChangedProcessorFixtureRuleConfiguration> {
     
-    public MaskAlgorithmChangedProcessor() {
-        super(MaskRule.class);
+    public FixtureAlgorithmChangedProcessor() {
+        super(AlgorithmChangedProcessorFixtureRule.class);
     }
     
     @Override
-    protected MaskRuleConfiguration createEmptyRuleConfiguration() {
-        return new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>());
+    protected AlgorithmChangedProcessorFixtureRuleConfiguration createEmptyRuleConfiguration() {
+        return new AlgorithmChangedProcessorFixtureRuleConfiguration();
     }
     
     @Override
-    protected Map<String, AlgorithmConfiguration> getAlgorithmConfigurations(final MaskRuleConfiguration currentRuleConfig) {
-        return currentRuleConfig.getMaskAlgorithms();
+    protected Map<String, AlgorithmConfiguration> getAlgorithmConfigurations(final AlgorithmChangedProcessorFixtureRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getAlgorithmConfigurations();
     }
     
     @Override
-    public String getType() {
-        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.MASK_ALGORITHMS;
+    public Object getType() {
+        return "FIXTURE";
     }
 }

@@ -18,20 +18,16 @@
 package org.apache.shardingsphere.sharding.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Properties;
 
 import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
@@ -48,47 +44,38 @@ class KeyGeneratorChangedProcessorTest {
             RuleItemConfigurationChangedProcessor.class, "sharding.key_generators");
     
     @Test
-    void assertSwapRuleItemConfiguration() {
-        AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo_tbl", "", "", ""), createYAMLContent());
-        assertThat(actual, deepEqual(new AlgorithmConfiguration("foo_algo", new Properties())));
+    void assertFindRuleConfigurationWhenAbsent() {
+        assertThat(processor.findRuleConfiguration(mockDatabase()), deepEqual(new ShardingRuleConfiguration()));
     }
     
-    private String createYAMLContent() {
-        YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration();
-        yamlConfig.setType("foo_algo");
-        return YamlEngine.marshal(yamlConfig);
-    }
-    
-    @Test
-    void assertFindRuleConfiguration() {
-        ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
-        assertThat(processor.findRuleConfiguration(mockDatabase(ruleConfig)), is(ruleConfig));
-    }
-    
-    private ShardingSphereDatabase mockDatabase(final ShardingRuleConfiguration ruleConfig) {
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(ruleConfig);
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return result;
     }
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.setKeyGenerators(new HashMap<>(Collections.singletonMap("foo_algo", mock(AlgorithmConfiguration.class))));
-        AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
-        processor.changeRuleItemConfiguration(
-                new AlterNamedRuleItemEvent("foo_db", "foo_algo", "", "", ""), currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getKeyGenerators().size(), is(1));
-        assertThat(currentRuleConfig.getKeyGenerators().get("foo_algo").getType(), is("FIXTURE"));
+        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "bar_algo", "", "", "");
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        assertThat(currentRuleConfig.getKeyGenerators().size(), is(2));
+        assertThat(currentRuleConfig.getKeyGenerators().get("foo_algo").getType(), is("FOO_FIXTURE"));
+        assertThat(currentRuleConfig.getKeyGenerators().get("bar_algo").getType(), is("BAR_FIXTURE"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.setKeyGenerators(new HashMap<>(Collections.singletonMap("foo_algo", mock(AlgorithmConfiguration.class))));
-        processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("", "foo_algo", ""), currentRuleConfig);
+        DropNamedRuleItemEvent event = new DropNamedRuleItemEvent("", "foo_algo", "");
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getKeyGenerators().isEmpty());
+    }
+    
+    private ShardingRuleConfiguration createCurrentRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getKeyGenerators().put("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()));
+        return result;
     }
 }

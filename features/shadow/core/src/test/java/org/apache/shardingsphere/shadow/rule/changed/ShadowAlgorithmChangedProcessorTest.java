@@ -18,20 +18,16 @@
 package org.apache.shardingsphere.shadow.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Properties;
 
 import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
@@ -48,47 +44,38 @@ class ShadowAlgorithmChangedProcessorTest {
             RuleItemConfigurationChangedProcessor.class, "shadow.shadow_algorithms");
     
     @Test
-    void assertSwapRuleItemConfiguration() {
-        AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo_tbl", "", "", ""), createYAMLContent());
-        assertThat(actual, deepEqual(new AlgorithmConfiguration("foo_algo", new Properties())));
+    void assertFindRuleConfigurationWhenAbsent() {
+        assertThat(processor.findRuleConfiguration(mockDatabase()), deepEqual(new ShadowRuleConfiguration()));
     }
     
-    private String createYAMLContent() {
-        YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration();
-        yamlConfig.setType("foo_algo");
-        return YamlEngine.marshal(yamlConfig);
-    }
-    
-    @Test
-    void assertFindRuleConfiguration() {
-        ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
-        assertThat(processor.findRuleConfiguration(mockDatabase(ruleConfig)), is(ruleConfig));
-    }
-    
-    private ShardingSphereDatabase mockDatabase(final ShadowRuleConfiguration ruleConfig) {
-        ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(ruleConfig);
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return result;
     }
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        ShadowRuleConfiguration currentRuleConfig = new ShadowRuleConfiguration();
-        currentRuleConfig.setShadowAlgorithms(new HashMap<>(Collections.singletonMap("foo_algo", mock(AlgorithmConfiguration.class))));
-        AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("FIXTURE", new Properties());
-        processor.changeRuleItemConfiguration(
-                new AlterNamedRuleItemEvent("foo_db", "foo_algo", "", "", ""), currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getShadowAlgorithms().size(), is(1));
-        assertThat(currentRuleConfig.getShadowAlgorithms().get("foo_algo").getType(), is("FIXTURE"));
+        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "bar_algo", "", "", "");
+        ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        assertThat(currentRuleConfig.getShadowAlgorithms().size(), is(2));
+        assertThat(currentRuleConfig.getShadowAlgorithms().get("foo_algo").getType(), is("FOO_FIXTURE"));
+        assertThat(currentRuleConfig.getShadowAlgorithms().get("bar_algo").getType(), is("BAR_FIXTURE"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        ShadowRuleConfiguration currentRuleConfig = new ShadowRuleConfiguration();
-        currentRuleConfig.setShadowAlgorithms(new HashMap<>(Collections.singletonMap("foo_algo", mock(AlgorithmConfiguration.class))));
-        processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("", "foo_algo", ""), currentRuleConfig);
+        DropNamedRuleItemEvent event = new DropNamedRuleItemEvent("", "foo_algo", "");
+        ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getShadowAlgorithms().isEmpty());
+    }
+    
+    private ShadowRuleConfiguration createCurrentRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.getShadowAlgorithms().put("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()));
+        return result;
     }
 }

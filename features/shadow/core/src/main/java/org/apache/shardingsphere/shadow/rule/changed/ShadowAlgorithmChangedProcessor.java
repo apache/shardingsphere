@@ -18,42 +18,30 @@
 package org.apache.shardingsphere.shadow.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
+import java.util.Map;
+
 /**
  * Shadow algorithm changed processor.
  */
-public final class ShadowAlgorithmChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, AlgorithmConfiguration> {
+public final class ShadowAlgorithmChangedProcessor extends AlgorithmChangedProcessor<ShadowRuleConfiguration> {
     
-    @Override
-    public AlgorithmConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
+    public ShadowAlgorithmChangedProcessor() {
+        super(ShadowRule.class);
     }
     
     @Override
-    public ShadowRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(ShadowRule.class).map(ShadowRule::getConfiguration).orElseGet(ShadowRuleConfiguration::new);
+    protected ShadowRuleConfiguration createEmptyRuleConfiguration() {
+        return new ShadowRuleConfiguration();
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
-        currentRuleConfig.getShadowAlgorithms().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
-    }
-    
-    @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getShadowAlgorithms().remove(((DropNamedRuleItemEvent) event).getItemName());
+    protected Map<String, AlgorithmConfiguration> getAlgorithmConfigurations(final ShadowRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getShadowAlgorithms();
     }
     
     @Override
