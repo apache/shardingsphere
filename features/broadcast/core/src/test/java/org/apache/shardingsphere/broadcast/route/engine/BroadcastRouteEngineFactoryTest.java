@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
@@ -139,22 +140,22 @@ class BroadcastRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceWithDALStatementAndNotTableAvailable() {
-        when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(DALStatement.class));
+    void assertNewInstanceWithoutTableAvailableStatement() {
+        when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SQLStatement.class));
         assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastIgnoreRouteEngine.class));
     }
     
     @Test
-    void assertNewInstanceWithDALStatementAndEmptyTables() {
+    void assertNewInstanceWithEmptyTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(new TablesContext(Collections.emptyList(), databaseType, null));
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastIgnoreRouteEngine.class));
     }
     
     @Test
-    void assertNewInstanceWithDALStatementAndTables() {
+    void assertNewInstanceWithDALStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
         TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))), databaseType, null);
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
@@ -164,16 +165,17 @@ class BroadcastRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceWithDCLStatementAndEmptyTables() {
+    void assertNewInstanceWithDCLStatementWithoutBroadcastTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
-        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(new TablesContext(Collections.emptyList(), databaseType, null));
+        TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")))), databaseType, null);
+        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DCLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastIgnoreRouteEngine.class));
     }
     
     @Test
-    void assertNewInstanceWithDCLStatementAndTables() {
+    void assertNewInstanceWithDCLStatementWithBroadcastTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
         TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))), databaseType, null);
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
@@ -185,7 +187,7 @@ class BroadcastRouteEngineFactoryTest {
     @Test
     void assertNewInstanceWithDMLStatementAndIsNotAllBroadcastTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
-        TablesContext tablesContext = new TablesContext(Collections.emptyList(), databaseType, null);
+        TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")))), databaseType, null);
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
@@ -193,7 +195,7 @@ class BroadcastRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceWithDMLSelectStatementAndIsAllBroadcastTables() {
+    void assertNewInstanceWithSelectStatementAndIsAllBroadcastTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
         TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))), databaseType, null);
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
@@ -203,7 +205,7 @@ class BroadcastRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceWithDMLUpdateStatementAndIsAllBroadcastTables() {
+    void assertNewInstanceWithUpdateStatementAndIsAllBroadcastTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
         TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))), databaseType, null);
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
