@@ -20,6 +20,7 @@ package org.apache.shardingsphere.broadcast.route.engine.type.broadcast;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.broadcast.route.engine.type.BroadcastRouteEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -30,6 +31,7 @@ import java.util.Collections;
 /**
  * Broadcast routing engine for database instance.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class BroadcastInstanceBroadcastRoutingEngine implements BroadcastRouteEngine {
     
