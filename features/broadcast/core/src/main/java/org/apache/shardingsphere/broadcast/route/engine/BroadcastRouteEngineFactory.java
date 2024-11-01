@@ -25,6 +25,7 @@ import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.Broadcast
 import org.apache.shardingsphere.broadcast.route.engine.type.ignore.BroadcastIgnoreRoutingEngine;
 import org.apache.shardingsphere.broadcast.route.engine.type.unicast.BroadcastUnicastRoutingEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
@@ -53,6 +54,7 @@ import java.util.stream.Collectors;
 /**
  * Broadcast routing engine factory.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BroadcastRouteEngineFactory {
     
