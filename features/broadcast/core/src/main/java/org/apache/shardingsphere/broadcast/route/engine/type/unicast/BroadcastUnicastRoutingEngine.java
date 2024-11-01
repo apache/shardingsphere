@@ -61,7 +61,11 @@ public final class BroadcastUnicastRoutingEngine implements BroadcastRouteEngine
     }
     
     private String getDataSourceName(final Collection<String> dataSourceNames) {
-        return sqlStatementContext instanceof CursorAvailable || isViewStatementContext(sqlStatementContext) ? dataSourceNames.iterator().next() : getRandomDataSourceName(dataSourceNames);
+        return isRouteToFirstDataSource() ? dataSourceNames.iterator().next() : getRandomDataSourceName(dataSourceNames);
+    }
+    
+    private boolean isRouteToFirstDataSource() {
+        return sqlStatementContext instanceof CursorAvailable || isViewStatementContext(sqlStatementContext);
     }
     
     private boolean isViewStatementContext(final SQLStatementContext sqlStatementContext) {
