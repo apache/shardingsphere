@@ -56,7 +56,8 @@ class ShadowAlgorithmChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "bar_algo", "", "", "");
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("bar_algo");
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
@@ -67,7 +68,8 @@ class ShadowAlgorithmChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = new DropNamedRuleItemEvent("", "foo_algo", "");
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_algo");
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getShadowAlgorithms().isEmpty());
