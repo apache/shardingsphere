@@ -25,9 +25,9 @@ import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleIt
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -40,23 +40,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingTableChangedProcessorTest {
+class ShardingAutoTableChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
-    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingTableRuleConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "sharding.tables");
+    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingAutoTableRuleConfiguration> processor = TypedSPILoader.getService(
+            RuleItemConfigurationChangedProcessor.class, "sharding.auto_tables");
     
     @Test
     void assertSwapRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        ShardingTableRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
-        assertThat(actual, deepEqual(new ShardingTableRuleConfiguration("foo_tbl", "foo_ds.foo_tbl")));
+        ShardingAutoTableRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        assertThat(actual, deepEqual(new ShardingAutoTableRuleConfiguration("foo_tbl", "foo_ds")));
     }
     
     private String createYAMLContent() {
-        YamlTableRuleConfiguration yamlConfig = new YamlTableRuleConfiguration();
+        YamlShardingAutoTableRuleConfiguration yamlConfig = new YamlShardingAutoTableRuleConfiguration();
         yamlConfig.setLogicTable("foo_tbl");
-        yamlConfig.setActualDataNodes("foo_ds.foo_tbl");
+        yamlConfig.setActualDataSources("foo_ds");
         return YamlEngine.marshal(yamlConfig);
     }
     
@@ -79,10 +79,10 @@ class ShardingTableChangedProcessorTest {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
         when(event.getItemName()).thenReturn("foo_tbl");
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        ShardingTableRuleConfiguration toBeChangedItemConfig = new ShardingTableRuleConfiguration("foo_tbl", "bar_ds.bar_tbl");
+        ShardingAutoTableRuleConfiguration toBeChangedItemConfig = new ShardingAutoTableRuleConfiguration("foo_tbl", "bar_ds");
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getTables().size(), is(1));
-        assertThat(new ArrayList<>(currentRuleConfig.getTables()).get(0).getActualDataNodes(), is("bar_ds.bar_tbl"));
+        assertThat(currentRuleConfig.getAutoTables().size(), is(1));
+        assertThat(new ArrayList<>(currentRuleConfig.getAutoTables()).get(0).getActualDataSources(), is("bar_ds"));
     }
     
     @Test
@@ -91,12 +91,12 @@ class ShardingTableChangedProcessorTest {
         when(event.getItemName()).thenReturn("foo_tbl");
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
-        assertTrue(currentRuleConfig.getTables().isEmpty());
+        assertTrue(currentRuleConfig.getAutoTables().isEmpty());
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "foo_ds.foo_tbl"));
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("foo_tbl", "foo_ds"));
         return result;
     }
 }
