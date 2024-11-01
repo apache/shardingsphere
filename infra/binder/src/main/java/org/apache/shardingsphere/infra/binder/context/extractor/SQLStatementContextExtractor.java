@@ -40,7 +40,7 @@ public final class SQLStatementContextExtractor {
     
     /**
      * Get table names.
-     * 
+     *
      * @param database database
      * @param sqlStatementContext SQL statement context
      * @return table names
