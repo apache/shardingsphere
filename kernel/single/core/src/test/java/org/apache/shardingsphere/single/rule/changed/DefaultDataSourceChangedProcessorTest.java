@@ -20,7 +20,7 @@ package org.apache.shardingsphere.single.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -44,7 +44,8 @@ class DefaultDataSourceChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        String actual = processor.swapRuleItemConfiguration(mock(AlterRuleItemEvent.class), "foo_ds");
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        String actual = processor.swapRuleItemConfiguration(event, "foo_ds");
         assertThat(actual, is("foo_ds"));
     }
     
@@ -64,16 +65,18 @@ class DefaultDataSourceChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(Collections.emptyList(), "foo_ds");
         String toBeChangedItemConfig = "bar_ds";
-        processor.changeRuleItemConfiguration(mock(AlterRuleItemEvent.class), currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getDefaultDataSource(), is(Optional.of("bar_ds")));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
+        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(Collections.emptyList(), "foo_ds");
-        processor.dropRuleItemConfiguration(mock(DropRuleItemEvent.class), currentRuleConfig);
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertFalse(currentRuleConfig.getDefaultDataSource().isPresent());
     }
 }

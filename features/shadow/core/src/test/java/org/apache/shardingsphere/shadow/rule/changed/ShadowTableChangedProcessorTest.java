@@ -20,32 +20,43 @@ package org.apache.shardingsphere.shadow.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DefaultShadowAlgorithmNameChangedProcessorTest {
+class ShadowTableChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
-    private final RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, String> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "shadow.default_shadow_algorithm_name");
+    private final RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, ShadowTableConfiguration> processor = TypedSPILoader.getService(
+            RuleItemConfigurationChangedProcessor.class, "shadow.tables");
     
     @Test
     void assertSwapRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        String actual = processor.swapRuleItemConfiguration(event, "foo_algo");
-        assertThat(actual, is("foo_algo"));
+        ShadowTableConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        assertThat(actual, deepEqual(new ShadowTableConfiguration(Collections.singletonList("foo_ds"), Collections.singletonList("foo_algo"))));
+    }
+    
+    private String createYAMLContent() {
+        YamlShadowTableConfiguration yamlConfig = new YamlShadowTableConfiguration();
+        yamlConfig.getDataSourceNames().add("foo_ds");
+        yamlConfig.getShadowAlgorithmNames().add("foo_algo");
+        return YamlEngine.marshal(yamlConfig);
     }
     
     @Test
@@ -65,22 +76,27 @@ class DefaultShadowAlgorithmNameChangedProcessorTest {
     @Test
     void assertChangeRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_tbl");
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        String toBeChangedItemConfig = "bar_algo";
+        ShadowTableConfiguration toBeChangedItemConfig = new ShadowTableConfiguration(Collections.singletonList("bar_ds"), Collections.singletonList("bar_algo"));
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getDefaultShadowAlgorithmName(), is("bar_algo"));
+        assertThat(currentRuleConfig.getTables().size(), is(1));
+        assertThat(currentRuleConfig.getTables().get("foo_tbl").getDataSourceNames(), is(Collections.singletonList("bar_ds")));
+        assertThat(currentRuleConfig.getTables().get("foo_tbl").getShadowAlgorithmNames(), is(Collections.singletonList("bar_algo")));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_tbl");
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        currentRuleConfig.setDefaultShadowAlgorithmName("foo_algo");
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
-        assertNull(currentRuleConfig.getDefaultShadowAlgorithmName());
+        assertTrue(currentRuleConfig.getTables().isEmpty());
     }
     
     private ShadowRuleConfiguration createCurrentRuleConfiguration() {
-        return new ShadowRuleConfiguration();
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.getTables().put("foo_tbl", new ShadowTableConfiguration(Collections.singletonList("foo_ds"), Collections.singletonList("foo_algo")));
+        return result;
     }
 }

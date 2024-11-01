@@ -20,32 +20,44 @@ package org.apache.shardingsphere.sharding.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DefaultShardingColumnChangedProcessorTest {
+class ShardingTableChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
-    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, String> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "sharding.default_sharding_column");
+    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingTableRuleConfiguration> processor = TypedSPILoader.getService(
+            RuleItemConfigurationChangedProcessor.class, "sharding.tables");
     
     @Test
     void assertSwapRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        String actual = processor.swapRuleItemConfiguration(event, "foo_col");
-        assertThat(actual, is("foo_col"));
+        ShardingTableRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        assertThat(actual, deepEqual(new ShardingTableRuleConfiguration("foo_tbl", "foo_ds.foo_tbl")));
+    }
+    
+    private String createYAMLContent() {
+        YamlTableRuleConfiguration yamlConfig = new YamlTableRuleConfiguration();
+        yamlConfig.setLogicTable("foo_tbl");
+        yamlConfig.setActualDataNodes("foo_ds.foo_tbl");
+        return YamlEngine.marshal(yamlConfig);
     }
     
     @Test
@@ -65,22 +77,26 @@ class DefaultShardingColumnChangedProcessorTest {
     @Test
     void assertChangeRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_tbl");
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        String toBeChangedItemConfig = "bar_col";
+        ShardingTableRuleConfiguration toBeChangedItemConfig = new ShardingTableRuleConfiguration("foo_tbl", "bar_ds.bar_tbl");
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getDefaultShardingColumn(), is("bar_col"));
+        assertThat(currentRuleConfig.getTables().size(), is(1));
+        assertThat(new ArrayList<>(currentRuleConfig.getTables()).get(0).getActualDataNodes(), is("bar_ds.bar_tbl"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_tbl");
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        currentRuleConfig.setDefaultShardingColumn("foo_col");
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
-        assertNull(currentRuleConfig.getDefaultShardingColumn());
+        assertTrue(currentRuleConfig.getTables().isEmpty());
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
-        return new ShardingRuleConfiguration();
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "foo_ds.foo_tbl"));
+        return result;
     }
 }

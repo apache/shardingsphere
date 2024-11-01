@@ -20,32 +20,50 @@ package org.apache.shardingsphere.sharding.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
+import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheOptionsConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DefaultShardingColumnChangedProcessorTest {
+class ShardingCacheChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
-    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, String> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "sharding.default_sharding_column");
+    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingCacheConfiguration> processor = TypedSPILoader.getService(
+            RuleItemConfigurationChangedProcessor.class, "sharding.sharding_cache");
     
     @Test
     void assertSwapRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        String actual = processor.swapRuleItemConfiguration(event, "foo_col");
-        assertThat(actual, is("foo_col"));
+        ShardingCacheConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        assertThat(actual, deepEqual(new ShardingCacheConfiguration(1, new ShardingCacheOptionsConfiguration(true, 128, 1024))));
+    }
+    
+    private String createYAMLContent() {
+        YamlShardingCacheConfiguration yamlConfig = new YamlShardingCacheConfiguration();
+        yamlConfig.setAllowedMaxSqlLength(1);
+        YamlShardingCacheOptionsConfiguration yamlCacheOptionsConfig = new YamlShardingCacheOptionsConfiguration();
+        yamlCacheOptionsConfig.setSoftValues(true);
+        yamlCacheOptionsConfig.setInitialCapacity(128);
+        yamlCacheOptionsConfig.setMaximumSize(1024);
+        yamlConfig.setRouteCache(yamlCacheOptionsConfig);
+        return YamlEngine.marshal(yamlConfig);
     }
     
     @Test
@@ -66,21 +84,25 @@ class DefaultShardingColumnChangedProcessorTest {
     void assertChangeRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        String toBeChangedItemConfig = "bar_col";
+        ShardingCacheConfiguration toBeChangedItemConfig = new ShardingCacheConfiguration(2, new ShardingCacheOptionsConfiguration(false, 1280, 10240));
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getDefaultShardingColumn(), is("bar_col"));
+        assertThat(currentRuleConfig.getShardingCache().getAllowedMaxSqlLength(), is(2));
+        assertFalse(currentRuleConfig.getShardingCache().getRouteCache().isSoftValues());
+        assertThat(currentRuleConfig.getShardingCache().getRouteCache().getInitialCapacity(), is(1280));
+        assertThat(currentRuleConfig.getShardingCache().getRouteCache().getMaximumSize(), is(10240));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        currentRuleConfig.setDefaultShardingColumn("foo_col");
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
-        assertNull(currentRuleConfig.getDefaultShardingColumn());
+        assertNull(currentRuleConfig.getShardingCache());
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
-        return new ShardingRuleConfiguration();
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setShardingCache(new ShardingCacheConfiguration(1, new ShardingCacheOptionsConfiguration(true, 128, 1024)));
+        return result;
     }
 }

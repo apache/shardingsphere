@@ -15,48 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.rule.changed;
+package org.apache.shardingsphere.sharding.rule.changed;
 
-import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class BroadcastTableChangedProcessorTest {
+class ShardingTableReferenceChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
-    private final RuleItemConfigurationChangedProcessor<BroadcastRuleConfiguration, BroadcastRuleConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "broadcast.tables");
+    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingTableReferenceRuleConfiguration> processor = TypedSPILoader.getService(
+            RuleItemConfigurationChangedProcessor.class, "sharding.binding_tables");
     
     @Test
     void assertSwapRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        BroadcastRuleConfiguration actual = processor.swapRuleItemConfiguration(event, "- foo_tbl");
-        assertThat(actual.getTables(), is(Collections.singleton("foo_tbl")));
+        ShardingTableReferenceRuleConfiguration actual = processor.swapRuleItemConfiguration(event, "foo_ref:foo_tbl_0,foo_tbl_1");
+        assertThat(actual, deepEqual(new ShardingTableReferenceRuleConfiguration("foo_ref", "foo_tbl_0,foo_tbl_1")));
     }
     
     @Test
     void assertFindRuleConfiguration() {
-        BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
+        ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
         assertThat(processor.findRuleConfiguration(mockDatabase(ruleConfig)), is(ruleConfig));
     }
     
-    private ShardingSphereDatabase mockDatabase(final BroadcastRuleConfiguration ruleConfig) {
-        BroadcastRule rule = mock(BroadcastRule.class);
+    private ShardingSphereDatabase mockDatabase(final ShardingRuleConfiguration ruleConfig) {
+        ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
@@ -66,21 +68,27 @@ class BroadcastTableChangedProcessorTest {
     @Test
     void assertChangeRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        BroadcastRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        BroadcastRuleConfiguration toBeChangedItemConfig = new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("bar_tbl")));
+        when(event.getItemName()).thenReturn("foo_ref");
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        ShardingTableReferenceRuleConfiguration toBeChangedItemConfig = new ShardingTableReferenceRuleConfiguration("foo_ref", "bar_tbl_0,bar_tbl_1");
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getTables(), is(Collections.singletonList("bar_tbl")));
+        assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
+        assertThat(new ArrayList<>(currentRuleConfig.getBindingTableGroups()).get(0).getName(), is("foo_ref"));
+        assertThat(new ArrayList<>(currentRuleConfig.getBindingTableGroups()).get(0).getReference(), is("bar_tbl_0,bar_tbl_1"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
-        BroadcastRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_ref");
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
-        assertTrue(currentRuleConfig.getTables().isEmpty());
+        assertTrue(currentRuleConfig.getBindingTableGroups().isEmpty());
     }
     
-    private BroadcastRuleConfiguration createCurrentRuleConfiguration() {
-        return new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")));
+    private ShardingRuleConfiguration createCurrentRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo_ref", "foo_tbl_0,foo_tbl_1"));
+        return result;
     }
 }

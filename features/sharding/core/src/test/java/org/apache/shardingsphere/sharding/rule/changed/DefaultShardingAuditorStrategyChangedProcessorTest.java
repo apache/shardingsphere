@@ -20,32 +20,43 @@ package org.apache.shardingsphere.sharding.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DefaultShardingColumnChangedProcessorTest {
+class DefaultShardingAuditorStrategyChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
-    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, String> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "sharding.default_sharding_column");
+    private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, ShardingAuditStrategyConfiguration> processor = TypedSPILoader.getService(
+            RuleItemConfigurationChangedProcessor.class, "sharding.default_audit_strategy");
     
     @Test
     void assertSwapRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        String actual = processor.swapRuleItemConfiguration(event, "foo_col");
-        assertThat(actual, is("foo_col"));
+        ShardingAuditStrategyConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        assertThat(actual, deepEqual(new ShardingAuditStrategyConfiguration(Collections.singletonList("foo_algo"), true)));
+    }
+    
+    private String createYAMLContent() {
+        YamlShardingAuditStrategyConfiguration yamlConfig = new YamlShardingAuditStrategyConfiguration();
+        yamlConfig.setAuditorNames(Collections.singletonList("foo_algo"));
+        return YamlEngine.marshal(yamlConfig);
     }
     
     @Test
@@ -66,21 +77,23 @@ class DefaultShardingColumnChangedProcessorTest {
     void assertChangeRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        String toBeChangedItemConfig = "bar_col";
+        ShardingAuditStrategyConfiguration toBeChangedItemConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("bar_algo"), true);
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
-        assertThat(currentRuleConfig.getDefaultShardingColumn(), is("bar_col"));
+        assertThat(currentRuleConfig.getDefaultAuditStrategy().getAuditorNames(), is(Collections.singleton("bar_algo")));
+        assertTrue(currentRuleConfig.getDefaultAuditStrategy().isAllowHintDisable());
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        currentRuleConfig.setDefaultShardingColumn("foo_col");
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
-        assertNull(currentRuleConfig.getDefaultShardingColumn());
+        assertNull(currentRuleConfig.getDefaultAuditStrategy());
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
-        return new ShardingRuleConfiguration();
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setDefaultAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("foo_algo"), false));
+        return result;
     }
 }
