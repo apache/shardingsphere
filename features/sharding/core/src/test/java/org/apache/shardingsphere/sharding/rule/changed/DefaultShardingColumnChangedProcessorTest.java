@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -43,7 +43,8 @@ class DefaultShardingColumnChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        String actual = processor.swapRuleItemConfiguration(mock(AlterRuleItemEvent.class), "foo_col");
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        String actual = processor.swapRuleItemConfiguration(event, "foo_col");
         assertThat(actual, is("foo_col"));
     }
     
@@ -63,17 +64,19 @@ class DefaultShardingColumnChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         String toBeChangedItemConfig = "bar_col";
-        processor.changeRuleItemConfiguration(mock(AlterRuleItemEvent.class), currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getDefaultShardingColumn(), is("bar_col"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
+        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.setDefaultShardingColumn("foo_col");
-        processor.dropRuleItemConfiguration(mock(DropRuleItemEvent.class), currentRuleConfig);
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultShardingColumn());
     }
 }
