@@ -82,6 +82,7 @@
 1. Proxy Native: Add more graalvm reachability metadata for caffeine cache
 1. SQL Parser: Enhance Oracle update statement as alias parse and add test case
 1. SQL Federation: Support for federated query NOT operator
+1. Governance: Change shadow、sharding's algorithms node path to shadow_algorithms and sharding_algorithms node path
 1. Encrypt: Support like concat nested concat statement rewrite with encrypt feature
 1. Support PostgreSQL, openGauss function table and update from parse
 1. Add assisted node to create and delete databases
