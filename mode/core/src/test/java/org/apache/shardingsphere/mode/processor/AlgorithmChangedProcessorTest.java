@@ -42,13 +42,13 @@ import static org.mockito.Mockito.when;
 
 class AlgorithmChangedProcessorTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private final AlgorithmChangedProcessor<AlgorithmChangedProcessorFixtureRuleConfiguration> processor = (AlgorithmChangedProcessor) TypedSPILoader.getService(
+    @SuppressWarnings("unchecked")
+    private final RuleItemConfigurationChangedProcessor<AlgorithmChangedProcessorFixtureRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
             RuleItemConfigurationChangedProcessor.class, "FIXTURE");
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "foo", "", "", "");
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
         AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
         assertThat(actual, deepEqual(new AlgorithmConfiguration("foo_algo", new Properties())));
     }
@@ -73,7 +73,8 @@ class AlgorithmChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "bar_algo", "", "", "");
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("bar_algo");
         AlgorithmChangedProcessorFixtureRuleConfiguration currentRuleConfig = new AlgorithmChangedProcessorFixtureRuleConfiguration();
         currentRuleConfig.getAlgorithmConfigurations().put("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()));
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
@@ -85,7 +86,8 @@ class AlgorithmChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = new DropNamedRuleItemEvent("", "foo_algo", "");
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_algo");
         AlgorithmChangedProcessorFixtureRuleConfiguration currentRuleConfig = new AlgorithmChangedProcessorFixtureRuleConfiguration();
         currentRuleConfig.getAlgorithmConfigurations().put("foo_algo", new AlgorithmConfiguration("FOO_FIXTURE", new Properties()));
         processor.dropRuleItemConfiguration(event, currentRuleConfig);

@@ -59,7 +59,8 @@ class MaskAlgorithmChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "bar_algo", "", "", "");
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("bar_algo");
         MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
@@ -70,7 +71,8 @@ class MaskAlgorithmChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = new DropNamedRuleItemEvent("", "foo_algo", "");
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_algo");
         MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getMaskAlgorithms().isEmpty());
