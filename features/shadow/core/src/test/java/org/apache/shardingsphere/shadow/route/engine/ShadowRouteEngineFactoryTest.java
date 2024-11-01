@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.shadow.route.engine.dml.ShadowDeleteStatementRoutingEngine;
-import org.apache.shardingsphere.shadow.route.engine.dml.ShadowInsertStatementRoutingEngine;
-import org.apache.shardingsphere.shadow.route.engine.dml.ShadowSelectStatementRoutingEngine;
-import org.apache.shardingsphere.shadow.route.engine.dml.ShadowUpdateStatementRoutingEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowDeleteStatementRouteEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowInsertStatementRouteEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowSelectStatementRouteEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowUpdateStatementRouteEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -52,16 +52,16 @@ class ShadowRouteEngineFactoryTest {
     void assertNewInstance() {
         ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(
                 new QueryContext(createInsertSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowInsertRouteEngine, instanceOf(ShadowInsertStatementRoutingEngine.class));
+        assertThat(shadowInsertRouteEngine, instanceOf(ShadowInsertStatementRouteEngine.class));
         ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(
                 new QueryContext(createUpdateSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowUpdateRouteEngine, instanceOf(ShadowUpdateStatementRoutingEngine.class));
+        assertThat(shadowUpdateRouteEngine, instanceOf(ShadowUpdateStatementRouteEngine.class));
         ShadowRouteEngine shadowDeleteRouteEngine = ShadowRouteEngineFactory.newInstance(
                 new QueryContext(createDeleteSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowDeleteRouteEngine, instanceOf(ShadowDeleteStatementRoutingEngine.class));
+        assertThat(shadowDeleteRouteEngine, instanceOf(ShadowDeleteStatementRouteEngine.class));
         ShadowRouteEngine shadowSelectRouteEngine = ShadowRouteEngineFactory.newInstance(
                 new QueryContext(createSelectSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementRoutingEngine.class));
+        assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementRouteEngine.class));
     }
     
     private ConnectionContext mockConnectionContext() {
