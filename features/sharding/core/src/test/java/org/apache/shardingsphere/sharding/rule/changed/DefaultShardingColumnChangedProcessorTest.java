@@ -65,7 +65,7 @@ class DefaultShardingColumnChangedProcessorTest {
     @Test
     void assertChangeRuleItemConfiguration() {
         AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         String toBeChangedItemConfig = "bar_col";
         processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getDefaultShardingColumn(), is("bar_col"));
@@ -74,9 +74,13 @@ class DefaultShardingColumnChangedProcessorTest {
     @Test
     void assertDropRuleItemConfiguration() {
         DropRuleItemEvent event = mock(DropRuleItemEvent.class);
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.setDefaultShardingColumn("foo_col");
         processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultShardingColumn());
+    }
+    
+    private ShardingRuleConfiguration createCurrentRuleConfiguration() {
+        return new ShardingRuleConfiguration();
     }
 }
