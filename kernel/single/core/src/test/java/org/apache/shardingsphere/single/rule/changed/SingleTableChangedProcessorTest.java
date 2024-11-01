@@ -44,7 +44,8 @@ class SingleTableChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        SingleRuleConfiguration actual = processor.swapRuleItemConfiguration(mock(AlterNamedRuleItemEvent.class), "- foo_tbl");
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        SingleRuleConfiguration actual = processor.swapRuleItemConfiguration(event, "- foo_tbl");
         assertThat(actual.getTables(), is(Collections.singleton("foo_tbl")));
     }
     
@@ -64,16 +65,18 @@ class SingleTableChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")), null);
         SingleRuleConfiguration toBeChangedItemConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton("bar_tbl")), null);
-        processor.changeRuleItemConfiguration(mock(AlterNamedRuleItemEvent.class), currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables(), is(Collections.singletonList("bar_tbl")));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
+        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")), null);
-        processor.dropRuleItemConfiguration(mock(DropRuleItemEvent.class), currentRuleConfig);
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
 }
