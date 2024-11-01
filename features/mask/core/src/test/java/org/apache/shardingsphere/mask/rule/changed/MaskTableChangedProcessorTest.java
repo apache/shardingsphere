@@ -51,7 +51,8 @@ class MaskTableChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        MaskTableRuleConfiguration actual = processor.swapRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo_tbl", "", "", ""), createYAMLContent());
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        MaskTableRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
         assertThat(actual, deepEqual(new MaskTableRuleConfiguration("foo_tbl", Collections.singletonList(new MaskColumnRuleConfiguration("foo_col", "foo_algo")))));
     }
     
@@ -81,19 +82,25 @@ class MaskTableChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        MaskRuleConfiguration currentRuleConfig = new MaskRuleConfiguration(
-                new LinkedList<>(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()))), Collections.emptyMap());
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_tbl");
+        MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         MaskTableRuleConfiguration toBeChangedItemConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(mock(MaskColumnRuleConfiguration.class)));
-        processor.changeRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo_tbl", "", "", ""), currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         assertThat(new ArrayList<>(currentRuleConfig.getTables()).get(0).getColumns().size(), is(1));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        MaskRuleConfiguration currentRuleConfig = new MaskRuleConfiguration(
-                new LinkedList<>(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()))), Collections.emptyMap());
-        processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("", "foo_tbl", ""), currentRuleConfig);
+        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        when(event.getItemName()).thenReturn("foo_tbl");
+        MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
+    }
+    
+    private MaskRuleConfiguration createCurrentRuleConfiguration() {
+        return new MaskRuleConfiguration(new LinkedList<>(Collections.singleton(new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()))), Collections.emptyMap());
     }
 }
