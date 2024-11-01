@@ -19,6 +19,7 @@ package org.apache.shardingsphere.broadcast.route.engine.type.broadcast;
 
 import org.apache.shardingsphere.broadcast.route.engine.type.BroadcastRouteEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -28,6 +29,7 @@ import java.util.Collections;
 /**
  * Broadcast routing engine for database.
  */
+@HighFrequencyInvocation
 public final class BroadcastDatabaseBroadcastRoutingEngine implements BroadcastRouteEngine {
     
     @Override
