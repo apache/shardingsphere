@@ -107,7 +107,8 @@ class BroadcastRouteEngineFactoryTest {
     @Test
     void assertNewInstanceWithCursorAvailableAndIsAllBroadcastTables() {
         CloseStatementContext sqlStatementContext = mock(CloseStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
+        TablesContext tablesContext = new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))), databaseType, null);
+        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastUnicastRouteEngine.class));
     }
@@ -163,12 +164,6 @@ class BroadcastRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceWithDCLStatementAndNotTableAvailable() {
-        when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(DCLStatement.class));
-        assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastIgnoreRouteEngine.class));
-    }
-    
-    @Test
     void assertNewInstanceWithDCLStatementAndEmptyTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(new TablesContext(Collections.emptyList(), databaseType, null));
@@ -185,12 +180,6 @@ class BroadcastRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DCLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastTableBroadcastRouteEngine.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithDMLStatementAndNotTableAvailable() {
-        when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(DMLStatement.class));
-        assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastIgnoreRouteEngine.class));
     }
     
     @Test

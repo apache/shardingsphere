@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 @HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -46,9 +45,7 @@ public final class SQLStatementContextExtractor {
      * @return table names
      */
     public static Collection<String> getTableNames(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
-                : Collections.emptyList();
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
         if (!tableNames.isEmpty()) {
             return tableNames;
         }
