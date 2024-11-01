@@ -80,7 +80,6 @@ class BroadcastTableChangedProcessorTest {
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
     
-    
     private BroadcastRuleConfiguration createCurrentRuleConfiguration() {
         return new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")));
     }
