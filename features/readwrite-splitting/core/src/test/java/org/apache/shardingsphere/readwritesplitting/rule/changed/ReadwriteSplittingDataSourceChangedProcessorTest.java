@@ -50,14 +50,15 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfigurationWithoutTransactionalReadQueryStrategy() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(new AlterNamedRuleItemEvent("", "foo", "", "", ""), createYAMLContent(null));
+        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "foo", "", "", "");
+        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent(null));
         assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer")));
     }
     
     @Test
     void assertSwapRuleItemConfigurationWithTransactionalReadQueryStrategy() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(
-                new AlterNamedRuleItemEvent("", "foo", "", "", ""), createYAMLContent(TransactionalReadQueryStrategy.PRIMARY));
+        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "foo", "", "", "");
+        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent(TransactionalReadQueryStrategy.PRIMARY));
         assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.PRIMARY, "foo_balancer")));
     }
@@ -87,21 +88,25 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(
-                new LinkedList<>(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer"))),
-                Collections.emptyMap());
+        AlterNamedRuleItemEvent event = new AlterNamedRuleItemEvent("", "foo", "", "", "");
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         ReadwriteSplittingDataSourceGroupRuleConfiguration toBeChangedItemConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.FIXED, "foo_balancer");
-        processor.changeRuleItemConfiguration(mock(AlterNamedRuleItemEvent.class), currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(new ArrayList<>(currentRuleConfig.getDataSourceGroups()).get(0).getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.FIXED));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(
+        DropNamedRuleItemEvent event = new DropNamedRuleItemEvent("", "foo", "");
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        assertTrue(currentRuleConfig.getDataSourceGroups().isEmpty());
+    }
+    
+    private static ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
+        return new ReadwriteSplittingRuleConfiguration(
                 new LinkedList<>(Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer"))),
                 Collections.emptyMap());
-        processor.dropRuleItemConfiguration(new DropNamedRuleItemEvent("", "foo", ""), currentRuleConfig);
-        assertTrue(currentRuleConfig.getDataSourceGroups().isEmpty());
     }
 }
