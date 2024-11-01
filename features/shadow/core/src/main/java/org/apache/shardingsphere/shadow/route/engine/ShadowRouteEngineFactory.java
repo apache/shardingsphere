@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.shadow.route.engine.dml.ShadowDeleteStatementRoutingEngine;
-import org.apache.shardingsphere.shadow.route.engine.dml.ShadowInsertStatementRoutingEngine;
-import org.apache.shardingsphere.shadow.route.engine.dml.ShadowSelectStatementRoutingEngine;
-import org.apache.shardingsphere.shadow.route.engine.dml.ShadowUpdateStatementRoutingEngine;
-import org.apache.shardingsphere.shadow.route.engine.impl.ShadowNonDMLStatementRoutingEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowDeleteStatementRouteEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowInsertStatementRouteEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowSelectStatementRouteEngine;
+import org.apache.shardingsphere.shadow.route.engine.dml.ShadowUpdateStatementRouteEngine;
+import org.apache.shardingsphere.shadow.route.engine.impl.ShadowNonDMLStatementRouteEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
@@ -50,37 +50,37 @@ public final class ShadowRouteEngineFactory {
     public static ShadowRouteEngine newInstance(final QueryContext queryContext) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            return createShadowInsertStatementRoutingEngine(queryContext);
+            return createShadowInsertStatementRouteEngine(queryContext);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return createShadowDeleteStatementRoutingEngine(queryContext);
+            return createShadowDeleteStatementRouteEngine(queryContext);
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return createShadowUpdateStatementRoutingEngine(queryContext);
+            return createShadowUpdateStatementRouteEngine(queryContext);
         }
         if (sqlStatement instanceof SelectStatement) {
-            return createShadowSelectStatementRoutingEngine(queryContext);
+            return createShadowSelectStatementRouteEngine(queryContext);
         }
-        return createShadowNonMDLStatementRoutingEngine(queryContext);
+        return createShadowNonMDLStatementRouteEngine(queryContext);
     }
     
-    private static ShadowRouteEngine createShadowNonMDLStatementRoutingEngine(final QueryContext queryContext) {
-        return new ShadowNonDMLStatementRoutingEngine(queryContext.getHintValueContext());
+    private static ShadowRouteEngine createShadowNonMDLStatementRouteEngine(final QueryContext queryContext) {
+        return new ShadowNonDMLStatementRouteEngine(queryContext.getHintValueContext());
     }
     
-    private static ShadowRouteEngine createShadowSelectStatementRoutingEngine(final QueryContext queryContext) {
-        return new ShadowSelectStatementRoutingEngine((SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+    private static ShadowRouteEngine createShadowSelectStatementRouteEngine(final QueryContext queryContext) {
+        return new ShadowSelectStatementRouteEngine((SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
     }
     
-    private static ShadowRouteEngine createShadowUpdateStatementRoutingEngine(final QueryContext queryContext) {
-        return new ShadowUpdateStatementRoutingEngine((UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+    private static ShadowRouteEngine createShadowUpdateStatementRouteEngine(final QueryContext queryContext) {
+        return new ShadowUpdateStatementRouteEngine((UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
     }
     
-    private static ShadowRouteEngine createShadowDeleteStatementRoutingEngine(final QueryContext queryContext) {
-        return new ShadowDeleteStatementRoutingEngine((DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+    private static ShadowRouteEngine createShadowDeleteStatementRouteEngine(final QueryContext queryContext) {
+        return new ShadowDeleteStatementRouteEngine((DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
     }
     
-    private static ShadowRouteEngine createShadowInsertStatementRoutingEngine(final QueryContext queryContext) {
-        return new ShadowInsertStatementRoutingEngine((InsertStatementContext) queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
+    private static ShadowRouteEngine createShadowInsertStatementRouteEngine(final QueryContext queryContext) {
+        return new ShadowInsertStatementRouteEngine((InsertStatementContext) queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
     }
 }
