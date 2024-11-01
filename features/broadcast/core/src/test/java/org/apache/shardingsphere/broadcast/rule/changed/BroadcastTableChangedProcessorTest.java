@@ -44,7 +44,8 @@ class BroadcastTableChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        BroadcastRuleConfiguration actual = processor.swapRuleItemConfiguration(mock(AlterNamedRuleItemEvent.class), "- foo_tbl");
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        BroadcastRuleConfiguration actual = processor.swapRuleItemConfiguration(event, "- foo_tbl");
         assertThat(actual.getTables(), is(Collections.singleton("foo_tbl")));
     }
     
@@ -64,16 +65,23 @@ class BroadcastTableChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        BroadcastRuleConfiguration currentRuleConfig = new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")));
+        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        BroadcastRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         BroadcastRuleConfiguration toBeChangedItemConfig = new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("bar_tbl")));
-        processor.changeRuleItemConfiguration(mock(AlterNamedRuleItemEvent.class), currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables(), is(Collections.singletonList("bar_tbl")));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        BroadcastRuleConfiguration currentRuleConfig = new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")));
-        processor.dropRuleItemConfiguration(mock(DropRuleItemEvent.class), currentRuleConfig);
+        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
+        BroadcastRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        processor.dropRuleItemConfiguration(event, currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
+    }
+    
+    
+    private BroadcastRuleConfiguration createCurrentRuleConfiguration() {
+        return new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")));
     }
 }
