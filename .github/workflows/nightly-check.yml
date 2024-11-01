@@ -210,7 +210,7 @@ jobs:
           retention-days: 5
 
   check-and-report-jacoco:
-    if: github.repository == 'SphereEx/dbplus-engine'
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Jacoco
     needs: global-environment
     runs-on: self-hosted-cluster
