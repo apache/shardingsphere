@@ -19,6 +19,7 @@ package org.apache.shardingsphere.broadcast.route;
 
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.route.engine.BroadcastRouteEngineFactory;
+import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastDatabaseBroadcastRouteEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -88,14 +89,16 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
     }
     
     private void decorateRouteContextWhenTCLStatement(final RouteContext routeContext, final BroadcastRule rule) {
-        routeToAllDatabases(routeContext, rule);
+        routeContext.getRouteUnits().clear();
+        routeContext.getRouteUnits().addAll(doDatabaseBroadcastRoute(routeContext, rule).getRouteUnits());
     }
     
     private void decorateRouteContextWhenDDLStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule rule) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof CursorAvailable) {
             if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
-                routeToAllDatabases(routeContext, rule);
+                routeContext.getRouteUnits().clear();
+                routeContext.getRouteUnits().addAll(doDatabaseBroadcastRoute(routeContext, rule).getRouteUnits());
             }
             return;
         }
@@ -106,7 +109,8 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
         if (functionStatement || procedureStatement) {
-            routeToAllDatabases(routeContext, rule);
+            routeContext.getRouteUnits().clear();
+            routeContext.getRouteUnits().addAll(doDatabaseBroadcastRoute(routeContext, rule).getRouteUnits());
             return;
         }
         // TODO BEGIN extract db route logic to common database router, eg: DCL in instance route @duanzhengqiang
@@ -152,11 +156,8 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
         return false;
     }
     
-    private void routeToAllDatabases(final RouteContext routeContext, final BroadcastRule rule) {
-        routeContext.getRouteUnits().clear();
-        for (String each : rule.getDataSourceNames()) {
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
-        }
+    private RouteContext doDatabaseBroadcastRoute(final RouteContext routeContext, final BroadcastRule rule) {
+        return new BroadcastDatabaseBroadcastRouteEngine().route(routeContext, rule);
     }
     
     private void routeToAllDatabaseInstances(final RouteContext routeContext, final ShardingSphereDatabase database, final BroadcastRule rule) {
