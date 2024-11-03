@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 public final class BroadcastIgnoreRouteEngine implements BroadcastRouteEngine {
     
     @Override
-    public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
+    public RouteContext route(final RouteContext routeContext, final BroadcastRule rule) {
         return routeContext;
     }
 }

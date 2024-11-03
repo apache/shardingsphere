@@ -77,24 +77,25 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {
-            routeToAllDatabase(routeContext, rule);
-        }
-        if (sqlStatement instanceof DDLStatement) {
+            decorateRouteContextWhenTCLStatement(routeContext, rule);
+        } else if (sqlStatement instanceof DDLStatement) {
             decorateRouteContextWhenDDLStatement(routeContext, queryContext, database, rule);
+        } else if (sqlStatement instanceof DALStatement && isResourceGroupStatement(sqlStatement)) {
+            routeToAllDatabaseInstances(routeContext, database, rule);
+        } else if (sqlStatement instanceof DCLStatement && !isDCLForSingleTable(queryContext.getSqlStatementContext())) {
+            routeToAllDatabaseInstances(routeContext, database, rule);
         }
-        if (sqlStatement instanceof DALStatement && isResourceGroupStatement(sqlStatement)) {
-            routeToAllDatabaseInstance(routeContext, database, rule);
-        }
-        if (sqlStatement instanceof DCLStatement && !isDCLForSingleTable(queryContext.getSqlStatementContext())) {
-            routeToAllDatabaseInstance(routeContext, database, rule);
-        }
+    }
+    
+    private void decorateRouteContextWhenTCLStatement(final RouteContext routeContext, final BroadcastRule rule) {
+        routeToAllDatabases(routeContext, rule);
     }
     
     private void decorateRouteContextWhenDDLStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule rule) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof CursorAvailable) {
             if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
-                routeToAllDatabase(routeContext, rule);
+                routeToAllDatabases(routeContext, rule);
             }
             return;
         }
@@ -105,17 +106,17 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
         if (functionStatement || procedureStatement) {
-            routeToAllDatabase(routeContext, rule);
+            routeToAllDatabases(routeContext, rule);
             return;
         }
         // TODO BEGIN extract db route logic to common database router, eg: DCL in instance route @duanzhengqiang
         if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
-            routeToAllDatabaseInstance(routeContext, database, rule);
+            routeToAllDatabaseInstances(routeContext, database, rule);
         }
         // TODO END extract db route logic to common database router, eg: DCL in instance route
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? getTableNames((TableAvailable) sqlStatementContext) : Collections.emptyList();
         if (rule.isAllBroadcastTables(tableNames)) {
-            routeToAllDatabaseInstance(routeContext, database, rule);
+            routeToAllDatabaseInstances(routeContext, database, rule);
         }
     }
     
@@ -151,19 +152,19 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
         return false;
     }
     
-    private void routeToAllDatabaseInstance(final RouteContext routeContext, final ShardingSphereDatabase database, final BroadcastRule rule) {
+    private void routeToAllDatabases(final RouteContext routeContext, final BroadcastRule rule) {
+        routeContext.getRouteUnits().clear();
+        for (String each : rule.getDataSourceNames()) {
+            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
+        }
+    }
+    
+    private void routeToAllDatabaseInstances(final RouteContext routeContext, final ShardingSphereDatabase database, final BroadcastRule rule) {
         routeContext.getRouteUnits().clear();
         for (String each : rule.getDataSourceNames()) {
             if (database.getResourceMetaData().getAllInstanceDataSourceNames().contains(each)) {
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
-        }
-    }
-    
-    private void routeToAllDatabase(final RouteContext routeContext, final BroadcastRule rule) {
-        routeContext.getRouteUnits().clear();
-        for (String each : rule.getDataSourceNames()) {
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
     }
     
