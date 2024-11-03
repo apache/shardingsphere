@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredProductionDataSourceException;
 import org.apache.shardingsphere.shadow.exception.metadata.MissingRequiredShadowDataSourceException;
 import org.apache.shardingsphere.shadow.exception.metadata.NotImplementHintShadowAlgorithmException;
+import org.apache.shardingsphere.shadow.exception.metadata.ShadowDataSourceMappingNotFoundException;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -85,6 +86,21 @@ class ShadowRuleConfigurationCheckerTest {
         result.setDefaultShadowAlgorithmName("foo-algo");
         result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
         result.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.singletonList("foo_ds"), new LinkedList<>(Collections.singleton("foo-algo")))));
+        return result;
+    }
+    
+    @Test
+    void assertCheckWithInvalidShadowTableDataSourcesReferences() {
+        assertThrows(ShadowDataSourceMappingNotFoundException.class,
+                () -> ruleConfigChecker.check("foo_db", createRuleConfigurationWithInvalidShadowTableDataSourcesReferences(), createDataSourceMap(), Collections.emptyList()));
+    }
+    
+    private ShadowRuleConfiguration createRuleConfigurationWithInvalidShadowTableDataSourcesReferences() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.setShadowAlgorithms(Collections.singletonMap("foo-algo", new AlgorithmConfiguration("SQL_HINT", new Properties())));
+        result.setDefaultShadowAlgorithmName("foo-algo");
+        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
+        result.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.singletonList("bar_ds"), new LinkedList<>(Collections.singleton("foo-algo")))));
         return result;
     }
     
