@@ -48,14 +48,9 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -117,20 +112,6 @@ class BroadcastSQLRouterTest {
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
-        return result;
-    }
-    
-    private Map<String, DataSource> createMultiDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new HashMap<>(2, 1F);
-        Connection connection = mockConnection();
-        result.put("ds_0", new MockedDataSource(connection));
-        result.put("ds_1", new MockedDataSource(connection));
-        return result;
-    }
-    
-    private Connection mockConnection() throws SQLException {
-        Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
         return result;
     }
 }

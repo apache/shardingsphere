@@ -38,9 +38,9 @@ public final class BroadcastInstanceBroadcastRouteEngine implements BroadcastRou
     private final ResourceMetaData resourceMetaData;
     
     @Override
-    public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
+    public RouteContext route(final RouteContext routeContext, final BroadcastRule rule) {
         RouteContext result = new RouteContext();
-        for (String each : broadcastRule.getDataSourceNames()) {
+        for (String each : rule.getDataSourceNames()) {
             if (resourceMetaData.getAllInstanceDataSourceNames().contains(each)) {
                 result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }

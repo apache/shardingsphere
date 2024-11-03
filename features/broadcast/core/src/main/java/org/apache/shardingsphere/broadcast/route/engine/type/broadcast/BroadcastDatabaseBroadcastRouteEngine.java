@@ -33,8 +33,8 @@ import java.util.Collections;
 public final class BroadcastDatabaseBroadcastRouteEngine implements BroadcastRouteEngine {
     
     @Override
-    public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
-        for (String each : broadcastRule.getDataSourceNames()) {
+    public RouteContext route(final RouteContext routeContext, final BroadcastRule rule) {
+        for (String each : rule.getDataSourceNames()) {
             routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
         return routeContext;
