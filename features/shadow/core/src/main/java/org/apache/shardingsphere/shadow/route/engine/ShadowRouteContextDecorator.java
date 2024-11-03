@@ -48,7 +48,7 @@ public final class ShadowRouteContextDecorator {
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String logicName = each.getDataSourceMapper().getLogicName();
             String actualName = each.getDataSourceMapper().getActualName();
-            Optional<String> sourceDataSourceName = rule.getProductionDataSourceName(actualName);
+            Optional<String> sourceDataSourceName = rule.findProductionDataSourceName(actualName);
             if (sourceDataSourceName.isPresent()) {
                 String shadowDataSourceName = shadowDataSourceMappings.get(sourceDataSourceName.get());
                 toBeRemovedRouteUnit.add(each);
