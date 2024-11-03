@@ -44,10 +44,7 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
                                      final ShadowRule rule, final ConfigurationProperties props) {
-        route(routeContext, rule, ShadowDataSourceMappingsFinderFactory.newInstance(queryContext));
-    }
-    
-    private void route(final RouteContext routeContext, final ShadowRule rule, final ShadowDataSourceMappingsFinder finder) {
+        final ShadowDataSourceMappingsFinder finder = ShadowDataSourceMappingsFinderFactory.newInstance(queryContext);
         Collection<RouteUnit> toBeRemovedRouteUnit = new LinkedList<>();
         Collection<RouteUnit> toBeAddedRouteUnit = new LinkedList<>();
         Map<String, String> shadowDataSourceMappings = finder.find(rule);
