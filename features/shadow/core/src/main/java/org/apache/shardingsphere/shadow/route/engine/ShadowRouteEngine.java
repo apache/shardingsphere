@@ -18,14 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine;
 
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Shadow route engine.
@@ -39,30 +32,4 @@ public interface ShadowRouteEngine {
      * @param rule shadow rule
      */
     void route(RouteContext routeContext, ShadowRule rule);
-    
-    /**
-     * Decorate route context.
-     *
-     * @param routeContext route context to be decorated
-     * @param rule shadow rule
-     * @param shadowDataSourceMappings shadow data source mappings
-     */
-    default void decorateRouteContext(final RouteContext routeContext, final ShadowRule rule, final Map<String, String> shadowDataSourceMappings) {
-        Collection<RouteUnit> toBeRemovedRouteUnit = new LinkedList<>();
-        Collection<RouteUnit> toBeAddedRouteUnit = new LinkedList<>();
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            String logicName = each.getDataSourceMapper().getLogicName();
-            String actualName = each.getDataSourceMapper().getActualName();
-            Optional<String> sourceDataSourceName = rule.getSourceDataSourceName(actualName);
-            if (sourceDataSourceName.isPresent()) {
-                String shadowDataSourceName = shadowDataSourceMappings.get(sourceDataSourceName.get());
-                toBeRemovedRouteUnit.add(each);
-                toBeAddedRouteUnit.add(null == shadowDataSourceName
-                        ? new RouteUnit(new RouteMapper(logicName, sourceDataSourceName.get()), each.getTableMappers())
-                        : new RouteUnit(new RouteMapper(logicName, shadowDataSourceName), each.getTableMappers()));
-            }
-        }
-        routeContext.getRouteUnits().removeAll(toBeRemovedRouteUnit);
-        routeContext.getRouteUnits().addAll(toBeAddedRouteUnit);
-    }
 }
