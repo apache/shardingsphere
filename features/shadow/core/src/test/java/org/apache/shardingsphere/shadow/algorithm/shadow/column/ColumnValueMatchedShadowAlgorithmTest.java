@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ColumnValueMatchedShadowAlgorithmTest {
     
-    private static final String SHADOW_TABLE = "t_user";
+    private static final String SHADOW_TABLE = "foo_tbl";
     
     private static final String SHADOW_COLUMN = "shadow";
     
