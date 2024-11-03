@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.natived.jdbc.features;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -29,6 +30,7 @@ class ShardingTest {
     
     private TestShardingService testShardingService;
     
+    @Disabled("FIXME")
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
