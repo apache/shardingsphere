@@ -70,7 +70,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
         }
         return result;
     }
-        
+    
     @Override
     public final void route(final RouteContext routeContext, final ShadowRule rule) {
         ShadowRouteContextDecorator.decorate(routeContext, rule, findShadowDataSourceMappings(rule));
