@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -31,6 +32,7 @@ import java.util.Optional;
 /**
  * Shadow route engine.
  */
+@HighFrequencyInvocation
 public final class ShadowRouteEngine {
     
     /**
@@ -40,7 +42,7 @@ public final class ShadowRouteEngine {
      * @param rule shadow rule
      * @param finder finder
      */
-    public void route(RouteContext routeContext, ShadowRule rule, ShadowDataSourceMappingsFinder finder) {
+    public void route(final RouteContext routeContext, final ShadowRule rule, final ShadowDataSourceMappingsFinder finder) {
         Collection<RouteUnit> toBeRemovedRouteUnit = new LinkedList<>();
         Collection<RouteUnit> toBeAddedRouteUnit = new LinkedList<>();
         Map<String, String> shadowDataSourceMappings = finder.find(rule);
@@ -51,9 +53,8 @@ public final class ShadowRouteEngine {
             if (productionDataSourceName.isPresent()) {
                 String shadowDataSourceName = shadowDataSourceMappings.get(productionDataSourceName.get());
                 toBeRemovedRouteUnit.add(each);
-                toBeAddedRouteUnit.add(null == shadowDataSourceName
-                        ? new RouteUnit(new RouteMapper(logicName, productionDataSourceName.get()), each.getTableMappers())
-                        : new RouteUnit(new RouteMapper(logicName, shadowDataSourceName), each.getTableMappers()));
+                String dataSourceName = null == shadowDataSourceName ? productionDataSourceName.get() : shadowDataSourceName;
+                toBeAddedRouteUnit.add(new RouteUnit(new RouteMapper(logicName, dataSourceName), each.getTableMappers()));
             }
         }
         routeContext.getRouteUnits().removeAll(toBeRemovedRouteUnit);
