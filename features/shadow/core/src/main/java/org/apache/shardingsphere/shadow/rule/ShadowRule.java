@@ -64,17 +64,17 @@ public final class ShadowRule implements DatabaseRule {
     
     public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        initShadowDataSourceRules(ruleConfig.getDataSources());
+        initDataSourceRules(ruleConfig.getDataSources());
         initShadowAlgorithmConfigurations(ruleConfig.getShadowAlgorithms());
         defaultShadowAlgorithm = shadowAlgorithms.get(ruleConfig.getDefaultShadowAlgorithmName());
         if (defaultShadowAlgorithm instanceof HintShadowAlgorithm<?>) {
             hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
         }
-        initShadowTableRules(ruleConfig.getTables());
+        initTableRules(ruleConfig.getTables());
         attributes = new RuleAttributes(new ShadowDataSourceMapperRuleAttribute(shadowDataSourceRules));
     }
     
-    private void initShadowDataSourceRules(final Collection<ShadowDataSourceConfiguration> dataSources) {
+    private void initDataSourceRules(final Collection<ShadowDataSourceConfiguration> dataSources) {
         dataSources.forEach(each -> shadowDataSourceRules.put(each.getName(), new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName())));
     }
     
@@ -88,7 +88,7 @@ public final class ShadowRule implements DatabaseRule {
         });
     }
     
-    private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables) {
+    private void initTableRules(final Map<String, ShadowTableConfiguration> tables) {
         tables.forEach((key, value) -> shadowTableRules.put(key, new ShadowTableRule(key, value.getDataSourceNames(), value.getShadowAlgorithmNames(), shadowAlgorithms)));
     }
     
