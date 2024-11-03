@@ -204,7 +204,7 @@ public final class ShadowRule implements DatabaseRule {
      * @return shadow data source mappings
      */
     @HighFrequencyInvocation
-    public Map<String, String> getShadowDataSourceRules(final String tableName) {
+    public Map<String, String> getShadowDataSourceMappings(final String tableName) {
         Map<String, String> result = new LinkedHashMap<>(shadowDataSourceRules.size(), 1F);
         for (String each : shadowTableRules.get(tableName).getShadowDataSources()) {
             ShadowDataSourceRule dataSourceRule = shadowDataSourceRules.get(each);

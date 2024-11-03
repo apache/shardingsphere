@@ -93,7 +93,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : relatedShadowTables) {
             if (isContainsShadowInSQLHints(rule, each, new ShadowDetermineCondition(each, operationType))) {
-                result.putAll(rule.getShadowDataSourceRules(each));
+                result.putAll(rule.getShadowDataSourceMappings(each));
                 return result;
             }
         }
@@ -113,7 +113,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
         for (String each : relatedShadowTables) {
             Collection<String> shadowColumnNames = rule.getShadowColumnNames(operationType, each);
             if (!shadowColumnNames.isEmpty() && isMatchAnyColumnShadowAlgorithms(rule, each, shadowColumnNames)) {
-                return rule.getShadowDataSourceRules(each);
+                return rule.getShadowDataSourceMappings(each);
             }
         }
         return Collections.emptyMap();

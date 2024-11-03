@@ -130,7 +130,7 @@ class ShadowRuleTest {
     
     @Test
     void assertGetShadowDataSourceMappings() {
-        assertThat(rule.getShadowDataSourceRules("foo_tbl"), is(Collections.singletonMap("prod_ds_0", "shadow_ds_0")));
+        assertThat(rule.getShadowDataSourceMappings("foo_tbl"), is(Collections.singletonMap("prod_ds_0", "shadow_ds_0")));
     }
     
     @Test
