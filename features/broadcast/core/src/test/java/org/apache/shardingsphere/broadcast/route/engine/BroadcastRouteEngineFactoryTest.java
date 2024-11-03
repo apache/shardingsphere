@@ -114,6 +114,7 @@ class BroadcastRouteEngineFactoryTest {
     @Test
     void assertNewInstanceWithCursorAvailableAndNotTableAvailable() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(CursorAvailable.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastIgnoreRouteEngine.class));
     }
