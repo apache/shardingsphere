@@ -18,25 +18,49 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class ShadowRuleConfigurationCheckerTest {
     
+    private ShadowRuleConfigurationChecker ruleConfigChecker;
+    
+    @BeforeEach
+    void setUp() {
+        ruleConfigChecker = (ShadowRuleConfigurationChecker) OrderedSPILoader.getServicesByClass(
+                RuleConfigurationChecker.class, Collections.singleton(ShadowRuleConfiguration.class)).get(ShadowRuleConfiguration.class);
+    }
+    
     @Test
     void assertCheck() {
-        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), createDataSourceMap(), Collections.emptyList());
+        ruleConfigChecker.check("", createRuleConfiguration(), createDataSourceMap(), Collections.emptyList());
+    }
+    
+    private ShadowRuleConfiguration createRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.setShadowAlgorithms(Collections.singletonMap("hint-algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties())));
+        result.setDefaultShadowAlgorithmName("hint-algorithm");
+        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "ds", "ds_shadow")));
+        result.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.singletonList("foo_ds"), new LinkedList<>(Collections.singleton("hint-algorithm")))));
+        return result;
     }
     
     private Map<String, DataSource> createDataSourceMap() {
@@ -46,16 +70,8 @@ class ShadowRuleConfigurationCheckerTest {
         return result;
     }
     
-    private ShadowRuleConfiguration createShadowRuleConfiguration() {
-        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setShadowAlgorithms(Collections.singletonMap("user-id-insert-match-algorithm", createAlgorithmConfiguration()));
-        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("shadow-data-source", "ds", "ds_shadow")));
-        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(new LinkedList<>(), new LinkedList<>(Collections.singleton("user-id-insert-match-algorithm")))));
-        return result;
-    }
-    
-    private AlgorithmConfiguration createAlgorithmConfiguration() {
-        return new AlgorithmConfiguration("REGEX_MATCH",
-                PropertiesBuilder.build(new Property("column", "shadow"), new Property("operation", "insert"), new Property("regex", "[1]")));
+    @Test
+    void assertGetRequiredDataSourceNames() {
+        assertThat(ruleConfigChecker.getRequiredDataSourceNames(createRuleConfiguration()), is(new LinkedHashSet<>(Arrays.asList("ds_shadow", "ds"))));
     }
 }
