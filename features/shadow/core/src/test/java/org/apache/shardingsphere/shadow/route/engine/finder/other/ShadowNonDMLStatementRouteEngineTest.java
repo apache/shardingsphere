@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.impl;
+package org.apache.shardingsphere.shadow.route.engine.finder.other;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
@@ -31,7 +28,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -40,11 +36,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class ShadowNonDMLStatementRouteEngineTest {
     
-    private ShadowNonDMLStatementRouteEngine shadowRouteEngine;
+    private ShadowNonDMLStatementDataSourceMappingsFinder finder;
     
     @BeforeEach
     void init() {
-        shadowRouteEngine = new ShadowNonDMLStatementRouteEngine(createHintValueContext());
+        finder = new ShadowNonDMLStatementDataSourceMappingsFinder(createHintValueContext());
     }
     
     private HintValueContext createHintValueContext() {
@@ -55,23 +51,8 @@ class ShadowNonDMLStatementRouteEngineTest {
     
     @Test
     void assertRoute() {
-        RouteContext routeContext = createRouteContext();
-        shadowRouteEngine.route(routeContext, new ShadowRule(createShadowRuleConfiguration()));
-        Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
-        RouteMapper dataSourceMapper = routeUnits.iterator().next().getDataSourceMapper();
-        assertThat(dataSourceMapper.getLogicName(), is("logic_db"));
-        assertThat(dataSourceMapper.getActualName(), is("ds_shadow"));
-    }
-    
-    private RouteContext createRouteContext() {
-        RouteContext result = new RouteContext();
-        Collection<RouteUnit> routeUnits = result.getRouteUnits();
-        routeUnits.add(createRouteUnit());
-        return result;
-    }
-    
-    private RouteUnit createRouteUnit() {
-        return new RouteUnit(new RouteMapper("logic_db", "shadow-data-source"), Collections.singleton(new RouteMapper("t_order", "t_order")));
+        Map<String, String> shadowDataSourceMappings = finder.find(new ShadowRule(createShadowRuleConfiguration()));
+        assertThat(shadowDataSourceMappings, is(Collections.singletonMap("ds", "ds_shadow")));
     }
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
