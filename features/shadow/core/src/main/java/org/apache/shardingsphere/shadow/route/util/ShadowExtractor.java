@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.util;
+package org.apache.shardingsphere.shadow.route.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

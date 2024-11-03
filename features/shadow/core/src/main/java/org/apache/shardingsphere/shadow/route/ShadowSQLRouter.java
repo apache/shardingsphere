@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
-import org.apache.shardingsphere.shadow.route.engine.finder.ShadowDataSourceMappingsFinderFactory;
+import org.apache.shardingsphere.shadow.route.finder.ShadowDataSourceMappingsFinderFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
