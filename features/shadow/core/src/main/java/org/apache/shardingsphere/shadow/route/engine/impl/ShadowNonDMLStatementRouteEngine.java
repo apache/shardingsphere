@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.route.engine.ShadowRouteContextDecorator;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.engine.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -40,7 +41,7 @@ public final class ShadowNonDMLStatementRouteEngine implements ShadowRouteEngine
     
     @Override
     public void route(final RouteContext routeContext, final ShadowRule rule) {
-        decorateRouteContext(routeContext, rule, findShadowDataSourceMappings(rule));
+        ShadowRouteContextDecorator.decorate(routeContext, rule, findShadowDataSourceMappings(rule));
     }
     
     private Map<String, String> findShadowDataSourceMappings(final ShadowRule rule) {

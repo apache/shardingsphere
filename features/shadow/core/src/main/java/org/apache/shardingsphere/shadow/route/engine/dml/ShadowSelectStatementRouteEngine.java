@@ -75,6 +75,6 @@ public final class ShadowSelectStatementRouteEngine extends AbstractShadowDMLSta
     
     private String extractOwnerName(final ColumnSegment columnSegment) {
         Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return owner.isPresent() ? getTableAliasNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasNameMappings().keySet().iterator().next();
+        return owner.isPresent() ? getTableAliasAndNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasAndNameMappings().keySet().iterator().next();
     }
 }
