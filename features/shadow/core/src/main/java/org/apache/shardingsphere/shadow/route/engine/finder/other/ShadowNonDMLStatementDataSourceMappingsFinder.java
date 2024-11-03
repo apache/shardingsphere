@@ -15,36 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.impl;
+package org.apache.shardingsphere.shadow.route.engine.finder.other;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
-import org.apache.shardingsphere.shadow.route.engine.ShadowRouteContextDecorator;
-import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.engine.determiner.HintShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.engine.finder.ShadowDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
-import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 
 import java.util.Collections;
 import java.util.Map;
 
 /**
- * Shadow non-DML statement route engine.
+ * Shadow non-DML statement data source mappings finder.
  */
 @RequiredArgsConstructor
-public final class ShadowNonDMLStatementRouteEngine implements ShadowRouteEngine {
+public final class ShadowNonDMLStatementDataSourceMappingsFinder implements ShadowDataSourceMappingsFinder {
     
     private final HintValueContext hintValueContext;
     
     @Override
-    public void route(final RouteContext routeContext, final ShadowRule rule) {
-        ShadowRouteContextDecorator.decorate(routeContext, rule, findShadowDataSourceMappings(rule));
-    }
-    
-    private Map<String, String> findShadowDataSourceMappings(final ShadowRule rule) {
+    public Map<String, String> find(final ShadowRule rule) {
         if (!hintValueContext.isShadow()) {
             return Collections.emptyMap();
         }
@@ -55,11 +48,6 @@ public final class ShadowNonDMLStatementRouteEngine implements ShadowRouteEngine
     }
     
     private boolean isMatchAnyNoteShadowAlgorithms(final ShadowRule rule, final ShadowDetermineCondition shadowCondition) {
-        for (HintShadowAlgorithm<Comparable<?>> each : rule.getAllHintShadowAlgorithms()) {
-            if (HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, hintValueContext.isShadow())) {
-                return true;
-            }
-        }
-        return false;
+        return rule.getAllHintShadowAlgorithms().stream().anyMatch(each -> HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, hintValueContext.isShadow()));
     }
 }

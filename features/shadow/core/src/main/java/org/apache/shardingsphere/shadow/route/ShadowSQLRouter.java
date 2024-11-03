@@ -24,7 +24,8 @@ import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
-import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngineFactory;
+import org.apache.shardingsphere.shadow.route.engine.ShadowDataSourceMappingsFinderFactory;
+import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
@@ -36,7 +37,7 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
                                      final ShadowRule rule, final ConfigurationProperties props) {
-        ShadowRouteEngineFactory.newInstance(queryContext).route(routeContext, rule);
+        new ShadowRouteEngine().route(routeContext, rule, ShadowDataSourceMappingsFinderFactory.newInstance(queryContext));
     }
     
     @Override

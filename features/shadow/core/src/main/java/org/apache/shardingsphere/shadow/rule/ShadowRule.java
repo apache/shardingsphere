@@ -230,13 +230,13 @@ public final class ShadowRule implements DatabaseRule {
     }
     
     /**
-     * Get source data source name.
+     * Find production data source name.
      *
      * @param actualDataSourceName actual data source name
-     * @return source data source name
+     * @return found production data source name
      */
     @HighFrequencyInvocation
-    public Optional<String> getSourceDataSourceName(final String actualDataSourceName) {
+    public Optional<String> findProductionDataSourceName(final String actualDataSourceName) {
         ShadowDataSourceRule dataSourceRule = shadowDataSourceMappings.get(actualDataSourceName);
         return null == dataSourceRule ? Optional.empty() : Optional.of(dataSourceRule.getProductionDataSource());
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.dml;
+package org.apache.shardingsphere.shadow.route.engine.finder.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -32,15 +32,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Shadow delete statement route engine.
+ * Shadow delete statement data source mappings finder.
  */
-public final class ShadowDeleteStatementRouteEngine extends AbstractShadowDMLStatementRouteEngine {
+public final class ShadowDeleteStatementDataSourceMappingsFinder extends AbstractShadowDMLStatementDataSourceMappingsFinder {
     
     private final DeleteStatementContext sqlStatementContext;
     
     private final List<Object> parameters;
     
-    public ShadowDeleteStatementRouteEngine(final DeleteStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
+    public ShadowDeleteStatementDataSourceMappingsFinder(final DeleteStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
         super(sqlStatementContext, hintValueContext, ShadowOperationType.DELETE);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;

@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.dml;
+package org.apache.shardingsphere.shadow.route.engine.finder.dml;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
-import org.apache.shardingsphere.shadow.route.engine.ShadowRouteContextDecorator;
-import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.route.engine.determiner.ColumnShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.engine.determiner.HintShadowAlgorithmDeterminer;
+import org.apache.shardingsphere.shadow.route.engine.finder.ShadowDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
@@ -43,10 +41,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Abstract shadow DML statement route engine.
+ * Abstract shadow DML statement data source mappings finder.
  */
 @HighFrequencyInvocation
-public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRouteEngine {
+public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder implements ShadowDataSourceMappingsFinder {
     
     private final ShadowOperationType operationType;
     
@@ -55,7 +53,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     @Getter
     private final Map<String, String> tableAliasAndNameMappings;
     
-    protected AbstractShadowDMLStatementRouteEngine(final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final ShadowOperationType operationType) {
+    protected AbstractShadowDMLStatementDataSourceMappingsFinder(final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final ShadowOperationType operationType) {
         this.operationType = operationType;
         isShadow = hintValueContext.isShadow();
         tableAliasAndNameMappings = getTableAliasAndNameMappings(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables());
@@ -72,11 +70,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     }
     
     @Override
-    public final void route(final RouteContext routeContext, final ShadowRule rule) {
-        ShadowRouteContextDecorator.decorate(routeContext, rule, findShadowDataSourceMappings(rule));
-    }
-    
-    private Map<String, String> findShadowDataSourceMappings(final ShadowRule rule) {
+    public Map<String, String> find(final ShadowRule rule) {
         Collection<String> relatedShadowTables = rule.getRelatedShadowTables(tableAliasAndNameMappings.values());
         if (relatedShadowTables.isEmpty() && isMatchDefaultAlgorithm(rule)) {
             return rule.getAllShadowDataSourceMappings();

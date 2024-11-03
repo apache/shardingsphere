@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.dml;
+package org.apache.shardingsphere.shadow.route.engine.finder.dml;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
@@ -26,26 +26,24 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Shadow select statement route engine.
+ * Shadow update statement data source mappings finder.
  */
-public final class ShadowSelectStatementRouteEngine extends AbstractShadowDMLStatementRouteEngine {
+public final class ShadowUpdateStatementDataSourceMappingsFinder extends AbstractShadowDMLStatementDataSourceMappingsFinder {
     
-    private final SelectStatementContext sqlStatementContext;
+    private final UpdateStatementContext sqlStatementContext;
     
     private final List<Object> parameters;
     
-    public ShadowSelectStatementRouteEngine(final SelectStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
-        super(sqlStatementContext, hintValueContext, ShadowOperationType.SELECT);
+    public ShadowUpdateStatementDataSourceMappingsFinder(final UpdateStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
+        super(sqlStatementContext, hintValueContext, ShadowOperationType.UPDATE);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
@@ -58,7 +56,7 @@ public final class ShadowSelectStatementRouteEngine extends AbstractShadowDMLSta
             if (1 != columns.size()) {
                 continue;
             }
-            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(extractOwnerName(columns.iterator().next()), shadowColumnName, values)).ifPresent(result::add);
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }
@@ -71,10 +69,5 @@ public final class ShadowSelectStatementRouteEngine extends AbstractShadowDMLSta
             }
         }
         return result;
-    }
-    
-    private String extractOwnerName(final ColumnSegment columnSegment) {
-        Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return owner.isPresent() ? getTableAliasAndNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasAndNameMappings().keySet().iterator().next();
     }
 }
