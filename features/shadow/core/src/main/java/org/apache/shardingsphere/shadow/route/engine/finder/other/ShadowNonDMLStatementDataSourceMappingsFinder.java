@@ -41,13 +41,13 @@ public final class ShadowNonDMLStatementDataSourceMappingsFinder implements Shad
         if (!hintValueContext.isShadow()) {
             return Collections.emptyMap();
         }
-        if (isMatchAnyNoteShadowAlgorithms(rule, new ShadowDetermineCondition("", ShadowOperationType.HINT_MATCH))) {
+        if (isMatchAnyHintShadowAlgorithms(rule, new ShadowDetermineCondition("", ShadowOperationType.HINT_MATCH))) {
             return rule.getAllShadowDataSourceMappings();
         }
         return Collections.emptyMap();
     }
     
-    private boolean isMatchAnyNoteShadowAlgorithms(final ShadowRule rule, final ShadowDetermineCondition shadowCondition) {
+    private boolean isMatchAnyHintShadowAlgorithms(final ShadowRule rule, final ShadowDetermineCondition shadowCondition) {
         return rule.getAllHintShadowAlgorithms().stream().anyMatch(each -> HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, hintValueContext.isShadow()));
     }
 }
