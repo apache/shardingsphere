@@ -58,7 +58,6 @@ public final class ShadowRouteEngine {
         }
         routeContext.getRouteUnits().removeAll(toBeRemovedRouteUnit);
         routeContext.getRouteUnits().addAll(toBeAddedRouteUnit);
-        
         ShadowRouteContextDecorator.decorate(routeContext, rule, finder.find(rule));
     }
 }
