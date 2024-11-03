@@ -71,12 +71,12 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     
     @Override
     public Map<String, String> find(final ShadowRule rule) {
-        Collection<String> relatedShadowTables = rule.getRelatedShadowTables(tableAliasAndNameMappings.values());
-        if (relatedShadowTables.isEmpty() && isMatchDefaultAlgorithm(rule)) {
+        Collection<String> shadowTables = rule.filterShadowTables(tableAliasAndNameMappings.values());
+        if (shadowTables.isEmpty() && isMatchDefaultAlgorithm(rule)) {
             return rule.getAllShadowDataSourceMappings();
         }
-        Map<String, String> result = findBySQLHints(rule, relatedShadowTables);
-        return result.isEmpty() ? findByShadowColumn(rule, relatedShadowTables) : result;
+        Map<String, String> result = findBySQLHints(rule, shadowTables);
+        return result.isEmpty() ? findByShadowColumn(rule, shadowTables) : result;
     }
     
     @SuppressWarnings("unchecked")
@@ -93,7 +93,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : relatedShadowTables) {
             if (isContainsShadowInSQLHints(rule, each, new ShadowDetermineCondition(each, operationType))) {
-                result.putAll(rule.getRelatedShadowDataSourceMappings(each));
+                result.putAll(rule.getShadowDataSourceMappings(each));
                 return result;
             }
         }
@@ -101,7 +101,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     }
     
     private boolean isContainsShadowInSQLHints(final ShadowRule rule, final String tableName, final ShadowDetermineCondition shadowCondition) {
-        for (HintShadowAlgorithm<Comparable<?>> each : rule.getRelatedHintShadowAlgorithms(tableName)) {
+        for (HintShadowAlgorithm<Comparable<?>> each : rule.getHintShadowAlgorithms(tableName)) {
             if (HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, isShadow)) {
                 return true;
             }
@@ -111,9 +111,9 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     
     private Map<String, String> findByShadowColumn(final ShadowRule rule, final Collection<String> relatedShadowTables) {
         for (String each : relatedShadowTables) {
-            Collection<String> relatedShadowColumnNames = rule.getRelatedShadowColumnNames(operationType, each);
-            if (!relatedShadowColumnNames.isEmpty() && isMatchAnyColumnShadowAlgorithms(rule, each, relatedShadowColumnNames)) {
-                return rule.getRelatedShadowDataSourceMappings(each);
+            Collection<String> shadowColumnNames = rule.getShadowColumnNames(operationType, each);
+            if (!shadowColumnNames.isEmpty() && isMatchAnyColumnShadowAlgorithms(rule, each, shadowColumnNames)) {
+                return rule.getShadowDataSourceMappings(each);
             }
         }
         return Collections.emptyMap();
@@ -129,7 +129,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     }
     
     private boolean isMatchAnyColumnShadowAlgorithms(final ShadowRule rule, final String shadowTable, final String shadowColumn) {
-        Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms = rule.getRelatedColumnShadowAlgorithms(operationType, shadowTable, shadowColumn);
+        Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms = rule.getShadowAlgorithms(operationType, shadowTable, shadowColumn);
         if (columnShadowAlgorithms.isEmpty()) {
             return false;
         }

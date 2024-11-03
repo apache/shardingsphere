@@ -58,14 +58,14 @@ class ShadowRuleTest {
     }
     
     private Collection<ShadowDataSourceConfiguration> createDataSources() {
-        return Arrays.asList(new ShadowDataSourceConfiguration("shadow_ds_0", "ds0", "ds0_shadow"),
-                new ShadowDataSourceConfiguration("shadow_ds_1", "ds1", "ds1_shadow"));
+        return Arrays.asList(new ShadowDataSourceConfiguration("foo_ds_0", "prod_ds_0", "shadow_ds_0"),
+                new ShadowDataSourceConfiguration("foo_ds_1", "prod_ds_1", "shadow_ds_1"));
     }
     
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("foo_tbl", new ShadowTableConfiguration(Collections.singleton("shadow_ds_0"), createShadowAlgorithmNames("foo_tbl")));
-        result.put("bar_tbl", new ShadowTableConfiguration(Collections.singleton("shadow_ds_1"), createShadowAlgorithmNames("bar_tbl")));
+        result.put("foo_tbl", new ShadowTableConfiguration(Collections.singleton("foo_ds_0"), createShadowAlgorithmNames("foo_tbl")));
+        result.put("bar_tbl", new ShadowTableConfiguration(Collections.singleton("foo_ds_1"), createShadowAlgorithmNames("bar_tbl")));
         return result;
     }
     
@@ -94,42 +94,13 @@ class ShadowRuleTest {
     }
     
     @Test
-    void assertNewShadowRulSuccessByShadowRuleConfiguration() {
-        assertShadowDataSourceMappings(rule.getShadowDataSourceMappings());
-        assertShadowTableRules(rule.getShadowTableRules());
-    }
-    
-    private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> shadowDataSourceMappings) {
-        assertThat(shadowDataSourceMappings.size(), is(2));
-        assertThat(shadowDataSourceMappings.get("shadow_ds_0").getProductionDataSource(), is("ds0"));
-        assertThat(shadowDataSourceMappings.get("shadow_ds_0").getShadowDataSource(), is("ds0_shadow"));
-        assertThat(shadowDataSourceMappings.get("shadow_ds_1").getProductionDataSource(), is("ds1"));
-        assertThat(shadowDataSourceMappings.get("shadow_ds_1").getShadowDataSource(), is("ds1_shadow"));
-    }
-    
-    private void assertShadowTableRules(final Map<String, ShadowTableRule> shadowTableRules) {
-        assertThat(shadowTableRules.size(), is(2));
-        shadowTableRules.forEach(this::assertShadowTableRule);
-    }
-    
-    private void assertShadowTableRule(final String tableName, final ShadowTableRule shadowTableRule) {
-        if ("foo_tbl".equals(tableName)) {
-            assertThat(shadowTableRule.getHintShadowAlgorithmNames().size(), is(1));
-            assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(2));
-        } else {
-            assertThat(shadowTableRule.getHintShadowAlgorithmNames().size(), is(1));
-            assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(1));
-        }
-    }
-    
-    @Test
     void assertGetDefaultShadowAlgorithm() {
         assertFalse(rule.getDefaultShadowAlgorithm().isPresent());
     }
     
     @Test
-    void assertGetRelatedShadowTables() {
-        assertThat(rule.getRelatedShadowTables(Arrays.asList("foo_tbl", "no_tbl")), is(Collections.singletonList("foo_tbl")));
+    void assertFilterShadowTables() {
+        assertThat(rule.filterShadowTables(Arrays.asList("foo_tbl", "no_tbl")), is(Collections.singletonList("foo_tbl")));
     }
     
     @Test
@@ -143,38 +114,40 @@ class ShadowRuleTest {
     }
     
     @Test
-    void assertGetRelatedHintShadowAlgorithms() {
-        assertThat(rule.getRelatedHintShadowAlgorithms("foo_tbl").size(), is(1));
+    void assertGetHintShadowAlgorithms() {
+        assertThat(rule.getHintShadowAlgorithms("foo_tbl").size(), is(1));
     }
     
     @Test
-    void assertGetRelatedColumnShadowAlgorithms() {
-        assertThat(rule.getRelatedColumnShadowAlgorithms(ShadowOperationType.INSERT, "foo_tbl", "foo_id").size(), is(1));
+    void assertGetShadowAlgorithms() {
+        assertThat(rule.getShadowAlgorithms(ShadowOperationType.INSERT, "foo_tbl", "foo_id").size(), is(1));
     }
     
     @Test
-    void assertGetRelatedShadowColumnNames() {
-        assertThat(rule.getRelatedShadowColumnNames(ShadowOperationType.INSERT, "foo_tbl").size(), is(1));
+    void assertGetShadowColumnNames() {
+        assertThat(rule.getShadowColumnNames(ShadowOperationType.INSERT, "foo_tbl").size(), is(1));
     }
     
     @Test
-    void assertGetRelatedShadowDataSourceMappings() {
-        assertThat(rule.getRelatedShadowDataSourceMappings("foo_tbl").size(), is(1));
+    void assertGetShadowDataSourceMappings() {
+        assertThat(rule.getShadowDataSourceMappings("foo_tbl"), is(Collections.singletonMap("prod_ds_0", "shadow_ds_0")));
     }
     
     @Test
     void assertGetAllShadowDataSourceMappings() {
         assertThat(rule.getAllShadowDataSourceMappings().size(), is(2));
+        assertThat(rule.getAllShadowDataSourceMappings().get("prod_ds_0"), is("shadow_ds_0"));
+        assertThat(rule.getAllShadowDataSourceMappings().get("prod_ds_1"), is("shadow_ds_1"));
     }
     
     @Test
     void assertFindProductionDataSourceNameSuccess() {
-        assertThat(rule.findProductionDataSourceName("shadow_ds_0"), is(Optional.of("ds0")));
-        assertThat(rule.findProductionDataSourceName("shadow_ds_1"), is(Optional.of("ds1")));
+        assertThat(rule.findProductionDataSourceName("foo_ds_0"), is(Optional.of("prod_ds_0")));
+        assertThat(rule.findProductionDataSourceName("foo_ds_1"), is(Optional.of("prod_ds_1")));
     }
     
     @Test
     void assertFindProductionDataSourceNameFailed() {
-        assertFalse(rule.findProductionDataSourceName("shadow_ds_2").isPresent());
+        assertFalse(rule.findProductionDataSourceName("foo_ds_2").isPresent());
     }
 }
