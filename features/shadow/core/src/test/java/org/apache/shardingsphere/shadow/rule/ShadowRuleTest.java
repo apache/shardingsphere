@@ -168,13 +168,13 @@ class ShadowRuleTest {
     }
     
     @Test
-    void assertGetDataSourceMapper() {
+    void assertGetProductionDataSourceName() {
         assertThat(rule.getProductionDataSourceName("shadow_ds_0"), is(Optional.of("ds0")));
         assertThat(rule.getProductionDataSourceName("shadow_ds_1"), is(Optional.of("ds1")));
     }
     
     @Test
-    void assertNotGetDataSourceMapper() {
+    void assertNotGetProductionDataSourceName() {
         assertFalse(rule.getProductionDataSourceName("shadow_ds_2").isPresent());
     }
 }
