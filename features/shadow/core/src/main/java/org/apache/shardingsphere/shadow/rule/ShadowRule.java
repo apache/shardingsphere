@@ -65,7 +65,7 @@ public final class ShadowRule implements DatabaseRule {
     public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         initDataSourceRules(ruleConfig.getDataSources());
-        initShadowAlgorithmConfigurations(ruleConfig.getShadowAlgorithms());
+        initShadowAlgorithms(ruleConfig.getShadowAlgorithms());
         defaultShadowAlgorithm = shadowAlgorithms.get(ruleConfig.getDefaultShadowAlgorithmName());
         if (defaultShadowAlgorithm instanceof HintShadowAlgorithm<?>) {
             hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
@@ -78,7 +78,7 @@ public final class ShadowRule implements DatabaseRule {
         dataSources.forEach(each -> shadowDataSourceRules.put(each.getName(), new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName())));
     }
     
-    private void initShadowAlgorithmConfigurations(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
+    private void initShadowAlgorithms(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
         shadowAlgorithmConfigs.forEach((key, value) -> {
             ShadowAlgorithm algorithm = TypedSPILoader.getService(ShadowAlgorithm.class, value.getType(), value.getProps());
             if (algorithm instanceof HintShadowAlgorithm<?>) {
