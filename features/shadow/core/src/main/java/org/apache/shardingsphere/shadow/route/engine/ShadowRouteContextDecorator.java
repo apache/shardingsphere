@@ -48,12 +48,12 @@ public final class ShadowRouteContextDecorator {
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String logicName = each.getDataSourceMapper().getLogicName();
             String actualName = each.getDataSourceMapper().getActualName();
-            Optional<String> sourceDataSourceName = rule.findProductionDataSourceName(actualName);
-            if (sourceDataSourceName.isPresent()) {
-                String shadowDataSourceName = shadowDataSourceMappings.get(sourceDataSourceName.get());
+            Optional<String> productionDataSourceName = rule.findProductionDataSourceName(actualName);
+            if (productionDataSourceName.isPresent()) {
+                String shadowDataSourceName = shadowDataSourceMappings.get(productionDataSourceName.get());
                 toBeRemovedRouteUnit.add(each);
                 toBeAddedRouteUnit.add(null == shadowDataSourceName
-                        ? new RouteUnit(new RouteMapper(logicName, sourceDataSourceName.get()), each.getTableMappers())
+                        ? new RouteUnit(new RouteMapper(logicName, productionDataSourceName.get()), each.getTableMappers())
                         : new RouteUnit(new RouteMapper(logicName, shadowDataSourceName), each.getTableMappers()));
             }
         }
