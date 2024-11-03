@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
-import org.apache.shardingsphere.shadow.route.engine.ShadowDataSourceMappingsFinderFactory;
+import org.apache.shardingsphere.shadow.route.engine.finder.ShadowDataSourceMappingsFinderFactory;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
