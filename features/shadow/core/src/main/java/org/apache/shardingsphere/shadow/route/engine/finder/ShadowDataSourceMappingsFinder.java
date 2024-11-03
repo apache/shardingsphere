@@ -28,7 +28,7 @@ public interface ShadowDataSourceMappingsFinder {
     
     /**
      * Find shadow data source mappings.
-     * 
+     *
      * @param rule shadow rule
      * @return found shadow data source mappings
      */
