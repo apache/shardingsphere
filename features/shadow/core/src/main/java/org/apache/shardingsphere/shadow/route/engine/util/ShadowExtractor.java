@@ -39,11 +39,11 @@ import java.util.Optional;
 public final class ShadowExtractor {
     
     /**
-     * Get values in expression segment.
+     * Extract values.
      *
      * @param expression expression segment
      * @param params parameters
-     * @return values
+     * @return extracted values
      */
     public static Optional<Collection<Comparable<?>>> extractValues(final ExpressionSegment expression, final List<Object> params) {
         Collection<Comparable<?>> result = new LinkedList<>();
@@ -54,33 +54,33 @@ public final class ShadowExtractor {
             extractValues(((InExpression) expression).getRight(), params).ifPresent(result::addAll);
         }
         if (expression instanceof ListExpression) {
-            ((ListExpression) expression).getItems().forEach(each -> extractValueInSimpleExpressionSegment(each, params).ifPresent(result::add));
+            ((ListExpression) expression).getItems().forEach(each -> extractSimpleExpressionValue(each, params).ifPresent(result::add));
         }
         if (expression instanceof SimpleExpressionSegment) {
-            extractValueInSimpleExpressionSegment(expression, params).ifPresent(result::add);
+            extractSimpleExpressionValue(expression, params).ifPresent(result::add);
         }
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
-    private static Optional<Comparable<?>> extractValueInSimpleExpressionSegment(final ExpressionSegment expression, final List<Object> params) {
+    private static Optional<Comparable<?>> extractSimpleExpressionValue(final ExpressionSegment expression, final List<Object> params) {
         if (expression instanceof LiteralExpressionSegment) {
-            return extractValueInLiteralExpressionSegment((LiteralExpressionSegment) expression);
+            return extractLiteralExpressionValue((LiteralExpressionSegment) expression);
         }
         if (expression instanceof ParameterMarkerExpressionSegment) {
-            return extractValueInParameterMarkerExpressionSegment((ParameterMarkerExpressionSegment) expression, params);
+            return extractParameterMarkerExpressionValue((ParameterMarkerExpressionSegment) expression, params);
         }
         return Optional.empty();
     }
     
-    private static Optional<Comparable<?>> extractValueInParameterMarkerExpressionSegment(final ParameterMarkerExpressionSegment expression, final List<Object> params) {
-        return castToComparable(params.get(expression.getParameterMarkerIndex()));
-    }
-    
-    private static Optional<Comparable<?>> extractValueInLiteralExpressionSegment(final LiteralExpressionSegment expression) {
+    private static Optional<Comparable<?>> extractLiteralExpressionValue(final LiteralExpressionSegment expression) {
         return castToComparable(expression.getLiterals());
     }
     
-    private static Optional<Comparable<?>> castToComparable(final Object object) {
-        return object instanceof Comparable<?> ? Optional.of((Comparable<?>) object) : Optional.empty();
+    private static Optional<Comparable<?>> extractParameterMarkerExpressionValue(final ParameterMarkerExpressionSegment expression, final List<Object> params) {
+        return castToComparable(params.get(expression.getParameterMarkerIndex()));
+    }
+    
+    private static Optional<Comparable<?>> castToComparable(final Object value) {
+        return value instanceof Comparable<?> ? Optional.of((Comparable<?>) value) : Optional.empty();
     }
 }
