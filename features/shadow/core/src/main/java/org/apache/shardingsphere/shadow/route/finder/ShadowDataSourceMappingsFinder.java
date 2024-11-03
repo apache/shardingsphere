@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.finder;
+package org.apache.shardingsphere.shadow.route.finder;
 
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 

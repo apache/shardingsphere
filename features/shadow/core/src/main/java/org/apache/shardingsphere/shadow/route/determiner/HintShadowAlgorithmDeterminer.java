@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.determiner;
+package org.apache.shardingsphere.shadow.route.determiner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,11 +41,11 @@ public final class HintShadowAlgorithmDeterminer {
      * @return is shadow or not
      */
     public static boolean isShadow(final HintShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule, final boolean useShadow) {
-        PreciseHintShadowValue<Comparable<?>> shadowValue = createNoteShadowValues(shadowCondition, useShadow);
+        PreciseHintShadowValue<Comparable<?>> shadowValue = createHintShadowValues(shadowCondition, useShadow);
         return shadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), shadowValue);
     }
     
-    private static PreciseHintShadowValue<Comparable<?>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition, final boolean useShadow) {
+    private static PreciseHintShadowValue<Comparable<?>> createHintShadowValues(final ShadowDetermineCondition shadowDetermineCondition, final boolean useShadow) {
         ShadowOperationType shadowOperationType = shadowDetermineCondition.getShadowOperationType();
         String tableName = shadowDetermineCondition.getTableName();
         return new PreciseHintShadowValue<>(tableName, shadowOperationType, useShadow);
