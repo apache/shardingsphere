@@ -34,10 +34,12 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 @HighFrequencyInvocation
 public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
     
+    private final ShadowRouteEngine routeEngine = new ShadowRouteEngine();
+    
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
                                      final ShadowRule rule, final ConfigurationProperties props) {
-        new ShadowRouteEngine().route(routeContext, rule, ShadowDataSourceMappingsFinderFactory.newInstance(queryContext));
+        routeEngine.route(routeContext, rule, ShadowDataSourceMappingsFinderFactory.newInstance(queryContext));
     }
     
     @Override
