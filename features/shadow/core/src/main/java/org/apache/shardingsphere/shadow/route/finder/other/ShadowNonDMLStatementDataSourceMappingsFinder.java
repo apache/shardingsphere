@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.route.finder.other;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.finder.ShadowDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -41,13 +41,13 @@ public final class ShadowNonDMLStatementDataSourceMappingsFinder implements Shad
         if (!hintValueContext.isShadow()) {
             return Collections.emptyMap();
         }
-        if (isMatchAnyHintShadowAlgorithms(rule, new ShadowDetermineCondition("", ShadowOperationType.HINT_MATCH))) {
+        if (isMatchAnyHintShadowAlgorithms(rule, new ShadowCondition("", ShadowOperationType.HINT_MATCH))) {
             return rule.getAllShadowDataSourceMappings();
         }
         return Collections.emptyMap();
     }
     
-    private boolean isMatchAnyHintShadowAlgorithms(final ShadowRule rule, final ShadowDetermineCondition shadowCondition) {
+    private boolean isMatchAnyHintShadowAlgorithms(final ShadowRule rule, final ShadowCondition shadowCondition) {
         return rule.getAllHintShadowAlgorithms().stream().anyMatch(each -> HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, hintValueContext.isShadow()));
     }
 }

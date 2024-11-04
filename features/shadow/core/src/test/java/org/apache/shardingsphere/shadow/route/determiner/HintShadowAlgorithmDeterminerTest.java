@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.route.determiner;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
@@ -44,7 +44,7 @@ class HintShadowAlgorithmDeterminerTest {
     void assertIsShadow() {
         HintShadowAlgorithm hintShadowAlgorithm = (HintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());
         HintValueContext hintValueContext = createHintValueContext();
-        assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration()), hintValueContext.isShadow()));
+        assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowCondition(), new ShadowRule(createShadowRuleConfiguration()), hintValueContext.isShadow()));
     }
     
     private HintValueContext createHintValueContext() {
@@ -68,7 +68,7 @@ class HintShadowAlgorithmDeterminerTest {
         return result;
     }
     
-    private ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
+    private ShadowCondition createShadowCondition() {
+        return new ShadowCondition("t_order", ShadowOperationType.INSERT);
     }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.ColumnShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.finder.ShadowDataSourceMappingsFinder;
@@ -83,8 +83,8 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     private boolean isMatchDefaultAlgorithm(final ShadowRule rule) {
         Optional<ShadowAlgorithm> defaultAlgorithm = rule.getDefaultShadowAlgorithm();
         if (defaultAlgorithm.isPresent() && defaultAlgorithm.get() instanceof HintShadowAlgorithm<?>) {
-            ShadowDetermineCondition determineCondition = new ShadowDetermineCondition("", ShadowOperationType.HINT_MATCH);
-            return HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) defaultAlgorithm.get(), determineCondition, rule, isShadow);
+            ShadowCondition shadowCondition = new ShadowCondition("", ShadowOperationType.HINT_MATCH);
+            return HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) defaultAlgorithm.get(), shadowCondition, rule, isShadow);
         }
         return false;
     }
@@ -92,7 +92,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     private Map<String, String> findBySQLHints(final ShadowRule rule, final Collection<String> relatedShadowTables) {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : relatedShadowTables) {
-            if (isContainsShadowInSQLHints(rule, each, new ShadowDetermineCondition(each, operationType))) {
+            if (isContainsShadowInSQLHints(rule, each, new ShadowCondition(each, operationType))) {
                 result.putAll(rule.getShadowDataSourceMappings(each));
                 return result;
             }
@@ -100,7 +100,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
         return result;
     }
     
-    private boolean isContainsShadowInSQLHints(final ShadowRule rule, final String tableName, final ShadowDetermineCondition shadowCondition) {
+    private boolean isContainsShadowInSQLHints(final ShadowRule rule, final String tableName, final ShadowCondition shadowCondition) {
         for (HintShadowAlgorithm<Comparable<?>> each : rule.getHintShadowAlgorithms(tableName)) {
             if (HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, isShadow)) {
                 return true;
@@ -143,7 +143,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     
     private boolean isMatchColumnShadowAlgorithm(final String shadowTable, final Collection<ColumnShadowAlgorithm<Comparable<?>>> algorithms, final ShadowColumnCondition condition) {
         for (ColumnShadowAlgorithm<Comparable<?>> each : algorithms) {
-            if (ColumnShadowAlgorithmDeterminer.isShadow(each, new ShadowDetermineCondition(shadowTable, operationType, condition))) {
+            if (ColumnShadowAlgorithmDeterminer.isShadow(each, new ShadowCondition(shadowTable, operationType, condition))) {
                 return true;
             }
         }
