@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
@@ -39,8 +38,6 @@ import java.util.Map;
 /**
  * Substitutable column name token.
  */
-// TODO remove @EqualsAndHashCode in token rewriter
-@EqualsAndHashCode(callSuper = false, exclude = "projections")
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable, RouteUnitAware {
     
     private static final String COLUMN_NAME_SPLITTER = ", ";
