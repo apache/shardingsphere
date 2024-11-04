@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -81,7 +81,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     
     private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnExpressionTableNames,
                                                    final Collection<WhereSegment> whereSegments, final DatabaseType databaseType) {
-        Collection<SQLToken> result = new LinkedHashSet<>(columnSegments.size(), 1F);
+        Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : columnSegments) {
             String tableName = columnExpressionTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
