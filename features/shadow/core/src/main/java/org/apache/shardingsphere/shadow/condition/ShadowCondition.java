@@ -34,6 +34,10 @@ public final class ShadowCondition {
     
     private final ShadowColumnCondition columnCondition;
     
+    public ShadowCondition() {
+        this("", ShadowOperationType.HINT_MATCH, null);
+    }
+    
     public ShadowCondition(final String tableName, final ShadowOperationType operationType) {
         this(tableName, operationType, null);
     }
