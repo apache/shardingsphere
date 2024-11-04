@@ -44,7 +44,7 @@ class HintShadowAlgorithmDeterminerTest {
     void assertIsShadow() {
         HintShadowAlgorithm hintShadowAlgorithm = (HintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());
         HintValueContext hintValueContext = createHintValueContext();
-        assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration()), hintValueContext.isShadow()));
+        assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowCondition(), new ShadowRule(createShadowRuleConfiguration()), hintValueContext.isShadow()));
     }
     
     private HintValueContext createHintValueContext() {
@@ -68,7 +68,7 @@ class HintShadowAlgorithmDeterminerTest {
         return result;
     }
     
-    private ShadowCondition createShadowDetermineCondition() {
+    private ShadowCondition createShadowCondition() {
         return new ShadowCondition("t_order", ShadowOperationType.INSERT);
     }
 }

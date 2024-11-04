@@ -83,8 +83,8 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     private boolean isMatchDefaultAlgorithm(final ShadowRule rule) {
         Optional<ShadowAlgorithm> defaultAlgorithm = rule.getDefaultShadowAlgorithm();
         if (defaultAlgorithm.isPresent() && defaultAlgorithm.get() instanceof HintShadowAlgorithm<?>) {
-            ShadowCondition determineCondition = new ShadowCondition("", ShadowOperationType.HINT_MATCH);
-            return HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) defaultAlgorithm.get(), determineCondition, rule, isShadow);
+            ShadowCondition shadowCondition = new ShadowCondition("", ShadowOperationType.HINT_MATCH);
+            return HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) defaultAlgorithm.get(), shadowCondition, rule, isShadow);
         }
         return false;
     }

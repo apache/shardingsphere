@@ -39,10 +39,10 @@ class ColumnShadowAlgorithmDeterminerTest {
     void assertIsShadow() {
         Properties props = PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "insert"), new Property("regex", "[1]"));
         assertTrue(ColumnShadowAlgorithmDeterminer.isShadow(
-                (ColumnShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH", props), createShadowDetermineCondition()));
+                (ColumnShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH", props), createShadowCondition()));
     }
     
-    private ShadowCondition createShadowDetermineCondition() {
+    private ShadowCondition createShadowCondition() {
         return new ShadowCondition("t_order", ShadowOperationType.INSERT, new ShadowColumnCondition("t_order", "user_id", Collections.singleton(1)));
     }
 }
