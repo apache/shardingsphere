@@ -57,7 +57,7 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
     private ShadowOperationType getShadowOperationType(final Properties props) {
         String operationType = props.getProperty(OPERATION_PROPS_KEY);
         ShardingSpherePreconditions.checkNotNull(operationType, () -> new AlgorithmInitializationException(this, "Column shadow algorithm operation cannot be null"));
-        Optional<ShadowOperationType> result = ShadowOperationType.contains(operationType);
+        Optional<ShadowOperationType> result = ShadowOperationType.valueFrom(operationType);
         ShardingSpherePreconditions.checkState(result.isPresent(),
                 () -> new AlgorithmInitializationException(this, "Column shadow algorithm operation must be one of [select, insert, update, delete]"));
         return result.get();
