@@ -15,50 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.segment.generic;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.Optional;
-
 /**
- * Owner segment.
+ * Table name bound info.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class OwnerSegment implements SQLSegment {
+public final class TableSegmentBoundInfo {
     
-    private final int startIndex;
+    private final IdentifierValue originalDatabase;
     
-    private final int stopIndex;
-    
-    private final IdentifierValue identifier;
-    
-    private OwnerSegment owner;
-    
-    private TableSegmentBoundInfo tableBoundInfo;
-    
-    /**
-     * Get owner.
-     *
-     * @return owner segment
-     */
-    public Optional<OwnerSegment> getOwner() {
-        return Optional.ofNullable(owner);
-    }
-    
-    /**
-     * Get table bound info.
-     *
-     * @return table bound info
-     */
-    public Optional<TableSegmentBoundInfo> getTableBoundInfo() {
-        return Optional.ofNullable(tableBoundInfo);
-    }
+    private final IdentifierValue originalSchema;
 }

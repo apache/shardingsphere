@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
@@ -36,4 +37,6 @@ public final class TableNameSegment implements SQLSegment {
     private final int stopIndex;
     
     private final IdentifierValue identifier;
+    
+    private TableSegmentBoundInfo tableBoundInfo;
 }

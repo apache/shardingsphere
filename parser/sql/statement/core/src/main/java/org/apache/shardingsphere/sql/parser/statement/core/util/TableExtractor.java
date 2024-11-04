@@ -283,7 +283,9 @@ public final class TableExtractor {
         for (ColumnSegment each : columnSegments) {
             if (each.getOwner().isPresent() && needRewrite(each.getOwner().get())) {
                 OwnerSegment ownerSegment = each.getOwner().get();
-                rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
+                TableNameSegment tableSegment = new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier());
+                ownerSegment.getTableBoundInfo().ifPresent(tableSegment::setTableBoundInfo);
+                rewriteTables.add(new SimpleTableSegment(tableSegment));
             }
         }
     }
