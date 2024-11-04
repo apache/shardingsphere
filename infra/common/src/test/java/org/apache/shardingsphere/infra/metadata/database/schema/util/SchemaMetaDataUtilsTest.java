@@ -47,12 +47,14 @@ class SchemaMetaDataUtilsTest {
     
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenConfigCheckMetaDataEnable() {
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        ShardingSphereRule rule0 = mock(ShardingSphereRule.class);
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
-                Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "sharding_db");
+        when(rule0.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
+        when(rule1.getAttributes()).thenReturn(new RuleAttributes());
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
+                mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
         assertThat(actual.size(), is(2));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -66,12 +68,14 @@ class SchemaMetaDataUtilsTest {
     
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnable() {
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        ShardingSphereRule rule0 = mock(ShardingSphereRule.class);
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
-                Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "sharding_db");
+        when(rule0.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
+        when(rule1.getAttributes()).thenReturn(new RuleAttributes());
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
+                mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -82,12 +86,14 @@ class SchemaMetaDataUtilsTest {
     
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        ShardingSphereRule rule0 = mock(ShardingSphereRule.class);
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
-                Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "public");
+        when(rule0.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
+        when(rule1.getAttributes()).thenReturn(new RuleAttributes());
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
+                mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "public");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();

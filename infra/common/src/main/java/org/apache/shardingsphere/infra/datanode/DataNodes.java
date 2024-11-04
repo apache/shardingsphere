@@ -50,7 +50,10 @@ public final class DataNodes {
             return result;
         }
         for (ShardingSphereRule each : rules) {
-            result = buildDataNodes(result, each);
+            Optional<DataSourceMapperRuleAttribute> dataSourceMapperRuleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
+            if (dataSourceMapperRuleAttribute.isPresent()) {
+                result = buildDataNodes(result, dataSourceMapperRuleAttribute.get());
+            }
         }
         return result;
     }
@@ -69,13 +72,9 @@ public final class DataNodes {
         return rule.getAttributes().findAttribute(DataNodeRuleAttribute.class).map(optional -> optional.getDataNodesByTableName(tableName)).orElse(Collections.emptyList());
     }
     
-    private Collection<DataNode> buildDataNodes(final Collection<DataNode> dataNodes, final ShardingSphereRule rule) {
-        Optional<DataSourceMapperRuleAttribute> dataSourceMapperRuleAttribute = rule.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
-        if (!dataSourceMapperRuleAttribute.isPresent()) {
-            return Collections.emptyList();
-        }
+    private Collection<DataNode> buildDataNodes(final Collection<DataNode> dataNodes, final DataSourceMapperRuleAttribute dataSourceMapperRuleAttribute) {
         Collection<DataNode> result = new LinkedList<>();
-        Map<String, Collection<String>> dataSourceMapper = dataSourceMapperRuleAttribute.get().getDataSourceMapper();
+        Map<String, Collection<String>> dataSourceMapper = dataSourceMapperRuleAttribute.getDataSourceMapper();
         for (DataNode each : dataNodes) {
             result.addAll(DataNodeUtils.buildDataNode(each, dataSourceMapper));
         }
