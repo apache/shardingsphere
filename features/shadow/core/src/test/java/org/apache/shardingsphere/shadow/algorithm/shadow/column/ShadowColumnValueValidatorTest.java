@@ -25,7 +25,7 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-class ShadowValueValidatorTest {
+class ShadowColumnValueValidatorTest {
     
     @Test
     void assertValidateDateType() {
