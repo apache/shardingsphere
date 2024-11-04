@@ -43,8 +43,6 @@ class ColumnShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
-        result.initShadowColumnCondition(new ShadowColumnCondition("t_order", "user_id", Collections.singleton(1)));
-        return result;
+        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT, new ShadowColumnCondition("t_order", "user_id", Collections.singleton(1)));
     }
 }
