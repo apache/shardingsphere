@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -49,6 +50,7 @@ public final class DataNodes {
      * @param tableName table name
      * @return data nodes
      */
+    @HighFrequencyInvocation
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<DataNode> getDataNodes(final String tableName) {
         Collection<DataNode> result = getDataNodesByTableName(tableName);

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.datanode;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeBuilder;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
@@ -31,6 +32,7 @@ import java.util.Map;
 /**
  * Readwrite-splitting data node builder.
  */
+@HighFrequencyInvocation
 public final class ReadwriteSplittingDataNodeBuilder implements DataNodeBuilder<ReadwriteSplittingRule> {
     
     @Override
