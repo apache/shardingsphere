@@ -132,9 +132,9 @@ public final class ShadowRule implements DatabaseRule {
     }
     
     /**
-     * Get related hint shadow algorithms.
+     * Get all hint shadow algorithms.
      *
-     * @return related hint shadow algorithms
+     * @return all hint shadow algorithms
      */
     @HighFrequencyInvocation
     @SuppressWarnings("unchecked")
@@ -158,8 +158,7 @@ public final class ShadowRule implements DatabaseRule {
     @SuppressWarnings("unchecked")
     public Collection<HintShadowAlgorithm<Comparable<?>>> getHintShadowAlgorithms(final String tableName) {
         Collection<HintShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
-        Collection<String> hintShadowAlgorithmNames = tableRules.get(tableName).getHintShadowAlgorithmNames();
-        for (String each : hintShadowAlgorithmNames) {
+        for (String each : tableRules.get(tableName).getHintShadowAlgorithmNames()) {
             result.add((HintShadowAlgorithm<Comparable<?>>) shadowAlgorithms.get(each));
         }
         return result;
@@ -168,16 +167,16 @@ public final class ShadowRule implements DatabaseRule {
     /**
      * Get column shadow algorithms.
      *
-     * @param shadowOperationType shadow operation type
+     * @param operationType shadow operation type
      * @param tableName table name
      * @param shadowColumnName shadow column name
      * @return column shadow algorithms
      */
     @HighFrequencyInvocation
     @SuppressWarnings("unchecked")
-    public Collection<ColumnShadowAlgorithm<Comparable<?>>> getColumnShadowAlgorithms(final ShadowOperationType shadowOperationType, final String tableName, final String shadowColumnName) {
+    public Collection<ColumnShadowAlgorithm<Comparable<?>>> getColumnShadowAlgorithms(final ShadowOperationType operationType, final String tableName, final String shadowColumnName) {
         Collection<ColumnShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
-        for (ShadowAlgorithmNameRule each : tableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(shadowOperationType, Collections.emptyList())) {
+        for (ShadowAlgorithmNameRule each : tableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(operationType, Collections.emptyList())) {
             if (shadowColumnName.equals(each.getShadowColumnName())) {
                 result.add((ColumnShadowAlgorithm<Comparable<?>>) shadowAlgorithms.get(each.getShadowAlgorithmName()));
             }
@@ -188,14 +187,14 @@ public final class ShadowRule implements DatabaseRule {
     /**
      * Get shadow column names.
      *
-     * @param shadowOperationType shadow operation type
+     * @param operationType shadow operation type
      * @param tableName table name
      * @return got shadow column names
      */
     @HighFrequencyInvocation
-    public Collection<String> getShadowColumnNames(final ShadowOperationType shadowOperationType, final String tableName) {
+    public Collection<String> getShadowColumnNames(final ShadowOperationType operationType, final String tableName) {
         Collection<String> result = new LinkedList<>();
-        for (ShadowAlgorithmNameRule each : tableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(shadowOperationType, Collections.emptyList())) {
+        for (ShadowAlgorithmNameRule each : tableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(operationType, Collections.emptyList())) {
             result.add(each.getShadowColumnName());
         }
         return result;
