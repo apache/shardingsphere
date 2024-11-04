@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class ColumnSegmentBinderTest {
@@ -133,5 +135,34 @@ class ColumnSegmentBinderTest {
         assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order_item"));
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+    }
+    
+    @Test
+    void assertBindOwner() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
+        boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("t_order"), new IdentifierValue("order_id")));
+        tableBinderContexts.put(new CaseInsensitiveString("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn))));
+        ColumnSegment boundItemIdColumn = new ColumnSegment(0, 0, new IdentifierValue("item_id"));
+        boundItemIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("t_order_item"), new IdentifierValue("item_id")));
+        tableBinderContexts.put(new CaseInsensitiveString("t_order_item"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn))));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t_order")));
+        SQLStatementBinderContext binderContext =
+                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create());
+        assertTrue(actual.getOwner().isPresent());
+        assertTrue(actual.getOwner().get().getTableBoundInfo().isPresent());
+        TableSegmentBoundInfo actualTableBoundInfo = actual.getOwner().get().getTableBoundInfo().get();
+        assertThat(actualTableBoundInfo.getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actualTableBoundInfo.getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertNotNull(actual.getColumnBoundInfo());
+        assertNull(actual.getOtherUsingColumnBoundInfo());
+        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
     }
 }
