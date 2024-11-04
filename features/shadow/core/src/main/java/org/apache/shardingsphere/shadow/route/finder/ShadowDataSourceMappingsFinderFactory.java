@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shadow.route.finder.dml.ShadowDeleteStatementDa
 import org.apache.shardingsphere.shadow.route.finder.dml.ShadowInsertStatementDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.route.finder.dml.ShadowSelectStatementDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.route.finder.dml.ShadowUpdateStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.other.ShadowHintDataSourceMappingsFinder;
+import org.apache.shardingsphere.shadow.route.finder.hint.ShadowHintDataSourceMappingsFinder;
 
 /**
  * Shadow data source mappings finder factory.

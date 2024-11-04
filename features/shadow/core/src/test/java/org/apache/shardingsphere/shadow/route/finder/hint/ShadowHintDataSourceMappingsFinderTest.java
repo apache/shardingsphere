@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder.other;
+package org.apache.shardingsphere.shadow.route.finder.hint;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -25,7 +25,6 @@ import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -36,29 +35,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class ShadowHintDataSourceMappingsFinderTest {
     
-    private ShadowHintDataSourceMappingsFinder finder;
-    
-    @BeforeEach
-    void init() {
-        finder = new ShadowHintDataSourceMappingsFinder(createHintValueContext());
-    }
-    
-    private HintValueContext createHintValueContext() {
-        HintValueContext result = new HintValueContext();
-        result.setShadow(true);
-        return result;
+    @Test
+    void assertFindWithShadowHint() {
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setShadow(true);
+        assertThat(new ShadowHintDataSourceMappingsFinder(hintValueContext).find(new ShadowRule(createRuleConfiguration())), is(Collections.singletonMap("prod_ds", "shadow_ds")));
     }
     
     @Test
-    void assertRoute() {
-        Map<String, String> shadowDataSourceMappings = finder.find(new ShadowRule(createShadowRuleConfiguration()));
-        assertThat(shadowDataSourceMappings, is(Collections.singletonMap("ds", "ds_shadow")));
+    void assertFindWithNotShadowHint() {
+        HintValueContext hintValueContext = new HintValueContext();
+        assertThat(new ShadowHintDataSourceMappingsFinder(hintValueContext).find(new ShadowRule(createRuleConfiguration())), is(Collections.emptyMap()));
     }
     
-    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+    private ShadowRuleConfiguration createRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("shadow-data-source", "ds", "ds_shadow")));
-        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source"), Collections.singleton("sql-hint-algorithm"))));
+        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
+        result.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.singleton("foo_ds"), Collections.singleton("sql-hint-algorithm"))));
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
