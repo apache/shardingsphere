@@ -35,17 +35,17 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShadowTableRule {
     
-    private final String tableName;
+    private final String name;
     
-    private final Collection<String> shadowDataSources;
+    private final Collection<String> logicDataSourceNames;
     
     private final Collection<String> hintShadowAlgorithmNames;
     
     private final Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames;
     
-    public ShadowTableRule(final String tableName, final Collection<String> shadowDataSources, final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        this.tableName = tableName;
-        this.shadowDataSources = shadowDataSources;
+    public ShadowTableRule(final String tableName, final Collection<String> logicDataSourceNames, final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
+        this.name = tableName;
+        this.logicDataSourceNames = logicDataSourceNames;
         hintShadowAlgorithmNames = getHintShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
         columnShadowAlgorithmNames = getColumnShadowAlgorithmRules(shadowAlgorithmNames, shadowAlgorithms);
     }

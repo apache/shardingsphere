@@ -145,7 +145,7 @@ public final class ShadowRule implements DatabaseRule {
     }
     
     /**
-     * Get hint shadow algorithms by table name.
+     * Get hint shadow algorithms.
      *
      * @param tableName table name
      * @return hint shadow algorithms
@@ -162,16 +162,16 @@ public final class ShadowRule implements DatabaseRule {
     }
     
     /**
-     * Get shadow algorithms.
+     * Get column shadow algorithms.
      *
      * @param shadowOperationType shadow operation type
      * @param tableName table name
      * @param shadowColumnName shadow column name
-     * @return shadow algorithms
+     * @return column shadow algorithms
      */
     @HighFrequencyInvocation
     @SuppressWarnings("unchecked")
-    public Collection<ColumnShadowAlgorithm<Comparable<?>>> getShadowAlgorithms(final ShadowOperationType shadowOperationType, final String tableName, final String shadowColumnName) {
+    public Collection<ColumnShadowAlgorithm<Comparable<?>>> getColumnShadowAlgorithms(final ShadowOperationType shadowOperationType, final String tableName, final String shadowColumnName) {
         Collection<ColumnShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
         for (ShadowAlgorithmNameRule each : tableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(shadowOperationType, Collections.emptyList())) {
             if (shadowColumnName.equals(each.getShadowColumnName())) {
@@ -206,7 +206,7 @@ public final class ShadowRule implements DatabaseRule {
     @HighFrequencyInvocation
     public Map<String, String> getShadowDataSourceMappings(final String tableName) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceRules.size(), 1F);
-        for (String each : tableRules.get(tableName).getShadowDataSources()) {
+        for (String each : tableRules.get(tableName).getLogicDataSourceNames()) {
             ShadowDataSourceRule dataSourceRule = dataSourceRules.get(each);
             result.put(dataSourceRule.getProductionDataSource(), dataSourceRule.getShadowDataSource());
         }

@@ -129,7 +129,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     }
     
     private boolean isMatchAnyColumnShadowAlgorithms(final ShadowRule rule, final String shadowTable, final String shadowColumn) {
-        Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms = rule.getShadowAlgorithms(operationType, shadowTable, shadowColumn);
+        Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms = rule.getColumnShadowAlgorithms(operationType, shadowTable, shadowColumn);
         if (columnShadowAlgorithms.isEmpty()) {
             return false;
         }
