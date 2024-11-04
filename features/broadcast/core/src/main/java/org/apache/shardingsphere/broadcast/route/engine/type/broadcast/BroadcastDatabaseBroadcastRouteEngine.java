@@ -34,10 +34,9 @@ public final class BroadcastDatabaseBroadcastRouteEngine implements BroadcastRou
     
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule rule) {
-        RouteContext result = new RouteContext();
         for (String each : rule.getDataSourceNames()) {
-            result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
+            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
-        return result;
+        return routeContext;
     }
 }
