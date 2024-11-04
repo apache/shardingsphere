@@ -49,7 +49,6 @@ public final class ShadowRule implements DatabaseRule {
     @Getter
     private final ShadowRuleConfiguration configuration;
     
-    @Getter
     private final Map<String, ShadowAlgorithm> shadowAlgorithms;
     
     private final ShadowAlgorithm defaultShadowAlgorithm;
@@ -83,6 +82,16 @@ public final class ShadowRule implements DatabaseRule {
     private Map<String, ShadowTableRule> createTableRules(final Map<String, ShadowTableConfiguration> tableConfigs) {
         return tableConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                 entry -> new ShadowTableRule(entry.getKey(), entry.getValue().getDataSourceNames(), entry.getValue().getShadowAlgorithmNames(), shadowAlgorithms), (a, b) -> b, LinkedHashMap::new));
+    }
+    
+    /**
+     * Whether contains shadow algorithm.
+     *
+     * @param algorithmName algorithm name
+     * @return contains shadow algorithm or not
+     */
+    public boolean containsShadowAlgorithm(final String algorithmName) {
+        return shadowAlgorithms.containsKey(algorithmName);
     }
     
     /**
