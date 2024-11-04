@@ -48,9 +48,9 @@ public final class ShadowRule implements DatabaseRule {
     @Getter
     private final ShadowRuleConfiguration configuration;
     
-    private final Map<String, ShadowDataSourceRule> shadowDataSourceRules = new LinkedHashMap<>();
+    private final Map<String, ShadowDataSourceRule> dataSourceRules = new LinkedHashMap<>();
     
-    private final Map<String, ShadowTableRule> shadowTableRules = new LinkedHashMap<>();
+    private final Map<String, ShadowTableRule> tableRules = new LinkedHashMap<>();
     
     @Getter
     private final Map<String, ShadowAlgorithm> shadowAlgorithms = new LinkedHashMap<>();
@@ -71,11 +71,11 @@ public final class ShadowRule implements DatabaseRule {
             hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
         }
         initTableRules(ruleConfig.getTables());
-        attributes = new RuleAttributes(new ShadowDataSourceMapperRuleAttribute(shadowDataSourceRules));
+        attributes = new RuleAttributes(new ShadowDataSourceMapperRuleAttribute(dataSourceRules));
     }
     
     private void initDataSourceRules(final Collection<ShadowDataSourceConfiguration> dataSources) {
-        dataSources.forEach(each -> shadowDataSourceRules.put(each.getName(), new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName())));
+        dataSources.forEach(each -> dataSourceRules.put(each.getName(), new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName())));
     }
     
     private void initShadowAlgorithms(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
@@ -89,7 +89,7 @@ public final class ShadowRule implements DatabaseRule {
     }
     
     private void initTableRules(final Map<String, ShadowTableConfiguration> tables) {
-        tables.forEach((key, value) -> shadowTableRules.put(key, new ShadowTableRule(key, value.getDataSourceNames(), value.getShadowAlgorithmNames(), shadowAlgorithms)));
+        tables.forEach((key, value) -> tableRules.put(key, new ShadowTableRule(key, value.getDataSourceNames(), value.getShadowAlgorithmNames(), shadowAlgorithms)));
     }
     
     /**
@@ -112,7 +112,7 @@ public final class ShadowRule implements DatabaseRule {
     public Collection<String> filterShadowTables(final Collection<String> tableNames) {
         Collection<String> result = new LinkedList<>();
         for (String each : tableNames) {
-            if (shadowTableRules.containsKey(each)) {
+            if (tableRules.containsKey(each)) {
                 result.add(each);
             }
         }
@@ -126,7 +126,7 @@ public final class ShadowRule implements DatabaseRule {
      */
     @HighFrequencyInvocation
     public Collection<String> getAllShadowTableNames() {
-        return shadowTableRules.keySet();
+        return tableRules.keySet();
     }
     
     /**
@@ -154,7 +154,7 @@ public final class ShadowRule implements DatabaseRule {
     @SuppressWarnings("unchecked")
     public Collection<HintShadowAlgorithm<Comparable<?>>> getHintShadowAlgorithms(final String tableName) {
         Collection<HintShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
-        Collection<String> hintShadowAlgorithmNames = shadowTableRules.get(tableName).getHintShadowAlgorithmNames();
+        Collection<String> hintShadowAlgorithmNames = tableRules.get(tableName).getHintShadowAlgorithmNames();
         for (String each : hintShadowAlgorithmNames) {
             result.add((HintShadowAlgorithm<Comparable<?>>) shadowAlgorithms.get(each));
         }
@@ -173,7 +173,7 @@ public final class ShadowRule implements DatabaseRule {
     @SuppressWarnings("unchecked")
     public Collection<ColumnShadowAlgorithm<Comparable<?>>> getShadowAlgorithms(final ShadowOperationType shadowOperationType, final String tableName, final String shadowColumnName) {
         Collection<ColumnShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
-        for (ShadowAlgorithmNameRule each : shadowTableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(shadowOperationType, Collections.emptyList())) {
+        for (ShadowAlgorithmNameRule each : tableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(shadowOperationType, Collections.emptyList())) {
             if (shadowColumnName.equals(each.getShadowColumnName())) {
                 result.add((ColumnShadowAlgorithm<Comparable<?>>) shadowAlgorithms.get(each.getShadowAlgorithmName()));
             }
@@ -191,7 +191,7 @@ public final class ShadowRule implements DatabaseRule {
     @HighFrequencyInvocation
     public Collection<String> getShadowColumnNames(final ShadowOperationType shadowOperationType, final String tableName) {
         Collection<String> result = new LinkedList<>();
-        for (ShadowAlgorithmNameRule each : shadowTableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(shadowOperationType, Collections.emptyList())) {
+        for (ShadowAlgorithmNameRule each : tableRules.get(tableName).getColumnShadowAlgorithmNames().getOrDefault(shadowOperationType, Collections.emptyList())) {
             result.add(each.getShadowColumnName());
         }
         return result;
@@ -205,9 +205,9 @@ public final class ShadowRule implements DatabaseRule {
      */
     @HighFrequencyInvocation
     public Map<String, String> getShadowDataSourceMappings(final String tableName) {
-        Map<String, String> result = new LinkedHashMap<>(shadowDataSourceRules.size(), 1F);
-        for (String each : shadowTableRules.get(tableName).getShadowDataSources()) {
-            ShadowDataSourceRule dataSourceRule = shadowDataSourceRules.get(each);
+        Map<String, String> result = new LinkedHashMap<>(dataSourceRules.size(), 1F);
+        for (String each : tableRules.get(tableName).getShadowDataSources()) {
+            ShadowDataSourceRule dataSourceRule = dataSourceRules.get(each);
             result.put(dataSourceRule.getProductionDataSource(), dataSourceRule.getShadowDataSource());
         }
         return result;
@@ -220,8 +220,8 @@ public final class ShadowRule implements DatabaseRule {
      */
     @HighFrequencyInvocation
     public Map<String, String> getAllShadowDataSourceMappings() {
-        Map<String, String> result = new LinkedHashMap<>(shadowDataSourceRules.size(), 1F);
-        for (Entry<String, ShadowDataSourceRule> entry : shadowDataSourceRules.entrySet()) {
+        Map<String, String> result = new LinkedHashMap<>(dataSourceRules.size(), 1F);
+        for (Entry<String, ShadowDataSourceRule> entry : dataSourceRules.entrySet()) {
             ShadowDataSourceRule dataSourceRule = entry.getValue();
             result.put(dataSourceRule.getProductionDataSource(), dataSourceRule.getShadowDataSource());
         }
@@ -236,7 +236,7 @@ public final class ShadowRule implements DatabaseRule {
      */
     @HighFrequencyInvocation
     public Optional<String> findProductionDataSourceName(final String logicDataSourceName) {
-        ShadowDataSourceRule dataSourceRule = shadowDataSourceRules.get(logicDataSourceName);
+        ShadowDataSourceRule dataSourceRule = dataSourceRules.get(logicDataSourceName);
         return null == dataSourceRule ? Optional.empty() : Optional.of(dataSourceRule.getProductionDataSource());
     }
 }
