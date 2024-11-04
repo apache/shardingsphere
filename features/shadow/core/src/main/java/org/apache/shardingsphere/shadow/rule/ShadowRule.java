@@ -86,7 +86,7 @@ public final class ShadowRule implements DatabaseRule {
     
     /**
      * Whether contains shadow algorithm.
-     * 
+     *
      * @param algorithmName algorithm name
      * @return contains shadow algorithm or not
      */
