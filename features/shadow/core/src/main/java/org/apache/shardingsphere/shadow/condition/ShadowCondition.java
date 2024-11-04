@@ -22,19 +22,19 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 
 /**
- * Shadow determine condition.
+ * Shadow condition.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShadowDetermineCondition {
+public final class ShadowCondition {
     
     private final String tableName;
     
-    private final ShadowOperationType shadowOperationType;
+    private final ShadowOperationType operationType;
     
-    private final ShadowColumnCondition shadowColumnCondition;
+    private final ShadowColumnCondition columnCondition;
     
-    public ShadowDetermineCondition(final String tableName, final ShadowOperationType shadowOperationType) {
-        this(tableName, shadowOperationType, null);
+    public ShadowCondition(final String tableName, final ShadowOperationType operationType) {
+        this(tableName, operationType, null);
     }
 }

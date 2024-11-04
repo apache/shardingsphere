@@ -221,12 +221,12 @@ user@machine repo % mvn spotless:check
 根本原因在于两者设定的检查配置和格式化配置冲突。举个例子，Spotless 格式化后换行缩进了 16 个空格，而 Checkstyle 的换行检查是 12 个空格。
 
 ```java
-private static Collection<PreciseHintShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition) {
+private static Collection<PreciseHintShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowCondition) {
     // Checkstyle 可以通过的格式
-    return shadowDetermineCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
+    return shadowCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
         each -> new PreciseHintShadowValue<>(tableName, shadowOperationType, each)).collect(Collectors.toList());
     // Spotless 格式化后
-    return shadowDetermineCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
+    return shadowCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
             each -> new PreciseHintShadowValue<>(tableName, shadowOperationType, each)).collect(Collectors.toList());
 }
 ```

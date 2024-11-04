@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.route.determiner;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
@@ -42,7 +42,7 @@ class ColumnShadowAlgorithmDeterminerTest {
                 (ColumnShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH", props), createShadowDetermineCondition()));
     }
     
-    private ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT, new ShadowColumnCondition("t_order", "user_id", Collections.singleton(1)));
+    private ShadowCondition createShadowDetermineCondition() {
+        return new ShadowCondition("t_order", ShadowOperationType.INSERT, new ShadowColumnCondition("t_order", "user_id", Collections.singleton(1)));
     }
 }

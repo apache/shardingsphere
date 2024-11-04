@@ -19,11 +19,11 @@ package org.apache.shardingsphere.shadow.route.determiner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.column.PreciseColumnShadowValue;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,10 +41,10 @@ public final class ColumnShadowAlgorithmDeterminer {
      * @param shadowCondition shadow determine condition
      * @return is shadow or not
      */
-    public static boolean isShadow(final ColumnShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowDetermineCondition shadowCondition) {
-        ShadowColumnCondition shadowColumnCondition = shadowCondition.getShadowColumnCondition();
+    public static boolean isShadow(final ColumnShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowCondition shadowCondition) {
+        ShadowColumnCondition shadowColumnCondition = shadowCondition.getColumnCondition();
         String tableName = shadowCondition.getTableName();
-        ShadowOperationType operationType = shadowCondition.getShadowOperationType();
+        ShadowOperationType operationType = shadowCondition.getOperationType();
         for (PreciseColumnShadowValue<Comparable<?>> each : createColumnShadowValues(shadowColumnCondition.getColumn(), shadowColumnCondition.getValues(), tableName, operationType)) {
             if (!tableName.equals(shadowColumnCondition.getOwner()) || !shadowAlgorithm.isShadow(each)) {
                 return false;

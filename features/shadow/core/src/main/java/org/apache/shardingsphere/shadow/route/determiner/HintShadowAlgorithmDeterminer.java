@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.route.determiner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
@@ -40,14 +40,14 @@ public final class HintShadowAlgorithmDeterminer {
      * @param useShadow use shadow or not
      * @return is shadow or not
      */
-    public static boolean isShadow(final HintShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule, final boolean useShadow) {
+    public static boolean isShadow(final HintShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowCondition shadowCondition, final ShadowRule shadowRule, final boolean useShadow) {
         PreciseHintShadowValue<Comparable<?>> shadowValue = createHintShadowValues(shadowCondition, useShadow);
         return shadowAlgorithm.isShadow(shadowRule.getAllShadowTableNames(), shadowValue);
     }
     
-    private static PreciseHintShadowValue<Comparable<?>> createHintShadowValues(final ShadowDetermineCondition shadowDetermineCondition, final boolean useShadow) {
-        ShadowOperationType shadowOperationType = shadowDetermineCondition.getShadowOperationType();
-        String tableName = shadowDetermineCondition.getTableName();
+    private static PreciseHintShadowValue<Comparable<?>> createHintShadowValues(final ShadowCondition shadowCondition, final boolean useShadow) {
+        ShadowOperationType shadowOperationType = shadowCondition.getOperationType();
+        String tableName = shadowCondition.getTableName();
         return new PreciseHintShadowValue<>(tableName, shadowOperationType, useShadow);
     }
 }
