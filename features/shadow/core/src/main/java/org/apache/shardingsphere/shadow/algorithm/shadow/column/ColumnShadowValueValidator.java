@@ -27,10 +27,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Shadow column value validator.
+ * Column shadow value validator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowColumnValueValidator {
+public final class ColumnShadowValueValidator {
     
     private static final Set<Class<?>> UNSUPPORTED_TYPES = new HashSet<>();
     

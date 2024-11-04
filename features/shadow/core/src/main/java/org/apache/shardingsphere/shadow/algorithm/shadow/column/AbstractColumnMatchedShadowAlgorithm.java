@@ -68,7 +68,7 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
         String column = shadowValue.getColumnName();
         Comparable<?> value = shadowValue.getValue();
         if (shadowOperationType == shadowValue.getShadowOperationType() && shadowColumn.equals(column)) {
-            ShadowColumnValueValidator.validate(table, column, value);
+            ColumnShadowValueValidator.validate(table, column, value);
             return matchesShadowValue(value);
         }
         return false;
