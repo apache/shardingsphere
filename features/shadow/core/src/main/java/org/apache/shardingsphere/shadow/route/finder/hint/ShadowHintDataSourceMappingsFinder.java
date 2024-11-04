@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder.other;
+package org.apache.shardingsphere.shadow.route.finder.hint;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -23,7 +23,6 @@ import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.finder.ShadowDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 
 import java.util.Collections;
 import java.util.Map;
@@ -38,12 +37,9 @@ public final class ShadowHintDataSourceMappingsFinder implements ShadowDataSourc
     
     @Override
     public Map<String, String> find(final ShadowRule rule) {
-        return hintValueContext.isShadow() && isMatchAnyHintShadowAlgorithms(rule, new ShadowCondition("", ShadowOperationType.HINT_MATCH))
+        ShadowCondition shadowCondition = new ShadowCondition();
+        return rule.getAllHintShadowAlgorithms().stream().anyMatch(each -> HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, hintValueContext.isShadow()))
                 ? rule.getAllShadowDataSourceMappings()
                 : Collections.emptyMap();
-    }
-    
-    private boolean isMatchAnyHintShadowAlgorithms(final ShadowRule rule, final ShadowCondition shadowCondition) {
-        return rule.getAllHintShadowAlgorithms().stream().anyMatch(each -> HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, hintValueContext.isShadow()));
     }
 }
