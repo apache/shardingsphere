@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.column.PreciseColumnShadowValue;
@@ -69,7 +68,7 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
         String column = shadowValue.getColumnName();
         Comparable<?> value = shadowValue.getValue();
         if (shadowOperationType == shadowValue.getShadowOperationType() && shadowColumn.equals(column)) {
-            ShadowValueValidator.validate(table, column, value);
+            ColumnShadowValueValidator.validate(table, column, value);
             return matchesShadowValue(value);
         }
         return false;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow.validator;
+package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import org.apache.shardingsphere.shadow.exception.data.UnsupportedShadowColumnTypeException;
 import org.junit.jupiter.api.Test;
@@ -25,20 +25,20 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-class ShadowValueValidatorTest {
+class ColumnShadowValueValidatorTest {
     
     @Test
     void assertValidateDateType() {
-        assertThrows(UnsupportedShadowColumnTypeException.class, () -> ShadowValueValidator.validate("tbl", "col", new Date()));
+        assertThrows(UnsupportedShadowColumnTypeException.class, () -> ColumnShadowValueValidator.validate("foo_tbl", "foo_col", new Date()));
     }
     
     @Test
     void assertValidateEnumType() {
-        assertThrows(UnsupportedShadowColumnTypeException.class, () -> ShadowValueValidator.validate("tbl", "col", mock(Enum.class)));
+        assertThrows(UnsupportedShadowColumnTypeException.class, () -> ColumnShadowValueValidator.validate("foo_tbl", "foo_col", mock(Enum.class)));
     }
     
     @Test
     void assertValidateAcceptedType() {
-        ShadowValueValidator.validate("tbl", "col", "");
+        ColumnShadowValueValidator.validate("foo_tbl", "foo_col", "");
     }
 }
