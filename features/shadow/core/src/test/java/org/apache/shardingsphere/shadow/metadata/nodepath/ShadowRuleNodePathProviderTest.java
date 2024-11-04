@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.shadow.metadata.nodepath;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,16 +29,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowRuleNodePathProviderTest {
     
+    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, ShadowRuleConfiguration.class);
+    
     @Test
-    void assertNew() {
-        RuleNodePathProvider ruleNodePathProvider = new ShadowRuleNodePathProvider();
-        RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertThat(actualRuleNodePath.getNamedItems().size(), is(3));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.SHADOW_ALGORITHMS));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.TABLES));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ShadowRuleNodePathProvider.DATA_SOURCES));
-        assertThat(actualRuleNodePath.getUniqueItems().size(), is(1));
-        assertTrue(actualRuleNodePath.getUniqueItems().containsKey(ShadowRuleNodePathProvider.DEFAULT_SHADOW_ALGORITHM_NAME));
-        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(ShadowRuleNodePathProvider.RULE_TYPE));
+    void assertGetRuleNodePath() {
+        RuleNodePath actual = pathProvider.getRuleNodePath();
+        assertThat(actual.getNamedItems().size(), is(3));
+        assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodePathProvider.SHADOW_ALGORITHMS));
+        assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodePathProvider.TABLES));
+        assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodePathProvider.DATA_SOURCES));
+        assertThat(actual.getUniqueItems().size(), is(1));
+        assertTrue(actual.getUniqueItems().containsKey(ShadowRuleNodePathProvider.DEFAULT_SHADOW_ALGORITHM_NAME));
+        assertThat(actual.getRoot().getRuleType(), is(ShadowRuleNodePathProvider.RULE_TYPE));
     }
 }

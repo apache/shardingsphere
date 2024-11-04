@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mask.metadata.nodepath;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
@@ -27,14 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaskRuleNodePathProviderTest {
     
+    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, MaskRuleConfiguration.class);
+    
     @Test
-    void assertNew() {
-        RuleNodePathProvider ruleNodePathProvider = new MaskRuleNodePathProvider();
-        RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertThat(actualRuleNodePath.getNamedItems().size(), is(2));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(MaskRuleNodePathProvider.MASK_ALGORITHMS));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(MaskRuleNodePathProvider.TABLES));
-        assertTrue(actualRuleNodePath.getUniqueItems().isEmpty());
-        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(MaskRuleNodePathProvider.RULE_TYPE));
+    void assertGetRuleNodePath() {
+        RuleNodePath actual = pathProvider.getRuleNodePath();
+        assertThat(actual.getNamedItems().size(), is(2));
+        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodePathProvider.MASK_ALGORITHMS));
+        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodePathProvider.TABLES));
+        assertTrue(actual.getUniqueItems().isEmpty());
+        assertThat(actual.getRoot().getRuleType(), is(MaskRuleNodePathProvider.RULE_TYPE));
     }
 }
