@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.route.determiner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
@@ -31,6 +32,7 @@ import java.util.LinkedList;
 /**
  * Column shadow algorithm determiner.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnShadowAlgorithmDeterminer {
     
