@@ -29,11 +29,6 @@ import org.apache.shardingsphere.shadow.route.finder.dml.ShadowInsertStatementDa
 import org.apache.shardingsphere.shadow.route.finder.dml.ShadowSelectStatementDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.route.finder.dml.ShadowUpdateStatementDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.route.finder.other.ShadowNonDMLStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 /**
  * Shadow data source mappings finder factory.
@@ -48,17 +43,16 @@ public final class ShadowDataSourceMappingsFinderFactory {
      * @return created instance
      */
     public static ShadowDataSourceMappingsFinder newInstance(final QueryContext queryContext) {
-        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        if (sqlStatement instanceof InsertStatement) {
+        if (queryContext.getSqlStatementContext() instanceof InsertStatementContext) {
             return new ShadowInsertStatementDataSourceMappingsFinder((InsertStatementContext) queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
         }
-        if (sqlStatement instanceof DeleteStatement) {
+        if (queryContext.getSqlStatementContext() instanceof DeleteStatementContext) {
             return new ShadowDeleteStatementDataSourceMappingsFinder((DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
-        if (sqlStatement instanceof UpdateStatement) {
+        if (queryContext.getSqlStatementContext() instanceof UpdateStatementContext) {
             return new ShadowUpdateStatementDataSourceMappingsFinder((UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
-        if (sqlStatement instanceof SelectStatement) {
+        if (queryContext.getSqlStatementContext() instanceof SelectStatementContext) {
             return new ShadowSelectStatementDataSourceMappingsFinder((SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
         return new ShadowNonDMLStatementDataSourceMappingsFinder(queryContext.getHintValueContext());
