@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.decider;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
@@ -33,6 +34,7 @@ import java.util.List;
 /**
  * Sharding SQL federation decider.
  */
+@HighFrequencyInvocation
 public final class ShardingSQLFederationDecider implements SQLFederationDecider<ShardingRule> {
     
     @Override
