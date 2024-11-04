@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.shadow.condition;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 
 /**
  * Shadow determine condition.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShadowDetermineCondition {
     
@@ -30,21 +32,9 @@ public final class ShadowDetermineCondition {
     
     private final ShadowOperationType shadowOperationType;
     
-    private ShadowColumnCondition shadowColumnCondition;
+    private final ShadowColumnCondition shadowColumnCondition;
     
     public ShadowDetermineCondition(final String tableName, final ShadowOperationType shadowOperationType) {
-        this.tableName = tableName;
-        this.shadowOperationType = shadowOperationType;
-    }
-    
-    /**
-     * Initialize shadow column condition.
-     *
-     * @param shadowColumnCondition shadow column condition
-     * @return shadow determine condition
-     */
-    public ShadowDetermineCondition initShadowColumnCondition(final ShadowColumnCondition shadowColumnCondition) {
-        this.shadowColumnCondition = shadowColumnCondition;
-        return this;
+        this(tableName, shadowOperationType, null);
     }
 }

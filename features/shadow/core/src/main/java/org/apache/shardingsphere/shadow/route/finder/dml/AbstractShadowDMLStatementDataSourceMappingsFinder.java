@@ -143,7 +143,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     
     private boolean isMatchColumnShadowAlgorithm(final String shadowTable, final Collection<ColumnShadowAlgorithm<Comparable<?>>> algorithms, final ShadowColumnCondition condition) {
         for (ColumnShadowAlgorithm<Comparable<?>> each : algorithms) {
-            if (ColumnShadowAlgorithmDeterminer.isShadow(each, new ShadowDetermineCondition(shadowTable, operationType).initShadowColumnCondition(condition))) {
+            if (ColumnShadowAlgorithmDeterminer.isShadow(each, new ShadowDetermineCondition(shadowTable, operationType, condition))) {
                 return true;
             }
         }
