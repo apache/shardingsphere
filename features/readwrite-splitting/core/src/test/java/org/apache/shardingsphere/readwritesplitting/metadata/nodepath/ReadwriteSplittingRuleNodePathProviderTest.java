@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,14 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReadwriteSplittingRuleNodePathProviderTest {
     
+    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, ReadwriteSplittingRuleConfiguration.class);
+    
     @Test
-    void assertNew() {
-        RuleNodePathProvider ruleNodePathProvider = new ReadwriteSplittingRuleNodePathProvider();
-        RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertThat(actualRuleNodePath.getNamedItems().size(), is(2));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCE_GROUPS));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS));
-        assertTrue(actualRuleNodePath.getUniqueItems().isEmpty());
-        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(ReadwriteSplittingRuleNodePathProvider.RULE_TYPE));
+    void assertGetRuleNodePath() {
+        RuleNodePath actual = pathProvider.getRuleNodePath();
+        assertThat(actual.getNamedItems().size(), is(2));
+        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCE_GROUPS));
+        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS));
+        assertTrue(actual.getUniqueItems().isEmpty());
+        assertThat(actual.getRoot().getRuleType(), is(ReadwriteSplittingRuleNodePathProvider.RULE_TYPE));
     }
 }

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sharding.metadata.nodepath;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.jupiter.api.Test;
 
@@ -30,19 +32,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class ShardingRuleNodePathProviderTest {
     
+    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, ShardingRuleConfiguration.class);
+    
     @Test
-    void assertNew() {
-        RuleNodePathProvider ruleNodePathProvider = new ShardingRuleNodePathProvider();
-        RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertThat(actualRuleNodePath.getNamedItems().size(), is(6));
+    void assertGetRuleNodePath() {
+        RuleNodePath actual = pathProvider.getRuleNodePath();
+        assertThat(actual.getNamedItems().size(), is(6));
         List<String> namedRuleItems = Arrays.asList(ShardingRuleNodePathProvider.TABLES, ShardingRuleNodePathProvider.AUTO_TABLES, ShardingRuleNodePathProvider.BINDING_TABLES,
                 ShardingRuleNodePathProvider.SHARDING_ALGORITHMS, ShardingRuleNodePathProvider.KEY_GENERATORS, ShardingRuleNodePathProvider.AUDITORS);
-        assertThat("Named rule items equality without order", actualRuleNodePath.getNamedItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(namedRuleItems.toArray()));
-        assertThat(actualRuleNodePath.getUniqueItems().size(), is(6));
+        assertThat("Named rule items equality without order", actual.getNamedItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(namedRuleItems.toArray()));
+        assertThat(actual.getUniqueItems().size(), is(6));
         List<String> uniqueRuleItems = Arrays.asList(ShardingRuleNodePathProvider.DEFAULT_DATABASE_STRATEGY, ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY,
                 ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY, ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY, ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN,
                 ShardingRuleNodePathProvider.SHARDING_CACHE);
-        assertThat("Unique rule items equality without order", actualRuleNodePath.getUniqueItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(uniqueRuleItems.toArray()));
-        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(ShardingRuleNodePathProvider.RULE_TYPE));
+        assertThat("Unique rule items equality without order", actual.getUniqueItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(uniqueRuleItems.toArray()));
+        assertThat(actual.getRoot().getRuleType(), is(ShardingRuleNodePathProvider.RULE_TYPE));
     }
 }
