@@ -38,13 +38,9 @@ public final class ShadowHintDataSourceMappingsFinder implements ShadowDataSourc
     
     @Override
     public Map<String, String> find(final ShadowRule rule) {
-        if (!hintValueContext.isShadow()) {
-            return Collections.emptyMap();
-        }
-        if (isMatchAnyHintShadowAlgorithms(rule, new ShadowCondition("", ShadowOperationType.HINT_MATCH))) {
-            return rule.getAllShadowDataSourceMappings();
-        }
-        return Collections.emptyMap();
+        return hintValueContext.isShadow() && isMatchAnyHintShadowAlgorithms(rule, new ShadowCondition("", ShadowOperationType.HINT_MATCH))
+                ? rule.getAllShadowDataSourceMappings()
+                : Collections.emptyMap();
     }
     
     private boolean isMatchAnyHintShadowAlgorithms(final ShadowRule rule, final ShadowCondition shadowCondition) {
