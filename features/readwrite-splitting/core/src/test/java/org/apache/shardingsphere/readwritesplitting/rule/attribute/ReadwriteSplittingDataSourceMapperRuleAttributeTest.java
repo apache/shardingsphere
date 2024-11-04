@@ -33,13 +33,14 @@ class ReadwriteSplittingDataSourceMapperRuleAttributeTest {
     
     @Test
     void assertGetDataSourceMapper() {
-        Map<String, Collection<String>> actual = new ReadwriteSplittingDataSourceMapperRuleAttribute(Collections.singleton(createDataSourceGroupRule())).getDataSourceMapper();
+        Map<String, Collection<String>> actual = createRuleAttribute().getDataSourceMapper();
         Map<String, Collection<String>> expected = Collections.singletonMap("readwrite", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
     }
     
-    private ReadwriteSplittingDataSourceGroupRule createDataSourceGroupRule() {
-        return new ReadwriteSplittingDataSourceGroupRule(
+    private ReadwriteSplittingDataSourceMapperRuleAttribute createRuleAttribute() {
+        ReadwriteSplittingDataSourceGroupRule dataSourceGroupRule = new ReadwriteSplittingDataSourceGroupRule(
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"), null, null);
+        return new ReadwriteSplittingDataSourceMapperRuleAttribute(Collections.singleton(dataSourceGroupRule));
     }
 }

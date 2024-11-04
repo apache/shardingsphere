@@ -21,6 +21,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowDataSourceRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -31,8 +32,13 @@ class ShadowDataSourceMapperRuleAttributeTest {
     
     @Test
     void assertGetDataSourceMapper() {
+        Map<String, Collection<String>> actual = createRuleAttribute().getDataSourceMapper();
+        Map<String, Collection<String>> expected = Collections.singletonMap("foo_ds", Arrays.asList("prod_ds", "shadow_ds"));
+        assertThat(actual, is(expected));
+    }
+    
+    ShadowDataSourceMapperRuleAttribute createRuleAttribute() {
         Map<String, ShadowDataSourceRule> dataSourceRules = Collections.singletonMap("foo_ds", new ShadowDataSourceRule("prod_ds", "shadow_ds"));
-        ShadowDataSourceMapperRuleAttribute attribute = new ShadowDataSourceMapperRuleAttribute(dataSourceRules);
-        assertThat(attribute.getDataSourceMapper(), is(Collections.singletonMap("foo_ds", Arrays.asList("prod_ds", "shadow_ds"))));
+        return new ShadowDataSourceMapperRuleAttribute(dataSourceRules);
     }
 }
