@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +37,7 @@ public final class ReadwriteSplittingDataSourceMapperRuleAttribute implements Da
     @HighFrequencyInvocation
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(dataSourceGroupRules.size(), 1F);
+        Map<String, Collection<String>> result = new LinkedHashMap<>(dataSourceGroupRules.size(), 1F);
         for (ReadwriteSplittingDataSourceGroupRule each : dataSourceGroupRules) {
             result.put(each.getName(), each.getReadwriteSplittingGroup().getAllDataSources());
         }
