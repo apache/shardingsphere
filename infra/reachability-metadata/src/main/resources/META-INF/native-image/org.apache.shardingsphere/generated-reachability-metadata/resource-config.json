@@ -409,9 +409,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Qlib/sqlparser/druid.jar\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-    "pattern":"\\Qorg/apache/hc/core5/version.properties\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\Qorg/h2/util/data.zip\\E"
   }, {
