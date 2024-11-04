@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shadow.route.finder.dml.ShadowDeleteStatementDa
 import org.apache.shardingsphere.shadow.route.finder.dml.ShadowInsertStatementDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.route.finder.dml.ShadowSelectStatementDataSourceMappingsFinder;
 import org.apache.shardingsphere.shadow.route.finder.dml.ShadowUpdateStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.other.ShadowNonDMLStatementDataSourceMappingsFinder;
+import org.apache.shardingsphere.shadow.route.finder.other.ShadowHintDataSourceMappingsFinder;
 
 /**
  * Shadow data source mappings finder factory.
@@ -55,6 +55,6 @@ public final class ShadowDataSourceMappingsFinderFactory {
         if (queryContext.getSqlStatementContext() instanceof SelectStatementContext) {
             return new ShadowSelectStatementDataSourceMappingsFinder((SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
-        return new ShadowNonDMLStatementDataSourceMappingsFinder(queryContext.getHintValueContext());
+        return new ShadowHintDataSourceMappingsFinder(queryContext.getHintValueContext());
     }
 }

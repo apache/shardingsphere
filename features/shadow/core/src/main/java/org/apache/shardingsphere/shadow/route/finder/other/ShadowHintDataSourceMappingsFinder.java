@@ -29,22 +29,18 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Shadow non-DML statement data source mappings finder.
+ * Shadow hint data source mappings finder.
  */
 @RequiredArgsConstructor
-public final class ShadowNonDMLStatementDataSourceMappingsFinder implements ShadowDataSourceMappingsFinder {
+public final class ShadowHintDataSourceMappingsFinder implements ShadowDataSourceMappingsFinder {
     
     private final HintValueContext hintValueContext;
     
     @Override
     public Map<String, String> find(final ShadowRule rule) {
-        if (!hintValueContext.isShadow()) {
-            return Collections.emptyMap();
-        }
-        if (isMatchAnyHintShadowAlgorithms(rule, new ShadowCondition("", ShadowOperationType.HINT_MATCH))) {
-            return rule.getAllShadowDataSourceMappings();
-        }
-        return Collections.emptyMap();
+        return hintValueContext.isShadow() && isMatchAnyHintShadowAlgorithms(rule, new ShadowCondition("", ShadowOperationType.HINT_MATCH))
+                ? rule.getAllShadowDataSourceMappings()
+                : Collections.emptyMap();
     }
     
     private boolean isMatchAnyHintShadowAlgorithms(final ShadowRule rule, final ShadowCondition shadowCondition) {
