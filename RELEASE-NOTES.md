@@ -16,6 +16,7 @@
 1. Kernel: Add index columns not empty judgement for IndexColumnTokenGenerator - [#33384](https://github.com/apache/shardingsphere/pull/33384)
 1. SQL Parser: Support parsing Doris STRRIGHT - [#33393](https://github.com/apache/shardingsphere/pull/33393)
 1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
+1. Kernel: Add binding to owner table - [#33533](https://github.com/apache/shardingsphere/pull/33533)
 
 ### Bug Fixes
 
