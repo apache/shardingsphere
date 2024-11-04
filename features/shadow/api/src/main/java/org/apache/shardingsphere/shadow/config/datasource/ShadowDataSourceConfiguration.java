@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.config.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Shadow data source mapper configuration.
