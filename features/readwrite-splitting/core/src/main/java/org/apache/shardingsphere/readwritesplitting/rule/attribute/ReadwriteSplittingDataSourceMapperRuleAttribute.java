@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
@@ -33,6 +34,7 @@ public final class ReadwriteSplittingDataSourceMapperRuleAttribute implements Da
     
     private final Collection<ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules;
     
+    @HighFrequencyInvocation
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(dataSourceGroupRules.size(), 1F);
