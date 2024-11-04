@@ -34,13 +34,13 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShadowNonDMLStatementRouteEngineTest {
+class ShadowHintDataSourceMappingsFinderTest {
     
-    private ShadowNonDMLStatementDataSourceMappingsFinder finder;
+    private ShadowHintDataSourceMappingsFinder finder;
     
     @BeforeEach
     void init() {
-        finder = new ShadowNonDMLStatementDataSourceMappingsFinder(createHintValueContext());
+        finder = new ShadowHintDataSourceMappingsFinder(createHintValueContext());
     }
     
     private HintValueContext createHintValueContext() {

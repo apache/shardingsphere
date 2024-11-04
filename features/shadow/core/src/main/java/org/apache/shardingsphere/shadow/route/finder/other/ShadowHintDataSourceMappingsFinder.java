@@ -29,10 +29,10 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Shadow non-DML statement data source mappings finder.
+ * Shadow hint data source mappings finder.
  */
 @RequiredArgsConstructor
-public final class ShadowNonDMLStatementDataSourceMappingsFinder implements ShadowDataSourceMappingsFinder {
+public final class ShadowHintDataSourceMappingsFinder implements ShadowDataSourceMappingsFinder {
     
     private final HintValueContext hintValueContext;
     
