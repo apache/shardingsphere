@@ -55,7 +55,7 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     }
     
     private void checkAlgorithmExisted() {
-        boolean isDuplicatedAlgorithmName = null != rule && rule.getShadowAlgorithms().containsKey("default_shadow_algorithm");
+        boolean isDuplicatedAlgorithmName = null != rule && rule.containsShadowAlgorithm("default_shadow_algorithm");
         ShardingSpherePreconditions.checkState(!isDuplicatedAlgorithmName, () -> new InUsedAlgorithmException("Shadow", database.getName(), Collections.singleton("default_shadow_algorithm")));
     }
     
@@ -72,7 +72,7 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     @Override
     public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        if (null == rule || !rule.getShadowAlgorithms().containsKey("default_shadow_algorithm")) {
+        if (null == rule || !rule.containsShadowAlgorithm("default_shadow_algorithm")) {
             result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
             result.setDefaultShadowAlgorithmName("default_shadow_algorithm");
         }

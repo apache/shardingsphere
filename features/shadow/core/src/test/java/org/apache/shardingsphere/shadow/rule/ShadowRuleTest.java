@@ -39,6 +39,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowRuleTest {
     
@@ -91,6 +92,11 @@ class ShadowRuleTest {
         result.put("bar-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
                 PropertiesBuilder.build(new Property("column", "bar_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
         return result;
+    }
+    
+    @Test
+    void assertContainsShadowAlgorithm() {
+        assertTrue(rule.containsShadowAlgorithm("sql-hint-algorithm"));
     }
     
     @Test
