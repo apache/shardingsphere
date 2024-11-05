@@ -25,20 +25,17 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.ColumnShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.hint.ShadowTableHintDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Abstract shadow DML statement data source mappings retriever.
@@ -48,15 +45,15 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsRetriever impl
     
     private final ShadowOperationType operationType;
     
-    private final boolean isShadow;
-    
     @Getter
     private final Map<String, String> tableAliasAndNameMappings;
     
+    private final ShadowTableHintDataSourceMappingsRetriever tableHintDataSourceMappingsRetriever;
+    
     protected AbstractShadowDMLStatementDataSourceMappingsRetriever(final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final ShadowOperationType operationType) {
         this.operationType = operationType;
-        isShadow = hintValueContext.isShadow();
         tableAliasAndNameMappings = getTableAliasAndNameMappings(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables());
+        tableHintDataSourceMappingsRetriever = new ShadowTableHintDataSourceMappingsRetriever(operationType, hintValueContext.isShadow(), tableAliasAndNameMappings);
     }
     
     private Map<String, String> getTableAliasAndNameMappings(final Collection<SimpleTableSegment> tableSegments) {
@@ -71,41 +68,8 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsRetriever impl
     
     @Override
     public Map<String, String> retrieve(final ShadowRule rule) {
-        Collection<String> shadowTables = rule.filterShadowTables(tableAliasAndNameMappings.values());
-        if (shadowTables.isEmpty() && isMatchDefaultAlgorithm(rule)) {
-            return rule.getAllShadowDataSourceMappings();
-        }
-        Map<String, String> result = findBySQLHints(rule, shadowTables);
-        return result.isEmpty() ? findByShadowColumn(rule, shadowTables) : result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private boolean isMatchDefaultAlgorithm(final ShadowRule rule) {
-        Optional<ShadowAlgorithm> defaultAlgorithm = rule.getDefaultShadowAlgorithm();
-        if (defaultAlgorithm.isPresent() && defaultAlgorithm.get() instanceof HintShadowAlgorithm<?>) {
-            return HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) defaultAlgorithm.get(), new ShadowCondition(), rule, isShadow);
-        }
-        return false;
-    }
-    
-    private Map<String, String> findBySQLHints(final ShadowRule rule, final Collection<String> shadowTables) {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : shadowTables) {
-            if (isContainsShadowInSQLHints(rule, each, new ShadowCondition(each, operationType))) {
-                result.putAll(rule.getShadowDataSourceMappings(each));
-                return result;
-            }
-        }
-        return result;
-    }
-    
-    private boolean isContainsShadowInSQLHints(final ShadowRule rule, final String tableName, final ShadowCondition shadowCondition) {
-        for (HintShadowAlgorithm<Comparable<?>> each : rule.getHintShadowAlgorithms(tableName)) {
-            if (HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, isShadow)) {
-                return true;
-            }
-        }
-        return false;
+        Map<String, String> result = tableHintDataSourceMappingsRetriever.retrieve(rule);
+        return result.isEmpty() ? findByShadowColumn(rule, rule.filterShadowTables(tableAliasAndNameMappings.values())) : result;
     }
     
     private Map<String, String> findByShadowColumn(final ShadowRule rule, final Collection<String> shadowTables) {
