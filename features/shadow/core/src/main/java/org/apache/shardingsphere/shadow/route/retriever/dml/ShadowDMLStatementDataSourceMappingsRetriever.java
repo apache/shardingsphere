@@ -80,13 +80,13 @@ public final class ShadowDMLStatementDataSourceMappingsRetriever implements Shad
         if (queryContext.getSqlStatementContext() instanceof SelectStatementContext) {
             return new ShadowSelectStatementDataSourceMappingsRetriever((SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), tableAliasAndNameMappings);
         }
-        throw new UnsupportedOperationException(String.format("unsupported SQL statement context `%s`", queryContext.getSqlStatementContext().getClass().getName()));
+        return null;
     }
     
     @Override
     public Map<String, String> retrieve(final ShadowRule rule) {
         Collection<String> shadowTables = rule.filterShadowTables(tableAliasAndNameMappings.values());
         Map<String, String> result = tableHintDataSourceMappingsRetriever.retrieve(rule, shadowTables);
-        return result.isEmpty() ? shadowColumnDataSourceMappingsRetriever.retrieve(rule, shadowTables) : result;
+        return result.isEmpty() && null != shadowColumnDataSourceMappingsRetriever ? shadowColumnDataSourceMappingsRetriever.retrieve(rule, shadowTables) : result;
     }
 }
