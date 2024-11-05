@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml.type.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;

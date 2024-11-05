@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml.type.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.ColumnShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowTableDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.table.ShadowTableDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table;
 
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 

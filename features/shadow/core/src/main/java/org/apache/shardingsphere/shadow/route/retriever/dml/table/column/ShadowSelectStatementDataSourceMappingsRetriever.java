@@ -15,35 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml.type.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Shadow delete statement data source mappings retriever.
+ * Shadow select statement data source mappings retriever.
  */
 @HighFrequencyInvocation
-public final class ShadowDeleteStatementDataSourceMappingsRetriever extends ShadowColumnDataSourceMappingsRetriever {
+public final class ShadowSelectStatementDataSourceMappingsRetriever extends ShadowColumnDataSourceMappingsRetriever {
     
-    private final DeleteStatementContext sqlStatementContext;
+    private final SelectStatementContext sqlStatementContext;
     
     private final List<Object> parameters;
     
-    public ShadowDeleteStatementDataSourceMappingsRetriever(final DeleteStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, String> tableAliasAndNameMappings) {
-        super(ShadowOperationType.DELETE, tableAliasAndNameMappings);
+    public ShadowSelectStatementDataSourceMappingsRetriever(final SelectStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, String> tableAliasAndNameMappings) {
+        super(ShadowOperationType.SELECT, tableAliasAndNameMappings);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
@@ -52,7 +56,11 @@ public final class ShadowDeleteStatementDataSourceMappingsRetriever extends Shad
     protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
         for (ExpressionSegment each : getWhereSegment()) {
-            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), shadowColumnName, values)).ifPresent(result::add);
+            Collection<ColumnSegment> columns = ColumnExtractUtils.extract(each);
+            if (1 != columns.size()) {
+                continue;
+            }
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(extractOwnerName(columns.iterator().next()), shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }
@@ -65,5 +73,10 @@ public final class ShadowDeleteStatementDataSourceMappingsRetriever extends Shad
             }
         }
         return result;
+    }
+    
+    private String extractOwnerName(final ColumnSegment columnSegment) {
+        Optional<OwnerSegment> owner = columnSegment.getOwner();
+        return owner.isPresent() ? getTableAliasAndNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasAndNameMappings().keySet().iterator().next();
     }
 }
