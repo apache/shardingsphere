@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.retriever.dml.type.column;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
@@ -36,6 +37,7 @@ import java.util.Map;
 /**
  * Shadow update statement data source mappings retriever.
  */
+@HighFrequencyInvocation
 public final class ShadowUpdateStatementDataSourceMappingsRetriever extends ShadowColumnDataSourceMappingsRetriever {
     
     private final UpdateStatementContext sqlStatementContext;

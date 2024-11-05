@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.retriever.dml.type.column;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -32,6 +33,7 @@ import java.util.Map;
 /**
  * Shadow insert statement data source mappings retriever.
  */
+@HighFrequencyInvocation
 public final class ShadowInsertStatementDataSourceMappingsRetriever extends ShadowColumnDataSourceMappingsRetriever {
     
     private final InsertStatementContext sqlStatementContext;

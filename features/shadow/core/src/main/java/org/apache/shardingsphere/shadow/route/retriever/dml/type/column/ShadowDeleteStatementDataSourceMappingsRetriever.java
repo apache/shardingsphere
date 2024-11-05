@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.retriever.dml.type.column;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
@@ -34,6 +35,7 @@ import java.util.Map;
 /**
  * Shadow delete statement data source mappings retriever.
  */
+@HighFrequencyInvocation
 public final class ShadowDeleteStatementDataSourceMappingsRetriever extends ShadowColumnDataSourceMappingsRetriever {
     
     private final DeleteStatementContext sqlStatementContext;
