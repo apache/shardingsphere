@@ -21,10 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
-import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.column.PreciseColumnShadowValue;
-import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -44,22 +42,18 @@ public final class ColumnShadowAlgorithmDeterminer {
      * @return is shadow or not
      */
     public static boolean isShadow(final ColumnShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowCondition shadowCondition) {
-        ShadowColumnCondition shadowColumnCondition = shadowCondition.getColumnCondition();
-        String tableName = shadowCondition.getTableName();
-        ShadowOperationType operationType = shadowCondition.getOperationType();
-        for (PreciseColumnShadowValue<Comparable<?>> each : createColumnShadowValues(shadowColumnCondition.getColumn(), shadowColumnCondition.getValues(), tableName, operationType)) {
-            if (!tableName.equals(shadowColumnCondition.getOwner()) || !shadowAlgorithm.isShadow(each)) {
+        for (PreciseColumnShadowValue<Comparable<?>> each : createColumnShadowValues(shadowCondition)) {
+            if (!shadowCondition.getTableName().equals(shadowCondition.getColumnCondition().getOwner()) || !shadowAlgorithm.isShadow(each)) {
                 return false;
             }
         }
         return true;
     }
     
-    private static Collection<PreciseColumnShadowValue<Comparable<?>>> createColumnShadowValues(final String columnName, final Collection<Comparable<?>> columnValues, final String tableName,
-                                                                                                final ShadowOperationType operationType) {
+    private static Collection<PreciseColumnShadowValue<Comparable<?>>> createColumnShadowValues(final ShadowCondition shadowCondition) {
         Collection<PreciseColumnShadowValue<Comparable<?>>> result = new LinkedList<>();
-        for (Comparable<?> each : columnValues) {
-            result.add(new PreciseColumnShadowValue<>(tableName, operationType, columnName, each));
+        for (Comparable<?> each : shadowCondition.getColumnCondition().getValues()) {
+            result.add(new PreciseColumnShadowValue<>(shadowCondition.getTableName(), shadowCondition.getOperationType(), shadowCondition.getColumnCondition().getColumn(), each));
         }
         return result;
     }
