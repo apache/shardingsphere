@@ -44,16 +44,20 @@ public final class ShadowDataSourceMappingsRetrieverFactory {
      */
     public static ShadowDataSourceMappingsRetriever newInstance(final QueryContext queryContext) {
         if (queryContext.getSqlStatementContext() instanceof InsertStatementContext) {
-            return new ShadowInsertStatementDataSourceMappingsRetriever((InsertStatementContext) queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
+            return new ShadowInsertStatementDataSourceMappingsRetriever(
+                    (InsertStatementContext) queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
         }
         if (queryContext.getSqlStatementContext() instanceof DeleteStatementContext) {
-            return new ShadowDeleteStatementDataSourceMappingsRetriever((DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+            return new ShadowDeleteStatementDataSourceMappingsRetriever(
+                    (DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
         if (queryContext.getSqlStatementContext() instanceof UpdateStatementContext) {
-            return new ShadowUpdateStatementDataSourceMappingsRetriever((UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+            return new ShadowUpdateStatementDataSourceMappingsRetriever(
+                    (UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
         if (queryContext.getSqlStatementContext() instanceof SelectStatementContext) {
-            return new ShadowSelectStatementDataSourceMappingsRetriever((SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+            return new ShadowSelectStatementDataSourceMappingsRetriever(
+                    (SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
         return new ShadowHintDataSourceMappingsRetriever(queryContext.getHintValueContext());
     }
