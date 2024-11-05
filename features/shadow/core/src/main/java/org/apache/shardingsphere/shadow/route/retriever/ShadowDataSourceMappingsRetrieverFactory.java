@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder;
+package org.apache.shardingsphere.shadow.route.retriever;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,37 +24,41 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.shadow.route.finder.dml.ShadowDeleteStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.dml.ShadowInsertStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.dml.ShadowSelectStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.dml.ShadowUpdateStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.hint.ShadowHintDataSourceMappingsFinder;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowDeleteStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowInsertStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowSelectStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowUpdateStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.hint.ShadowHintDataSourceMappingsRetriever;
 
 /**
- * Shadow data source mappings finder factory.
+ * Shadow data source mappings retriever factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowDataSourceMappingsFinderFactory {
+public final class ShadowDataSourceMappingsRetrieverFactory {
     
     /**
-     * Create new instance of shadow data source mappings finder.
+     * Create new instance of shadow data source mappings retriever.
      *
      * @param queryContext query context
      * @return created instance
      */
-    public static ShadowDataSourceMappingsFinder newInstance(final QueryContext queryContext) {
+    public static ShadowDataSourceMappingsRetriever newInstance(final QueryContext queryContext) {
         if (queryContext.getSqlStatementContext() instanceof InsertStatementContext) {
-            return new ShadowInsertStatementDataSourceMappingsFinder((InsertStatementContext) queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
+            return new ShadowInsertStatementDataSourceMappingsRetriever(
+                    (InsertStatementContext) queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
         }
         if (queryContext.getSqlStatementContext() instanceof DeleteStatementContext) {
-            return new ShadowDeleteStatementDataSourceMappingsFinder((DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+            return new ShadowDeleteStatementDataSourceMappingsRetriever(
+                    (DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
         if (queryContext.getSqlStatementContext() instanceof UpdateStatementContext) {
-            return new ShadowUpdateStatementDataSourceMappingsFinder((UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+            return new ShadowUpdateStatementDataSourceMappingsRetriever(
+                    (UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
         if (queryContext.getSqlStatementContext() instanceof SelectStatementContext) {
-            return new ShadowSelectStatementDataSourceMappingsFinder((SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+            return new ShadowSelectStatementDataSourceMappingsRetriever(
+                    (SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
         }
-        return new ShadowHintDataSourceMappingsFinder(queryContext.getHintValueContext());
+        return new ShadowHintDataSourceMappingsRetriever(queryContext.getHintValueContext());
     }
 }

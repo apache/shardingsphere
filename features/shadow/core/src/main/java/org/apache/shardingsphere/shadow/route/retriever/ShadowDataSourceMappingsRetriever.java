@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder;
+package org.apache.shardingsphere.shadow.route.retriever;
 
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Map;
 
 /**
- * Shadow data source mappings finder.
+ * Shadow data source mappings retriever.
  */
-public interface ShadowDataSourceMappingsFinder {
+public interface ShadowDataSourceMappingsRetriever {
     
     /**
-     * Find shadow data source mappings.
+     * Retrieve shadow data source mappings.
      *
      * @param rule shadow rule
-     * @return found shadow data source mappings
+     * @return retrieved shadow data source mappings
      */
-    Map<String, String> find(ShadowRule rule);
+    Map<String, String> retrieve(ShadowRule rule);
 }

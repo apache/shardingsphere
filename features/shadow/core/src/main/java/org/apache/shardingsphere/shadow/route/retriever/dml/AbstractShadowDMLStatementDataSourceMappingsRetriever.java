@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder.dml;
+package org.apache.shardingsphere.shadow.route.retriever.dml;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.ColumnShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.finder.ShadowDataSourceMappingsFinder;
+import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
@@ -41,10 +41,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Abstract shadow DML statement data source mappings finder.
+ * Abstract shadow DML statement data source mappings retriever.
  */
 @HighFrequencyInvocation
-public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder implements ShadowDataSourceMappingsFinder {
+public abstract class AbstractShadowDMLStatementDataSourceMappingsRetriever implements ShadowDataSourceMappingsRetriever {
     
     private final ShadowOperationType operationType;
     
@@ -53,7 +53,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     @Getter
     private final Map<String, String> tableAliasAndNameMappings;
     
-    protected AbstractShadowDMLStatementDataSourceMappingsFinder(final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final ShadowOperationType operationType) {
+    protected AbstractShadowDMLStatementDataSourceMappingsRetriever(final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final ShadowOperationType operationType) {
         this.operationType = operationType;
         isShadow = hintValueContext.isShadow();
         tableAliasAndNameMappings = getTableAliasAndNameMappings(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables());
@@ -70,7 +70,7 @@ public abstract class AbstractShadowDMLStatementDataSourceMappingsFinder impleme
     }
     
     @Override
-    public Map<String, String> find(final ShadowRule rule) {
+    public Map<String, String> retrieve(final ShadowRule rule) {
         Collection<String> shadowTables = rule.filterShadowTables(tableAliasAndNameMappings.values());
         if (shadowTables.isEmpty() && isMatchDefaultAlgorithm(rule)) {
             return rule.getAllShadowDataSourceMappings();

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder.hint;
+package org.apache.shardingsphere.shadow.route.retriever.hint;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -33,19 +33,19 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShadowHintDataSourceMappingsFinderTest {
+class ShadowHintDataSourceMappingsRetrieverTest {
     
     @Test
-    void assertFindWithShadowHint() {
+    void assertRetrieveWithShadowHint() {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setShadow(true);
-        assertThat(new ShadowHintDataSourceMappingsFinder(hintValueContext).find(new ShadowRule(createRuleConfiguration())), is(Collections.singletonMap("prod_ds", "shadow_ds")));
+        assertThat(new ShadowHintDataSourceMappingsRetriever(hintValueContext).retrieve(new ShadowRule(createRuleConfiguration())), is(Collections.singletonMap("prod_ds", "shadow_ds")));
     }
     
     @Test
-    void assertFindWithNotShadowHint() {
+    void assertRetrieverWithNotShadowHint() {
         HintValueContext hintValueContext = new HintValueContext();
-        assertThat(new ShadowHintDataSourceMappingsFinder(hintValueContext).find(new ShadowRule(createRuleConfiguration())), is(Collections.emptyMap()));
+        assertThat(new ShadowHintDataSourceMappingsRetriever(hintValueContext).retrieve(new ShadowRule(createRuleConfiguration())), is(Collections.emptyMap()));
     }
     
     private ShadowRuleConfiguration createRuleConfiguration() {
