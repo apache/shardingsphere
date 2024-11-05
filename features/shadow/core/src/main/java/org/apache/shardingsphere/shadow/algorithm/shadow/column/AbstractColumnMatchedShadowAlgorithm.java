@@ -64,10 +64,10 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
     
     @Override
     public final boolean isShadow(final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
-        String table = shadowValue.getLogicTableName();
+        String table = shadowValue.getTableName();
         String column = shadowValue.getColumnName();
         Comparable<?> value = shadowValue.getValue();
-        if (shadowOperationType == shadowValue.getShadowOperationType() && shadowColumn.equals(column)) {
+        if (shadowOperationType == shadowValue.getOperationType() && shadowColumn.equals(column)) {
             ColumnShadowValueValidator.validate(table, column, value);
             return matchesShadowValue(value);
         }
