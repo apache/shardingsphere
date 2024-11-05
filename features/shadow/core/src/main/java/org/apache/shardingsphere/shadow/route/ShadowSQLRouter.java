@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
-import org.apache.shardingsphere.shadow.route.finder.ShadowDataSourceMappingsFinderFactory;
+import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetrieverFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
@@ -45,7 +45,7 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
                                      final ShadowRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemovedRouteUnit = new LinkedList<>();
         Collection<RouteUnit> toBeAddedRouteUnit = new LinkedList<>();
-        Map<String, String> shadowDataSourceMappings = ShadowDataSourceMappingsFinderFactory.newInstance(queryContext).find(rule);
+        Map<String, String> shadowDataSourceMappings = ShadowDataSourceMappingsRetrieverFactory.newInstance(queryContext).retrieve(rule);
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String logicName = each.getDataSourceMapper().getLogicName();
             String actualName = each.getDataSourceMapper().getActualName();

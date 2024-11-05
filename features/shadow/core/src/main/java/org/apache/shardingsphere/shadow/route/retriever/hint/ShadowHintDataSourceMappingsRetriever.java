@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder.hint;
+package org.apache.shardingsphere.shadow.route.retriever.hint;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.finder.ShadowDataSourceMappingsFinder;
+import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collections;
 import java.util.Map;
 
 /**
- * Shadow hint data source mappings finder.
+ * Shadow hint data source mappings retriever.
  */
 @RequiredArgsConstructor
-public final class ShadowHintDataSourceMappingsFinder implements ShadowDataSourceMappingsFinder {
+public final class ShadowHintDataSourceMappingsRetriever implements ShadowDataSourceMappingsRetriever {
     
     private final HintValueContext hintValueContext;
     
     @Override
-    public Map<String, String> find(final ShadowRule rule) {
+    public Map<String, String> retrieve(final ShadowRule rule) {
         ShadowCondition shadowCondition = new ShadowCondition();
         return rule.getAllHintShadowAlgorithms().stream().anyMatch(each -> HintShadowAlgorithmDeterminer.isShadow(each, shadowCondition, rule, hintValueContext.isShadow()))
                 ? rule.getAllShadowDataSourceMappings()

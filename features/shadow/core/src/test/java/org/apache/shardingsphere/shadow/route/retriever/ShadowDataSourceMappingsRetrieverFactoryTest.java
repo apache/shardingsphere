@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder;
+package org.apache.shardingsphere.shadow.route.retriever;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.shadow.route.finder.dml.ShadowDeleteStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.dml.ShadowInsertStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.dml.ShadowSelectStatementDataSourceMappingsFinder;
-import org.apache.shardingsphere.shadow.route.finder.dml.ShadowUpdateStatementDataSourceMappingsFinder;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowDeleteStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowInsertStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowSelectStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowUpdateStatementDataSourceMappingsRetriever;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -46,22 +46,22 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShadowDataSourceMappingsFinderFactoryTest {
+class ShadowDataSourceMappingsRetrieverFactoryTest {
     
     @Test
     void assertNewInstance() {
-        ShadowDataSourceMappingsFinder finder = ShadowDataSourceMappingsFinderFactory.newInstance(
+        ShadowDataSourceMappingsRetriever retriever = ShadowDataSourceMappingsRetrieverFactory.newInstance(
                 new QueryContext(createInsertSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(finder, instanceOf(ShadowInsertStatementDataSourceMappingsFinder.class));
-        ShadowDataSourceMappingsFinder shadowUpdateRouteEngine = ShadowDataSourceMappingsFinderFactory.newInstance(
+        assertThat(retriever, instanceOf(ShadowInsertStatementDataSourceMappingsRetriever.class));
+        ShadowDataSourceMappingsRetriever shadowUpdateRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
                 new QueryContext(createUpdateSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowUpdateRouteEngine, instanceOf(ShadowUpdateStatementDataSourceMappingsFinder.class));
-        ShadowDataSourceMappingsFinder shadowDeleteRouteEngine = ShadowDataSourceMappingsFinderFactory.newInstance(
+        assertThat(shadowUpdateRouteEngine, instanceOf(ShadowUpdateStatementDataSourceMappingsRetriever.class));
+        ShadowDataSourceMappingsRetriever shadowDeleteRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
                 new QueryContext(createDeleteSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowDeleteRouteEngine, instanceOf(ShadowDeleteStatementDataSourceMappingsFinder.class));
-        ShadowDataSourceMappingsFinder shadowSelectRouteEngine = ShadowDataSourceMappingsFinderFactory.newInstance(
+        assertThat(shadowDeleteRouteEngine, instanceOf(ShadowDeleteStatementDataSourceMappingsRetriever.class));
+        ShadowDataSourceMappingsRetriever shadowSelectRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
                 new QueryContext(createSelectSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementDataSourceMappingsFinder.class));
+        assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementDataSourceMappingsRetriever.class));
     }
     
     private ConnectionContext mockConnectionContext() {

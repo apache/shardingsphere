@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.finder.dml;
+package org.apache.shardingsphere.shadow.route.retriever.dml;
 
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
@@ -30,13 +30,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Shadow insert statement data source mappings finder.
+ * Shadow insert statement data source mappings retriever.
  */
-public final class ShadowInsertStatementDataSourceMappingsFinder extends AbstractShadowDMLStatementDataSourceMappingsFinder {
+public final class ShadowInsertStatementDataSourceMappingsRetriever extends AbstractShadowDMLStatementDataSourceMappingsRetriever {
     
     private final InsertStatementContext sqlStatementContext;
     
-    public ShadowInsertStatementDataSourceMappingsFinder(final InsertStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
+    public ShadowInsertStatementDataSourceMappingsRetriever(final InsertStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
         super(sqlStatementContext, hintValueContext, ShadowOperationType.INSERT);
         this.sqlStatementContext = sqlStatementContext;
     }
