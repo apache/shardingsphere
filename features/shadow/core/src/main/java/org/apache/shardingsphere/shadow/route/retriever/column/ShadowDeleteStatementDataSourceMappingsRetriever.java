@@ -15,37 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml;
+package org.apache.shardingsphere.shadow.route.retriever.column;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
-import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 /**
- * Shadow select statement data source mappings retriever.
+ * Shadow delete statement data source mappings retriever.
  */
-public final class ShadowSelectStatementDataSourceMappingsRetriever extends AbstractShadowDMLStatementDataSourceMappingsRetriever {
+public final class ShadowDeleteStatementDataSourceMappingsRetriever extends ShadowColumnDataSourceMappingsRetriever {
     
-    private final SelectStatementContext sqlStatementContext;
+    private final DeleteStatementContext sqlStatementContext;
     
     private final List<Object> parameters;
     
-    public ShadowSelectStatementDataSourceMappingsRetriever(final SelectStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
-        super(sqlStatementContext, hintValueContext, ShadowOperationType.SELECT);
+    public ShadowDeleteStatementDataSourceMappingsRetriever(final DeleteStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, String> tableAliasAndNameMappings) {
+        super(ShadowOperationType.DELETE, tableAliasAndNameMappings);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
@@ -54,11 +50,7 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Abst
     protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
         for (ExpressionSegment each : getWhereSegment()) {
-            Collection<ColumnSegment> columns = ColumnExtractUtils.extract(each);
-            if (1 != columns.size()) {
-                continue;
-            }
-            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(extractOwnerName(columns.iterator().next()), shadowColumnName, values)).ifPresent(result::add);
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }
@@ -71,10 +63,5 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Abst
             }
         }
         return result;
-    }
-    
-    private String extractOwnerName(final ColumnSegment columnSegment) {
-        Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return owner.isPresent() ? getTableAliasAndNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasAndNameMappings().keySet().iterator().next();
     }
 }
