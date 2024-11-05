@@ -23,14 +23,12 @@ import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.retriever.dml.table.ShadowTableDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Shadow table hint data source mappings retriever.
@@ -50,11 +48,8 @@ public final class ShadowTableHintDataSourceMappingsRetriever implements ShadowT
     
     @SuppressWarnings("unchecked")
     private boolean isMatchDefaultAlgorithm(final ShadowRule rule) {
-        Optional<ShadowAlgorithm> defaultAlgorithm = rule.getDefaultShadowAlgorithm();
-        if (defaultAlgorithm.isPresent() && defaultAlgorithm.get() instanceof HintShadowAlgorithm<?>) {
-            return HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) defaultAlgorithm.get(), new ShadowCondition(), rule, isShadow);
-        }
-        return false;
+        return rule.getDefaultShadowAlgorithm()
+                .filter(optional -> HintShadowAlgorithmDeterminer.isShadow((HintShadowAlgorithm<Comparable<?>>) optional, new ShadowCondition(), rule, isShadow)).isPresent();
     }
     
     private Map<String, String> findShadowDataSourceMappingsBySQLHints(final ShadowRule rule, final Collection<String> shadowTables) {
