@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.ColumnShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowTableDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @HighFrequencyInvocation
 @RequiredArgsConstructor
-public abstract class ShadowColumnDataSourceMappingsRetriever implements ShadowDataSourceMappingsRetriever {
+public abstract class ShadowColumnDataSourceMappingsRetriever implements ShadowTableDataSourceMappingsRetriever {
     
     private final ShadowOperationType operationType;
     
@@ -45,8 +45,8 @@ public abstract class ShadowColumnDataSourceMappingsRetriever implements ShadowD
     private final Map<String, String> tableAliasAndNameMappings;
     
     @Override
-    public Map<String, String> retrieve(final ShadowRule rule) {
-        for (String each : rule.filterShadowTables(tableAliasAndNameMappings.values())) {
+    public Map<String, String> retrieve(final ShadowRule rule, final Collection<String> shadowTables) {
+        for (String each : shadowTables) {
             Collection<String> shadowColumnNames = rule.getShadowColumnNames(operationType, each);
             if (!shadowColumnNames.isEmpty() && isMatchAnyColumnShadowAlgorithms(rule, each, shadowColumnNames)) {
                 return rule.getShadowDataSourceMappings(each);

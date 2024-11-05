@@ -45,13 +45,15 @@ import java.util.Map;
 @HighFrequencyInvocation
 public final class ShadowDMLStatementDataSourceMappingsRetriever implements ShadowDataSourceMappingsRetriever {
     
+    private final Map<String, String> tableAliasAndNameMappings;
+    
     private final ShadowTableHintDataSourceMappingsRetriever tableHintDataSourceMappingsRetriever;
     
     private final ShadowColumnDataSourceMappingsRetriever shadowColumnDataSourceMappingsRetriever;
     
     public ShadowDMLStatementDataSourceMappingsRetriever(final QueryContext queryContext, final ShadowOperationType operationType) {
-        Map<String, String> tableAliasAndNameMappings = getTableAliasAndNameMappings(((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getSimpleTables());
-        tableHintDataSourceMappingsRetriever = new ShadowTableHintDataSourceMappingsRetriever(operationType, queryContext.getHintValueContext().isShadow(), tableAliasAndNameMappings);
+        tableAliasAndNameMappings = getTableAliasAndNameMappings(((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getSimpleTables());
+        tableHintDataSourceMappingsRetriever = new ShadowTableHintDataSourceMappingsRetriever(operationType, queryContext.getHintValueContext().isShadow());
         shadowColumnDataSourceMappingsRetriever = createShadowDataSourceMappingsRetriever(queryContext, tableAliasAndNameMappings);
     }
     
@@ -83,7 +85,8 @@ public final class ShadowDMLStatementDataSourceMappingsRetriever implements Shad
     
     @Override
     public Map<String, String> retrieve(final ShadowRule rule) {
-        Map<String, String> result = tableHintDataSourceMappingsRetriever.retrieve(rule);
-        return result.isEmpty() ? shadowColumnDataSourceMappingsRetriever.retrieve(rule) : result;
+        Collection<String> shadowTables = rule.filterShadowTables(tableAliasAndNameMappings.values());
+        Map<String, String> result = tableHintDataSourceMappingsRetriever.retrieve(rule, shadowTables);
+        return result.isEmpty() ? shadowColumnDataSourceMappingsRetriever.retrieve(rule, shadowTables) : result;
     }
 }
