@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.ComposableSQLToken;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,24 +61,11 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     }
     
     private void appendRewriteSQL(final SQLToken sqlToken, final StringBuilder builder) {
-        if (sqlToken instanceof ComposableSQLToken) {
-            builder.append(getComposableSQLTokenText((ComposableSQLToken) sqlToken));
-        } else {
-            builder.append(getSQLTokenText(sqlToken));
-        }
+        builder.append(getSQLTokenText(sqlToken));
         builder.append(getConjunctionText(sqlToken));
     }
     
     protected abstract String getSQLTokenText(SQLToken sqlToken);
-    
-    private String getComposableSQLTokenText(final ComposableSQLToken composableSQLToken) {
-        StringBuilder result = new StringBuilder();
-        for (SQLToken each : composableSQLToken.getSqlTokens()) {
-            result.append(getSQLTokenText(each));
-            result.append(getConjunctionText(each));
-        }
-        return result.toString();
-    }
     
     private String getConjunctionText(final SQLToken sqlToken) {
         int startIndex = getStartIndex(sqlToken);
