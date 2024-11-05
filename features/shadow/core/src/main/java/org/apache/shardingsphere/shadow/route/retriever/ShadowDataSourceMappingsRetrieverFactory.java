@@ -19,16 +19,17 @@ package org.apache.shardingsphere.shadow.route.retriever;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowDeleteStatementDataSourceMappingsRetriever;
-import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowInsertStatementDataSourceMappingsRetriever;
-import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowSelectStatementDataSourceMappingsRetriever;
-import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowUpdateStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowDMLStatementDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.route.retriever.hint.ShadowHintDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+
+import java.util.Optional;
 
 /**
  * Shadow data source mappings retriever factory.
@@ -43,22 +44,25 @@ public final class ShadowDataSourceMappingsRetrieverFactory {
      * @return created instance
      */
     public static ShadowDataSourceMappingsRetriever newInstance(final QueryContext queryContext) {
-        if (queryContext.getSqlStatementContext() instanceof InsertStatementContext) {
-            return new ShadowInsertStatementDataSourceMappingsRetriever(
-                    (InsertStatementContext) queryContext.getSqlStatementContext(), queryContext.getHintValueContext());
+        Optional<ShadowOperationType> operationType = getShadowOperationType(queryContext.getSqlStatementContext());
+        return operationType.isPresent()
+                ? new ShadowDMLStatementDataSourceMappingsRetriever(queryContext, operationType.get())
+                : new ShadowHintDataSourceMappingsRetriever(queryContext.getHintValueContext());
+    }
+    
+    private static Optional<ShadowOperationType> getShadowOperationType(final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            return Optional.of(ShadowOperationType.INSERT);
         }
-        if (queryContext.getSqlStatementContext() instanceof DeleteStatementContext) {
-            return new ShadowDeleteStatementDataSourceMappingsRetriever(
-                    (DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+        if (sqlStatementContext instanceof DeleteStatementContext) {
+            return Optional.of(ShadowOperationType.DELETE);
         }
-        if (queryContext.getSqlStatementContext() instanceof UpdateStatementContext) {
-            return new ShadowUpdateStatementDataSourceMappingsRetriever(
-                    (UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            return Optional.of(ShadowOperationType.UPDATE);
         }
-        if (queryContext.getSqlStatementContext() instanceof SelectStatementContext) {
-            return new ShadowSelectStatementDataSourceMappingsRetriever(
-                    (SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getHintValueContext());
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return Optional.of(ShadowOperationType.SELECT);
         }
-        return new ShadowHintDataSourceMappingsRetriever(queryContext.getHintValueContext());
+        return Optional.empty();
     }
 }

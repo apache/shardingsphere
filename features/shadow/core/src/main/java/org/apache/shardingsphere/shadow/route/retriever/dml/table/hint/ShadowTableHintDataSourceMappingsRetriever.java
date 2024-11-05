@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.hint;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.hint;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.dml.table.ShadowTableDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
@@ -37,17 +37,14 @@ import java.util.Optional;
  */
 @HighFrequencyInvocation
 @RequiredArgsConstructor
-public final class ShadowTableHintDataSourceMappingsRetriever implements ShadowDataSourceMappingsRetriever {
+public final class ShadowTableHintDataSourceMappingsRetriever implements ShadowTableDataSourceMappingsRetriever {
     
     private final ShadowOperationType operationType;
     
     private final boolean isShadow;
     
-    private final Map<String, String> tableAliasAndNameMappings;
-    
     @Override
-    public Map<String, String> retrieve(final ShadowRule rule) {
-        Collection<String> shadowTables = rule.filterShadowTables(tableAliasAndNameMappings.values());
+    public Map<String, String> retrieve(final ShadowRule rule, final Collection<String> shadowTables) {
         return shadowTables.isEmpty() && isMatchDefaultAlgorithm(rule) ? rule.getAllShadowDataSourceMappings() : findShadowDataSourceMappingsBySQLHints(rule, shadowTables);
     }
     

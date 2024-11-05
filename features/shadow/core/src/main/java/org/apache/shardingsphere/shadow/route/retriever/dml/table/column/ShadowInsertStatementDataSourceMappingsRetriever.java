@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Shadow insert statement data source mappings retriever.
  */
-public final class ShadowInsertStatementDataSourceMappingsRetriever extends AbstractShadowDMLStatementDataSourceMappingsRetriever {
+@HighFrequencyInvocation
+public final class ShadowInsertStatementDataSourceMappingsRetriever extends ShadowColumnDataSourceMappingsRetriever {
     
     private final InsertStatementContext sqlStatementContext;
     
-    public ShadowInsertStatementDataSourceMappingsRetriever(final InsertStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
-        super(sqlStatementContext, hintValueContext, ShadowOperationType.INSERT);
+    public ShadowInsertStatementDataSourceMappingsRetriever(final InsertStatementContext sqlStatementContext, final Map<String, String> tableAliasAndNameMappings) {
+        super(ShadowOperationType.INSERT, tableAliasAndNameMappings);
         this.sqlStatementContext = sqlStatementContext;
     }
     

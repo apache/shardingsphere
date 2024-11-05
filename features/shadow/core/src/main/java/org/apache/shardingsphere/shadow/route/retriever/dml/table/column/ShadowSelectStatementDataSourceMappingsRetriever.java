@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
-import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
@@ -33,19 +33,21 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtrac
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Shadow select statement data source mappings retriever.
  */
-public final class ShadowSelectStatementDataSourceMappingsRetriever extends AbstractShadowDMLStatementDataSourceMappingsRetriever {
+@HighFrequencyInvocation
+public final class ShadowSelectStatementDataSourceMappingsRetriever extends ShadowColumnDataSourceMappingsRetriever {
     
     private final SelectStatementContext sqlStatementContext;
     
     private final List<Object> parameters;
     
-    public ShadowSelectStatementDataSourceMappingsRetriever(final SelectStatementContext sqlStatementContext, final List<Object> parameters, final HintValueContext hintValueContext) {
-        super(sqlStatementContext, hintValueContext, ShadowOperationType.SELECT);
+    public ShadowSelectStatementDataSourceMappingsRetriever(final SelectStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, String> tableAliasAndNameMappings) {
+        super(ShadowOperationType.SELECT, tableAliasAndNameMappings);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
