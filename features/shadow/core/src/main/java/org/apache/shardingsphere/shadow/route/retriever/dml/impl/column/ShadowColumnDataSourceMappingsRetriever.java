@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.impl.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
