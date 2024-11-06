@@ -89,6 +89,6 @@ public abstract class ShadowColumnDataSourceMappingsRetriever implements ShadowT
     protected abstract Collection<ShadowColumnCondition> getShadowColumnConditions(String shadowColumnName);
     
     protected final String getSingleTableName() {
-        return tableAliasAndNameMappings.entrySet().iterator().next().getValue();
+        return tableAliasAndNameMappings.values().iterator().next();
     }
 }

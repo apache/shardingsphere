@@ -60,7 +60,7 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
             if (1 != columns.size()) {
                 continue;
             }
-            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(extractOwnerName(columns.iterator().next()), shadowColumnName, values)).ifPresent(result::add);
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getOwnerTableName(columns.iterator().next()), shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }
@@ -75,8 +75,8 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
         return result;
     }
     
-    private String extractOwnerName(final ColumnSegment columnSegment) {
+    private String getOwnerTableName(final ColumnSegment columnSegment) {
         Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return owner.isPresent() ? getTableAliasAndNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasAndNameMappings().keySet().iterator().next();
+        return owner.isPresent() ? getTableAliasAndNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasAndNameMappings().values().iterator().next();
     }
 }
