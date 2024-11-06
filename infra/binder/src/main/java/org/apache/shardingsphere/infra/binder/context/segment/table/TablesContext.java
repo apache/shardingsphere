@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -66,6 +67,8 @@ public final class TablesContext {
     @Getter(AccessLevel.NONE)
     private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
     
+    private final Map<String, String> tableAliasNameMap = new HashMap<>();
+    
     public TablesContext(final SimpleTableSegment table, final DatabaseType databaseType, final String currentDatabaseName) {
         this(null == table ? Collections.emptyList() : Collections.singletonList(table), databaseType, currentDatabaseName);
     }
@@ -85,9 +88,11 @@ public final class TablesContext {
                 SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
                 simpleTables.add(simpleTableSegment);
                 tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-                // TODO use sql binder result when statement which contains tables support bind logic
+                // TODO use SQL binder result when statement which contains tables support bind logic
                 simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
                 databaseNames.add(findDatabaseName(simpleTableSegment, databaseType).orElse(currentDatabaseName));
+                tableAliasNameMap.put(each.getAlias().map(IdentifierValue::getValue).orElse(simpleTableSegment.getTableName().getIdentifier().getValue()).toLowerCase(),
+                        ((SimpleTableSegment) each).getTableName().getIdentifier().getValue().toLowerCase());
             }
             if (each instanceof SubqueryTableSegment) {
                 subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));
