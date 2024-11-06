@@ -35,4 +35,9 @@ public final class FixtureRule implements DatabaseRule {
     public RuleAttributes getAttributes() {
         return new RuleAttributes(mock(DataSourceMapperRuleAttribute.class));
     }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }

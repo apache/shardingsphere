@@ -26,4 +26,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 public final class AlgorithmChangedProcessorFixtureRule implements ShardingSphereRule {
     
     private final AlgorithmChangedProcessorFixtureRuleConfiguration configuration;
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }

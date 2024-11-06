@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.rule.attribute.EncryptTableMapperRuleAttribute;
@@ -188,5 +189,10 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         Optional<EncryptTableRuleConfiguration> result = toBeUpdatedRuleConfig.getTables().stream().filter(table -> table.getName().equals(tableName)).findFirst();
         Preconditions.checkState(result.isPresent());
         return result.get();
+    }
+    
+    @Override
+    public int getOrder() {
+        return EncryptOrder.ORDER;
     }
 }

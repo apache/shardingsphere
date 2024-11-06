@@ -28,4 +28,9 @@ public class RuleMetaDataShardingSphereRuleFixture implements ShardingSphereRule
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
     }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }
