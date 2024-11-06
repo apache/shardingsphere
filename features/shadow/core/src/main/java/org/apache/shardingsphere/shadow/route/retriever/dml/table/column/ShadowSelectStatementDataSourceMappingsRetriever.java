@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtrac
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -46,8 +45,8 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
     
     private final List<Object> parameters;
     
-    public ShadowSelectStatementDataSourceMappingsRetriever(final SelectStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, String> tableAliasAndNameMappings) {
-        super(ShadowOperationType.SELECT, tableAliasAndNameMappings);
+    public ShadowSelectStatementDataSourceMappingsRetriever(final SelectStatementContext sqlStatementContext, final List<Object> parameters) {
+        super(ShadowOperationType.SELECT);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
@@ -77,6 +76,8 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
     
     private String getOwnerTableName(final ColumnSegment columnSegment) {
         Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return owner.isPresent() ? getTableAliasAndNameMappings().get(owner.get().getIdentifier().getValue()) : getTableAliasAndNameMappings().values().iterator().next();
+        return owner.isPresent()
+                ? sqlStatementContext.getTablesContext().getTableAliasNameMap().get(owner.get().getIdentifier().getValue())
+                : sqlStatementContext.getTablesContext().getTableNames().iterator().next();
     }
 }

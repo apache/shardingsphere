@@ -28,7 +28,6 @@ import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Shadow insert statement data source mappings retriever.
@@ -38,8 +37,8 @@ public final class ShadowInsertStatementDataSourceMappingsRetriever extends Shad
     
     private final InsertStatementContext sqlStatementContext;
     
-    public ShadowInsertStatementDataSourceMappingsRetriever(final InsertStatementContext sqlStatementContext, final Map<String, String> tableAliasAndNameMappings) {
-        super(ShadowOperationType.INSERT, tableAliasAndNameMappings);
+    public ShadowInsertStatementDataSourceMappingsRetriever(final InsertStatementContext sqlStatementContext) {
+        super(ShadowOperationType.INSERT);
         this.sqlStatementContext = sqlStatementContext;
     }
     
@@ -54,7 +53,8 @@ public final class ShadowInsertStatementDataSourceMappingsRetriever extends Shad
             }
             Collection<Comparable<?>> columnValues = getColumnValues(sqlStatementContext.getInsertValueContexts(), columnIndex);
             columnIndex++;
-            result.add(new ShadowColumnCondition(getSingleTableName(), each, columnValues));
+            String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
+            result.add(new ShadowColumnCondition(tableName, each, columnValues));
         }
         return result;
     }

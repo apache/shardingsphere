@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtrac
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Shadow update statement data source mappings retriever.
@@ -44,8 +43,8 @@ public final class ShadowUpdateStatementDataSourceMappingsRetriever extends Shad
     
     private final List<Object> parameters;
     
-    public ShadowUpdateStatementDataSourceMappingsRetriever(final UpdateStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, String> tableAliasAndNameMappings) {
-        super(ShadowOperationType.UPDATE, tableAliasAndNameMappings);
+    public ShadowUpdateStatementDataSourceMappingsRetriever(final UpdateStatementContext sqlStatementContext, final List<Object> parameters) {
+        super(ShadowOperationType.UPDATE);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
@@ -58,7 +57,8 @@ public final class ShadowUpdateStatementDataSourceMappingsRetriever extends Shad
             if (1 != columns.size()) {
                 continue;
             }
-            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), shadowColumnName, values)).ifPresent(result::add);
+            String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(tableName, shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }
