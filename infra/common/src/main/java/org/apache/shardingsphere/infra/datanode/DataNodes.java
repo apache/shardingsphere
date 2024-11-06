@@ -22,6 +22,9 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +52,9 @@ public final class DataNodes {
         if (result.isEmpty()) {
             return result;
         }
-        for (ShardingSphereRule each : rules) {
+        Collection<ShardingSphereRule> orderedRules = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, rules).keySet();
+        orderedRules.addAll(OrderedSPILoader.getServices(GlobalRuleBuilder.class, rules).keySet());
+        for (ShardingSphereRule each : orderedRules) {
             Optional<DataSourceMapperRuleAttribute> dataSourceMapperRuleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
             if (dataSourceMapperRuleAttribute.isPresent()) {
                 result = buildDataNodes(result, dataSourceMapperRuleAttribute.get());
