@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -38,19 +41,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShadowExtractor.class)
-class ShadowDeleteStatementDataSourceMappingsRetrieverTest {
+@StaticMockSettings({ColumnExtractUtils.class, ShadowExtractor.class})
+class ShadowUpdateStatementDataSourceMappingsRetrieverTest {
     
     @Test
     void assertRetrieve() {
-        DeleteStatementContext sqlStatementContext = mock(DeleteStatementContext.class, RETURNS_DEEP_STUBS);
+        UpdateStatementContext sqlStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         WhereSegment whereSegment = mock(WhereSegment.class);
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         when(whereSegment.getExpr()).thenReturn(expressionSegment);
-        when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
+        when(sqlStatementContext.getWhereSegments()).thenReturn(Arrays.asList(whereSegment, mock(WhereSegment.class, RETURNS_DEEP_STUBS)));
+        when(ColumnExtractUtils.extract(expressionSegment)).thenReturn(Collections.singleton(mock(ColumnSegment.class)));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
-        ShadowDeleteStatementDataSourceMappingsRetriever retriever = new ShadowDeleteStatementDataSourceMappingsRetriever(sqlStatementContext, Collections.singletonList("foo"));
+        ShadowUpdateStatementDataSourceMappingsRetriever retriever = new ShadowUpdateStatementDataSourceMappingsRetriever(sqlStatementContext, Collections.singletonList("foo"));
         Collection<ShadowColumnCondition> actual = retriever.getShadowColumnConditions("foo_col");
         Collection<ShadowColumnCondition> expected = Collections.singletonList(new ShadowColumnCondition("foo_tbl", "foo_col", Collections.singleton("foo")));
         assertThat(actual, deepEqual(expected));

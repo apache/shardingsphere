@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
