@@ -43,7 +43,7 @@ public final class ColumnShadowAlgorithmDeterminer {
      */
     public static boolean isShadow(final ColumnShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowCondition shadowCondition) {
         for (PreciseColumnShadowValue<Comparable<?>> each : createColumnShadowValues(shadowCondition)) {
-            if (!shadowCondition.getTableName().equals(shadowCondition.getColumnCondition().getOwner()) || !shadowAlgorithm.isShadow(each)) {
+            if (!shadowCondition.getTableName().equals(shadowCondition.getColumnCondition().getTable()) || !shadowAlgorithm.isShadow(each)) {
                 return false;
             }
         }
