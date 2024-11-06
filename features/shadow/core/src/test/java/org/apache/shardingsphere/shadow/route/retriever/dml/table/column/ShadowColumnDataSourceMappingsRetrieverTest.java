@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 class ShadowColumnDataSourceMappingsRetrieverTest {
     
     @Mock
-    ShadowRule rule;
+    private ShadowRule rule;
     
     @SuppressWarnings("unchecked")
     @Test
