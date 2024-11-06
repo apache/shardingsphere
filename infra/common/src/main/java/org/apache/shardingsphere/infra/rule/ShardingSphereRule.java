@@ -43,7 +43,7 @@ public interface ShardingSphereRule {
     
     /**
      * Get rule order.
-     * 
+     *
      * @return rule order
      */
     int getOrder();
