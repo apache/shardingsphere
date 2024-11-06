@@ -247,4 +247,5 @@
     <sql-case id="select_bitxor" value="SELECT BITXOR(3,5)" db-types="Doris" />
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
     <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
+    <sql-case id="select_extract_url_parameter" value="SELECT EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')" db-types="Doris" />
 </sql-cases>

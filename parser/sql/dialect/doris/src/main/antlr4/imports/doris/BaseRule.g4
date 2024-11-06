@@ -231,6 +231,9 @@ identifierKeywordsUnambiguous
     | EXPORT
     | EXTENDED
     | EXTENT_SIZE
+    // DORIS ADDED BEGIN
+    | EXTRACT_URL_PARAMETER
+    // DORIS ADDED END
     | FAILED_LOGIN_ATTEMPTS
     | FAST
     | FAULTS
@@ -1051,6 +1054,9 @@ specialFunction
     | currentUserFunction
     | charFunction
     | extractFunction
+    // DORIS ADDED BEGIN
+    | extractUrlParameterFunction
+    // DORIS ADDED END
     | groupConcatFunction
     // DORIS ADDED BEGIN
     | instrFunction
@@ -1158,6 +1164,12 @@ substringFunction
 extractFunction
     : EXTRACT LP_ intervalUnit FROM expr RP_
     ;
+
+// DORIS ADDED BEGIN
+extractUrlParameterFunction
+    : EXTRACT_URL_PARAMETER LP_ expr COMMA_ expr RP_
+    ;
+// DORIS ADDED END
 
 charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING charsetName)? RP_
