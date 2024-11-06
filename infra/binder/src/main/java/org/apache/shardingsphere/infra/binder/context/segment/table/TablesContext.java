@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -67,8 +66,6 @@ public final class TablesContext {
     @Getter(AccessLevel.NONE)
     private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
     
-    private final Map<String, IdentifierValue> tableNameAliasMap = new HashMap<>();
-    
     public TablesContext(final SimpleTableSegment table, final DatabaseType databaseType, final String currentDatabaseName) {
         this(null == table ? Collections.emptyList() : Collections.singletonList(table), databaseType, currentDatabaseName);
     }
@@ -91,7 +88,6 @@ public final class TablesContext {
                 // TODO use sql binder result when statement which contains tables support bind logic
                 simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
                 databaseNames.add(findDatabaseName(simpleTableSegment, databaseType).orElse(currentDatabaseName));
-                tableNameAliasMap.put(simpleTableSegment.getTableName().getIdentifier().getValue().toLowerCase(), each.getAlias().orElse(simpleTableSegment.getTableName().getIdentifier()));
             }
             if (each instanceof SubqueryTableSegment) {
                 subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));
