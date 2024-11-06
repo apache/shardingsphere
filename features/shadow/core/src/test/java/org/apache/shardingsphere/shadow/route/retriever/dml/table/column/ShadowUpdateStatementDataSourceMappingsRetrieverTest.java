@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -49,7 +50,7 @@ class ShadowUpdateStatementDataSourceMappingsRetrieverTest {
         WhereSegment whereSegment = mock(WhereSegment.class);
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         when(whereSegment.getExpr()).thenReturn(expressionSegment);
-        when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
+        when(sqlStatementContext.getWhereSegments()).thenReturn(Arrays.asList(whereSegment, mock(WhereSegment.class, RETURNS_DEEP_STUBS)));
         when(ColumnExtractUtils.extract(expressionSegment)).thenReturn(Collections.singleton(mock(ColumnSegment.class)));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
