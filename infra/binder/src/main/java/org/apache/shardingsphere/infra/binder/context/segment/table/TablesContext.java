@@ -84,15 +84,17 @@ public final class TablesContext {
         }
         this.tables.addAll(tables);
         for (TableSegment each : tables) {
-            if (each instanceof SimpleTableSegment && !"DUAL".equalsIgnoreCase(((SimpleTableSegment) each).getTableName().getIdentifier().getValue())) {
-                SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
-                simpleTables.add(simpleTableSegment);
-                tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-                // TODO use SQL binder result when statement which contains tables support bind logic
-                simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
-                databaseNames.add(findDatabaseName(simpleTableSegment, databaseType).orElse(currentDatabaseName));
-                tableAliasNameMap.put(each.getAlias().map(IdentifierValue::getValue).orElse(simpleTableSegment.getTableName().getIdentifier().getValue()).toLowerCase(),
-                        ((SimpleTableSegment) each).getTableName().getIdentifier().getValue().toLowerCase());
+            if (each instanceof SimpleTableSegment) {
+                String tableName = ((SimpleTableSegment) each).getTableName().getIdentifier().getValue();
+                if (!"DUAL".equalsIgnoreCase(tableName)) {
+                    SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
+                    simpleTables.add(simpleTableSegment);
+                    tableNames.add(tableName);
+                    // TODO use SQL binder result when statement which contains tables support bind logic
+                    simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
+                    databaseNames.add(findDatabaseName(simpleTableSegment, databaseType).orElse(currentDatabaseName));
+                    tableAliasNameMap.put(each.getAlias().map(IdentifierValue::getValue).orElse(tableName).toLowerCase(), tableName.toLowerCase());
+                }
             }
             if (each instanceof SubqueryTableSegment) {
                 subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));
