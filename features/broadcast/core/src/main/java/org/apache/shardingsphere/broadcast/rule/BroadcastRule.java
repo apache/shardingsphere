@@ -20,6 +20,7 @@ package org.apache.shardingsphere.broadcast.rule;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -101,5 +102,10 @@ public final class BroadcastRule implements DatabaseRule {
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         return !logicTableNames.isEmpty() && tables.containsAll(logicTableNames);
+    }
+    
+    @Override
+    public int getOrder() {
+        return BroadcastOrder.ORDER;
     }
 }

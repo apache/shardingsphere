@@ -22,13 +22,13 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -76,8 +76,8 @@ public final class DataNodes {
     }
     
     private Collection<ShardingSphereRule> getOrderedRules() {
-        Collection<ShardingSphereRule> result = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, rules).keySet();
-        result.addAll(OrderedSPILoader.getServices(GlobalRuleBuilder.class, rules).keySet());
+        List<ShardingSphereRule> result = new ArrayList<>(rules);
+        result.sort(Comparator.comparingInt(ShardingSphereRule::getOrder));
         return result;
     }
     

@@ -22,24 +22,15 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,9 +38,6 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(OrderedSPILoader.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class DataNodesTest {
     
     private static final Map<String, Collection<String>> READ_WRITE_SPLITTING_DATASOURCE_MAP = new HashMap<>();
@@ -140,14 +128,10 @@ class DataNodesTest {
         assertThat(thirdDataNode.getTableName(), is("t_single"));
     }
     
-    @SuppressWarnings("rawtypes")
     private Collection<ShardingSphereRule> mockShardingSphereRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         result.add(mockDataSourceMapperRule());
         result.addAll(mockDataNodeRules());
-        Map<ShardingSphereRule, DatabaseRuleBuilder> orderedRules = result.stream()
-                .collect(Collectors.toMap(entry -> entry, entry -> mock(DatabaseRuleBuilder.class), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, result)).thenReturn(orderedRules);
         return result;
     }
     

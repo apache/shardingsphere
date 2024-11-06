@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.constant.MaskOrder;
 import org.apache.shardingsphere.mask.rule.attribute.MaskTableMapperRuleAttribute;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -117,5 +118,10 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
         Optional<MaskTableRuleConfiguration> result = toBeUpdatedRuleConfig.getTables().stream().filter(table -> table.getName().equals(tableName)).findFirst();
         Preconditions.checkState(result.isPresent());
         return result.get();
+    }
+    
+    @Override
+    public int getOrder() {
+        return MaskOrder.ORDER;
     }
 }

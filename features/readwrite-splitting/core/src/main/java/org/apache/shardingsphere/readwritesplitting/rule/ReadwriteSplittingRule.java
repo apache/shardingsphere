@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingDataSourceType;
+import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.InvalidReadwriteSplittingActualDataSourceInlineExpressionException;
 import org.apache.shardingsphere.readwritesplitting.rule.attribute.ReadwriteSplittingDataSourceMapperRuleAttribute;
@@ -138,5 +139,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
      */
     public Optional<ReadwriteSplittingDataSourceGroupRule> findDataSourceGroupRule(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRuleGroups.get(dataSourceName));
+    }
+    
+    @Override
+    public int getOrder() {
+        return ReadwriteSplittingOrder.ORDER;
     }
 }
