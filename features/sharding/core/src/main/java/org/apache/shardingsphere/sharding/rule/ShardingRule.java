@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.cache.ShardingCache;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingDataNodeRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableNamesRuleAttribute;
@@ -633,5 +634,10 @@ public final class ShardingRule implements DatabaseRule {
         }
         BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
         return binaryExpression.getLeft() instanceof ColumnSegment && binaryExpression.getRight() instanceof ColumnSegment && "=".equals(binaryExpression.getOperator());
+    }
+    
+    @Override
+    public int getOrder() {
+        return ShardingOrder.ORDER;
     }
 }

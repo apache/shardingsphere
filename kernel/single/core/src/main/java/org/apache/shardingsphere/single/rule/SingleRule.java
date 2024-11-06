@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
@@ -185,5 +186,10 @@ public final class SingleRule implements DatabaseRule {
             result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));
         }
         return result;
+    }
+    
+    @Override
+    public int getOrder() {
+        return SingleOrder.ORDER;
     }
 }

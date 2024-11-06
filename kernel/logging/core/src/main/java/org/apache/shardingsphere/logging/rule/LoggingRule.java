@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
+import org.apache.shardingsphere.logging.constant.LoggingOrder;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 
 import java.util.Optional;
@@ -44,5 +45,10 @@ public final class LoggingRule implements GlobalRule {
      */
     public Optional<ShardingSphereLogger> getSQLLogger() {
         return configuration.getLoggers().stream().filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
+    }
+    
+    @Override
+    public int getOrder() {
+        return LoggingOrder.ORDER;
     }
 }

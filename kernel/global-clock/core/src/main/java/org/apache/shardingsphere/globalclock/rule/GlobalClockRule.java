@@ -20,6 +20,7 @@ package org.apache.shardingsphere.globalclock.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.globalclock.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
+import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -49,5 +50,10 @@ public final class GlobalClockRule implements GlobalRule {
      */
     public Optional<GlobalClockProvider> getGlobalClockProvider() {
         return Optional.ofNullable(globalClockProvider);
+    }
+    
+    @Override
+    public int getOrder() {
+        return GlobalClockOrder.ORDER;
     }
 }

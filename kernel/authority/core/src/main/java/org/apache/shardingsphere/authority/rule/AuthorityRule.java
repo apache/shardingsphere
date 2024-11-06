@@ -19,6 +19,7 @@ package org.apache.shardingsphere.authority.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -108,5 +109,10 @@ public final class AuthorityRule implements GlobalRule {
             }
         }
         return Optional.empty();
+    }
+    
+    @Override
+    public int getOrder() {
+        return AuthorityOrder.ORDER;
     }
 }

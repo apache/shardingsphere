@@ -20,17 +20,18 @@ package org.apache.shardingsphere.shadow.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.apache.shardingsphere.shadow.rule.attribute.ShadowDataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.hint.HintShadowAlgorithm;
-import org.apache.shardingsphere.shadow.rule.attribute.ShadowDataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -241,5 +242,10 @@ public final class ShadowRule implements DatabaseRule {
     public Optional<String> findProductionDataSourceName(final String logicDataSourceName) {
         ShadowDataSourceRule dataSourceRule = dataSourceRules.get(logicDataSourceName);
         return null == dataSourceRule ? Optional.empty() : Optional.of(dataSourceRule.getProductionDataSource());
+    }
+    
+    @Override
+    public int getOrder() {
+        return ShadowOrder.ORDER;
     }
 }

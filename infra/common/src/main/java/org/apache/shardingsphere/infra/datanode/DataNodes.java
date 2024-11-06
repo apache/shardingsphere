@@ -23,9 +23,12 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,7 +52,7 @@ public final class DataNodes {
         if (result.isEmpty()) {
             return result;
         }
-        for (ShardingSphereRule each : rules) {
+        for (ShardingSphereRule each : getOrderedRules()) {
             Optional<DataSourceMapperRuleAttribute> dataSourceMapperRuleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
             if (dataSourceMapperRuleAttribute.isPresent()) {
                 result = buildDataNodes(result, dataSourceMapperRuleAttribute.get());
@@ -70,6 +73,12 @@ public final class DataNodes {
     
     private Collection<DataNode> getDataNodesByTableName(final ShardingSphereRule rule, final String tableName) {
         return rule.getAttributes().findAttribute(DataNodeRuleAttribute.class).map(optional -> optional.getDataNodesByTableName(tableName)).orElse(Collections.emptyList());
+    }
+    
+    private Collection<ShardingSphereRule> getOrderedRules() {
+        List<ShardingSphereRule> result = new ArrayList<>(rules);
+        result.sort(Comparator.comparingInt(ShardingSphereRule::getOrder));
+        return result;
     }
     
     private Collection<DataNode> buildDataNodes(final Collection<DataNode> dataNodes, final DataSourceMapperRuleAttribute dataSourceMapperRuleAttribute) {

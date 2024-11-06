@@ -31,4 +31,9 @@ public final class MockedRule implements ShardingSphereRule {
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
     }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }
