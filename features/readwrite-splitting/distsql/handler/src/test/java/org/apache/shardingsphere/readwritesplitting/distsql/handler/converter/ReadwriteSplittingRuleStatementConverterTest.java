@@ -37,10 +37,12 @@ class ReadwriteSplittingRuleStatementConverterTest {
     
     @Test
     void assertConvert() {
-        ReadwriteSplittingRuleConfiguration actual = ReadwriteSplittingRuleStatementConverter.convert(Collections.singleton(new ReadwriteSplittingRuleSegment(
-                "foo_name", "write_ds", Arrays.asList("read_ds0", "read_ds1"), TransactionalReadQueryStrategy.FIXED.name(), new AlgorithmSegment("foo_algo", new Properties()))));
-        assertThat(actual.getDataSourceGroups(), deepEqual(Collections.singletonList(
-                new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_name", "write_ds", Arrays.asList("read_ds0", "read_ds1"), TransactionalReadQueryStrategy.FIXED, "foo_name_foo_algo"))));
+        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment(
+                "foo_name", "write_ds", Arrays.asList("read_ds0", "read_ds1"), TransactionalReadQueryStrategy.FIXED.name(), new AlgorithmSegment("foo_algo", new Properties()));
+        ReadwriteSplittingRuleConfiguration actual = ReadwriteSplittingRuleStatementConverter.convert(Collections.singleton(ruleSegment));
+        ReadwriteSplittingDataSourceGroupRuleConfiguration expectedDataSourceGroupRuleConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
+                "foo_name", "write_ds", Arrays.asList("read_ds0", "read_ds1"), TransactionalReadQueryStrategy.FIXED, "foo_name_foo_algo");
+        assertThat(actual.getDataSourceGroups(), deepEqual(Collections.singletonList(expectedDataSourceGroupRuleConfig)));
         assertThat(actual.getLoadBalancers(), deepEqual(Collections.singletonMap("foo_name_foo_algo", new AlgorithmConfiguration("foo_algo", new Properties()))));
     }
     
