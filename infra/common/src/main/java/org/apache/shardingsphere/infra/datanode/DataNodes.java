@@ -52,9 +52,7 @@ public final class DataNodes {
         if (result.isEmpty()) {
             return result;
         }
-        Collection<ShardingSphereRule> orderedRules = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, rules).keySet();
-        orderedRules.addAll(OrderedSPILoader.getServices(GlobalRuleBuilder.class, rules).keySet());
-        for (ShardingSphereRule each : orderedRules) {
+        for (ShardingSphereRule each : getOrderedRules()) {
             Optional<DataSourceMapperRuleAttribute> dataSourceMapperRuleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
             if (dataSourceMapperRuleAttribute.isPresent()) {
                 result = buildDataNodes(result, dataSourceMapperRuleAttribute.get());
@@ -75,6 +73,12 @@ public final class DataNodes {
     
     private Collection<DataNode> getDataNodesByTableName(final ShardingSphereRule rule, final String tableName) {
         return rule.getAttributes().findAttribute(DataNodeRuleAttribute.class).map(optional -> optional.getDataNodesByTableName(tableName)).orElse(Collections.emptyList());
+    }
+    
+    private Collection<ShardingSphereRule> getOrderedRules() {
+        Collection<ShardingSphereRule> result = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, rules).keySet();
+        result.addAll(OrderedSPILoader.getServices(GlobalRuleBuilder.class, rules).keySet());
+        return result;
     }
     
     private Collection<DataNode> buildDataNodes(final Collection<DataNode> dataNodes, final DataSourceMapperRuleAttribute dataSourceMapperRuleAttribute) {
