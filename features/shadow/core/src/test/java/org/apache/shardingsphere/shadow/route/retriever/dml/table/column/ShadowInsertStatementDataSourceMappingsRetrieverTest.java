@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsert
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -45,7 +46,9 @@ class ShadowInsertStatementDataSourceMappingsRetrieverTest {
         when(sqlStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         ShadowInsertStatementDataSourceMappingsRetriever retriever = new ShadowInsertStatementDataSourceMappingsRetriever(sqlStatementContext);
-        assertThat(retriever.getShadowColumnConditions("foo_col"), deepEqual(Collections.singletonList(new ShadowColumnCondition("foo_tbl", "foo_col", Collections.singletonList("foo")))));
+        Collection<ShadowColumnCondition> actual = retriever.getShadowColumnConditions("foo_col");
+        Collection<ShadowColumnCondition> expected = Collections.singletonList(new ShadowColumnCondition("foo_tbl", "foo_col", Collections.singletonList("foo")));
+        assertThat(actual, deepEqual(expected));
     }
     
     @Test
