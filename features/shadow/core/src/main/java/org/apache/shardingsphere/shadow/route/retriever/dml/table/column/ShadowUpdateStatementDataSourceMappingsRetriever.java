@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatem
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -53,8 +52,7 @@ public final class ShadowUpdateStatementDataSourceMappingsRetriever extends Shad
     protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
         for (ExpressionSegment each : getWhereSegment()) {
-            Collection<ColumnSegment> columns = ColumnExtractUtils.extract(each);
-            if (1 != columns.size()) {
+            if (1 != ColumnExtractUtils.extract(each).size()) {
                 continue;
             }
             String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
