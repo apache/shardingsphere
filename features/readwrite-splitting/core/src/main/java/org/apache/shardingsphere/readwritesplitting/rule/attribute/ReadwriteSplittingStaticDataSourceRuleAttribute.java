@@ -27,8 +27,6 @@ import org.apache.shardingsphere.mode.event.deliver.datasource.qualified.Qualifi
 import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -43,15 +41,6 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     private final Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules;
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
-    
-    @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(dataSourceGroupRules.size(), 1F);
-        for (Entry<String, ReadwriteSplittingDataSourceGroupRule> entry : dataSourceGroupRules.entrySet()) {
-            result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingGroup().getAllDataSources());
-        }
-        return result;
-    }
     
     @Override
     public void updateStatus(final QualifiedDataSource qualifiedDataSource, final DataSourceState status) {
