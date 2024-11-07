@@ -71,15 +71,15 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
         deleteStorageNodeDataSources(dataSourceGroupRules.get(groupName));
     }
     
-    private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceGroupRule rule) {
-        rule.getReadwriteSplittingGroup().getReadDataSources()
-                .forEach(each -> computeNodeInstanceContext.getEventBusContext().post(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
-    }
-    
     @Override
     public void cleanStorageNodeDataSources() {
         for (Entry<String, ReadwriteSplittingDataSourceGroupRule> entry : dataSourceGroupRules.entrySet()) {
             deleteStorageNodeDataSources(entry.getValue());
         }
+    }
+    
+    private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceGroupRule rule) {
+        rule.getReadwriteSplittingGroup().getReadDataSources()
+                .forEach(each -> computeNodeInstanceContext.getEventBusContext().post(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
     }
 }
