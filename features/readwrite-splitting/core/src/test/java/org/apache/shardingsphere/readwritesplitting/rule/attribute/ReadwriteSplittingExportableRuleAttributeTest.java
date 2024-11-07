@@ -36,9 +36,9 @@ class ReadwriteSplittingExportableRuleAttributeTest {
     
     @Test
     void assertGetExportData() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration config = new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_group", "write_ds", Arrays.asList("read_ds0", "read_ds1"), "foo_algo");
-        Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules = new HashMap<>(2, 1F);
+        Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules = new HashMap<>();
         dataSourceGroupRules.put("ignored_group", mock(ReadwriteSplittingDataSourceGroupRule.class));
+        ReadwriteSplittingDataSourceGroupRuleConfiguration config = new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_group", "write_ds", Arrays.asList("read_ds0", "read_ds1"), "foo_algo");
         dataSourceGroupRules.put("foo_group", new ReadwriteSplittingDataSourceGroupRule(config, TransactionalReadQueryStrategy.FIXED, null));
         ReadwriteSplittingExportableRuleAttribute ruleAttribute = new ReadwriteSplittingExportableRuleAttribute(dataSourceGroupRules);
         Map<String, Object> actual = ruleAttribute.getExportData();
