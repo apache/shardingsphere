@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
@@ -40,9 +39,6 @@ import java.util.Map;
 public abstract class ShadowColumnDataSourceMappingsRetriever implements ShadowTableDataSourceMappingsRetriever {
     
     private final ShadowOperationType operationType;
-    
-    @Getter
-    private final Map<String, String> tableAliasAndNameMappings;
     
     @Override
     public Map<String, String> retrieve(final ShadowRule rule, final Collection<String> shadowTables) {
@@ -87,8 +83,4 @@ public abstract class ShadowColumnDataSourceMappingsRetriever implements ShadowT
     }
     
     protected abstract Collection<ShadowColumnCondition> getShadowColumnConditions(String shadowColumnName);
-    
-    protected final String getSingleTableName() {
-        return tableAliasAndNameMappings.values().iterator().next();
-    }
 }

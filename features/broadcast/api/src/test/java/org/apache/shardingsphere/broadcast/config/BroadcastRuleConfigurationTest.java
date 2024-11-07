@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.config;
+package org.apache.shardingsphere.broadcast.config;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,10 +23,10 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MaskRuleConfigurationTest {
+class BroadcastRuleConfigurationTest {
     
     @Test
     void assertIsEmpty() {
-        assertTrue(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()).isEmpty());
+        assertTrue(new BroadcastRuleConfiguration(Collections.emptyList()).isEmpty());
     }
 }

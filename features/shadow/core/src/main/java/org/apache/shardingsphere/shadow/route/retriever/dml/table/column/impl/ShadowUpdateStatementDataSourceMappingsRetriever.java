@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
+import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtrac
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Shadow update statement data source mappings retriever.
@@ -44,8 +43,8 @@ public final class ShadowUpdateStatementDataSourceMappingsRetriever extends Shad
     
     private final List<Object> parameters;
     
-    public ShadowUpdateStatementDataSourceMappingsRetriever(final UpdateStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, String> tableAliasAndNameMappings) {
-        super(ShadowOperationType.UPDATE, tableAliasAndNameMappings);
+    public ShadowUpdateStatementDataSourceMappingsRetriever(final UpdateStatementContext sqlStatementContext, final List<Object> parameters) {
+        super(ShadowOperationType.UPDATE);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
@@ -54,11 +53,11 @@ public final class ShadowUpdateStatementDataSourceMappingsRetriever extends Shad
     protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
         for (ExpressionSegment each : getWhereSegment()) {
-            Collection<ColumnSegment> columns = ColumnExtractUtils.extract(each);
-            if (1 != columns.size()) {
+            if (1 != ColumnExtractUtils.extract(each).size()) {
                 continue;
             }
-            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), shadowColumnName, values)).ifPresent(result::add);
+            String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(tableName, shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
+import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtrac
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Shadow delete statement data source mappings retriever.
@@ -42,8 +42,8 @@ public final class ShadowDeleteStatementDataSourceMappingsRetriever extends Shad
     
     private final List<Object> parameters;
     
-    public ShadowDeleteStatementDataSourceMappingsRetriever(final DeleteStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, String> tableAliasAndNameMappings) {
-        super(ShadowOperationType.DELETE, tableAliasAndNameMappings);
+    public ShadowDeleteStatementDataSourceMappingsRetriever(final DeleteStatementContext sqlStatementContext, final List<Object> parameters) {
+        super(ShadowOperationType.DELETE);
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = parameters;
     }
@@ -52,7 +52,8 @@ public final class ShadowDeleteStatementDataSourceMappingsRetriever extends Shad
     protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
         for (ExpressionSegment each : getWhereSegment()) {
-            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), shadowColumnName, values)).ifPresent(result::add);
+            String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(tableName, shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }

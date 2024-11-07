@@ -127,6 +127,7 @@ class ShadowRuleTest {
     @Test
     void assertGetColumnShadowAlgorithms() {
         assertThat(rule.getColumnShadowAlgorithms(ShadowOperationType.INSERT, "foo_tbl", "foo_id").size(), is(1));
+        assertTrue(rule.getColumnShadowAlgorithms(ShadowOperationType.INSERT, "foo_tbl", "bar_id").isEmpty());
     }
     
     @Test

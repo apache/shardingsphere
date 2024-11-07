@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.retriever.dml.table.column;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
@@ -23,12 +23,12 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
+import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Shadow insert statement data source mappings retriever.
@@ -38,8 +38,8 @@ public final class ShadowInsertStatementDataSourceMappingsRetriever extends Shad
     
     private final InsertStatementContext sqlStatementContext;
     
-    public ShadowInsertStatementDataSourceMappingsRetriever(final InsertStatementContext sqlStatementContext, final Map<String, String> tableAliasAndNameMappings) {
-        super(ShadowOperationType.INSERT, tableAliasAndNameMappings);
+    public ShadowInsertStatementDataSourceMappingsRetriever(final InsertStatementContext sqlStatementContext) {
+        super(ShadowOperationType.INSERT);
         this.sqlStatementContext = sqlStatementContext;
     }
     
@@ -54,7 +54,8 @@ public final class ShadowInsertStatementDataSourceMappingsRetriever extends Shad
             }
             Collection<Comparable<?>> columnValues = getColumnValues(sqlStatementContext.getInsertValueContexts(), columnIndex);
             columnIndex++;
-            result.add(new ShadowColumnCondition(getSingleTableName(), each, columnValues));
+            String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
+            result.add(new ShadowColumnCondition(tableName, each, columnValues));
         }
         return result;
     }

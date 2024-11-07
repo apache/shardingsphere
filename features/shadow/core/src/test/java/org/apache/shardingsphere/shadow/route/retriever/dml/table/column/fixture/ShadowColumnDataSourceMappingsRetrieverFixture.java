@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.config;
+package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.fixture;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
+import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 
+import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
-class MaskRuleConfigurationTest {
+public final class ShadowColumnDataSourceMappingsRetrieverFixture extends ShadowColumnDataSourceMappingsRetriever {
     
-    @Test
-    void assertIsEmpty() {
-        assertTrue(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()).isEmpty());
+    public ShadowColumnDataSourceMappingsRetrieverFixture() {
+        super(ShadowOperationType.SELECT);
+    }
+    
+    @Override
+    protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
+        return Collections.singleton(mock(ShadowColumnCondition.class));
     }
 }
