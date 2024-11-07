@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -35,10 +35,16 @@ import java.util.Map.Entry;
 /**
  * Data source node persist service.
  */
-@RequiredArgsConstructor
 public final class DataSourceNodePersistService {
     
     private final PersistRepository repository;
+    
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    
+    public DataSourceNodePersistService(final PersistRepository repository) {
+        this.repository = repository;
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
+    }
     
     /**
      * Load data source pool properties map.
@@ -81,7 +87,7 @@ public final class DataSourceNodePersistService {
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
             String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
-            List<String> versions = repository.getChildrenKeys(DataSourceMetaDataNode.getDataSourceNodeVersionsNode(databaseName, entry.getKey()));
+            List<String> versions = metaDataVersionPersistService.getVersions(DataSourceMetaDataNode.getDataSourceNodeVersionsNode(databaseName, entry.getKey()));
             repository.persist(DataSourceMetaDataNode.getDataSourceNodeVersionNode(databaseName, entry.getKey(), versions.isEmpty()
                     ? MetaDataVersion.DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
