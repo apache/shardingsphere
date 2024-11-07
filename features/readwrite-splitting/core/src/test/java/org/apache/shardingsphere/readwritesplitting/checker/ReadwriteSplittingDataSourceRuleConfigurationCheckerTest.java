@@ -78,12 +78,16 @@ class ReadwriteSplittingDataSourceRuleConfigurationCheckerTest {
     @Test
     void assertCheckSuccess() {
         ReadwriteSplittingDataSourceGroupRuleConfiguration config = new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_group", "write_ds", Arrays.asList("read_ds0", "read_ds1"), "foo_algo");
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        assertDoesNotThrow(() -> new ReadwriteSplittingDataSourceRuleConfigurationChecker("foo_db", config,
+                Collections.singletonMap("write_ds", mock(DataSource.class))).check(new HashSet<>(), new HashSet<>(), Arrays.asList(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS), mockRule())));
+    }
+    
+    private static ShardingSphereRule mockRule() {
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
         DataSourceMapperRuleAttribute dataSourceMapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
         when(dataSourceMapperRuleAttribute.getDataSourceMapper().containsKey("read_ds0")).thenReturn(true);
         when(dataSourceMapperRuleAttribute.getDataSourceMapper().containsKey("read_ds1")).thenReturn(true);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(dataSourceMapperRuleAttribute));
-        assertDoesNotThrow(() -> new ReadwriteSplittingDataSourceRuleConfigurationChecker("foo_db", config,
-                Collections.singletonMap("write_ds", mock(DataSource.class))).check(new HashSet<>(), new HashSet<>(), Arrays.asList(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS), rule)));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(dataSourceMapperRuleAttribute));
+        return result;
     }
 }
