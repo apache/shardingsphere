@@ -63,4 +63,10 @@ class MetaDataVersionPersistServiceTest {
         when(repository.query("foo_db/versions/1")).thenReturn("foo_path");
         assertThat(persistService.getVersionPathByActiveVersion("foo_db/active_version", "1"), is("foo_path"));
     }
+    
+    @Test
+    void assertGetVersions() {
+        when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("1", "0", "2", "10"));
+        assertThat(persistService.getVersions("foo_db/versions"), is(Arrays.asList("10", "2", "1", "0")));
+    }
 }

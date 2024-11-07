@@ -55,7 +55,7 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        List<String> versions = repository.getChildrenKeys(GlobalNode.getPropsVersionsNode());
+        List<String> versions = metaDataVersionPersistService.getVersions(GlobalNode.getPropsVersionsNode());
         String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
         repository.persist(GlobalNode.getPropsVersionNode(nextActiveVersion), YamlEngine.marshal(props));
         if (Strings.isNullOrEmpty(getActiveVersion())) {
