@@ -29,6 +29,7 @@
 1. SQL Parser: Fix LiteralExpressionSegment cast exception in sql parser. - [#33332](https://github.com/apache/shardingsphere/pull/33332)
 1. Sharding: Fix SQL COUNT with GROUP BY to prevent incorrect row returns - [#33380](https://github.com/apache/shardingsphere/pull/33380)
 1. Sharding: Fix avg, sum, min, max function return empty data when no query result return - [#33449](https://github.com/apache/shardingsphere/pull/33449)
+1. SQL Parser: Fix PostgreSQL and openGauss time extract function parse week and quarter error - [#33564](https://github.com/apache/shardingsphere/pull/33564)
 
 ### Change Logs
 
