@@ -31,9 +31,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -75,7 +73,7 @@ class TableMetaDataPersistServiceTest {
         when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version")).thenReturn("10");
         persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class)));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/11", "{}" + System.lineSeparator());
-        verify(repository, times(1)).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"), eq("11"));
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "11");
     }
     
     @Test
