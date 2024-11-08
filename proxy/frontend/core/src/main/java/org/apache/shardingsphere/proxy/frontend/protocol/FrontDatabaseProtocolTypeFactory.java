@@ -59,6 +59,6 @@ public final class FrontDatabaseProtocolTypeFactory {
     private static Optional<DatabaseType> findConfiguredDatabaseType() {
         DatabaseType configuredDatabaseType = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
+        return Optional.ofNullable(configuredDatabaseType);
     }
 }
