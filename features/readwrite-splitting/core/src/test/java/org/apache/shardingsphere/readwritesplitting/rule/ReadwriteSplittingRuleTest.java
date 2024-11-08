@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourc
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.InvalidReadwriteSplittingActualDataSourceInlineExpressionException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -33,10 +34,32 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class ReadwriteSplittingRuleTest {
+    
+    @Test
+    void assertNewInstanceWithInvalidWriteActualDataSourceInlineExpression() {
+        ReadwriteSplittingDataSourceGroupRuleConfiguration config =
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite", "write_ds0,write_ds1", Arrays.asList("read_ds_0", "read_ds_1"), "foo");
+        assertThrows(InvalidReadwriteSplittingActualDataSourceInlineExpressionException.class, () -> new ReadwriteSplittingRule("foo_db", new ReadwriteSplittingRuleConfiguration(
+                Collections.singleton(config), Collections.singletonMap("bar", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(ComputeNodeInstanceContext.class)));
+    }
+    
+    @Test
+    void assertNewInstanceWithInvalidReadActualDataSourceInlineExpression() {
+        ReadwriteSplittingDataSourceGroupRuleConfiguration config =
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1, read_ds_2"), "foo");
+        assertThrows(InvalidReadwriteSplittingActualDataSourceInlineExpressionException.class, () -> new ReadwriteSplittingRule("foo_db", new ReadwriteSplittingRuleConfiguration(
+                Collections.singleton(config), Collections.singletonMap("bar", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(ComputeNodeInstanceContext.class)));
+    }
+    
+    @Test
+    void assertGetSingleDataSourceGroupRule() {
+        assertDataSourceGroupRule(createReadwriteSplittingRule().getSingleDataSourceGroupRule());
+    }
     
     @Test
     void assertFindDataSourceGroupRule() {
@@ -45,15 +68,10 @@ class ReadwriteSplittingRuleTest {
         assertDataSourceGroupRule(actual.get());
     }
     
-    @Test
-    void assertGetSingleDataSourceGroupRule() {
-        assertDataSourceGroupRule(createReadwriteSplittingRule().getSingleDataSourceGroupRule());
-    }
-    
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
         ReadwriteSplittingDataSourceGroupRuleConfiguration config =
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random");
-        return new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(
+        return new ReadwriteSplittingRule("foo_db", new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(ComputeNodeInstanceContext.class));
     }
     
@@ -98,7 +116,7 @@ class ReadwriteSplittingRuleTest {
                 "<GROOVY>${['write']}_ds",
                 Arrays.asList("<GROOVY>read_ds_${['0']}", "read_ds_${['1']}", "read_ds_2", "<LITERAL>read_ds_3"),
                 "random");
-        ReadwriteSplittingRule readwriteSplittingRule = new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(
+        ReadwriteSplittingRule readwriteSplittingRule = new ReadwriteSplittingRule("foo_db", new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(ComputeNodeInstanceContext.class));
         Optional<ReadwriteSplittingDataSourceGroupRule> actual = readwriteSplittingRule.findDataSourceGroupRule("readwrite_ds");
         assertTrue(actual.isPresent());
