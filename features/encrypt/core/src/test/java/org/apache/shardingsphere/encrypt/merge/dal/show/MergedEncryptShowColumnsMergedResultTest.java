@@ -134,6 +134,11 @@ class MergedEncryptShowColumnsMergedResultTest {
         assertThrows(SQLFeatureNotSupportedException.class, () -> createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getInputStream(1, "asc"));
     }
     
+    @Test
+    void assertGetCharacterStream() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getCharacterStream(1));
+    }
+    
     private MergedEncryptShowColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));

@@ -134,6 +134,11 @@ class DecoratedEncryptShowColumnsMergedResultTest {
         assertThrows(SQLFeatureNotSupportedException.class, () -> createDecoratedEncryptShowColumnsMergedResult(mergedResult, mock(EncryptRule.class)).getInputStream(1, "asc"));
     }
     
+    @Test
+    void assertGetCharacterStream() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> createDecoratedEncryptShowColumnsMergedResult(mergedResult, mock(EncryptRule.class)).getCharacterStream(1));
+    }
+    
     private DecoratedEncryptShowColumnsMergedResult createDecoratedEncryptShowColumnsMergedResult(final MergedResult mergedResult, final EncryptRule encryptRule) {
         ShowColumnsStatementContext showColumnsStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
         when(showColumnsStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
