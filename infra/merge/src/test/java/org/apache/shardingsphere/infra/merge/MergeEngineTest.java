@@ -80,7 +80,7 @@ class MergeEngineTest {
     void assertMergeWithDecoratorRuleOnly() throws SQLException {
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new DecoratorRuleFixture()));
         MergedResult actual = new MergeEngine(mock(ShardingSphereMetaData.class), database, new ConfigurationProperties(new Properties()), mock(ConnectionContext.class))
-                        .merge(Collections.singletonList(queryResult), mock(SQLStatementContext.class));
+                .merge(Collections.singletonList(queryResult), mock(SQLStatementContext.class));
         assertThat(actual.getValue(1, String.class), is("decorated_merged_value"));
     }
     
