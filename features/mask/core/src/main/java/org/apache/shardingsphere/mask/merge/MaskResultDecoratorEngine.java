@@ -38,7 +38,7 @@ public final class MaskResultDecoratorEngine implements ResultDecoratorEngine<Ma
     @Override
     public Optional<ResultDecorator<MaskRule>> newInstance(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
                                                            final MaskRule maskRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext ? Optional.of(new MaskDQLResultDecorator(maskRule, (SelectStatementContext) sqlStatementContext)) : Optional.empty();
+        return sqlStatementContext instanceof SelectStatementContext ? Optional.of(new MaskDQLResultDecorator((SelectStatementContext) sqlStatementContext)) : Optional.empty();
     }
     
     @Override

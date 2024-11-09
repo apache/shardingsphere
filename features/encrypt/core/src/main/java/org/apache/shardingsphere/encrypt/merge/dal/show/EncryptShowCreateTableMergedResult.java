@@ -53,17 +53,16 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     
     private final String tableName;
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private final SQLParserEngine sqlParserEngine;
     
-    public EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final MergedResult mergedResult,
-                                              final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    public EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLE"));
         this.mergedResult = mergedResult;
         tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
-        this.encryptRule = encryptRule;
+        this.rule = rule;
         sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getDatabaseType());
     }
     
@@ -76,7 +75,7 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (CREATE_TABLE_DEFINITION_INDEX == columnIndex) {
             String result = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+            Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
             if (!encryptTable.isPresent() || !result.contains("(")) {
                 return result;
             }

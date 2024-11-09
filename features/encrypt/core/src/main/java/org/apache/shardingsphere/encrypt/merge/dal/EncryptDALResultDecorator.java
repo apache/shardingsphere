@@ -42,14 +42,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement) {
-            return new EncryptShowColumnsMergedResult(new TransparentMergedResult(queryResult), sqlStatementContext, rule);
-        }
-        if (sqlStatement instanceof MySQLShowCreateTableStatement) {
-            return new EncryptShowCreateTableMergedResult(globalRuleMetaData, new TransparentMergedResult(queryResult), sqlStatementContext, rule);
-        }
-        return new TransparentMergedResult(queryResult);
+        return decorate(new TransparentMergedResult(queryResult), sqlStatementContext, rule);
     }
     
     @Override

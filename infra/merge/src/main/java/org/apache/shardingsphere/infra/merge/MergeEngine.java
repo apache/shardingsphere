@@ -117,7 +117,6 @@ public final class MergeEngine {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private ResultDecorator getResultDecorator(final SQLStatementContext sqlStatementContext, final Entry<ShardingSphereRule, ResultProcessEngine> entry) {
-        return (ResultDecorator) ((ResultDecoratorEngine) entry.getValue()).newInstance(metaData, database, entry.getKey(), props, sqlStatementContext)
-                .orElseGet(TransparentResultDecorator::new);
+        return (ResultDecorator) ((ResultDecoratorEngine) entry.getValue()).newInstance(metaData, database, entry.getKey(), props, sqlStatementContext).orElseGet(TransparentResultDecorator::new);
     }
 }

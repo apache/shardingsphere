@@ -43,20 +43,20 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
     
     private final MergedResult mergedResult;
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
-    public EncryptShowColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    public EncryptShowColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLES"));
         tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.mergedResult = mergedResult;
-        this.encryptRule = encryptRule;
+        this.rule = rule;
     }
     
     @Override
     public boolean next() throws SQLException {
         boolean hasNext = mergedResult.next();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         if (hasNext && !encryptTable.isPresent()) {
             return true;
         }
@@ -82,7 +82,7 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (COLUMN_FIELD_INDEX == columnIndex) {
             String columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, type).toString();
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+            Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
             if (!encryptTable.isPresent()) {
                 return columnName;
             }
