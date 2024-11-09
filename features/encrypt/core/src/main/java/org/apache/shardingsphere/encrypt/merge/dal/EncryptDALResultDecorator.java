@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateT
 @RequiredArgsConstructor
 public final class EncryptDALResultDecorator implements ResultDecorator<EncryptRule> {
     
-    private final RuleMetaData globalRuleMetaData;
+    private final RuleMetaData globalRuleMetaData; 
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
