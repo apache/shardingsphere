@@ -43,11 +43,13 @@ import java.util.Optional;
 /**
  * Encrypt show create table merged result.
  */
-public abstract class EncryptShowCreateTableMergedResult implements MergedResult {
+public final class EncryptShowCreateTableMergedResult implements MergedResult {
     
     private static final String COMMA = ", ";
     
     private static final int CREATE_TABLE_DEFINITION_INDEX = 2;
+    
+    private final MergedResult mergedResult;
     
     private final String tableName;
     
@@ -55,23 +57,25 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     
     private final SQLParserEngine sqlParserEngine;
     
-    protected EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    public EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final MergedResult mergedResult,
+                                              final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLE"));
+        this.mergedResult = mergedResult;
         tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
         sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getDatabaseType());
     }
     
     @Override
-    public final boolean next() throws SQLException {
-        return nextValue();
+    public boolean next() throws SQLException {
+        return mergedResult.next();
     }
     
     @Override
-    public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (CREATE_TABLE_DEFINITION_INDEX == columnIndex) {
-            String result = getOriginalValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
+            String result = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
             if (!encryptTable.isPresent() || !result.contains("(")) {
                 return result;
@@ -86,7 +90,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
             builder.delete(builder.length() - COMMA.length(), builder.length()).append(result.substring(columnDefinitions.get(columnDefinitions.size() - 1).getStopIndex() + 1));
             return builder.toString();
         }
-        return getOriginalValue(columnIndex, type);
+        return mergedResult.getValue(columnIndex, type);
     }
     
     private Optional<String> findLogicColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String sql) {
@@ -108,12 +112,12 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     }
     
     @Override
-    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         throw new SQLFeatureNotSupportedException("");
     }
     
     @Override
-    public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException("");
     }
     
@@ -122,7 +126,8 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
         throw new SQLFeatureNotSupportedException("");
     }
     
-    protected abstract boolean nextValue() throws SQLException;
-    
-    protected abstract Object getOriginalValue(int columnIndex, Class<?> type) throws SQLException;
+    @Override
+    public boolean wasNull() throws SQLException {
+        return mergedResult.wasNull();
+    }
 }

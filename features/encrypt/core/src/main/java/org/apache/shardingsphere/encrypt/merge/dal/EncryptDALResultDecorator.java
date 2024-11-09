@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.encrypt.merge.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMergedResult;
-import org.apache.shardingsphere.encrypt.merge.dal.show.MergedEncryptShowCreateTableMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -48,7 +47,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
             return new EncryptShowColumnsMergedResult(new TransparentMergedResult(queryResult), sqlStatementContext, rule);
         }
         if (sqlStatement instanceof MySQLShowCreateTableStatement) {
-            return new MergedEncryptShowCreateTableMergedResult(globalRuleMetaData, queryResult, sqlStatementContext, rule);
+            return new EncryptShowCreateTableMergedResult(globalRuleMetaData, new TransparentMergedResult(queryResult), sqlStatementContext, rule);
         }
         return new TransparentMergedResult(queryResult);
     }
@@ -60,7 +59,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
             return new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);
         }
         if (sqlStatement instanceof MySQLShowCreateTableStatement) {
-            return new DecoratedEncryptShowCreateTableMergedResult(globalRuleMetaData, mergedResult, sqlStatementContext, rule);
+            return new EncryptShowCreateTableMergedResult(globalRuleMetaData, mergedResult, sqlStatementContext, rule);
         }
         return mergedResult;
     }
