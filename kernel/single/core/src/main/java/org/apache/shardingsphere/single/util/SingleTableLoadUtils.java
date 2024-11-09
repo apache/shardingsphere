@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Single table load utils.
@@ -72,10 +73,9 @@ public final class SingleTableLoadUtils {
             if (!ruleAttribute.isPresent()) {
                 continue;
             }
-            if (ruleAttribute.get().getEnhancedTableNames().isEmpty() || !ruleAttribute.get().getDistributedTableNames().isEmpty()) {
-                continue;
+            if (!ruleAttribute.get().getEnhancedTableNames().isEmpty() && ruleAttribute.get().getDistributedTableNames().isEmpty()) {
+                result.addAll(ruleAttribute.get().getEnhancedTableNames());
             }
-            result.addAll(ruleAttribute.get().getEnhancedTableNames());
         }
         return result;
     }
@@ -107,11 +107,7 @@ public final class SingleTableLoadUtils {
      * @return data nodes
      */
     public static Collection<DataNode> convertToDataNodes(final String databaseName, final DatabaseType databaseType, final Collection<String> tables) {
-        Collection<DataNode> result = new LinkedHashSet<>(tables.size(), 1F);
-        for (String each : tables) {
-            result.add(new DataNode(databaseName, databaseType, each));
-        }
-        return result;
+        return tables.stream().map(each -> new DataNode(databaseName, databaseType, each)).collect(Collectors.toCollection(() -> new LinkedHashSet<>(tables.size(), 1F)));
     }
     
     /**
