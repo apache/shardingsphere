@@ -36,7 +36,7 @@ class MaskDQLResultDecoratorTest {
     void assertDecorateQueryResult() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true);
-        MaskDQLResultDecorator decorator = new MaskDQLResultDecorator(mock(MaskRule.class), mock(SelectStatementContext.class));
+        MaskDQLResultDecorator decorator = new MaskDQLResultDecorator(mock(SelectStatementContext.class));
         MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(MaskRule.class));
         assertTrue(actual.next());
     }
@@ -45,7 +45,7 @@ class MaskDQLResultDecoratorTest {
     void assertDecorateMergedResult() throws SQLException {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
-        MaskDQLResultDecorator decorator = new MaskDQLResultDecorator(mock(MaskRule.class), mock(SelectStatementContext.class));
+        MaskDQLResultDecorator decorator = new MaskDQLResultDecorator(mock(SelectStatementContext.class));
         MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(MaskRule.class));
         assertTrue(actual.next());
     }

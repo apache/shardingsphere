@@ -32,17 +32,15 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 @RequiredArgsConstructor
 public final class MaskDQLResultDecorator implements ResultDecorator<MaskRule> {
     
-    private final MaskRule maskRule;
-    
     private final SelectStatementContext selectStatementContext;
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final MaskRule rule) {
-        return new MaskMergedResult(maskRule, selectStatementContext, new TransparentMergedResult(queryResult));
+        return decorate(new TransparentMergedResult(queryResult), sqlStatementContext, rule);
     }
     
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final MaskRule rule) {
-        return new MaskMergedResult(maskRule, selectStatementContext, mergedResult);
+        return new MaskMergedResult(rule, selectStatementContext, mergedResult);
     }
 }

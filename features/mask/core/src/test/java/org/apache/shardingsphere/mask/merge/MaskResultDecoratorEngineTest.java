@@ -55,7 +55,7 @@ class MaskResultDecoratorEngineTest {
     void assertNewInstanceWithSelectStatement() {
         MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         Optional<ResultDecorator<MaskRule>> actual =
-                engine.newInstance(mock(ShardingSphereMetaData.class), database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
+                engine.newInstance(mock(ShardingSphereMetaData.class), database, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MaskDQLResultDecorator.class));
     }
@@ -63,6 +63,6 @@ class MaskResultDecoratorEngineTest {
     @Test
     void assertNewInstanceWithOtherStatement() {
         MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
-        assertFalse(engine.newInstance(mock(ShardingSphereMetaData.class), database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class)).isPresent());
+        assertFalse(engine.newInstance(mock(ShardingSphereMetaData.class), database, mock(ConfigurationProperties.class), mock(InsertStatementContext.class)).isPresent());
     }
 }
