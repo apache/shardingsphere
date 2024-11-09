@@ -45,7 +45,7 @@ public abstract class EncryptShowColumnsMergedResult implements MergedResult {
     
     protected EncryptShowColumnsMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
-                () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLE"));
+                () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLES"));
         tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
     }

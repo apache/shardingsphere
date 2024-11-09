@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal.show;
 
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -53,6 +55,19 @@ class MergedEncryptShowColumnsMergedResultTest {
     
     @Mock
     private QueryResult queryResult;
+    
+    @Test
+    void assertNewInstanceWithNotTableAvailableStatement() {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        assertThrows(UnsupportedEncryptSQLException.class, () -> new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, mock(EncryptRule.class)));
+    }
+    
+    @Test
+    void assertNewInstanceWithEmptyTable() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.emptyList());
+        assertThrows(UnsupportedEncryptSQLException.class, () -> new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, mock(EncryptRule.class)));
+    }
     
     @Test
     void assertNextWithNotHasNext() throws SQLException {
