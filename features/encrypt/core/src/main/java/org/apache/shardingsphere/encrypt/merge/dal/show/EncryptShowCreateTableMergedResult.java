@@ -58,7 +58,7 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     private final SQLParserEngine sqlParserEngine;
     
     public EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final MergedResult mergedResult,
-                                                 final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+                                              final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLE"));
         this.mergedResult = mergedResult;
