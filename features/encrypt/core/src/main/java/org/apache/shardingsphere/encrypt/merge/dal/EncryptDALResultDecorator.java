@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.encrypt.merge.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowCreateTableMergedResult;
-import org.apache.shardingsphere.encrypt.merge.dal.show.MergedEncryptShowColumnsMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.MergedEncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -46,7 +45,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement) {
-            return new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, rule);
+            return new EncryptShowColumnsMergedResult(new TransparentMergedResult(queryResult), sqlStatementContext, rule);
         }
         if (sqlStatement instanceof MySQLShowCreateTableStatement) {
             return new MergedEncryptShowCreateTableMergedResult(globalRuleMetaData, queryResult, sqlStatementContext, rule);
@@ -58,7 +57,7 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement) {
-            return new DecoratedEncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);
+            return new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);
         }
         if (sqlStatement instanceof MySQLShowCreateTableStatement) {
             return new DecoratedEncryptShowCreateTableMergedResult(globalRuleMetaData, mergedResult, sqlStatementContext, rule);
