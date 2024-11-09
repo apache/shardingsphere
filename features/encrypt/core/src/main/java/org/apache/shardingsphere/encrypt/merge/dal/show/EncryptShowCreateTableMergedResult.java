@@ -68,12 +68,12 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     }
     
     @Override
-    public final boolean next() throws SQLException {
+    public boolean next() throws SQLException {
         return mergedResult.next();
     }
     
     @Override
-    public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (CREATE_TABLE_DEFINITION_INDEX == columnIndex) {
             String result = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
@@ -112,12 +112,12 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     }
     
     @Override
-    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         throw new SQLFeatureNotSupportedException("");
     }
     
     @Override
-    public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException("");
     }
     
