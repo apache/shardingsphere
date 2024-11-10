@@ -92,10 +92,10 @@ class EncryptShowCreateTableMergedResultTest {
     @Test
     void assertGetValueWithOtherColumnIndex() throws SQLException {
         when(mergedResult.next()).thenReturn(true);
-        when(mergedResult.getValue(1, String.class)).thenReturn("foo");
+        when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
         EncryptShowCreateTableMergedResult actual = createMergedResult(mergedResult, "foo_tbl", mockEncryptRule(Collections.emptyList()));
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class), is("foo"));
+        assertThat(actual.getValue(1, String.class), is("foo_value"));
     }
     
     @Test
