@@ -73,23 +73,23 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (CREATE_TABLE_DEFINITION_INDEX == columnIndex) {
-            String result = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
-            Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !result.contains("(")) {
-                return result;
-            }
-            CreateTableStatement createTableStatement = (CreateTableStatement) sqlParserEngine.parse(result, false);
-            List<ColumnDefinitionSegment> columnDefinitions = new ArrayList<>(createTableStatement.getColumnDefinitions());
-            StringBuilder builder = new StringBuilder(result.substring(0, columnDefinitions.get(0).getStartIndex()));
-            for (ColumnDefinitionSegment each : columnDefinitions) {
-                findLogicColumnDefinition(each, encryptTable.get(), result).ifPresent(optional -> builder.append(optional).append(COMMA));
-            }
-            // TODO decorate encrypt column index when we support index rewrite
-            builder.delete(builder.length() - COMMA.length(), builder.length()).append(result.substring(columnDefinitions.get(columnDefinitions.size() - 1).getStopIndex() + 1));
-            return builder.toString();
+        if (CREATE_TABLE_DEFINITION_INDEX != columnIndex) {
+            return mergedResult.getValue(columnIndex, type);
         }
-        return mergedResult.getValue(columnIndex, type);
+        String result = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent() || !result.contains("(")) {
+            return result;
+        }
+        CreateTableStatement createTableStatement = (CreateTableStatement) sqlParserEngine.parse(result, false);
+        List<ColumnDefinitionSegment> columnDefinitions = new ArrayList<>(createTableStatement.getColumnDefinitions());
+        StringBuilder builder = new StringBuilder(result.substring(0, columnDefinitions.get(0).getStartIndex()));
+        for (ColumnDefinitionSegment each : columnDefinitions) {
+            findLogicColumnDefinition(each, encryptTable.get(), result).ifPresent(optional -> builder.append(optional).append(COMMA));
+        }
+        // TODO decorate encrypt column index when we support index rewrite
+        builder.delete(builder.length() - COMMA.length(), builder.length()).append(result.substring(columnDefinitions.get(columnDefinitions.size() - 1).getStopIndex() + 1));
+        return builder.toString();
     }
     
     private Optional<String> findLogicColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String sql) {
