@@ -91,8 +91,8 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithoutEncryptTable() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection("bar_tbl", "foo_col", "foo_alias", databaseType);
-        columnProjection.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_col")));
+        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("bar_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType,
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("foo_col")));
         when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
         EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
@@ -102,8 +102,8 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithoutEncryptColumn() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection("foo_tbl", "bar_col", "bar_alias", databaseType);
-        columnProjection.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("bar_col")));
+        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("bar_col"), new IdentifierValue("bar_alias"), databaseType,
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("bar_col")));
         when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
         EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
@@ -113,9 +113,8 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithEncryptColumn() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection("foo_tbl", "foo_col", "foo_alias", databaseType);
-        columnProjection.setColumnBoundInfo(new ColumnSegmentBoundInfo(
-                new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
+        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType,
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
         when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
@@ -132,9 +131,8 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueFailed() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection("foo_tbl", "foo_col", "foo_alias", databaseType);
-        columnProjection.setColumnBoundInfo(new ColumnSegmentBoundInfo(
-                new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
+        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType,
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
         when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);

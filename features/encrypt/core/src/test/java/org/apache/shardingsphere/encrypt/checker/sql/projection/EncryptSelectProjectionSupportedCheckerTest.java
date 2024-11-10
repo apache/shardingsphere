@@ -58,16 +58,16 @@ class EncryptSelectProjectionSupportedCheckerTest {
         when(sqlStatementContext.getSqlStatement().getCombine().isPresent()).thenReturn(true);
         CombineSegment combineSegment = mock(CombineSegment.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement().getCombine().get()).thenReturn(combineSegment);
-        ColumnProjection orderIdColumn = new ColumnProjection("o", "order_id", null, new MySQLDatabaseType());
-        orderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_order"), new IdentifierValue("order_id")));
-        ColumnProjection userIdColumn = new ColumnProjection("o", "user_id", null, new MySQLDatabaseType());
-        userIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_order"), new IdentifierValue("user_id")));
+        ColumnProjection orderIdColumn = new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id"), null, new MySQLDatabaseType(),
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_order"), new IdentifierValue("order_id")));
+        ColumnProjection userIdColumn = new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id"), null, new MySQLDatabaseType(),
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_order"), new IdentifierValue("user_id")));
         SelectStatementContext leftSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(leftSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(orderIdColumn, userIdColumn));
-        ColumnProjection merchantIdColumn = new ColumnProjection("m", "merchant_id", null, new MySQLDatabaseType());
-        merchantIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_merchant"), new IdentifierValue("merchant_id")));
-        ColumnProjection merchantNameColumn = new ColumnProjection("m", "merchant_name", null, new MySQLDatabaseType());
-        merchantNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_merchant"), new IdentifierValue("merchant_name")));
+        ColumnProjection merchantIdColumn = new ColumnProjection(new IdentifierValue("m"), new IdentifierValue("merchant_id"), null, new MySQLDatabaseType(),
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_merchant"), new IdentifierValue("merchant_id")));
+        ColumnProjection merchantNameColumn = new ColumnProjection(new IdentifierValue("m"), new IdentifierValue("merchant_name"), null, new MySQLDatabaseType(),
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_merchant"), new IdentifierValue("merchant_name")));
         SelectStatementContext rightSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(rightSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(merchantIdColumn, merchantNameColumn));
         Map<Integer, SelectStatementContext> subqueryContexts = new LinkedHashMap<>(2, 1F);

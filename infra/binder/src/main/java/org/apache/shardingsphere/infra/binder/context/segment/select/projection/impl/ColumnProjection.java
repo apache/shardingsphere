@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
@@ -39,7 +38,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @EqualsAndHashCode(exclude = "columnBoundInfo")
 @ToString
 public final class ColumnProjection implements Projection {
@@ -56,15 +54,20 @@ public final class ColumnProjection implements Projection {
     
     private final ParenthesesSegment rightParentheses;
     
-    private ColumnSegmentBoundInfo columnBoundInfo;
+    private final ColumnSegmentBoundInfo columnBoundInfo;
     
     public ColumnProjection(final String owner, final String name, final String alias, final DatabaseType databaseType) {
         this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
-                null == alias ? null : new IdentifierValue(alias, QuoteCharacter.NONE), databaseType, null, null);
+                null == alias ? null : new IdentifierValue(alias, QuoteCharacter.NONE), databaseType, null, null, null);
     }
     
     public ColumnProjection(final IdentifierValue owner, final IdentifierValue name, final IdentifierValue alias, final DatabaseType databaseType) {
-        this(owner, name, alias, databaseType, null, null);
+        this(owner, name, alias, databaseType, null, null, null);
+    }
+    
+    public ColumnProjection(final IdentifierValue owner, final IdentifierValue name, final IdentifierValue alias, final DatabaseType databaseType,
+                            final ParenthesesSegment leftParentheses, final ParenthesesSegment rightParentheses) {
+        this(owner, name, alias, databaseType, leftParentheses, rightParentheses, null);
     }
     
     /**
