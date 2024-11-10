@@ -113,7 +113,7 @@ class EncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    void assertGetValueWhenConfigAssistedQueryColumn() throws SQLException {
+    void assertGetValueWithAssistedQueryColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true);
         String actualSQL = "CREATE TABLE `foo_tbl` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
                 + "`user_id_assisted` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
