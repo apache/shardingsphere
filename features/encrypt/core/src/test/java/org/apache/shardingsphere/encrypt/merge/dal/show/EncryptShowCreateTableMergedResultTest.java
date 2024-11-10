@@ -99,25 +99,24 @@ class EncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    void assertGetValueWhenConfigFloatDataTypeAndComment() throws SQLException {
+    void assertGetValueWithFloatDataTypeAndComment() throws SQLException {
         when(mergedResult.next()).thenReturn(true);
-        when(mergedResult.getValue(2, String.class)).thenReturn(
-                "CREATE TABLE `foo_tbl` (`id` INT NOT NULL, `user_id_cipher` FLOAT(10, 2) NOT NULL "
-                        + "COMMENT ',123\\&/\\`\"abc', `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        String actualSQL = "CREATE TABLE `foo_tbl` (`id` INT NOT NULL, `user_id_cipher` FLOAT(10, 2) NOT NULL "
+                + "COMMENT ',123\\&/\\`\"abc', `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        when(mergedResult.getValue(2, String.class)).thenReturn(actualSQL);
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_id_cipher", "foo_encryptor"));
         EncryptShowCreateTableMergedResult actual = createMergedResult(mergedResult, "foo_tbl", mockEncryptRule(Collections.singleton(columnRuleConfig)));
         assertTrue(actual.next());
-        assertThat(actual.getValue(2, String.class),
-                is("CREATE TABLE `foo_tbl` (`id` INT NOT NULL, `user_id` FLOAT(10, 2) NOT NULL "
-                        + "COMMENT ',123\\&/\\`\"abc', `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));
+        String expectedSQL = "CREATE TABLE `foo_tbl` (`id` INT NOT NULL, `user_id` FLOAT(10, 2) NOT NULL "
+                + "COMMENT ',123\\&/\\`\"abc', `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        assertThat(actual.getValue(2, String.class), is(expectedSQL));
     }
     
     @Test
     void assertGetValueWhenConfigAssistedQueryColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true);
-        when(mergedResult.getValue(2, String.class)).thenReturn(
-                "CREATE TABLE `foo_tbl` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
-                        + "`user_id_assisted` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        when(mergedResult.getValue(2, String.class)).thenReturn("CREATE TABLE `foo_tbl` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
+                + "`user_id_assisted` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_id_cipher", "foo_encryptor"));
         columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_id_assisted", "foo_assist_query_encryptor"));
         EncryptShowCreateTableMergedResult actual = createMergedResult(mergedResult, "foo_tbl", mockEncryptRule(Collections.singleton(columnRuleConfig)));
