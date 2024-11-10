@@ -65,14 +65,14 @@ public final class EncryptMergedResult implements MergedResult {
         ShardingSphereDatabase database = metaData.containsDatabase(columnProjection.get().getColumnBoundInfo().getOriginalDatabase().getValue())
                 ? metaData.getDatabase(columnProjection.get().getColumnBoundInfo().getOriginalDatabase().getValue())
                 : this.database;
-        EncryptRule encryptRule = database.getRuleMetaData().getSingleRule(EncryptRule.class);
-        if (!encryptRule.findEncryptTable(originalTableName).map(optional -> optional.isEncryptColumn(originalColumnName)).orElse(false)) {
+        EncryptRule rule = database.getRuleMetaData().getSingleRule(EncryptRule.class);
+        if (!rule.findEncryptTable(originalTableName).map(optional -> optional.isEncryptColumn(originalColumnName)).orElse(false)) {
             return mergedResult.getValue(columnIndex, type);
         }
         Object cipherValue = mergedResult.getValue(columnIndex, Object.class);
-        EncryptColumn encryptColumn = encryptRule.getEncryptTable(originalTableName).getEncryptColumn(originalColumnName);
-        String schemaName =
-                selectStatementContext.getTablesContext().getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
+        EncryptColumn encryptColumn = rule.getEncryptTable(originalTableName).getEncryptColumn(originalColumnName);
+        String schemaName = selectStatementContext.getTablesContext().getSchemaName()
+                .orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
         try {
             return encryptColumn.getCipher().decrypt(database.getName(), schemaName, originalTableName, originalColumnName, cipherValue);
             // CHECKSTYLE:OFF
