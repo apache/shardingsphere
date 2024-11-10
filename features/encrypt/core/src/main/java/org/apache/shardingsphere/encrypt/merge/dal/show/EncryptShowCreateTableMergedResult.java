@@ -92,18 +92,18 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
         return result.toString();
     }
     
-    private Optional<String> findLogicColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String sql) {
+    private Optional<String> findLogicColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String createTableSQL) {
         ColumnSegment columnSegment = columnDefinition.getColumnName();
         String columnName = columnSegment.getIdentifier().getValue();
         if (encryptTable.isCipherColumn(columnName)) {
             String logicColumn = encryptTable.getLogicColumnByCipherColumn(columnName);
-            return Optional.of(sql.substring(columnDefinition.getStartIndex(), columnSegment.getStartIndex())
-                    + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn) + sql.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
+            return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnSegment.getStartIndex())
+                    + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn) + createTableSQL.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
         }
         if (isDerivedColumn(encryptTable, columnName)) {
             return Optional.empty();
         }
-        return Optional.of(sql.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
+        return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
     }
     
     private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
