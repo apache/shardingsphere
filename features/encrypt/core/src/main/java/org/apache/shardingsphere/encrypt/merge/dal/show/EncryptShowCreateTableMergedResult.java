@@ -59,7 +59,7 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     
     public EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
-                () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLE"));
+                () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLES"));
         this.mergedResult = mergedResult;
         tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.rule = rule;
@@ -73,37 +73,37 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (CREATE_TABLE_DEFINITION_INDEX == columnIndex) {
-            String result = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
-            Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent() || !result.contains("(")) {
-                return result;
-            }
-            CreateTableStatement createTableStatement = (CreateTableStatement) sqlParserEngine.parse(result, false);
-            List<ColumnDefinitionSegment> columnDefinitions = new ArrayList<>(createTableStatement.getColumnDefinitions());
-            StringBuilder builder = new StringBuilder(result.substring(0, columnDefinitions.get(0).getStartIndex()));
-            for (ColumnDefinitionSegment each : columnDefinitions) {
-                findLogicColumnDefinition(each, encryptTable.get(), result).ifPresent(optional -> builder.append(optional).append(COMMA));
-            }
-            // TODO decorate encrypt column index when we support index rewrite
-            builder.delete(builder.length() - COMMA.length(), builder.length()).append(result.substring(columnDefinitions.get(columnDefinitions.size() - 1).getStopIndex() + 1));
-            return builder.toString();
+        if (CREATE_TABLE_DEFINITION_INDEX != columnIndex) {
+            return mergedResult.getValue(columnIndex, type);
         }
-        return mergedResult.getValue(columnIndex, type);
+        String createTableSQL = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent() || !createTableSQL.contains("(")) {
+            return createTableSQL;
+        }
+        CreateTableStatement createTableStatement = (CreateTableStatement) sqlParserEngine.parse(createTableSQL, false);
+        List<ColumnDefinitionSegment> columnDefinitions = new ArrayList<>(createTableStatement.getColumnDefinitions());
+        StringBuilder result = new StringBuilder(createTableSQL.substring(0, columnDefinitions.get(0).getStartIndex()));
+        for (ColumnDefinitionSegment each : columnDefinitions) {
+            findLogicColumnDefinition(each, encryptTable.get(), createTableSQL).ifPresent(optional -> result.append(optional).append(COMMA));
+        }
+        // TODO decorate encrypt column index when we support index rewrite
+        result.delete(result.length() - COMMA.length(), result.length()).append(createTableSQL.substring(columnDefinitions.get(columnDefinitions.size() - 1).getStopIndex() + 1));
+        return result.toString();
     }
     
-    private Optional<String> findLogicColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String sql) {
+    private Optional<String> findLogicColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String createTableSQL) {
         ColumnSegment columnSegment = columnDefinition.getColumnName();
         String columnName = columnSegment.getIdentifier().getValue();
         if (encryptTable.isCipherColumn(columnName)) {
             String logicColumn = encryptTable.getLogicColumnByCipherColumn(columnName);
-            return Optional.of(sql.substring(columnDefinition.getStartIndex(), columnSegment.getStartIndex())
-                    + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn) + sql.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
+            return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnSegment.getStartIndex())
+                    + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn) + createTableSQL.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
         }
         if (isDerivedColumn(encryptTable, columnName)) {
             return Optional.empty();
         }
-        return Optional.of(sql.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
+        return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
     }
     
     private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
