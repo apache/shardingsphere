@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.parameter;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -30,16 +29,12 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ShardingParameterRewritersRegistryTest {
     
     @Test
     void assertGetParameterRewriters() {
-        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
         List<ParameterRewriter> actual = new ArrayList<>(new ShardingParameterRewritersRegistry(mock(RouteContext.class)).getParameterRewriters());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), instanceOf(GeneratedKeyInsertValueParameterRewriter.class));
