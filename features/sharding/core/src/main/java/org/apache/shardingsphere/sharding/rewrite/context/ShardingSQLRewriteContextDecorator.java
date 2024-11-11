@@ -45,9 +45,9 @@ import java.util.Collection;
 public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {
     
     @Override
-    public void decorate(final ShardingRule shardingRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
+    public void decorate(final ShardingRule rule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         SQLStatementContext sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
-        if (!isAlterOrDropIndexStatement(sqlStatementContext) && !isCursorAvailableStatement(sqlStatementContext) && !containsShardingTable(shardingRule, sqlStatementContext)) {
+        if (!isAlterOrDropIndexStatement(sqlStatementContext) && !isCursorAvailableStatement(sqlStatementContext) && !containsShardingTable(rule, sqlStatementContext)) {
             return;
         }
         if (!sqlRewriteContext.getParameters().isEmpty()) {
@@ -55,7 +55,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
                     new ShardingParameterRewriterBuilder(routeContext, sqlRewriteContext.getDatabase().getSchemas(), sqlStatementContext).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
-        sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, routeContext, sqlStatementContext).getSQLTokenGenerators());
+        sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(rule, routeContext, sqlStatementContext).getSQLTokenGenerators());
     }
     
     private boolean isAlterOrDropIndexStatement(final SQLStatementContext sqlStatementContext) {
@@ -66,12 +66,12 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
         return sqlStatementContext instanceof CursorAvailable;
     }
     
-    private boolean containsShardingTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
+    private boolean containsShardingTable(final ShardingRule rule, final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof TableAvailable)) {
             return false;
         }
         for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
-            if (shardingRule.isShardingTable(each.getTableName().getIdentifier().getValue())) {
+            if (rule.isShardingTable(each.getTableName().getIdentifier().getValue())) {
                 return true;
             }
         }
