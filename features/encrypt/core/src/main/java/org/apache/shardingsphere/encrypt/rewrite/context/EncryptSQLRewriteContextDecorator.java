@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.context;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewritersRegistry;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -55,7 +55,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         Collection<EncryptCondition> encryptConditions = createEncryptConditions(rule, sqlRewriteContext);
         String databaseName = sqlRewriteContext.getDatabase().getName();
         if (!sqlRewriteContext.getParameters().isEmpty()) {
-            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(rule, databaseName, sqlStatementContext, encryptConditions).getParameterRewriters();
+            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewritersRegistry(rule, databaseName, sqlStatementContext, encryptConditions).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
         SQLTokenGeneratorBuilder sqlTokenGeneratorBuilder = new EncryptTokenGenerateBuilder(rule, sqlStatementContext, encryptConditions, databaseName);

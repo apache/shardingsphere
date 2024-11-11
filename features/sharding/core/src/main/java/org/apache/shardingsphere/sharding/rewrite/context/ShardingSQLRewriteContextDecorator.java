@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorato
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
-import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
+import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewritersRegistry;
 import org.apache.shardingsphere.sharding.rewrite.token.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -51,7 +51,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
             return;
         }
         if (!sqlRewriteContext.getParameters().isEmpty()) {
-            Collection<ParameterRewriter> parameterRewriters = new ShardingParameterRewriterBuilder(routeContext, sqlStatementContext).getParameterRewriters();
+            Collection<ParameterRewriter> parameterRewriters = new ShardingParameterRewritersRegistry(routeContext, sqlStatementContext).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
         sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(rule, routeContext, sqlStatementContext).getSQLTokenGenerators());

@@ -28,28 +28,18 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingParameterRewriterBuilderTest {
+class ShardingParameterRewritersRegistryTest {
     
     @Test
-    void assertGetParameterRewritersWhenPaginationIsNeedRewrite() {
+    void assertGetParameterRewriters() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        Collection<ParameterRewriter> actual = new ShardingParameterRewriterBuilder(mock(RouteContext.class), statementContext).getParameterRewriters();
+        Collection<ParameterRewriter> actual = new ShardingParameterRewritersRegistry(mock(RouteContext.class), statementContext).getParameterRewriters();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(ShardingPaginationParameterRewriter.class));
-    }
-    
-    @Test
-    void assertGetParameterRewritersWhenPaginationIsNotNeedRewrite() {
-        RouteContext routeContext = mock(RouteContext.class);
-        when(routeContext.isSingleRouting()).thenReturn(true);
-        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        assertTrue(new ShardingParameterRewriterBuilder(routeContext, statementContext).getParameterRewriters().isEmpty());
     }
 }

@@ -34,7 +34,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EncryptParameterRewriterBuilderTest {
+class EncryptParameterRewritersRegistryTest {
     
     @Test
     void assertGetParameterRewriters() {
@@ -42,7 +42,7 @@ class EncryptParameterRewriterBuilderTest {
         when(rule.findEncryptTable("foo_tbl").isPresent()).thenReturn(true);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
-        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(rule, DefaultDatabase.LOGIC_NAME, sqlStatementContext, Collections.emptyList()).getParameterRewriters();
+        Collection<ParameterRewriter> actual = new EncryptParameterRewritersRegistry(rule, DefaultDatabase.LOGIC_NAME, sqlStatementContext, Collections.emptyList()).getParameterRewriters();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(EncryptPredicateParameterRewriter.class));
     }

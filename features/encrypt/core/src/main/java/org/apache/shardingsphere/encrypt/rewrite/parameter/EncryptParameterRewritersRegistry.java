@@ -27,16 +27,16 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredi
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersRegistry;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersBuilder;
 
 import java.util.Collection;
 
 /**
- * Parameter rewriter builder for encrypt.
+ * Parameter rewriter registry for encrypt.
  */
 @RequiredArgsConstructor
-public final class EncryptParameterRewriterBuilder implements ParameterRewriterBuilder {
+public final class EncryptParameterRewritersRegistry implements ParameterRewritersRegistry {
     
     private final EncryptRule rule;
     
