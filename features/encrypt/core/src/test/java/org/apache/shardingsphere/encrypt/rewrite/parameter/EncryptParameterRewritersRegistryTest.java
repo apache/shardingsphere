@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptAssignmentParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertPredicateParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -24,8 +28,9 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -42,8 +47,12 @@ class EncryptParameterRewritersRegistryTest {
         when(rule.findEncryptTable("foo_tbl").isPresent()).thenReturn(true);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
-        Collection<ParameterRewriter> actual = new EncryptParameterRewritersRegistry(rule, DefaultDatabase.LOGIC_NAME, sqlStatementContext, Collections.emptyList()).getParameterRewriters();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(EncryptPredicateParameterRewriter.class));
+        List<ParameterRewriter> actual = new ArrayList<>(new EncryptParameterRewritersRegistry(rule, DefaultDatabase.LOGIC_NAME, Collections.emptyList()).getParameterRewriters());
+        assertThat(actual.size(), is(5));
+        assertThat(actual.get(0), instanceOf(EncryptAssignmentParameterRewriter.class));
+        assertThat(actual.get(1), instanceOf(EncryptPredicateParameterRewriter.class));
+        assertThat(actual.get(2), instanceOf(EncryptInsertPredicateParameterRewriter.class));
+        assertThat(actual.get(3), instanceOf(EncryptInsertValueParameterRewriter.class));
+        assertThat(actual.get(4), instanceOf(EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter.class));
     }
 }

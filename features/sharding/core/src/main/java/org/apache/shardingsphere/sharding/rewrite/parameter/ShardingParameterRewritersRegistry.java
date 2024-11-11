@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersRegistry;
-import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -36,10 +35,8 @@ public final class ShardingParameterRewritersRegistry implements ParameterRewrit
     
     private final RouteContext routeContext;
     
-    private final SQLStatementContext sqlStatementContext;
-    
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
-        return new ParameterRewritersBuilder().build(sqlStatementContext, new GeneratedKeyInsertValueParameterRewriter(), new ShardingPaginationParameterRewriter(routeContext));
+        return Arrays.asList(new GeneratedKeyInsertValueParameterRewriter(), new ShardingPaginationParameterRewriter(routeContext));
     }
 }
