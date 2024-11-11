@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.parameter.rewriter;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 
@@ -27,18 +28,20 @@ import java.util.LinkedList;
  * Parameter rewriters builder.
  */
 @HighFrequencyInvocation
+@RequiredArgsConstructor
 public final class ParameterRewritersBuilder {
+    
+    private final SQLStatementContext sqlStatementContext;
     
     /**
      * Build parameter rewriters.
      *
-     * @param sqlStatementContext SQL statement context
-     * @param rewriters parameter rewriters
+     * @param registry parameter rewriters registry
      * @return built parameter rewriters
      */
-    public Collection<ParameterRewriter> build(final SQLStatementContext sqlStatementContext, final ParameterRewriter... rewriters) {
+    public Collection<ParameterRewriter> build(final ParameterRewritersRegistry registry) {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        for (ParameterRewriter each : rewriters) {
+        for (ParameterRewriter each : registry.getParameterRewriters()) {
             if (each.isNeedRewrite(sqlStatementContext)) {
                 result.add(each);
             }

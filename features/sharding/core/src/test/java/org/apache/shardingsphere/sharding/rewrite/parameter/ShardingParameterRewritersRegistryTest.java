@@ -19,11 +19,13 @@ package org.apache.shardingsphere.sharding.rewrite.parameter;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -38,8 +40,9 @@ class ShardingParameterRewritersRegistryTest {
     void assertGetParameterRewriters() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        Collection<ParameterRewriter> actual = new ShardingParameterRewritersRegistry(mock(RouteContext.class), statementContext).getParameterRewriters();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(ShardingPaginationParameterRewriter.class));
+        List<ParameterRewriter> actual = new ArrayList<>(new ShardingParameterRewritersRegistry(mock(RouteContext.class)).getParameterRewriters());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), instanceOf(GeneratedKeyInsertValueParameterRewriter.class));
+        assertThat(actual.get(1), instanceOf(ShardingPaginationParameterRewriter.class));
     }
 }
