@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.parameter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersProvider;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -32,7 +32,7 @@ import java.util.Collection;
  * Parameter rewriter builder for sharding.
  */
 @RequiredArgsConstructor
-public final class ShardingParameterRewriterBuilder implements ParameterRewriterBuilder {
+public final class ShardingParameterRewritersProvider implements ParameterRewritersProvider {
     
     private final RouteContext routeContext;
     

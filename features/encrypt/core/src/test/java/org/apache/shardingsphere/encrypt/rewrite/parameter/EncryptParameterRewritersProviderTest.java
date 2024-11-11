@@ -15,41 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.parameter;
+package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingParameterRewriterBuilderTest {
+class EncryptParameterRewritersProviderTest {
     
     @Test
-    void assertGetParameterRewritersWhenPaginationIsNeedRewrite() {
-        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        Collection<ParameterRewriter> actual = new ShardingParameterRewriterBuilder(mock(RouteContext.class), statementContext).getParameterRewriters();
+    void assertGetParameterRewriters() {
+        EncryptRule rule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
+        when(rule.findEncryptTable("foo_tbl").isPresent()).thenReturn(true);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
+        Collection<ParameterRewriter> actual = new EncryptParameterRewritersProvider(rule, DefaultDatabase.LOGIC_NAME, sqlStatementContext, Collections.emptyList()).getParameterRewriters();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(ShardingPaginationParameterRewriter.class));
-    }
-    
-    @Test
-    void assertGetParameterRewritersWhenPaginationIsNotNeedRewrite() {
-        RouteContext routeContext = mock(RouteContext.class);
-        when(routeContext.isSingleRouting()).thenReturn(true);
-        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        assertTrue(new ShardingParameterRewriterBuilder(routeContext, statementContext).getParameterRewriters().isEmpty());
+        assertThat(actual.iterator().next(), instanceOf(EncryptPredicateParameterRewriter.class));
     }
 }
