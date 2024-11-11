@@ -46,7 +46,7 @@ import java.util.Map.Entry;
 @Setter
 public final class EncryptPredicateParameterRewriter implements ParameterRewriter, EncryptConditionsAware, DatabaseNameAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private Collection<EncryptCondition> encryptConditions;
     
@@ -69,7 +69,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
-        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        EncryptTable encryptTable = rule.getEncryptTable(tableName);
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equals(((EncryptBinaryCondition) encryptCondition).getOperator()) && encryptColumn.getLikeQuery().isPresent()) {
             return encryptColumn.getLikeQuery().get().encrypt(databaseName, schemaName, tableName, columnName, originalValues);
