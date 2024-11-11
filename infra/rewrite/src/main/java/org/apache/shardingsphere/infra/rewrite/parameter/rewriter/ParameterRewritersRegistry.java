@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.rewrite.parameter.rewriter;
 import java.util.Collection;
 
 /**
- * Parameter rewriters provider.
+ * Parameter rewriters registry.
  */
-public interface ParameterRewritersProvider {
+public interface ParameterRewritersRegistry {
     
     /**
      * Get parameter rewriters.
