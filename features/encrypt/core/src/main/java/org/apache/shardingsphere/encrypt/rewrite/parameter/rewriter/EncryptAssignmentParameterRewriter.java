@@ -52,7 +52,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptAssignmentParameterRewriter implements ParameterRewriter, DatabaseNameAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private String databaseName;
     
@@ -74,8 +74,8 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             String columnName = each.getColumns().get(0).getIdentifier().getValue();
-            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(columnName)).orElse(false)) {
-                EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName).getEncryptColumn(columnName);
+            if (each.getValue() instanceof ParameterMarkerExpressionSegment && rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(columnName)).orElse(false)) {
+                EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(columnName);
                 StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) paramBuilder
                         : ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(0);

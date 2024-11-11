@@ -45,7 +45,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class EncryptParameterRewriterBuilder implements ParameterRewriterBuilder {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private final String databaseName;
     
@@ -58,11 +58,11 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        addParameterRewriter(result, new EncryptAssignmentParameterRewriter(encryptRule));
-        addParameterRewriter(result, new EncryptPredicateParameterRewriter(encryptRule));
-        addParameterRewriter(result, new EncryptInsertPredicateParameterRewriter(encryptRule));
-        addParameterRewriter(result, new EncryptInsertValueParameterRewriter(encryptRule));
-        addParameterRewriter(result, new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter(encryptRule));
+        addParameterRewriter(result, new EncryptAssignmentParameterRewriter(rule));
+        addParameterRewriter(result, new EncryptPredicateParameterRewriter(rule));
+        addParameterRewriter(result, new EncryptInsertPredicateParameterRewriter(rule));
+        addParameterRewriter(result, new EncryptInsertValueParameterRewriter(rule));
+        addParameterRewriter(result, new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter(rule));
         return result;
     }
     

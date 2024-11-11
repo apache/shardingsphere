@@ -42,7 +42,7 @@ import java.util.List;
 @Setter
 public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter implements ParameterRewriter, DatabaseNameAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private String databaseName;
     
@@ -62,14 +62,14 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String logicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
-            if (!encryptRule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(logicColumnName)).orElse(false)) {
+            if (!rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(logicColumnName)).orElse(false)) {
                 continue;
             }
             Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
             if (plainValue instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) plainValue).getFunctionName())) {
                 return;
             }
-            EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName).getEncryptColumn(logicColumnName);
+            EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(logicColumnName);
             Object cipherColumnValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue);
             groupedParamBuilder.getGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
             Collection<Object> addedParams = buildAddedParams(schemaName, tableName, encryptColumn, logicColumnName, plainValue);

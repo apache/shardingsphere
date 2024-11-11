@@ -38,7 +38,7 @@ import java.util.List;
 @Setter
 public final class EncryptInsertPredicateParameterRewriter implements ParameterRewriter, EncryptConditionsAware, DatabaseNameAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private Collection<EncryptCondition> encryptConditions;
     
@@ -52,7 +52,7 @@ public final class EncryptInsertPredicateParameterRewriter implements ParameterR
     
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        EncryptPredicateParameterRewriter rewriter = new EncryptPredicateParameterRewriter(encryptRule);
+        EncryptPredicateParameterRewriter rewriter = new EncryptPredicateParameterRewriter(rule);
         rewriter.setEncryptConditions(encryptConditions);
         rewriter.setDatabaseName(databaseName);
         rewriter.rewrite(paramBuilder, ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), params);
