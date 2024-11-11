@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInser
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.junit.jupiter.api.Test;
@@ -35,19 +34,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class EncryptParameterRewritersRegistryTest {
     
     @Test
     void assertGetParameterRewriters() {
-        EncryptRule rule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        when(rule.findEncryptTable("foo_tbl").isPresent()).thenReturn(true);
-        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
-        List<ParameterRewriter> actual = new ArrayList<>(new EncryptParameterRewritersRegistry(rule, DefaultDatabase.LOGIC_NAME, Collections.emptyList()).getParameterRewriters());
+        List<ParameterRewriter> actual = new ArrayList<>(new EncryptParameterRewritersRegistry(mock(EncryptRule.class), DefaultDatabase.LOGIC_NAME, Collections.emptyList()).getParameterRewriters());
         assertThat(actual.size(), is(5));
         assertThat(actual.get(0), instanceOf(EncryptAssignmentParameterRewriter.class));
         assertThat(actual.get(1), instanceOf(EncryptPredicateParameterRewriter.class));
