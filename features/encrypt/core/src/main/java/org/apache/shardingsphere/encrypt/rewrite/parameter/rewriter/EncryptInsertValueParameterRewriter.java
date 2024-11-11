@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -44,12 +42,11 @@ import java.util.Optional;
  * Insert value parameter rewriter for encrypt.
  */
 @RequiredArgsConstructor
-@Setter
-public final class EncryptInsertValueParameterRewriter implements ParameterRewriter, DatabaseNameAware {
+public final class EncryptInsertValueParameterRewriter implements ParameterRewriter {
     
     private final EncryptRule rule;
     
-    private String databaseName;
+    private final String databaseName;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {

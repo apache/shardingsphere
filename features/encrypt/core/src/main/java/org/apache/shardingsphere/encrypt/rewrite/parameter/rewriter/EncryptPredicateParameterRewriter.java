@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -43,14 +40,13 @@ import java.util.Map.Entry;
  * Predicate parameter rewriter for encrypt.
  */
 @RequiredArgsConstructor
-@Setter
-public final class EncryptPredicateParameterRewriter implements ParameterRewriter, EncryptConditionsAware, DatabaseNameAware {
+public final class EncryptPredicateParameterRewriter implements ParameterRewriter {
     
     private final EncryptRule rule;
     
-    private Collection<EncryptCondition> encryptConditions;
+    private final String databaseName;
     
-    private String databaseName;
+    private final Collection<EncryptCondition> encryptConditions;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
