@@ -55,8 +55,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         Collection<EncryptCondition> encryptConditions = createEncryptConditions(rule, sqlRewriteContext);
         String databaseName = sqlRewriteContext.getDatabase().getName();
         if (!sqlRewriteContext.getParameters().isEmpty()) {
-            Collection<ParameterRewriter> parameterRewriters =
-                    new EncryptParameterRewriterBuilder(rule, databaseName, sqlRewriteContext.getDatabase().getSchemas(), sqlStatementContext, encryptConditions).getParameterRewriters();
+            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(rule, databaseName, sqlStatementContext, encryptConditions).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
         SQLTokenGeneratorBuilder sqlTokenGeneratorBuilder = new EncryptTokenGenerateBuilder(rule, sqlStatementContext, encryptConditions, databaseName);
