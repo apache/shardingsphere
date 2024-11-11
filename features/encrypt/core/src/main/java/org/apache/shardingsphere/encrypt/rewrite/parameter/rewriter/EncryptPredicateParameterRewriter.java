@@ -40,7 +40,7 @@ import java.util.Map.Entry;
  * Predicate parameter rewriter for encrypt.
  */
 @RequiredArgsConstructor
-public final class EncryptPredicateParameterRewriter implements ParameterRewriter{
+public final class EncryptPredicateParameterRewriter implements ParameterRewriter {
     
     private final EncryptRule rule;
     
