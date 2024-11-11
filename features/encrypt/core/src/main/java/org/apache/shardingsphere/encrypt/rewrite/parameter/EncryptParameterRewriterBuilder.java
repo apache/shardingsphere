@@ -28,9 +28,9 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersBuilder;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Parameter rewriter builder for encrypt.
@@ -48,18 +48,11 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
-        Collection<ParameterRewriter> result = new LinkedList<>();
-        addParameterRewriter(result, new EncryptAssignmentParameterRewriter(rule, databaseName));
-        addParameterRewriter(result, new EncryptPredicateParameterRewriter(rule, databaseName, encryptConditions));
-        addParameterRewriter(result, new EncryptInsertPredicateParameterRewriter(rule, databaseName, encryptConditions));
-        addParameterRewriter(result, new EncryptInsertValueParameterRewriter(rule, databaseName));
-        addParameterRewriter(result, new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter(rule, databaseName));
-        return result;
-    }
-    
-    private void addParameterRewriter(final Collection<ParameterRewriter> paramRewriters, final ParameterRewriter toBeAddedParamRewriter) {
-        if (toBeAddedParamRewriter.isNeedRewrite(sqlStatementContext)) {
-            paramRewriters.add(toBeAddedParamRewriter);
-        }
+        return new ParameterRewritersBuilder().build(sqlStatementContext,
+                new EncryptAssignmentParameterRewriter(rule, databaseName),
+                new EncryptPredicateParameterRewriter(rule, databaseName, encryptConditions),
+                new EncryptInsertPredicateParameterRewriter(rule, databaseName, encryptConditions),
+                new EncryptInsertValueParameterRewriter(rule, databaseName),
+                new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter(rule, databaseName));
     }
 }
