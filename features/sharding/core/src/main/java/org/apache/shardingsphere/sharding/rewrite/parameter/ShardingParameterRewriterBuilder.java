@@ -21,12 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Parameter rewriter builder for sharding.
@@ -40,15 +40,6 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
-        Collection<ParameterRewriter> result = new LinkedList<>();
-        addParameterRewriter(result, new GeneratedKeyInsertValueParameterRewriter());
-        addParameterRewriter(result, new ShardingPaginationParameterRewriter(routeContext));
-        return result;
-    }
-    
-    private void addParameterRewriter(final Collection<ParameterRewriter> paramRewriters, final ParameterRewriter toBeAddedParamRewriter) {
-        if (toBeAddedParamRewriter.isNeedRewrite(sqlStatementContext)) {
-            paramRewriters.add(toBeAddedParamRewriter);
-        }
+        return new ParameterRewritersBuilder().build(sqlStatementContext, new GeneratedKeyInsertValueParameterRewriter(), new ShardingPaginationParameterRewriter(routeContext));
     }
 }
