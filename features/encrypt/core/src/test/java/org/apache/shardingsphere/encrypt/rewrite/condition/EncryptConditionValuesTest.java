@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 class EncryptConditionValuesTest {
     
     @Test
-    void assertGetValues() {
+    void assertGet() {
         Map<Integer, Integer> positionIndexMap = new HashMap<>(2, 1F);
         positionIndexMap.put(0, 0);
         positionIndexMap.put(2, 1);
@@ -41,7 +41,7 @@ class EncryptConditionValuesTest {
         EncryptCondition condition = mock(EncryptCondition.class);
         when(condition.getPositionIndexMap()).thenReturn(positionIndexMap);
         when(condition.getPositionValueMap()).thenReturn(positionValueMap);
-        List<Object> actual = new EncryptConditionValues(condition).getValues(Arrays.asList("foo", "bar"));
+        List<Object> actual = new EncryptConditionValues(condition).get(Arrays.asList("foo", "bar"));
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("foo"));
         assertThat(actual.get(1), is(1));

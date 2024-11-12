@@ -32,12 +32,12 @@ public final class EncryptConditionValues {
     private final EncryptCondition condition;
     
     /**
-     * Get values.
+     * Get encrypt condition values.
      *
      * @param params parameters
-     * @return values
+     * @return got values
      */
-    public List<Object> getValues(final List<Object> params) {
+    public List<Object> get(final List<Object> params) {
         List<Object> result = new ArrayList<>(condition.getPositionValueMap().values());
         for (Entry<Integer, Integer> entry : condition.getPositionIndexMap().entrySet()) {
             Object param = params.get(entry.getValue());
