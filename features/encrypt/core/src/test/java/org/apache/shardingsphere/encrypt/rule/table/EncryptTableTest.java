@@ -51,7 +51,7 @@ class EncryptTableTest {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("foo_tbl", Arrays.asList(fooColumnRuleConfig, barColumnRuleConfig)), createEncryptors());
     }
     
-    private static Map<String, EncryptAlgorithm> createEncryptors() {
+    private Map<String, EncryptAlgorithm> createEncryptors() {
         Map<String, EncryptAlgorithm> encryptors = new HashMap<>(3, 1F);
         encryptors.put("foo_algo", mock(EncryptAlgorithm.class));
         encryptors.put("foo_assist_query_algo", mock(EncryptAlgorithm.class));
