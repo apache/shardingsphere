@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class MD5AssistedEncryptAlgorithmTest {
@@ -45,13 +45,14 @@ class MD5AssistedEncryptAlgorithmTest {
     }
     
     @Test
-    void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null, mock(AlgorithmSQLContext.class)));
+    void assertDecrypt() {
+        assertThrows(UnsupportedOperationException.class, () -> encryptAlgorithm.decrypt("test", mock(AlgorithmSQLContext.class)));
     }
     
     @Test
-    void assertEncryptWhenConfigSalt() {
-        encryptAlgorithm.init(PropertiesBuilder.build(new Property("salt", "202cb962ac5907")));
-        assertThat(encryptAlgorithm.encrypt("test", mock(AlgorithmSQLContext.class)), is("0c243d2934937738f36514035d95344a"));
+    void assertToConfiguration() {
+        AlgorithmConfiguration actual = encryptAlgorithm.toConfiguration();
+        assertThat(actual.getType(), is("MD5"));
+        assertTrue(actual.getProps().isEmpty());
     }
 }

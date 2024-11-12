@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContex
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,8 +33,12 @@ import static org.mockito.Mockito.mock;
 
 class AESEncryptAlgorithmTest {
     
-    private final EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(
-            EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
+    private EncryptAlgorithm encryptAlgorithm;
+    
+    @BeforeEach
+    void setUp() {
+        encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
+    }
     
     @Test
     void assertEncrypt() {
