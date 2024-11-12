@@ -48,11 +48,15 @@ class EncryptTableTest {
         fooColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("foo_col_assisted_query", "foo_assist_query_algo"));
         fooColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("foo_col_like", "foo_like_algo"));
         EncryptColumnRuleConfiguration barColumnRuleConfig = new EncryptColumnRuleConfiguration("bar_col", new EncryptColumnItemRuleConfiguration("bar_col_cipher", "bar_algo"));
+        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("foo_tbl", Arrays.asList(fooColumnRuleConfig, barColumnRuleConfig)), createEncryptors());
+    }
+    
+    private static Map<String, EncryptAlgorithm> createEncryptors() {
         Map<String, EncryptAlgorithm> encryptors = new HashMap<>(3, 1F);
         encryptors.put("foo_algo", mock(EncryptAlgorithm.class));
         encryptors.put("foo_assist_query_algo", mock(EncryptAlgorithm.class));
         encryptors.put("foo_like_algo", mock(EncryptAlgorithm.class));
-        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("foo_tbl", Arrays.asList(fooColumnRuleConfig, barColumnRuleConfig)), encryptors);
+        return encryptors;
     }
     
     @Test
