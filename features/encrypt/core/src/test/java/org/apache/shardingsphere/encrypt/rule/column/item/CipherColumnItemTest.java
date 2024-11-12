@@ -28,6 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,15 +43,16 @@ class CipherColumnItemTest {
     void assertEncryptSingleValue() {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.encrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_table", "foo_col")))).thenReturn("encrypted_foo_value");
-        assertThat(new CipherColumnItem("foo_col", encryptAlgorithm).encrypt("foo_db", "foo_schema", "foo_table", "foo_col", "foo_value"), is("encrypted_foo_value"));
+        CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
+        assertThat(cipherColumnItem.encrypt("foo_db", "foo_schema", "foo_table", "foo_col", "foo_value"), is("encrypted_foo_value"));
     }
     
     @Test
     void assertEncryptMultipleValues() {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.encrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_table", "foo_col")))).thenReturn("encrypted_foo_value");
-        assertThat(new CipherColumnItem("foo_col", encryptAlgorithm).encrypt("foo_db", "foo_schema", "foo_table", "foo_col", Arrays.asList(null, "foo_value")),
-                is(Arrays.asList(null, "encrypted_foo_value")));
+        CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
+        assertThat(cipherColumnItem.encrypt("foo_db", "foo_schema", "foo_table", "foo_col", Arrays.asList(null, "foo_value")), is(Arrays.asList(null, "encrypted_foo_value")));
     }
     
     @Test
@@ -60,8 +62,9 @@ class CipherColumnItemTest {
     
     @Test
     void assertDecrypt() {
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class, RETURNS_DEEP_STUBS);
         when(encryptAlgorithm.decrypt(eq("encrypted_foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_table", "foo_col")))).thenReturn("foo_value");
-        assertThat(new CipherColumnItem("foo_col", encryptAlgorithm).decrypt("foo_db", "foo_schema", "foo_table", "foo_col", "encrypted_foo_value"), is("foo_value"));
+        CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
+        assertThat(cipherColumnItem.decrypt("foo_db", "foo_schema", "foo_table", "foo_col", "encrypted_foo_value"), is("foo_value"));
     }
 }
