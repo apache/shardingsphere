@@ -173,6 +173,9 @@ public final class EncryptTable {
      */
     @HighFrequencyInvocation
     public Optional<EncryptAlgorithm> findQueryEncryptor(final String columnName) {
-        return isEncryptColumn(columnName) ? Optional.of(getEncryptColumn(columnName).getQueryEncryptor()) : Optional.empty();
+        if (!isEncryptColumn(columnName)) {
+            return Optional.empty();
+        }
+        return Optional.of(getEncryptColumn(columnName).getQueryEncryptor());
     }
 }
