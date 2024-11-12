@@ -52,11 +52,11 @@ class EncryptTableTest {
     }
     
     private Map<String, EncryptAlgorithm> createEncryptors() {
-        Map<String, EncryptAlgorithm> encryptors = new HashMap<>(3, 1F);
-        encryptors.put("foo_algo", mock(EncryptAlgorithm.class));
-        encryptors.put("foo_assist_query_algo", mock(EncryptAlgorithm.class));
-        encryptors.put("foo_like_algo", mock(EncryptAlgorithm.class));
-        return encryptors;
+        Map<String, EncryptAlgorithm> result = new HashMap<>(3, 1F);
+        result.put("foo_algo", mock(EncryptAlgorithm.class));
+        result.put("foo_assist_query_algo", mock(EncryptAlgorithm.class));
+        result.put("foo_like_algo", mock(EncryptAlgorithm.class));
+        return result;
     }
     
     @Test
