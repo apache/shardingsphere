@@ -4269,10 +4269,10 @@
                 <expr>
                     <function function-name="EXTRACT_URL_PARAMETER" text="EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')" start-index="7" stop-index="60">
                         <parameter>
-                            <literal-expression value="'http://foo.com/?bar=baz'" start-index="26" stop-index="51" />
+                            <literal-expression value="'http://foo.com/?bar=baz'" start-index="29" stop-index="53" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="'bar'" start-index="52" stop-index="59" />
+                            <literal-expression value="'bar'" start-index="55" stop-index="59" />
                         </parameter>
                     </function>
                 </expr>
