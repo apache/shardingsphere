@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.algorithm.cryptographic.core.Cryptographi
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,8 +32,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AESCryptographicAlgorithmTest {
     
-    private final CryptographicAlgorithm cryptographicAlgorithm = TypedSPILoader.getService(
-            CryptographicAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
+    private CryptographicAlgorithm cryptographicAlgorithm;
+    
+    @BeforeEach
+    void setUp() {
+        cryptographicAlgorithm = TypedSPILoader.getService(CryptographicAlgorithm.class, "AES",
+                PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
+    }
     
     @Test
     void assertCreateNewInstanceWithoutAESKey() {
