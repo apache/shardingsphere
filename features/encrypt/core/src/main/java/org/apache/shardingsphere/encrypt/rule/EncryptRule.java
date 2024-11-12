@@ -33,12 +33,15 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -73,7 +76,9 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     }
     
     private RuleAttributes buildRuleAttributes() {
-        return new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet()));
+        List<RuleAttribute> ruleAttributes = new LinkedList<>();
+        ruleAttributes.add(new EncryptTableMapperRuleAttribute(tables.keySet()));
+        return new RuleAttributes(ruleAttributes.toArray(new RuleAttribute[]{}));
     }
     
     private Map<String, EncryptAlgorithm> createEncryptors(final EncryptRuleConfiguration ruleConfig) {
