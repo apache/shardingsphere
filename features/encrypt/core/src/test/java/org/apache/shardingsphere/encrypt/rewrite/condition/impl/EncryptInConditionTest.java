@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,15 +36,7 @@ class EncryptInConditionTest {
     void assertNewInstance() {
         List<ExpressionSegment> expressions = Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), new LiteralExpressionSegment(0, 0, "foo"), mock(ExpressionSegment.class));
         EncryptInCondition actual = new EncryptInCondition("foo_col", null, 0, 0, expressions);
-        assertPositionIndexMap(actual.getPositionIndexMap());
-        assertPositionValueMap(actual.getPositionValueMap());
-    }
-    
-    private void assertPositionIndexMap(final Map<Integer, Integer> actual) {
-        assertThat(actual, is(Collections.singletonMap(0, 0)));
-    }
-    
-    private void assertPositionValueMap(final Map<Integer, Object> actual) {
-        assertThat(actual, is(Collections.singletonMap(1, "foo")));
+        assertThat(actual.getPositionIndexMap(), is(Collections.singletonMap(0, 0)));
+        assertThat(actual.getPositionValueMap(), is(Collections.singletonMap(1, "foo")));
     }
 }
