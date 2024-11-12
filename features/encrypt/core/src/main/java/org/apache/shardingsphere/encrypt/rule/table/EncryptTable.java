@@ -31,7 +31,6 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -39,9 +38,9 @@ import java.util.Optional;
 /**
  * Encrypt table.
  */
-@Getter
 public final class EncryptTable {
     
+    @Getter
     private final String table;
     
     private final Map<String, EncryptColumn> columns;
@@ -79,15 +78,6 @@ public final class EncryptTable {
     @HighFrequencyInvocation
     public Optional<EncryptAlgorithm> findEncryptor(final String logicColumnName) {
         return columns.containsKey(logicColumnName) ? Optional.of(columns.get(logicColumnName).getCipher().getEncryptor()) : Optional.empty();
-    }
-    
-    /**
-     * Get logic columns.
-     *
-     * @return logic column names
-     */
-    public Collection<String> getLogicColumns() {
-        return columns.keySet();
     }
     
     /**
@@ -183,9 +173,6 @@ public final class EncryptTable {
      */
     @HighFrequencyInvocation
     public Optional<EncryptAlgorithm> findQueryEncryptor(final String columnName) {
-        if (!isEncryptColumn(columnName)) {
-            return Optional.empty();
-        }
-        return Optional.of(getEncryptColumn(columnName).getQueryEncryptor());
+        return isEncryptColumn(columnName) ? Optional.of(getEncryptColumn(columnName).getQueryEncryptor()) : Optional.empty();
     }
 }
