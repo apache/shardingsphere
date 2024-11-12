@@ -59,12 +59,15 @@ public final class EncryptTable {
     }
     
     private EncryptColumn createEncryptColumn(final EncryptColumnRuleConfiguration config, final Map<String, EncryptAlgorithm> encryptors) {
-        EncryptColumn result = new EncryptColumn(config.getName(), new CipherColumnItem(config.getCipher().getName(), encryptors.get(config.getCipher().getEncryptorName())));
+        CipherColumnItem cipherColumnItem = new CipherColumnItem(config.getCipher().getName(), encryptors.get(config.getCipher().getEncryptorName()));
+        EncryptColumn result = new EncryptColumn(config.getName(), cipherColumnItem);
         if (config.getAssistedQuery().isPresent()) {
-            result.setAssistedQuery(new AssistedQueryColumnItem(config.getAssistedQuery().get().getName(), encryptors.get(config.getAssistedQuery().get().getEncryptorName())));
+            AssistedQueryColumnItem assistedQueryColumn = new AssistedQueryColumnItem(config.getAssistedQuery().get().getName(), encryptors.get(config.getAssistedQuery().get().getEncryptorName()));
+            result.setAssistedQuery(assistedQueryColumn);
         }
         if (config.getLikeQuery().isPresent()) {
-            result.setLikeQuery(new LikeQueryColumnItem(config.getLikeQuery().get().getName(), encryptors.get(config.getLikeQuery().get().getEncryptorName())));
+            LikeQueryColumnItem likeQueryColumn = new LikeQueryColumnItem(config.getLikeQuery().get().getName(), encryptors.get(config.getLikeQuery().get().getEncryptorName()));
+            result.setLikeQuery(likeQueryColumn);
         }
         return result;
     }
