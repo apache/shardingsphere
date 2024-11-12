@@ -32,13 +32,14 @@ import static org.mockito.Mockito.mock;
 class EncryptInConditionTest {
     
     @Test
-    void assertGetValues() {
+    void assertNewInstance() {
         List<ExpressionSegment> expressions = Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), new LiteralExpressionSegment(0, 0, 1),
                 new ParameterMarkerExpressionSegment(0, 0, 1), mock(ExpressionSegment.class));
-        List<Object> actual = new EncryptInCondition("foo_col", null, 0, 0, expressions).getValues(Arrays.asList("foo", "bar"));
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("foo"));
-        assertThat(actual.get(1), is(1));
-        assertThat(actual.get(2), is("bar"));
+        EncryptInCondition actual = new EncryptInCondition("foo_col", null, 0, 0, expressions);
+        assertThat(actual.getPositionIndexMap().size(), is(2));
+        assertThat(actual.getPositionIndexMap().get(0), is(0));
+        assertThat(actual.getPositionIndexMap().get(2), is(1));
+        assertThat(actual.getPositionValueMap().size(), is(1));
+        assertThat(actual.getPositionValueMap().get(1), is(1));
     }
 }

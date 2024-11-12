@@ -27,6 +27,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class EncryptConditionValuesTest {
     
@@ -36,7 +38,10 @@ class EncryptConditionValuesTest {
         positionIndexMap.put(0, 0);
         positionIndexMap.put(2, 1);
         Map<Integer, Object> positionValueMap = Collections.singletonMap(1, 1);
-        List<Object> actual = new EncryptConditionValues(positionIndexMap, positionValueMap).getValues(Arrays.asList("foo", "bar"));
+        EncryptCondition condition = mock(EncryptCondition.class);
+        when(condition.getPositionIndexMap()).thenReturn(positionIndexMap);
+        when(condition.getPositionValueMap()).thenReturn(positionValueMap);
+        List<Object> actual = new EncryptConditionValues(condition).getValues(Arrays.asList("foo", "bar"));
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("foo"));
         assertThat(actual.get(1), is(1));

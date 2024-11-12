@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionValues;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -58,7 +59,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
         String schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (EncryptCondition each : encryptConditions) {
-            encryptParameters(paramBuilder, each.getPositionIndexMap(), getEncryptedValues(schemaName, each, each.getValues(params)));
+            encryptParameters(paramBuilder, each.getPositionIndexMap(), getEncryptedValues(schemaName, each, new EncryptConditionValues(each).getValues(params)));
         }
     }
     
