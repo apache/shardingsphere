@@ -36,7 +36,7 @@ public final class EncryptConditionValues {
     
     /**
      * Get values.
-     * 
+     *
      * @param params parameters
      * @return values
      */
