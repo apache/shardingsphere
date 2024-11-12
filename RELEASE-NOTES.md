@@ -17,6 +17,7 @@
 1. SQL Parser: Support parsing Doris STRRIGHT - [#33393](https://github.com/apache/shardingsphere/pull/33393)
 1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
 1. Kernel: Add binding to owner table - [#33533](https://github.com/apache/shardingsphere/pull/33533)
+1. SQL Parser: Support parsing Doris EXTRACT\_URL\_PARAMETER - [#33571](https://github.com/apache/shardingsphere/pull/33571)
 
 ### Bug Fixes
 
