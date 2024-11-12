@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,13 +34,9 @@ class EncryptInConditionTest {
     
     @Test
     void assertNewInstance() {
-        List<ExpressionSegment> expressions = Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), new LiteralExpressionSegment(0, 0, 1),
-                new ParameterMarkerExpressionSegment(0, 0, 1), mock(ExpressionSegment.class));
+        List<ExpressionSegment> expressions = Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), new LiteralExpressionSegment(0, 0, "foo"), mock(ExpressionSegment.class));
         EncryptInCondition actual = new EncryptInCondition("foo_col", null, 0, 0, expressions);
-        assertThat(actual.getPositionIndexMap().size(), is(2));
-        assertThat(actual.getPositionIndexMap().get(0), is(0));
-        assertThat(actual.getPositionIndexMap().get(2), is(1));
-        assertThat(actual.getPositionValueMap().size(), is(1));
-        assertThat(actual.getPositionValueMap().get(1), is(1));
+        assertThat(actual.getPositionIndexMap(), is(Collections.singletonMap(0, 0)));
+        assertThat(actual.getPositionValueMap(), is(Collections.singletonMap(1, "foo")));
     }
 }
