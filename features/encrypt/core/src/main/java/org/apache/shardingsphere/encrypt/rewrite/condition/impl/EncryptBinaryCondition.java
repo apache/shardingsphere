@@ -21,16 +21,15 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionValues;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Encrypt condition for equal.
@@ -81,15 +80,6 @@ public final class EncryptBinaryCondition implements EncryptCondition {
     
     @Override
     public List<Object> getValues(final List<Object> params) {
-        List<Object> result = new ArrayList<>(positionValueMap.values());
-        for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
-            Object param = params.get(entry.getValue());
-            if (entry.getKey() < result.size()) {
-                result.add(entry.getKey(), param);
-            } else {
-                result.add(param);
-            }
-        }
-        return result;
+        return new EncryptConditionValues(positionIndexMap, positionValueMap).getValues(params);
     }
 }
