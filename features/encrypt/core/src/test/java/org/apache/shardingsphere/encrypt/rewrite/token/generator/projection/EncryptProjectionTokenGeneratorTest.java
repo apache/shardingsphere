@@ -65,8 +65,6 @@ class EncryptProjectionTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         EncryptTable encryptTable1 = mock(EncryptTable.class);
         EncryptTable encryptTable2 = mock(EncryptTable.class);
-        when(encryptTable1.getLogicColumns()).thenReturn(Collections.singleton("mobile"));
-        when(encryptTable2.getLogicColumns()).thenReturn(Collections.singleton("mobile"));
         when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
         when(encryptTable1.isEncryptColumn("mobile")).thenReturn(true);

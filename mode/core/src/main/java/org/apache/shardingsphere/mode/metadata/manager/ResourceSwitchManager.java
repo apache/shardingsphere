@@ -118,6 +118,21 @@ public final class ResourceSwitchManager {
         return result;
     }
     
+    /**
+     * create switching resource by unregister storage unit.
+     *
+     * @param resourceMetaData resource meta data
+     * @param storageUnitNames storage unit names
+     * @return created switching resource
+     */
+    public SwitchingResource createByUnregisterStorageUnit(final ResourceMetaData resourceMetaData, final Collection<String> storageUnitNames) {
+        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        storageUnitNames.forEach(mergedDataSourcePoolPropertiesMap::remove);
+        return new SwitchingResource(Collections.emptyMap(),
+                getToBeRemovedStaleDataSource(resourceMetaData, storageUnitNames), storageUnitNames, mergedDataSourcePoolPropertiesMap);
+    }
+    
     private Map<StorageNode, DataSource> getToBeRemovedStaleDataSource(final ResourceMetaData resourceMetaData, final Collection<String> storageUnitNames) {
         Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUnitNames.size(), 1F);
         Map<String, StorageUnit> reservedStorageUnits = getReservedStorageUnits(resourceMetaData, storageUnitNames);

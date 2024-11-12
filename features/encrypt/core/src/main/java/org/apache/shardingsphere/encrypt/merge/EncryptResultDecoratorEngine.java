@@ -38,8 +38,8 @@ import java.util.Optional;
 public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public Optional<ResultDecorator<EncryptRule>> newInstance(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
-                                                              final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
+    public Optional<ResultDecorator<EncryptRule>> newInstance(final ShardingSphereMetaData metaData,
+                                                              final ShardingSphereDatabase database, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return Optional.of(new EncryptDQLResultDecorator(database, metaData, (SelectStatementContext) sqlStatementContext));
         }

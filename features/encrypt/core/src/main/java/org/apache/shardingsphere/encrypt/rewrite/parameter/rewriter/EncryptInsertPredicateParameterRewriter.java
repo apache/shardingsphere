@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -35,14 +32,13 @@ import java.util.List;
  * Insert predicate parameter rewriter for encrypt.
  */
 @RequiredArgsConstructor
-@Setter
-public final class EncryptInsertPredicateParameterRewriter implements ParameterRewriter, EncryptConditionsAware, DatabaseNameAware {
+public final class EncryptInsertPredicateParameterRewriter implements ParameterRewriter {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
-    private Collection<EncryptCondition> encryptConditions;
+    private final String databaseName;
     
-    private String databaseName;
+    private final Collection<EncryptCondition> encryptConditions;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
@@ -52,9 +48,7 @@ public final class EncryptInsertPredicateParameterRewriter implements ParameterR
     
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        EncryptPredicateParameterRewriter rewriter = new EncryptPredicateParameterRewriter(encryptRule);
-        rewriter.setEncryptConditions(encryptConditions);
-        rewriter.setDatabaseName(databaseName);
+        EncryptPredicateParameterRewriter rewriter = new EncryptPredicateParameterRewriter(rule, databaseName, encryptConditions);
         rewriter.rewrite(paramBuilder, ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), params);
     }
 }

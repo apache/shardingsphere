@@ -17,22 +17,54 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.condition.impl;
 
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class EncryptBinaryConditionTest {
     
     @Test
-    void assertGetConditionValues() {
-        List<Object> actual = new EncryptBinaryCondition("col", null, null,
-                0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(1));
+    void assertNewInstanceWithParameterMarkerExpression() {
+        EncryptBinaryCondition actual = new EncryptBinaryCondition("col", null, null, 0, 0, new ParameterMarkerExpressionSegment(0, 0, 1));
+        assertThat(actual.getPositionIndexMap(), is(Collections.singletonMap(0, 1)));
+        assertTrue(actual.getPositionValueMap().isEmpty());
+    }
+    
+    @Test
+    void assertNewInstanceWithLiteralExpression() {
+        EncryptBinaryCondition actual = new EncryptBinaryCondition("col", null, null, 0, 0, new LiteralExpressionSegment(0, 0, "foo"));
+        assertTrue(actual.getPositionIndexMap().isEmpty());
+        assertThat(actual.getPositionValueMap(), is(Collections.singletonMap(0, "foo")));
+    }
+    
+    @Test
+    void assertNewInstanceWithConcatFunctionExpression() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "CONCAT", "");
+        functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "foo"));
+        functionSegment.getParameters().add(new ParameterMarkerExpressionSegment(0, 0, 1));
+        functionSegment.getParameters().add(mock(ExpressionSegment.class));
+        EncryptBinaryCondition actual = new EncryptBinaryCondition("col", null, null, 0, 0, functionSegment);
+        assertThat(actual.getPositionIndexMap(), is(Collections.singletonMap(1, 1)));
+        assertThat(actual.getPositionValueMap(), is(Collections.singletonMap(0, "foo")));
+    }
+    
+    @Test
+    void assertNewInstanceWithNotConcatFunctionExpression() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "SUBSTR", "");
+        functionSegment.getParameters().add(new LiteralExpressionSegment(0, 0, "foo"));
+        functionSegment.getParameters().add(new ParameterMarkerExpressionSegment(0, 0, 1));
+        functionSegment.getParameters().add(mock(ExpressionSegment.class));
+        EncryptBinaryCondition actual = new EncryptBinaryCondition("col", null, null, 0, 0, functionSegment);
+        assertTrue(actual.getPositionIndexMap().isEmpty());
+        assertTrue(actual.getPositionValueMap().isEmpty());
     }
 }

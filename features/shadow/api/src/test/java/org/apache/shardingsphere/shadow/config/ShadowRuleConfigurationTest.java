@@ -30,21 +30,21 @@ import static org.mockito.Mockito.mock;
 class ShadowRuleConfigurationTest {
     
     @Test
-    public void assertIsEmptyDataSources() {
+    void assertIsEmptyDataSources() {
         ShadowRuleConfiguration actual = new ShadowRuleConfiguration();
         actual.setTables(Collections.singletonMap("foo_tbl", mock(ShadowTableConfiguration.class)));
         assertTrue(actual.isEmpty());
     }
     
     @Test
-    public void assertIsEmptyTables() {
+    void assertIsEmptyTables() {
         ShadowRuleConfiguration actual = new ShadowRuleConfiguration();
         actual.setDataSources(Collections.singleton(mock(ShadowDataSourceConfiguration.class)));
         assertTrue(actual.isEmpty());
     }
     
     @Test
-    public void assertIsNotEmpty() {
+    void assertIsNotEmpty() {
         ShadowRuleConfiguration actual = new ShadowRuleConfiguration();
         actual.setDataSources(Collections.singleton(mock(ShadowDataSourceConfiguration.class)));
         actual.setTables(Collections.singletonMap("foo_tbl", mock(ShadowTableConfiguration.class)));

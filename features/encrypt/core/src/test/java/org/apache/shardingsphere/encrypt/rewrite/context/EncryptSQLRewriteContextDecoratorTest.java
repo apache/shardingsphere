@@ -18,27 +18,57 @@
 package org.apache.shardingsphere.encrypt.rewrite.context;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class EncryptSQLRewriteContextDecoratorTest {
     
-    private final EncryptSQLRewriteContextDecorator encryptSQLRewriteContextDecorator = new EncryptSQLRewriteContextDecorator();
+    @Mock
+    private EncryptRule rule;
+    
+    private EncryptSQLRewriteContextDecorator decorator;
+    
+    @BeforeEach
+    void setUp() {
+        decorator = (EncryptSQLRewriteContextDecorator) OrderedSPILoader.getServices(SQLRewriteContextDecorator.class, Collections.singleton(rule)).get(rule);
+    }
     
     @Test
-    void assertDecorate() {
+    void assertDecorateWithNotTableAvailable() {
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
-        CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        encryptSQLRewriteContextDecorator.decorate(mock(EncryptRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
+        decorator.decorate(rule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
+        assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
+    }
+    
+    @Test
+    void assertDecorateWithoutEncryptTable() {
+        SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
+        when(sqlRewriteContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(rule.findEncryptTable("foo_tbl")).thenReturn(Optional.empty());
+        decorator.decorate(rule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }
 }

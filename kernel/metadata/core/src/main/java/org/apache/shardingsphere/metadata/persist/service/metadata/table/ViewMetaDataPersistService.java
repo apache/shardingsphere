@@ -83,7 +83,7 @@ public final class ViewMetaDataPersistService {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
             String viewName = entry.getKey().toLowerCase();
-            List<String> versions = repository.getChildrenKeys(ViewMetaDataNode.getViewVersionsNode(databaseName, schemaName, viewName));
+            List<String> versions = metaDataVersionPersistService.getVersions(ViewMetaDataNode.getViewVersionsNode(databaseName, schemaName, viewName));
             String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion),
                     YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(entry.getValue())));

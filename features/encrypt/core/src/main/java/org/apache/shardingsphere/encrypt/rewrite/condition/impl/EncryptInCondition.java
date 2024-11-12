@@ -25,11 +25,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Encrypt condition.
@@ -69,19 +67,5 @@ public final class EncryptInCondition implements EncryptCondition {
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
             positionValueMap.put(position, ((LiteralExpressionSegment) expressionSegment).getLiterals());
         }
-    }
-    
-    @Override
-    public List<Object> getValues(final List<Object> params) {
-        List<Object> result = new ArrayList<>(positionValueMap.values());
-        for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
-            Object param = params.get(entry.getValue());
-            if (entry.getKey() < result.size()) {
-                result.add(entry.getKey(), param);
-            } else {
-                result.add(param);
-            }
-        }
-        return result;
     }
 }

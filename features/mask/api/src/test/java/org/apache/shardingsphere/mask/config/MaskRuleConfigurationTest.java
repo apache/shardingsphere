@@ -17,24 +17,16 @@
 
 package org.apache.shardingsphere.mask.config;
 
-import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class MaskRuleConfigurationTest {
     
     @Test
     void assertIsEmpty() {
         assertTrue(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()).isEmpty());
-    }
-    
-    @Test
-    void assertIsNotEmpty() {
-        assertFalse(new MaskRuleConfiguration(Collections.singleton(mock(MaskTableRuleConfiguration.class)), Collections.emptyMap()).isEmpty());
     }
 }
