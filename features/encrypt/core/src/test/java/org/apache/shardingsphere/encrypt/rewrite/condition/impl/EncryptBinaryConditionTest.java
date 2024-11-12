@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,10 +28,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class EncryptBinaryConditionTest {
     
     @Test
-    void assertGetConditionValues() {
-        List<Object> actual = new EncryptBinaryCondition("col", null, null,
-                0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(1));
+    void assertNewInstance() {
+        EncryptBinaryCondition actual = new EncryptBinaryCondition("col", null, null, 0, 0, new LiteralExpressionSegment(0, 0, 1));
+        assertThat(actual.getPositionIndexMap(), is(Collections.emptyMap()));
+        assertThat(actual.getPositionValueMap().size(), is(1));
     }
 }

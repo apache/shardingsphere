@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -30,9 +29,7 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class EncryptConditionValues {
     
-    private final Map<Integer, Integer> positionIndexMap;
-    
-    private final Map<Integer, Object> positionValueMap;
+    private final EncryptCondition condition;
     
     /**
      * Get values.
@@ -41,8 +38,8 @@ public final class EncryptConditionValues {
      * @return values
      */
     public List<Object> getValues(final List<Object> params) {
-        List<Object> result = new ArrayList<>(positionValueMap.values());
-        for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
+        List<Object> result = new ArrayList<>(condition.getPositionValueMap().values());
+        for (Entry<Integer, Integer> entry : condition.getPositionIndexMap().entrySet()) {
             Object param = params.get(entry.getValue());
             if (entry.getKey() < result.size()) {
                 result.add(entry.getKey(), param);
