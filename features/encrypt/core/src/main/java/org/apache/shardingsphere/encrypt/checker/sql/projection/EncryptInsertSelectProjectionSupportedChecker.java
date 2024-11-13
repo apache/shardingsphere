@@ -38,15 +38,15 @@ public final class EncryptInsertSelectProjectionSupportedChecker implements Supp
     }
     
     @Override
-    public void check(final EncryptRule encryptRule, final ShardingSphereSchema schema, final InsertStatementContext sqlStatementContext) {
-        checkSelect(encryptRule, sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
+    public void check(final EncryptRule rule, final ShardingSphereSchema schema, final InsertStatementContext sqlStatementContext) {
+        checkSelect(rule, sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
         for (SelectStatementContext each : sqlStatementContext.getInsertSelectContext().getSelectStatementContext().getSubqueryContexts().values()) {
-            checkSelect(encryptRule, each);
+            checkSelect(rule, each);
         }
     }
     
-    private void checkSelect(final EncryptRule encryptRule, final SelectStatementContext selectStatementContext) {
-        EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptProjectionInCombineSegment(encryptRule, selectStatementContext);
+    private void checkSelect(final EncryptRule rule, final SelectStatementContext selectStatementContext) {
+        EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptProjectionInCombineSegment(rule, selectStatementContext);
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
             EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptShorthandExpandWithSubqueryStatement(selectStatementContext, each);
         }
