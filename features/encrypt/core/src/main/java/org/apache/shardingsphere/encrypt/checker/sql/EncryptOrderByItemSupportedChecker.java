@@ -68,14 +68,6 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
         }
     }
     
-    private void checkColumnOrderByItem(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext, final ColumnSegment columnSegment) {
-        Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
-        String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        String columnName = columnSegment.getIdentifier().getValue();
-        ShardingSpherePreconditions.checkState(!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName), () -> new UnsupportedEncryptSQLException("ORDER BY"));
-    }
-    
     private Collection<OrderByItem> getOrderByItems(final SelectStatementContext sqlStatementContext) {
         Collection<OrderByItem> result = new LinkedList<>();
         if (!sqlStatementContext.getOrderByContext().isGenerated()) {
@@ -85,5 +77,13 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
             result.addAll(getOrderByItems(each));
         }
         return result;
+    }
+    
+    private void checkColumnOrderByItem(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext, final ColumnSegment columnSegment) {
+        Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
+        String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        String columnName = columnSegment.getIdentifier().getValue();
+        ShardingSpherePreconditions.checkState(!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName), () -> new UnsupportedEncryptSQLException("ORDER BY"));
     }
 }

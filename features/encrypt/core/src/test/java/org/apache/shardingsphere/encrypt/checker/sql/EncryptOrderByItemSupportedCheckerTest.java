@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
@@ -39,10 +40,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,25 +57,67 @@ class EncryptOrderByItemSupportedCheckerTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertCheck() {
-        assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(ShardingSphereSchema.class), buildSelectStatementContext()));
+    void assertIsCheckWithNotSelectStatementContext() {
+        assertFalse(new EncryptOrderByItemSupportedChecker().isCheck(mock(SQLStatementContext.class)));
+    }
+    
+    @Test
+    void assertIsCheckWithoutOrderBy() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getOrderByContext().getItems().isEmpty()).thenReturn(true);
+        assertFalse(new EncryptOrderByItemSupportedChecker().isCheck(sqlStatementContext));
+    }
+    
+    @Test
+    void assertIsCheckWithGeneratedOrderBy() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getOrderByContext().isGenerated()).thenReturn(true);
+        assertFalse(new EncryptOrderByItemSupportedChecker().isCheck(sqlStatementContext));
+    }
+    
+    @Test
+    void assertIsCheckWithOrderBy() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        assertTrue(new EncryptOrderByItemSupportedChecker().isCheck(sqlStatementContext));
+    }
+    
+    @Test
+    void assertIsCheckWithSubQueryOrderBy() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getOrderByContext().isGenerated()).thenReturn(true);
+        SelectStatementContext subQuerySelectStatementContext0 = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(subQuerySelectStatementContext0.getOrderByContext().getItems().isEmpty()).thenReturn(true);
+        SelectStatementContext subQuerySelectStatementContext1 = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSubqueryContexts().values()).thenReturn(Arrays.asList(subQuerySelectStatementContext0, subQuerySelectStatementContext1));
+        assertTrue(new EncryptOrderByItemSupportedChecker().isCheck(sqlStatementContext));
+    }
+    
+    @Test
+    void assertCheckFailed() {
+        assertThrows(UnsupportedEncryptSQLException.class,
+                () -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(ShardingSphereSchema.class), mockSelectStatementContext("foo_tbl")));
+    }
+    
+    @Test
+    void assertCheckSuccess() {
+        assertDoesNotThrow(() -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(ShardingSphereSchema.class), mockSelectStatementContext("bar_tbl")));
     }
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptTable.isEncryptColumn("certificate_number")).thenReturn(true);
+        when(encryptTable.isEncryptColumn("foo_col")).thenReturn(true);
         EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
         when(encryptColumn.getAssistedQuery()).thenReturn(Optional.empty());
-        when(encryptTable.getEncryptColumn("certificate_number")).thenReturn(encryptColumn);
-        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.getEncryptColumn("foo_col")).thenReturn(encryptColumn);
+        when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
         return result;
     }
     
-    private SelectStatementContext buildSelectStatementContext() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")));
+    private SelectStatementContext mockSelectStatementContext(final String tableName) {
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         simpleTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("certificate_number"));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("foo_col"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseType()).thenReturn(databaseType);
