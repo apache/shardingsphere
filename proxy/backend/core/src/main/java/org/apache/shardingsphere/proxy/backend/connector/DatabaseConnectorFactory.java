@@ -49,7 +49,7 @@ public final class DatabaseConnectorFactory {
      */
     public DatabaseConnector newInstance(final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager, final boolean preferPreparedStatement) {
         String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
-        DatabaseConnector result = new DatabaseConnector(driverType, queryContext, databaseConnectionManager);
+        DatabaseConnector result = new StandardDatabaseConnector(driverType, queryContext, databaseConnectionManager);
         databaseConnectionManager.add(result);
         return result;
     }

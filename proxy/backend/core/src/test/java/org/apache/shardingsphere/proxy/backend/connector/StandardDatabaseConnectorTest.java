@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
@@ -80,7 +81,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -97,7 +97,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @StaticMockSettings({ProxyContext.class, SystemSchemaUtils.class})
-class DatabaseConnectorTest {
+class StandardDatabaseConnectorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ProxyDatabaseConnectionManager databaseConnectionManager;
@@ -146,16 +146,14 @@ class DatabaseConnectorTest {
     void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, true);
-        assertNotNull(engine);
-        assertThat(engine, instanceOf(DatabaseConnector.class));
-        Field queryHeadersField = DatabaseConnector.class.getDeclaredField("queryHeaders");
+        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.PREPARED_STATEMENT, createQueryContext(sqlStatementContext));
+        Field queryHeadersField = StandardDatabaseConnector.class.getDeclaredField("queryHeaders");
         ShardingSphereDatabase database = createDatabaseMetaData();
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"))).thenReturn(new QueryHeaderBuilderFixture());
             Plugins.getMemberAccessor().set(queryHeadersField, engine,
                     Collections.singletonList(new QueryHeaderBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).build(createQueryResultMetaData(), database, 1)));
-            Field mergedResultField = DatabaseConnector.class.getDeclaredField("mergedResult");
+            Field mergedResultField = StandardDatabaseConnector.class.getDeclaredField("mergedResult");
             Plugins.getMemberAccessor().set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
                 
                 @Override
@@ -173,6 +171,12 @@ class DatabaseConnectorTest {
                 assertFalse(ex instanceof IndexOutOfBoundsException);
             }
         }
+    }
+    
+    private DatabaseConnector createDatabaseConnector(final String driverType, final QueryContext queryContext) {
+        DatabaseConnector result = new StandardDatabaseConnector(driverType, queryContext, databaseConnectionManager);
+        databaseConnectionManager.add(result);
+        return result;
     }
     
     private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext) {
@@ -205,7 +209,7 @@ class DatabaseConnectorTest {
     void assertAddStatementCorrectly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, false);
+        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
         assertThat(actual.size(), is(1));
@@ -216,7 +220,7 @@ class DatabaseConnectorTest {
     void assertAddResultSetCorrectly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, false);
+        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
         assertThat(actual.size(), is(1));
@@ -227,7 +231,7 @@ class DatabaseConnectorTest {
     void assertCloseCorrectly() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, false);
+        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
         Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
@@ -244,7 +248,7 @@ class DatabaseConnectorTest {
     void assertCloseResultSetsWithExceptionThrown() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(createQueryContext(sqlStatementContext), databaseConnectionManager, false);
+        DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();
@@ -271,6 +275,6 @@ class DatabaseConnectorTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private <T> T getField(final DatabaseConnector target, final String fieldName) {
-        return (T) Plugins.getMemberAccessor().get(DatabaseConnector.class.getDeclaredField(fieldName), target);
+        return (T) Plugins.getMemberAccessor().get(StandardDatabaseConnector.class.getDeclaredField(fieldName), target);
     }
 }
