@@ -60,10 +60,10 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
     }
     
     @Override
-    public void check(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext) {
+    public void check(final EncryptRule rule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext) {
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
-                checkColumnOrderByItem(encryptRule, schema, sqlStatementContext, ((ColumnOrderByItemSegment) each.getSegment()).getColumn());
+                checkColumnOrderByItem(rule, schema, sqlStatementContext, ((ColumnOrderByItemSegment) each.getSegment()).getColumn());
             }
         }
     }
@@ -79,10 +79,10 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
         return result;
     }
     
-    private void checkColumnOrderByItem(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext, final ColumnSegment columnSegment) {
+    private void checkColumnOrderByItem(final EncryptRule rule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext, final ColumnSegment columnSegment) {
         Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
         String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         String columnName = columnSegment.getIdentifier().getValue();
         ShardingSpherePreconditions.checkState(!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName), () -> new UnsupportedEncryptSQLException("ORDER BY"));
     }

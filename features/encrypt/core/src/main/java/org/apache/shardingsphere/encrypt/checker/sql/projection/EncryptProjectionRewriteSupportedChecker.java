@@ -45,15 +45,15 @@ public final class EncryptProjectionRewriteSupportedChecker {
     /**
      * Check not contain encrypt projection in combine segment.
      *
-     * @param encryptRule encrypt rule
+     * @param rule encrypt rule
      * @param selectStatementContext select statement context
      */
-    public static void checkNotContainEncryptProjectionInCombineSegment(final EncryptRule encryptRule, final SelectStatementContext selectStatementContext) {
-        ShardingSpherePreconditions.checkState(!containsEncryptProjectionInCombineSegment(encryptRule, selectStatementContext),
+    public static void checkNotContainEncryptProjectionInCombineSegment(final EncryptRule rule, final SelectStatementContext selectStatementContext) {
+        ShardingSpherePreconditions.checkState(!containsEncryptProjectionInCombineSegment(rule, selectStatementContext),
                 () -> new UnsupportedSQLOperationException("Can not support encrypt projection in combine statement."));
     }
     
-    private static boolean containsEncryptProjectionInCombineSegment(final EncryptRule encryptRule, final SelectStatementContext selectStatementContext) {
+    private static boolean containsEncryptProjectionInCombineSegment(final EncryptRule rule, final SelectStatementContext selectStatementContext) {
         if (!selectStatementContext.getSqlStatement().getCombine().isPresent()) {
             return false;
         }
@@ -62,18 +62,18 @@ public final class EncryptProjectionRewriteSupportedChecker {
         List<Projection> rightProjections = selectStatementContext.getSubqueryContexts().get(combineSegment.getRight().getStartIndex()).getProjectionsContext().getExpandProjections();
         ShardingSpherePreconditions.checkState(leftProjections.size() == rightProjections.size(), () -> new UnsupportedSQLOperationException("Column projections must be same for combine statement"));
         for (int i = 0; i < leftProjections.size(); i++) {
-            if (containsEncryptProjectionInCombineSegment(encryptRule, leftProjections.get(i), rightProjections.get(i))) {
+            if (containsEncryptProjectionInCombineSegment(rule, leftProjections.get(i), rightProjections.get(i))) {
                 return true;
             }
         }
         return false;
     }
     
-    private static boolean containsEncryptProjectionInCombineSegment(final EncryptRule encryptRule, final Projection leftProjection, final Projection rightProjection) {
+    private static boolean containsEncryptProjectionInCombineSegment(final EncryptRule rule, final Projection leftProjection, final Projection rightProjection) {
         ColumnSegmentBoundInfo leftColumnInfo = getColumnSegmentBoundInfo(leftProjection);
-        EncryptAlgorithm leftColumnEncryptor = encryptRule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
+        EncryptAlgorithm leftColumnEncryptor = rule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
         ColumnSegmentBoundInfo rightColumnInfo = getColumnSegmentBoundInfo(rightProjection);
-        EncryptAlgorithm rightColumnEncryptor = encryptRule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
+        EncryptAlgorithm rightColumnEncryptor = rule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
         return null != leftColumnEncryptor || null != rightColumnEncryptor;
     }
     
