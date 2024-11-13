@@ -52,16 +52,16 @@ public final class EncryptPredicateColumnSupportedChecker implements SupportedSQ
     }
     
     @Override
-    public void check(final EncryptRule encryptRule, final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext) {
-        ShardingSpherePreconditions.checkState(JoinConditionsEncryptorComparator.isSame(((WhereAvailable) sqlStatementContext).getJoinConditions(), encryptRule),
+    public void check(final EncryptRule rule, final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext) {
+        ShardingSpherePreconditions.checkState(JoinConditionsEncryptorComparator.isSame(((WhereAvailable) sqlStatementContext).getJoinConditions(), rule),
                 () -> new UnsupportedSQLOperationException("Can not use different encryptor in join condition"));
-        check(encryptRule, schema, (WhereAvailable) sqlStatementContext);
+        check(rule, schema, (WhereAvailable) sqlStatementContext);
     }
     
-    private void check(final EncryptRule encryptRule, final ShardingSphereSchema schema, final WhereAvailable sqlStatementContext) {
+    private void check(final EncryptRule rule, final ShardingSphereSchema schema, final WhereAvailable sqlStatementContext) {
         Map<String, String> columnExpressionTableNames = ((TableAvailable) sqlStatementContext).getTablesContext().findTableNames(sqlStatementContext.getColumnSegments(), schema);
         for (ColumnSegment each : sqlStatementContext.getColumnSegments()) {
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnExpressionTableNames.getOrDefault(each.getExpression(), ""));
+            Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnExpressionTableNames.getOrDefault(each.getExpression(), ""));
             String columnName = each.getIdentifier().getValue();
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnName) && includesLike(sqlStatementContext.getWhereSegments(), each)) {
                 String tableName = encryptTable.get().getTable();
