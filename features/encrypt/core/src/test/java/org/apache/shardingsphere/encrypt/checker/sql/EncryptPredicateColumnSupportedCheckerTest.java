@@ -70,8 +70,8 @@ class EncryptPredicateColumnSupportedCheckerTest {
         leftColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(
                 new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_user"), new IdentifierValue("user_name")));
         ColumnSegment rightColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
-        rightColumn.setColumnBoundInfo(
-                new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_user"), new IdentifierValue("user_id")));
+        rightColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(
+                new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_user"), new IdentifierValue("user_id")));
         SelectStatementContext result = mock(SelectStatementContext.class);
         when(result.getJoinConditions()).thenReturn(Collections.singleton(new BinaryOperationExpression(0, 0, leftColumn, rightColumn, "=", "")));
         return result;
