@@ -61,12 +61,12 @@ class EncryptRuleConfigurationCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertCheckWhenConfigInvalidCipherColumn() {
-        EncryptRuleConfiguration ruleConfig = createInvalidCipherColumnConfiguration();
+    void assertCheckWithInvalidCipherColumn() {
+        EncryptRuleConfiguration ruleConfig = createRuleConfigurationWithInvalidCipherColumn();
         assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
-    private EncryptRuleConfiguration createInvalidCipherColumnConfiguration() {
+    private EncryptRuleConfiguration createRuleConfigurationWithInvalidCipherColumn() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
         Collection<EncryptTableRuleConfiguration> tables = Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig)));
         Map<String, AlgorithmConfiguration> encryptors = Collections.emptyMap();
@@ -75,12 +75,12 @@ class EncryptRuleConfigurationCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertCheckWhenConfigInvalidAssistColumn() {
-        EncryptRuleConfiguration ruleConfig = createInvalidAssistColumnConfiguration();
+    void assertCheckWithInvalidAssistColumn() {
+        EncryptRuleConfiguration ruleConfig = createRuleConfigurationWithInvalidAssistColumn();
         assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
-    private EncryptRuleConfiguration createInvalidAssistColumnConfiguration() {
+    private EncryptRuleConfiguration createRuleConfigurationWithInvalidAssistColumn() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
         columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "aes_assisted_encryptor"));
         Collection<EncryptTableRuleConfiguration> tables = Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig)));
@@ -90,12 +90,12 @@ class EncryptRuleConfigurationCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertCheckWhenConfigInvalidLikeColumn() {
-        EncryptRuleConfiguration ruleConfig = createInvalidLikeColumnConfiguration();
+    void assertCheckWithInvalidLikeColumn() {
+        EncryptRuleConfiguration ruleConfig = createRuleConfigurationWithInvalidLikeColumn();
         assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
-    private EncryptRuleConfiguration createInvalidLikeColumnConfiguration() {
+    private EncryptRuleConfiguration createRuleConfigurationWithInvalidLikeColumn() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
         columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "like_cn_encryptor"));
         Collection<EncryptTableRuleConfiguration> tables = Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig)));
