@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
+import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-@ConstructionMockSettings(DatabaseConnector.class)
+@ConstructionMockSettings(StandardDatabaseConnector.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DatabaseBackendHandlerFactoryTest {
     
@@ -99,7 +99,7 @@ class DatabaseBackendHandlerFactoryTest {
                 DatabaseBackendHandlerFactory.newInstance(
                         new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                         connectionSession, false);
-        assertThat(actual, instanceOf(DatabaseConnector.class));
+        assertThat(actual, instanceOf(StandardDatabaseConnector.class));
     }
     
     private SQLStatementContext mockSQLStatementContext() {

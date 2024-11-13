@@ -147,13 +147,13 @@ class StandardDatabaseConnectorTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.PREPARED_STATEMENT, createQueryContext(sqlStatementContext));
-        Field queryHeadersField = DatabaseConnector.class.getDeclaredField("queryHeaders");
+        Field queryHeadersField = StandardDatabaseConnector.class.getDeclaredField("queryHeaders");
         ShardingSphereDatabase database = createDatabaseMetaData();
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"))).thenReturn(new QueryHeaderBuilderFixture());
             Plugins.getMemberAccessor().set(queryHeadersField, engine,
                     Collections.singletonList(new QueryHeaderBuilderEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).build(createQueryResultMetaData(), database, 1)));
-            Field mergedResultField = DatabaseConnector.class.getDeclaredField("mergedResult");
+            Field mergedResultField = StandardDatabaseConnector.class.getDeclaredField("mergedResult");
             Plugins.getMemberAccessor().set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
                 
                 @Override
@@ -275,6 +275,6 @@ class StandardDatabaseConnectorTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private <T> T getField(final DatabaseConnector target, final String fieldName) {
-        return (T) Plugins.getMemberAccessor().get(DatabaseConnector.class.getDeclaredField(fieldName), target);
+        return (T) Plugins.getMemberAccessor().get(StandardDatabaseConnector.class.getDeclaredField(fieldName), target);
     }
 }
