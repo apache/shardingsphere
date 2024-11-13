@@ -59,7 +59,8 @@ class EncryptInsertSelectProjectionSupportedCheckerTest {
     void assertCheckSuccess() {
         InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getInsertSelectContext()).thenReturn(mock(InsertSelectContext.class, RETURNS_DEEP_STUBS));
-        when(sqlStatementContext.getInsertSelectContext().getSelectStatementContext().getSubqueryContexts().values()).thenReturn(Collections.singletonList(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
+        when(sqlStatementContext.getInsertSelectContext().getSelectStatementContext().getSubqueryContexts().values())
+                .thenReturn(Collections.singletonList(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
         assertDoesNotThrow(() -> new EncryptInsertSelectProjectionSupportedChecker().check(mock(EncryptRule.class), mock(ShardingSphereSchema.class), sqlStatementContext));
     }
 }
