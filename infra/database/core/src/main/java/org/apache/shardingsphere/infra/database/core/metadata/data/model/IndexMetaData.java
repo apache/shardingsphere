@@ -43,6 +43,6 @@ public final class IndexMetaData {
     private boolean unique;
     
     public IndexMetaData(final String name) {
-        this(name,  new LinkedList<>());
+        this(name, new LinkedList<>());
     }
 }
