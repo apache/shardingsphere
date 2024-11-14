@@ -86,11 +86,11 @@ class EncryptSelectProjectionSupportedCheckerTest {
     }
     
     private SelectStatementContext mockSelectStatementContext() {
-        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         CombineSegment combineSegment = mock(CombineSegment.class, RETURNS_DEEP_STUBS);
         when(combineSegment.getLeft().getStartIndex()).thenReturn(0);
         when(combineSegment.getRight().getStartIndex()).thenReturn(1);
-        when(sqlStatementContext.getSqlStatement().getCombine()).thenReturn(Optional.of(combineSegment));
+        when(result.getSqlStatement().getCombine()).thenReturn(Optional.of(combineSegment));
         ColumnProjection leftColumn1 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_1"), null, databaseType,
                 null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_1")));
         ColumnProjection leftColumn2 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_2"), null, databaseType,
@@ -106,8 +106,8 @@ class EncryptSelectProjectionSupportedCheckerTest {
         Map<Integer, SelectStatementContext> subqueryContexts = new LinkedHashMap<>(2, 1F);
         subqueryContexts.put(0, leftSelectStatementContext);
         subqueryContexts.put(1, rightSelectStatementContext);
-        when(sqlStatementContext.getSubqueryContexts()).thenReturn(subqueryContexts);
-        return sqlStatementContext;
+        when(result.getSubqueryContexts()).thenReturn(subqueryContexts);
+        return result;
     }
     
     private EncryptRule mockEncryptRule() {
