@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.encrypt.checker.sql.projection;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
-import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -34,9 +33,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,11 +44,28 @@ import static org.mockito.Mockito.when;
 class EncryptSelectProjectionSupportedCheckerTest {
     
     @Test
+    void assertIsCheckWithNotSelectStatementContext() {
+        assertFalse(new EncryptSelectProjectionSupportedChecker().isCheck(mock(SQLStatementContext.class)));
+    }
+    
+    @Test
+    void assertIsCheckWithEmptyTable() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()).thenReturn(true);
+        assertFalse(new EncryptSelectProjectionSupportedChecker().isCheck(sqlStatementContext));
+    }
+    
+    @Test
+    void assertIsCheckWithTables() {
+        assertTrue(new EncryptSelectProjectionSupportedChecker().isCheck(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
+    }
+    
+    @Test
     void assertCheckWhenShorthandExpandContainsSubqueryTable() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.containsTableSubquery()).thenReturn(true);
         when(sqlStatementContext.getSqlStatement().getProjections().getProjections()).thenReturn(Collections.singleton(new ShorthandProjectionSegment(0, 0)));
-        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mockEncryptRule(), null, sqlStatementContext));
+        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mock(EncryptRule.class, RETURNS_DEEP_STUBS), null, sqlStatementContext));
     }
     
     @Test
@@ -58,10 +75,10 @@ class EncryptSelectProjectionSupportedCheckerTest {
         when(sqlStatementContext.getSqlStatement().getCombine().isPresent()).thenReturn(true);
         CombineSegment combineSegment = mock(CombineSegment.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement().getCombine().get()).thenReturn(combineSegment);
-        ColumnProjection orderIdColumn = new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id"), null, new MySQLDatabaseType(),
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_order"), new IdentifierValue("order_id")));
+        ColumnProjection orderIdColumn = new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("foo_col"), null, new MySQLDatabaseType(),
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
         ColumnProjection userIdColumn = new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id"), null, new MySQLDatabaseType(),
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_order"), new IdentifierValue("user_id")));
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("user_id")));
         SelectStatementContext leftSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(leftSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(orderIdColumn, userIdColumn));
         ColumnProjection merchantIdColumn = new ColumnProjection(new IdentifierValue("m"), new IdentifierValue("merchant_id"), null, new MySQLDatabaseType(),
@@ -76,21 +93,6 @@ class EncryptSelectProjectionSupportedCheckerTest {
         when(sqlStatementContext.getSubqueryContexts()).thenReturn(subqueryContexts);
         when(combineSegment.getLeft().getStartIndex()).thenReturn(0);
         when(combineSegment.getRight().getStartIndex()).thenReturn(1);
-        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mockEncryptRule(), null, sqlStatementContext));
-    }
-    
-    private EncryptRule mockEncryptRule() {
-        EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        EncryptTable encryptTable1 = mock(EncryptTable.class);
-        EncryptTable encryptTable2 = mock(EncryptTable.class);
-        when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
-        when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        when(encryptTable1.isEncryptColumn("mobile")).thenReturn(true);
-        EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
-        when(encryptColumn.getAssistedQuery()).thenReturn(Optional.empty());
-        when(encryptTable1.getEncryptColumn("mobile")).thenReturn(encryptColumn);
-        when(result.findEncryptTable("t_order").isPresent()).thenReturn(true);
-        when(result.getEncryptTable("t_order").isEncryptColumn("order_id")).thenReturn(true);
-        return result;
+        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mock(EncryptRule.class, RETURNS_DEEP_STUBS), null, sqlStatementContext));
     }
 }
