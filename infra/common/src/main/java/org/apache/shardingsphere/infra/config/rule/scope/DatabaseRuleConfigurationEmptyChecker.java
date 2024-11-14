@@ -15,9 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.infra.config.rule.scope;
 
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+/**
+ * Database rule configuration empty checker.
+ * 
+ * @param <T> type of database rule configuration
+ */
+@SingletonSPI
+public interface DatabaseRuleConfigurationEmptyChecker<T extends DatabaseRuleConfiguration> extends TypedSPI {
+    
+    /**
+     * Whether rule configuration empty.
+     *
+     * @param ruleConfig rule configuration
+     * @return is empty or not
+     */
+    boolean isEmpty(T ruleConfig);
+    
+    @Override
+    Class<T> getType();
 }

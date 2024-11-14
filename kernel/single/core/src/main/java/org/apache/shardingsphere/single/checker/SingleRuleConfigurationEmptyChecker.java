@@ -15,9 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.single.checker;
 
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
-public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+/**
+ * Single rule configuration empty checker.
+ */
+public final class SingleRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<SingleRuleConfiguration> {
+    
+    @Override
+    public boolean isEmpty(final SingleRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().isEmpty() && !ruleConfig.getDefaultDataSource().isPresent();
+    }
+    
+    @Override
+    public Class<SingleRuleConfiguration> getType() {
+        return SingleRuleConfiguration.class;
+    }
 }

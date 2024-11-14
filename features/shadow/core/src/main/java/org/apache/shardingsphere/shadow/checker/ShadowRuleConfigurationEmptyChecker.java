@@ -15,9 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 
-public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+/**
+ * Shadow rule configuration empty checker.
+ */
+public final class ShadowRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<ShadowRuleConfiguration> {
+    
+    @Override
+    public boolean isEmpty(final ShadowRuleConfiguration ruleConfig) {
+        return ruleConfig.getDataSources().isEmpty() || ruleConfig.getTables().isEmpty();
+    }
+    
+    @Override
+    public Class<ShadowRuleConfiguration> getType() {
+        return ShadowRuleConfiguration.class;
+    }
 }

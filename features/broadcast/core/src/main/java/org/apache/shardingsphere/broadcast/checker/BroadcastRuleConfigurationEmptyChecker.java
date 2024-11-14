@@ -15,9 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.broadcast.checker;
 
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
 
-public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+/**
+ * Broadcast rule configuration empty checker.
+ */
+public final class BroadcastRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<BroadcastRuleConfiguration> {
+    
+    @Override
+    public boolean isEmpty(final BroadcastRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().isEmpty();
+    }
+    
+    @Override
+    public Class<BroadcastRuleConfiguration> getType() {
+        return BroadcastRuleConfiguration.class;
+    }
 }

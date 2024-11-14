@@ -37,9 +37,4 @@ public final class ReadwriteSplittingRuleConfiguration implements DatabaseRuleCo
     private final Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups;
     
     private final Map<String, AlgorithmConfiguration> loadBalancers;
-    
-    @Override
-    public boolean isEmpty() {
-        return dataSourceGroups.isEmpty();
-    }
 }
