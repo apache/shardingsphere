@@ -87,6 +87,5 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
         ShardingSpherePreconditions.checkState(insertColumns.size() == projections.size(), () -> new UnsupportedSQLOperationException("Column count doesn't match value count."));
         ShardingSpherePreconditions.checkState(InsertSelectColumnsEncryptorComparator.isSame(insertColumns, projections, encryptRule),
                 () -> new UnsupportedSQLOperationException("Can not use different encryptor in insert select columns"));
-        selectStatementContext.getSubqueryContexts().values().forEach(each -> checkInsertSelectEncryptor(each, insertColumns));
     }
 }

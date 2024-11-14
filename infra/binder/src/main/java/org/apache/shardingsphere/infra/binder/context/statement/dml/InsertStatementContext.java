@@ -55,6 +55,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -138,6 +139,14 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         SubquerySegment insertSelectSegment = getSqlStatement().getInsertSelect().get();
         SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, params, insertSelectSegment.getSelect(), currentDatabaseName, Collections.emptyList());
         selectStatementContext.setSubqueryType(SubqueryType.INSERT_SELECT);
+        setCombineSelectSubqueryType(selectStatementContext);
+        setProjectionSelectSubqueryType(selectStatementContext);
+        InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, params, paramsOffset.get());
+        paramsOffset.addAndGet(insertSelectContext.getParameterCount());
+        return Optional.of(insertSelectContext);
+    }
+    
+    private void setCombineSelectSubqueryType(final SelectStatementContext selectStatementContext) {
         if (selectStatementContext.getSqlStatement().getCombine().isPresent()) {
             CombineSegment combineSegment = selectStatementContext.getSqlStatement().getCombine().get();
             Optional.ofNullable(selectStatementContext.getSubqueryContexts().get(combineSegment.getLeft().getStartIndex()))
@@ -145,9 +154,14 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
             Optional.ofNullable(selectStatementContext.getSubqueryContexts().get(combineSegment.getRight().getStartIndex()))
                     .ifPresent(optional -> optional.setSubqueryType(SubqueryType.INSERT_SELECT));
         }
-        InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, params, paramsOffset.get());
-        paramsOffset.addAndGet(insertSelectContext.getParameterCount());
-        return Optional.of(insertSelectContext);
+    }
+    
+    private void setProjectionSelectSubqueryType(final SelectStatementContext selectStatementContext) {
+        for (Entry<Integer, SelectStatementContext> entry : selectStatementContext.getSubqueryContexts().entrySet()) {
+            if (entry.getKey() >= selectStatementContext.getProjectionsContext().getStartIndex() && entry.getKey() <= selectStatementContext.getProjectionsContext().getStopIndex()) {
+                entry.getValue().setSubqueryType(SubqueryType.INSERT_SELECT);
+            }
+        }
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> params, final AtomicInteger parametersOffset) {

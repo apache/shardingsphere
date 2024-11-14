@@ -203,11 +203,11 @@ public final class EncryptProjectionTokenGenerator {
         ParenthesesSegment leftParentheses = columnProjection.getLeftParentheses().orElse(null);
         ParenthesesSegment rightParentheses = columnProjection.getRightParentheses().orElse(null);
         result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), columnName, null, databaseType, leftParentheses, rightParentheses));
-        IdentifierValue assistedColumOwner = columnProjection.getOwner().orElse(null);
-        encryptColumn.getAssistedQuery().ifPresent(
-                optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType, leftParentheses, rightParentheses)));
-        encryptColumn.getLikeQuery().ifPresent(
-                optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType, leftParentheses, rightParentheses)));
+        IdentifierValue columOwner = columnProjection.getOwner().orElse(null);
+        encryptColumn.getAssistedQuery()
+                .ifPresent(optional -> result.add(new ColumnProjection(columOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType, leftParentheses, rightParentheses)));
+        encryptColumn.getLikeQuery()
+                .ifPresent(optional -> result.add(new ColumnProjection(columOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType, leftParentheses, rightParentheses)));
         return result;
     }
     

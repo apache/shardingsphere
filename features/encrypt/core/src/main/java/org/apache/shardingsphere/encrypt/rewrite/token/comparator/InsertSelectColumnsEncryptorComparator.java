@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ParameterMarkerProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -78,8 +79,12 @@ public final class InsertSelectColumnsEncryptorComparator {
     }
     
     private static ColumnSegmentBoundInfo getColumnSegmentBoundInfo(final Projection projection) {
-        return projection instanceof ColumnProjection
-                ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
-                : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
+        if (projection instanceof ColumnProjection) {
+            return ((ColumnProjection) projection).getColumnBoundInfo();
+        }
+        if (projection instanceof SubqueryProjection) {
+            return getColumnSegmentBoundInfo(((SubqueryProjection) projection).getProjection());
+        }
+        return new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
     }
 }
