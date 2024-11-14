@@ -15,9 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.readwritesplitting.checker;
 
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 
-public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+/**
+ * Readwrite-splitting rule configuration empty checker.
+ */
+public final class ReadwriteSplittingRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<ReadwriteSplittingRuleConfiguration> {
+    
+    @Override
+    public boolean isEmpty(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        return ruleConfig.getDataSourceGroups().isEmpty();
+    }
+    
+    @Override
+    public Class<ReadwriteSplittingRuleConfiguration> getType() {
+        return ReadwriteSplittingRuleConfiguration.class;
+    }
 }

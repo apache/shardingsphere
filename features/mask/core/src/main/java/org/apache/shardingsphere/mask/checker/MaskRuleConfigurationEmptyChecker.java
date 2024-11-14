@@ -15,9 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.mask.checker;
 
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 
-public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+/**
+ * Mask rule configuration empty checker.
+ */
+public final class MaskRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<MaskRuleConfiguration> {
+    
+    @Override
+    public boolean isEmpty(final MaskRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().isEmpty();
+    }
+    
+    @Override
+    public Class<MaskRuleConfiguration> getType() {
+        return MaskRuleConfiguration.class;
+    }
 }

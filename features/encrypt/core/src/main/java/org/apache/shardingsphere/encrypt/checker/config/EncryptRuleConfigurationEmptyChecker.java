@@ -15,9 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.encrypt.checker.config;
 
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
 
-public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
+/**
+ * Encrypt rule configuration empty checker.
+ */
+public final class EncryptRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<EncryptRuleConfiguration> {
+    
+    @Override
+    public boolean isEmpty(final EncryptRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().isEmpty();
+    }
+    
+    @Override
+    public Class<EncryptRuleConfiguration> getType() {
+        return EncryptRuleConfiguration.class;
+    }
 }
