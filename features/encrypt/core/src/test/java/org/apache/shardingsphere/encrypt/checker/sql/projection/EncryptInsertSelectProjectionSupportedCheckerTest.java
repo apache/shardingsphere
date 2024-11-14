@@ -21,11 +21,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -57,10 +54,7 @@ class EncryptInsertSelectProjectionSupportedCheckerTest {
     
     @Test
     void assertCheckSuccess() {
-        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class);
-        when(sqlStatementContext.getInsertSelectContext()).thenReturn(mock(InsertSelectContext.class, RETURNS_DEEP_STUBS));
-        when(sqlStatementContext.getInsertSelectContext().getSelectStatementContext().getSubqueryContexts().values())
-                .thenReturn(Collections.singletonList(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
-        assertDoesNotThrow(() -> new EncryptInsertSelectProjectionSupportedChecker().check(mock(EncryptRule.class), mock(ShardingSphereSchema.class), sqlStatementContext));
+        assertDoesNotThrow(
+                () -> new EncryptInsertSelectProjectionSupportedChecker().check(mock(EncryptRule.class), mock(ShardingSphereSchema.class), mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
     }
 }
