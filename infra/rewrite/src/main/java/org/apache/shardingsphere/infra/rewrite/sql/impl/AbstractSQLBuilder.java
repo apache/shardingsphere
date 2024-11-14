@@ -62,24 +62,25 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     
     private void appendRewriteSQL(final SQLToken sqlToken, final StringBuilder builder) {
         builder.append(getSQLTokenText(sqlToken));
-        builder.append(getConjunctionText(sqlToken));
+        builder.append(getConjunctionText(sqlToken, sqlTokens, sql.length()));
     }
     
     protected abstract String getSQLTokenText(SQLToken sqlToken);
     
-    private String getConjunctionText(final SQLToken sqlToken) {
-        int startIndex = getStartIndex(sqlToken);
-        return sql.substring(startIndex, getStopIndex(sqlToken, startIndex));
+    private String getConjunctionText(final SQLToken sqlToken, final List<SQLToken> sqlTokens, final int sqlLength) {
+        int startIndex = getStartIndex(sqlToken, sqlLength);
+        int stopIndex = getStopIndex(sqlToken, sqlTokens, sqlLength, startIndex);
+        return sql.substring(startIndex, stopIndex);
     }
     
-    private int getStartIndex(final SQLToken sqlToken) {
+    private int getStartIndex(final SQLToken sqlToken, final int sqlLength) {
         int startIndex = sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
-        return Math.min(startIndex, sql.length());
+        return Math.min(startIndex, sqlLength);
     }
     
-    private int getStopIndex(final SQLToken sqlToken, final int startIndex) {
+    private int getStopIndex(final SQLToken sqlToken, final List<SQLToken> sqlTokens, final int sqlLength, final int startIndex) {
         int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
-        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? sql.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
-        return startIndex <= stopIndex ? stopIndex : getStopIndex(sqlTokens.get(currentSQLTokenIndex + 1), startIndex);
+        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? sqlLength : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
+        return startIndex <= stopIndex ? stopIndex : getStopIndex(sqlTokens.get(currentSQLTokenIndex + 1), sqlTokens, sqlLength, startIndex);
     }
 }
