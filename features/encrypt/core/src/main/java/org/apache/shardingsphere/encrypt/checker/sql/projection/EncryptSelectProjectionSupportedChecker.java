@@ -55,7 +55,7 @@ public final class EncryptSelectProjectionSupportedChecker implements SupportedS
         }
     }
     
-    public void checkSelectStatementContext(final EncryptRule rule, final SelectStatementContext selectStatementContext) {
+    private void checkSelectStatementContext(final EncryptRule rule, final SelectStatementContext selectStatementContext) {
         checkNotContainEncryptProjectionInCombineSegment(rule, selectStatementContext);
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
             checkNotContainEncryptShorthandExpandWithSubqueryStatement(selectStatementContext, each);
