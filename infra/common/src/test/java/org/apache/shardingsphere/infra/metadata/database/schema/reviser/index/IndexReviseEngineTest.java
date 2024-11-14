@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.equalToObject;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -43,6 +42,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class IndexReviseEngineTest<T extends ShardingSphereRule> {
     
     @Mock
@@ -51,19 +51,14 @@ class IndexReviseEngineTest<T extends ShardingSphereRule> {
     @InjectMocks
     private IndexReviseEngine<T> indexReviseEngine;
     
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-    
     @Test
     void assertReviseIsPresentIsFalse() {
         when(metaDataReviseEntry.getIndexReviser(any(), anyString())).thenReturn(Optional.empty());
-        Collection<IndexMetaData> indexMetaDataCollection = Collections.singletonList(new IndexMetaData("index"));
-        Collection<IndexMetaData> actual = indexReviseEngine.revise("tableName", indexMetaDataCollection);
+        Collection<IndexMetaData> indexMetaDataList = Collections.singletonList(new IndexMetaData("index"));
+        Collection<IndexMetaData> actual = indexReviseEngine.revise("tableName", indexMetaDataList);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
-        assertThat(actual, equalToObject(indexMetaDataCollection));
+        assertThat(actual, is(indexMetaDataList));
     }
     
     @Test
