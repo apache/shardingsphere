@@ -34,7 +34,7 @@ class SingleRuleConfigurationEmptyCheckerTest {
     
     @BeforeEach
     void setUp() {
-        checker = (SingleRuleConfigurationEmptyChecker) TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, SingleRuleConfigurationEmptyChecker.class);
+        checker = (SingleRuleConfigurationEmptyChecker) TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, SingleRuleConfiguration.class);
     }
     
     @Test

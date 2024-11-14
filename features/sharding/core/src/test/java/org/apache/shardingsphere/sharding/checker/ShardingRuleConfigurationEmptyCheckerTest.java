@@ -36,7 +36,7 @@ class ShardingRuleConfigurationEmptyCheckerTest {
     
     @BeforeEach
     void setUp() {
-        checker = (ShardingRuleConfigurationEmptyChecker) TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, ShardingRuleConfigurationEmptyChecker.class);
+        checker = (ShardingRuleConfigurationEmptyChecker) TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, ShardingRuleConfiguration.class);
     }
     
     @Test
