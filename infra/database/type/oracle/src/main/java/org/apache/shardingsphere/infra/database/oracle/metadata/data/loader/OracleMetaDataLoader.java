@@ -199,9 +199,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
+                    IndexMetaData indexMetaData = new IndexMetaData(indexName, loadIndexColumnNames(connection, tableName, indexName));
                     indexMetaData.setUnique(isUnique);
-                    indexMetaData.getColumns().addAll(loadIndexColumnNames(connection, tableName, indexName));
                     result.get(tableName).add(indexMetaData);
                 }
             }

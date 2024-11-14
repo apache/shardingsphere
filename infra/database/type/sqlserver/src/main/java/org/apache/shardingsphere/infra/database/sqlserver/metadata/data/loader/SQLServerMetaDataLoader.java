@@ -140,8 +140,7 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
                     if (indexMap.containsKey(indexName)) {
                         indexMap.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
                     } else {
-                        IndexMetaData indexMetaData = new IndexMetaData(indexName);
-                        indexMetaData.getColumns().add(resultSet.getString("COLUMN_NAME"));
+                        IndexMetaData indexMetaData = new IndexMetaData(indexName, new LinkedList<>(Collections.singleton(resultSet.getString("COLUMN_NAME"))));
                         indexMetaData.setUnique("1".equals(resultSet.getString("IS_UNIQUE")));
                         indexMap.put(indexName, indexMetaData);
                     }
