@@ -39,7 +39,6 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Sha
     C buildToBeAlteredRuleConfiguration(T sqlStatement);
     
     /**
-     * TODO Remove temporary default implementation
      * Build to be dropped rule configuration.
      *
      * @param toBeAlteredRuleConfig new rule configuration to be renewed
