@@ -21,10 +21,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 
 /**
  * Insert select projection supported checker for encrypt.
@@ -39,16 +37,6 @@ public final class EncryptInsertSelectProjectionSupportedChecker implements Supp
     
     @Override
     public void check(final EncryptRule rule, final ShardingSphereSchema schema, final InsertStatementContext sqlStatementContext) {
-        checkSelect(rule, sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
-        for (SelectStatementContext each : sqlStatementContext.getInsertSelectContext().getSelectStatementContext().getSubqueryContexts().values()) {
-            checkSelect(rule, each);
-        }
-    }
-    
-    private void checkSelect(final EncryptRule rule, final SelectStatementContext selectStatementContext) {
-        EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptProjectionInCombineSegment(rule, selectStatementContext);
-        for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
-            EncryptProjectionRewriteSupportedChecker.checkNotContainEncryptShorthandExpandWithSubqueryStatement(selectStatementContext, each);
-        }
+        new EncryptSelectProjectionSupportedChecker().check(rule, schema, sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
     }
 }
