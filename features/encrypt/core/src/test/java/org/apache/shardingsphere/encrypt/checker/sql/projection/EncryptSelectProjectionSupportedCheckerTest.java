@@ -21,8 +21,9 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -33,7 +34,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,6 +45,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class EncryptSelectProjectionSupportedCheckerTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertIsCheckWithNotSelectStatementContext() {
@@ -70,29 +75,47 @@ class EncryptSelectProjectionSupportedCheckerTest {
     
     @Test
     void assertCheckWhenCombineStatementContainsEncryptColumn() {
+        SelectStatementContext sqlStatementContext = mockSelectStatementContext();
+        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mock(EncryptRule.class, RETURNS_DEEP_STUBS), null, sqlStatementContext));
+    }
+    
+    @Test
+    void assertCheckSuccess() {
+        SelectStatementContext sqlStatementContext = mockSelectStatementContext();
+        assertDoesNotThrow(() -> new EncryptSelectProjectionSupportedChecker().check(mockEncryptRule(), null, sqlStatementContext));
+    }
+    
+    private SelectStatementContext mockSelectStatementContext() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.isContainsCombine()).thenReturn(true);
-        when(sqlStatementContext.getSqlStatement().getCombine().isPresent()).thenReturn(true);
         CombineSegment combineSegment = mock(CombineSegment.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement().getCombine().get()).thenReturn(combineSegment);
-        ColumnProjection orderIdColumn = new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("foo_col"), null, new MySQLDatabaseType(),
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
-        ColumnProjection userIdColumn = new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id"), null, new MySQLDatabaseType(),
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("user_id")));
+        when(combineSegment.getLeft().getStartIndex()).thenReturn(0);
+        when(combineSegment.getRight().getStartIndex()).thenReturn(1);
+        when(sqlStatementContext.getSqlStatement().getCombine()).thenReturn(Optional.of(combineSegment));
+        ColumnProjection leftColumn1 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_1"), null, databaseType,
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_1")));
+        ColumnProjection leftColumn2 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_2"), null, databaseType,
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_2")));
         SelectStatementContext leftSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(leftSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(orderIdColumn, userIdColumn));
-        ColumnProjection merchantIdColumn = new ColumnProjection(new IdentifierValue("m"), new IdentifierValue("merchant_id"), null, new MySQLDatabaseType(),
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_merchant"), new IdentifierValue("merchant_id")));
-        ColumnProjection merchantNameColumn = new ColumnProjection(new IdentifierValue("m"), new IdentifierValue("merchant_name"), null, new MySQLDatabaseType(),
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("t_merchant"), new IdentifierValue("merchant_name")));
+        when(leftSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(leftColumn1, leftColumn2));
+        ColumnProjection rightColumn1 = new ColumnProjection(new IdentifierValue("b"), new IdentifierValue("bar_col_1"), null, databaseType,
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_1")));
+        ColumnProjection rightColumn2 = new ColumnProjection(new IdentifierValue("b"), new IdentifierValue("bar_col_2"), null, databaseType,
+                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_2")));
         SelectStatementContext rightSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(rightSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(merchantIdColumn, merchantNameColumn));
+        when(rightSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(rightColumn1, rightColumn2));
         Map<Integer, SelectStatementContext> subqueryContexts = new LinkedHashMap<>(2, 1F);
         subqueryContexts.put(0, leftSelectStatementContext);
         subqueryContexts.put(1, rightSelectStatementContext);
         when(sqlStatementContext.getSubqueryContexts()).thenReturn(subqueryContexts);
-        when(combineSegment.getLeft().getStartIndex()).thenReturn(0);
-        when(combineSegment.getRight().getStartIndex()).thenReturn(1);
-        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mock(EncryptRule.class, RETURNS_DEEP_STUBS), null, sqlStatementContext));
+        return sqlStatementContext;
+    }
+    
+    private EncryptRule mockEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
+        when(result.findQueryEncryptor("foo_tbl", "foo_col_1")).thenReturn(Optional.empty());
+        when(result.findQueryEncryptor("foo_tbl", "foo_col_2")).thenReturn(Optional.empty());
+        when(result.findQueryEncryptor("bar_tbl", "bar_col_1")).thenReturn(Optional.empty());
+        when(result.findQueryEncryptor("bar_tbl", "bar_col_2")).thenReturn(Optional.empty());
+        return result;
     }
 }
