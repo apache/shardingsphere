@@ -50,8 +50,7 @@ class ShardingIndexReviserTest {
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("SCHEMA_NAME", "TABLE_NAME_0"), new DataNode("SCHEMA_NAME", "TABLE_NAME_1")));
         shardingIndexReviser = new ShardingIndexReviser(shardingTable);
-        IndexMetaData originalMetaData = new IndexMetaData("TEST_INDEX");
-        originalMetaData.getColumns().add("TEST_COLUMN");
+        IndexMetaData originalMetaData = new IndexMetaData("TEST_INDEX", Collections.singletonList("TEST_COLUMN"));
         originalMetaData.setUnique(false);
         Optional<IndexMetaData> revisedMetaData = shardingIndexReviser.revise("TABLE_NAME_0", originalMetaData, shardingRule);
         assertTrue(revisedMetaData.isPresent());

@@ -211,12 +211,11 @@ class PostgreSQLMetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, true, true, false, true)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        IndexMetaData indexMetaData = new IndexMetaData("id");
+        IndexMetaData indexMetaData = new IndexMetaData("id", Collections.singletonList("id"));
         indexMetaData.setUnique(true);
-        indexMetaData.getColumns().add("id");
         assertThat(indexesIterator.next(), is(indexMetaData));
         assertThat(actualTableMetaData.getConstraints().size(), is(1));
-        Iterator<ConstraintMetaData> constrainsIterator = actualTableMetaData.getConstraints().iterator();
-        assertThat(constrainsIterator.next(), is(new ConstraintMetaData("tbl_con", "refer_tbl")));
+        Iterator<ConstraintMetaData> constrainsMetaDataList = actualTableMetaData.getConstraints().iterator();
+        assertThat(constrainsMetaDataList.next(), is(new ConstraintMetaData("tbl_con", "refer_tbl")));
     }
 }

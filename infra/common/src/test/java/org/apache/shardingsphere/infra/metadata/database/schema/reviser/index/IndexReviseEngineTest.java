@@ -67,8 +67,8 @@ class IndexReviseEngineTest<T extends ShardingSphereRule> {
         IndexMetaData indexMetaData = new IndexMetaData("index");
         doReturn(Optional.of(reviser)).when(metaDataReviseEntry).getIndexReviser(any(), anyString());
         when(reviser.revise(anyString(), any(), any())).thenReturn(Optional.of(indexMetaData));
-        Collection<IndexMetaData> indexMetaDataCollection = Arrays.asList(new IndexMetaData("index1"), new IndexMetaData("index2"));
-        Collection<IndexMetaData> actual = indexReviseEngine.revise("tableName", indexMetaDataCollection);
+        Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("index1"), new IndexMetaData("index2"));
+        Collection<IndexMetaData> actual = indexReviseEngine.revise("tableName", indexMetaDataList);
         assertThat(actual.size(), equalTo(1));
         assertTrue(actual.contains(indexMetaData));
     }
