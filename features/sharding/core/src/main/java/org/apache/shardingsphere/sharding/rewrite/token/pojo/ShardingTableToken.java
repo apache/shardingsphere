@@ -54,7 +54,7 @@ public final class ShardingTableToken extends SQLToken implements Substitutable,
     }
     
     private String getActualTableName(final RouteUnit routeUnit) {
-        String actualTableName = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule).get(tableName.getValue());
+        String actualTableName = ShardingTokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule).get(tableName.getValue());
         actualTableName = null == actualTableName ? tableName.getValue() : actualTableName;
         return tableName.getQuoteCharacter().wrap(actualTableName);
     }

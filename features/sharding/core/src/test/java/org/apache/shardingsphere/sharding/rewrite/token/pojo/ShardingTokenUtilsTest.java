@@ -37,17 +37,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-class TokenUtilsTest {
+class ShardingTokenUtilsTest {
     
     @Test
     void assertGetLogicAndActualTablesWithNotTableAvailable() {
-        Map<String, String> actual = TokenUtils.getLogicAndActualTableMap(mock(RouteUnit.class), mock(SQLStatementContext.class), mock(ShardingRule.class));
+        Map<String, String> actual = ShardingTokenUtils.getLogicAndActualTableMap(mock(RouteUnit.class), mock(SQLStatementContext.class), mock(ShardingRule.class));
         assertTrue(actual.isEmpty());
     }
     
     @Test
     void assertGetLogicAndActualTablesFromRouteUnit() {
-        Map<String, String> actual = TokenUtils.getLogicAndActualTableMap(getRouteUnit(), mockSQLStatementContext(), mockShardingRule());
+        Map<String, String> actual = ShardingTokenUtils.getLogicAndActualTableMap(getRouteUnit(), mockSQLStatementContext(), mockShardingRule());
         assertThat(actual.get("foo_tbl"), is("foo_tbl_0"));
         assertThat(actual.get("bar_tbl"), is("bar_tbl_0"));
     }

@@ -31,20 +31,20 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Token utils.
+ * Sharding token utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TokenUtils {
+public final class ShardingTokenUtils {
     
     /**
      * Get logic and actual table map.
      *
      * @param routeUnit route unit
      * @param sqlStatementContext SQL statement context
-     * @param shardingRule sharding rule
+     * @param rule sharding rule
      * @return key is logic table name, values is actual table belong to this data source
      */
-    public static Map<String, String> getLogicAndActualTableMap(final RouteUnit routeUnit, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    public static Map<String, String> getLogicAndActualTableMap(final RouteUnit routeUnit, final SQLStatementContext sqlStatementContext, final ShardingRule rule) {
         if (!(sqlStatementContext instanceof TableAvailable)) {
             return Collections.emptyMap();
         }
@@ -52,7 +52,7 @@ public final class TokenUtils {
         Map<String, String> result = new CaseInsensitiveMap<>(tableNames.size(), 1F);
         for (RouteMapper each : routeUnit.getTableMappers()) {
             result.put(each.getLogicName(), each.getActualName());
-            result.putAll(shardingRule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));
+            result.putAll(rule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));
         }
         return result;
     }
