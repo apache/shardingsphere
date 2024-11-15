@@ -27,8 +27,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.Builder;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -56,24 +56,24 @@ class DataRecordResultConvertUtilsTest {
     @Test
     void assertConvertDataRecordToRecord() throws InvalidProtocolBufferException, SQLException {
         DataRecord dataRecord = new DataRecord(PipelineSQLOperationType.INSERT, "t_order", new IntegerPrimaryKeyIngestPosition(0L, 1L), 2);
-        dataRecord.addColumn(new Column("order_id", BigInteger.ONE, false, true));
-        dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123L), false, false));
-        dataRecord.addColumn(new Column("user_id", Long.MAX_VALUE, false, false));
-        dataRecord.addColumn(new Column("item_id", Integer.MAX_VALUE, false, false));
-        dataRecord.addColumn(new Column("create_date", LocalDate.now(), false, false));
-        dataRecord.addColumn(new Column("create_date2", Date.valueOf(LocalDate.now()), false, false));
-        dataRecord.addColumn(new Column("create_time", LocalTime.now(), false, false));
-        dataRecord.addColumn(new Column("create_time2", OffsetTime.now(), false, false));
-        dataRecord.addColumn(new Column("create_datetime", LocalDateTime.now(), false, false));
-        dataRecord.addColumn(new Column("create_datetime2", OffsetDateTime.now(), false, false));
-        dataRecord.addColumn(new Column("empty", null, false, false));
+        dataRecord.addColumn(new NormalColumn("order_id", BigInteger.ONE, false, true));
+        dataRecord.addColumn(new NormalColumn("price", BigDecimal.valueOf(123L), false, false));
+        dataRecord.addColumn(new NormalColumn("user_id", Long.MAX_VALUE, false, false));
+        dataRecord.addColumn(new NormalColumn("item_id", Integer.MAX_VALUE, false, false));
+        dataRecord.addColumn(new NormalColumn("create_date", LocalDate.now(), false, false));
+        dataRecord.addColumn(new NormalColumn("create_date2", Date.valueOf(LocalDate.now()), false, false));
+        dataRecord.addColumn(new NormalColumn("create_time", LocalTime.now(), false, false));
+        dataRecord.addColumn(new NormalColumn("create_time2", OffsetTime.now(), false, false));
+        dataRecord.addColumn(new NormalColumn("create_datetime", LocalDateTime.now(), false, false));
+        dataRecord.addColumn(new NormalColumn("create_datetime2", OffsetDateTime.now(), false, false));
+        dataRecord.addColumn(new NormalColumn("empty", null, false, false));
         Blob mockedBlob = mock(Blob.class);
         when(mockedBlob.getBytes(anyLong(), anyInt())).thenReturn(new byte[]{-1, 0, 1});
-        dataRecord.addColumn(new Column("data_blob", mockedBlob, false, false));
+        dataRecord.addColumn(new NormalColumn("data_blob", mockedBlob, false, false));
         Clob mockedClob = mock(Clob.class);
         when(mockedClob.getSubString(anyLong(), anyInt())).thenReturn("clob\n");
-        dataRecord.addColumn(new Column("text_clob", mockedClob, false, false));
-        dataRecord.addColumn(new Column("update_time", new Timestamp(System.currentTimeMillis()), false, false));
+        dataRecord.addColumn(new NormalColumn("text_clob", mockedClob, false, false));
+        dataRecord.addColumn(new NormalColumn("update_time", new Timestamp(System.currentTimeMillis()), false, false));
         TypeRegistry registry = TypeRegistry.newBuilder().add(EmptyProto.getDescriptor().getMessageTypes()).add(TimestampProto.getDescriptor().getMessageTypes())
                 .add(WrappersProto.getDescriptor().getMessageTypes()).build();
         Record expectedRecord = DataRecordResultConvertUtils.convertDataRecordToRecord("test", null, dataRecord);

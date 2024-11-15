@@ -17,43 +17,35 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.record;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Column.
  */
-public interface Column {
+@RequiredArgsConstructor
+@Getter
+public final class NormalColumn implements Column {
+    
+    private final String name;
     
     /**
-     * Get name.
-     *
-     * @return name
+     * Value are available only when the primary key column is updated.
      */
-    String getName();
+    private final Object oldValue;
     
-    /**
-     * Get old value.
-     *
-     * @return old value
-     */
-    Object getOldValue();
+    private final Object value;
     
-    /**
-     * Get value.
-     *
-     * @return value
-     */
-    Object getValue();
+    private final boolean updated;
     
-    /**
-     * Judge whether the column is updated.
-     *
-     * @return true if the column is updated, otherwise false
-     */
-    boolean isUpdated();
+    private final boolean uniqueKey;
     
-    /**
-     * Judge whether the column is unique key.
-     *
-     * @return true if the column is unique key, otherwise false
-     */
-    boolean isUniqueKey();
+    public NormalColumn(final String name, final Object value, final boolean updated, final boolean uniqueKey) {
+        this(name, null, value, updated, uniqueKey);
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s: oldValue=%s, value=%s", name, oldValue, value);
+    }
 }
