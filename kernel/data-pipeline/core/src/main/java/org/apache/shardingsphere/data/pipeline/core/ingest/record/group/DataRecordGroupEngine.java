@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineUnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 
@@ -122,7 +123,7 @@ public final class DataRecordGroupEngine {
             DataRecord mergedDataRecord = new DataRecord(PipelineSQLOperationType.DELETE, dataRecord.getTableName(), dataRecord.getPosition(), dataRecord.getColumnCount());
             mergeBaseFields(dataRecord, mergedDataRecord);
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-                mergedDataRecord.addColumn(new Column(dataRecord.getColumn(i).getName(),
+                mergedDataRecord.addColumn(new NormalColumn(dataRecord.getColumn(i).getName(),
                         dataRecord.getColumn(i).isUniqueKey() ? beforeDataRecord.getColumn(i).getOldValue() : beforeDataRecord.getColumn(i).getValue(),
                         null, true, dataRecord.getColumn(i).isUniqueKey()));
             }
@@ -153,7 +154,7 @@ public final class DataRecordGroupEngine {
         DataRecord result = new DataRecord(type, tableName, curDataRecord.getPosition(), curDataRecord.getColumnCount());
         mergeBaseFields(curDataRecord, result);
         for (int i = 0; i < curDataRecord.getColumnCount(); i++) {
-            result.addColumn(new Column(
+            result.addColumn(new NormalColumn(
                     curDataRecord.getColumn(i).getName(),
                     preDataRecord.getColumn(i).getOldValue(),
                     curDataRecord.getColumn(i).getValue(),

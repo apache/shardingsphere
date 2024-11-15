@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.CreateTableSQLGenerateException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -56,11 +56,11 @@ class MySQLPipelineSQLBuilderTest {
     
     private DataRecord createDataRecord() {
         DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new IngestPlaceholderPosition(), 4);
-        result.addColumn(new Column("id", "", false, true));
-        result.addColumn(new Column("sc", "", false, false));
-        result.addColumn(new Column("c1", "", true, false));
-        result.addColumn(new Column("c2", "", true, false));
-        result.addColumn(new Column("c3", "", true, false));
+        result.addColumn(new NormalColumn("id", "", false, true));
+        result.addColumn(new NormalColumn("sc", "", false, false));
+        result.addColumn(new NormalColumn("c1", "", true, false));
+        result.addColumn(new NormalColumn("c2", "", true, false));
+        result.addColumn(new NormalColumn("c3", "", true, false));
         return result;
     }
     
