@@ -167,7 +167,7 @@ class JDBCStreamQueryResultTest {
         when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(0L));
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Timestamp.class), is(new Timestamp(0L)));
     }
-
+    
     @Test
     void assertGetValueByZonedDateTime() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
