@@ -31,34 +31,41 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-class TokenUtilsTest {
+class ShardingTokenUtilsTest {
+    
+    @Test
+    void assertGetLogicAndActualTablesWithNotTableAvailable() {
+        Map<String, String> actual = ShardingTokenUtils.getLogicAndActualTableMap(mock(RouteUnit.class), mock(SQLStatementContext.class), mock(ShardingRule.class));
+        assertTrue(actual.isEmpty());
+    }
     
     @Test
     void assertGetLogicAndActualTablesFromRouteUnit() {
-        Map<String, String> actual = TokenUtils.getLogicAndActualTableMap(getRouteUnit(), mockSQLStatementContext(), mockShardingRule());
-        assertThat(actual.get("foo_table"), is("foo_table_0"));
-        assertThat(actual.get("bar_table"), is("bar_table_0"));
+        Map<String, String> actual = ShardingTokenUtils.getLogicAndActualTableMap(getRouteUnit(), mockSQLStatementContext(), mockShardingRule());
+        assertThat(actual.get("foo_tbl"), is("foo_tbl_0"));
+        assertThat(actual.get("bar_tbl"), is("bar_tbl_0"));
     }
     
     private RouteUnit getRouteUnit() {
-        return new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"), Collections.singleton(new RouteMapper("foo_table", "foo_table_0")));
+        return new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"), Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_0")));
     }
     
     private static SQLStatementContext mockSQLStatementContext() {
         SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) result).getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_table", "bar_table"));
+        when(((TableAvailable) result).getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_tbl", "bar_tbl"));
         return result;
     }
     
     private static ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        when(result.getLogicAndActualTablesFromBindingTable(DefaultDatabase.LOGIC_NAME, "foo_table", "foo_table_0", Arrays.asList("foo_table", "bar_table")))
-                .thenReturn(Collections.singletonMap("bar_table", "bar_table_0"));
+        when(result.getLogicAndActualTablesFromBindingTable(DefaultDatabase.LOGIC_NAME, "foo_tbl", "foo_tbl_0", Arrays.asList("foo_tbl", "bar_tbl")))
+                .thenReturn(Collections.singletonMap("bar_tbl", "bar_tbl_0"));
         return result;
     }
 }
