@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 /**
@@ -104,7 +105,10 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         if (Array.class == type) {
             return resultSet.getArray(columnIndex);
         }
-        return resultSet.getObject(columnIndex, type);
+        if (ZonedDateTime.class == type) {
+            return resultSet.getObject(columnIndex, type);
+        }
+        return resultSet.getObject(columnIndex);
     }
     
     @Override
