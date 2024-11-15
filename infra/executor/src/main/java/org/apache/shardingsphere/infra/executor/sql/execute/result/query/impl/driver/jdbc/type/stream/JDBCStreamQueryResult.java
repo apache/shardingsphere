@@ -104,7 +104,7 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         if (Array.class == type) {
             return resultSet.getArray(columnIndex);
         }
-        return resultSet.getObject(columnIndex);
+        return resultSet.getObject(columnIndex, type);
     }
     
     @Override
