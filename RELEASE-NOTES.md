@@ -6,31 +6,32 @@
 
 ### Enhancements
 
-1. SQL Parser: Support parsing Doris BITXOR - [#33258](https://github.com/apache/shardingsphere/pull/33258)
-1. Proxy Native: Change the Base Docker Image of ShardingSphere Proxy Native - [#33263](https://github.com/apache/shardingsphere/issues/33263)
-1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
-1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
-1. SQL Parser: Support parsing Doris INSTR - [#33289](https://github.com/apache/shardingsphere/pull/33289)
-1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Kernel: Add arguments not null check when creating RouteUnit - [#33382](https://github.com/apache/shardingsphere/pull/33382)
 1. Kernel: Add index columns not empty judgement for IndexColumnTokenGenerator - [#33384](https://github.com/apache/shardingsphere/pull/33384)
-1. SQL Parser: Support parsing Doris STRRIGHT - [#33393](https://github.com/apache/shardingsphere/pull/33393)
-1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
 1. Kernel: Add binding to owner table - [#33533](https://github.com/apache/shardingsphere/pull/33533)
+1. SQL Parser: Support parsing Doris BITXOR - [#33258](https://github.com/apache/shardingsphere/pull/33258)
+1. SQL Parser: Support parsing Doris INSTR - [#33289](https://github.com/apache/shardingsphere/pull/33289)
+1. SQL Parser: Support parsing Doris STRRIGHT - [#33393](https://github.com/apache/shardingsphere/pull/33393)
+1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
+1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
+1. JDBC: Support ZonedDateTime on ResultSet - [#33660](https://github.com/apache/shardingsphere/issues/33660)
+1. Proxy Native: Change the Base Docker Image of ShardingSphere Proxy Native - [#33263](https://github.com/apache/shardingsphere/issues/33263)
+1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
+1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Build: Avoid using `-proc:full` when compiling ShardingSphere with OpenJDK23 - [#33681](https://github.com/apache/shardingsphere/pull/33681)
 
 ### Bug Fixes
 
 1. Mode: Fixes `JDBCRepository` improper handling of H2-database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
+1. SQL Binder: Fix table does not exist exception when use HintManager#setDatabaseName to transparent - [#33370](https://github.com/apache/shardingsphere/pull/33370)
+1. SQL Parser: Fix LiteralExpressionSegment cast exception in sql parser. - [#33332](https://github.com/apache/shardingsphere/pull/33332)
+1. SQL Parser: Fix PostgreSQL and openGauss time extract function parse week and quarter error - [#33564](https://github.com/apache/shardingsphere/pull/33564)
 1. SQL Binder: Use Multimap and CaseInsensitiveString to replace CaseInsensitiveMap for supporting mysql multi table join with same table alias - [#33303](https://github.com/apache/shardingsphere/pull/33303)
 1. SQL Binder: Fix the combine statement cannot find the outer table when bind - [#33357](https://github.com/apache/shardingsphere/pull/33357)
 1. SQL Binder: Fix SQL performance issues caused by repeated subquery fetches - [#33361](https://github.com/apache/shardingsphere/pull/33361)
 1. Sharding: Remove ShardingRouteAlgorithmException check logic temporarily to support different actual table name config - [#33367](https://github.com/apache/shardingsphere/pull/33367)
-1. SQL Binder: Fix table does not exist exception when use HintManager#setDatabaseName to transparent - [#33370](https://github.com/apache/shardingsphere/pull/33370)
-1. SQL Parser: Fix LiteralExpressionSegment cast exception in sql parser. - [#33332](https://github.com/apache/shardingsphere/pull/33332)
 1. Sharding: Fix SQL COUNT with GROUP BY to prevent incorrect row returns - [#33380](https://github.com/apache/shardingsphere/pull/33380)
 1. Sharding: Fix avg, sum, min, max function return empty data when no query result return - [#33449](https://github.com/apache/shardingsphere/pull/33449)
-1. SQL Parser: Fix PostgreSQL and openGauss time extract function parse week and quarter error - [#33564](https://github.com/apache/shardingsphere/pull/33564)
 
 ### Change Logs
 
