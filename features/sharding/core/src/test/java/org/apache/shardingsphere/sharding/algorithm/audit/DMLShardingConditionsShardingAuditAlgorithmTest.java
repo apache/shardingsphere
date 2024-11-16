@@ -25,12 +25,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.exception.audit.DMLWithoutShardingKeyException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -47,9 +45,7 @@ import static org.mockito.Mockito.withSettings;
 @ExtendWith(MockitoExtension.class)
 class DMLShardingConditionsShardingAuditAlgorithmTest {
     
-    private SQLStatementContext sqlStatementContext;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock
     private ShardingSphereDatabase database;
     
     private ShardingAuditAlgorithm shardingAuditAlgorithm;
@@ -57,19 +53,18 @@ class DMLShardingConditionsShardingAuditAlgorithmTest {
     @BeforeEach
     void setUp() {
         shardingAuditAlgorithm = TypedSPILoader.getService(ShardingAuditAlgorithm.class, "DML_SHARDING_CONDITIONS");
-        sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
     }
     
     @Test
-    void assertNotDMLStatementCheck() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
-        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(RuleMetaData.class), database);
+    void assertCheckWithNotDMLStatement() {
+        shardingAuditAlgorithm.check(mock(SQLStatementContext.class), Collections.emptyList(), mock(RuleMetaData.class), database);
         verify(database, times(0)).getRuleMetaData();
     }
     
     @Test
-    void assertEmptyShardingConditionsCheck() {
+    void assertCheckWithEmptyShardingCondition() {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
