@@ -30,7 +30,7 @@ import java.util.LinkedList;
 /**
  * Sharding remove token generator.
  */
-public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, IgnoreForSingleRoute {
+public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -42,11 +42,9 @@ public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGen
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SelectStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        if (isContainsAggregationDistinctProjection(sqlStatementContext)) {
-            ((SelectStatementContext) sqlStatementContext).getSqlStatement().getGroupBy().ifPresent(optional -> result.add(new RemoveToken(optional.getStartIndex(), optional.getStopIndex())));
-        }
+        sqlStatementContext.getSqlStatement().getGroupBy().ifPresent(optional -> result.add(new RemoveToken(optional.getStartIndex(), optional.getStopIndex())));
         return result;
     }
 }
