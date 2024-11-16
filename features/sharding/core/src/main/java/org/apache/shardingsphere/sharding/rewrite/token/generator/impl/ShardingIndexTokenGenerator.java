@@ -44,7 +44,7 @@ import java.util.Map;
 @Setter
 public final class ShardingIndexTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware {
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     private Map<String, ShardingSphereSchema> schemas;
     
@@ -65,7 +65,7 @@ public final class ShardingIndexTokenGenerator implements CollectionSQLTokenGene
         if (sqlStatementContext instanceof IndexAvailable) {
             for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
                 ShardingSphereSchema schema = each.getOwner().isPresent() ? schemas.get(each.getOwner().get().getIdentifier().getValue()) : defaultSchema;
-                result.add(new IndexToken(each.getIndexName().getStartIndex(), each.getStopIndex(), each.getIndexName().getIdentifier(), sqlStatementContext, shardingRule, schema));
+                result.add(new IndexToken(each.getIndexName().getStartIndex(), each.getStopIndex(), each.getIndexName().getIdentifier(), sqlStatementContext, rule, schema));
             }
         }
         return result;

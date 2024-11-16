@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 @RequiredArgsConstructor
 public final class ShardingCursorTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext> {
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -43,6 +43,6 @@ public final class ShardingCursorTokenGenerator implements OptionalSQLTokenGener
     @Override
     public SQLToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         CursorNameSegment cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().orElseThrow(CursorNameNotFoundException::new);
-        return new CursorToken(cursorName.getStartIndex(), cursorName.getStopIndex(), cursorName.getIdentifier(), sqlStatementContext, shardingRule);
+        return new CursorToken(cursorName.getStartIndex(), cursorName.getStopIndex(), cursorName.getIdentifier(), sqlStatementContext, rule);
     }
 }

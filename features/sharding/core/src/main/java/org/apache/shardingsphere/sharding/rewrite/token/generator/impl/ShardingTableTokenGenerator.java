@@ -42,7 +42,7 @@ import java.util.LinkedList;
 @Setter
 public final class ShardingTableTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, RouteContextAware {
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     private RouteContext routeContext;
     
@@ -53,9 +53,9 @@ public final class ShardingTableTokenGenerator implements CollectionSQLTokenGene
     
     private boolean isAllBindingTables(final SQLStatementContext sqlStatementContext) {
         Collection<String> shardingLogicTableNames = sqlStatementContext instanceof TableAvailable
-                ? shardingRule.getShardingLogicTableNames(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())
+                ? rule.getShardingLogicTableNames(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())
                 : Collections.emptyList();
-        return shardingLogicTableNames.size() > 1 && shardingRule.isAllBindingTables(shardingLogicTableNames);
+        return shardingLogicTableNames.size() > 1 && rule.isAllBindingTables(shardingLogicTableNames);
     }
     
     @Override
@@ -67,8 +67,8 @@ public final class ShardingTableTokenGenerator implements CollectionSQLTokenGene
         Collection<SQLToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             TableNameSegment tableName = each.getTableName();
-            if (shardingRule.findShardingTable(tableName.getIdentifier().getValue()).isPresent()) {
-                result.add(new ShardingTableToken(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier(), (SQLStatementContext) sqlStatementContext, shardingRule));
+            if (rule.findShardingTable(tableName.getIdentifier().getValue()).isPresent()) {
+                result.add(new ShardingTableToken(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier(), (SQLStatementContext) sqlStatementContext, rule));
             }
         }
         return result;
