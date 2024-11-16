@@ -56,10 +56,6 @@ class ShardingProjectionsTokenGeneratorTest {
     
     private static final String TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION = "TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION";
     
-    private static final String TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS = "TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS";
-    
-    private static final String TEST_DERIVED_PROJECTION_ALIAS = "TEST_DERIVED_PROJECTION_ALIAS";
-    
     private static final String TEST_OTHER_DERIVED_PROJECTION_ALIAS = "TEST_OTHER_DERIVED_PROJECTION_ALIAS";
     
     private static final String TEST_OTHER_DERIVED_PROJECTION_EXPRESSION = "TEST_OTHER_DERIVED_PROJECTION_EXPRESSION";
@@ -120,28 +116,24 @@ class ShardingProjectionsTokenGeneratorTest {
         when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
         when(selectStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
-        assertThat(actual.toString(routeUnit), is(", " + TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION + " AS " + TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS + " "
-                + ", foo_tbl_0.foo_col" + " AS " + TEST_DERIVED_PROJECTION_ALIAS + " "
-                + ", " + "null" + " AS " + TEST_DERIVED_PROJECTION_ALIAS + " "
+        assertThat(actual.toString(routeUnit), is(", " + TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION + " AS foo_alias "
+                + ", foo_tbl_0.foo_col" + " AS foo_alias , null AS foo_alias "
                 + ", " + TEST_OTHER_DERIVED_PROJECTION_EXPRESSION + " AS " + TEST_OTHER_DERIVED_PROJECTION_ALIAS + " "));
     }
     
     private AggregationProjection getAggregationProjection() {
         AggregationDistinctProjection derivedAggregationDistinctProjection = mock(AggregationDistinctProjection.class);
         when(derivedAggregationDistinctProjection.getDistinctInnerExpression()).thenReturn(TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION);
-        when(derivedAggregationDistinctProjection.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS)));
+        when(derivedAggregationDistinctProjection.getAlias()).thenReturn(Optional.of(new IdentifierValue("foo_alias")));
         AggregationProjection result = mock(AggregationProjection.class);
         when(result.getDerivedAggregationProjections()).thenReturn(Collections.singletonList(derivedAggregationDistinctProjection));
         return result;
     }
     
     private DerivedProjection getDerivedProjectionWithOwner() {
-        DerivedProjection result = mock(DerivedProjection.class);
-        when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_DERIVED_PROJECTION_ALIAS)));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("foo_col"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_tbl")));
-        when(result.getDerivedProjectionSegment()).thenReturn(new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
-        return result;
+        return new DerivedProjection("", new IdentifierValue("foo_alias"), new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
     }
     
     private DerivedProjection getDerivedProjectionWithoutOwner() {
@@ -150,7 +142,7 @@ class ShardingProjectionsTokenGeneratorTest {
         when(oldColumnOrderByItemSegment.getOrderDirection()).thenReturn(mock(OrderDirection.class));
         when(oldColumnOrderByItemSegment.getColumn().getIdentifier()).thenReturn(mock(IdentifierValue.class));
         DerivedProjection result = mock(DerivedProjection.class);
-        when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_DERIVED_PROJECTION_ALIAS)));
+        when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue("foo_alias")));
         when(result.getDerivedProjectionSegment()).thenReturn(oldColumnOrderByItemSegment);
         return result;
     }
