@@ -29,6 +29,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -40,13 +44,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
+@ExtendWith(MockitoExtension.class)
 class DMLShardingConditionsShardingAuditAlgorithmTest {
     
     private SQLStatementContext sqlStatementContext;
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
-    
-    private ShardingRule rule;
     
     private ShardingAuditAlgorithm shardingAuditAlgorithm;
     
@@ -54,9 +58,7 @@ class DMLShardingConditionsShardingAuditAlgorithmTest {
     void setUp() {
         shardingAuditAlgorithm = TypedSPILoader.getService(ShardingAuditAlgorithm.class, "DML_SHARDING_CONDITIONS");
         sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        rule = mock(ShardingRule.class);
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
     }
     
     @Test
@@ -69,8 +71,9 @@ class DMLShardingConditionsShardingAuditAlgorithmTest {
     @Test
     void assertEmptyShardingConditionsCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(rule)));
-        when(rule.isShardingTable("t_order")).thenReturn(true);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.isShardingTable("foo_tbl")).thenReturn(true);
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         assertThrows(DMLWithoutShardingKeyException.class, () -> shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(RuleMetaData.class), database));
     }
 }
