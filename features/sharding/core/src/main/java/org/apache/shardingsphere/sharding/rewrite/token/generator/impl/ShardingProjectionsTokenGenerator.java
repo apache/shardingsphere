@@ -87,7 +87,7 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     private Collection<String> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext, final RouteUnit routeUnit) {
         Collection<String> result = new LinkedList<>();
         for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
-            if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
+            if (each instanceof AggregationProjection) {
                 result.addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
             } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjectionSegment() instanceof ColumnOrderByItemSegment) {
                 TableExtractor tableExtractor = new TableExtractor();
@@ -114,17 +114,14 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
         return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get().getValue() + " ";
     }
     
-    private ColumnOrderByItemSegment generateNewColumnOrderByItem(final ColumnOrderByItemSegment old, final RouteUnit routeUnit, final TableExtractor tableExtractor, final DatabaseType databaseType) {
+    private ColumnOrderByItemSegment generateNewColumnOrderByItem(final ColumnOrderByItemSegment old,
+                                                                  final RouteUnit routeUnit, final TableExtractor tableExtractor, final DatabaseType databaseType) {
         Optional<OwnerSegment> ownerSegment = old.getColumn().getOwner();
-        if (!ownerSegment.isPresent()) {
-            return old;
-        }
-        if (!tableExtractor.needRewrite(ownerSegment.get())) {
+        if (!ownerSegment.isPresent() || !tableExtractor.needRewrite(ownerSegment.get())) {
             return old;
         }
         String actualTableName = getActualTableName(routeUnit, ownerSegment.get().getIdentifier().getValue());
-        IdentifierValue newOwnerIdentifier = new IdentifierValue(ownerSegment.get().getIdentifier().getQuoteCharacter().wrap(actualTableName));
-        OwnerSegment newOwner = new OwnerSegment(0, 0, newOwnerIdentifier);
+        OwnerSegment newOwner = new OwnerSegment(0, 0, new IdentifierValue(ownerSegment.get().getIdentifier().getQuoteCharacter().wrap(actualTableName)));
         ColumnSegment newColumnSegment = new ColumnSegment(0, 0, old.getColumn().getIdentifier());
         newColumnSegment.setOwner(newOwner);
         NullsOrderType nullsOrderType = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultNullsOrderType().getResolvedOrderType(old.getOrderDirection().name());
