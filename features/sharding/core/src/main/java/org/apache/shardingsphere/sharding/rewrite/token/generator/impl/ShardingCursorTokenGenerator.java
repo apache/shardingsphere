@@ -42,7 +42,7 @@ public final class ShardingCursorTokenGenerator implements OptionalSQLTokenGener
     
     @Override
     public SQLToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        CursorNameSegment cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().orElseThrow(CursorNameNotFoundException::new);
-        return new CursorToken(cursorName.getStartIndex(), cursorName.getStopIndex(), cursorName.getIdentifier(), sqlStatementContext, rule);
+        CursorNameSegment cursorNameSegment = ((CursorAvailable) sqlStatementContext).getCursorName().orElseThrow(CursorNameNotFoundException::new);
+        return new CursorToken(cursorNameSegment.getStartIndex(), cursorNameSegment.getStopIndex(), cursorNameSegment.getIdentifier(), sqlStatementContext, rule);
     }
 }
