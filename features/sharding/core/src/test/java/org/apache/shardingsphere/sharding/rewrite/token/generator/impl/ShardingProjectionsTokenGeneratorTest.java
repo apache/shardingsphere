@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -42,7 +43,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,12 +53,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingProjectionsTokenGeneratorTest {
-    
-    private static final String TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION = "TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION";
-    
-    private static final String TEST_OTHER_DERIVED_PROJECTION_ALIAS = "TEST_OTHER_DERIVED_PROJECTION_ALIAS";
-    
-    private static final String TEST_OTHER_DERIVED_PROJECTION_EXPRESSION = "TEST_OTHER_DERIVED_PROJECTION_EXPRESSION";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
@@ -111,41 +105,36 @@ class ShardingProjectionsTokenGeneratorTest {
     void assertGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
-        Collection<Projection> projections = Arrays.asList(createAggregationProjection(), createDerivedProjectionWithOwner(), createDerivedProjectionWithoutOwner(), createOtherDerivedProjection(), mock());
+        Collection<Projection> projections = Arrays.asList(
+                createAggregationProjection(), createDerivedProjectionWithOwner(), createDerivedProjectionWithoutOwner(), createOtherDerivedProjection(), mock());
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projections);
         when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
         when(selectStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
-        assertThat(actual.toString(routeUnit), is(", " + TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION + " AS foo_alias "
-                + ", foo_tbl_0.foo_col AS foo_alias , bar_col AS bar_alias "
-                + ", " + TEST_OTHER_DERIVED_PROJECTION_EXPRESSION + " AS " + TEST_OTHER_DERIVED_PROJECTION_ALIAS + " "));
+        assertThat(actual.toString(routeUnit),
+                is(", foo_agg_expr AS foo_agg_alias , foo_tbl_0.foo_derived_col AS foo_derived_alias , bar_derived_col AS bar_derived_alias , other_expr AS other_alias "));
     }
     
     private AggregationProjection createAggregationProjection() {
-        AggregationDistinctProjection derivedAggregationDistinctProjection = mock(AggregationDistinctProjection.class);
-        when(derivedAggregationDistinctProjection.getDistinctInnerExpression()).thenReturn(TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION);
-        when(derivedAggregationDistinctProjection.getAlias()).thenReturn(Optional.of(new IdentifierValue("foo_alias")));
-        AggregationProjection result = mock(AggregationProjection.class);
-        when(result.getDerivedAggregationProjections()).thenReturn(Collections.singletonList(derivedAggregationDistinctProjection));
+        AggregationDistinctProjection derivedProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "",
+                new IdentifierValue("foo_agg_alias"), "foo_agg_expr", databaseType);
+        AggregationProjection result = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "", null, "", databaseType);
+        result.getDerivedAggregationProjections().add(derivedProjection);
         return result;
     }
     
     private DerivedProjection createDerivedProjectionWithOwner() {
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("foo_col"));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("foo_derived_col"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_tbl")));
-        return new DerivedProjection("", new IdentifierValue("foo_alias"), new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
+        return new DerivedProjection("", new IdentifierValue("foo_derived_alias"), new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
     }
     
     private DerivedProjection createDerivedProjectionWithoutOwner() {
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("bar_col"));
-        return new DerivedProjection("", new IdentifierValue("bar_alias"), new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("bar_derived_col"));
+        return new DerivedProjection("", new IdentifierValue("bar_derived_alias"), new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
     }
     
     private DerivedProjection createOtherDerivedProjection() {
-        DerivedProjection result = mock(DerivedProjection.class);
-        when(result.getDerivedProjectionSegment()).thenReturn(null);
-        when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_OTHER_DERIVED_PROJECTION_ALIAS)));
-        when(result.getExpression()).thenReturn(TEST_OTHER_DERIVED_PROJECTION_EXPRESSION);
-        return result;
+        return new DerivedProjection("other_expr", new IdentifierValue("other_alias"), mock());
     }
 }
