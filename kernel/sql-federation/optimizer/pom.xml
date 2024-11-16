@@ -28,7 +28,6 @@
     
     <properties>
         <calcite.version>1.38.0</calcite.version>
-        <immutables.version>2.9.3</immutables.version>
     </properties>
     
     <dependencies>
