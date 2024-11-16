@@ -21,10 +21,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,7 +35,6 @@ class ProjectionsTokenTest {
     
     @Test
     void assertToStringWithoutRouteUnit() {
-        Map<RouteUnit, Collection<String>> projections = new HashMap<>(1, 1);
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("foo_ds", "foo_ds_0"), Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_1")));
         assertThat(new ProjectionsToken(0, Collections.singletonMap(routeUnit, Collections.singleton("foo_col"))).toString(routeUnit), is(", foo_col"));
     }
