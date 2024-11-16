@@ -58,7 +58,16 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !getDerivedProjectionTexts((SelectStatementContext) sqlStatementContext).isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext && containsDerivedProjections((SelectStatementContext) sqlStatementContext);
+    }
+    
+    private boolean containsDerivedProjections(final SelectStatementContext selectStatementContext) {
+        for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
+            if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty() || each instanceof DerivedProjection) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override
