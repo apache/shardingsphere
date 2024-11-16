@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.junit.jupiter.api.Test;
 
-/**
- * Distinct projection prefix token.
- */
-public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class DistinctProjectionPrefixTokenTest {
     
-    public DistinctProjectionPrefixToken(final int startIndex) {
-        super(startIndex);
+    @Test
+    void assertGetStopIndex() {
+        assertThat(new DistinctProjectionPrefixToken(10).getStopIndex(), is(10));
     }
     
-    @Override
-    public int getStopIndex() {
-        return getStartIndex();
-    }
-    
-    @Override
-    public String toString() {
-        return "DISTINCT ";
+    @Test
+    void assertToString() {
+        assertThat(new DistinctProjectionPrefixToken(0).toString(), is("DISTINCT "));
     }
 }
