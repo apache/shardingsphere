@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 class ShardingRemoveTokenGeneratorTest {
     
-    ShardingRemoveTokenGenerator generator = new ShardingRemoveTokenGenerator();
+    private final ShardingRemoveTokenGenerator generator = new ShardingRemoveTokenGenerator();
     
     @Test
     void assertIsGenerateSQLTokenWithNotSelectStatement() {
