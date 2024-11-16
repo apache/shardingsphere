@@ -36,7 +36,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class ShardingConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext> {
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -49,8 +49,9 @@ public final class ShardingConstraintTokenGenerator implements CollectionSQLToke
         if (sqlStatementContext instanceof ConstraintAvailable) {
             for (ConstraintSegment each : ((ConstraintAvailable) sqlStatementContext).getConstraints()) {
                 IdentifierValue constraintIdentifier = each.getIdentifier();
+                // TODO make sure can remove null check here? @duanzhengqiang
                 if (null != constraintIdentifier) {
-                    result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, shardingRule));
+                    result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, rule));
                 }
             }
         }
