@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
@@ -30,6 +31,7 @@ import java.util.LinkedList;
 /**
  * Sharding remove token generator.
  */
+@HighFrequencyInvocation
 public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
