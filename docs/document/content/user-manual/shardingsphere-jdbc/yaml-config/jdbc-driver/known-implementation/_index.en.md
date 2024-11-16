@@ -213,7 +213,7 @@ Then for the intercepted fragment of the following YAML file,
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::com.mysql.cj.jdbc.Driver}
-  jdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?useUnicode=true&characterEncoding=UTF-8
+  jdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?sslMode=REQUIRED
   username: $${FIXTURE_USERNAME::}
   password: $${FIXTURE_PASSWORD::}
 ```
@@ -224,7 +224,7 @@ This YAML snippet will be parsed as,
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: com.mysql.cj.jdbc.Driver
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?sslMode=REQUIRED
   username: sa
   password:
 ```
