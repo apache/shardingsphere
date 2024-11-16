@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.RowCountToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -37,35 +38,44 @@ import static org.mockito.Mockito.when;
 
 class ShardingRowCountTokenGeneratorTest {
     
+    private final ShardingRowCountTokenGenerator generator = new ShardingRowCountTokenGenerator();
+    
     @Test
-    void assertIsGenerateSQLToken() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        ShardingRowCountTokenGenerator shardingRowCountTokenGenerator = new ShardingRowCountTokenGenerator();
-        assertFalse(shardingRowCountTokenGenerator.isGenerateSQLToken(insertStatementContext));
+    void assertIsNotGenerateSQLTokenWithNotSelectStatementContext() {
+        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithoutRowCountSegment() {
+        assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithNotNumberLiteralPaginationValueSegment() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getPaginationContext().getRowCountSegment().isPresent()).thenReturn(Boolean.FALSE);
-        NumberLiteralPaginationValueSegment numberLiteralPaginationValueSegment = mock(NumberLiteralPaginationValueSegment.class);
-        assertFalse(shardingRowCountTokenGenerator.isGenerateSQLToken(selectStatementContext));
-        when(selectStatementContext.getPaginationContext().getRowCountSegment()).thenReturn(Optional.of(numberLiteralPaginationValueSegment));
-        assertTrue(shardingRowCountTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        when(selectStatementContext.getPaginationContext().getRowCountSegment()).thenReturn(Optional.of(mock(ParameterMarkerPaginationValueSegment.class)));
+        assertFalse(generator.isGenerateSQLToken(selectStatementContext));
+    }
+    
+    @Test
+    void assertIsGenerateSQLTokenWithNumberLiteralPaginationValueSegment() {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getPaginationContext().getRowCountSegment()).thenReturn(Optional.of(mock(NumberLiteralPaginationValueSegment.class)));
+        assertTrue(generator.isGenerateSQLToken(selectStatementContext));
     }
     
     @Test
     void assertGenerateSQLToken() {
-        final long testOffsetSegmentValue = 12L;
-        NumberLiteralLimitValueSegment offsetSegment = new NumberLiteralLimitValueSegment(1, 2, testOffsetSegmentValue);
-        final long testRowCountSegmentValue = 8L;
-        NumberLiteralLimitValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(4, 5, testRowCountSegmentValue);
-        PaginationContext paginationContext = new PaginationContext(offsetSegment, rowCountSegment, null);
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getPaginationContext()).thenReturn(paginationContext);
-        when(selectStatementContext.getGroupByContext().getItems().isEmpty()).thenReturn(Boolean.FALSE);
-        when(selectStatementContext.isSameGroupByAndOrderByItems()).thenReturn(Boolean.FALSE);
-        ShardingRowCountTokenGenerator shardingRowCountTokenGenerator = new ShardingRowCountTokenGenerator();
-        RowCountToken rowCountToken = shardingRowCountTokenGenerator.generateSQLToken(selectStatementContext);
-        assertThat(rowCountToken.toString(), is(String.valueOf(Integer.MAX_VALUE)));
-        when(selectStatementContext.isSameGroupByAndOrderByItems()).thenReturn(Boolean.TRUE);
-        rowCountToken = shardingRowCountTokenGenerator.generateSQLToken(selectStatementContext);
-        assertThat(rowCountToken.toString(), is(String.valueOf(testOffsetSegmentValue + testRowCountSegmentValue)));
+        RowCountToken actual = generator.generateSQLToken(mockSelectStatementContext());
+        assertThat(actual.toString(), is(String.valueOf(20L)));
+    }
+    
+    private SelectStatementContext mockSelectStatementContext() {
+        NumberLiteralLimitValueSegment offsetSegment = new NumberLiteralLimitValueSegment(0, 0, 12L);
+        NumberLiteralLimitValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(0, 0, 8L);
+        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getPaginationContext()).thenReturn(new PaginationContext(offsetSegment, rowCountSegment, null));
+        when(result.isSameGroupByAndOrderByItems()).thenReturn(true);
+        return result;
     }
 }

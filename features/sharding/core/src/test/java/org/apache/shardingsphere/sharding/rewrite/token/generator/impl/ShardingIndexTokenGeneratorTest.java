@@ -47,18 +47,17 @@ import static org.mockito.Mockito.when;
 
 class ShardingIndexTokenGeneratorTest {
     
+    private final ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
+    
     @Test
     void assertIsNotGenerateSQLTokenWithNotIndexAvailable() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
-        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
+        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithEmptyIndex() {
         AlterIndexStatementContext sqlStatementContext = mock(AlterIndexStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getIndexes().isEmpty()).thenReturn(true);
-        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
@@ -66,13 +65,11 @@ class ShardingIndexTokenGeneratorTest {
     void assertIsGenerateSQLToken() {
         AlterIndexStatementContext sqlStatementContext = mock(AlterIndexStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokensWithNotIndexAvailable() {
-        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
         Collection<SQLToken> actual = generator.generateSQLTokens(mock(SQLStatementContext.class));
         assertTrue(actual.isEmpty());
     }
@@ -82,7 +79,6 @@ class ShardingIndexTokenGeneratorTest {
         IndexSegment indexSegment = new IndexSegment(1, 3, new IndexNameSegment(1, 3, mock(IdentifierValue.class)));
         indexSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_schema")));
         AlterIndexStatementContext sqlStatementContext = mockAlterIndexStatementContext(indexSegment);
-        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         generator.setSchemas(Collections.singletonMap("foo_schema", schema));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
@@ -93,7 +89,6 @@ class ShardingIndexTokenGeneratorTest {
     void assertGenerateSQLTokensWithoutSchemaOwner() throws ReflectiveOperationException {
         IndexSegment indexSegment = new IndexSegment(1, 3, new IndexNameSegment(1, 3, mock(IdentifierValue.class)));
         AlterIndexStatementContext sqlStatementContext = mockAlterIndexStatementContext(indexSegment);
-        ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         generator.setDefaultSchema(schema);
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);

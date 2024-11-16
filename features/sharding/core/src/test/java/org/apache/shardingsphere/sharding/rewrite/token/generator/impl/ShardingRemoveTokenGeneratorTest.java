@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -54,32 +54,33 @@ import static org.mockito.Mockito.when;
 
 class ShardingRemoveTokenGeneratorTest {
     
+    private final ShardingRemoveTokenGenerator generator = new ShardingRemoveTokenGenerator();
+    
     @Test
-    void assertIsGenerateSQLTokenWithNonSelectStatement() {
-        assertFalse(new ShardingRemoveTokenGenerator().isGenerateSQLToken(mock(InsertStatementContext.class)));
+    void assertIsGenerateSQLTokenWithNotSelectStatement() {
+        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
     @Test
-    void assertIsGenerateSQLTokenWithEmptyAggregationDistinctProjections() {
+    void assertIsGenerateSQLTokenWithEmptyAggregationDistinctProjection() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections().isEmpty()).thenReturn(true);
-        assertFalse(new ShardingRemoveTokenGenerator().isGenerateSQLToken(selectStatementContext));
+        assertFalse(generator.isGenerateSQLToken(selectStatementContext));
     }
     
     @Test
-    void assertIsGenerateSQLTokenWithNonEmptyAggregationDistinctProjections() {
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        assertTrue(new ShardingRemoveTokenGenerator().isGenerateSQLToken(selectStatementContext));
+    void assertIsGenerateSQLTokenWithAggregationDistinctProjections() {
+        assertTrue(generator.isGenerateSQLToken(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
     void assertGenerateSQLTokens() {
-        Collection<? extends SQLToken> sqlTokens = new ShardingRemoveTokenGenerator().generateSQLTokens(createUpdatesStatementContext());
-        assertThat(sqlTokens.size(), is(1));
-        assertThat(sqlTokens.iterator().next(), instanceOf(RemoveToken.class));
+        Collection<? extends SQLToken> actual = generator.generateSQLTokens(createSelectStatementContext());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), instanceOf(RemoveToken.class));
     }
     
-    private SelectStatementContext createUpdatesStatementContext() {
+    private SelectStatementContext createSelectStatementContext() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST))));
