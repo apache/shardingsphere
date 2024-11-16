@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 /**
  * Sharding cursor token generator.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class ShardingCursorTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext> {
     

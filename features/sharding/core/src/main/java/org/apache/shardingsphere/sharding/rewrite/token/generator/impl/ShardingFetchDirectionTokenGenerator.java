@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchSt
 /**
  * Sharding fetch direction token generator.
  */
+@HighFrequencyInvocation
 @Setter
 public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext>, ConnectionContextAware {
     

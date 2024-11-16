@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
@@ -33,6 +34,7 @@ import java.util.LinkedList;
 /**
  * Sharding constraint token generator.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class ShardingConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext> {
     
