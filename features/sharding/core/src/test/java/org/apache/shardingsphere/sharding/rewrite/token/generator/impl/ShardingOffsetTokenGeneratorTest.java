@@ -37,21 +37,20 @@ import static org.mockito.Mockito.when;
 
 class ShardingOffsetTokenGeneratorTest {
     
+    private final ShardingOffsetTokenGenerator generator = new ShardingOffsetTokenGenerator();
+    
     @Test
     void assertIsNotGenerateSQLTokenWithNotSelectStatementContext() {
-        ShardingOffsetTokenGenerator generator = new ShardingOffsetTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithoutOffsetSegment() {
-        ShardingOffsetTokenGenerator generator = new ShardingOffsetTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithParameterMarkerPaginationValueSegment() {
-        ShardingOffsetTokenGenerator generator = new ShardingOffsetTokenGenerator();
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getPaginationContext().getOffsetSegment()).thenReturn(Optional.of(mock(ParameterMarkerPaginationValueSegment.class)));
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
@@ -59,7 +58,6 @@ class ShardingOffsetTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLTokenWithNumberLiteralPaginationValueSegment() {
-        ShardingOffsetTokenGenerator generator = new ShardingOffsetTokenGenerator();
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getPaginationContext().getOffsetSegment()).thenReturn(Optional.of(mock(NumberLiteralPaginationValueSegment.class)));
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
@@ -67,7 +65,6 @@ class ShardingOffsetTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLToken() {
-        ShardingOffsetTokenGenerator generator = new ShardingOffsetTokenGenerator();
         assertThat(generator.generateSQLToken(mockSelectStatementContext()).toString(), is("2"));
     }
     
