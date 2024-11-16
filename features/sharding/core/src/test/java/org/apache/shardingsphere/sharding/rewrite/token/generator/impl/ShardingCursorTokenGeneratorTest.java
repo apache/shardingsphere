@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.MoveStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.CursorToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -40,30 +37,31 @@ import static org.mockito.Mockito.when;
 
 class ShardingCursorTokenGeneratorTest {
     
+    private final ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator(mock(ShardingRule.class));
+    
     @Test
-    void assertIsGenerateSQLToken() {
-        ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator(mock(ShardingRule.class));
-        assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
-        Optional<CursorNameSegment> cursorName = Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor")));
-        CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class);
-        when(cursorStatementContext.getCursorName()).thenReturn(cursorName);
-        assertTrue(generator.isGenerateSQLToken(cursorStatementContext));
-        CloseStatementContext closeStatementContext = mock(CloseStatementContext.class);
-        when(closeStatementContext.getCursorName()).thenReturn(cursorName);
-        assertTrue(generator.isGenerateSQLToken(closeStatementContext));
-        MoveStatementContext moveStatementContext = mock(MoveStatementContext.class);
-        when(moveStatementContext.getCursorName()).thenReturn(cursorName);
-        assertTrue(generator.isGenerateSQLToken(moveStatementContext));
-        FetchStatementContext fetchStatementContext = mock(FetchStatementContext.class);
-        when(fetchStatementContext.getCursorName()).thenReturn(cursorName);
-        assertTrue(generator.isGenerateSQLToken(fetchStatementContext));
+    void assertIsNotGenerateSQLTokenWithNotCursorAvailable() {
+        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithoutCursorName() {
+        CursorStatementContext sqlStatementContext = mock(CursorStatementContext.class);
+        when(sqlStatementContext.getCursorName()).thenReturn(Optional.empty());
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
+    }
+    
+    @Test
+    void assertIsGenerateSQLTokenWithCursorName() {
+        CursorStatementContext sqlStatementContext = mock(CursorStatementContext.class);
+        when(sqlStatementContext.getCursorName()).thenReturn(Optional.of(mock(CursorNameSegment.class)));
+        assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLToken() {
-        ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator(mock(ShardingRule.class));
         CursorStatementContext statementContext = mock(CursorStatementContext.class);
-        when(statementContext.getCursorName()).thenReturn(Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor"))));
+        when(statementContext.getCursorName()).thenReturn(Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor"))));
         SQLToken actual = generator.generateSQLToken(statementContext);
         assertThat(actual, instanceOf(CursorToken.class));
     }
