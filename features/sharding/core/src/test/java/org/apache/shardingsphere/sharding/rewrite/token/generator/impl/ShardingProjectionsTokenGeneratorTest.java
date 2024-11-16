@@ -111,17 +111,17 @@ class ShardingProjectionsTokenGeneratorTest {
     void assertGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
-        Collection<Projection> projections = Arrays.asList(getAggregationProjection(), getDerivedProjectionWithOwner(), getDerivedProjectionWithoutOwner(), getOtherDerivedProjection(), mock());
+        Collection<Projection> projections = Arrays.asList(createAggregationProjection(), createDerivedProjectionWithOwner(), createDerivedProjectionWithoutOwner(), createOtherDerivedProjection(), mock());
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projections);
         when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
         when(selectStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
         assertThat(actual.toString(routeUnit), is(", " + TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION + " AS foo_alias "
-                + ", foo_tbl_0.foo_col" + " AS foo_alias , null AS foo_alias "
+                + ", foo_tbl_0.foo_col AS foo_alias , bar_col AS bar_alias "
                 + ", " + TEST_OTHER_DERIVED_PROJECTION_EXPRESSION + " AS " + TEST_OTHER_DERIVED_PROJECTION_ALIAS + " "));
     }
     
-    private AggregationProjection getAggregationProjection() {
+    private AggregationProjection createAggregationProjection() {
         AggregationDistinctProjection derivedAggregationDistinctProjection = mock(AggregationDistinctProjection.class);
         when(derivedAggregationDistinctProjection.getDistinctInnerExpression()).thenReturn(TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION);
         when(derivedAggregationDistinctProjection.getAlias()).thenReturn(Optional.of(new IdentifierValue("foo_alias")));
@@ -130,24 +130,18 @@ class ShardingProjectionsTokenGeneratorTest {
         return result;
     }
     
-    private DerivedProjection getDerivedProjectionWithOwner() {
+    private DerivedProjection createDerivedProjectionWithOwner() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("foo_col"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_tbl")));
         return new DerivedProjection("", new IdentifierValue("foo_alias"), new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
     }
     
-    private DerivedProjection getDerivedProjectionWithoutOwner() {
-        ColumnOrderByItemSegment oldColumnOrderByItemSegment = mock(ColumnOrderByItemSegment.class, RETURNS_DEEP_STUBS);
-        when(oldColumnOrderByItemSegment.getColumn().getOwner()).thenReturn(Optional.empty());
-        when(oldColumnOrderByItemSegment.getOrderDirection()).thenReturn(mock(OrderDirection.class));
-        when(oldColumnOrderByItemSegment.getColumn().getIdentifier()).thenReturn(mock(IdentifierValue.class));
-        DerivedProjection result = mock(DerivedProjection.class);
-        when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue("foo_alias")));
-        when(result.getDerivedProjectionSegment()).thenReturn(oldColumnOrderByItemSegment);
-        return result;
+    private DerivedProjection createDerivedProjectionWithoutOwner() {
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("bar_col"));
+        return new DerivedProjection("", new IdentifierValue("bar_alias"), new ColumnOrderByItemSegment(columnSegment, OrderDirection.DESC, NullsOrderType.FIRST));
     }
     
-    private DerivedProjection getOtherDerivedProjection() {
+    private DerivedProjection createOtherDerivedProjection() {
         DerivedProjection result = mock(DerivedProjection.class);
         when(result.getDerivedProjectionSegment()).thenReturn(null);
         when(result.getAlias()).thenReturn(Optional.of(new IdentifierValue(TEST_OTHER_DERIVED_PROJECTION_ALIAS)));
