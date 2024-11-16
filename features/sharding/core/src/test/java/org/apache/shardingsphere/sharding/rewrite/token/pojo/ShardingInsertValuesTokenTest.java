@@ -36,6 +36,7 @@ class ShardingInsertValuesTokenTest {
     
     @Test
     void assertToStringWithRouteUnit() {
+        // TODO This test case may not necessary; the trailing parentheses should not be there. Is there too much protective coding in main code? @duanzhengqiang
         assertThat(createInsertValuesToken().toString(createRouteUnit()), is("('foo', 'bar'), ()"));
     }
     
@@ -58,6 +59,7 @@ class ShardingInsertValuesTokenTest {
     
     @Test
     void assertToStringWithoutRouteUnit() {
+        // TODO This test case may not necessary; the trailing parentheses should not be there. Is there too much protective coding in main code? @duanzhengqiang
         assertThat(createInsertValuesToken().toString(), is("('foo', 'bar'), (), ()"));
     }
 }
