@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,12 +36,21 @@ import static org.mockito.Mockito.when;
 class CursorTokenTest {
     
     @Test
-    void assertToString() {
-        CursorToken cursorToken = new CursorToken(0, 0,
-                new IdentifierValue("t_order_cursor"), mock(CursorStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
-        RouteUnit routeUnit = mock(RouteUnit.class);
-        when(routeUnit.getTableMappers()).thenReturn(Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
-        when(routeUnit.getDataSourceMapper()).thenReturn(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"));
-        assertThat(cursorToken.toString(routeUnit), is("t_order_cursor_t_order_0"));
+    void assertToStringWithActualTableName() {
+        CursorToken cursorToken = new CursorToken(0, 0, new IdentifierValue("foo_cursor"), mock(CursorStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
+        assertThat(cursorToken.toString(mockRouteUnit(Collections.singletonList(new RouteMapper("foo_tbl", "foo_tbl_0")))), is("foo_cursor_foo_tbl_0"));
+    }
+    
+    @Test
+    void assertToStringWithoutActualTableName() {
+        CursorToken cursorToken = new CursorToken(0, 0, new IdentifierValue("foo_cursor"), mock(CursorStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
+        assertThat(cursorToken.toString(mockRouteUnit(Collections.emptyList())), is("foo_cursor"));
+    }
+    
+    private RouteUnit mockRouteUnit(final Collection<RouteMapper> tableMappers) {
+        RouteUnit result = mock(RouteUnit.class);
+        when(result.getTableMappers()).thenReturn(tableMappers);
+        when(result.getDataSourceMapper()).thenReturn(new RouteMapper("foo_ds", "foo_ds_0"));
+        return result;
     }
 }
