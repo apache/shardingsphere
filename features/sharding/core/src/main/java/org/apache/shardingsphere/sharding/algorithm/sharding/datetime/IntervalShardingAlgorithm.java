@@ -134,39 +134,41 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         throw new UnsupportedSQLOperationException(String.format("Cannot find step unit for specified %s property: `%s`", INTERVAL_UNIT_KEY, stepUnit));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
-        return doSharding(availableTargetNames, Range.singleton(shardingValue.getValue())).stream().findFirst().orElse(null);
+        Range<Comparable<?>> range = Range.singleton(shardingValue.getValue());
+        return ((Collection<String>) getMatchedTables(availableTargetNames, range, createTemporalParser())).stream().findFirst().orElse(null);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        return doSharding(availableTargetNames, shardingValue.getValueRange());
+        return getMatchedTables(availableTargetNames, shardingValue.getValueRange(), createTemporalParser());
     }
     
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
+    @SuppressWarnings("rawtypes")
+    private TemporalParser createTemporalParser() {
         if (!dateTimeLower.isSupported(ChronoField.NANO_OF_DAY)) {
             if (dateTimeLower.isSupported(ChronoField.EPOCH_DAY)) {
-                return getMatchedTables(availableTargetNames, range, new LocalDateTemporalParser());
+                return new LocalDateTemporalParser();
             }
             if (dateTimeLower.isSupported(ChronoField.YEAR) && dateTimeLower.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                return getMatchedTables(availableTargetNames, range, new YearMonthTemporalParser());
+                return new YearMonthTemporalParser();
             }
             if (dateTimeLower.isSupported(ChronoField.YEAR)) {
-                return getMatchedTables(availableTargetNames, range, new YearTemporalParser());
+                return new YearTemporalParser();
             }
             if (dateTimeLower.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                return getMatchedTables(availableTargetNames, range, new MonthTemporalParser());
+                return new MonthTemporalParser();
             }
         }
-        return dateTimeLower.isSupported(ChronoField.EPOCH_DAY)
-                ? getMatchedTables(availableTargetNames, range, new LocalDateTimeTemporalParser())
-                : getMatchedTables(availableTargetNames, range, new LocalTimeTemporalParser());
+        return dateTimeLower.isSupported(ChronoField.EPOCH_DAY) ? new LocalDateTimeTemporalParser() : new LocalTimeTemporalParser();
     }
     
-    private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames, final Range<Comparable<?>> range,
-                                                                                             final TemporalParser<T> temporalParser) {
+    private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames,
+                                                                                             final Range<Comparable<?>> range, final TemporalParser<T> temporalParser) {
         Collection<String> result = new HashSet<>();
         T dateTimeUpper = temporalParser.convertTo(this.dateTimeUpper);
         T dateTimeLower = temporalParser.convertTo(this.dateTimeLower);
