@@ -34,7 +34,7 @@ public final class YearMonthTemporalParser implements TemporalParser<YearMonth> 
     }
     
     @Override
-    public boolean isAfter(final YearMonth temporal1, final YearMonth temporal2) {
+    public boolean isAfter(final YearMonth temporal1, final YearMonth temporal2, final int stepAmount) {
         return temporal1.isAfter(temporal2);
     }
     

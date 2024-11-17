@@ -34,7 +34,7 @@ public final class LocalDateTemporalParser implements TemporalParser<LocalDate> 
     }
     
     @Override
-    public boolean isAfter(final LocalDate temporal1, final LocalDate temporal2) {
+    public boolean isAfter(final LocalDate temporal1, final LocalDate temporal2, final int stepAmount) {
         return temporal1.isAfter(temporal2);
     }
     

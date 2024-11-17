@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal;
 
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
 
 /**
@@ -26,7 +26,7 @@ import java.time.temporal.TemporalUnit;
  * 
  * @param <T> type of temporal
  */
-public interface TemporalParser<T extends Temporal> {
+public interface TemporalParser<T extends TemporalAccessor> {
     
     /**
      * Parse from text.
@@ -42,9 +42,10 @@ public interface TemporalParser<T extends Temporal> {
      * 
      * @param temporal1 temporal1
      * @param temporal2 temporal2
+     * @param stepAmount step amount
      * @return is temporal1 after temporal2 or not
      */
-    boolean isAfter(T temporal1, T temporal2);
+    boolean isAfter(T temporal1, T temporal2, int stepAmount);
     
     /**
      * Plus temporal.

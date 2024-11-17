@@ -22,10 +22,11 @@ import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalParser;
 import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTemporalParser;
 import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTimeTemporalParser;
 import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalTimeTemporalParser;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.MonthTemporalParser;
 import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearMonthTemporalParser;
 import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearTemporalParser;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -46,7 +47,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 import java.util.Collection;
@@ -193,17 +193,11 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Collection<String> doShardingInMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Collection<String> result = new HashSet<>();
         Month dateTimeUpper = this.dateTimeUpper.query(Month::from);
         Month dateTimeLower = this.dateTimeLower.query(Month::from);
         Month calculateTimeAsView = calculateTime.query(Month::from);
-        while (calculateTimeAsView.getValue() <= dateTimeUpper.getValue() && (calculateTimeAsView.getValue() + stepAmount) <= Month.DECEMBER.getValue()) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount)), range, dateTimeLower, dateTimeUpper)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-            }
-            calculateTimeAsView = calculateTimeAsView.plus(stepAmount);
-        }
-        return result;
+        MonthTemporalParser temporalParser = new MonthTemporalParser();
+        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
     }
     
     private Collection<String> doShardingInLocalDateTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
@@ -222,8 +216,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
     }
     
-    private <T extends Temporal & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range, final T temporalLower, final T temporalUpper,
-                                                                         final TemporalParser<T> temporalParser) {
+    private <T extends TemporalAccessor & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range, final T temporalLower, final T temporalUpper,
+                                                                                 final TemporalParser<T> temporalParser) {
         T lower = range.hasLowerBound() ? parseTemporal(range.lowerEndpoint(), temporalParser) : temporalLower;
         T upper = range.hasUpperBound() ? parseTemporal(range.upperEndpoint(), temporalParser) : temporalUpper;
         BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
@@ -232,31 +226,11 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
-    private boolean hasIntersection(final Range<Month> calculateRange, final Range<Comparable<?>> range, final Month dateTimeLower, final Month dateTimeUpper) {
-        Month lower = range.hasLowerBound() ? parseMonth(range.lowerEndpoint()) : dateTimeLower;
-        Month upper = range.hasUpperBound() ? parseMonth(range.upperEndpoint()) : dateTimeUpper;
-        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
-        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
-        Range<Month> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
-        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
-    }
-    
-    private <T extends Temporal> T parseTemporal(final Comparable<?> endpoint, final TemporalParser<T> temporalParser) {
+    private <T extends TemporalAccessor> T parseTemporal(final Comparable<?> endpoint, final TemporalParser<T> temporalParser) {
         String dateTimeText = getDateTimeText(endpoint);
         return dateTimeText.length() >= dateTimePatternLength
                 ? temporalParser.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
                 : temporalParser.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
-    }
-    
-    /*
-     * After the sharding key is formatted as a {@link String},
-     * if the length of the {@link String} is less than `datetime-pattern`,
-     * it usually means there is a problem with the sharding key.
-     * @param endpoint A class carrying time information with an unknown class name.
-     * @return {@link java.time.Month}
-     */
-    private Month parseMonth(final Comparable<?> endpoint) {
-        return Month.of(Integer.parseInt(getDateTimeText(endpoint).substring(0, dateTimePatternLength)));
     }
     
     /*
@@ -286,14 +260,14 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return endpoint.toString();
     }
     
-    private <T extends Temporal & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames, final Range<Comparable<?>> range,
-                                                                                     final T dateTimeUpperAsLocalTime, final T dateTimeLowerAsLocalTime,
+    private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames, final Range<Comparable<?>> range,
+                                                                                     final T dateTimeUpper, final T dateTimeLower,
                                                                                      final T calculateTimeAsView, final TemporalParser<T> temporalParser) {
         Collection<String> result = new HashSet<>();
         T newCalculateTimeAsView = calculateTimeAsView;
-        while (!temporalParser.isAfter(newCalculateTimeAsView, dateTimeUpperAsLocalTime)) {
+        while (!temporalParser.isAfter(newCalculateTimeAsView, dateTimeUpper, stepAmount)) {
             if (hasIntersection(Range.closedOpen(newCalculateTimeAsView,
-                    temporalParser.plus(newCalculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime, temporalParser)) {
+                    temporalParser.plus(newCalculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalParser)) {
                 result.addAll(getMatchedTables(newCalculateTimeAsView, availableTargetNames));
             }
             newCalculateTimeAsView = temporalParser.plus(newCalculateTimeAsView, stepAmount, stepUnit);

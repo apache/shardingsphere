@@ -19,27 +19,34 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.
 
 import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalParser;
 
-import java.time.Year;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalUnit;
 
 /**
- * Year temporal parser.
+ * Month temporal parser.
  */
-public final class YearTemporalParser implements TemporalParser<Year> {
+public final class MonthTemporalParser implements TemporalParser<Month> {
     
+    /*
+     * After the sharding key is formatted as a {@link String},
+     * if the length of the {@link String} is less than `datetime-pattern`,
+     * it usually means there is a problem with the sharding key.
+     * @param endpoint A class carrying time information with an unknown class name.
+     * @return {@link java.time.Month}
+     */
     @Override
-    public Year parse(final CharSequence text, final DateTimeFormatter formatter) {
-        return Year.parse(text, formatter);
+    public Month parse(final CharSequence text, final DateTimeFormatter formatter) {
+        return Month.of(Integer.parseInt(text.toString()));
     }
     
     @Override
-    public boolean isAfter(final Year temporal1, final Year temporal2, final int stepAmount) {
-        return temporal1.isAfter(temporal2);
+    public boolean isAfter(final Month temporal1, final Month temporal2, final int stepAmount) {
+        return temporal1.getValue() > temporal2.getValue() || (temporal1.getValue() + stepAmount) > Month.DECEMBER.getValue();
     }
     
     @Override
-    public Year plus(final Year temporal, final long amountToAdd, final TemporalUnit unit) {
-        return temporal.plus(amountToAdd, unit);
+    public Month plus(final Month temporal, final long amountToAdd, final TemporalUnit unit) {
+        return temporal.plus(amountToAdd);
     }
 }
