@@ -59,7 +59,7 @@ public interface TemporalParser<T extends TemporalAccessor> {
      * Plus temporal.
      * 
      * @param temporal to be plus temporal
-     * @param stepAmount to be added step amount
+     * @param stepAmount to be plus step amount
      * @param unit temporal unit
      * @return plus temporal
      */
