@@ -39,6 +39,7 @@ public final class TemporalHandlerFactory {
      * Create new instance of temporal handler.
      *
      * @param temporal temporal
+     * @return temporal handler
      */
     @SuppressWarnings("rawtypes")
     public static TemporalHandler newInstance(final TemporalAccessor temporal) {
