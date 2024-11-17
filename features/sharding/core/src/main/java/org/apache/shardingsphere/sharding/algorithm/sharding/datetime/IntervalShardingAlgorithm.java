@@ -22,6 +22,12 @@ import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTimeTemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalTimeTemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearMonthTemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearTemporalParser;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -40,12 +46,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -157,47 +163,34 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
                 return doShardingInMonth(availableTargetNames, range, calculateTime);
             }
         }
-        if (!calculateTime.isSupported(ChronoField.EPOCH_DAY)) {
-            return doShardingInLocalTime(availableTargetNames, range, calculateTime);
-        }
-        return doShardingInLocalDateTime(availableTargetNames, range, calculateTime);
-    }
-    
-    private Collection<String> doShardingInLocalDateTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Set<String> result = new HashSet<>();
-        LocalDateTime calculateTimeAsView = LocalDateTime.from(calculateTime);
-        LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.from(dateTimeUpper);
-        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.from(dateTimeLower);
-        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDateTime)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDateTime, dateTimeUpperAsLocalDateTime)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-            }
-            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-        }
-        return result;
-    }
-    
-    private Collection<String> doShardingInLocalTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Set<String> result = new HashSet<>();
-        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
-        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
-        LocalTime calculateTimeAsView = calculateTime.query(TemporalQueries.localTime());
-        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalTime)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-            }
-            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-        }
-        return result;
+        return calculateTime.isSupported(ChronoField.EPOCH_DAY)
+                ? doShardingInLocalDateTime(availableTargetNames, range, calculateTime)
+                : doShardingInLocalTime(availableTargetNames, range, calculateTime);
     }
     
     private Collection<String> doShardingInLocalDate(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Set<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>();
         LocalDate dateTimeUpperAsLocalDate = dateTimeUpper.query(TemporalQueries.localDate());
         LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
         LocalDate calculateTimeAsView = calculateTime.query(TemporalQueries.localDate());
+        LocalDateTemporalParser temporalParser = new LocalDateTemporalParser();
         while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDate)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDate, dateTimeUpperAsLocalDate)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDate, dateTimeUpperAsLocalDate, temporalParser)) {
+                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
+            }
+            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
+        }
+        return result;
+    }
+    
+    private Collection<String> doShardingInYearMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
+        Collection<String> result = new HashSet<>();
+        YearMonth dateTimeUpperAsYearMonth = dateTimeUpper.query(YearMonth::from);
+        YearMonth dateTimeLowerAsYearMonth = dateTimeLower.query(YearMonth::from);
+        YearMonth calculateTimeAsView = calculateTime.query(YearMonth::from);
+        YearMonthTemporalParser temporalParser = new YearMonthTemporalParser();
+        while (!calculateTimeAsView.isAfter(dateTimeUpperAsYearMonth)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsYearMonth, dateTimeUpperAsYearMonth, temporalParser)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
             calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
@@ -206,12 +199,13 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Collection<String> doShardingInYear(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Set<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>();
         Year dateTimeUpperAsYear = dateTimeUpper.query(Year::from);
         Year dateTimeLowerAsYear = dateTimeLower.query(Year::from);
         Year calculateTimeAsView = calculateTime.query(Year::from);
+        YearTemporalParser temporalParser = new YearTemporalParser();
         while (!calculateTimeAsView.isAfter(dateTimeUpperAsYear)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsYear, dateTimeUpperAsYear)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsYear, dateTimeUpperAsYear, temporalParser)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
             calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
@@ -220,7 +214,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Collection<String> doShardingInMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Set<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>();
         Month dateTimeUpperAsMonth = dateTimeUpper.query(Month::from);
         Month dateTimeLowerAsMonth = dateTimeLower.query(Month::from);
         Month calculateTimeAsView = calculateTime.query(Month::from);
@@ -233,13 +227,15 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return result;
     }
     
-    private Collection<String> doShardingInYearMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Set<String> result = new HashSet<>();
-        YearMonth dateTimeUpperAsYearMonth = dateTimeUpper.query(YearMonth::from);
-        YearMonth dateTimeLowerAsYearMonth = dateTimeLower.query(YearMonth::from);
-        YearMonth calculateTimeAsView = calculateTime.query(YearMonth::from);
-        while (!calculateTimeAsView.isAfter(dateTimeUpperAsYearMonth)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsYearMonth, dateTimeUpperAsYearMonth)) {
+    private Collection<String> doShardingInLocalDateTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
+        Collection<String> result = new HashSet<>();
+        LocalDateTime calculateTimeAsView = LocalDateTime.from(calculateTime);
+        LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.from(dateTimeUpper);
+        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.from(dateTimeLower);
+        LocalDateTimeTemporalParser temporalParser = new LocalDateTimeTemporalParser();
+        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDateTime)) {
+            if (hasIntersection(
+                    Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDateTime, dateTimeUpperAsLocalDateTime, temporalParser)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
             calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
@@ -247,39 +243,28 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return result;
     }
     
-    private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range, final LocalDateTime dateTimeLower, final LocalDateTime dateTimeUpper) {
-        LocalDateTime lower = range.hasLowerBound() ? parseLocalDateTime(range.lowerEndpoint()) : dateTimeLower;
-        LocalDateTime upper = range.hasUpperBound() ? parseLocalDateTime(range.upperEndpoint()) : dateTimeUpper;
-        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
-        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
-        Range<LocalDateTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
-        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
+    private Collection<String> doShardingInLocalTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
+        Collection<String> result = new HashSet<>();
+        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
+        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
+        LocalTime calculateTimeAsView = calculateTime.query(TemporalQueries.localTime());
+        LocalTimeTemporalParser temporalParser = new LocalTimeTemporalParser();
+        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalTime)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime, temporalParser)) {
+                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
+            }
+            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
+        }
+        return result;
     }
     
-    private boolean hasIntersection(final Range<LocalDate> calculateRange, final Range<Comparable<?>> range, final LocalDate dateTimeLower, final LocalDate dateTimeUpper) {
-        LocalDate lower = range.hasLowerBound() ? parseLocalDate(range.lowerEndpoint()) : dateTimeLower;
-        LocalDate upper = range.hasUpperBound() ? parseLocalDate(range.upperEndpoint()) : dateTimeUpper;
+    private <T extends Temporal & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range, final T temporalLower, final T temporalUpper,
+                                                                         final TemporalParser<T> temporalParser) {
+        T lower = range.hasLowerBound() ? parseTemporal(range.lowerEndpoint(), temporalParser) : temporalLower;
+        T upper = range.hasUpperBound() ? parseTemporal(range.upperEndpoint(), temporalParser) : temporalUpper;
         BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
         BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
-        Range<LocalDate> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
-        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
-    }
-    
-    private boolean hasIntersection(final Range<LocalTime> calculateRange, final Range<Comparable<?>> range, final LocalTime dateTimeLower, final LocalTime dateTimeUpper) {
-        LocalTime lower = range.hasLowerBound() ? parseLocalTime(range.lowerEndpoint()) : dateTimeLower;
-        LocalTime upper = range.hasUpperBound() ? parseLocalTime(range.upperEndpoint()) : dateTimeUpper;
-        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
-        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
-        Range<LocalTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
-        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
-    }
-    
-    private boolean hasIntersection(final Range<Year> calculateRange, final Range<Comparable<?>> range, final Year dateTimeLower, final Year dateTimeUpper) {
-        Year lower = range.hasLowerBound() ? parseYear(range.lowerEndpoint()) : dateTimeLower;
-        Year upper = range.hasUpperBound() ? parseYear(range.upperEndpoint()) : dateTimeUpper;
-        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
-        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
-        Range<Year> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
+        Range<T> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
@@ -292,51 +277,14 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
-    private boolean hasIntersection(final Range<YearMonth> calculateRange, final Range<Comparable<?>> range, final YearMonth dateTimeLower, final YearMonth dateTimeUpper) {
-        YearMonth lower = range.hasLowerBound() ? parseYearMonth(range.lowerEndpoint()) : dateTimeLower;
-        YearMonth upper = range.hasUpperBound() ? parseYearMonth(range.upperEndpoint()) : dateTimeUpper;
-        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
-        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
-        Range<YearMonth> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
-        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
-    }
-    
-    private LocalDateTime parseLocalDateTime(final Comparable<?> endpoint) {
+    private <T extends Temporal> T parseTemporal(final Comparable<?> endpoint, final TemporalParser<T> temporalParser) {
         String dateTimeText = getDateTimeText(endpoint);
         return dateTimeText.length() >= dateTimePatternLength
-                ? LocalDateTime.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
-                : LocalDateTime.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
+                ? temporalParser.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
+                : temporalParser.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
-    private LocalDate parseLocalDate(final Comparable<?> endpoint) {
-        String dateTimeText = getDateTimeText(endpoint);
-        return dateTimeText.length() >= dateTimePatternLength
-                ? LocalDate.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
-                : LocalDate.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
-    }
-    
-    private LocalTime parseLocalTime(final Comparable<?> endpoint) {
-        String dateTimeText = getDateTimeText(endpoint);
-        return dateTimeText.length() >= dateTimePatternLength
-                ? LocalTime.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
-                : LocalTime.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
-    }
-    
-    private Year parseYear(final Comparable<?> endpoint) {
-        String dateTimeText = getDateTimeText(endpoint);
-        return dateTimeText.length() >= dateTimePatternLength
-                ? Year.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
-                : Year.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
-    }
-    
-    private YearMonth parseYearMonth(final Comparable<?> endpoint) {
-        String dateTimeText = getDateTimeText(endpoint);
-        return dateTimeText.length() >= dateTimePatternLength
-                ? YearMonth.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
-                : YearMonth.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
-    }
-    
-    /**
+    /*
      * After the sharding key is formatted as a {@link String},
      * if the length of the {@link String} is less than `datetime-pattern`,
      * it usually means there is a problem with the sharding key.
@@ -347,7 +295,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return Month.of(Integer.parseInt(getDateTimeText(endpoint).substring(0, dateTimePatternLength)));
     }
     
-    /**
+    /*
      * When the sharding key is a {@link String} and the length of this {@link String} is less than the `datetime-pattern` set by the algorithm,
      * ShardingSphere will try to use a substring of `datetime-pattern` to parse the sharding key.
      * This is to be compatible with the behavior of ORM libraries such as <a href="https://github.com/go-gorm/gorm">go-gorm/gorm</a>.
