@@ -30,10 +30,10 @@ import java.time.temporal.TemporalUnit;
 public final class MonthTemporalParser implements TemporalParser<Month> {
     
     /*
-     * After the sharding key is formatted as a {@link String},
-     * if the length of the {@link String} is less than `datetime-pattern`,
-     * it usually means there is a problem with the sharding key.
+     * After the sharding key is formatted as a {@link String}, if the length of the {@link String} is less than `datetime-pattern`, it usually means there is a problem with the sharding key.
+     *
      * @param endpoint A class carrying time information with an unknown class name.
+     *
      * @return {@link java.time.Month}
      */
     @Override

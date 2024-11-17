@@ -229,10 +229,11 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     /*
-     * When the sharding key is a {@link String} and the length of this {@link String} is less than the `datetime-pattern` set by the algorithm,
-     * ShardingSphere will try to use a substring of `datetime-pattern` to parse the sharding key.
-     * This is to be compatible with the behavior of ORM libraries such as <a href="https://github.com/go-gorm/gorm">go-gorm/gorm</a>.
+     * When the sharding key is a {@link String} and the length of this {@link String} is less than the `datetime-pattern` set by the algorithm, ShardingSphere will try to use a substring of
+     * `datetime-pattern` to parse the sharding key. This is to be compatible with the behavior of ORM libraries such as <a href="https://github.com/go-gorm/gorm">go-gorm/gorm</a>.
+     *
      * @param dateTimeText Sharding key with class name {@link String}
+     *
      * @return Child `datetime-pattern`, the pattern length is consistent with the shard key.
      */
     private DateTimeFormatter createRelaxedDateTimeFormatter(final String dateTimeText) {
