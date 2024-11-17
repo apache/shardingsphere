@@ -45,7 +45,7 @@ public final class YearMonthTemporalParser implements TemporalParser<YearMonth> 
     }
     
     @Override
-    public YearMonth plus(final YearMonth temporal, final long stepAmount, final TemporalUnit unit) {
+    public YearMonth add(final YearMonth temporal, final long stepAmount, final TemporalUnit unit) {
         return temporal.plus(stepAmount, unit);
     }
 }

@@ -175,10 +175,10 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         T calculateTimeAsView = temporalParser.convertTo(this.dateTimeLower);
         while (!temporalParser.isAfter(calculateTimeAsView, dateTimeUpper, stepAmount)) {
             if (hasIntersection(Range.closedOpen(calculateTimeAsView,
-                    temporalParser.plus(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalParser)) {
+                    temporalParser.add(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalParser)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
-            calculateTimeAsView = temporalParser.plus(calculateTimeAsView, stepAmount, stepUnit);
+            calculateTimeAsView = temporalParser.add(calculateTimeAsView, stepAmount, stepUnit);
         }
         return result;
     }

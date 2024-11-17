@@ -46,7 +46,7 @@ public final class LocalDateTemporalParser implements TemporalParser<LocalDate> 
     }
     
     @Override
-    public LocalDate plus(final LocalDate temporal, final long stepAmount, final TemporalUnit unit) {
+    public LocalDate add(final LocalDate temporal, final long stepAmount, final TemporalUnit unit) {
         return temporal.plus(stepAmount, unit);
     }
 }

@@ -56,12 +56,12 @@ public interface TemporalParser<T extends TemporalAccessor> {
     boolean isAfter(T temporal1, T temporal2, int stepAmount);
     
     /**
-     * Plus temporal.
+     * Add temporal.
      * 
-     * @param temporal to be plus temporal
-     * @param stepAmount to be plus step amount
+     * @param temporal to be added temporal
+     * @param stepAmount to be added step amount
      * @param unit temporal unit
-     * @return plus temporal
+     * @return added temporal
      */
-    T plus(T temporal, long stepAmount, TemporalUnit unit);
+    T add(T temporal, long stepAmount, TemporalUnit unit);
 }
