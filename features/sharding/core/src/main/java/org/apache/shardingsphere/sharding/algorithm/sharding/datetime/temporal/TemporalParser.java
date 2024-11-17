@@ -59,9 +59,9 @@ public interface TemporalParser<T extends TemporalAccessor> {
      * Plus temporal.
      * 
      * @param temporal to be plus temporal
-     * @param amountToAdd to be added amount
+     * @param stepAmount to be added step amount
      * @param unit temporal unit
      * @return plus temporal
      */
-    T plus(T temporal, long amountToAdd, TemporalUnit unit);
+    T plus(T temporal, long stepAmount, TemporalUnit unit);
 }

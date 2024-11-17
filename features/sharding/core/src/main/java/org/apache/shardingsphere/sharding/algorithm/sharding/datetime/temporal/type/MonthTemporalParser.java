@@ -52,7 +52,7 @@ public final class MonthTemporalParser implements TemporalParser<Month> {
     }
     
     @Override
-    public Month plus(final Month temporal, final long amountToAdd, final TemporalUnit unit) {
-        return temporal.plus(amountToAdd);
+    public Month plus(final Month temporal, final long stepAmount, final TemporalUnit unit) {
+        return temporal.plus(stepAmount);
     }
 }
