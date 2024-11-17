@@ -38,6 +38,14 @@ public interface TemporalParser<T extends TemporalAccessor> {
     T parse(CharSequence text, DateTimeFormatter formatter);
     
     /**
+     * Convert temporal.
+     * 
+     * @param temporal to be converted temporal
+     * @return converted temporal
+     */
+    T convertTo(TemporalAccessor temporal);
+    
+    /**
      * Judge whether temporal1 is after temporal2.
      * 
      * @param temporal1 temporal1

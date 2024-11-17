@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.T
 
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
 
 /**
@@ -31,6 +32,11 @@ public final class YearMonthTemporalParser implements TemporalParser<YearMonth> 
     @Override
     public YearMonth parse(final CharSequence text, final DateTimeFormatter formatter) {
         return YearMonth.parse(text, formatter);
+    }
+    
+    @Override
+    public YearMonth convertTo(final TemporalAccessor temporal) {
+        return temporal.query(YearMonth::from);
     }
     
     @Override

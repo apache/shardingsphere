@@ -36,9 +36,7 @@ import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatEx
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.Month;
 import java.time.Year;
 import java.time.YearMonth;
@@ -148,72 +146,67 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
-        TemporalAccessor calculateTime = dateTimeLower;
-        if (!calculateTime.isSupported(ChronoField.NANO_OF_DAY)) {
-            if (calculateTime.isSupported(ChronoField.EPOCH_DAY)) {
-                return doShardingInLocalDate(availableTargetNames, range, calculateTime);
+        if (!dateTimeLower.isSupported(ChronoField.NANO_OF_DAY)) {
+            if (dateTimeLower.isSupported(ChronoField.EPOCH_DAY)) {
+                return getMatchedTables(availableTargetNames, range, new LocalDateTemporalParser());
             }
-            if (calculateTime.isSupported(ChronoField.YEAR) && calculateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                return doShardingInYearMonth(availableTargetNames, range, calculateTime);
+            if (dateTimeLower.isSupported(ChronoField.YEAR) && dateTimeLower.isSupported(ChronoField.MONTH_OF_YEAR)) {
+                return getMatchedTables(availableTargetNames, range, new YearMonthTemporalParser());
             }
-            if (calculateTime.isSupported(ChronoField.YEAR)) {
-                return doShardingInYear(availableTargetNames, range, calculateTime);
+            if (dateTimeLower.isSupported(ChronoField.YEAR)) {
+                return getMatchedTables(availableTargetNames, range, new YearTemporalParser());
             }
-            if (calculateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                return doShardingInMonth(availableTargetNames, range, calculateTime);
+            if (dateTimeLower.isSupported(ChronoField.MONTH_OF_YEAR)) {
+                return getMatchedTables(availableTargetNames, range, new MonthTemporalParser());
             }
         }
-        return calculateTime.isSupported(ChronoField.EPOCH_DAY)
-                ? doShardingInLocalDateTime(availableTargetNames, range, calculateTime)
-                : doShardingInLocalTime(availableTargetNames, range, calculateTime);
+        return dateTimeLower.isSupported(ChronoField.EPOCH_DAY)
+                ? getMatchedTables(availableTargetNames, range, new LocalDateTimeTemporalParser())
+                : getMatchedTables(availableTargetNames, range, new LocalTimeTemporalParser());
     }
     
-    private Collection<String> doShardingInLocalDate(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        LocalDate dateTimeUpper = this.dateTimeUpper.query(TemporalQueries.localDate());
-        LocalDate dateTimeLower = this.dateTimeLower.query(TemporalQueries.localDate());
-        LocalDate calculateTimeAsView = calculateTime.query(TemporalQueries.localDate());
-        LocalDateTemporalParser temporalParser = new LocalDateTemporalParser();
-        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
+    private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames, final Range<Comparable<?>> range,
+                                                                                             final TemporalParser<T> temporalParser) {
+        Collection<String> result = new HashSet<>();
+        T dateTimeUpper = temporalParser.convertTo(this.dateTimeUpper);
+        T dateTimeLower = temporalParser.convertTo(this.dateTimeLower);
+        T calculateTimeAsView = temporalParser.convertTo(this.dateTimeLower);
+        while (!temporalParser.isAfter(calculateTimeAsView, dateTimeUpper, stepAmount)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView,
+                    temporalParser.plus(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalParser)) {
+                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
+            }
+            calculateTimeAsView = temporalParser.plus(calculateTimeAsView, stepAmount, stepUnit);
+        }
+        return result;
     }
     
-    private Collection<String> doShardingInYearMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        YearMonth dateTimeUpper = this.dateTimeUpper.query(YearMonth::from);
-        YearMonth dateTimeLower = this.dateTimeLower.query(YearMonth::from);
-        YearMonth calculateTimeAsView = calculateTime.query(YearMonth::from);
-        YearMonthTemporalParser temporalParser = new YearMonthTemporalParser();
-        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
-    }
-    
-    private Collection<String> doShardingInYear(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Year dateTimeUpper = this.dateTimeUpper.query(Year::from);
-        Year dateTimeLower = this.dateTimeLower.query(Year::from);
-        Year calculateTimeAsView = calculateTime.query(Year::from);
-        YearTemporalParser temporalParser = new YearTemporalParser();
-        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
-    }
-    
-    private Collection<String> doShardingInMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Month dateTimeUpper = this.dateTimeUpper.query(Month::from);
-        Month dateTimeLower = this.dateTimeLower.query(Month::from);
-        Month calculateTimeAsView = calculateTime.query(Month::from);
-        MonthTemporalParser temporalParser = new MonthTemporalParser();
-        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
-    }
-    
-    private Collection<String> doShardingInLocalDateTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        LocalDateTime calculateTimeAsView = LocalDateTime.from(calculateTime);
-        LocalDateTime dateTimeUpper = LocalDateTime.from(this.dateTimeUpper);
-        LocalDateTime dateTimeLower = LocalDateTime.from(this.dateTimeLower);
-        LocalDateTimeTemporalParser temporalParser = new LocalDateTimeTemporalParser();
-        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
-    }
-    
-    private Collection<String> doShardingInLocalTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        LocalTime dateTimeUpper = this.dateTimeUpper.query(TemporalQueries.localTime());
-        LocalTime dateTimeLower = this.dateTimeLower.query(TemporalQueries.localTime());
-        LocalTime calculateTimeAsView = calculateTime.query(TemporalQueries.localTime());
-        LocalTimeTemporalParser temporalParser = new LocalTimeTemporalParser();
-        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
+    private Collection<String> getMatchedTables(final TemporalAccessor dateTime, final Collection<String> availableTargetNames) {
+        String tableSuffix;
+        if (!dateTime.isSupported(ChronoField.NANO_OF_DAY)) {
+            if (dateTime.isSupported(ChronoField.EPOCH_DAY)) {
+                tableSuffix = tableSuffixPattern.format(dateTime.query(TemporalQueries.localDate()));
+                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+            }
+            if (dateTime.isSupported(ChronoField.YEAR) && dateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
+                tableSuffix = tableSuffixPattern.format(dateTime.query(YearMonth::from));
+                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+            }
+            if (dateTime.isSupported(ChronoField.YEAR)) {
+                tableSuffix = tableSuffixPattern.format(dateTime.query(Year::from));
+                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+            }
+            if (dateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
+                tableSuffix = tableSuffixPattern.format(dateTime.query(Month::from));
+                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+            }
+        }
+        if (!dateTime.isSupported(ChronoField.EPOCH_DAY)) {
+            tableSuffix = dateTime.query(TemporalQueries.localTime()).format(tableSuffixPattern);
+            return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+        }
+        tableSuffix = LocalDateTime.from(dateTime).format(tableSuffixPattern);
+        return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
     }
     
     private <T extends TemporalAccessor & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range, final T temporalLower, final T temporalUpper,
@@ -258,49 +251,6 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             return dateTimeFormatter.format(((java.util.Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
         return endpoint.toString();
-    }
-    
-    private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames, final Range<Comparable<?>> range,
-                                                                                     final T dateTimeUpper, final T dateTimeLower,
-                                                                                     final T calculateTimeAsView, final TemporalParser<T> temporalParser) {
-        Collection<String> result = new HashSet<>();
-        T newCalculateTimeAsView = calculateTimeAsView;
-        while (!temporalParser.isAfter(newCalculateTimeAsView, dateTimeUpper, stepAmount)) {
-            if (hasIntersection(Range.closedOpen(newCalculateTimeAsView,
-                    temporalParser.plus(newCalculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalParser)) {
-                result.addAll(getMatchedTables(newCalculateTimeAsView, availableTargetNames));
-            }
-            newCalculateTimeAsView = temporalParser.plus(newCalculateTimeAsView, stepAmount, stepUnit);
-        }
-        return result;
-    }
-    
-    private Collection<String> getMatchedTables(final TemporalAccessor dateTime, final Collection<String> availableTargetNames) {
-        String tableSuffix;
-        if (!dateTime.isSupported(ChronoField.NANO_OF_DAY)) {
-            if (dateTime.isSupported(ChronoField.EPOCH_DAY)) {
-                tableSuffix = tableSuffixPattern.format(dateTime.query(TemporalQueries.localDate()));
-                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-            }
-            if (dateTime.isSupported(ChronoField.YEAR) && dateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                tableSuffix = tableSuffixPattern.format(dateTime.query(YearMonth::from));
-                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-            }
-            if (dateTime.isSupported(ChronoField.YEAR)) {
-                tableSuffix = tableSuffixPattern.format(dateTime.query(Year::from));
-                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-            }
-            if (dateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                tableSuffix = tableSuffixPattern.format(dateTime.query(Month::from));
-                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-            }
-        }
-        if (!dateTime.isSupported(ChronoField.EPOCH_DAY)) {
-            tableSuffix = dateTime.query(TemporalQueries.localTime()).format(tableSuffixPattern);
-            return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-        }
-        tableSuffix = LocalDateTime.from(dateTime).format(tableSuffixPattern);
-        return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
     }
     
     @Override

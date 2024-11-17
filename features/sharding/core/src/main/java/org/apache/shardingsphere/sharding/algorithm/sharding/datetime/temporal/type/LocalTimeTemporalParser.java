@@ -21,6 +21,8 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.T
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQueries;
 import java.time.temporal.TemporalUnit;
 
 /**
@@ -31,6 +33,11 @@ public final class LocalTimeTemporalParser implements TemporalParser<LocalTime> 
     @Override
     public LocalTime parse(final CharSequence text, final DateTimeFormatter formatter) {
         return LocalTime.parse(text, formatter);
+    }
+    
+    @Override
+    public LocalTime convertTo(final TemporalAccessor temporal) {
+        return temporal.query(TemporalQueries.localTime());
     }
     
     @Override
