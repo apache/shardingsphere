@@ -37,7 +37,7 @@ public final class TemporalHandlerFactory {
     
     /**
      * Create new instance of temporal handler.
-     * 
+     *
      * @param temporal temporal
      */
     @SuppressWarnings("rawtypes")
