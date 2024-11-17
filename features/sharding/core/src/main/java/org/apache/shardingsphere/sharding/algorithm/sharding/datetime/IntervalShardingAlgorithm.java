@@ -267,8 +267,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
      * @return Child `datetime-pattern`, the pattern length is consistent with the shard key.
      */
     private DateTimeFormatter createRelaxedDateTimeFormatter(final String dateTimeText) {
-        String dateTimeFormatterString = dateTimePatternString.substring(0, dateTimeText.length());
-        return DateTimeFormatter.ofPattern(dateTimeFormatterString);
+        return DateTimeFormatter.ofPattern(dateTimePatternString.substring(0, dateTimeText.length()));
     }
     
     private String getDateTimeText(final Comparable<?> endpoint) {
