@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.T
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalUnit;
 
 /**
  * Local date temporal parser.
@@ -30,5 +31,15 @@ public final class LocalDateTemporalParser implements TemporalParser<LocalDate> 
     @Override
     public LocalDate parse(final CharSequence text, final DateTimeFormatter formatter) {
         return LocalDate.parse(text, formatter);
+    }
+    
+    @Override
+    public boolean isAfter(final LocalDate temporal1, final LocalDate temporal2) {
+        return temporal1.isAfter(temporal2);
+    }
+    
+    @Override
+    public LocalDate plus(final LocalDate temporal, final long amountToAdd, final TemporalUnit unit) {
+        return temporal.plus(amountToAdd, unit);
     }
 }

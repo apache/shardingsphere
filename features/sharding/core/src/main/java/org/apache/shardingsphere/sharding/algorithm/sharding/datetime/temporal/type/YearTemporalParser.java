@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.T
 
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalUnit;
 
 /**
  * Year temporal parser.
@@ -30,5 +31,15 @@ public final class YearTemporalParser implements TemporalParser<Year> {
     @Override
     public Year parse(final CharSequence text, final DateTimeFormatter formatter) {
         return Year.parse(text, formatter);
+    }
+    
+    @Override
+    public boolean isAfter(final Year temporal1, final Year temporal2) {
+        return temporal1.isAfter(temporal2);
+    }
+    
+    @Override
+    public Year plus(final Year temporal, final long amountToAdd, final TemporalUnit unit) {
+        return temporal.plus(amountToAdd, unit);
     }
 }

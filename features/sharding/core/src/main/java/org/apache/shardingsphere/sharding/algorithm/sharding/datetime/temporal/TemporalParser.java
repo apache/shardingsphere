@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal;
 
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 
 /**
  * Temporal parser.
@@ -35,4 +36,23 @@ public interface TemporalParser<T extends Temporal> {
      * @return parsed temporal
      */
     T parse(CharSequence text, DateTimeFormatter formatter);
+    
+    /**
+     * Judge whether temporal1 is after temporal2.
+     * 
+     * @param temporal1 temporal1
+     * @param temporal2 temporal2
+     * @return is temporal1 after temporal2 or not
+     */
+    boolean isAfter(T temporal1, T temporal2);
+    
+    /**
+     * Plus temporal.
+     * 
+     * @param temporal to be plus temporal
+     * @param amountToAdd to be added amount
+     * @param unit temporal unit
+     * @return plus temporal
+     */
+    T plus(T temporal, long amountToAdd, TemporalUnit unit);
 }

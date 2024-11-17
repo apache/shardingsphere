@@ -169,57 +169,36 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Collection<String> doShardingInLocalDate(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Collection<String> result = new HashSet<>();
-        LocalDate dateTimeUpperAsLocalDate = dateTimeUpper.query(TemporalQueries.localDate());
-        LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
+        LocalDate dateTimeUpper = this.dateTimeUpper.query(TemporalQueries.localDate());
+        LocalDate dateTimeLower = this.dateTimeLower.query(TemporalQueries.localDate());
         LocalDate calculateTimeAsView = calculateTime.query(TemporalQueries.localDate());
         LocalDateTemporalParser temporalParser = new LocalDateTemporalParser();
-        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDate)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDate, dateTimeUpperAsLocalDate, temporalParser)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-            }
-            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-        }
-        return result;
+        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
     }
     
     private Collection<String> doShardingInYearMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Collection<String> result = new HashSet<>();
-        YearMonth dateTimeUpperAsYearMonth = dateTimeUpper.query(YearMonth::from);
-        YearMonth dateTimeLowerAsYearMonth = dateTimeLower.query(YearMonth::from);
+        YearMonth dateTimeUpper = this.dateTimeUpper.query(YearMonth::from);
+        YearMonth dateTimeLower = this.dateTimeLower.query(YearMonth::from);
         YearMonth calculateTimeAsView = calculateTime.query(YearMonth::from);
         YearMonthTemporalParser temporalParser = new YearMonthTemporalParser();
-        while (!calculateTimeAsView.isAfter(dateTimeUpperAsYearMonth)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsYearMonth, dateTimeUpperAsYearMonth, temporalParser)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-            }
-            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-        }
-        return result;
+        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
     }
     
     private Collection<String> doShardingInYear(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Collection<String> result = new HashSet<>();
-        Year dateTimeUpperAsYear = dateTimeUpper.query(Year::from);
-        Year dateTimeLowerAsYear = dateTimeLower.query(Year::from);
+        Year dateTimeUpper = this.dateTimeUpper.query(Year::from);
+        Year dateTimeLower = this.dateTimeLower.query(Year::from);
         Year calculateTimeAsView = calculateTime.query(Year::from);
         YearTemporalParser temporalParser = new YearTemporalParser();
-        while (!calculateTimeAsView.isAfter(dateTimeUpperAsYear)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsYear, dateTimeUpperAsYear, temporalParser)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-            }
-            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-        }
-        return result;
+        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
     }
     
     private Collection<String> doShardingInMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
         Collection<String> result = new HashSet<>();
-        Month dateTimeUpperAsMonth = dateTimeUpper.query(Month::from);
-        Month dateTimeLowerAsMonth = dateTimeLower.query(Month::from);
+        Month dateTimeUpper = this.dateTimeUpper.query(Month::from);
+        Month dateTimeLower = this.dateTimeLower.query(Month::from);
         Month calculateTimeAsView = calculateTime.query(Month::from);
-        while (calculateTimeAsView.getValue() <= dateTimeUpperAsMonth.getValue() && (calculateTimeAsView.getValue() + stepAmount) <= Month.DECEMBER.getValue()) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount)), range, dateTimeLowerAsMonth, dateTimeUpperAsMonth)) {
+        while (calculateTimeAsView.getValue() <= dateTimeUpper.getValue() && (calculateTimeAsView.getValue() + stepAmount) <= Month.DECEMBER.getValue()) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount)), range, dateTimeLower, dateTimeUpper)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
             calculateTimeAsView = calculateTimeAsView.plus(stepAmount);
@@ -228,34 +207,19 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Collection<String> doShardingInLocalDateTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Collection<String> result = new HashSet<>();
         LocalDateTime calculateTimeAsView = LocalDateTime.from(calculateTime);
-        LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.from(dateTimeUpper);
-        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.from(dateTimeLower);
+        LocalDateTime dateTimeUpper = LocalDateTime.from(this.dateTimeUpper);
+        LocalDateTime dateTimeLower = LocalDateTime.from(this.dateTimeLower);
         LocalDateTimeTemporalParser temporalParser = new LocalDateTimeTemporalParser();
-        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDateTime)) {
-            if (hasIntersection(
-                    Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDateTime, dateTimeUpperAsLocalDateTime, temporalParser)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-            }
-            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-        }
-        return result;
+        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
     }
     
     private Collection<String> doShardingInLocalTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
-        Collection<String> result = new HashSet<>();
-        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
-        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
+        LocalTime dateTimeUpper = this.dateTimeUpper.query(TemporalQueries.localTime());
+        LocalTime dateTimeLower = this.dateTimeLower.query(TemporalQueries.localTime());
         LocalTime calculateTimeAsView = calculateTime.query(TemporalQueries.localTime());
         LocalTimeTemporalParser temporalParser = new LocalTimeTemporalParser();
-        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalTime)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime, temporalParser)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-            }
-            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-        }
-        return result;
+        return getMatchedTables(availableTargetNames, range, dateTimeUpper, dateTimeLower, calculateTimeAsView, temporalParser);
     }
     
     private <T extends Temporal & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range, final T temporalLower, final T temporalUpper,
@@ -321,6 +285,21 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             return dateTimeFormatter.format(((java.util.Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
         return endpoint.toString();
+    }
+    
+    private <T extends Temporal & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames, final Range<Comparable<?>> range,
+                                                                                     final T dateTimeUpperAsLocalTime, final T dateTimeLowerAsLocalTime,
+                                                                                     final T calculateTimeAsView, final TemporalParser<T> temporalParser) {
+        Collection<String> result = new HashSet<>();
+        T newCalculateTimeAsView = calculateTimeAsView;
+        while (!temporalParser.isAfter(newCalculateTimeAsView, dateTimeUpperAsLocalTime)) {
+            if (hasIntersection(Range.closedOpen(newCalculateTimeAsView,
+                    temporalParser.plus(newCalculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime, temporalParser)) {
+                result.addAll(getMatchedTables(newCalculateTimeAsView, availableTargetNames));
+            }
+            newCalculateTimeAsView = temporalParser.plus(newCalculateTimeAsView, stepAmount, stepUnit);
+        }
+        return result;
     }
     
     private Collection<String> getMatchedTables(final TemporalAccessor dateTime, final Collection<String> availableTargetNames) {
