@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -104,6 +106,18 @@ class IntervalShardingAlgorithmTest {
                 availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
             }
         }
+    }
+    
+    @Test
+    void assertInitFailedWithInvalidDatetimeFormat() {
+        assertThrows(InvalidDatetimeFormatException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", PropertiesBuilder.build(new Property("datetime-pattern", "yyyy"), new Property("datetime-lower", "invalid"))));
+    }
+    
+    @Test
+    void assertInitFailedWithInvalidStepUnit() {
+        assertThrows(UnsupportedSQLOperationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", PropertiesBuilder.build(
+                new Property("datetime-pattern", "yy"), new Property("datetime-lower", "16"), new Property("sharding-suffix-pattern", "yy"), new Property("datetime-interval-unit", "invalid"))));
     }
     
     @Test

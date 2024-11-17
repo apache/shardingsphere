@@ -303,42 +303,37 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     private LocalDateTime parseLocalDateTime(final Comparable<?> endpoint) {
         String dateTimeText = getDateTimeText(endpoint);
-        if (dateTimeText.length() >= dateTimePatternLength) {
-            return LocalDateTime.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
-        }
-        return LocalDateTime.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
+        return dateTimeText.length() >= dateTimePatternLength
+                ? LocalDateTime.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
+                : LocalDateTime.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     private LocalDate parseLocalDate(final Comparable<?> endpoint) {
         String dateTimeText = getDateTimeText(endpoint);
-        if (dateTimeText.length() >= dateTimePatternLength) {
-            return LocalDate.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
-        }
-        return LocalDate.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
+        return dateTimeText.length() >= dateTimePatternLength
+                ? LocalDate.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
+                : LocalDate.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     private LocalTime parseLocalTime(final Comparable<?> endpoint) {
         String dateTimeText = getDateTimeText(endpoint);
-        if (dateTimeText.length() >= dateTimePatternLength) {
-            return LocalTime.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
-        }
-        return LocalTime.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
+        return dateTimeText.length() >= dateTimePatternLength
+                ? LocalTime.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
+                : LocalTime.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     private Year parseYear(final Comparable<?> endpoint) {
         String dateTimeText = getDateTimeText(endpoint);
-        if (dateTimeText.length() >= dateTimePatternLength) {
-            return Year.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
-        }
-        return Year.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
+        return dateTimeText.length() >= dateTimePatternLength
+                ? Year.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
+                : Year.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     private YearMonth parseYearMonth(final Comparable<?> endpoint) {
         String dateTimeText = getDateTimeText(endpoint);
-        if (dateTimeText.length() >= dateTimePatternLength) {
-            return YearMonth.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
-        }
-        return YearMonth.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
+        return dateTimeText.length() >= dateTimePatternLength
+                ? YearMonth.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
+                : YearMonth.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     /**
