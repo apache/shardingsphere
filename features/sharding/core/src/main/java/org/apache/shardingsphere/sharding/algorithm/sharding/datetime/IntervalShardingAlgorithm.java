@@ -23,12 +23,7 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitial
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalHandler;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTemporalHandler;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTimeTemporalHandler;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalTimeTemporalHandler;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.MonthTemporalHandler;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearMonthTemporalHandler;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearTemporalHandler;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalHandlerFactory;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -134,42 +129,22 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         throw new UnsupportedSQLOperationException(String.format("Cannot find step unit for specified %s property: `%s`", INTERVAL_UNIT_KEY, stepUnit));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         Range<Comparable<?>> range = Range.singleton(shardingValue.getValue());
-        return ((Collection<String>) getMatchedTables(availableTargetNames, range, createTemporalParser())).stream().findFirst().orElse(null);
+        return getMatchedTables(availableTargetNames, range).stream().findFirst().orElse(null);
+    }
+    
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
+        return getMatchedTables(availableTargetNames, shardingValue.getValueRange());
     }
     
     @SuppressWarnings("unchecked")
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        return getMatchedTables(availableTargetNames, shardingValue.getValueRange(), createTemporalParser());
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private TemporalHandler createTemporalParser() {
-        if (!dateTimeLower.isSupported(ChronoField.NANO_OF_DAY)) {
-            if (dateTimeLower.isSupported(ChronoField.EPOCH_DAY)) {
-                return new LocalDateTemporalHandler();
-            }
-            if (dateTimeLower.isSupported(ChronoField.YEAR) && dateTimeLower.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                return new YearMonthTemporalHandler();
-            }
-            if (dateTimeLower.isSupported(ChronoField.YEAR)) {
-                return new YearTemporalHandler();
-            }
-            if (dateTimeLower.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                return new MonthTemporalHandler();
-            }
-        }
-        return dateTimeLower.isSupported(ChronoField.EPOCH_DAY) ? new LocalDateTimeTemporalHandler() : new LocalTimeTemporalHandler();
-    }
-    
-    private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames,
-                                                                                             final Range<Comparable<?>> range, final TemporalHandler<T> temporalHandler) {
+    private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
         Collection<String> result = new HashSet<>();
+        TemporalHandler<T> temporalHandler = TemporalHandlerFactory.newInstance(dateTimeLower);
         T dateTimeUpper = temporalHandler.convertTo(this.dateTimeUpper);
         T dateTimeLower = temporalHandler.convertTo(this.dateTimeLower);
         T calculateTimeAsView = temporalHandler.convertTo(this.dateTimeLower);
