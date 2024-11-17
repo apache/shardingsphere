@@ -130,8 +130,7 @@ class IntervalShardingAlgorithmTest {
     
     @Test
     void assertRangeDoShardingByQuarter() {
-        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources,
-                createShardingValue("2019-10-15 10:59:08", "2020-04-08 10:59:08"));
+        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, createShardingValue("2019-10-15 10:59:08", "2020-04-08 10:59:08"));
         assertThat(actual.size(), is(3));
     }
     
