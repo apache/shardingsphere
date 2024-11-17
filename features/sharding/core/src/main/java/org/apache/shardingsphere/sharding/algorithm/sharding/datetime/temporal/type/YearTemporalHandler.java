@@ -17,36 +17,35 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type;
 
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalHandler;
 
-import java.time.LocalTime;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalQueries;
 import java.time.temporal.TemporalUnit;
 
 /**
- * Local time temporal parser.
+ * Year temporal handler.
  */
-public final class LocalTimeTemporalParser implements TemporalParser<LocalTime> {
+public final class YearTemporalHandler implements TemporalHandler<Year> {
     
     @Override
-    public LocalTime parse(final CharSequence text, final DateTimeFormatter formatter) {
-        return LocalTime.parse(text, formatter);
+    public Year parse(final CharSequence text, final DateTimeFormatter formatter) {
+        return Year.parse(text, formatter);
     }
     
     @Override
-    public LocalTime convertTo(final TemporalAccessor temporal) {
-        return temporal.query(TemporalQueries.localTime());
+    public Year convertTo(final TemporalAccessor temporal) {
+        return Year.from(temporal);
     }
     
     @Override
-    public boolean isAfter(final LocalTime temporal1, final LocalTime temporal2, final int stepAmount) {
+    public boolean isAfter(final Year temporal1, final Year temporal2, final int stepAmount) {
         return temporal1.isAfter(temporal2);
     }
     
     @Override
-    public LocalTime add(final LocalTime temporal, final long stepAmount, final TemporalUnit unit) {
+    public Year add(final Year temporal, final long stepAmount, final TemporalUnit unit) {
         return temporal.plus(stepAmount, unit);
     }
 }

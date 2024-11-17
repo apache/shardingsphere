@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type;
 
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalHandler;
 
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
@@ -25,9 +25,9 @@ import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
 
 /**
- * Month temporal parser.
+ * Month temporal handler.
  */
-public final class MonthTemporalParser implements TemporalParser<Month> {
+public final class MonthTemporalHandler implements TemporalHandler<Month> {
     
     /*
      * After the sharding key is formatted as a {@link String}, if the length of the {@link String} is less than `datetime-pattern`, it usually means there is a problem with the sharding key.

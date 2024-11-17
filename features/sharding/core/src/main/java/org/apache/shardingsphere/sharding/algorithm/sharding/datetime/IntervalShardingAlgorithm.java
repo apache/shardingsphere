@@ -22,13 +22,13 @@ import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalParser;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTemporalParser;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTimeTemporalParser;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalTimeTemporalParser;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.MonthTemporalParser;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearMonthTemporalParser;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearTemporalParser;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.TemporalHandler;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTemporalHandler;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalDateTimeTemporalHandler;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.LocalTimeTemporalHandler;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.MonthTemporalHandler;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearMonthTemporalHandler;
+import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.temporal.type.YearTemporalHandler;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -149,36 +149,36 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     @SuppressWarnings("rawtypes")
-    private TemporalParser createTemporalParser() {
+    private TemporalHandler createTemporalParser() {
         if (!dateTimeLower.isSupported(ChronoField.NANO_OF_DAY)) {
             if (dateTimeLower.isSupported(ChronoField.EPOCH_DAY)) {
-                return new LocalDateTemporalParser();
+                return new LocalDateTemporalHandler();
             }
             if (dateTimeLower.isSupported(ChronoField.YEAR) && dateTimeLower.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                return new YearMonthTemporalParser();
+                return new YearMonthTemporalHandler();
             }
             if (dateTimeLower.isSupported(ChronoField.YEAR)) {
-                return new YearTemporalParser();
+                return new YearTemporalHandler();
             }
             if (dateTimeLower.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                return new MonthTemporalParser();
+                return new MonthTemporalHandler();
             }
         }
-        return dateTimeLower.isSupported(ChronoField.EPOCH_DAY) ? new LocalDateTimeTemporalParser() : new LocalTimeTemporalParser();
+        return dateTimeLower.isSupported(ChronoField.EPOCH_DAY) ? new LocalDateTimeTemporalHandler() : new LocalTimeTemporalHandler();
     }
     
     private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final Collection<String> availableTargetNames,
-                                                                                             final Range<Comparable<?>> range, final TemporalParser<T> temporalParser) {
+                                                                                             final Range<Comparable<?>> range, final TemporalHandler<T> temporalHandler) {
         Collection<String> result = new HashSet<>();
-        T dateTimeUpper = temporalParser.convertTo(this.dateTimeUpper);
-        T dateTimeLower = temporalParser.convertTo(this.dateTimeLower);
-        T calculateTimeAsView = temporalParser.convertTo(this.dateTimeLower);
-        while (!temporalParser.isAfter(calculateTimeAsView, dateTimeUpper, stepAmount)) {
+        T dateTimeUpper = temporalHandler.convertTo(this.dateTimeUpper);
+        T dateTimeLower = temporalHandler.convertTo(this.dateTimeLower);
+        T calculateTimeAsView = temporalHandler.convertTo(this.dateTimeLower);
+        while (!temporalHandler.isAfter(calculateTimeAsView, dateTimeUpper, stepAmount)) {
             if (hasIntersection(Range.closedOpen(calculateTimeAsView,
-                    temporalParser.add(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalParser)) {
+                    temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalHandler)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
-            calculateTimeAsView = temporalParser.add(calculateTimeAsView, stepAmount, stepUnit);
+            calculateTimeAsView = temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit);
         }
         return result;
     }
@@ -212,20 +212,20 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private <T extends TemporalAccessor & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range, final T temporalLower, final T temporalUpper,
-                                                                                 final TemporalParser<T> temporalParser) {
-        T lower = range.hasLowerBound() ? parseTemporal(range.lowerEndpoint(), temporalParser) : temporalLower;
-        T upper = range.hasUpperBound() ? parseTemporal(range.upperEndpoint(), temporalParser) : temporalUpper;
+                                                                                 final TemporalHandler<T> temporalHandler) {
+        T lower = range.hasLowerBound() ? parseTemporal(range.lowerEndpoint(), temporalHandler) : temporalLower;
+        T upper = range.hasUpperBound() ? parseTemporal(range.upperEndpoint(), temporalHandler) : temporalUpper;
         BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
         BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
         Range<T> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
-    private <T extends TemporalAccessor> T parseTemporal(final Comparable<?> endpoint, final TemporalParser<T> temporalParser) {
+    private <T extends TemporalAccessor> T parseTemporal(final Comparable<?> endpoint, final TemporalHandler<T> temporalHandler) {
         String dateTimeText = getDateTimeText(endpoint);
         return dateTimeText.length() >= dateTimePatternLength
-                ? temporalParser.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
-                : temporalParser.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
+                ? temporalHandler.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
+                : temporalHandler.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     /*

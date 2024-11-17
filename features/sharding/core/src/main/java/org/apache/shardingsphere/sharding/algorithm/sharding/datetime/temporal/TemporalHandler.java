@@ -22,11 +22,11 @@ import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
 
 /**
- * Temporal parser.
+ * Temporal handler.
  * 
  * @param <T> type of temporal
  */
-public interface TemporalParser<T extends TemporalAccessor> {
+public interface TemporalHandler<T extends TemporalAccessor> {
     
     /**
      * Parse from text.
