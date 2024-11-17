@@ -149,8 +149,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         T dateTimeLower = temporalHandler.convertTo(this.dateTimeLower);
         T calculateTimeAsView = temporalHandler.convertTo(this.dateTimeLower);
         while (!temporalHandler.isAfter(calculateTimeAsView, dateTimeUpper, stepAmount)) {
-            if (hasIntersection(Range.closedOpen(calculateTimeAsView,
-                    temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalHandler)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalHandler)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
             calculateTimeAsView = temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit);
