@@ -32,16 +32,11 @@ import org.apache.shardingsphere.sharding.exception.data.NullShardingValueExcept
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.Year;
-import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalQueries;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
@@ -150,43 +145,20 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         T calculateTimeAsView = temporalHandler.convertTo(this.dateTimeLower);
         while (!temporalHandler.isAfter(calculateTimeAsView, dateTimeUpper, stepAmount)) {
             if (hasIntersection(Range.closedOpen(calculateTimeAsView, temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper, temporalHandler)) {
-                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
+                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames, temporalHandler));
             }
             calculateTimeAsView = temporalHandler.add(calculateTimeAsView, stepAmount, stepUnit);
         }
         return result;
     }
     
-    private Collection<String> getMatchedTables(final TemporalAccessor dateTime, final Collection<String> availableTargetNames) {
-        String tableSuffix;
-        if (!dateTime.isSupported(ChronoField.NANO_OF_DAY)) {
-            if (dateTime.isSupported(ChronoField.EPOCH_DAY)) {
-                tableSuffix = tableSuffixPattern.format(dateTime.query(TemporalQueries.localDate()));
-                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-            }
-            if (dateTime.isSupported(ChronoField.YEAR) && dateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                tableSuffix = tableSuffixPattern.format(dateTime.query(YearMonth::from));
-                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-            }
-            if (dateTime.isSupported(ChronoField.YEAR)) {
-                tableSuffix = tableSuffixPattern.format(dateTime.query(Year::from));
-                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-            }
-            if (dateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
-                tableSuffix = tableSuffixPattern.format(dateTime.query(Month::from));
-                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-            }
-        }
-        if (!dateTime.isSupported(ChronoField.EPOCH_DAY)) {
-            tableSuffix = dateTime.query(TemporalQueries.localTime()).format(tableSuffixPattern);
-            return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
-        }
-        tableSuffix = LocalDateTime.from(dateTime).format(tableSuffixPattern);
-        return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+    private <T extends TemporalAccessor & Comparable<?>> Collection<String> getMatchedTables(final TemporalAccessor calculateTimeAsView,
+                                                                                             final Collection<String> availableTargetNames, final TemporalHandler<T> temporalHandler) {
+        return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffixPattern.format(temporalHandler.convertTo(calculateTimeAsView)))).collect(Collectors.toSet());
     }
     
-    private <T extends TemporalAccessor & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range, final T temporalLower, final T temporalUpper,
-                                                                                 final TemporalHandler<T> temporalHandler) {
+    private <T extends TemporalAccessor & Comparable<?>> boolean hasIntersection(final Range<T> calculateRange, final Range<Comparable<?>> range,
+                                                                                 final T temporalLower, final T temporalUpper, final TemporalHandler<T> temporalHandler) {
         T lower = range.hasLowerBound() ? parseTemporal(range.lowerEndpoint(), temporalHandler) : temporalLower;
         T upper = range.hasUpperBound() ? parseTemporal(range.upperEndpoint(), temporalHandler) : temporalUpper;
         BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
@@ -200,18 +172,6 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return dateTimeText.length() >= dateTimePatternLength
                 ? temporalHandler.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter)
                 : temporalHandler.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
-    }
-    
-    /*
-     * When the sharding key is a {@link String} and the length of this {@link String} is less than the `datetime-pattern` set by the algorithm, ShardingSphere will try to use a substring of
-     * `datetime-pattern` to parse the sharding key. This is to be compatible with the behavior of ORM libraries such as <a href="https://github.com/go-gorm/gorm">go-gorm/gorm</a>.
-     *
-     * @param dateTimeText Sharding key with class name {@link String}
-     *
-     * @return Child `datetime-pattern`, the pattern length is consistent with the shard key.
-     */
-    private DateTimeFormatter createRelaxedDateTimeFormatter(final String dateTimeText) {
-        return DateTimeFormatter.ofPattern(dateTimePatternString.substring(0, dateTimeText.length()));
     }
     
     private String getDateTimeText(final Comparable<?> endpoint) {
@@ -228,6 +188,18 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             return dateTimeFormatter.format(((java.util.Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
         return endpoint.toString();
+    }
+    
+    /*
+     * When the sharding key is a {@link String} and the length of this {@link String} is less than the `datetime-pattern` set by the algorithm, ShardingSphere will try to use a substring of
+     * `datetime-pattern` to parse the sharding key. This is to be compatible with the behavior of ORM libraries such as <a href="https://github.com/go-gorm/gorm">go-gorm/gorm</a>.
+     *
+     * @param dateTimeText Sharding key with class name {@link String}
+     *
+     * @return Child `datetime-pattern`, the pattern length is consistent with the shard key.
+     */
+    private DateTimeFormatter createRelaxedDateTimeFormatter(final String dateTimeText) {
+        return DateTimeFormatter.ofPattern(dateTimePatternString.substring(0, dateTimeText.length()));
     }
     
     @Override
