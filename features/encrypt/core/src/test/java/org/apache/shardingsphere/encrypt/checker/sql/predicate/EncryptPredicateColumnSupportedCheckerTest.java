@@ -91,6 +91,8 @@ class EncryptPredicateColumnSupportedCheckerTest {
         when(result.getTablesContext().findTableNames(Collections.singleton(columnSegment), null)).thenReturn(Collections.singletonMap("user_name", "t_user"));
         when(result.getColumnSegments()).thenReturn(Collections.singleton(columnSegment));
         when(result.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, columnSegment, columnSegment, "LIKE", ""))));
+        when(result.getSubqueryContexts()).thenReturn(Collections.emptyMap());
+        when(result.getJoinConditions()).thenReturn(Collections.emptyList());
         return result;
     }
     
@@ -107,6 +109,8 @@ class EncryptPredicateColumnSupportedCheckerTest {
         when(result.getTablesContext().findTableNames(Collections.singleton(columnSegment), null)).thenReturn(Collections.singletonMap("user_name", "t_user"));
         when(result.getColumnSegments()).thenReturn(Collections.singleton(columnSegment));
         when(result.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, columnSegment, columnSegment, "=", ""))));
+        when(result.getSubqueryContexts()).thenReturn(Collections.emptyMap());
+        when(result.getJoinConditions()).thenReturn(Collections.emptyList());
         return result;
     }
 }
