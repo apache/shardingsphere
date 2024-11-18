@@ -54,7 +54,7 @@ public final class SubqueryProjectionConverter {
         if (segment.getAliasName().isPresent()) {
             sqlNode = convertWithAlias(sqlNode, segment.getAliasName().get());
         }
-        return SubqueryType.EXISTS == segment.getSubquery().getSubqueryType()
+        return segment.getSubquery().getSelect().getSubqueryType().map(optional -> optional == SubqueryType.EXISTS).orElse(false)
                 ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.EXISTS, Collections.singletonList(sqlNode), SqlParserPos.ZERO))
                 : Optional.of(sqlNode);
     }
