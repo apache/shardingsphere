@@ -122,6 +122,7 @@ Truffle 与 JDK 的向后兼容性矩阵位于 https://medium.com/graalvm/40027a
 考虑一个简单的 SPI 实现类，
 
 ```java
+package org.example;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import java.util.Arrays;
 import java.util.List;
@@ -144,6 +145,12 @@ public final class CustomInlineExpressionParserFixture implements InlineExpressi
         return "CUSTOM.FIXTURE";
     }
 }
+```
+
+并在项目的 classpath 添加 `META-INF/services/org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser`文件，
+
+```
+org.example.CustomInlineExpressionParserFixture
 ```
 
 此时对于 ShardingSphere 配置文件中的 `actualDataNodes`，

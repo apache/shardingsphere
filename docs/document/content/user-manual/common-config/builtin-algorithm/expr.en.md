@@ -159,6 +159,12 @@ public final class CustomInlineExpressionParserFixture implements InlineExpressi
 }
 ```
 
+And add the file `META-INF/services/org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser` to the project classpath,
+
+```
+org.example.CustomInlineExpressionParserFixture
+```
+
 At this time, for `actualDataNodes` in the ShardingSphere configuration file,
 1. If configured as `<CUSTOM.FIXTURE>spring`, it will be converted to `t_order_2024_01, t_order_2024_02`.
 2. If configured as `<CUSTOM.FIXTURE>summer`, it will be converted to `t_order_2024_03, t_order_2024_04`.

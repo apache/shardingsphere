@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.database.testcontainers.type;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -29,14 +29,9 @@ import java.util.Optional;
  */
 public final class TcClickHouseDatabaseType implements TestcontainersDatabaseType {
     
-    /**
-     * TODO See the JavaDoc for `org.apache.shardingsphere.test.natived.jdbc.commons.testcontainers.ClickHouseProvider`.
-     *
-     * @return prefixes of JDBC URL
-     */
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:tc:clickhouse:", "jdbc:tc:shardingsphere0clickhouse:");
+        return Collections.singletonList("jdbc:tc:clickhouse:");
     }
     
     @Override

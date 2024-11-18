@@ -142,7 +142,7 @@
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.2</awaitility.version>
-        <testcontainers.version>1.20.1</testcontainers.version>
+        <testcontainers.version>1.20.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graal-sdk.version>24.1.0</graal-sdk.version>
@@ -1001,7 +1001,7 @@
     
     <profiles>
         <profile>
-            <id>jdk11-22</id>
+            <id>jdk11+</id>
             <activation>
                 <jdk>[11,)</jdk>
             </activation>
