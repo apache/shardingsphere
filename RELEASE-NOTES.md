@@ -2,8 +2,6 @@
 
 ### API Changes
 
-1. Infra: Removes support for jdbcURL prefix of `jdbc:tc:shardingsphere0clickhouse:` - [#33707](https://github.com/apache/shardingsphere/pull/33707)
-
 ### New Features
 
 ### Enhancements
