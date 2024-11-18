@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -25,43 +26,116 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingRuleConfigurationCheckerTest {
     
-    @SuppressWarnings("unchecked")
+    private ShardingRuleConfigurationChecker checker;
+    
+    @BeforeEach
+    void setUp() {
+        checker = (ShardingRuleConfigurationChecker) OrderedSPILoader.getServicesByClass(
+                RuleConfigurationChecker.class, Collections.singleton(ShardingRuleConfiguration.class)).get(ShardingRuleConfiguration.class);
+    }
+    
     @Test
     void assertCheckSuccess() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
-        ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singletonList("foo_audit"), false);
+        ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("foo_audit"), false);
         ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
         ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
-        RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPILoader.getServicesByClass(
-                RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertCheckTableConfigurationFailed() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
-        ruleConfig.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
+        ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(null, null, null)));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
-        RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPILoader.getServicesByClass(
-                RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         assertThrows(MissingRequiredShardingConfigurationException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
+    }
+    
+    @Test
+    void assertCheckKeyGenerateStrategyFailed() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("foo_audit"), false);
+        ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
+        ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null,
+                new KeyGenerateStrategyConfiguration("foo_col", "bar_keygen"))));
+        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
+    }
+    
+    @Test
+    void assertCheckAuditStrategyFailed() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
+        ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, null, ruleConfig.getDefaultKeyGenerateStrategy())));
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig,
+                new ShardingAuditStrategyConfiguration(Collections.singleton("bar_audit"), false), ruleConfig.getDefaultKeyGenerateStrategy())));
+        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
+    }
+    
+    @Test
+    void assertCheckShardingStrategyFailedWithComplexShardingStrategy() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("foo_audit"), false);
+        ruleConfig.setTables(Collections.singleton(
+                createShardingTableRuleConfiguration(new NoneShardingStrategyConfiguration(), shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(
+                new ComplexShardingStrategyConfiguration("", "foo_algorithm"), shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        assertThrows(MissingRequiredShardingConfigurationException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
+    }
+    
+    @Test
+    void assertCheckShardingStrategyFailedWithUnregisteredAlgorithm() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("foo_audit"), false);
+        ruleConfig.setTables(Collections.singleton(
+                createShardingTableRuleConfiguration(new NoneShardingStrategyConfiguration(), shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(
+                new StandardShardingStrategyConfiguration("foo_col", "bar_algorithm"), shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
+    }
+    
+    @Test
+    void assertGetRequiredDataSourceNames() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("foo_audit"), false);
+        ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
+        ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        assertTrue(checker.getRequiredDataSourceNames(ruleConfig).isEmpty());
+    }
+    
+    @Test
+    void assertGetTableNames() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("foo_audit"), false);
+        ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
+        ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        assertThat(checker.getTableNames(ruleConfig), is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {
@@ -85,8 +159,8 @@ class ShardingRuleConfigurationCheckerTest {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_tbl", null);
         result.setDatabaseShardingStrategy(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
         result.setTableShardingStrategy(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
-        result.setAuditStrategy(null == shardingAuditStrategyConfig ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfig);
-        result.setKeyGenerateStrategy(null == keyGenerateStrategyConfig ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfig);
+        result.setAuditStrategy(shardingAuditStrategyConfig);
+        result.setKeyGenerateStrategy(keyGenerateStrategyConfig);
         return result;
     }
     
@@ -96,8 +170,8 @@ class ShardingRuleConfigurationCheckerTest {
         ShardingAutoTableRuleConfiguration result = mock(ShardingAutoTableRuleConfiguration.class);
         when(result.getLogicTable()).thenReturn("bar_tbl");
         when(result.getShardingStrategy()).thenReturn(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
-        when(result.getAuditStrategy()).thenReturn(null == shardingAuditStrategyConfig ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfig);
-        when(result.getKeyGenerateStrategy()).thenReturn(null == keyGenerateStrategyConfig ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfig);
+        when(result.getAuditStrategy()).thenReturn(shardingAuditStrategyConfig);
+        when(result.getKeyGenerateStrategy()).thenReturn(keyGenerateStrategyConfig);
         return result;
     }
 }
