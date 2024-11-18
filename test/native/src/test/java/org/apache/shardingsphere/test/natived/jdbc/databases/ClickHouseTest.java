@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 class ClickHouseTest {
     
     @Container
-    public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.6.2.17");
+    public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.10.2.80");
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.clickhouse.";
     

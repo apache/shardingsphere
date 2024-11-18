@@ -275,11 +275,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveInsertStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveInsertStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
   "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveDeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]

@@ -19,6 +19,7 @@
 1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Build: Avoid using `-proc:full` when compiling ShardingSphere with OpenJDK23 - [#33681](https://github.com/apache/shardingsphere/pull/33681)
+1. Doc: Adds documentation for HiveServer2 support - [#33717](https://github.com/apache/shardingsphere/pull/33717)
 
 ### Bug Fixes
 

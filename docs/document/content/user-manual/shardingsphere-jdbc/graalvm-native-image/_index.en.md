@@ -302,88 +302,10 @@ Possible configuration examples are as follows,
 ClickHouse does not support local transactions, XA transactions, and Seata AT mode transactions at the ShardingSphere integration level. 
 More discussion is at https://github.com/ClickHouse/clickhouse-docs/issues/2300 .
 
-7. When using the Hive dialect through ShardingSphere JDBC, affected by https://issues.apache.org/jira/browse/HIVE-28445 ,
-   users should not use `org.apache.hive:hive-jdbc:4.0.1` with `classifier` as `standalone` to avoid dependency conflicts.
-   Possible configuration examples are as follows,
-
-```xml
-<project>
-   <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-infra-database-hive</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-parser-sql-hive</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.hive</groupId>
-         <artifactId>hive-jdbc</artifactId>
-         <version>4.0.1</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.hive</groupId>
-         <artifactId>hive-service</artifactId>
-         <version>4.0.1</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.hadoop</groupId>
-         <artifactId>hadoop-client-api</artifactId>
-         <version>3.3.6</version>
-      </dependency>
-   </dependencies>
-</project>
-```
-
-This can lead to a large number of dependency conflicts.
-If the user does not want to manually resolve potentially thousands of lines of dependency conflicts, 
-a third-party build of the HiveServer2 JDBC Driver `Thin JAR` can be used.
-An example of a possible configuration is as follows,
-
-```xml
-<project>
-    <dependencies>
-       <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-hive</artifactId>
-            <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-parser-sql-hive</artifactId>
-          <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>io.github.linghengqian</groupId>
-          <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-          <version>1.5.0</version>
-          <exclusions>
-             <exclusion>
-                <groupId>com.fasterxml.woodstox</groupId>
-                <artifactId>woodstox-core</artifactId>
-             </exclusion>
-          </exclusions>
-       </dependency>
-    </dependencies>
-</project>
-```
-
-Affected by https://github.com/grpc/grpc-java/issues/10601 , should users incorporate `org.apache.hive:hive-service` into their project,
+7. Affected by https://github.com/grpc/grpc-java/issues/10601 , should users incorporate `org.apache.hive:hive-jdbc` into their project,
 it is imperative to create a file named `native-image.properties` within the directory `META-INF/native-image/io.grpc/grpc-netty-shaded` of the classpath,
 containing the following content,
+
 ```properties
 Args=--initialize-at-run-time=\
     io.grpc.netty.shaded.io.netty.channel.ChannelHandlerMask,\
@@ -414,57 +336,6 @@ Args=--initialize-at-run-time=\
     io.grpc.netty.shaded.io.netty.buffer.PoolThreadCache,\
     io.grpc.netty.shaded.io.netty.util.AttributeKey
 ```
-
-In order to be able to use DML SQL statements such as `delete`, when connecting to HiveServer2,
-users should consider using only ACID-supported tables in ShardingSphere JDBC. `apache/hive` provides a variety of transaction solutions.
-
-The first option is to use ACID tables, and the possible table creation process is as follows.
-Due to its outdated catalog-based table format, 
-users may have to wait before and after DML statement execution to let HiveServer2 complete the inefficient DML operations.
-
-```sql
-set metastore.compactor.initiator.on=true;
-set metastore.compactor.cleaner.on=true;
-set metastore.compactor.worker.threads=5;
-
-set hive.support.concurrency=true;
-set hive.exec.dynamic.partition.mode=nonstrict;
-set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
-
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
-    PRIMARY KEY (order_id) disable novalidate
-) CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true');
-```
-
-The second option is to use Iceberg table. The possible table creation process is as follows.
-Apache Iceberg table format is poised to replace the traditional Hive table format in the coming years, 
-see https://blog.cloudera.com/from-hive-tables-to-iceberg-tables-hassle-free/ .
-
-```sql
-set iceberg.mr.schema.auto.conversion=true;
-
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-```
-
-Since HiveServer2 JDBC Driver does not implement `java.sql.DatabaseMetaData#getURL()`, 
-ShardingSphere has done some obfuscation, so users can only connect to HiveServer2 through HikariCP for now.
-
-HiveServer2 does not support local transactions, XA transactions, and Seata AT mode transactions at the ShardingSphere integration level. 
-More discussion is available at https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions .
 
 8. Due to https://github.com/oracle/graal/issues/7979 , 
 the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Maven module cannot be used under GraalVM Native Image.
