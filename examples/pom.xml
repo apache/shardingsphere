@@ -338,7 +338,7 @@
     
     <profiles>
         <profile>
-            <id>jdk11-22</id>
+            <id>jdk11+</id>
             <activation>
                 <jdk>[11,)</jdk>
             </activation>

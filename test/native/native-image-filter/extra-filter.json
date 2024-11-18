@@ -4,6 +4,8 @@
 
     {"excludeClasses": "android.app.**"},
     {"excludeClasses": "com.**"},
+    {"includeClasses": "com.oracle.svm.core.**"},
+    {"includeClasses": "com.sun.management.**"},
     {"excludeClasses": "ch.qos.logback.**"},
     {"excludeClasses": "groovy.**"},
     {"excludeClasses": "io.**"},
