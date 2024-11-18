@@ -338,6 +338,7 @@ public final class ShardingRule implements DatabaseRule {
      * @param logicTableNames logic table names
      * @return whether logic table is all binding tables
      */
+    // TODO rename the method name, add sharding condition judgement in method name @duanzhengqiang
     public boolean isAllBindingTables(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final Collection<String> logicTableNames) {
         if (!(sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())) {
             return isAllBindingTables(logicTableNames);

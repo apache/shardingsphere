@@ -44,7 +44,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         if (tableNames.isEmpty()) {
             return false;
         }
-        includedDataNodes.addAll(getTableDataNodes(rule, tableNames, database));
+        includedDataNodes.addAll(getTableDataNodes(rule, database, tableNames));
         if (selectStatementContext.isContainsSubquery() || selectStatementContext.isContainsHaving()
                 || selectStatementContext.isContainsCombine() || selectStatementContext.isContainsPartialDistinctAggregation()) {
             return true;
@@ -52,13 +52,18 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         if (!selectStatementContext.isContainsJoinQuery() || rule.isAllTablesInSameDataSource(tableNames)) {
             return false;
         }
-        if (1 == tableNames.size() && selectStatementContext.isContainsJoinQuery() && !rule.isAllBindingTables(database, selectStatementContext, tableNames)) {
+        if (isSelfJoinWithoutShardingColumn(selectStatementContext, rule, database, tableNames)) {
             return true;
         }
         return tableNames.size() > 1 && !rule.isAllBindingTables(database, selectStatementContext, tableNames);
     }
     
-    private Collection<DataNode> getTableDataNodes(final ShardingRule rule, final Collection<String> tableNames, final ShardingSphereDatabase database) {
+    private boolean isSelfJoinWithoutShardingColumn(final SelectStatementContext selectStatementContext,
+                                                    final ShardingRule rule, final ShardingSphereDatabase database, final Collection<String> tableNames) {
+        return 1 == tableNames.size() && selectStatementContext.isContainsJoinQuery() && !rule.isAllBindingTables(database, selectStatementContext, tableNames);
+    }
+    
+    private Collection<DataNode> getTableDataNodes(final ShardingRule rule, final ShardingSphereDatabase database, final Collection<String> tableNames) {
         Collection<DataNode> result = new HashSet<>();
         for (String each : tableNames) {
             rule.findShardingTable(each).ifPresent(optional -> result.addAll(new DataNodes(database.getRuleMetaData().getRules()).getDataNodes(each)));
