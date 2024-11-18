@@ -52,7 +52,7 @@ class ComplexInlineShardingAlgorithmTest {
     }
     
     @Test
-    void assertInitWithNullClass() {
+    void assertInitWithNullClass() { 
         assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", PropertiesBuilder.build(new Property("wrong", ""))));
     }
     
