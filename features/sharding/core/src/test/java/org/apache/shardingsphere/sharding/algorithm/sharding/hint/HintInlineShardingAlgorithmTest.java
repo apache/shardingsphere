@@ -29,30 +29,27 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HintInlineShardingAlgorithmTest {
     
     private HintInlineShardingAlgorithm hintInlineShardingAlgorithm;
     
-    private HintInlineShardingAlgorithm hintInlineShardingAlgorithmDefault;
-    
     @BeforeEach
     void setUp() {
         hintInlineShardingAlgorithm = (HintInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class,
                 "HINT_INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{value % 4}")));
-        hintInlineShardingAlgorithmDefault = new HintInlineShardingAlgorithm();
-        hintInlineShardingAlgorithmDefault.init(new Properties());
     }
     
     @Test
-    void assertDoShardingWithSingleValueOfDefault() {
+    void assertDoShardingWithEmptyValue() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        HintShardingValue<Comparable<?>> shardingValue = new HintShardingValue<>("t_order", "order_id", Collections.singleton("t_order_0"));
-        Collection<String> actual = hintInlineShardingAlgorithmDefault.doSharding(availableTargetNames, shardingValue);
-        assertTrue(actual.contains("t_order_0"));
+        HintShardingValue<Comparable<?>> shardingValue = new HintShardingValue<>("t_order", "order_id", Collections.emptyList());
+        Collection<String> actual = hintInlineShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
+        assertThat(actual, is(availableTargetNames));
     }
     
     @Test
@@ -60,7 +57,7 @@ class HintInlineShardingAlgorithmTest {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         HintShardingValue<Comparable<?>> shardingValue = new HintShardingValue<>("t_order", "order_id", Collections.singleton(4));
         Collection<String> actual = hintInlineShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
-        assertTrue(actual.contains("t_order_0"));
+        assertThat(actual, is(Collections.singletonList("t_order_0")));
     }
     
     @Test
