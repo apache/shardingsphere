@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.exception.data.ShardingValueOffsetException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -51,6 +52,13 @@ class ModShardingAlgorithmTest {
     void assertPreciseDoShardingWithBigIntegerShardingValue() {
         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "16")));
         assertThat(algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_12"));
+    }
+    
+    @Test
+    void assertPreciseDoShardingWhenOffsetOverload() {
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(
+                new Property("sharding-count", "16"), new Property("start-offset", "10"), new Property("stop-offset", "1")));
+        assertThrows(ShardingValueOffsetException.class, () -> algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "1")));
     }
     
     @Test
