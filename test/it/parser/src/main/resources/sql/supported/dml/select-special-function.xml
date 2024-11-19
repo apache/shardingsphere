@@ -54,7 +54,21 @@
     <sql-case id="select_from_open_row_set_with_provider_string" value="SELECT d.* FROM OPENROWSET('SQLNCLI','Server=Seattle1;Trusted_Connection=yes;',AdventureWorks2022.HumanResources.Department) AS d;" db-types="SQLServer"/>
     <sql-case id="select_json_object_simple_key_value" value="SELECT JSON_OBJECT('name':'value', 'type':1)" db-types="SQLServer" />
     <sql-case id="select_json_object_absent_not_null" value="SELECT JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" db-types="SQLServer" />
-    <sql-case id="select_json_array" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" db-types="SQLServer" />
+    <sql-case id="select_json_object_with_json_array" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" db-types="SQLServer" />
+    <sql-case id="select_json_array" value="SELECT JSON_ARRAY(1, 'abc', NULL, TRUE, CURTIME());" db-types="MySQL" />
+    <sql-case id="select_json_array_append" value="SELECT JSON_ARRAY_APPEND('[&quot;a&quot;, [&quot;b&quot;, &quot;c&quot;], &quot;d&quot;]', '$[1]', 1);" db-types="MySQL" />
+    <sql-case id="select_json_array_insert" value="SELECT JSON_ARRAY_INSERT('[&quot;a&quot;, {&quot;b&quot;: [1, 2]}, [3, 4]]', '$[1]', 'x');" db-types="MySQL" />
+    <sql-case id="select_json_arrayagg" value="SELECT o_id, JSON_ARRAYAGG(attribute) AS 'attributes' FROM t3 GROUP BY o_id" db-types="MySQL" />
+    <sql-case id="select_json_contains" value="SELECT JSON_CONTAINS('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', '1', '$.a')" db-types="MySQL" />
+    <sql-case id="select_json_contains_one" value="SELECT JSON_CONTAINS_PATH('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', 'one', '$.a', '$.e')" db-types="MySQL" />
+    <sql-case id="select_json_contains_all" value="SELECT JSON_CONTAINS_PATH('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', 'all', '$.a', '$.e')" db-types="MySQL" />
+    <sql-case id="select_json_depth" value="SELECT JSON_DEPTH('[10, {&quot;a&quot;: 20}]')" db-types="MySQL" />
+    <sql-case id="select_json_extract" value="SELECT JSON_EXTRACT('[10, 20, [30, 40]]', '$[1]', '$[0]')" db-types="MySQL" />
+    <sql-case id="select_json_keys" value="SELECT JSON_KEYS('{&quot;a&quot;: 1, &quot;b&quot;: {&quot;c&quot;: 30}}')" db-types="MySQL" />
+    <sql-case id="select_json_length" value="SELECT JSON_LENGTH('[1, 2, {&quot;a&quot;: 3}]')" db-types="MySQL" />
+    <sql-case id="select_json_merge" value="SELECT JSON_MERGE('[1, 2]', '[true, false]')" db-types="MySQL" />
+    <sql-case id="select_json_merge_patch" value="SELECT JSON_MERGE_PATCH('[1, 2]', '[true, false]')" db-types="MySQL" />
+    <sql-case id="select_json_merge_preserve" value="SELECT JSON_MERGE_PRESERVE('[1, 2]', '[true, false]')" db-types="MySQL" />
     <sql-case id="select_nest_json_object" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" db-types="SQLServer" />
     <sql-case id="select_json_object_with_subquery" value="SELECT JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" db-types="SQLServer" />
     <sql-case id="select_dm_exec_sessions_with_json_object_function" value="SELECT s.session_id, JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status) as info FROM sys.dm_exec_sessions AS s WHERE s.is_user_process = 1" db-types="SQLServer" />
