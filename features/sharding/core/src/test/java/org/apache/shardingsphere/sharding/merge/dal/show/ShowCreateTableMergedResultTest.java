@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
@@ -59,17 +58,17 @@ class ShowCreateTableMergedResultTest {
     
     private ShardingRule buildShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..2}"));
-        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_user", "ds.t_user_${0..2}"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "ds.foo_tbl_${0..2}"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("bar_tbl", "ds.bar_tbl_${0..2}"));
         return new ShardingRule(shardingRuleConfig, Maps.of("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
     }
     
     private ShardingSphereSchema createSchema() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
-        tables.put("t_order",
-                new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("t_order_foreign_key", "t_user"))));
-        tables.put("t_user", new ShardingSphereTable("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
+        tables.put("foo_tbl",
+                new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("foo_tbl_foreign_key", "bar_tbl"))));
+        tables.put("bar_tbl", new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return new ShardingSphereSchema("foo_db", tables, Collections.emptyMap());
     }
     
     @Test
@@ -78,39 +77,73 @@ class ShowCreateTableMergedResultTest {
     }
     
     @Test
-    void assertNextForTableRulePresent() throws SQLException {
-        assertTrue(new ShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
+    void assertNextWithTableRule() throws SQLException {
+        assertTrue(new ShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule())).next());
     }
     
     @Test
-    void assertGetValueForTableRulePresent() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult()));
+    void assertGetValueWithTableRule() throws SQLException {
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule()));
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class), is("t_order"));
-        assertThat(actual.getValue(2, String.class), is("CREATE TABLE `t_order` (\n"
+        assertThat(actual.getValue(1, String.class), is("foo_tbl"));
+        assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
                 + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
-                + "  `order_id` int(11) NOT NULL COMMENT,\n"
-                + "  `user_id` int(11) NOT NULL COMMENT,\n"
+                + "  `foo_id` int(11) NOT NULL COMMENT,\n"
+                + "  `bar_id` int(11) NOT NULL COMMENT,\n"
                 + "  `status` tinyint(4) NOT NULL DEFAULT '1',\n"
                 + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
                 + "  PRIMARY KEY (`id`),\n"
-                + "  CONSTRAINT `t_order_foreign_key` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`user_id`) \n"
+                + "  CONSTRAINT `foo_tbl_foreign_key` FOREIGN KEY (`bar_id`) REFERENCES `bar_tbl` (`bar_id`) \n"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin"));
     }
     
-    private QueryResult mockQueryResult() throws SQLException {
+    private QueryResult mockQueryResultWithTableRule() throws SQLException {
         QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getColumnCount()).thenReturn(2);
         when(result.next()).thenReturn(true, false);
-        when(result.getValue(1, Object.class)).thenReturn("t_order_0");
-        when(result.getValue(2, Object.class)).thenReturn("CREATE TABLE `t_order_0` (\n"
+        when(result.getValue(1, Object.class)).thenReturn("foo_tbl_0");
+        when(result.getValue(2, Object.class)).thenReturn("CREATE TABLE `foo_tbl_0` (\n"
                 + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
-                + "  `order_id` int(11) NOT NULL COMMENT,\n"
-                + "  `user_id` int(11) NOT NULL COMMENT,\n"
+                + "  `foo_id` int(11) NOT NULL COMMENT,\n"
+                + "  `bar_id` int(11) NOT NULL COMMENT,\n"
                 + "  `status` tinyint(4) NOT NULL DEFAULT '1',\n"
                 + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
                 + "  PRIMARY KEY (`id`),\n"
-                + "  CONSTRAINT `t_order_foreign_key_t_order_0` FOREIGN KEY (`user_id`) REFERENCES `t_user_0` (`user_id`) \n"
+                + "  CONSTRAINT `foo_tbl_foreign_key_foo_tbl_0` FOREIGN KEY (`bar_id`) REFERENCES `bar_tbl_0` (`bar_id`) \n"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
+        return result;
+    }
+    
+    @Test
+    void assertGetValueWithoutTableRule() throws SQLException {
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(
+                mock(ShardingRule.class, RETURNS_DEEP_STUBS), mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithoutTableRule()));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, String.class), is("foo_tbl"));
+        assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
+                + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
+                + "  `foo_id` int(11) NOT NULL COMMENT,\n"
+                + "  `bar_id` int(11) NOT NULL COMMENT,\n"
+                + "  `status` tinyint(4) NOT NULL DEFAULT '1',\n"
+                + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
+                + "  PRIMARY KEY (`id`),\n"
+                + "  CONSTRAINT `foo_tbl_foreign_key` FOREIGN KEY (`bar_id`) REFERENCES `bar_tbl` (`bar_id`) \n"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin"));
+    }
+    
+    private QueryResult mockQueryResultWithoutTableRule() throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(2);
+        when(result.next()).thenReturn(true, false);
+        when(result.getValue(1, Object.class)).thenReturn("foo_tbl");
+        when(result.getValue(2, Object.class)).thenReturn("CREATE TABLE `foo_tbl` (\n"
+                + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
+                + "  `foo_id` int(11) NOT NULL COMMENT,\n"
+                + "  `bar_id` int(11) NOT NULL COMMENT,\n"
+                + "  `status` tinyint(4) NOT NULL DEFAULT '1',\n"
+                + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
+                + "  PRIMARY KEY (`id`),\n"
+                + "  CONSTRAINT `foo_tbl_foreign_key` FOREIGN KEY (`bar_id`) REFERENCES `bar_tbl` (`bar_id`) \n"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
         return result;
     }
