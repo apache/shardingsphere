@@ -32,6 +32,7 @@ import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -146,5 +147,10 @@ public final class TransactionRule implements GlobalRule, AutoCloseable {
             // CHECKSTYLE:ON
             log.error("Close transaction engine failed.", ex);
         }
+    }
+    
+    @Override
+    public int getOrder() {
+        return TransactionOrder.ORDER;
     }
 }

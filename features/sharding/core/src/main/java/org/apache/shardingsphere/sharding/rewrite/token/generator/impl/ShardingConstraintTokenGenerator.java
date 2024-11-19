@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
@@ -33,10 +34,11 @@ import java.util.LinkedList;
 /**
  * Sharding constraint token generator.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class ShardingConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext> {
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -49,8 +51,9 @@ public final class ShardingConstraintTokenGenerator implements CollectionSQLToke
         if (sqlStatementContext instanceof ConstraintAvailable) {
             for (ConstraintSegment each : ((ConstraintAvailable) sqlStatementContext).getConstraints()) {
                 IdentifierValue constraintIdentifier = each.getIdentifier();
+                // TODO make sure can remove null check here? @duanzhengqiang
                 if (null != constraintIdentifier) {
-                    result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, shardingRule));
+                    result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, rule));
                 }
             }
         }

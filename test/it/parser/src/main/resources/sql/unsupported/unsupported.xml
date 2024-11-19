@@ -262,8 +262,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_438" value="select B'101' | as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_439" value="select B'101' # as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_440" value="select B'11110' # B'0000';" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_443" value="select extract(quarter from timestamp '2001-02-16 20:38:40') from sys_dummy;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_444" value="select extract(week from timestamp '2001-02-16 20:38:40') from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_447" value="select atan(11 11) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_448" value="select atan(,) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_451" value="select $$the lexeme '    '  , contains spaces$$::tsvector@@ ','::tsquery  as result;" db-types="openGauss" />

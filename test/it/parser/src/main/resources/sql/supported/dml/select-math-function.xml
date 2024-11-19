@@ -21,6 +21,7 @@
     <sql-case id="select_acos" value="SELECT ACOS(0)" db-types="MySQL" />
     <sql-case id="select_asin" value="SELECT ASIN(0.2)" db-types="MySQL" />
     <sql-case id="select_atan" value="SELECT ATAN(2)" db-types="MySQL" />
+    <sql-case id="select_interval" value="SELECT INTERVAL(23, 1, 15, 17, 30, 44, 200)" db-types="MySQL" />
     <sql-case id="select_pow" value="SELECT POW(2,2)" db-types="MySQL" />
     <sql-case id="select_power" value="SELECT POWER(2,2)" db-types="MySQL" />
     <sql-case id="select_rand" value="SELECT RAND()" db-types="MySQL" />

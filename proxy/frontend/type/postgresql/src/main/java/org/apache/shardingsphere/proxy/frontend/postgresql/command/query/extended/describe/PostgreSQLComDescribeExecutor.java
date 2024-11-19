@@ -242,8 +242,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 .bind(logicPreparedStatement.getSqlStatementContext().getSqlStatement(), Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList(), logicPreparedStatement.getHintValueContext(),
                 connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
-                queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
+        ExecutionContext executionContext =
+                new KernelProcessor().generateExecutionContext(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         Connection connection = databaseConnectionManager.getConnections(databaseName, executionUnitSample.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();

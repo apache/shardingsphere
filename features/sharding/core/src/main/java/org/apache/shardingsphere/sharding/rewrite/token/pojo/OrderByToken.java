@@ -40,6 +40,11 @@ public final class OrderByToken extends SQLToken implements Attachable {
     }
     
     @Override
+    public int getStopIndex() {
+        return getStartIndex();
+    }
+    
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(" ORDER BY ");

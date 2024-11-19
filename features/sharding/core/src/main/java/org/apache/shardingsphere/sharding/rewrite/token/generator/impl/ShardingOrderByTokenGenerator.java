@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectS
 /**
  * Sharding order by token generator.
  */
+@HighFrequencyInvocation
 public final class ShardingOrderByTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override

@@ -30,10 +30,7 @@ public final class SQLHintShadowAlgorithm implements HintShadowAlgorithm<Boolean
     
     @Override
     public boolean isShadow(final Collection<String> shadowTableNames, final PreciseHintShadowValue<Boolean> hintShadowValue) {
-        if (ShadowOperationType.HINT_MATCH == hintShadowValue.getShadowOperationType() || shadowTableNames.contains(hintShadowValue.getLogicTableName())) {
-            return hintShadowValue.getValue();
-        }
-        return false;
+        return (ShadowOperationType.HINT_MATCH == hintShadowValue.getShadowOperationType() || shadowTableNames.contains(hintShadowValue.getLogicTableName())) && hintShadowValue.getValue();
     }
     
     @Override

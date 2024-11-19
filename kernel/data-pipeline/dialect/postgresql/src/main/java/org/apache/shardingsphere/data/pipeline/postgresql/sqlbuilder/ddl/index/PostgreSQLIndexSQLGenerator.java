@@ -24,9 +24,11 @@ import org.postgresql.jdbc.PgArray;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Index SQL generator for PostgreSQL.
@@ -50,36 +52,27 @@ public final class PostgreSQLIndexSQLGenerator {
      */
     public String generate(final Map<String, Object> context) throws SQLException {
         StringBuilder result = new StringBuilder();
-        Collection<Map<String, Object>> indexNodes = getIndexNodes(context);
-        for (Map<String, Object> each : indexNodes) {
+        for (Map<String, Object> each : getIndexNodes(context)) {
             if (each.containsKey("is_inherited") && (Boolean) each.get("is_inherited")) {
                 continue;
             }
-            result.append(getIndexSql(context, each));
+            result.append(getIndexSQL(context, each));
         }
         return result.toString().trim();
     }
     
     private Collection<Map<String, Object>> getIndexNodes(final Map<String, Object> context) {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("tid", context.get("tid"));
-        return templateExecutor.executeByTemplate(param, "component/indexes/%s/nodes.ftl");
+        return templateExecutor.executeByTemplate(Collections.singletonMap("tid", context.get("tid")), "component/indexes/%s/nodes.ftl");
     }
     
-    private String getIndexSql(final Map<String, Object> context, final Map<String, Object> indexNode) throws SQLException {
+    private String getIndexSQL(final Map<String, Object> context, final Map<String, Object> indexNode) throws SQLException {
         Map<String, Object> indexData = getIndexData(context, indexNode);
         appendColumnDetails(indexData, (Long) indexNode.get("oid"));
         if (templateExecutor.getMajorVersion() >= PG_INDEX_INCLUDE_VERSION) {
-            appendIncludeDetails(indexData, (Long) indexNode.get("oid"));
+            Collection<Map<String, Object>> includeDetails = templateExecutor.executeByTemplate(Collections.singletonMap("idx", indexNode.get("oid")), "component/indexes/%s/include_details.ftl");
+            indexData.put("include", includeDetails.stream().map(each -> each.get("colname")).collect(Collectors.toList()));
         }
-        return doGenerateIndexSql(indexData);
-    }
-    
-    private String doGenerateIndexSql(final Map<String, Object> indexData) {
-        String result = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/create.ftl", templateExecutor.getMajorVersion(), templateExecutor.getMinorVersion());
-        result += System.lineSeparator();
-        result += PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/alter.ftl", templateExecutor.getMajorVersion(), templateExecutor.getMinorVersion());
-        return result;
+        return doGenerateIndexSQL(indexData);
     }
     
     private Map<String, Object> getIndexData(final Map<String, Object> context, final Map<String, Object> indexNode) {
@@ -91,7 +84,7 @@ public final class PostgreSQLIndexSQLGenerator {
     }
     
     private Collection<Map<String, Object>> fetchIndexProperties(final Map<String, Object> context, final Map<String, Object> indexNode) {
-        Map<String, Object> param = new LinkedHashMap<>();
+        Map<String, Object> param = new LinkedHashMap<>(4, 1F);
         param.put("did", context.get("did"));
         param.put("tid", context.get("tid"));
         param.put("idx", indexNode.get("oid"));
@@ -100,10 +93,9 @@ public final class PostgreSQLIndexSQLGenerator {
     }
     
     private void appendColumnDetails(final Map<String, Object> indexData, final Long indexId) throws SQLException {
-        Collection<Map<String, Object>> columnDetails = fetchColumnDetails(indexId);
         Collection<Map<String, Object>> columns = new LinkedList<>();
         Collection<String> columnDisplays = new LinkedList<>();
-        for (Map<String, Object> each : columnDetails) {
+        for (Map<String, Object> each : templateExecutor.executeByTemplate(Collections.singletonMap("idx", indexId), "component/indexes/%s/column_details.ftl")) {
             columns.add(getColumnData(indexData, each));
             columnDisplays.add(getColumnPropertyDisplayData(each, indexData));
         }
@@ -112,7 +104,7 @@ public final class PostgreSQLIndexSQLGenerator {
     }
     
     private Map<String, Object> getColumnData(final Map<String, Object> indexData, final Map<String, Object> columnDetail) throws SQLException {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("colname", columnDetail.get("attdef"));
         result.put("collspcname", columnDetail.get("collnspname"));
         result.put("op_class", columnDetail.get("opcname"));
@@ -139,12 +131,6 @@ public final class PostgreSQLIndexSQLGenerator {
         return options.length > 1 && options[1].split(" ").length > 1 && "FIRST".equals(options[1].split(" ")[1]);
     }
     
-    private Collection<Map<String, Object>> fetchColumnDetails(final Long indexId) {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("idx", indexId);
-        return templateExecutor.executeByTemplate(param, "component/indexes/%s/column_details.ftl");
-    }
-    
     private String getColumnPropertyDisplayData(final Map<String, Object> columnDetail, final Map<String, Object> indexData) throws SQLException {
         String result = (String) columnDetail.get("attdef");
         if (null != columnDetail.get("collnspname")) {
@@ -165,13 +151,9 @@ public final class PostgreSQLIndexSQLGenerator {
         return result;
     }
     
-    private void appendIncludeDetails(final Map<String, Object> indexData, final Long oid) {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("idx", oid);
-        Collection<Object> includes = new LinkedList<>();
-        for (Map<String, Object> each : templateExecutor.executeByTemplate(param, "component/indexes/%s/include_details.ftl")) {
-            includes.add(each.get("colname"));
-        }
-        indexData.put("include", includes);
+    private String doGenerateIndexSQL(final Map<String, Object> indexData) {
+        return String.join(System.lineSeparator(),
+                PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/create.ftl", templateExecutor.getMajorVersion(), templateExecutor.getMinorVersion()),
+                PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/alter.ftl", templateExecutor.getMajorVersion(), templateExecutor.getMinorVersion()));
     }
 }

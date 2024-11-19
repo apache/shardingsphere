@@ -46,8 +46,6 @@ public final class SubquerySegmentBinder {
         SQLStatementBinderContext selectBinderContext = new SQLStatementBinderContext(segment.getSelect(), binderContext.getMetaData(), binderContext.getCurrentDatabaseName());
         selectBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         SelectStatement boundSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);
-        SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundSelectStatement, segment.getText());
-        result.setSubqueryType(segment.getSubqueryType());
-        return result;
+        return new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundSelectStatement, segment.getText());
     }
 }

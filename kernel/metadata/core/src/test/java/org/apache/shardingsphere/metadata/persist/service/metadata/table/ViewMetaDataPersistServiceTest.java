@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.metadata.persist.service.metadata.table;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,13 +29,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,11 +43,9 @@ class ViewMetaDataPersistServiceTest {
     @Mock
     private PersistRepository repository;
     
-    @Mock
-    private MetaDataVersionPersistService metaDataVersionPersistService;
-    
     @BeforeEach
     void setUp() {
+        MetaDataVersionPersistService metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         persistService = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
     }
     
@@ -68,10 +61,10 @@ class ViewMetaDataPersistServiceTest {
     
     @Test
     void assertPersistWithoutVersion() {
+        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("", "0");
         persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", mock(ShardingSphereView.class)));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", "{}" + System.lineSeparator());
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0");
-        verify(metaDataVersionPersistService).switchActiveVersion(deepEq(Collections.singletonList(new MetaDataVersion("/metadata/foo_db/schemas/foo_schema/views/foo_view", null, "0"))));
     }
     
     @Test
@@ -80,9 +73,7 @@ class ViewMetaDataPersistServiceTest {
         when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("10");
         persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", mock(ShardingSphereView.class)));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/11", "{}" + System.lineSeparator());
-        verify(repository, times(0)).persist(eq("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"), any());
-        verify(metaDataVersionPersistService).switchActiveVersion(
-                deepEq(Collections.singletonList(new MetaDataVersion("/metadata/foo_db/schemas/foo_schema/views/foo_view", "10", "11"))));
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "11");
     }
     
     @Test

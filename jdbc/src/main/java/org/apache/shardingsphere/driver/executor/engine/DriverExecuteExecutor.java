@@ -101,7 +101,7 @@ public final class DriverExecuteExecutor {
             return true;
         }
         ExecutionContext executionContext =
-                new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+                new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
         return executePushDown(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
     }
     

@@ -18,50 +18,32 @@
 package org.apache.shardingsphere.mask.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Mask algorithm changed processor.
  */
-public final class MaskAlgorithmChangedProcessor implements RuleItemConfigurationChangedProcessor<MaskRuleConfiguration, AlgorithmConfiguration> {
+public final class MaskAlgorithmChangedProcessor extends AlgorithmChangedProcessor<MaskRuleConfiguration> {
     
-    @Override
-    public AlgorithmConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
+    public MaskAlgorithmChangedProcessor() {
+        super(MaskRule.class);
     }
     
     @Override
-    public MaskRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(MaskRule.class)
-                .map(optional -> getConfiguration(optional.getConfiguration())).orElseGet(() -> new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
-    }
-    
-    private MaskRuleConfiguration getConfiguration(final MaskRuleConfiguration ruleConfig) {
-        return null == ruleConfig.getMaskAlgorithms() ? new MaskRuleConfiguration(ruleConfig.getTables(), new LinkedHashMap<>()) : ruleConfig;
+    protected MaskRuleConfiguration createEmptyRuleConfiguration() {
+        return new MaskRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>());
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
-        currentRuleConfig.getMaskAlgorithms().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
-    }
-    
-    @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final MaskRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getMaskAlgorithms().remove(((DropNamedRuleItemEvent) event).getItemName());
+    protected Map<String, AlgorithmConfiguration> getAlgorithmConfigurations(final MaskRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getMaskAlgorithms();
     }
     
     @Override

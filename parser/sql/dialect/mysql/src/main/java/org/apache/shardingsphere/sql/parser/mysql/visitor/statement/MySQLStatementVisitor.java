@@ -603,7 +603,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             SubquerySegment subquerySegment = new SubquerySegment(
                     ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
             if (null != ctx.EXISTS()) {
-                subquerySegment.setSubqueryType(SubqueryType.EXISTS);
+                subquerySegment.getSelect().setSubqueryType(SubqueryType.EXISTS);
                 return new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
             }
             return new SubqueryExpressionSegment(subquerySegment);
@@ -1786,10 +1786,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 || projection instanceof CollateExpression || projection instanceof NotExpression) {
             return createExpressionProjectionSegment(ctx, alias, projection);
         }
-        LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias
-                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+                ? new ExpressionProjectionSegment(projection.getStartIndex(), projection.getStopIndex(), String.valueOf(projection.getText()), projection)
+                : new ExpressionProjectionSegment(projection.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(projection.getText()), projection);
         result.setAlias(alias);
         return result;
     }

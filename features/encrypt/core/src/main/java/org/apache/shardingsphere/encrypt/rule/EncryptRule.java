@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.rule.attribute.EncryptTableMapperRuleAttribute;
@@ -32,12 +33,15 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -72,7 +76,9 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     }
     
     private RuleAttributes buildRuleAttributes() {
-        return new RuleAttributes(new EncryptTableMapperRuleAttribute(tables.keySet()));
+        List<RuleAttribute> ruleAttributes = new LinkedList<>();
+        ruleAttributes.add(new EncryptTableMapperRuleAttribute(tables.keySet()));
+        return new RuleAttributes(ruleAttributes.toArray(new RuleAttribute[]{}));
     }
     
     private Map<String, EncryptAlgorithm> createEncryptors(final EncryptRuleConfiguration ruleConfig) {
@@ -188,5 +194,10 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
         Optional<EncryptTableRuleConfiguration> result = toBeUpdatedRuleConfig.getTables().stream().filter(table -> table.getName().equals(tableName)).findFirst();
         Preconditions.checkState(result.isPresent());
         return result.get();
+    }
+    
+    @Override
+    public int getOrder() {
+        return EncryptOrder.ORDER;
     }
 }

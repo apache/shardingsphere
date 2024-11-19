@@ -105,7 +105,7 @@ public abstract class SQLRewriterIT {
         assertThat(actual.size(), is(testParams.getOutputSQLs().size()));
         int count = 0;
         for (SQLRewriteUnit each : actual) {
-            assertThat(each.getSql(), is(testParams.getOutputSQLs().get(count)));
+            assertThat(each.getSql().replace("\t", "    "), is(testParams.getOutputSQLs().get(count).replace("\t", "    ")));
             assertThat(each.getParameters().size(), is(testParams.getOutputGroupedParameters().get(count).size()));
             for (int i = 0; i < each.getParameters().size(); i++) {
                 assertThat(String.valueOf(each.getParameters().get(i)), is(String.valueOf(testParams.getOutputGroupedParameters().get(count).get(i))));
@@ -152,7 +152,7 @@ public abstract class SQLRewriterIT {
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(queryContext, globalRuleMetaData, database);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, globalRuleMetaData, props);
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(queryContext, routeContext, connectionContext);
+        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(queryContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singleton(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();

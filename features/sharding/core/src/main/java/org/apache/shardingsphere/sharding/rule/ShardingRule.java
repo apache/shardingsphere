@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.cache.ShardingCache;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingDataNodeRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableNamesRuleAttribute;
@@ -337,6 +338,7 @@ public final class ShardingRule implements DatabaseRule {
      * @param logicTableNames logic table names
      * @return whether logic table is all binding tables
      */
+    // TODO rename the method name, add sharding condition judgement in method name @duanzhengqiang
     public boolean isAllBindingTables(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final Collection<String> logicTableNames) {
         if (!(sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())) {
             return isAllBindingTables(logicTableNames);
@@ -633,5 +635,10 @@ public final class ShardingRule implements DatabaseRule {
         }
         BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
         return binaryExpression.getLeft() instanceof ColumnSegment && binaryExpression.getRight() instanceof ColumnSegment && "=".equals(binaryExpression.getOperator());
+    }
+    
+    @Override
+    public int getOrder() {
+        return ShardingOrder.ORDER;
     }
 }

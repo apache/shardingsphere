@@ -23,11 +23,4 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
  * Database rule configuration.
  */
 public interface DatabaseRuleConfiguration extends RuleConfiguration {
-    
-    /**
-     * Is this configuration is empty.
-     *
-     * @return true or false
-     */
-    boolean isEmpty();
 }

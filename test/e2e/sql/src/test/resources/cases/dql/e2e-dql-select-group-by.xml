@@ -52,4 +52,34 @@
                scenario-comments="Test single table's LIKE operator underscore wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT COUNT(1) FROM t_order WHERE 1 = 2 GROUP BY order_id,user_id ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
+               scenario-comments="Test GROUP BY with ORDER BY different fields returns no rows when WHERE condition matches no data">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT AVG(DISTINCT order_id) AS avg_id FROM t_order WHERE 1 = 2" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
+               scenario-comments="Test AVG DISTINCT returns NULL when no data matches">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT SUM(DISTINCT order_id) AS sum_id FROM t_order WHERE 1 = 2" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
+               scenario-comments="Test SUM DISTINCT returns NULL when no data matches">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT COUNT(DISTINCT order_id) AS count_id FROM t_order WHERE 1 = 2" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
+               scenario-comments="Test COUNT DISTINCT returns 0 when no data matches">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT MIN(DISTINCT order_id) AS min_id FROM t_order WHERE 1 = 2" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
+               scenario-comments="Test MIN DISTINCT returns NULL when no data matches">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT MAX(DISTINCT order_id) AS max_id FROM t_order WHERE 1 = 2" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl"
+               scenario-comments="Test MAX DISTINCT returns NULL when no data matches">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.single.metadata.nodepath;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,14 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SingleRuleNodePathProviderTest {
     
+    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, SingleRuleConfiguration.class);
+    
     @Test
-    void assertNew() {
-        RuleNodePathProvider ruleNodePathProvider = new SingleRuleNodePathProvider();
-        RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertTrue(actualRuleNodePath.getNamedItems().isEmpty());
-        assertThat(actualRuleNodePath.getUniqueItems().size(), is(2));
-        assertTrue(actualRuleNodePath.getUniqueItems().containsKey(SingleRuleNodePathProvider.TABLES));
-        assertTrue(actualRuleNodePath.getUniqueItems().containsKey(SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE));
-        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(SingleRuleNodePathProvider.RULE_TYPE));
+    void assertGetRuleNodePath() {
+        RuleNodePath actual = pathProvider.getRuleNodePath();
+        assertTrue(actual.getNamedItems().isEmpty());
+        assertThat(actual.getUniqueItems().size(), is(2));
+        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodePathProvider.TABLES));
+        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE));
+        assertThat(actual.getRoot().getRuleType(), is(SingleRuleNodePathProvider.RULE_TYPE));
     }
 }

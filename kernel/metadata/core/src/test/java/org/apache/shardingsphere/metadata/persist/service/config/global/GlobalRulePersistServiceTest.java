@@ -59,6 +59,7 @@ class GlobalRulePersistServiceTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         globalRulePersistService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
         Plugins.getMemberAccessor().set(GlobalRulePersistService.class.getDeclaredField("repositoryTuplePersistService"), globalRulePersistService, repositoryTuplePersistService);
     }
@@ -100,6 +101,7 @@ class GlobalRulePersistServiceTest {
         YamlRuleConfiguration yamlRuleConfig = new MetaDataYamlRuleConfigurationFixture();
         when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
         when(repository.getChildrenKeys("/rules/fixture/versions")).thenReturn(Collections.emptyList());
+        when(repository.query("/rules/fixture/active_version")).thenReturn("", "0");
         globalRulePersistService.persist(Collections.singleton(ruleConfig));
         verify(repository).persist("/rules/fixture/versions/0", "{}" + System.lineSeparator());
         verify(repository).persist("/rules/fixture/active_version", "0");

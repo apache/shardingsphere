@@ -49,8 +49,8 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
-                                                     final RuleMetaData globalRuleMetaData) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
+                                                     final Map<String, ShardingSphereDatabase> databases, final RuleMetaData globalRuleMetaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
         DatabaseType protocolType = databases.values().iterator().next().getProtocolType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
@@ -65,16 +65,16 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     }
     
     private void collectFromDatabase(final ShardingSphereDatabase database, final ShardingSphereTableData tableData) throws SQLException {
-        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!shardingRule.isPresent()) {
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        if (!rule.isPresent()) {
             return;
         }
-        collectForShardingStatisticTable(database, shardingRule.get(), tableData);
+        collectForShardingStatisticTable(database, rule.get(), tableData);
     }
     
-    private void collectForShardingStatisticTable(final ShardingSphereDatabase database, final ShardingRule shardingRule, final ShardingSphereTableData tableData) throws SQLException {
+    private void collectForShardingStatisticTable(final ShardingSphereDatabase database, final ShardingRule rule, final ShardingSphereTableData tableData) throws SQLException {
         int count = 1;
-        for (ShardingTable each : shardingRule.getShardingTables().values()) {
+        for (ShardingTable each : rule.getShardingTables().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {
                 List<Object> row = new LinkedList<>();
                 row.add(count++);
@@ -89,11 +89,12 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     }
     
     private void addTableRowsAndDataLength(final Map<String, StorageUnit> storageUnits, final DataNode dataNode, final List<Object> row) throws SQLException {
-        DatabaseType databaseType = storageUnits.get(dataNode.getDataSourceName()).getStorageType();
+        StorageUnit storageUnit = storageUnits.get(dataNode.getDataSourceName());
+        DatabaseType databaseType = storageUnit.getStorageType();
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
         boolean isAppended = false;
         if (dialectCollector.isPresent()) {
-            try (Connection connection = storageUnits.get(dataNode.getDataSourceName()).getDataSource().getConnection()) {
+            try (Connection connection = storageUnit.getDataSource().getConnection()) {
                 isAppended = dialectCollector.get().appendRow(connection, dataNode, row);
             }
         }

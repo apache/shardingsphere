@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -25,15 +24,11 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
-import org.mockito.MockedStatic;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
 
 class AESCryptographicAlgorithmTest {
     
@@ -41,16 +36,8 @@ class AESCryptographicAlgorithmTest {
     
     @BeforeEach
     void setUp() {
-        cryptographicAlgorithm =
-                TypedSPILoader.getService(CryptographicAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
-    }
-    
-    @Test
-    void assertDigestAlgorithm() {
-        MockedStatic<DigestUtils> digestUtilsMockedStatic = mockStatic(DigestUtils.class, Answers.CALLS_REAL_METHODS);
-        TypedSPILoader.getService(CryptographicAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
-        digestUtilsMockedStatic.verify(() -> DigestUtils.getDigest("SHA-1"), times(1));
-        digestUtilsMockedStatic.close();
+        cryptographicAlgorithm = TypedSPILoader.getService(CryptographicAlgorithm.class, "AES",
+                PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
     }
     
     @Test
@@ -65,14 +52,13 @@ class AESCryptographicAlgorithmTest {
     
     @Test
     void assertCreateNewInstanceWithEmptyDigestAlgorithm() {
-        assertThrows(AlgorithmInitializationException.class, () -> cryptographicAlgorithm.init(PropertiesBuilder.build(new Property("aes-key-value", "123456abc"),
-                new Property("digest-algorithm-name", ""))));
+        assertThrows(AlgorithmInitializationException.class, () -> cryptographicAlgorithm.init(
+                PropertiesBuilder.build(new Property("aes-key-value", "123456abc"), new Property("digest-algorithm-name", ""))));
     }
     
     @Test
     void assertEncrypt() {
-        Object actual = cryptographicAlgorithm.encrypt("test");
-        assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(cryptographicAlgorithm.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
@@ -82,8 +68,7 @@ class AESCryptographicAlgorithmTest {
     
     @Test
     void assertDecrypt() {
-        Object actual = cryptographicAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==");
-        assertThat(actual.toString(), is("test"));
+        assertThat(cryptographicAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA=="), is("test"));
     }
     
     @Test

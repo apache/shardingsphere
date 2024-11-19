@@ -67,7 +67,7 @@ public final class TablesContext {
     @Getter(AccessLevel.NONE)
     private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
     
-    private final Map<String, IdentifierValue> tableNameAliasMap = new HashMap<>();
+    private final Map<String, String> tableAliasNameMap = new HashMap<>();
     
     public TablesContext(final SimpleTableSegment table, final DatabaseType databaseType, final String currentDatabaseName) {
         this(null == table ? Collections.emptyList() : Collections.singletonList(table), databaseType, currentDatabaseName);
@@ -84,14 +84,17 @@ public final class TablesContext {
         }
         this.tables.addAll(tables);
         for (TableSegment each : tables) {
-            if (each instanceof SimpleTableSegment && !"DUAL".equalsIgnoreCase(((SimpleTableSegment) each).getTableName().getIdentifier().getValue())) {
-                SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
-                simpleTables.add(simpleTableSegment);
-                tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-                // TODO use sql binder result when statement which contains tables support bind logic
-                simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
-                databaseNames.add(findDatabaseName(simpleTableSegment, databaseType).orElse(currentDatabaseName));
-                tableNameAliasMap.put(simpleTableSegment.getTableName().getIdentifier().getValue().toLowerCase(), each.getAlias().orElse(simpleTableSegment.getTableName().getIdentifier()));
+            if (each instanceof SimpleTableSegment) {
+                String tableName = ((SimpleTableSegment) each).getTableName().getIdentifier().getValue();
+                if (!"DUAL".equalsIgnoreCase(tableName)) {
+                    SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
+                    simpleTables.add(simpleTableSegment);
+                    tableNames.add(tableName);
+                    // TODO use SQL binder result when statement which contains tables support bind logic
+                    simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
+                    databaseNames.add(findDatabaseName(simpleTableSegment, databaseType).orElse(currentDatabaseName));
+                    tableAliasNameMap.put(each.getAlias().map(IdentifierValue::getValue).orElse(tableName).toLowerCase(), tableName.toLowerCase());
+                }
             }
             if (each instanceof SubqueryTableSegment) {
                 subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));
@@ -106,6 +109,9 @@ public final class TablesContext {
     }
     
     private Map<String, Collection<SubqueryTableContext>> createSubqueryTables(final Map<Integer, SelectStatementContext> subqueryContexts, final SubqueryTableSegment subqueryTable) {
+        if (!subqueryContexts.containsKey(subqueryTable.getSubquery().getStartIndex())) {
+            return Collections.emptyMap();
+        }
         SelectStatementContext subqueryContext = subqueryContexts.get(subqueryTable.getSubquery().getStartIndex());
         Map<String, SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, subqueryTable.getAliasName().orElse(null));
         Map<String, Collection<SubqueryTableContext>> result = new HashMap<>(subqueryTableContexts.size(), 1F);

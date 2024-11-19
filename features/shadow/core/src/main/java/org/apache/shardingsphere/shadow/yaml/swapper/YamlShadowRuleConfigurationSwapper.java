@@ -17,85 +17,87 @@
 
 package org.apache.shardingsphere.shadow.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.yaml.swapper.datasource.YamlShadowDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * YAML shadow rule configuration swapper.
  */
 public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlShadowRuleConfiguration, ShadowRuleConfiguration> {
     
-    private final YamlShadowTableConfigurationSwapper tableConfigurationSwapper = new YamlShadowTableConfigurationSwapper();
+    private final YamlShadowDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlShadowDataSourceConfigurationSwapper();
+    
+    private final YamlShadowTableConfigurationSwapper tableConfigSwapper = new YamlShadowTableConfigurationSwapper();
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
     @Override
     public YamlShadowRuleConfiguration swapToYamlConfiguration(final ShadowRuleConfiguration data) {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
+        result.getDataSources().putAll(swapToYamlDataSources(data.getDataSources()));
+        result.getTables().putAll(swapToYamlShadowTables(data.getTables()));
+        result.getShadowAlgorithms().putAll(swapToYamlShadowAlgorithms(data.getShadowAlgorithms()));
         result.setDefaultShadowAlgorithmName(data.getDefaultShadowAlgorithmName());
         setTableDefaultShadowDataSource(data.getTables(), data.getDataSources());
         setTableDefaultShadowAlgorithm(data.getTables(), data.getDefaultShadowAlgorithmName());
-        parseDataSources(data, result);
-        parseShadowTables(data, result);
-        parseShadowAlgorithms(data, result);
         return result;
     }
     
-    private void parseDataSources(final ShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
-        data.getDataSources().forEach(each -> yamlConfig.getDataSources().put(each.getName(), swapToDataSourceYamlConfiguration(each)));
+    private Map<String, YamlShadowDataSourceConfiguration> swapToYamlDataSources(final Collection<ShadowDataSourceConfiguration> dataSources) {
+        return dataSources.stream().collect(Collectors.toMap(ShadowDataSourceConfiguration::getName, dataSourceConfigSwapper::swapToYamlConfiguration, (a, b) -> b, LinkedHashMap::new));
     }
     
-    private YamlShadowDataSourceConfiguration swapToDataSourceYamlConfiguration(final ShadowDataSourceConfiguration data) {
-        YamlShadowDataSourceConfiguration result = new YamlShadowDataSourceConfiguration();
-        result.setProductionDataSourceName(data.getProductionDataSourceName());
-        result.setShadowDataSourceName(data.getShadowDataSourceName());
-        return result;
+    private Map<String, YamlShadowTableConfiguration> swapToYamlShadowTables(final Map<String, ShadowTableConfiguration> data) {
+        return data.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> tableConfigSwapper.swapToYamlConfiguration(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
     }
     
-    private void parseShadowTables(final ShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
-        data.getTables().forEach((key, value) -> yamlConfig.getTables().put(key, tableConfigurationSwapper.swapToYamlConfiguration(value)));
-    }
-    
-    private void parseShadowAlgorithms(final ShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
-        data.getShadowAlgorithms().forEach((key, value) -> yamlConfig.getShadowAlgorithms().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
+    private Map<String, YamlAlgorithmConfiguration> swapToYamlShadowAlgorithms(final Map<String, AlgorithmConfiguration> shadowAlgorithms) {
+        return shadowAlgorithms.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> algorithmSwapper.swapToYamlConfiguration(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
     }
     
     @Override
     public ShadowRuleConfiguration swapToObject(final YamlShadowRuleConfiguration yamlConfig) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setDefaultShadowAlgorithmName(yamlConfig.getDefaultShadowAlgorithmName());
-        parseYamlDataSources(yamlConfig, result);
-        parseYamlShadowTables(yamlConfig, result);
-        parseYamlShadowAlgorithms(yamlConfig, result);
+        result.setDataSources(swapToDataSources(yamlConfig.getDataSources()));
+        result.setTables(swapToShadowTables(yamlConfig.getTables()));
+        result.setShadowAlgorithms(swapToShadowAlgorithms(yamlConfig.getShadowAlgorithms()));
         setTableDefaultShadowDataSource(result.getTables(), result.getDataSources());
         setTableDefaultShadowAlgorithm(result.getTables(), result.getDefaultShadowAlgorithmName());
+        result.setDefaultShadowAlgorithmName(yamlConfig.getDefaultShadowAlgorithmName());
         return result;
     }
     
-    private void parseYamlShadowAlgorithms(final YamlShadowRuleConfiguration yamlConfig, final ShadowRuleConfiguration data) {
-        yamlConfig.getShadowAlgorithms().forEach((key, value) -> data.getShadowAlgorithms().put(key, algorithmSwapper.swapToObject(value)));
+    private Collection<ShadowDataSourceConfiguration> swapToDataSources(final Map<String, YamlShadowDataSourceConfiguration> dataSources) {
+        return dataSources.entrySet().stream().map(entry -> swapToDataSource(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
-    private void parseYamlShadowTables(final YamlShadowRuleConfiguration yamlConfig, final ShadowRuleConfiguration data) {
-        yamlConfig.getTables().forEach((key, value) -> data.getTables().put(key, tableConfigurationSwapper.swapToObject(value)));
-    }
-    
-    private void parseYamlDataSources(final YamlShadowRuleConfiguration yamlConfig, final ShadowRuleConfiguration data) {
-        yamlConfig.getDataSources().forEach((key, value) -> data.getDataSources().add(swapToDataSourceObject(key, value)));
-    }
-    
-    private ShadowDataSourceConfiguration swapToDataSourceObject(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {
+    private ShadowDataSourceConfiguration swapToDataSource(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {
         return new ShadowDataSourceConfiguration(name, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
+    }
+    
+    private Map<String, ShadowTableConfiguration> swapToShadowTables(final Map<String, YamlShadowTableConfiguration> tables) {
+        return tables.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> tableConfigSwapper.swapToObject(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
+    }
+    
+    private Map<String, AlgorithmConfiguration> swapToShadowAlgorithms(final Map<String, YamlAlgorithmConfiguration> shadowAlgorithms) {
+        return shadowAlgorithms.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> algorithmSwapper.swapToObject(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
     }
     
     private void setTableDefaultShadowDataSource(final Map<String, ShadowTableConfiguration> shadowTables, final Collection<ShadowDataSourceConfiguration> shadowDataSources) {

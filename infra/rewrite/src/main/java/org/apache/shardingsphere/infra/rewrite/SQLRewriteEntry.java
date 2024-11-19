@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -64,21 +63,19 @@ public final class SQLRewriteEntry {
      *
      * @param queryContext query context
      * @param routeContext route context
-     * @param connectionContext connection context
-     *
      * @return route unit and SQL rewrite result map
      */
-    public SQLRewriteResult rewrite(final QueryContext queryContext, final RouteContext routeContext, final ConnectionContext connectionContext) {
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(queryContext, routeContext, connectionContext);
+    public SQLRewriteResult rewrite(final QueryContext queryContext, final RouteContext routeContext) {
+        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(queryContext, routeContext);
         SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
         return routeContext.getRouteUnits().isEmpty()
                 ? new GenericSQLRewriteEngine(rule, database, globalRuleMetaData).rewrite(sqlRewriteContext, queryContext)
                 : new RouteSQLRewriteEngine(rule, database, globalRuleMetaData).rewrite(sqlRewriteContext, routeContext, queryContext);
     }
     
-    private SQLRewriteContext createSQLRewriteContext(final QueryContext queryContext, final RouteContext routeContext, final ConnectionContext connectionContext) {
+    private SQLRewriteContext createSQLRewriteContext(final QueryContext queryContext, final RouteContext routeContext) {
         HintValueContext hintValueContext = queryContext.getHintValueContext();
-        SQLRewriteContext result = new SQLRewriteContext(database, queryContext.getSqlStatementContext(), queryContext.getSql(), queryContext.getParameters(), connectionContext, hintValueContext);
+        SQLRewriteContext result = new SQLRewriteContext(database, queryContext);
         decorate(result, routeContext, hintValueContext);
         result.generateSQLTokens();
         return result;

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.broadcast.rule;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -43,19 +44,16 @@ public final class BroadcastRule implements DatabaseRule {
     
     private final BroadcastRuleConfiguration configuration;
     
-    private final String databaseName;
+    private final Collection<String> dataSourceNames;
     
     private final Collection<String> tables;
     
-    private final Collection<String> dataSourceNames;
-    
     private final RuleAttributes attributes;
     
-    public BroadcastRule(final BroadcastRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
+    public BroadcastRule(final BroadcastRuleConfiguration config, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         configuration = config;
-        this.databaseName = databaseName;
         dataSourceNames = getAggregatedDataSourceNames(dataSources, builtRules);
-        tables = createBroadcastTables(config.getTables());
+        tables = new CaseInsensitiveSet<>(config.getTables());
         attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables), new BroadcastTableNamesRuleAttribute(tables));
     }
     
@@ -86,27 +84,28 @@ public final class BroadcastRule implements DatabaseRule {
         return result;
     }
     
-    private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
-        return new CaseInsensitiveSet<>(broadcastTables);
-    }
-    
     /**
-     * Get broadcast rule table names.
+     * Filter broadcast table names.
      *
-     * @param logicTableNames logic table names
-     * @return broadcast rule table names.
+     * @param logicTableNames to be filtered logic table names
+     * @return filtered broadcast table names
      */
-    public Collection<String> getBroadcastRuleTableNames(final Collection<String> logicTableNames) {
+    public Collection<String> filterBroadcastTableNames(final Collection<String> logicTableNames) {
         return logicTableNames.stream().filter(tables::contains).collect(Collectors.toSet());
     }
     
     /**
-     * Judge whether logic table is all broadcast tables or not.
+     * Judge whether logic tables are all broadcast tables.
      *
      * @param logicTableNames logic table names
-     * @return whether logic table is all broadcast tables or not
+     * @return logic tables are all broadcast tables or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         return !logicTableNames.isEmpty() && tables.containsAll(logicTableNames);
+    }
+    
+    @Override
+    public int getOrder() {
+        return BroadcastOrder.ORDER;
     }
 }

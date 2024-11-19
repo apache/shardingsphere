@@ -62,39 +62,19 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
     }
     
     private void checkColumn(final String databaseName, final String tableName, final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
-        checkCipherColumn(databaseName, tableName, columnRuleConfig.getName(), columnRuleConfig.getCipher(), encryptors);
-        columnRuleConfig.getAssistedQuery().ifPresent(optional -> checkAssistColumn(databaseName, tableName, columnRuleConfig.getName(), optional, encryptors));
-        columnRuleConfig.getLikeQuery().ifPresent(optional -> checkLikeColumn(databaseName, tableName, columnRuleConfig.getName(), optional, encryptors));
+        checkEncryptColumnItem(databaseName, tableName, columnRuleConfig.getName(), columnRuleConfig.getCipher(), encryptors, "Cipher");
+        columnRuleConfig.getAssistedQuery().ifPresent(optional -> checkEncryptColumnItem(databaseName, tableName, columnRuleConfig.getName(), optional, encryptors, "Assist Query"));
+        columnRuleConfig.getLikeQuery().ifPresent(optional -> checkEncryptColumnItem(databaseName, tableName, columnRuleConfig.getName(), optional, encryptors, "Like Query"));
     }
     
-    private void checkCipherColumn(final String databaseName, final String tableName, final String logicColumnName,
-                                   final EncryptColumnItemRuleConfiguration cipherColumnConfig, final Map<String, AlgorithmConfiguration> encryptors) {
-        ShardingSpherePreconditions.checkNotEmpty(cipherColumnConfig.getName(),
-                () -> new MissingRequiredEncryptColumnException("Cipher", new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-        ShardingSpherePreconditions.checkNotEmpty(cipherColumnConfig.getEncryptorName(),
-                () -> new MissingRequiredAlgorithmException("Standard encrypt", new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-        ShardingSpherePreconditions.checkContainsKey(encryptors, cipherColumnConfig.getEncryptorName(),
-                () -> new UnregisteredAlgorithmException("Standard encrypt", cipherColumnConfig.getEncryptorName(), new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-    }
-    
-    private void checkAssistColumn(final String databaseName, final String tableName, final String logicColumnName,
-                                   final EncryptColumnItemRuleConfiguration assistedQueryColumnConfig, final Map<String, AlgorithmConfiguration> encryptors) {
-        ShardingSpherePreconditions.checkNotEmpty(assistedQueryColumnConfig.getName(),
-                () -> new MissingRequiredEncryptColumnException("Assisted query", new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-        ShardingSpherePreconditions.checkNotEmpty(assistedQueryColumnConfig.getEncryptorName(),
-                () -> new MissingRequiredAlgorithmException("Assist query encrypt", new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-        ShardingSpherePreconditions.checkContainsKey(encryptors, assistedQueryColumnConfig.getEncryptorName(),
-                () -> new UnregisteredAlgorithmException("Assist query encrypt", assistedQueryColumnConfig.getEncryptorName(), new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-    }
-    
-    private void checkLikeColumn(final String databaseName, final String tableName, final String logicColumnName,
-                                 final EncryptColumnItemRuleConfiguration likeQueryColumnConfig, final Map<String, AlgorithmConfiguration> encryptors) {
-        ShardingSpherePreconditions.checkNotEmpty(likeQueryColumnConfig.getName(),
-                () -> new MissingRequiredEncryptColumnException("Like", new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-        ShardingSpherePreconditions.checkNotEmpty(likeQueryColumnConfig.getEncryptorName(),
-                () -> new MissingRequiredAlgorithmException("Like query", new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
-        ShardingSpherePreconditions.checkContainsKey(encryptors, likeQueryColumnConfig.getEncryptorName(),
-                () -> new UnregisteredAlgorithmException("Like query encrypt", likeQueryColumnConfig.getEncryptorName(), new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
+    private void checkEncryptColumnItem(final String databaseName, final String tableName, final String logicColumnName,
+                                        final EncryptColumnItemRuleConfiguration columnItem, final Map<String, AlgorithmConfiguration> encryptors, final String itemType) {
+        ShardingSpherePreconditions.checkNotEmpty(columnItem.getName(),
+                () -> new MissingRequiredEncryptColumnException(itemType, new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
+        ShardingSpherePreconditions.checkNotEmpty(columnItem.getEncryptorName(),
+                () -> new MissingRequiredAlgorithmException(itemType + " encrypt", new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
+        ShardingSpherePreconditions.checkContainsKey(encryptors, columnItem.getEncryptorName(),
+                () -> new UnregisteredAlgorithmException(itemType + " encrypt", columnItem.getEncryptorName(), new SQLExceptionIdentifier(databaseName, tableName, logicColumnName)));
     }
     
     @Override

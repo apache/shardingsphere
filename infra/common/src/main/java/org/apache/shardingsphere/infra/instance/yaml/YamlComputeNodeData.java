@@ -31,4 +31,6 @@ public final class YamlComputeNodeData implements YamlConfiguration {
     private String attribute;
     
     private String version;
+    
+    private String databaseName;
 }

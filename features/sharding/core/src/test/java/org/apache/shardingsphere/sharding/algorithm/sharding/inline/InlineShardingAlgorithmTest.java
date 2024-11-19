@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -35,6 +36,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,19 +48,15 @@ class InlineShardingAlgorithmTest {
     
     private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
     
-    private InlineShardingAlgorithm inlineShardingAlgorithm;
+    private InlineShardingAlgorithm shardingAlgorithm;
     
-    private InlineShardingAlgorithm inlineShardingAlgorithmWithSimplified;
-    
-    private InlineShardingAlgorithm negativeNumberInlineShardingAlgorithm;
+    private InlineShardingAlgorithm negativeNumberShardingAlgorithm;
     
     @BeforeEach
     void setUp() {
-        inlineShardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
+        shardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
                 PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{order_id % 4}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString())));
-        inlineShardingAlgorithmWithSimplified = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
-                PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 4}")));
-        negativeNumberInlineShardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
+        negativeNumberShardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
                 PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{(order_id % 4).abs()}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString())));
     }
     
@@ -77,43 +75,53 @@ class InlineShardingAlgorithmTest {
     @Test
     void assertDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
         assertThrows(MismatchedInlineShardingAlgorithmExpressionAndColumnException.class,
-                () -> inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0)));
+                () -> shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0)));
+    }
+    
+    @Test
+    void assertDoShardingWithNonExistNodes() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1");
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
+    }
+    
+    @Test
+    void assertDoShardingWithNegative() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(negativeNumberShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
+        assertThat(negativeNumberShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -4)), is("t_order_0"));
+    }
+    
+    @Test
+    void assertDoShardingWithLargeValues() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 787694822390497280L)), is("t_order_0"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, new BigInteger("787694822390497280787694822390497280"))), is("t_order_0"));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     void assertDoShardingWithRangeShardingConditionValue() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, mock(Range.class)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, mock(Range.class)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    void assertDoShardingWithNonExistNodes() {
-        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1");
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
-        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
+    void assertDoShardingWithNotAllowRangeQuery() {
+        InlineShardingAlgorithm inlineShardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 4}")));
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThrows(UnsupportedSQLOperationException.class,
+                () -> inlineShardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, mock(Range.class))));
     }
     
     @Test
-    void assertDoShardingWithNegative() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(negativeNumberInlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
-        assertThat(negativeNumberInlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -4)), is("t_order_0"));
-    }
-    
-    @Test
-    void assertDoShardingWithLargeValues() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames,
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 787694822390497280L)), is("t_order_0"));
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames,
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, new BigInteger("787694822390497280787694822390497280"))), is("t_order_0"));
-        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames,
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 787694822390497280L)), is("t_order_0"));
-        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames,
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, new BigInteger("787694822390497280787694822390497280"))), is("t_order_0"));
+    void assertGetAlgorithmStructure() {
+        assertThat(shardingAlgorithm.getAlgorithmStructure("foo_ds", "foo_col"), is(Optional.of("t_order_${order_id%4}")));
     }
 }

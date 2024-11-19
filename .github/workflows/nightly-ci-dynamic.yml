@@ -40,9 +40,9 @@ jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
-  
+
   ci-dynamic:
-    if: github.repository == 'apache/shardingsphere' && github.event.inputs.job == 'ci-dynamic'
+    if: github.event.inputs.job == 'ci-dynamic'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
@@ -73,9 +73,9 @@ jobs:
         run: ./mvnw clean install -B -ntp -T1C
       - name: Build Examples with Maven
         run: ./mvnw clean package -B -f examples/pom.xml -T1C
-  
+
   ci-jdk8-dynamic:
-    if: github.repository == 'apache/shardingsphere' && github.event.inputs.job == 'ci-jdk8-dynamic'
+    if: github.event.inputs.job == 'ci-jdk8-dynamic'
     name: CI - JDK 8 on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
@@ -110,9 +110,9 @@ jobs:
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw test -B -ntp -fae -T1C
-  
+
   ci-native-test:
-    if: github.repository == 'apache/shardingsphere' && github.event.inputs.job == 'ci-native-test'
+    if: github.event.inputs.job == 'ci-native-test'
     name: NativeTest CI - GraalVM CE on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ fromJson(github.event.inputs.os) }}

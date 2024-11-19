@@ -17,35 +17,43 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.record;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Column.
  */
-@RequiredArgsConstructor
-@Getter
-public final class Column {
-    
-    private final String name;
+public interface Column {
     
     /**
-     * Value are available only when the primary key column is updated.
+     * Get name.
+     *
+     * @return name
      */
-    private final Object oldValue;
+    String getName();
     
-    private final Object value;
+    /**
+     * Get old value.
+     *
+     * @return old value
+     */
+    Object getOldValue();
     
-    private final boolean updated;
+    /**
+     * Get value.
+     *
+     * @return value
+     */
+    Object getValue();
     
-    private final boolean uniqueKey;
+    /**
+     * Judge whether the column is updated.
+     *
+     * @return true if the column is updated, otherwise false
+     */
+    boolean isUpdated();
     
-    public Column(final String name, final Object value, final boolean updated, final boolean uniqueKey) {
-        this(name, null, value, updated, uniqueKey);
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("%s: oldValue=%s, value=%s", name, oldValue, value);
-    }
+    /**
+     * Judge whether the column is unique key.
+     *
+     * @return true if the column is unique key, otherwise false
+     */
+    boolean isUniqueKey();
 }

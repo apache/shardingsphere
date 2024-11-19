@@ -31,14 +31,18 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 public final class IndexMetaData {
     
     private final String name;
     
-    private final Collection<String> columns = new LinkedList<>();
+    private final Collection<String> columns;
     
-    @Setter
     private boolean unique;
+    
+    public IndexMetaData(final String name) {
+        this(name, new LinkedList<>());
+    }
 }

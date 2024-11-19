@@ -87,7 +87,7 @@ public final class GlobalRulePersistService {
     private Collection<MetaDataVersion> persistTuples(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            List<String> versions = repository.getChildrenKeys(GlobalNode.getGlobalRuleVersionsNode(each.getKey()));
+            List<String> versions = metaDataVersionPersistService.getVersions(GlobalNode.getGlobalRuleVersionsNode(each.getKey()));
             String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(GlobalNode.getGlobalRuleVersionNode(each.getKey(), nextActiveVersion), each.getValue());
             if (Strings.isNullOrEmpty(repository.query(GlobalNode.getGlobalRuleActiveVersionNode(each.getKey())))) {

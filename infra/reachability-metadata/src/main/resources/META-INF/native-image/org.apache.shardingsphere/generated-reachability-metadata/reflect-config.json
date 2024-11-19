@@ -60,7 +60,7 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.persist.StandaloneMetaDataManagerPersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -69,10 +69,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -179,6 +175,11 @@
   "name":"java.io.Reader",
   "queryAllDeclaredMethods":true,
   "methods":[{"name":"close","parameterTypes":[] }, {"name":"read","parameterTypes":["java.nio.CharBuffer"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
+  "name":"java.io.Serializable",
+  "queryAllDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
@@ -334,17 +335,12 @@
   "allDeclaredFields":true
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor"},
+  "name":"java.lang.Object",
+  "allDeclaredFields":true
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.changed.DefaultDatabaseShardingStrategyChangedProcessor"},
-  "name":"java.lang.Object",
-  "allDeclaredFields":true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.changed.KeyGeneratorChangedProcessor"},
-  "name":"java.lang.Object",
-  "allDeclaredFields":true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.changed.ShardingAlgorithmChangedProcessor"},
   "name":"java.lang.Object",
   "allDeclaredFields":true
 },
@@ -476,11 +472,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
   "name":"java.net.Socket"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-  "name":"java.net.SocketException",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
@@ -644,7 +635,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.changed.ShardingAlgorithmChangedProcessor"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor"},
   "name":"java.util.Properties",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -1112,7 +1103,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
   "name":"org.apache.shardingsphere.encrypt.checker.sql.EncryptSupportedSQLCheckersBuilder",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -1294,13 +1285,7 @@
   "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.changed.KeyGeneratorChangedProcessor"},
-  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.changed.ShardingAlgorithmChangedProcessor"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor"},
   "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
@@ -1619,7 +1604,7 @@
   "name":"org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getAttribute","parameterTypes":[] }, {"name":"getVersion","parameterTypes":[] }, {"name":"setAttribute","parameterTypes":["java.lang.String"] }, {"name":"setVersion","parameterTypes":["java.lang.String"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getAttribute","parameterTypes":[] }, {"name":"getDatabaseName","parameterTypes":[] }, {"name":"getVersion","parameterTypes":[] }, {"name":"setAttribute","parameterTypes":["java.lang.String"] }, {"name":"setDatabaseName","parameterTypes":["java.lang.String"] }, {"name":"setVersion","parameterTypes":["java.lang.String"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService"},
@@ -2085,7 +2070,7 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener$$Lambda/0x00007fb983b253a8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener$$Lambda/0x00007ffa47b22d00"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.MetaDataChangedSubscriber"
 },
 {
@@ -2433,10 +2418,6 @@
   "name":"org.apache.shardingsphere.readwritesplitting.checker.ReadwriteSplittingRuleConfigurationChecker"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.datanode.DataNodes"},
-  "name":"org.apache.shardingsphere.readwritesplitting.datanode.ReadwriteSplittingDataNodeBuilder"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
   "name":"org.apache.shardingsphere.readwritesplitting.distsql.handler.update.AlterReadwriteSplittingRuleExecutor"
 },
@@ -2562,10 +2543,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"},
   "name":"org.apache.shardingsphere.shadow.checker.ShadowRuleConfigurationChecker"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.datanode.DataNodes"},
-  "name":"org.apache.shardingsphere.shadow.datanode.ShadowDataNodeBuilder"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},

@@ -129,8 +129,7 @@ class MySQLMetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("mpt", Types.BINARY, false, false, false, true, false, true)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        IndexMetaData expected = new IndexMetaData("id");
-        expected.getColumns().add("id");
+        IndexMetaData expected = new IndexMetaData("id", Collections.singletonList("id"));
         expected.setUnique(true);
         assertThat(indexesIterator.next(), is(expected));
     }

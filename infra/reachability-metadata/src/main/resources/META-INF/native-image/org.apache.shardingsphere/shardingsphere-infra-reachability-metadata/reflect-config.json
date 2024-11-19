@@ -189,6 +189,11 @@
   "allPublicMethods": true
 },
 {
+  "condition":{"typeReachable":"java.net.SocketException"},
+  "name":"java.net.SocketException",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration",
   "allPublicMethods":true

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.audit;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -33,6 +34,7 @@ import java.util.List;
 /**
  * DML sharding conditions sharding audit algorithm.
  */
+@HighFrequencyInvocation
 public final class DMLShardingConditionsShardingAuditAlgorithm implements ShardingAuditAlgorithm {
     
     @Override

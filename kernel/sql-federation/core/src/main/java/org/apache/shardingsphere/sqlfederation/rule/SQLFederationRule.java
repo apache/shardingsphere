@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 
@@ -54,5 +55,10 @@ public final class SQLFederationRule implements GlobalRule {
      */
     public OptimizerContext getOptimizerContext() {
         return optimizerContext.get();
+    }
+    
+    @Override
+    public int getOrder() {
+        return SQLFederationOrder.ORDER;
     }
 }

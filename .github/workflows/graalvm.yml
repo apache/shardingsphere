@@ -26,7 +26,8 @@ on:
       - 'infra/reachability-metadata/src/**'
       - 'test/native/native-image-filter/**'
       - 'test/native/src/**'
-
+  workflow_dispatch:
+  
 concurrency:
   group: graalvm-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

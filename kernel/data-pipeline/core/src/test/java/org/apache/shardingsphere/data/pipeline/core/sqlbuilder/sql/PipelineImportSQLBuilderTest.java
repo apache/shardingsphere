@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.RecordUtils;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -87,18 +88,18 @@ class PipelineImportSQLBuilderTest {
     
     private DataRecord createDataRecordWithUniqueKey() {
         DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new IngestPlaceholderPosition(), 4);
-        result.addColumn(new Column("id", "", false, true));
-        result.addColumn(new Column("foo_col", "", false, false));
+        result.addColumn(new NormalColumn("id", "", false, true));
+        result.addColumn(new NormalColumn("foo_col", "", false, false));
         for (int i = 1; i <= 3; i++) {
-            result.addColumn(new Column("col" + i, "", true, false));
+            result.addColumn(new NormalColumn("col" + i, "", true, false));
         }
         return result;
     }
     
     private DataRecord createDataRecordWithoutUniqueKey() {
         DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new IngestPlaceholderPosition(), 4);
-        result.addColumn(new Column("id", "", false, false));
-        result.addColumn(new Column("foo_col", "", true, false));
+        result.addColumn(new NormalColumn("id", "", false, false));
+        result.addColumn(new NormalColumn("foo_col", "", true, false));
         return result;
     }
 }

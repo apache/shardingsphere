@@ -18,33 +18,32 @@
 package org.apache.shardingsphere.shadow.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.shadow.rule.ShadowDataSourceRule;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Shadow data source mapper rule attribute.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class ShadowDataSourceMapperRuleAttribute implements DataSourceMapperRuleAttribute {
     
-    private final Map<String, ShadowDataSourceRule> shadowDataSourceMappings;
+    private final Map<String, ShadowDataSourceRule> dataSourceRules;
     
+    @HighFrequencyInvocation
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        shadowDataSourceMappings.forEach((key, value) -> result.put(key, createShadowDataSources(value)));
-        return result;
-    }
-    
-    private Collection<String> createShadowDataSources(final ShadowDataSourceRule shadowDataSourceRule) {
-        Collection<String> result = new LinkedList<>();
-        result.add(shadowDataSourceRule.getProductionDataSource());
-        result.add(shadowDataSourceRule.getShadowDataSource());
+        Map<String, Collection<String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1F);
+        for (Entry<String, ShadowDataSourceRule> entry : dataSourceRules.entrySet()) {
+            result.put(entry.getKey(), Arrays.asList(entry.getValue().getProductionDataSource(), entry.getValue().getShadowDataSource()));
+        }
         return result;
     }
 }

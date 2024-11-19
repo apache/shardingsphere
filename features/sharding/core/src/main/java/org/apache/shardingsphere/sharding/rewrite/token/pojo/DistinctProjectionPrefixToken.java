@@ -30,6 +30,11 @@ public final class DistinctProjectionPrefixToken extends SQLToken implements Att
     }
     
     @Override
+    public int getStopIndex() {
+        return getStartIndex();
+    }
+    
+    @Override
     public String toString() {
         return "DISTINCT ";
     }

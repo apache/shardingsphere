@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableRe
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
@@ -62,7 +63,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -91,7 +91,6 @@ import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92DeleteState
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -349,9 +348,9 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
             result.setAlias(alias);
             return projection;
         }
-        LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+        ExpressionSegment column = (ExpressionSegment) projection;
+        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getText()), column)
+                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getText()), column);
         result.setAlias(alias);
         return result;
     }

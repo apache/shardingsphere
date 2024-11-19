@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
@@ -27,14 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptRuleNodePathProviderTest {
     
+    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, EncryptRuleConfiguration.class);
+    
     @Test
-    void assertNew() {
-        RuleNodePathProvider ruleNodePathProvider = new EncryptRuleNodePathProvider();
-        RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
-        assertThat(actualRuleNodePath.getNamedItems().size(), is(2));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(EncryptRuleNodePathProvider.ENCRYPTORS));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(EncryptRuleNodePathProvider.TABLES));
-        assertTrue(actualRuleNodePath.getUniqueItems().isEmpty());
-        assertThat(actualRuleNodePath.getRoot().getRuleType(), is(EncryptRuleNodePathProvider.RULE_TYPE));
+    void assertGetRuleNodePath() {
+        RuleNodePath actual = pathProvider.getRuleNodePath();
+        assertThat(actual.getNamedItems().size(), is(2));
+        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodePathProvider.ENCRYPTORS));
+        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodePathProvider.TABLES));
+        assertTrue(actual.getUniqueItems().isEmpty());
+        assertThat(actual.getRoot().getRuleType(), is(EncryptRuleNodePathProvider.RULE_TYPE));
     }
 }

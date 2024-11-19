@@ -44,7 +44,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     private final ShardingSphereSchema schema;
     
@@ -54,7 +54,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
         this.stopIndex = stopIndex;
         this.identifier = identifier;
         this.sqlStatementContext = sqlStatementContext;
-        this.shardingRule = shardingRule;
+        this.rule = shardingRule;
         this.schema = schema;
     }
     
@@ -70,10 +70,10 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     private String getIndexValue(final RouteUnit routeUnit) {
         Optional<String> logicTableName = findLogicTableNameFromMetaData(identifier.getValue());
-        if (logicTableName.isPresent() && !shardingRule.isShardingTable(logicTableName.get())) {
+        if (logicTableName.isPresent() && !rule.isShardingTable(logicTableName.get())) {
             return identifier.getValue();
         }
-        Map<String, String> logicAndActualTables = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule);
+        Map<String, String> logicAndActualTables = ShardingTokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, rule);
         String actualTableName = logicTableName.map(logicAndActualTables::get).orElseGet(() -> logicAndActualTables.isEmpty() ? null : logicAndActualTables.values().iterator().next());
         return IndexMetaDataUtils.getActualIndexName(identifier.getValue(), actualTableName);
     }

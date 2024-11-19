@@ -63,7 +63,7 @@ class ClusterContextManagerBuilderTest {
     
     @Test
     void assertBuildForJDBC() throws SQLException {
-        assertBuild(new JDBCInstanceMetaData("foo"));
+        assertBuild(new JDBCInstanceMetaData("foo", "foo_db"));
     }
     
     @Test

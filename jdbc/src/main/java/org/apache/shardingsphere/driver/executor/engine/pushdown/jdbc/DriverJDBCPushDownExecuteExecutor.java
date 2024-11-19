@@ -145,7 +145,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
                 return Optional.empty();
             }
             List<QueryResult> queryResults = getQueryResults(resultSets);
-            MergedResult mergedResult = new MergeEngine(metaData.getGlobalRuleMetaData(), database, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext())
+            MergedResult mergedResult = new MergeEngine(metaData, database, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext())
                     .merge(queryResults, sqlStatementContext);
             return Optional.of(new ShardingSphereResultSet(resultSets, mergedResult, statement, sqlStatementContext));
         }

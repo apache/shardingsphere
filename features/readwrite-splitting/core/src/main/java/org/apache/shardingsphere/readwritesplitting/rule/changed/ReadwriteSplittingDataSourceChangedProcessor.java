@@ -19,22 +19,21 @@ package org.apache.shardingsphere.readwritesplitting.rule.changed;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Readwrite-splitting data source changed processor.
@@ -58,8 +57,7 @@ public final class ReadwriteSplittingDataSourceChangedProcessor
     
     @Override
     public ReadwriteSplittingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        return rule.map(ReadwriteSplittingRule::getConfiguration)
+        return database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class).map(ReadwriteSplittingRule::getConfiguration)
                 .orElseGet(() -> new ReadwriteSplittingRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     

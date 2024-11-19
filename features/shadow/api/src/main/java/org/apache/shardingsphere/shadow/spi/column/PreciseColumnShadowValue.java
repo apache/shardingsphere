@@ -31,9 +31,9 @@ import org.apache.shardingsphere.shadow.spi.ShadowValue;
 @Getter
 public final class PreciseColumnShadowValue<T extends Comparable<?>> implements ShadowValue {
     
-    private final String logicTableName;
+    private final String tableName;
     
-    private final ShadowOperationType shadowOperationType;
+    private final ShadowOperationType operationType;
     
     private final String columnName;
     

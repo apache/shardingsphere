@@ -112,7 +112,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             return createMemoryEnumerable(databaseName, schemaName, table, databaseType);
         }
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), scanContext, databaseType, federationContext.getQueryContext().isUseCache());
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, globalRuleMetaData, executorContext.getProps(), new ConnectionContext(Collections::emptySet));
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, globalRuleMetaData, executorContext.getProps());
         if (federationContext.isPreview()) {
             federationContext.getPreviewExecutionUnits().addAll(executionContext.getExecutionUnits());
             return createEmptyEnumerable();
@@ -135,7 +135,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
                 ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(federationContext.getProcessId()).isInterrupted(), SQLExecutionInterruptedException::new);
                 processEngine.executeSQL(executionGroupContext, federationContext.getQueryContext());
                 List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
-                MergeEngine mergeEngine = new MergeEngine(federationContext.getMetaData().getGlobalRuleMetaData(), database, executorContext.getProps(), new ConnectionContext(Collections::emptySet));
+                MergeEngine mergeEngine = new MergeEngine(federationContext.getMetaData(), database, executorContext.getProps(), new ConnectionContext(Collections::emptySet));
                 MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
                 Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
                 return new JDBCRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);

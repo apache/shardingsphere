@@ -79,15 +79,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-    "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseRequestManager\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-    "pattern":"\\QMETA-INF/services/com.clickhouse.data.ClickHouseDataStreamFactory\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-    "pattern":"\\QMETA-INF/services/com.clickhouse.jdbc.JdbcTypeMapping\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\QMETA-INF/services/io.grpc.LoadBalancerProvider\\E"
   }, {
@@ -222,9 +213,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.props.TypedPropertyValue"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.type.DatabaseType\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.datanode.DataNodes"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.datanode.DataNodeBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolActiveDetector\\E"
@@ -395,9 +383,6 @@
     "pattern":"\\Qcom/atomikos/icatch/provider/imp/transactions.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-    "pattern":"\\Qcom/clickhouse/client/internal/jpountz/util/linux/amd64/liblz4-java.so\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qcontainer-license-acceptance.txt\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion"},
@@ -408,9 +393,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Qlib/sqlparser/druid.jar\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-    "pattern":"\\Qorg/apache/hc/core5/version.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\Qorg/h2/util/data.zip\\E"
@@ -1975,56 +1957,53 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qtest-native/sql/seata-script-client-at-postgresql.sql\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-    "pattern":"\\Qtest-native/sql/test-native-databases-clickhouse.sql\\E"
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/clickhouse.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/clickhouse.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/hive.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/mysql.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/mysql.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/opengauss.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/opengauss.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/postgresql.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/postgresql.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/sqlserver.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/databases/sqlserver.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/encrypt.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/encrypt.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/mask.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/mask.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/readwrite-splitting.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/readwrite-splitting.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/shadow.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/shadow.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/features/sharding.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/features/sharding.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/modes/cluster/etcd.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/modes/cluster/etcd.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/modes/cluster/zookeeper.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/modes/cluster/zookeeper.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/transactions/base/seata.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/transactions/base/seata.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/transactions/xa/atomikos.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/transactions/xa/atomikos.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/transactions/xa/narayana.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/transactions/xa/narayana.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qtransactions-defaults.properties\\E"

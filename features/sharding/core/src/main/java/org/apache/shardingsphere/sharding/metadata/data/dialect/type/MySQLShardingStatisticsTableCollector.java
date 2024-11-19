@@ -31,11 +31,11 @@ import java.util.List;
  */
 public final class MySQLShardingStatisticsTableCollector implements DialectShardingStatisticsTableCollector {
     
-    private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?";
+    private static final String FETCH_TABLE_ROWS_AND_DATA_LENGTH_SQL = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?";
     
     @Override
     public boolean appendRow(final Connection connection, final DataNode dataNode, final List<Object> row) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(MYSQL_TABLE_ROWS_AND_DATA_LENGTH)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(FETCH_TABLE_ROWS_AND_DATA_LENGTH_SQL)) {
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, dataNode.getTableName());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

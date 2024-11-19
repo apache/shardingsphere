@@ -40,4 +40,9 @@ public final class UseDefaultInsertColumnsToken extends SQLToken implements Atta
     public String toString() {
         return columns.isEmpty() ? "" : "(" + String.join(", ", columns) + ")";
     }
+    
+    @Override
+    public int getStopIndex() {
+        return getStartIndex();
+    }
 }

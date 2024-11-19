@@ -36,7 +36,7 @@ public final class BroadcastRuleBuilder implements DatabaseRuleBuilder<Broadcast
     @Override
     public BroadcastRule build(final BroadcastRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                                final ResourceMetaData resourceMetaData, final Collection<ShardingSphereRule> builtRules, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        return new BroadcastRule(ruleConfig, databaseName, resourceMetaData.getDataSourceMap(), builtRules);
+        return new BroadcastRule(ruleConfig, resourceMetaData.getDataSourceMap(), builtRules);
     }
     
     @Override

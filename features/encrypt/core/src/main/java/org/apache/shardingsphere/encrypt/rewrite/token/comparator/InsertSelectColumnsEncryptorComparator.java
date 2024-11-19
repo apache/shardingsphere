@@ -23,7 +23,12 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ParameterMarkerProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -52,6 +57,9 @@ public final class InsertSelectColumnsEncryptorComparator {
             EncryptAlgorithm insertColumnEncryptor = encryptRule.findQueryEncryptor(
                     insertColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), insertColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
             Projection projection = projectionIterator.next();
+            if (isLiteralOrParameterMarker(projection)) {
+                continue;
+            }
             ColumnSegmentBoundInfo projectionColumnBoundInfo = getColumnSegmentBoundInfo(projection);
             EncryptAlgorithm projectionEncryptor =
                     encryptRule.findQueryEncryptor(projectionColumnBoundInfo.getOriginalTable().getValue(), projectionColumnBoundInfo.getOriginalColumn().getValue()).orElse(null);
@@ -62,9 +70,21 @@ public final class InsertSelectColumnsEncryptorComparator {
         return true;
     }
     
+    private static boolean isLiteralOrParameterMarker(final Projection projection) {
+        if (projection instanceof ExpressionProjection) {
+            ExpressionSegment expressionSegment = ((ExpressionProjection) projection).getExpressionSegment().getExpr();
+            return expressionSegment instanceof LiteralExpressionSegment;
+        }
+        return projection instanceof ParameterMarkerProjection;
+    }
+    
     private static ColumnSegmentBoundInfo getColumnSegmentBoundInfo(final Projection projection) {
-        return projection instanceof ColumnProjection
-                ? new ColumnSegmentBoundInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
-                : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
+        if (projection instanceof ColumnProjection) {
+            return ((ColumnProjection) projection).getColumnBoundInfo();
+        }
+        if (projection instanceof SubqueryProjection) {
+            return getColumnSegmentBoundInfo(((SubqueryProjection) projection).getProjection());
+        }
+        return new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
     }
 }

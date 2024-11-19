@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.column.PreciseColumnShadowValue;
@@ -57,7 +56,7 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
     private ShadowOperationType getShadowOperationType(final Properties props) {
         String operationType = props.getProperty(OPERATION_PROPS_KEY);
         ShardingSpherePreconditions.checkNotNull(operationType, () -> new AlgorithmInitializationException(this, "Column shadow algorithm operation cannot be null"));
-        Optional<ShadowOperationType> result = ShadowOperationType.contains(operationType);
+        Optional<ShadowOperationType> result = ShadowOperationType.valueFrom(operationType);
         ShardingSpherePreconditions.checkState(result.isPresent(),
                 () -> new AlgorithmInitializationException(this, "Column shadow algorithm operation must be one of [select, insert, update, delete]"));
         return result.get();
@@ -65,11 +64,11 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
     
     @Override
     public final boolean isShadow(final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
-        String table = shadowValue.getLogicTableName();
+        String table = shadowValue.getTableName();
         String column = shadowValue.getColumnName();
         Comparable<?> value = shadowValue.getValue();
-        if (shadowOperationType == shadowValue.getShadowOperationType() && shadowColumn.equals(column)) {
-            ShadowValueValidator.validate(table, column, value);
+        if (shadowOperationType == shadowValue.getOperationType() && shadowColumn.equals(column)) {
+            ColumnShadowValueValidator.validate(table, column, value);
             return matchesShadowValue(value);
         }
         return false;

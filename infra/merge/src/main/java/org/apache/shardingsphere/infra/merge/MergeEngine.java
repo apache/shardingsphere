@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMergerEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -47,7 +47,7 @@ import java.util.Optional;
 @HighFrequencyInvocation
 public final class MergeEngine {
     
-    private final RuleMetaData globalRuleMetaData;
+    private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereDatabase database;
     
@@ -58,8 +58,8 @@ public final class MergeEngine {
     
     private final ConnectionContext connectionContext;
     
-    public MergeEngine(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        this.globalRuleMetaData = globalRuleMetaData;
+    public MergeEngine(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+        this.metaData = metaData;
         this.database = database;
         this.props = props;
         engines = OrderedSPILoader.getServices(ResultProcessEngine.class, database.getRuleMetaData().getRules());
@@ -75,9 +75,8 @@ public final class MergeEngine {
      * @throws SQLException SQL exception
      */
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        Optional<MergedResult> mergedResult = executeMerge(queryResults, sqlStatementContext);
-        Optional<MergedResult> result = mergedResult.isPresent() ? Optional.of(decorate(mergedResult.get(), sqlStatementContext)) : decorate(queryResults.get(0), sqlStatementContext);
-        return result.orElseGet(() -> new TransparentMergedResult(queryResults.get(0)));
+        MergedResult mergedResult = executeMerge(queryResults, sqlStatementContext).orElseGet(() -> new TransparentMergedResult(queryResults.get(0)));
+        return decorate(mergedResult, sqlStatementContext);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -96,7 +95,7 @@ public final class MergeEngine {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = getResultDecorator(sqlStatementContext, entry);
+                ResultDecorator resultDecorator = getResultDecorator(sqlStatementContext, entry.getValue());
                 result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, entry.getKey()) : resultDecorator.decorate(result, sqlStatementContext, entry.getKey());
             }
         }
@@ -104,20 +103,7 @@ public final class MergeEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Optional<MergedResult> decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext) throws SQLException {
-        MergedResult result = null;
-        for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
-            if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = getResultDecorator(sqlStatementContext, entry);
-                result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, entry.getKey()) : resultDecorator.decorate(result, sqlStatementContext, entry.getKey());
-            }
-        }
-        return Optional.ofNullable(result);
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private ResultDecorator getResultDecorator(final SQLStatementContext sqlStatementContext, final Entry<ShardingSphereRule, ResultProcessEngine> entry) {
-        return (ResultDecorator) ((ResultDecoratorEngine) entry.getValue()).newInstance(globalRuleMetaData, database, entry.getKey(), props, sqlStatementContext)
-                .orElseGet(TransparentResultDecorator::new);
+    private ResultDecorator getResultDecorator(final SQLStatementContext sqlStatementContext, final ResultProcessEngine resultProcessEngine) {
+        return (ResultDecorator) ((ResultDecoratorEngine) resultProcessEngine).newInstance(metaData, database, props, sqlStatementContext).orElseGet(TransparentResultDecorator::new);
     }
 }

@@ -70,7 +70,7 @@ class KernelProcessorTest {
         when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(database);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
         ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString())));
-        ExecutionContext actual = new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(mockShardingSphereRule()), props, connectionContext);
+        ExecutionContext actual = new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(mockShardingSphereRule()), props);
         assertThat(actual.getExecutionUnits().size(), is(1));
     }
     

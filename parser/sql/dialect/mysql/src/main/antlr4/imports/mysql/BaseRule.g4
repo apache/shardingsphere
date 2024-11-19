@@ -525,6 +525,7 @@ identifierKeywordsUnambiguous
     | YEAR_MONTH
     | CONDITION
     | DESCRIBE
+    | ZONE
     ;
 
 identifierKeywordsAmbiguous1RolesAndLabels

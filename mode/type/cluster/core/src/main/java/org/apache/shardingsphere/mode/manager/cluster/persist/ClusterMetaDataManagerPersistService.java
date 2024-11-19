@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.persist;
 
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -40,9 +42,11 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -117,27 +121,39 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
         MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
-                .switchByRegisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
-        MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
-                switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
-        metaDataPersistService.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
-        afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
-        reloadMetaDataContexts.close();
+        Map<StorageNode, DataSource> newDataSources = new HashMap<>(toBeRegisteredProps.size());
+        try {
+            SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
+                    .switchByRegisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
+            newDataSources.putAll(switchingResource.getNewDataSources());
+            MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
+                    switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
+            metaDataPersistService.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
+            afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
+            reloadMetaDataContexts.close();
+        } finally {
+            closeNewDataSources(newDataSources);
+        }
     }
     
     @Override
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
         MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
-                .switchByAlterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
-        MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
-                switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
-        DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
-        metaDataPersistService.getMetaDataVersionPersistService()
-                .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
-        afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
-        reloadMetaDataContexts.close();
+        Map<StorageNode, DataSource> newDataSources = new HashMap<>(toBeUpdatedProps.size());
+        try {
+            SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
+                    .switchByAlterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
+            newDataSources.putAll(switchingResource.getNewDataSources());
+            MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
+                    switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
+            DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
+            metaDataPersistService.getMetaDataVersionPersistService()
+                    .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
+            afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
+            reloadMetaDataContexts.close();
+        } finally {
+            closeNewDataSources(newDataSources);
+        }
     }
     
     @Override
@@ -145,12 +161,20 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         for (String each : getToBeDroppedResourceNames(databaseName, toBeDroppedStorageUnitNames)) {
             MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
-                    .switchByUnregisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(each));
+                    .createByUnregisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(each));
             MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
                     switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
             metaDataPersistService.getDataSourceUnitService().delete(databaseName, each);
             afterStorageUnitsDropped(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.close();
+        }
+    }
+    
+    private void closeNewDataSources(final Map<StorageNode, DataSource> newDataSources) {
+        for (Map.Entry<StorageNode, DataSource> entry : newDataSources.entrySet()) {
+            if (null != entry.getValue()) {
+                new DataSourcePoolDestroyer(entry.getValue()).asyncDestroy();
+            }
         }
     }
     

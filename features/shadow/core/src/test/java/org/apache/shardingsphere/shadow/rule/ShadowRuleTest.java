@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,24 +30,27 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowRuleTest {
     
-    private ShadowRule shadowRule;
+    private ShadowRule rule;
     
     @BeforeEach
     void init() {
-        shadowRule = new ShadowRule(createShadowRuleConfiguration());
+        rule = new ShadowRule(createRuleConfiguration());
     }
     
-    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+    private ShadowRuleConfiguration createRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(createDataSources());
         result.setTables(createTables());
@@ -54,86 +58,103 @@ class ShadowRuleTest {
         return result;
     }
     
-    private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
-        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
-        result.put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
-        result.put("user-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
-                PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
-        result.put("user-id-update-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
-                PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "update"), new Property("regex", "[1]"))));
-        result.put("order-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
-                PropertiesBuilder.build(new Property("column", "order_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
-        return result;
+    private Collection<ShadowDataSourceConfiguration> createDataSources() {
+        return Arrays.asList(new ShadowDataSourceConfiguration("foo_ds_0", "prod_ds_0", "shadow_ds_0"),
+                new ShadowDataSourceConfiguration("foo_ds_1", "prod_ds_1", "shadow_ds_1"));
     }
     
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_user", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-0"), createShadowAlgorithmNames("t_user")));
-        result.put("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-1"), createShadowAlgorithmNames("t_order")));
+        result.put("foo_tbl", new ShadowTableConfiguration(Collections.singleton("foo_ds_0"), createShadowAlgorithmNames("foo_tbl")));
+        result.put("bar_tbl", new ShadowTableConfiguration(Collections.singleton("foo_ds_1"), createShadowAlgorithmNames("bar_tbl")));
         return result;
     }
     
     private Collection<String> createShadowAlgorithmNames(final String tableName) {
         Collection<String> result = new LinkedList<>();
         result.add("sql-hint-algorithm");
-        if ("t_user".equals(tableName)) {
-            result.add("user-id-insert-regex-algorithm");
-            result.add("user-id-update-regex-algorithm");
+        if ("foo_tbl".equals(tableName)) {
+            result.add("foo-id-insert-regex-algorithm");
+            result.add("foo-id-update-regex-algorithm");
         } else {
-            result.add("order-id-insert-regex-algorithm");
+            result.add("bar-id-insert-regex-algorithm");
         }
         return result;
     }
     
-    private Collection<ShadowDataSourceConfiguration> createDataSources() {
-        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
-        result.add(new ShadowDataSourceConfiguration("shadow-data-source-0", "ds", "ds_shadow"));
-        result.add(new ShadowDataSourceConfiguration("shadow-data-source-1", "ds1", "ds1_shadow"));
+    private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
+        result.put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
+        result.put("foo-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "foo_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
+        result.put("foo-id-update-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "foo_id"), new Property("operation", "update"), new Property("regex", "[1]"))));
+        result.put("bar-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "bar_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
         return result;
     }
     
     @Test
-    void assertNewShadowRulSuccessByShadowRuleConfiguration() {
-        assertShadowDataSourceMappings(shadowRule.getShadowDataSourceMappings());
-        assertShadowTableRules(shadowRule.getShadowTableRules());
-    }
-    
-    private void assertShadowTableRules(final Map<String, ShadowTableRule> shadowTableRules) {
-        assertThat(shadowTableRules.size(), is(2));
-        shadowTableRules.forEach(this::assertShadowTableRule);
-    }
-    
-    private void assertShadowTableRule(final String tableName, final ShadowTableRule shadowTableRule) {
-        if ("t_user".equals(tableName)) {
-            assertThat(shadowTableRule.getHintShadowAlgorithmNames().size(), is(1));
-            assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(2));
-        } else {
-            assertThat(shadowTableRule.getHintShadowAlgorithmNames().size(), is(1));
-            assertThat(shadowTableRule.getColumnShadowAlgorithmNames().size(), is(1));
-        }
-    }
-    
-    private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> shadowDataSourceMappings) {
-        assertThat(shadowDataSourceMappings.size(), is(2));
-        assertThat(shadowDataSourceMappings.get("shadow-data-source-0").getProductionDataSource(), is("ds"));
-        assertThat(shadowDataSourceMappings.get("shadow-data-source-0").getShadowDataSource(), is("ds_shadow"));
-        assertThat(shadowDataSourceMappings.get("shadow-data-source-1").getProductionDataSource(), is("ds1"));
-        assertThat(shadowDataSourceMappings.get("shadow-data-source-1").getShadowDataSource(), is("ds1_shadow"));
+    void assertContainsShadowAlgorithm() {
+        assertTrue(rule.containsShadowAlgorithm("sql-hint-algorithm"));
     }
     
     @Test
-    void assertGetRelatedShadowTables() {
-        Collection<String> relatedShadowTables = shadowRule.getRelatedShadowTables(Arrays.asList("t_user", "t_auto"));
-        assertThat(relatedShadowTables.size(), is(1));
-        assertThat(relatedShadowTables.iterator().next(), is("t_user"));
+    void assertGetDefaultShadowAlgorithm() {
+        assertFalse(rule.getDefaultShadowAlgorithm().isPresent());
+    }
+    
+    @Test
+    void assertFilterShadowTables() {
+        assertThat(rule.filterShadowTables(Arrays.asList("foo_tbl", "no_tbl")), is(Collections.singletonList("foo_tbl")));
     }
     
     @Test
     void assertGetAllShadowTableNames() {
-        Collection<String> allShadowTableNames = shadowRule.getAllShadowTableNames();
-        assertThat(allShadowTableNames.size(), is(2));
-        Iterator<String> iterator = allShadowTableNames.iterator();
-        assertThat(iterator.next(), is("t_user"));
-        assertThat(iterator.next(), is("t_order"));
+        assertThat(rule.getAllShadowTableNames(), is(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl"))));
+    }
+    
+    @Test
+    void assertGetAllHintShadowAlgorithms() {
+        assertThat(rule.getAllHintShadowAlgorithms().size(), is(1));
+    }
+    
+    @Test
+    void assertGetHintShadowAlgorithms() {
+        assertThat(rule.getHintShadowAlgorithms("foo_tbl").size(), is(1));
+    }
+    
+    @Test
+    void assertGetColumnShadowAlgorithms() {
+        assertThat(rule.getColumnShadowAlgorithms(ShadowOperationType.INSERT, "foo_tbl", "foo_id").size(), is(1));
+        assertTrue(rule.getColumnShadowAlgorithms(ShadowOperationType.INSERT, "foo_tbl", "bar_id").isEmpty());
+    }
+    
+    @Test
+    void assertGetShadowColumnNames() {
+        assertThat(rule.getShadowColumnNames(ShadowOperationType.INSERT, "foo_tbl").size(), is(1));
+    }
+    
+    @Test
+    void assertGetShadowDataSourceMappings() {
+        assertThat(rule.getShadowDataSourceMappings("foo_tbl"), is(Collections.singletonMap("prod_ds_0", "shadow_ds_0")));
+    }
+    
+    @Test
+    void assertGetAllShadowDataSourceMappings() {
+        assertThat(rule.getAllShadowDataSourceMappings().size(), is(2));
+        assertThat(rule.getAllShadowDataSourceMappings().get("prod_ds_0"), is("shadow_ds_0"));
+        assertThat(rule.getAllShadowDataSourceMappings().get("prod_ds_1"), is("shadow_ds_1"));
+    }
+    
+    @Test
+    void assertFindProductionDataSourceNameSuccess() {
+        assertThat(rule.findProductionDataSourceName("foo_ds_0"), is(Optional.of("prod_ds_0")));
+        assertThat(rule.findProductionDataSourceName("foo_ds_1"), is(Optional.of("prod_ds_1")));
+    }
+    
+    @Test
+    void assertFindProductionDataSourceNameFailed() {
+        assertFalse(rule.findProductionDataSourceName("foo_ds_2").isPresent());
     }
 }

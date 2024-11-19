@@ -422,7 +422,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
                 ctx.selectWithParens().getStop().getStopIndex(), (OpenGaussSelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
         if (null != ctx.EXISTS()) {
-            subquerySegment.setSubqueryType(SubqueryType.EXISTS);
+            subquerySegment.getSelect().setSubqueryType(SubqueryType.EXISTS);
             return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
         }
         return new SubqueryExpressionSegment(subquerySegment);
@@ -1391,7 +1391,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((ExpressionSegment) astNode).getText()));
     }
     
     @Override
@@ -1400,7 +1400,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((ExpressionSegment) astNode).getText()));
     }
     
     @Override
@@ -1409,7 +1409,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((ExpressionSegment) astNode).getText()));
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {

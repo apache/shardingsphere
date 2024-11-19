@@ -87,7 +87,7 @@ jobs:
     needs: [ build-e2e-image, global-environment ]
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     strategy:
       max-parallel: 20
       fail-fast: false
@@ -95,8 +95,6 @@ jobs:
         adapter: ${{ fromJson(github.event.inputs.adapter) }}
         mode: ${{ fromJson(github.event.inputs.mode) }}
         database: ${{ fromJson(github.event.inputs.database) }}
-        # Fix me #25051
-        #scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding ]
         scenario: ${{ fromJson(github.event.inputs.scenario) }}
         additional-options: ${{ fromJson(github.event.inputs.additional-options) }}
         include:

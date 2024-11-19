@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -107,6 +109,18 @@ class IntervalShardingAlgorithmTest {
     }
     
     @Test
+    void assertInitFailedWithInvalidDatetimeFormat() {
+        assertThrows(InvalidDatetimeFormatException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", PropertiesBuilder.build(new Property("datetime-pattern", "yyyy"), new Property("datetime-lower", "invalid"))));
+    }
+    
+    @Test
+    void assertInitFailedWithInvalidStepUnit() {
+        assertThrows(UnsupportedSQLOperationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", PropertiesBuilder.build(
+                new Property("datetime-pattern", "yy"), new Property("datetime-lower", "16"), new Property("sharding-suffix-pattern", "yy"), new Property("datetime-interval-unit", "invalid"))));
+    }
+    
+    @Test
     void assertPreciseDoShardingByQuarter() {
         assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources,
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2020-01-01 00:00:01")), is("t_order_202001"));
@@ -116,8 +130,7 @@ class IntervalShardingAlgorithmTest {
     
     @Test
     void assertRangeDoShardingByQuarter() {
-        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources,
-                createShardingValue("2019-10-15 10:59:08", "2020-04-08 10:59:08"));
+        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, createShardingValue("2019-10-15 10:59:08", "2020-04-08 10:59:08"));
         assertThat(actual.size(), is(3));
     }
     

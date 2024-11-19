@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
@@ -39,8 +38,6 @@ import java.util.Map;
 /**
  * Substitutable column name token.
  */
-// TODO remove @EqualsAndHashCode in token rewriter
-@EqualsAndHashCode(callSuper = false, exclude = "projections")
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable, RouteUnitAware {
     
     private static final String COLUMN_NAME_SPLITTER = ", ";
@@ -48,15 +45,20 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     @Getter
     private final int stopIndex;
     
+    @Getter
     private final Collection<Projection> projections;
     
     private final QuoteCharacter quoteCharacter;
+    
+    @Getter
+    private final DatabaseType databaseType;
     
     public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<Projection> projections, final DatabaseType databaseType) {
         super(startIndex);
         this.stopIndex = stopIndex;
         quoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
         this.projections = projections;
+        this.databaseType = databaseType;
     }
     
     @Override
@@ -80,7 +82,7 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         }
         Map<String, String> result = new CaseInsensitiveMap<>();
         for (RouteMapper each : routeUnit.getTableMappers()) {
-            result.put(each.getLogicName().toLowerCase(), each.getActualName());
+            result.put(each.getLogicName(), each.getActualName());
         }
         return result;
     }
