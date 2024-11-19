@@ -17,21 +17,11 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.internal.OracleConnection;
-import oracle.jdbc.xa.client.OracleXAConnection;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
-import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
