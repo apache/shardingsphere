@@ -2836,6 +2836,197 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_gtid_subtract">
+        <projections start-index="7" stop-index="107">
+            <expression-projection start-index="7" stop-index="107" text="GTID_SUBTRACT('3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57','3E11FA47-71CA-11E1-9E33-C80AA9429562:21')">
+                <expr>
+                    <function start-index="7" stop-index="107" function-name="GTID_SUBTRACT" text="GTID_SUBTRACT('3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57','3E11FA47-71CA-11E1-9E33-C80AA9429562:21')">
+                        <parameter>
+                            <literal-expression start-index="21" stop-index="64" value="3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="66" stop-index="106" value="3E11FA47-71CA-11E1-9E33-C80AA9429562:21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_hex">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="HEX('abc')">
+                <expr>
+                    <function function-name="HEX" text="HEX('abc')" start-index="7" stop-index="16">
+                        <parameter>
+                            <literal-expression start-index="11" stop-index="15" value="abc" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_hour">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="HOUR('10:05:03')">
+                <expr>
+                    <function function-name="HOUR" text="HOUR('10:05:03')" start-index="7" stop-index="22">
+                        <parameter>
+                            <literal-expression start-index="12" stop-index="21" value="10:05:03" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_ipv4">
+        <projections start-index="7" stop-index="25">
+            <expression-projection start-index="7" stop-index="25" text="IS_IPV4('10.0.5.9')">
+                <expr>
+                    <function function-name="IS_IPV4" text="IS_IPV4('10.0.5.9')" start-index="7" stop-index="25">
+                        <parameter>
+                            <literal-expression start-index="15" stop-index="24" value="10.0.5.9" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_ipv4_compat">
+        <projections start-index="7" stop-index="46">
+            <expression-projection start-index="7" stop-index="46" text="IS_IPV4_COMPAT(INET6_ATON('::10.0.5.9'))">
+                <expr>
+                    <function function-name="IS_IPV4_COMPAT" text="IS_IPV4_COMPAT(INET6_ATON('::10.0.5.9'))" start-index="7" stop-index="46">
+                        <parameter>
+                            <function function-name="INET6_ATON" text="INET6_ATON('::10.0.5.9')" start-index="22" stop-index="45">
+                                <parameter>
+                                    <literal-expression start-index="33" stop-index="44" value="::10.0.5.9" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_ipv4_mapped">
+        <projections start-index="7" stop-index="46">
+            <expression-projection start-index="7" stop-index="46" text="IS_IPV4_MAPPED(INET6_ATON('::10.0.5.9'))">
+                <expr>
+                    <function function-name="IS_IPV4_MAPPED" text="IS_IPV4_MAPPED(INET6_ATON('::10.0.5.9'))" start-index="7" stop-index="46">
+                        <parameter>
+                            <function function-name="INET6_ATON" text="INET6_ATON('::10.0.5.9')" start-index="22" stop-index="45">
+                                <parameter>
+                                    <literal-expression start-index="33" stop-index="44" value="::10.0.5.9" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_ipv6">
+        <projections start-index="7" stop-index="25">
+            <expression-projection start-index="7" stop-index="25" text="IS_IPV6('10.0.5.9')">
+                <expr>
+                    <function function-name="IS_IPV6" text="IS_IPV6('10.0.5.9')" start-index="7" stop-index="25">
+                        <parameter>
+                            <literal-expression start-index="15" stop-index="24" value="10.0.5.9" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_free_lock">
+        <projections start-index="7" stop-index="27">
+            <expression-projection start-index="7" stop-index="27" text="IS_FREE_LOCK('lock1')">
+                <expr>
+                    <function function-name="IS_FREE_LOCK" text="IS_FREE_LOCK('lock1')" start-index="7" stop-index="27">
+                        <parameter>
+                            <literal-expression start-index="20" stop-index="26" value="lock1" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_used_lock">
+        <projections start-index="7" stop-index="27">
+            <expression-projection start-index="7" stop-index="27" text="IS_USED_LOCK('lock1')">
+                <expr>
+                    <function function-name="IS_USED_LOCK" text="IS_USED_LOCK('lock1')" start-index="7" stop-index="27">
+                        <parameter>
+                            <literal-expression start-index="20" stop-index="26" value="lock1" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_null">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="ISNULL(1+1)">
+                <expr>
+                    <function function-name="ISNULL" text="ISNULL(1+1)" start-index="7" stop-index="17">
+                        <parameter>
+                            <binary-operation-expression start-index="14" stop-index="16" literal-start-index="14" literal-stop-index="16">
+                                <left>
+                                    <literal-expression value="1" start-index="14" stop-index="14" literal-start-index="14" literal-stop-index="14" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="16" stop-index="16" literal-start-index="16" literal-stop-index="16" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_not_null">
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="1 IS NOT NULL" start-index="7" stop-index="19">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="19">
+                        <left>
+                            <literal-expression value="1" start-index="7" stop-index="7" />
+                        </left>
+                        <operator>IS</operator>
+                        <right>
+                            <literal-expression value="NOT NULL" start-index="12" stop-index="19" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_is_uuid">
+        <projections start-index="7" stop-index="53">
+            <expression-projection start-index="7" stop-index="53" text="IS_UUID('6ccd780c-baba-1026-9564-5b8c656024db')">
+                <expr>
+                    <function function-name="IS_UUID" text="IS_UUID('6ccd780c-baba-1026-9564-5b8c656024db')" start-index="7" stop-index="53">
+                        <parameter>
+                            <literal-expression start-index="15" stop-index="52" value="6ccd780c-baba-1026-9564-5b8c656024db" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_random_bytes">
         <projections start-index="7" stop-index="22">
             <expression-projection start-index="7" stop-index="22" text="RANDOM_BYTES(16)">
