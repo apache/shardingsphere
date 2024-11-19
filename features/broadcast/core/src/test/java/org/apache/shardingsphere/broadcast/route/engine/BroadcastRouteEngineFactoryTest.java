@@ -41,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -80,12 +79,6 @@ class BroadcastRouteEngineFactoryTest {
     void setUp() {
         when(rule.filterBroadcastTableNames(Collections.singleton("foo_tbl"))).thenReturn(Collections.singleton("foo_tbl"));
         when(rule.isAllBroadcastTables(Collections.singleton("foo_tbl"))).thenReturn(true);
-    }
-    
-    @Test
-    void assertNewInstanceWithTCLStatement() {
-        when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(TCLStatement.class));
-        assertThat(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext), instanceOf(BroadcastDatabaseBroadcastRouteEngine.class));
     }
     
     @Test

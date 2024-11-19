@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 
 import java.util.Collection;
 
@@ -61,9 +60,6 @@ public final class BroadcastRouteEngineFactory {
     public static BroadcastRouteEngine newInstance(final BroadcastRule rule, final ShardingSphereDatabase database, final QueryContext queryContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof TCLStatement) {
-            return new BroadcastDatabaseBroadcastRouteEngine();
-        }
         if (sqlStatement instanceof DDLStatement) {
             return sqlStatementContext instanceof CursorAvailable
                     ? getCursorRouteEngine(rule, sqlStatementContext, queryContext.getConnectionContext())

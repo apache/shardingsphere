@@ -23,6 +23,7 @@ import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.Broadcast
 import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastInstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
@@ -51,13 +51,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetResourceGroupStatement;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 
 /**
  * Broadcast SQL router.
@@ -76,19 +74,13 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
                                      final ShardingSphereDatabase database, final BroadcastRule rule, final ConfigurationProperties props) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof TCLStatement) {
-            decorateRouteContextWhenTCLStatement(routeContext, rule);
-        } else if (sqlStatement instanceof DDLStatement) {
+        if (sqlStatement instanceof DDLStatement) {
             decorateRouteContextWhenDDLStatement(routeContext, queryContext, database, rule);
         } else if (sqlStatement instanceof DALStatement && isResourceGroupStatement(sqlStatement)) {
             doInstanceBroadcastRoute(routeContext, database, rule);
         } else if (sqlStatement instanceof DCLStatement && !isDCLForSingleTable(queryContext.getSqlStatementContext())) {
             doInstanceBroadcastRoute(routeContext, database, rule);
         }
-    }
-    
-    private void decorateRouteContextWhenTCLStatement(final RouteContext routeContext, final BroadcastRule rule) {
-        doDatabaseBroadcastRoute(routeContext, rule);
     }
     
     private void decorateRouteContextWhenDDLStatement(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database, final BroadcastRule rule) {
@@ -114,19 +106,10 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
             doInstanceBroadcastRoute(routeContext, database, rule);
         }
         // TODO END extract db route logic to common database router, eg: DCL in instance route
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? getTableNames((TableAvailable) sqlStatementContext) : Collections.emptyList();
+        Collection<String> tableNames = SQLStatementContextExtractor.getTableNames(database, sqlStatementContext);
         if (rule.isAllBroadcastTables(tableNames)) {
             doInstanceBroadcastRoute(routeContext, database, rule);
         }
-    }
-    
-    private Collection<String> getTableNames(final TableAvailable sqlStatementContext) {
-        Collection<SimpleTableSegment> tableSegments = sqlStatementContext.getTablesContext().getSimpleTables();
-        Collection<String> result = new LinkedHashSet<>(tableSegments.size());
-        for (SimpleTableSegment each : tableSegments) {
-            result.add(each.getTableName().getIdentifier().getValue());
-        }
-        return result;
     }
     
     private void putAllBroadcastTables(final RouteContext routeContext, final BroadcastRule rule, final SQLStatementContext sqlStatementContext) {
