@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 class MySQLXAConnectionWrapperTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-    
+
     @Test
     void assertWrap() throws SQLException {
         XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
