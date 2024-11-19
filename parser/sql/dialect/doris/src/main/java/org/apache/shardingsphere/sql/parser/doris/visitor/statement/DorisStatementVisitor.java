@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentContext;
@@ -1039,7 +1040,35 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.timeStampDiffFunction()) {
             return visit(ctx.timeStampDiffFunction());
         }
+        if (null != ctx.bitwiseFunction()) {
+            return visit(ctx.bitwiseFunction());
+        }
+        if (null != ctx.dateFunction()) {
+            return visit(ctx.dateFunction());
+        }
+        if (null != ctx.strrightFunction()) {
+            return visit(ctx.strrightFunction());
+        }
+        if (null != ctx.rtrimFunction()) {
+            return visit(ctx.rtrimFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitRtrimFunction(final DorisStatementParser.RtrimFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.RTRIM().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitStrrightFunction(final DorisStatementParser.StrrightFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.STRRIGHT().getText(), getOriginalText(ctx));
+        result.getParameters().addAll(getExpressions(ctx.expr()));
+        return result;
     }
     
     @Override
@@ -1158,6 +1187,24 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             ASTNode expr = visit(each);
             result.getParameters().add((ExpressionSegment) expr);
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDateFunction(final DorisStatementParser.DateFunctionContext ctx) {
+        if (null != ctx.yearWeekFunction()) {
+            return visit(ctx.yearWeekFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitYearWeekFunction(final DorisStatementParser.YearWeekFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.YEARWEEK().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        
         return result;
     }
     

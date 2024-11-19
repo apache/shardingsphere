@@ -508,7 +508,10 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
         DorisInstallPluginStatement result = new DorisInstallPluginStatement();
-        result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
+        result.setSource(getOriginalText(ctx.pluginSource));
+        if (null != ctx.propertyClause()) {
+            result.setMd5sum(getOriginalText(ctx.propertyClause().md5sum));
+        }
         return result;
     }
     
