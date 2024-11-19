@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.DistinctProjectionP
 /**
  * Sharding distinct projection prefix token generator.
  */
+@HighFrequencyInvocation
 public final class ShardingDistinctProjectionPrefixTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override

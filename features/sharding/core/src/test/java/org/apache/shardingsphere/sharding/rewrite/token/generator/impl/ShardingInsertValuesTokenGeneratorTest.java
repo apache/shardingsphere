@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -27,13 +27,12 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -41,34 +40,54 @@ import static org.mockito.Mockito.when;
 
 class ShardingInsertValuesTokenGeneratorTest {
     
+    private final ShardingInsertValuesTokenGenerator generator = new ShardingInsertValuesTokenGenerator();
+    
     @Test
-    void assertIsGenerateSQLToken() {
-        ShardingInsertValuesTokenGenerator generator = new ShardingInsertValuesTokenGenerator();
-        assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement().getValues().isEmpty()).thenReturn(Boolean.TRUE);
-        assertFalse(generator.isGenerateSQLToken(insertStatementContext));
-        when(insertStatementContext.getSqlStatement().getValues().isEmpty()).thenReturn(Boolean.FALSE);
-        assertTrue(generator.isGenerateSQLToken(insertStatementContext));
+    void assertIsNotGenerateSQLTokenWithNotInsertStatementContext() {
+        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
     @Test
-    void assertGenerateSQLToken() {
+    void assertIsNotGenerateSQLTokenWithEmptyInsertValues() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 4)));
-        when(insertStatementContext.getSqlStatement().getValues()).thenReturn(Collections.singleton(new InsertValuesSegment(1, 2, Collections.emptyList())));
-        ShardingInsertValuesTokenGenerator generator = new ShardingInsertValuesTokenGenerator();
-        InsertValuesToken insertValuesToken = generator.generateSQLToken(insertStatementContext);
+        when(insertStatementContext.getSqlStatement().getValues().isEmpty()).thenReturn(true);
+        assertFalse(generator.isGenerateSQLToken(insertStatementContext));
+    }
+    
+    @Test
+    void assertIsGenerateSQLToken() {
+        assertTrue(generator.isGenerateSQLToken(mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithNullRouteContext() {
+        InsertValuesToken insertValuesToken = generator.generateSQLToken(mockInsertStatementContext());
         assertThat(insertValuesToken.getInsertValues().size(), is(1));
-        String testDataSource = "testDataSource";
-        String testTable = "testTable";
+        assertTrue(insertValuesToken.getInsertValues().get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithEmptyDataNode() {
+        generator.setRouteContext(new RouteContext());
+        InsertValuesToken actual = generator.generateSQLToken(mockInsertStatementContext());
+        assertThat(actual.getInsertValues().size(), is(1));
+        assertTrue(actual.getInsertValues().get(0).getValues().isEmpty());
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithDataNodes() {
         RouteContext routeContext = new RouteContext();
-        routeContext.getOriginalDataNodes().add(Collections.singleton(new DataNode(testDataSource, testTable)));
+        routeContext.getOriginalDataNodes().add(Collections.singleton(new DataNode("foo_ds", "foo_tbl")));
         generator.setRouteContext(routeContext);
-        insertValuesToken = generator.generateSQLToken(insertStatementContext);
-        assertThat(insertValuesToken.getInsertValues().get(0), instanceOf(ShardingInsertValue.class));
-        ShardingInsertValue generatedShardingInsertValue = (ShardingInsertValue) insertValuesToken.getInsertValues().get(0);
-        assertThat((new LinkedList<>(generatedShardingInsertValue.getDataNodes())).get(0).getDataSourceName(), is(testDataSource));
-        assertThat((new LinkedList<>(generatedShardingInsertValue.getDataNodes())).get(0).getTableName(), is(testTable));
+        InsertValuesToken actual = generator.generateSQLToken(mockInsertStatementContext());
+        ShardingInsertValue actualInsertValue = (ShardingInsertValue) actual.getInsertValues().get(0);
+        assertThat((new ArrayList<>(actualInsertValue.getDataNodes())).get(0), is(new DataNode("foo_ds.foo_tbl")));
+    }
+    
+    private InsertStatementContext mockInsertStatementContext() {
+        InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 4)));
+        when(result.getSqlStatement().getValues()).thenReturn(Collections.singleton(new InsertValuesSegment(1, 2, Collections.emptyList())));
+        return result;
     }
 }

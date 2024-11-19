@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -37,37 +37,43 @@ import static org.mockito.Mockito.when;
 
 class ShardingOffsetTokenGeneratorTest {
     
+    private final ShardingOffsetTokenGenerator generator = new ShardingOffsetTokenGenerator();
+    
     @Test
-    void assertIsGenerateSQLToken() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        ShardingOffsetTokenGenerator shardingOffsetTokenGenerator = new ShardingOffsetTokenGenerator();
-        assertFalse(shardingOffsetTokenGenerator.isGenerateSQLToken(insertStatementContext));
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getPaginationContext().getOffsetSegment().isPresent()).thenReturn(Boolean.FALSE);
-        assertFalse(shardingOffsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
-        when(selectStatementContext.getPaginationContext().getOffsetSegment().isPresent()).thenReturn(Boolean.TRUE);
-        ParameterMarkerPaginationValueSegment parameterMarkerPaginationValueSegment = mock(ParameterMarkerPaginationValueSegment.class);
-        when(selectStatementContext.getPaginationContext().getOffsetSegment().get()).thenReturn(parameterMarkerPaginationValueSegment);
-        assertFalse(shardingOffsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
-        NumberLiteralPaginationValueSegment numberLiteralPaginationValueSegment = mock(NumberLiteralPaginationValueSegment.class);
-        when(selectStatementContext.getPaginationContext().getOffsetSegment().get()).thenReturn(numberLiteralPaginationValueSegment);
-        assertTrue(shardingOffsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
+    void assertIsNotGenerateSQLTokenWithNotSelectStatementContext() {
+        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithoutOffsetSegment() {
+        assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
+    }
+    
+    @Test
+    void assertIsNotGenerateSQLTokenWithParameterMarkerPaginationValueSegment() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getPaginationContext().getOffsetSegment()).thenReturn(Optional.of(mock(ParameterMarkerPaginationValueSegment.class)));
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
+    }
+    
+    @Test
+    void assertIsGenerateSQLTokenWithNumberLiteralPaginationValueSegment() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getPaginationContext().getOffsetSegment()).thenReturn(Optional.of(mock(NumberLiteralPaginationValueSegment.class)));
+        assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLToken() {
-        PaginationValueSegment paginationValueSegment = mock(PaginationValueSegment.class);
-        final int testStartIndex = 1;
-        when(paginationValueSegment.getStartIndex()).thenReturn(testStartIndex);
-        final int testStopIndex = 3;
-        when(paginationValueSegment.getStopIndex()).thenReturn(testStopIndex);
+        assertThat(generator.generateSQLToken(mockSelectStatementContext()).toString(), is("2"));
+    }
+    
+    private SelectStatementContext mockSelectStatementContext() {
         PaginationContext paginationContext = mock(PaginationContext.class);
-        when(paginationContext.getOffsetSegment()).thenReturn(Optional.of(paginationValueSegment));
-        final long testRevisedOffset = 2L;
-        when(paginationContext.getRevisedOffset()).thenReturn(testRevisedOffset);
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getPaginationContext()).thenReturn(paginationContext);
-        ShardingOffsetTokenGenerator shardingOffsetTokenGenerator = new ShardingOffsetTokenGenerator();
-        assertThat(shardingOffsetTokenGenerator.generateSQLToken(selectStatementContext).toString(), is(String.valueOf(testRevisedOffset)));
+        when(paginationContext.getOffsetSegment()).thenReturn(Optional.of(mock(PaginationValueSegment.class)));
+        when(paginationContext.getRevisedOffset()).thenReturn(2L);
+        SelectStatementContext result = mock(SelectStatementContext.class);
+        when(result.getPaginationContext()).thenReturn(paginationContext);
+        return result;
     }
 }

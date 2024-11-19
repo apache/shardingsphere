@@ -607,7 +607,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             if (null == ctx.EXISTS()) {
                 return new SubqueryExpressionSegment(subquerySegment);
             }
-            subquerySegment.setSubqueryType(SubqueryType.EXISTS);
+            subquerySegment.getSelect().setSubqueryType(SubqueryType.EXISTS);
             return new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
         }
         if (null != ctx.parameterMarker()) {

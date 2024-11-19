@@ -25,6 +25,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -51,7 +53,25 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty();
+        if (sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty()) {
+            return true;
+        }
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return isSubqueryNeedRewrite((SelectStatementContext) sqlStatementContext);
+        }
+        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+            return isSubqueryNeedRewrite(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext());
+        }
+        return false;
+    }
+    
+    private boolean isSubqueryNeedRewrite(final SelectStatementContext selectStatementContext) {
+        for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
+            if (isNeedRewrite(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override

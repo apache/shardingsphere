@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -33,17 +31,27 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 class ShardingTableTokenTest {
     
     @Test
-    void assertToString() {
-        ShardingTableToken tableToken = new ShardingTableToken(0, 0, new IdentifierValue("t_order"),
-                mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS)), mock(ShardingRule.class));
-        RouteUnit routeUnit = mock(RouteUnit.class);
-        when(routeUnit.getTableMappers()).thenReturn(Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
-        when(routeUnit.getDataSourceMapper()).thenReturn(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"));
-        assertThat(tableToken.toString(routeUnit), is("t_order_0"));
+    void assertToStringWithActualTableName() {
+        assertThat(createTableToken("foo_tbl").toString(mockRouteUnit()), is("foo_tbl_0"));
+    }
+    
+    @Test
+    void assertToStringWithOriginalTableName() {
+        assertThat(createTableToken("bar_tbl").toString(mockRouteUnit()), is("bar_tbl"));
+    }
+    
+    private ShardingTableToken createTableToken(final String tableName) {
+        return new ShardingTableToken(0, 0, new IdentifierValue(tableName), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
+    }
+    
+    private RouteUnit mockRouteUnit() {
+        RouteUnit result = mock(RouteUnit.class);
+        when(result.getDataSourceMapper()).thenReturn(new RouteMapper("foo_ds", "foo_ds_0"));
+        when(result.getTableMappers()).thenReturn(Collections.singletonList(new RouteMapper("foo_tbl", "foo_tbl_0")));
+        return result;
     }
 }

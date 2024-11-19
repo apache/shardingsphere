@@ -70,6 +70,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         sqlStatement.getLimit().ifPresent(result::setLimit);
         sqlStatement.getWindow().ifPresent(result::setWindow);
         sqlStatement.getModelSegment().ifPresent(result::setModelSegment);
+        sqlStatement.getSubqueryType().ifPresent(result::setSubqueryType);
         sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());

@@ -34,14 +34,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 /**
  * JDBC query result for stream loading.
  */
+@Getter
 public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     
-    @Getter
     private final ResultSet resultSet;
     
     public JDBCStreamQueryResult(final ResultSet resultSet) throws SQLException {
@@ -103,6 +104,9 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         }
         if (Array.class == type) {
             return resultSet.getArray(columnIndex);
+        }
+        if (ZonedDateTime.class == type) {
+            return resultSet.getObject(columnIndex, type);
         }
         return resultSet.getObject(columnIndex);
     }

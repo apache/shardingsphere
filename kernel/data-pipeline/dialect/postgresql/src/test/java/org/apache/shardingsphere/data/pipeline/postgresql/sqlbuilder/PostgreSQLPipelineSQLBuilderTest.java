@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.PostgreSQLLogSequenceNumber;
@@ -63,9 +63,9 @@ class PostgreSQLPipelineSQLBuilderTest {
     
     private DataRecord createDataRecord() {
         DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
-        result.addColumn(new Column("order_id", 1, true, true));
-        result.addColumn(new Column("user_id", 2, true, false));
-        result.addColumn(new Column("status", "ok", true, false));
+        result.addColumn(new NormalColumn("order_id", 1, true, true));
+        result.addColumn(new NormalColumn("user_id", 2, true, false));
+        result.addColumn(new NormalColumn("status", "ok", true, false));
         return result;
     }
     

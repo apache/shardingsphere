@@ -19,12 +19,8 @@ package org.apache.shardingsphere.sharding.metadata.reviser.index;
 
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -33,47 +29,28 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingIndexReviserTest {
     
-    private ShardingRule shardingRule;
-    
-    private ShardingIndexReviser shardingIndexReviser;
-    
     @Test
-    void assertRevise() {
-        shardingRule = createShardingRule();
-        ShardingTable shardingTable = mock(ShardingTable.class);
-        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("SCHEMA_NAME", "TABLE_NAME_0"), new DataNode("SCHEMA_NAME", "TABLE_NAME_1")));
-        shardingIndexReviser = new ShardingIndexReviser(shardingTable);
-        IndexMetaData originalMetaData = new IndexMetaData("TEST_INDEX");
-        originalMetaData.getColumns().add("TEST_COLUMN");
-        originalMetaData.setUnique(false);
-        Optional<IndexMetaData> revisedMetaData = shardingIndexReviser.revise("TABLE_NAME_0", originalMetaData, shardingRule);
-        assertTrue(revisedMetaData.isPresent());
-        assertThat(revisedMetaData.get().getName(), is("TEST_INDEX"));
-        assertThat(revisedMetaData.get().getColumns().size(), is(1));
-        assertFalse(revisedMetaData.get().isUnique());
+    void assertReviseWithEmptyActualDataNode() {
+        assertThat(new ShardingIndexReviser(mock(ShardingTable.class)).revise("foo_tbl", new IndexMetaData("foo_idx"), mock(ShardingRule.class)), is(Optional.empty()));
     }
     
     @Test
-    void assertReviseWhenActualDataNodeIsEmpty() {
-        shardingRule = createShardingRule();
-        ShardingTable shardingTable = mock(ShardingTable.class);
-        when(shardingTable.getActualDataNodes()).thenReturn(Collections.emptyList());
-        shardingIndexReviser = new ShardingIndexReviser(shardingTable);
-        IndexMetaData originalMetaData = new IndexMetaData("TEST_INDEX");
-        Optional<IndexMetaData> revisedMetaData = shardingIndexReviser.revise("TABLE_NAME_1", originalMetaData, shardingRule);
-        assertThat(revisedMetaData, is(Optional.empty()));
+    void assertReviseWithActualDataNodes() {
+        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable()).revise("tbl_0", new IndexMetaData("foo_idx", Collections.singletonList("foo_col")), mock(ShardingRule.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("foo_idx"));
+        assertThat(actual.get().getColumns().size(), is(1));
     }
     
-    private ShardingRule createShardingRule() {
-        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.setTables(Collections.singleton(new ShardingTableRuleConfiguration("TABLE_NAME", "DS.TABLE_NAME")));
-        return new ShardingRule(ruleConfig, Collections.singletonMap("DS", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
+    private static ShardingTable mockShardingTable() {
+        ShardingTable result = mock(ShardingTable.class);
+        when(result.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("foo_schema", "tbl_0"), new DataNode("foo_schema", "tbl_1")));
+        return result;
     }
 }
