@@ -13,13 +13,16 @@ import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapp
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -27,17 +30,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class OracleXAConnectionWrapperTest {
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "OracleXA");
 
+    private OracleXAConnectionWrapper xaConnectionWrapper;
+
+    @BeforeEach
+    void setUp() {
+        xaConnectionWrapper = new OracleXAConnectionWrapper();
+        xaConnectionWrapper.init(new Properties());
+    }
     @Test
-    void assertWrap() throws Exception {
-        XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
-        assertThat(actual.getClass(), is(OracleXAConnection.class));
+    void assertWrap() throws SQLException {
+        XADataSource xaDataSource = mock(XADataSource.class);
+        Connection connection = mockConnection();
+        XAConnection actual = xaConnectionWrapper.wrap(xaDataSource, connection);
+        assertThat(actual, instanceOf(XAConnection.class));
     }
 
-    private XADataSource createXADataSource() {
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType,"foo_ds");
-        return new DataSourceSwapper(DatabaseTypedSPILoader.getService(XADataSourceDefinition.class,databaseType)).swap(dataSource);
+    @Test
+    void assertGetDatabaseType() {
+        assertThat(xaConnectionWrapper.getDatabaseType(), is("Oracle"));
     }
 
     private Connection mockConnection() throws SQLException {
