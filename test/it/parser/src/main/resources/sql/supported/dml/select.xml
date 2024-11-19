@@ -286,4 +286,5 @@
     <sql-case id="select_with_nvl_function_and_interval_hour" value="SELECT * FROM t_order t WHERE t.CREATE_TIME &lt;= nvl(END_TIME, sysdate) - INTERVAL ? HOUR AND t.STATUS = 'FAILURE'" db-types="Oracle"/>
     <sql-case id="select_with_not_operator_number" value="SELECT NOT 0, NOT 1, NOT 2" db-types="MySQL" />
     <sql-case id="select_with_not_operator_boolean" value="SELECT NOT TRUE, NOT FALSE" db-types="MySQL" />
+    <sql-case id="select_with_zone_keyword" value="SELECT order_id, zone FROM t_order" db-types="MySQL" />
 </sql-cases>
