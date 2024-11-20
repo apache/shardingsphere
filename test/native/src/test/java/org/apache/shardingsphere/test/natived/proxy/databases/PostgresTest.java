@@ -45,7 +45,7 @@ import java.util.Properties;
 class PostgresTest {
     
     @Container
-    public static final GenericContainer<?> POSTGRES_CONTAINER = new GenericContainer<>("postgres:16.3-bookworm")
+    public static final GenericContainer<?> POSTGRES_CONTAINER = new GenericContainer<>("postgres:17.1-bookworm")
             .withEnv("POSTGRES_PASSWORD", "yourStrongPassword123!")
             .withExposedPorts(5432);
     

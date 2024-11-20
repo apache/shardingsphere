@@ -289,86 +289,9 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 
 ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 Seata AT 模式事务，更多讨论位于 https://github.com/ClickHouse/clickhouse-docs/issues/2300 。
 
-7. 当需要通过 ShardingSphere JDBC 使用 Hive 方言时，受 https://issues.apache.org/jira/browse/HIVE-28445 影响，
-用户不应该使用 `classifier` 为 `standalone` 的 `org.apache.hive:hive-jdbc:4.0.1`，以避免依赖冲突。
-可能的配置例子如下，
-
-```xml
-<project>
-    <dependencies>
-       <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-hive</artifactId>
-            <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-parser-sql-hive</artifactId>
-          <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>org.apache.hive</groupId>
-          <artifactId>hive-jdbc</artifactId>
-          <version>4.0.1</version>
-       </dependency>
-       <dependency>
-          <groupId>org.apache.hive</groupId>
-          <artifactId>hive-service</artifactId>
-          <version>4.0.1</version>
-       </dependency>
-       <dependency>
-          <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-client-api</artifactId>
-          <version>3.3.6</version>
-       </dependency>
-    </dependencies>
-</project>
-```
-
-这会导致大量的依赖冲突。
-如果用户不希望手动解决潜在的数千行的依赖冲突，可以使用 HiveServer2 JDBC Driver 的 `Thin JAR` 的第三方构建。
-可能的配置例子如下，
-
-```xml
-<project>
-    <dependencies>
-       <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-hive</artifactId>
-            <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-parser-sql-hive</artifactId>
-          <version>${shardingsphere.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>io.github.linghengqian</groupId>
-          <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-          <version>1.5.0</version>
-          <exclusions>
-             <exclusion>
-                <groupId>com.fasterxml.woodstox</groupId>
-                <artifactId>woodstox-core</artifactId>
-             </exclusion>
-          </exclusions>
-       </dependency>
-    </dependencies>
-</project>
-```
-
-受 https://github.com/grpc/grpc-java/issues/10601 影响，用户如果在项目中引入了 `org.apache.hive:hive-jdbc`，
+7. 受 https://github.com/grpc/grpc-java/issues/10601 影响，用户如果在项目中引入了 `org.apache.hive:hive-jdbc`，
 则需要在项目的 classpath 的 `META-INF/native-image/io.grpc/grpc-netty-shaded` 文件夹下创建包含如下内容的文件 `native-image.properties`，
+
 ```properties
 Args=--initialize-at-run-time=\
     io.grpc.netty.shaded.io.netty.channel.ChannelHandlerMask,\
@@ -399,55 +322,6 @@ Args=--initialize-at-run-time=\
     io.grpc.netty.shaded.io.netty.buffer.PoolThreadCache,\
     io.grpc.netty.shaded.io.netty.util.AttributeKey
 ```
-
-为了能够使用 `delete` 等 DML SQL 语句，当连接到 HiveServer2 时，
-用户应当考虑在 ShardingSphere JDBC 中仅使用支持 ACID 的表。`apache/hive` 提供了多种事务解决方案。
-
-第1种选择是使用 ACID 表，可能的建表流程如下。
-由于其过时的基于目录的表格式，用户可能不得不在 DML 语句执行前后进行等待，以让 HiveServer2 完成低效的 DML 操作。
-
-```sql
-set metastore.compactor.initiator.on=true;
-set metastore.compactor.cleaner.on=true;
-set metastore.compactor.worker.threads=5;
-
-set hive.support.concurrency=true;
-set hive.exec.dynamic.partition.mode=nonstrict;
-set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
-
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
-    PRIMARY KEY (order_id) disable novalidate
-) CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true');
-```
-
-第2种选择是使用 Iceberg 表，可能的建表流程如下。
-Apache Iceberg 表格式有望在未来几年取代传统的 Hive 表格式，
-参考 https://blog.cloudera.com/from-hive-tables-to-iceberg-tables-hassle-free/ 。
-
-```sql
-set iceberg.mr.schema.auto.conversion=true;
-
-CREATE TABLE IF NOT EXISTS t_order
-(
-    order_id   BIGINT,
-    order_type INT,
-    user_id    INT    NOT NULL,
-    address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
-    PRIMARY KEY (order_id) disable novalidate
-) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-```
-
-由于 HiveServer2 JDBC Driver 未实现 `java.sql.DatabaseMetaData#getURL()`，
-ShardingSphere 做了模糊处理，因此用户暂时仅可通过 HikariCP 连接 HiveServer2。
-
-HiveServer2 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 Seata AT 模式事务，更多讨论位于 https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions 。
 
 8. 由于 https://github.com/oracle/graal/issues/7979 的影响，
 对应 `com.oracle.database.jdbc:ojdbc8` Maven 模块的 Oracle JDBC Driver 无法在 GraalVM Native Image 下使用。

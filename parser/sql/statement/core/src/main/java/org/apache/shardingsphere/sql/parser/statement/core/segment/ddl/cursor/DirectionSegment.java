@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.DirectionType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
@@ -30,24 +29,18 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class DirectionSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private DirectionType directionType;
+    private final DirectionType directionType;
     
-    private Long count;
+    private final Long count;
     
-    /**
-     * Get direction type.
-     *
-     * @return direction type
-     */
-    public Optional<DirectionType> getDirectionType() {
-        return Optional.ofNullable(directionType);
+    public DirectionSegment(final int startIndex, final int stopIndex, final DirectionType directionType) {
+        this(startIndex, stopIndex, directionType, null);
     }
     
     /**

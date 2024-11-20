@@ -4,7 +4,7 @@ weight = 6
 +++
 
 ShardingSphere does not provide support for `driverClassName` of `org.testcontainers.jdbc.ContainerDatabaseDriver` by default.
-To use `jdbcUrl` like `jdbc:tc:postgresql:17.1-bookworm://test-native-databases-postgres/demo_ds_0` for data nodes in ShardingSphere's configuration file,
+To use `jdbcUrl` like `jdbc:tc:postgresql:17.1-bookworm://test-databases-postgres/demo_ds_0` for data nodes in ShardingSphere's configuration file,
 the possible Maven dependencies are as follows,
 
 ```xml
@@ -28,7 +28,27 @@ the possible Maven dependencies are as follows,
 </dependencies>
 ```
 
-`org.apache.shardingsphere:shardingsphere-infra-database-testcontainers` provides support for jdbcURL in the testcontainers-java partition, 
+At this time, you can use the jdbcURL with the prefix `jdbc:tc:postgresql:` normally in the YAML configuration file of ShardingSphere.
+
+```yaml
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test-databases-postgres/demo_ds_0
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test-databases-postgres/demo_ds_1
+  ds_2:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test-databases-postgres/demo_ds_2
+```
+
+To use the `org.apache.shardingsphere:shardingsphere-infra-database-testcontainers` module, 
+the user machine always needs to have Docker Engine or alternative container runtimes that comply with https://java.testcontainers.org/supported_docker_environment/ installed.
+`org.apache.shardingsphere:shardingsphere-infra-database-testcontainers` provides support for testcontainers-java style jdbcURL,
 including but not limited to,
 
 1. Maven module `org.testcontainers:clickhouse:1.20.3` that provides support for jdbcURL prefixes for `jdbc:tc:clickhouse:`

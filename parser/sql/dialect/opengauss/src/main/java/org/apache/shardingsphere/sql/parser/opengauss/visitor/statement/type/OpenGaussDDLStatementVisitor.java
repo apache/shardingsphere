@@ -1070,104 +1070,71 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitNext(final NextContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.NEXT);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.NEXT);
     }
     
     @Override
     public ASTNode visitPrior(final PriorContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.PRIOR);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.PRIOR);
     }
     
     @Override
     public ASTNode visitFirst(final FirstContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.FIRST);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FIRST);
     }
     
     @Override
     public ASTNode visitLast(final LastContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.LAST);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.LAST);
     }
     
     @Override
     public ASTNode visitAbsoluteCount(final AbsoluteCountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.ABSOLUTE_COUNT);
-        result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.ABSOLUTE_COUNT, ((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
     }
     
     @Override
     public ASTNode visitRelativeCount(final RelativeCountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.RELATIVE_COUNT);
-        result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.RELATIVE_COUNT, ((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
     }
     
     @Override
     public ASTNode visitCount(final CountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.COUNT);
-        result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.COUNT, ((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
     }
     
     @Override
     public ASTNode visitAll(final AllContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.ALL);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.ALL);
     }
     
     @Override
     public ASTNode visitForward(final ForwardContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.FORWARD);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD);
     }
     
     @Override
     public ASTNode visitForwardCount(final ForwardCountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.FORWARD_COUNT);
-        result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD_COUNT, ((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
     }
     
     @Override
     public ASTNode visitForwardAll(final ForwardAllContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.FORWARD_ALL);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD_ALL);
     }
     
     @Override
     public ASTNode visitBackward(final BackwardContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.BACKWARD);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD);
     }
     
     @Override
     public ASTNode visitBackwardCount(final BackwardCountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.BACKWARD_COUNT);
-        result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD_COUNT, ((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
     }
     
     @Override
     public ASTNode visitBackwardAll(final BackwardAllContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setDirectionType(DirectionType.BACKWARD_ALL);
-        return result;
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD_ALL);
     }
 }
