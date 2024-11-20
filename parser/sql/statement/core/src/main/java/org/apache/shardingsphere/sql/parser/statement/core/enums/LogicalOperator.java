@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
-import java.util.HashMap;
+import com.cedarsoftware.util.CaseInsensitiveMap;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,23 +29,13 @@ public enum LogicalOperator {
     
     AND, OR;
     
-    private static final Map<String, LogicalOperator> MAPS = new HashMap<>(16, 1F);
+    private static final Map<String, LogicalOperator> LOGICAL_OPERATORS = new CaseInsensitiveMap<>(4, 1F);
     
     static {
-        MAPS.put("and", AND);
-        MAPS.put("And", AND);
-        MAPS.put("aNd", AND);
-        MAPS.put("anD", AND);
-        MAPS.put("ANd", AND);
-        MAPS.put("AnD", AND);
-        MAPS.put("aND", AND);
-        MAPS.put("AND", AND);
-        MAPS.put("&&", AND);
-        MAPS.put("or", OR);
-        MAPS.put("Or", OR);
-        MAPS.put("oR", OR);
-        MAPS.put("OR", OR);
-        MAPS.put("||", OR);
+        LOGICAL_OPERATORS.put("AND", AND);
+        LOGICAL_OPERATORS.put("&&", AND);
+        LOGICAL_OPERATORS.put("OR", OR);
+        LOGICAL_OPERATORS.put("||", OR);
     }
     
     /**
@@ -54,6 +45,6 @@ public enum LogicalOperator {
      * @return logical operator value
      */
     public static Optional<LogicalOperator> valueFrom(final String text) {
-        return Optional.ofNullable(MAPS.get(text));
+        return Optional.ofNullable(LOGICAL_OPERATORS.get(text));
     }
 }
