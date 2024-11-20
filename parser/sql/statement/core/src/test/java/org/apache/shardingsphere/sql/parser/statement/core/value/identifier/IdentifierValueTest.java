@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IdentifierValueTest {
     
@@ -52,5 +53,27 @@ class IdentifierValueTest {
     void assertGetIdentifierValueWithReservedBracket() {
         String text = "ds_${[1,2]}.t_order";
         assertThat(new IdentifierValue(text, "[]").getValue(), is("ds_${[1,2]}.t_order"));
+    }
+    
+    @Test
+    void assertGetValueWithQuoteCharactersWithNullValue() {
+        assertThat(new IdentifierValue(null).getValueWithQuoteCharacters(), is(""));
+    }
+    
+    @Test
+    void assertGetValueWithQuoteCharactersWithValue() {
+        String text = "[foo]";
+        assertThat(new IdentifierValue(text).getValueWithQuoteCharacters(), is("[foo]"));
+    }
+    
+    @Test
+    void assertGetQuotedContentWithNullValue() {
+        assertNull(IdentifierValue.getQuotedContent(null));
+    }
+    
+    @Test
+    void assertGetQuotedContent() {
+        assertThat(IdentifierValue.getQuotedContent(" foo "), is("foo"));
+        assertThat(IdentifierValue.getQuotedContent("`foo`"), is("foo"));
     }
 }
