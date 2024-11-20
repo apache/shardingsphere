@@ -15,31 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.segment.dcl;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.UserResourceSpecifiedLimitType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 /**
- * User resource segment.
+ * User resource specified limit type.
  */
-@Getter
-@Setter
-public final class UserResourceSegment implements SQLSegment {
+public enum UserResourceSpecifiedLimitType {
     
-    private int startIndex;
-    
-    private int stopIndex;
-    
-    private int questions;
-    
-    private int updates;
-    
-    private int connPerHour;
-    
-    private int userConn;
-    
-    private UserResourceSpecifiedLimitType specifiedLimits;
+    QUERIES_PER_HOUR, UPDATES_PER_HOUR, CONNECTIONS_PER_HOUR, USER_CONNECTIONS
 }
