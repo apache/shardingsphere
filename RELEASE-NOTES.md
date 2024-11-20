@@ -20,6 +20,7 @@
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Build: Avoid using `-proc:full` when compiling ShardingSphere with OpenJDK23 - [#33681](https://github.com/apache/shardingsphere/pull/33681)
 1. Doc: Adds documentation for HiveServer2 support - [#33717](https://github.com/apache/shardingsphere/pull/33717)
+1. DistSQL: Check inline expression when create sharding table rule with inline sharding algorithm - [#33735](https://github.com/apache/shardingsphere/pull/33735)
 
 ### Bug Fixes
 
