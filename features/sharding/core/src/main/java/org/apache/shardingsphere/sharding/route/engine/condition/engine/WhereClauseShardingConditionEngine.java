@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
@@ -85,7 +86,7 @@ public final class WhereClauseShardingConditionEngine {
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().findTableNames(columnSegments, schema)
                 : Collections.emptyMap();
         List<ShardingCondition> result = new ArrayList<>();
-        for (WhereSegment each : ((WhereAvailable) sqlStatementContext).getWhereSegments()) {
+        for (WhereSegment each : SQLStatementContextExtractor.getAllWhereSegments(sqlStatementContext)) {
             result.addAll(createShardingConditions(each.getExpr(), params, columnExpressionTableNames));
         }
         return result;
