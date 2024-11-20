@@ -28,7 +28,6 @@ import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,7 +55,7 @@ class OpenGaussTest {
     
     @SuppressWarnings("resource")
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>(DockerImageName.parse("opengauss/opengauss:5.0.0"))
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("opengauss/opengauss:5.0.0")
             .withEnv("GS_PASSWORD", PASSWORD)
             .withExposedPorts(5432);
     

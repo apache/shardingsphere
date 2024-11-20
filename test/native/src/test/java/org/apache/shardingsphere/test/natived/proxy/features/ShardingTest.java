@@ -46,7 +46,7 @@ import java.util.Properties;
 class ShardingTest {
     
     @Container
-    public static final GenericContainer<?> MYSQL_CONTAINER = new GenericContainer<>("mysql:9.0.1-oraclelinux9")
+    public static final GenericContainer<?> MYSQL_CONTAINER = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
             .withEnv("MYSQL_ROOT_PASSWORD", "yourStrongPassword123!")
             .withExposedPorts(3306);
     
