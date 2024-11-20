@@ -22,7 +22,5 @@ package org.apache.shardingsphere.sql.parser.statement.core.enums;
  */
 public enum TransactionAccessType {
     
-    READ_ONLY,
-    
-    READ_WRITE
+    READ_ONLY, READ_WRITE
 }

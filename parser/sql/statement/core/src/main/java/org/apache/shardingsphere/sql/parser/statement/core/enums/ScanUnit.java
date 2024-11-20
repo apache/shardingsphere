@@ -22,7 +22,5 @@ package org.apache.shardingsphere.sql.parser.statement.core.enums;
  */
 public enum ScanUnit {
     
-    ROWS,
-    
-    PERCENT
+    ROWS, PERCENT
 }
