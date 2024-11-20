@@ -65,10 +65,7 @@ public enum QuoteCharacter {
      * @return value of quote character
      */
     public static QuoteCharacter getQuoteCharacter(final String value) {
-        if (Strings.isNullOrEmpty(value)) {
-            return NONE;
-        }
-        return BY_FIRST_CHAR.getOrDefault(value.charAt(0), NONE);
+        return Strings.isNullOrEmpty(value) ? NONE : BY_FIRST_CHAR.getOrDefault(value.charAt(0), NONE);
     }
     
     /**
