@@ -25,8 +25,8 @@ dataSources:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:local_mask_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
-    password: 123456
+    username: sa
+    password:
 
 rules:
 - !MASK
