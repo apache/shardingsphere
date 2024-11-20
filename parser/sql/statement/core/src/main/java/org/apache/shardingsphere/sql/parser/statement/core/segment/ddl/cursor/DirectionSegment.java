@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.DirectionType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
+import java.util.Optional;
+
 /**
  * Direction segment.
  */
@@ -35,9 +37,18 @@ public final class DirectionSegment implements SQLSegment {
     
     private final DirectionType directionType;
     
-    private final long count;
+    private final Long count;
     
     public DirectionSegment(final int startIndex, final int stopIndex, final DirectionType directionType) {
-        this(startIndex, stopIndex, directionType, 1L);
+        this(startIndex, stopIndex, directionType, null);
+    }
+    
+    /**
+     * Get count.
+     *
+     * @return count
+     */
+    public Optional<Long> getCount() {
+        return Optional.ofNullable(count);
     }
 }

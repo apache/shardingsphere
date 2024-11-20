@@ -61,7 +61,7 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
                                    final ShardingSphereSchema schema, final ConnectionContext connectionContext) throws SQLException {
         orderByValuesQueue = new PriorityQueue<>(queryResults.size());
         directionType = fetchStatementContext.getSqlStatement().getDirection().map(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
-        fetchCount = fetchStatementContext.getSqlStatement().getDirection().map(DirectionSegment::getCount).orElse(1L);
+        fetchCount = fetchStatementContext.getSqlStatement().getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
         SelectStatementContext selectStatementContext = fetchStatementContext.getCursorStatementContext().getSelectStatementContext();
         String cursorName = fetchStatementContext.getCursorName().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElseThrow(CursorNameNotFoundException::new);
         List<FetchOrderByValueGroup> fetchOrderByValueGroups = getFetchOrderByValueGroups(queryResults, selectStatementContext, schema, cursorName, connectionContext);
