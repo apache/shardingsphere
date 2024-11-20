@@ -102,7 +102,7 @@ class FetchStreamMergedResultTest {
         FetchStatement result = mock(FetchStatement.class);
         when(result.getCursorName()).thenReturn(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")));
         if (containsAllDirectionType) {
-            when(result.getDirection()).thenReturn(Optional.of(new DirectionSegment(0, 0, DirectionType.ALL, null)));
+            when(result.getDirection()).thenReturn(Optional.of(new DirectionSegment(0, 0, DirectionType.ALL)));
         }
         when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
