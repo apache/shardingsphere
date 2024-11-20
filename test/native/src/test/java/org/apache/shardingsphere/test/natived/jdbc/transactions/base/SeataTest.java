@@ -21,7 +21,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.HttpStatus;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.time.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -68,12 +66,10 @@ class SeataTest {
     
     /**
      * TODO Just checking `/health` of `7091` port of Seata Server is not enough to indicate that Seata Server is ready.
-     *  The use of {@code Awaitility.await().pollDelay(Duration.ofSeconds(9L)).until(() -> true);} needs to be removed.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     @Test
     void assertShardingInSeataTransactions() throws SQLException {
-        Awaitility.await().pollDelay(Duration.ofSeconds(9L)).until(() -> true);
         DataSource dataSource = createDataSource(CONTAINER.getMappedPort(8091));
         testShardingService = new TestShardingService(dataSource);
         initEnvironment();

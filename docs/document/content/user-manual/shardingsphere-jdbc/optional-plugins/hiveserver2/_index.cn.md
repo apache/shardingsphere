@@ -40,11 +40,6 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
         <artifactId>hive-service</artifactId>
         <version>4.0.1</version>
     </dependency>
-    <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-client-api</artifactId>
-        <version>3.3.6</version>
-    </dependency>
 </dependencies>
 ```
 
@@ -185,28 +180,28 @@ rules:
 
 ### 享受集成
 
-创建 ShardingSphere 的数据源，
+创建 ShardingSphere 的数据源以享受集成，
 
 ```java
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 public class ExampleUtils {
-    DataSource createDataSource() {
+    void test() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml");
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        return new HikariDataSource(config);
+        try (HikariDataSource dataSource = new HikariDataSource(config);
+             Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.execute("DELETE FROM t_order WHERE order_id=1");
+        }
     }
 }
-```
-
-可直接在此`javax.sql.DataSource`相关的 ShardingSphere DataSource 上执行逻辑 SQL，享受它，
-
-```sql
--- noinspection SqlNoDataSourceInspectionForFile
-INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, "INSERT_TEST")；
-DELETE FROM t_order WHERE order_id=1;
 ```
 
 ## 使用限制
@@ -257,16 +252,6 @@ HiveServer2 的 jdbcURL 格式为 `jdbc:hive2://<host1>:<port1>,<host2>:<port2>/
 ShardingSphere 当前对参数的解析仅支持以`jdbc:hive2://localhost:10000/demo_ds_1;initFile=/tmp/init.sql`为代表的`;hive_conf_list`部分。
 
 若用户需使用`;sess_var_list`或`#hive_var_list`的 jdbcURL 参数，考虑为 ShardingSphere 提交包含单元测试的 PR。
-
-
-### 分布式序列限制
-
-由于 `org.apache.hive.jdbc.HiveStatement` 未实现 `java.sql.Statement#getGeneratedKeys()`，
-ShardingSphere JDBC Connection 无法通过 `java.sql.Statement.RETURN_GENERATED_KEYS` 获得 ShardingSphere 生成的雪花 ID 等分布式序列。
-
-若用户需要通过 `java.sql.Statement.RETURN_GENERATED_KEYS` 从 HiveServer2 获得 ShardingSphere 生成的雪花 ID 等分布式序列，
-用户应当考虑在 Hive 的主分支实现 `java.sql.DatabaseMetaData#getURL()`，
-而不是尝试修改 ShardingSphere 的内部类。
 
 ### 在 ShardingSphere 数据源上使用 DML SQL 语句的前提条件
 

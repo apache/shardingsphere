@@ -72,10 +72,6 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
@@ -695,6 +691,11 @@
   "name":"java.util.concurrent.atomic.LongAdder",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"add","parameterTypes":["long"] }, {"name":"sum","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask"},
+  "name":"java.util.concurrent.atomic.Striped64$Cell",
+  "fields":[{"name":"value"}]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
@@ -2074,7 +2075,7 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener$$Lambda/0x00007f619fb277d8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener$$Lambda/0x00007f401fb273a8"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.MetaDataChangedSubscriber"
 },
 {
