@@ -62,8 +62,14 @@ class SQLStatementContextExtractorTest {
     void assertGetWhereSegments() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         SelectStatementContext subquerySelectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getWhereSegments()).thenReturn(Collections.singleton(mock(WhereSegment.class)));
-        when(subquerySelectStatementContext.getWhereSegments()).thenReturn(Collections.singleton(mock(WhereSegment.class)));
+        WhereSegment whereSegment1 = mock(WhereSegment.class);
+        when(whereSegment1.getStartIndex()).thenReturn(1);
+        when(whereSegment1.getStopIndex()).thenReturn(1);
+        when(selectStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment1));
+        WhereSegment whereSegment2 = mock(WhereSegment.class);
+        when(whereSegment2.getStartIndex()).thenReturn(2);
+        when(whereSegment2.getStopIndex()).thenReturn(2);
+        when(subquerySelectStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment2));
         Collection<WhereSegment> actual = SQLStatementContextExtractor.getWhereSegments(selectStatementContext, Collections.singleton(subquerySelectStatementContext));
         assertThat(actual.size(), is(2));
     }
