@@ -76,7 +76,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Checkout with Commit ID
         if: matrix.commit-id != ''
-        run: git checkout ${{ matrix.commit-id }}
+        run: git pull && git checkout ${{ matrix.commit-id }}
       - name: Build Project with Maven
         run: ./mvnw clean install -B -ntp -T1C
       - name: Build Examples with Maven
