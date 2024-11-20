@@ -26,8 +26,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Direction segment assert.
@@ -53,11 +51,6 @@ public final class DirectionSegmentAssert {
     }
     
     private static void assertCount(final SQLCaseAssertContext assertContext, final DirectionSegment actual, final ExpectedDirectionSegment expected) {
-        if (null == expected.getCount()) {
-            assertFalse(actual.getCount().isPresent(), assertContext.getText("Actual count should not exist."));
-        } else {
-            assertTrue(actual.getCount().isPresent(), assertContext.getText("Actual count should exist."));
-            assertThat(assertContext.getText("Count assertion error: "), actual.getCount().get(), is(expected.getCount()));
-        }
+        assertThat(assertContext.getText("Count assertion error: "), actual.getCount(), is(expected.getCount()));
     }
 }

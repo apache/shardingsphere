@@ -52,7 +52,7 @@ public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTo
         int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);
         int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet("FETCH"::length);
         DirectionType directionType = fetchStatement.getDirection().map(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
-        long fetchCount = fetchStatement.getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
+        long fetchCount = fetchStatement.getDirection().map(DirectionSegment::getCount).orElse(1L);
         return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase(), connectionContext);
     }
     

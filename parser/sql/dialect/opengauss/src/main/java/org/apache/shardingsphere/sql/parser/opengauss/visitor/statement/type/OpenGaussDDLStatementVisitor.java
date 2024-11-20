@@ -1070,22 +1070,22 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitNext(final NextContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.NEXT, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.NEXT);
     }
     
     @Override
     public ASTNode visitPrior(final PriorContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.PRIOR, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.PRIOR);
     }
     
     @Override
     public ASTNode visitFirst(final FirstContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FIRST, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FIRST);
     }
     
     @Override
     public ASTNode visitLast(final LastContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.LAST, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.LAST);
     }
     
     @Override
@@ -1105,12 +1105,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAll(final AllContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.ALL, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.ALL);
     }
     
     @Override
     public ASTNode visitForward(final ForwardContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD);
     }
     
     @Override
@@ -1120,12 +1120,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitForwardAll(final ForwardAllContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD_ALL, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD_ALL);
     }
     
     @Override
     public ASTNode visitBackward(final BackwardContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD);
     }
     
     @Override
@@ -1135,6 +1135,6 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitBackwardAll(final BackwardAllContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD_ALL, null);
+        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD_ALL);
     }
 }
