@@ -40,15 +40,6 @@ public final class DirectionSegment implements SQLSegment {
     private final Long count;
     
     /**
-     * Get direction type.
-     *
-     * @return direction type
-     */
-    public Optional<DirectionType> getDirectionType() {
-        return Optional.ofNullable(directionType);
-    }
-    
-    /**
      * Get count.
      *
      * @return count
