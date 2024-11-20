@@ -37,11 +37,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Di
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussSelectStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,7 +93,7 @@ class FetchStreamMergedResultTest {
     
     private static FetchStatementContext createFetchStatementContext(final boolean containsAllDirectionType) {
         FetchStatementContext result = new FetchStatementContext(createFetchStatement(containsAllDirectionType), "foo_db");
-        result.setCursorStatementContext(createCursorStatementContext());
+        result.setCursorStatementContext(mockCursorStatementContext());
         return result;
     }
     
@@ -108,22 +107,23 @@ class FetchStreamMergedResultTest {
         return result;
     }
     
-    private static CursorStatementContext createCursorStatementContext() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        OpenGaussCursorStatement cursorStatement = new OpenGaussCursorStatement();
-        cursorStatement.setSelect(createSelectStatement());
-        return new CursorStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), cursorStatement, "foo_db");
+    private static CursorStatementContext mockCursorStatementContext() {
+        CursorStatement cursorStatement = mock(CursorStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
+        when(cursorStatement.getSelect()).thenReturn(selectStatement);
+        when(cursorStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        return new CursorStatementContext(createShardingSphereMetaData(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), cursorStatement, "foo_db");
     }
     
     private static ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        return new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
-    private static SelectStatement createSelectStatement() {
-        SelectStatement result = new OpenGaussSelectStatement();
-        result.setProjections(new ProjectionsSegment(0, 0));
-        result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+    private static SelectStatement mockSelectStatement() {
+        SelectStatement result = mock(SelectStatement.class);
+        when(result.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
+        when(result.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
+        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
     
