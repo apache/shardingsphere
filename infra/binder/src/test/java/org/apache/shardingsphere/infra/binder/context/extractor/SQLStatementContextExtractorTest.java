@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.util;
+package org.apache.shardingsphere.infra.binder.context.extractor;
 
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EncryptPredicateSegmentUtilsTest {
+class SQLStatementContextExtractorTest {
     
     @Test
     void assertGetAllSubqueryContextsForSelectStatement() {
@@ -42,7 +42,7 @@ class EncryptPredicateSegmentUtilsTest {
         SelectStatementContext subquerySelectStatementContext = mock(SelectStatementContext.class);
         when(subquerySelectStatementContext.getSubqueryContexts()).thenReturn(Collections.emptyMap());
         when(selectStatementContext.getSubqueryContexts()).thenReturn(Collections.singletonMap(0, subquerySelectStatementContext));
-        Collection<SelectStatementContext> actual = EncryptPredicateSegmentUtils.getAllSubqueryContexts(selectStatementContext);
+        Collection<SelectStatementContext> actual = SQLStatementContextExtractor.getAllSubqueryContexts(selectStatementContext);
         assertThat(actual.size(), is(1));
     }
     
@@ -54,7 +54,7 @@ class EncryptPredicateSegmentUtilsTest {
         InsertSelectContext insertSelectContext = mock(InsertSelectContext.class);
         when(insertSelectContext.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(insertStatementContext.getInsertSelectContext()).thenReturn(insertSelectContext);
-        Collection<SelectStatementContext> actual = EncryptPredicateSegmentUtils.getAllSubqueryContexts(insertStatementContext);
+        Collection<SelectStatementContext> actual = SQLStatementContextExtractor.getAllSubqueryContexts(insertStatementContext);
         assertThat(actual.size(), is(2));
     }
     
@@ -64,7 +64,7 @@ class EncryptPredicateSegmentUtilsTest {
         SelectStatementContext subquerySelectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.singleton(mock(WhereSegment.class)));
         when(subquerySelectStatementContext.getWhereSegments()).thenReturn(Collections.singleton(mock(WhereSegment.class)));
-        Collection<WhereSegment> actual = EncryptPredicateSegmentUtils.getWhereSegments(selectStatementContext, Collections.singleton(subquerySelectStatementContext));
+        Collection<WhereSegment> actual = SQLStatementContextExtractor.getWhereSegments(selectStatementContext, Collections.singleton(subquerySelectStatementContext));
         assertThat(actual.size(), is(2));
     }
     
@@ -74,7 +74,7 @@ class EncryptPredicateSegmentUtilsTest {
         SelectStatementContext subquerySelectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getColumnSegments()).thenReturn(Collections.singleton(mock(ColumnSegment.class)));
         when(subquerySelectStatementContext.getColumnSegments()).thenReturn(Collections.singleton(mock(ColumnSegment.class)));
-        Collection<ColumnSegment> actual = EncryptPredicateSegmentUtils.getColumnSegments(selectStatementContext, Collections.singleton(subquerySelectStatementContext));
+        Collection<ColumnSegment> actual = SQLStatementContextExtractor.getColumnSegments(selectStatementContext, Collections.singleton(subquerySelectStatementContext));
         assertThat(actual.size(), is(2));
     }
     
@@ -84,7 +84,7 @@ class EncryptPredicateSegmentUtilsTest {
         SelectStatementContext subquerySelectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getJoinConditions()).thenReturn(Collections.singleton(mock(BinaryOperationExpression.class)));
         when(subquerySelectStatementContext.getJoinConditions()).thenReturn(Collections.singleton(mock(BinaryOperationExpression.class)));
-        Collection<BinaryOperationExpression> actual = EncryptPredicateSegmentUtils.getJoinConditions(selectStatementContext, Collections.singleton(subquerySelectStatementContext));
+        Collection<BinaryOperationExpression> actual = SQLStatementContextExtractor.getJoinConditions(selectStatementContext, Collections.singleton(subquerySelectStatementContext));
         assertThat(actual.size(), is(2));
     }
 }
