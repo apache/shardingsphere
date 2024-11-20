@@ -22,9 +22,10 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -234,13 +235,13 @@ class ShardingTableRuleStatementCheckerTest {
     }
     
     @Test
-    void assertCheckNullAlgorithmNameAndAlgorithmSegment() {
+    void assertCheckTableWithInvalidDataNodeFormat() {
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${product_id % 2}")));
         KeyGenerateStrategySegment keyGenerateStrategy = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerateStrategy, null);
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
+        assertThrows(InvalidDataNodeFormatException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, null));
     }
     
     @Test
