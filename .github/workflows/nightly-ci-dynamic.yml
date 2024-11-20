@@ -20,18 +20,18 @@ name: Nightly - CI Dynamic
 on:
   workflow_dispatch:
     inputs:
-      commit-id:
-        description: 'Commit ID'
-        required: false
-        default: "[ '' ]"
-      java-version:
-        description: 'JDK Version'
-        required: false
-        default: "[ '21' ]"
       os:
         description: 'System OS'
         required: false
         default: "[ 'ubuntu-latest' ]"
+      java-version:
+        description: 'JDK Version'
+        required: false
+        default: "[ '21' ]"
+      commit-id:
+        description: 'Commit ID'
+        required: false
+        default: "[ '' ]"
       job:
         description: 'Job Name'
         required: true
