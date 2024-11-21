@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dal;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public final class VariableAssignSegment implements SQLSegment {

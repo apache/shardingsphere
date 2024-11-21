@@ -124,6 +124,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromTable
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetMasterOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetSlaveOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
@@ -212,9 +215,6 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShutdownSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisUseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetMasterOptionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetSlaveOptionSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -914,14 +914,9 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     private Collection<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
         Collection<VariableAssignSegment> result = new LinkedList<>();
         if (null == ctx.optionValueNoOptionType()) {
-            VariableAssignSegment variableAssign = new VariableAssignSegment();
-            variableAssign.setStartIndex(ctx.start.getStartIndex());
-            variableAssign.setStopIndex(ctx.setExprOrDefault().stop.getStopIndex());
             VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
             variable.setScope(ctx.optionType().getText());
-            variableAssign.setVariable(variable);
-            variableAssign.setAssignValue(ctx.setExprOrDefault().getText());
-            result.add(variableAssign);
+            result.add(new VariableAssignSegment(ctx.start.getStartIndex(), ctx.setExprOrDefault().stop.getStopIndex(), variable, ctx.setExprOrDefault().getText()));
         } else {
             result.add(getVariableAssign(ctx.optionValueNoOptionType()));
         }
@@ -948,10 +943,10 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         } else if (null != ctx.setSystemVariable()) {
             VariableSegment variable = new VariableSegment(
                     ctx.setSystemVariable().start.getStartIndex(), ctx.setSystemVariable().stop.getStopIndex(), ctx.setSystemVariable().internalVariableName().getText());
+            OptionTypeContext optionType = ctx.setSystemVariable().optionType();
+            variable.setScope(null == optionType ? "SESSION" : optionType.getText());
             result.setVariable(variable);
             result.setAssignValue(ctx.setExprOrDefault().getText());
-            OptionTypeContext optionType = ctx.setSystemVariable().optionType();
-            variable.setScope(null != optionType ? optionType.getText() : "SESSION");
         }
         return result;
     }
@@ -960,27 +955,19 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.optionValueNoOptionType()) {
             return getVariableAssign(ctx.optionValueNoOptionType());
         }
-        VariableAssignSegment result = new VariableAssignSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
         VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
         variable.setScope(ctx.optionType().getText());
-        result.setVariable(variable);
-        result.setAssignValue(ctx.setExprOrDefault().getText());
-        return result;
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
     
     @Override
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
-        VariableAssignSegment characterSet = new VariableAssignSegment();
         int startIndex = null == ctx.CHARSET() ? ctx.CHARACTER().getSymbol().getStartIndex() : ctx.CHARSET().getSymbol().getStartIndex();
         int stopIndex = null == ctx.CHARSET() ? ctx.SET(1).getSymbol().getStopIndex() : ctx.CHARSET().getSymbol().getStopIndex();
         // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
-        String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "character_set_client";
-        VariableSegment variable = new VariableSegment(startIndex, stopIndex, variableName);
-        characterSet.setVariable(variable);
-        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.charsetName().getText();
-        characterSet.setAssignValue(assignValue);
+        VariableSegment variable = new VariableSegment(startIndex, stopIndex, (null == ctx.CHARSET()) ? "character_set_client" : ctx.CHARSET().getText());
+        String assignValue = (null == ctx.DEFAULT()) ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
+        VariableAssignSegment characterSet = new VariableAssignSegment(startIndex, stopIndex, variable, assignValue);
         DorisSetStatement result = new DorisSetStatement();
         result.getVariableAssigns().add(characterSet);
         return result;

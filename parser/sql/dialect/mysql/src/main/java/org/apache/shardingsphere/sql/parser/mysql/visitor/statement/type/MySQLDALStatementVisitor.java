@@ -920,13 +920,9 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     private Collection<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
         Collection<VariableAssignSegment> result = new LinkedList<>();
         if (null == ctx.optionValueNoOptionType()) {
-            VariableAssignSegment variableAssign = new VariableAssignSegment();
-            variableAssign.setStartIndex(ctx.start.getStartIndex());
-            variableAssign.setStopIndex(ctx.setExprOrDefault().stop.getStopIndex());
             VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
             variable.setScope(ctx.optionType().getText());
-            variableAssign.setVariable(variable);
-            variableAssign.setAssignValue(ctx.setExprOrDefault().getText());
+            VariableAssignSegment variableAssign = new VariableAssignSegment(ctx.start.getStartIndex(), ctx.setExprOrDefault().stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
             result.add(variableAssign);
         } else {
             result.add(getVariableAssign(ctx.optionValueNoOptionType()));
@@ -954,10 +950,10 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         } else if (null != ctx.setSystemVariable()) {
             VariableSegment variable = new VariableSegment(
                     ctx.setSystemVariable().start.getStartIndex(), ctx.setSystemVariable().stop.getStopIndex(), ctx.setSystemVariable().internalVariableName().getText());
+            OptionTypeContext optionType = ctx.setSystemVariable().optionType();
+            variable.setScope(null == optionType ? "SESSION" : optionType.getText());
             result.setVariable(variable);
             result.setAssignValue(ctx.setExprOrDefault().getText());
-            OptionTypeContext optionType = ctx.setSystemVariable().optionType();
-            variable.setScope(null != optionType ? optionType.getText() : "SESSION");
         }
         return result;
     }
@@ -966,27 +962,20 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.optionValueNoOptionType()) {
             return getVariableAssign(ctx.optionValueNoOptionType());
         }
-        VariableAssignSegment result = new VariableAssignSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
         VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
         variable.setScope(ctx.optionType().getText());
-        result.setVariable(variable);
-        result.setAssignValue(ctx.setExprOrDefault().getText());
-        return result;
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
     
     @Override
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
-        VariableAssignSegment characterSet = new VariableAssignSegment();
         int startIndex = null == ctx.CHARSET() ? ctx.CHARACTER().getSymbol().getStartIndex() : ctx.CHARSET().getSymbol().getStartIndex();
         int stopIndex = null == ctx.CHARSET() ? ctx.SET(1).getSymbol().getStopIndex() : ctx.CHARSET().getSymbol().getStopIndex();
         // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
-        String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "character_set_client";
+        String variableName = (null == ctx.CHARSET()) ? "character_set_client" : ctx.CHARSET().getText();
         VariableSegment variable = new VariableSegment(startIndex, stopIndex, variableName);
-        characterSet.setVariable(variable);
-        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.charsetName().getText();
-        characterSet.setAssignValue(assignValue);
+        String assignValue = (null == ctx.DEFAULT()) ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
+        VariableAssignSegment characterSet = new VariableAssignSegment(startIndex, stopIndex, variable, assignValue);
         MySQLSetStatement result = new MySQLSetStatement();
         result.getVariableAssigns().add(characterSet);
         return result;
