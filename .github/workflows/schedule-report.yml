@@ -76,10 +76,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-e2e-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-e2e-cache-
-            shardingsphere-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Install Project
         run: ./mvnw clean install -DskipTests -T1C
       - name: Set up JDK 8 for Jacoco
@@ -89,7 +88,7 @@ jobs:
           java-version: 8
       - name: Build with maven and execute jacoco aggregation script
         run: |
-          ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
+          ./mvnw -V -B -ntp verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
       - name: Upload coverage reports to codecov
