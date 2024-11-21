@@ -99,7 +99,7 @@ public enum QuoteCharacter {
     
     /**
      * Unwrap text.
-     * 
+     *
      * @param text text to be unwrapped
      * @return unwrapped text
      */
