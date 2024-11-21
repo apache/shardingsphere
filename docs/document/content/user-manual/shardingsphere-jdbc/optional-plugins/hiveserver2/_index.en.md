@@ -90,14 +90,18 @@ Write a Docker Compose file to start HiveServer2.
 
 ```yaml
 services:
-    hive-server2:
-        image: apache/hive:4.0.1
-        environment:
-          SERVICE_NAME: hiveserver2
-        ports:
-          - "10000:10000"
-        expose:
-          - 10002
+  hive-server2:
+    image: apache/hive:4.0.1
+    environment:
+      SERVICE_NAME: hiveserver2
+    ports:
+      - "10000:10000"
+    expose:
+      - 10002
+    volumes:
+      - warehouse:/opt/hive/data/warehouse
+volumes:
+  warehouse:
 ```
 
 ### Create business tables
@@ -249,16 +253,6 @@ ShardingSphere JDBC DataSource does not yet support executing HiveServer2's `SET
 `CREATE TABLE` statement, and `TRUNCATE TABLE` statement.
 
 Users should consider submitting a PR containing unit tests for ShardingSphere.
-
-### jdbcURL Restrictions
-
-For ShardingSphere configuration files, there are restrictions on HiveServer2's jdbcURL. Introduction premise,
-HiveServer2's jdbcURL format is `jdbc:hive2://<host1>:<port1>,<host2>:<port2>/dbName;initFile=<file>;sess_var_list?hive_conf_list#hive_var_list`.
-
-ShardingSphere currently only supports the `;hive_conf_list` part represented by `jdbc:hive2://localhost:10000/demo_ds_1;initFile=/tmp/init.sql`.
-
-If users need to use the jdbcURL parameters of `;sess_var_list` or `#hive_var_list`, 
-consider submitting a PR containing unit tests for ShardingSphere.
 
 ### Prerequisites for using DML SQL statements on ShardingSphere data sources
 

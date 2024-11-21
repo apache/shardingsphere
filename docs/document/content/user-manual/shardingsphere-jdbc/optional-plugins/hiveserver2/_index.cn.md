@@ -88,14 +88,18 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
 
 ```yaml
 services:
-    hive-server2:
-        image: apache/hive:4.0.1
-        environment:
-          SERVICE_NAME: hiveserver2
-        ports:
-          - "10000:10000"
-        expose:
-          - 10002
+  hive-server2:
+    image: apache/hive:4.0.1
+    environment:
+      SERVICE_NAME: hiveserver2
+    ports:
+      - "10000:10000"
+    expose:
+      - 10002
+    volumes:
+      - warehouse:/opt/hive/data/warehouse
+volumes:
+  warehouse:
 ```
 
 ### 创建业务表
@@ -244,14 +248,6 @@ ShardingSphere 在`org.apache.shardingsphere.infra.database.DatabaseTypeEngine#g
 ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `SET` 语句，`CREATE TABLE` 语句和 `TRUNCATE TABLE` 语句。
 
 用户应考虑为 ShardingSphere 提交包含单元测试的 PR。
-
-### jdbcURL 限制
-
-对于 ShardingSphere 的配置文件，对 HiveServer2 的 jdbcURL 存在限制。引入前提，
-HiveServer2 的 jdbcURL 格式为 `jdbc:hive2://<host1>:<port1>,<host2>:<port2>/dbName;initFile=<file>;sess_var_list?hive_conf_list#hive_var_list`。
-ShardingSphere 当前对参数的解析仅支持以`jdbc:hive2://localhost:10000/demo_ds_1;initFile=/tmp/init.sql`为代表的`;hive_conf_list`部分。
-
-若用户需使用`;sess_var_list`或`#hive_var_list`的 jdbcURL 参数，考虑为 ShardingSphere 提交包含单元测试的 PR。
 
 ### 在 ShardingSphere 数据源上使用 DML SQL 语句的前提条件
 

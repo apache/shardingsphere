@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.hive.metadata.data.loader;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
+import org.apache.hadoop.hive.metastore.api.GetTableRequest;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
@@ -85,7 +86,8 @@ public final class HiveMetaDataLoader implements DialectMetaDataLoader {
         Map<String, Integer> dataTypes = getDataType(material.getDataSource());
         Collection<TableMetaData> result = new LinkedList<>();
         for (String each : tables) {
-            result.add(new TableMetaData(each, getColumnMetaData(storeClient.getTable(material.getDefaultSchemaName(), each), dataTypes), Collections.emptyList(), Collections.emptyList()));
+            GetTableRequest req = new GetTableRequest(material.getDefaultSchemaName(), each);
+            result.add(new TableMetaData(each, getColumnMetaData(storeClient.getTable(req), dataTypes), Collections.emptyList(), Collections.emptyList()));
         }
         return result;
     }

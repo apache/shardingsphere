@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.infra.database.hive.connector;
 
+import lombok.SneakyThrows;
+import org.apache.hive.jdbc.JdbcUriParseException;
+import org.apache.hive.jdbc.Utils;
+import org.apache.hive.jdbc.Utils.JdbcConnectionParams;
+import org.apache.hive.jdbc.ZooKeeperHiveClientException;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -30,16 +34,25 @@ import java.util.Properties;
  */
 public final class HiveConnectionPropertiesParser implements ConnectionPropertiesParser {
     
-    private static final int DEFAULT_PORT = 10000;
-    
-    private static final String DEFAULT_HOSTNAME = "localhost";
-    
+    @SneakyThrows({ZooKeeperHiveClientException.class, JdbcUriParseException.class, SQLException.class})
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return jdbcUrl.getHostname().isEmpty()
-                ? new StandardConnectionProperties(DEFAULT_HOSTNAME, jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties())
-                : new StandardConnectionProperties(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties());
+        JdbcConnectionParams params = Utils.parseURL(url, new Properties());
+        if (null == params.getHost() && 0 == params.getPort()) {
+            throw new RuntimeException("HiveServer2 in embedded mode has been deprecated by Apache Hive, "
+                    + "See https://issues.apache.org/jira/browse/HIVE-28418 . "
+                    + "Users should start local HiveServer2 through Docker Image https://hub.docker.com/r/apache/hive .");
+        }
+        Properties queryProperties = new Properties();
+        queryProperties.putAll(params.getSessionVars());
+        queryProperties.putAll(params.getHiveConfs());
+        queryProperties.putAll(params.getHiveVars());
+        return new StandardConnectionProperties(params.getHost(),
+                params.getPort(),
+                params.getDbName(),
+                null,
+                queryProperties,
+                new Properties());
     }
     
     @Override
