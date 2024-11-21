@@ -59,12 +59,12 @@ import java.util.Optional;
 public final class ExpressionExtractor {
     
     /**
-     * Get and predicate collection.
+     * Extract and predicates.
      *
-     * @param expression expression segment
-     * @return and predicate collection
+     * @param expression to be extracted expression segment
+     * @return and predicates
      */
-    public static Collection<AndPredicate> getAndPredicates(final ExpressionSegment expression) {
+    public static Collection<AndPredicate> extractAndPredicates(final ExpressionSegment expression) {
         Collection<AndPredicate> result = new LinkedList<>();
         extractAndPredicates(result, expression);
         return result;
@@ -81,8 +81,8 @@ public final class ExpressionExtractor {
             extractAndPredicates(result, binaryExpression.getLeft());
             extractAndPredicates(result, binaryExpression.getRight());
         } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
-            Collection<AndPredicate> predicates = getAndPredicates(binaryExpression.getRight());
-            for (AndPredicate each : getAndPredicates(binaryExpression.getLeft())) {
+            Collection<AndPredicate> predicates = extractAndPredicates(binaryExpression.getRight());
+            for (AndPredicate each : extractAndPredicates(binaryExpression.getLeft())) {
                 extractCombinedAndPredicates(result, each, predicates);
             }
         } else {
@@ -106,10 +106,10 @@ public final class ExpressionExtractor {
     }
     
     /**
-     * Get parameter marker expression collection.
+     * Get parameter marker expressions.
      *
-     * @param expressions expression collection
-     * @return parameter marker expression collection
+     * @param expressions expressions
+     * @return parameter marker expressions
      */
     public static List<ParameterMarkerExpressionSegment> getParameterMarkerExpressions(final Collection<ExpressionSegment> expressions) {
         List<ParameterMarkerExpressionSegment> result = new ArrayList<>();
@@ -155,11 +155,11 @@ public final class ExpressionExtractor {
     }
     
     /**
-     * Extract columns.
+     * Extract column segments.
      *
-     * @param expression expression
-     * @param containsSubQuery contains sub query or not
-     * @return columns
+     * @param expression expression segment
+     * @param containsSubQuery contains subquery or not
+     * @return extracted column segments
      */
     public static Collection<ColumnSegment> extractColumns(final ExpressionSegment expression, final boolean containsSubQuery) {
         if (expression instanceof ColumnSegment) {

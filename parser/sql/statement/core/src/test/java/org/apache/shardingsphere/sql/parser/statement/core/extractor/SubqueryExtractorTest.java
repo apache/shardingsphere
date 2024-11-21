@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 class SubqueryExtractorTest {
     
     @Test
-    void assertGetSubquerySegmentsInWhere() {
+    void assertExtractSubquerySegmentsInWhere() {
         SelectStatement subquerySelectStatement = mock(SelectStatement.class);
         when(subquerySelectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(73, 99, new IdentifierValue("t_order")))));
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(59, 66);
@@ -72,14 +72,14 @@ class SubqueryExtractorTest {
         SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(51, 100, subquerySelectStatement, ""));
         WhereSegment whereSegment = new WhereSegment(34, 100, new BinaryOperationExpression(40, 100, left, right, "=", "order_id = (SELECT order_id FROM t_order WHERE status = 'OK')"));
         when(selectStatement.getWhere()).thenReturn(Optional.of(whereSegment));
-        Collection<SubquerySegment> actual = SubqueryExtractor.getSubquerySegments(selectStatement, true);
+        Collection<SubquerySegment> actual = SubqueryExtractor.extractSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(right.getSubquery()));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, false).size(), is(1));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(1));
     }
     
     @Test
-    void assertGetSubquerySegmentsInProjection() {
+    void assertExtractSubquerySegmentsInProjection() {
         ColumnSegment left = new ColumnSegment(41, 48, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(52, 62, new IdentifierValue("order_id"));
         SelectStatement subquerySelectStatement = mock(SelectStatement.class);
@@ -90,14 +90,14 @@ class SubqueryExtractorTest {
         ProjectionsSegment projections = new ProjectionsSegment(7, 79);
         when(selectStatement.getProjections()).thenReturn(projections);
         projections.getProjections().add(subqueryProjectionSegment);
-        Collection<SubquerySegment> actual = SubqueryExtractor.getSubquerySegments(selectStatement, true);
+        Collection<SubquerySegment> actual = SubqueryExtractor.extractSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(subquerySegment));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, false).size(), is(1));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(1));
     }
     
     @Test
-    void assertGetSubquerySegmentsInFrom1() {
+    void assertExtractSubquerySegmentsInFrom1() {
         SelectStatement subquery = mock(SelectStatement.class);
         ColumnSegment left = new ColumnSegment(59, 66, new IdentifierValue("order_id"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(70, 70, 1);
@@ -112,14 +112,14 @@ class SubqueryExtractorTest {
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 16, new IdentifierValue("order_id"))));
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(23, 71, subquery, ""));
         when(selectStatement.getFrom()).thenReturn(Optional.of(subqueryTableSegment));
-        Collection<SubquerySegment> actual = SubqueryExtractor.getSubquerySegments(selectStatement, true);
+        Collection<SubquerySegment> actual = SubqueryExtractor.extractSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(subqueryTableSegment.getSubquery()));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, false).size(), is(1));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(1));
     }
     
     @Test
-    void assertGetSubquerySegmentsInFrom2() {
+    void assertExtractSubquerySegmentsInFrom2() {
         SelectStatement subqueryLeftSelectStatement = mock(SelectStatement.class);
         when(subqueryLeftSelectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(65, 71, new IdentifierValue("t_order")))));
         ColumnSegment leftColumnSegment = new ColumnSegment(79, 84, new IdentifierValue("status"));
@@ -157,31 +157,31 @@ class SubqueryExtractorTest {
         from.setLeft(leftSubquerySegment);
         from.setRight(rightSubquerySegment);
         when(selectStatement.getFrom()).thenReturn(Optional.of(from));
-        Collection<SubquerySegment> actual = SubqueryExtractor.getSubquerySegments(selectStatement, true);
+        Collection<SubquerySegment> actual = SubqueryExtractor.extractSubquerySegments(selectStatement, true);
         assertThat(actual.size(), is(2));
         Iterator<SubquerySegment> iterator = actual.iterator();
         assertThat(iterator.next(), is(leftSubquerySegment.getSubquery()));
         assertThat(iterator.next(), is(rightSubquerySegment.getSubquery()));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, false).size(), is(2));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(2));
     }
     
     @Test
-    void assertGetSubquerySegmentsWithMultiNestedSubquery() {
+    void assertExtractSubquerySegmentsWithMultiNestedSubquery() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         SubquerySegment subquerySelect = createSubquerySegment();
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 0, subquerySelect)));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, true).size(), is(2));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, false).size(), is(1));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, true).size(), is(2));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(1));
     }
     
     @Test
-    void assertGetSubquerySegmentsWithCombineSegment() {
+    void assertExtractSubquerySegmentsWithCombineSegment() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         SubquerySegment left = new SubquerySegment(0, 0, mock(SelectStatement.class), "");
         SubquerySegment right = createSubquerySegment();
         when(selectStatement.getCombine()).thenReturn(Optional.of(new CombineSegment(0, 0, left, CombineType.UNION, right)));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, true).size(), is(3));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, false).size(), is(2));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, true).size(), is(3));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(2));
     }
     
     private SubquerySegment createSubquerySegment() {
@@ -193,7 +193,7 @@ class SubqueryExtractorTest {
     }
     
     @Test
-    void assertGetSubquerySegmentsFromProjectionFunctionParams() {
+    void assertExtractSubquerySegmentsFromProjectionFunctionParams() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         when(selectStatement.getProjections()).thenReturn(projections);
@@ -201,7 +201,7 @@ class SubqueryExtractorTest {
         functionSegment.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")));
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "", functionSegment);
         projections.getProjections().add(expressionProjectionSegment);
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, true).size(), is(1));
-        assertThat(SubqueryExtractor.getSubquerySegments(selectStatement, false).size(), is(1));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, true).size(), is(1));
+        assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(1));
     }
 }

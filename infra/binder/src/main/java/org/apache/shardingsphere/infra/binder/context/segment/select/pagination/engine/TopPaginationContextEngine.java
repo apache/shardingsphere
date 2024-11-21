@@ -50,7 +50,7 @@ public final class TopPaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final TopProjectionSegment topProjectionSegment, final Collection<ExpressionSegment> expressions, final List<Object> params) {
-        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractor.getAndPredicates(each).stream()).collect(Collectors.toList());
+        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractor.extractAndPredicates(each).stream()).collect(Collectors.toList());
         Optional<ExpressionSegment> rowNumberPredicate = expressions.isEmpty() ? Optional.empty() : getRowNumberPredicate(andPredicates, topProjectionSegment.getAlias());
         Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.empty();
         PaginationValueSegment rowCount = topProjectionSegment.getTop();

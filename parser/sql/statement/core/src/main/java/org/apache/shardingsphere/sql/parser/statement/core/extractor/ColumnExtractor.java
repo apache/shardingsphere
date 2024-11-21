@@ -57,10 +57,10 @@ import java.util.LinkedList;
 public final class ColumnExtractor {
     
     /**
-     * Extract column segment collection.
+     * Extract column segments from expression segment.
      *
-     * @param expression expression segment
-     * @return column segment collection
+     * @param expression to be extracted expression segment
+     * @return column segments
      */
     public static Collection<ColumnSegment> extract(final ExpressionSegment expression) {
         Collection<ColumnSegment> result = new LinkedList<>();
@@ -95,7 +95,7 @@ public final class ColumnExtractor {
      */
     public static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final Collection<WhereSegment> whereSegments) {
         for (WhereSegment each : whereSegments) {
-            for (AndPredicate andPredicate : ExpressionExtractor.getAndPredicates(each.getExpr())) {
+            for (AndPredicate andPredicate : ExpressionExtractor.extractAndPredicates(each.getExpr())) {
                 extractColumnSegments(columnSegments, andPredicate);
             }
         }
@@ -112,7 +112,7 @@ public final class ColumnExtractor {
      *
      * @param columnSegments column segments
      * @param statement select statement
-     * @param containsSubQuery whether contains sub query
+     * @param containsSubQuery whether contains subquery
      */
     public static void extractFromSelectStatement(final Collection<ColumnSegment> columnSegments, final SelectStatement statement, final boolean containsSubQuery) {
         extractFromProjections(columnSegments, statement.getProjections().getProjections(), containsSubQuery);
@@ -124,7 +124,7 @@ public final class ColumnExtractor {
      *
      * @param columnSegments column segments
      * @param statement select statement
-     * @param containsSubQuery whether contains sub query
+     * @param containsSubQuery whether contains subquery
      */
     public static void extractFromSelectStatementWithoutProjection(final Collection<ColumnSegment> columnSegments, final SelectStatement statement, final boolean containsSubQuery) {
         statement.getFrom().ifPresent(optional -> extractFromTable(columnSegments, optional, containsSubQuery));
@@ -141,7 +141,7 @@ public final class ColumnExtractor {
      *
      * @param columnSegments column segments
      * @param projections projection segments
-     * @param containsSubQuery contains sub query
+     * @param containsSubQuery contains subquery
      */
     public static void extractFromProjections(final Collection<ColumnSegment> columnSegments, final Collection<ProjectionSegment> projections, final boolean containsSubQuery) {
         for (ProjectionSegment each : projections) {
@@ -195,7 +195,7 @@ public final class ColumnExtractor {
      *
      * @param columnSegments column segments
      * @param whereSegment where segment
-     * @param containsSubQuery contains sub query
+     * @param containsSubQuery contains subquery
      */
     public static void extractFromWhere(final Collection<ColumnSegment> columnSegments, final WhereSegment whereSegment, final boolean containsSubQuery) {
         columnSegments.addAll(ExpressionExtractor.extractColumns(whereSegment.getExpr(), containsSubQuery));

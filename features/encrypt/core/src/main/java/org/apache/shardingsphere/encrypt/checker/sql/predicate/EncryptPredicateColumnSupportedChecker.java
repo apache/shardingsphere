@@ -77,7 +77,7 @@ public final class EncryptPredicateColumnSupportedChecker implements SupportedSQ
     
     private boolean includesLike(final Collection<WhereSegment> whereSegments, final ColumnSegment targetColumnSegment) {
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractor.getAndPredicates(each.getExpr());
+            Collection<AndPredicate> andPredicates = ExpressionExtractor.extractAndPredicates(each.getExpr());
             for (AndPredicate andPredicate : andPredicates) {
                 if (isLikeColumnSegment(andPredicate, targetColumnSegment)) {
                     return true;

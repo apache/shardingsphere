@@ -130,8 +130,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
         selectStatement.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractor.getSubqueryWhereSegments(selectStatement));
-        whereSegments.addAll(WhereExtractor.getJoinWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractor.extractSubqueryWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractor.extractJoinWhereSegments(selectStatement));
     }
     
     private Collection<TableSegment> getAllTableSegments(final Collection<TableSegment> inheritedTables) {
@@ -187,7 +187,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String currentDatabaseName,
                                                                         final Collection<TableSegment> tableSegments) {
-        Collection<SubquerySegment> subquerySegments = SubqueryExtractor.getSubquerySegments(getSqlStatement(), false);
+        Collection<SubquerySegment> subquerySegments = SubqueryExtractor.extractSubquerySegments(getSqlStatement(), false);
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);
         for (SubquerySegment each : subquerySegments) {
             SelectStatementContext subqueryContext = new SelectStatementContext(metaData, params, each.getSelect(), currentDatabaseName, tableSegments);

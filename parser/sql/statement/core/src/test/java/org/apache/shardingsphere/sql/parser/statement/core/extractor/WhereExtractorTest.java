@@ -44,26 +44,26 @@ import static org.mockito.Mockito.when;
 class WhereExtractorTest {
     
     @Test
-    void assertGetJoinWhereSegmentsWithEmptySelectStatement() {
-        assertTrue(WhereExtractor.getJoinWhereSegments(mock(SelectStatement.class)).isEmpty());
+    void assertExtractJoinWhereSegmentsWithEmptySelectStatement() {
+        assertTrue(WhereExtractor.extractJoinWhereSegments(mock(SelectStatement.class)).isEmpty());
     }
     
     @Test
-    void assertGetJoinWhereSegments() {
+    void assertExtractJoinWhereSegments() {
         JoinTableSegment tableSegment = new JoinTableSegment();
         ColumnSegment left = new ColumnSegment(57, 67, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(71, 80, new IdentifierValue("order_id"));
         tableSegment.setCondition(new BinaryOperationExpression(1, 31, left, right, "=", "oi.order_id = o.order_id"));
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(tableSegment));
-        Collection<WhereSegment> joinWhereSegments = WhereExtractor.getJoinWhereSegments(selectStatement);
+        Collection<WhereSegment> joinWhereSegments = WhereExtractor.extractJoinWhereSegments(selectStatement);
         assertThat(joinWhereSegments.size(), is(1));
         WhereSegment actual = joinWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(tableSegment.getCondition()));
     }
     
     @Test
-    void assertGetSubqueryWhereSegmentsFromSubqueryTableSegment() {
+    void assertExtractSubqueryWhereSegmentsFromSubqueryTableSegment() {
         SelectStatement subQuerySelectStatement = mock(SelectStatement.class);
         ColumnSegment left = new ColumnSegment(41, 48, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(52, 62, new IdentifierValue("order_id"));
@@ -73,7 +73,7 @@ class WhereExtractorTest {
         projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(7, 63, subQuerySelectStatement, ""), "(SELECT status FROM t_order WHERE order_id = oi.order_id)"));
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(projections);
-        Collection<WhereSegment> subqueryWhereSegments = WhereExtractor.getSubqueryWhereSegments(selectStatement);
+        Collection<WhereSegment> subqueryWhereSegments = WhereExtractor.extractSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         Preconditions.checkState(subQuerySelectStatement.getWhere().isPresent());
         assertThat(actual.getExpr(), is(subQuerySelectStatement.getWhere().get().getExpr()));
@@ -91,7 +91,7 @@ class WhereExtractorTest {
         when(subQuerySelectStatement.getFrom()).thenReturn(Optional.of(joinTableSegment));
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 0, new SubquerySegment(20, 84, subQuerySelectStatement, ""))));
-        Collection<WhereSegment> subqueryWhereSegments = WhereExtractor.getSubqueryWhereSegments(selectStatement);
+        Collection<WhereSegment> subqueryWhereSegments = WhereExtractor.extractSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(joinTableSegment.getCondition()));
     }
