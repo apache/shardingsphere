@@ -123,7 +123,7 @@ public final class EncryptProjectionTokenGenerator {
                 ColumnProjection columnProjection = (ColumnProjection) each;
                 boolean newAddedColumn = existColumnNames.add(columnProjection.getOriginalTable().getValue() + "." + columnProjection.getOriginalColumn().getValue());
                 Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnProjection.getOriginalTable().getValue());
-                if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getOriginalColumn().getValue()) && !selectStatementContext.containsTableSubquery()) {
+                if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getOriginalColumn().getValue()) && isNeedRewrite(selectStatementContext, subqueryType)) {
                     EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnProjection.getOriginalColumn().getValue());
                     projections.addAll(generateProjections(encryptColumn, columnProjection, subqueryType, newAddedColumn));
                     continue;
@@ -135,6 +135,13 @@ public final class EncryptProjectionTokenGenerator {
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
         return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, selectStatementContext.getDatabaseType());
+    }
+    
+    private boolean isNeedRewrite(final SelectStatementContext selectStatementContext, final SubqueryType subqueryType) {
+        if (SubqueryType.TABLE == subqueryType) {
+            return true;
+        }
+        return !selectStatementContext.containsTableSubquery();
     }
     
     private boolean isNeedRewrite(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnSegment) {
