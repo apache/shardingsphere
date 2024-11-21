@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IdentifierValueTest {
     
@@ -64,16 +63,5 @@ class IdentifierValueTest {
     void assertGetValueWithQuoteCharactersWithValue() {
         String text = "[foo]";
         assertThat(new IdentifierValue(text).getValueWithQuoteCharacters(), is("[foo]"));
-    }
-    
-    @Test
-    void assertGetQuotedContentWithNullValue() {
-        assertNull(IdentifierValue.getQuotedContent(null));
-    }
-    
-    @Test
-    void assertGetQuotedContent() {
-        assertThat(IdentifierValue.getQuotedContent(" foo "), is("foo"));
-        assertThat(IdentifierValue.getQuotedContent("`foo`"), is("foo"));
     }
 }
