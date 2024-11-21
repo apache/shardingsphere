@@ -63,6 +63,6 @@ public final class IdentifierValue implements ValueASTNode<String> {
      * @return quote content
      */
     public static String getQuotedContent(final String text) {
-        return Strings.isNullOrEmpty(text) ? text : QuoteCharacter.getQuoteCharacter(text).unwrap(text).trim();
+        return Strings.isNullOrEmpty(text) ? text : QuoteCharacter.unwrapAndTrimText(text);
     }
 }
