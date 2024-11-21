@@ -31,7 +31,6 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class MatchAgainstExpression implements ExpressionSegment {
     
     private final int startIndex;
