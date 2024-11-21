@@ -61,7 +61,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -582,7 +582,7 @@ public final class ShardingRule implements DatabaseRule {
         Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size(), 1F);
         Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size(), 1F);
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(each.getExpr());
+            Collection<AndPredicate> andPredicates = ExpressionExtractor.getAndPredicates(each.getExpr());
             if (andPredicates.size() > 1) {
                 return false;
             }

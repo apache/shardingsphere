@@ -64,12 +64,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
-import org.apache.shardingsphere.sql.parser.statement.core.util.SubqueryExtractUtils;
-import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.util.WhereExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.SubqueryExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.WhereExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -116,9 +116,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
                                   final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
-        ColumnExtractUtils.extractColumnSegments(columnSegments, whereSegments);
+        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
-        ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);
+        ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
         subqueryContexts = createSubqueryContexts(metaData, params, currentDatabaseName, tableSegments);
         tablesContext = new TablesContext(tableSegments, subqueryContexts, getDatabaseType(), currentDatabaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
@@ -130,8 +130,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
         selectStatement.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(selectStatement));
-        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractor.getSubqueryWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractor.getJoinWhereSegments(selectStatement));
     }
     
     private Collection<TableSegment> getAllTableSegments(final Collection<TableSegment> inheritedTables) {
@@ -187,7 +187,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String currentDatabaseName,
                                                                         final Collection<TableSegment> tableSegments) {
-        Collection<SubquerySegment> subquerySegments = SubqueryExtractUtils.getSubquerySegments(getSqlStatement(), false);
+        Collection<SubquerySegment> subquerySegments = SubqueryExtractor.getSubquerySegments(getSqlStatement(), false);
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);
         for (SubquerySegment each : subquerySegments) {
             SelectStatementContext subqueryContext = new SelectStatementContext(metaData, params, each.getSelect(), currentDatabaseName, tableSegments);
@@ -257,7 +257,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         for (WhereSegment each : whereSegments) {
             expressions.add(each.getExpr());
         }
-        return ExpressionExtractUtils.getParameterMarkerExpressions(expressions);
+        return ExpressionExtractor.getParameterMarkerExpressions(expressions);
     }
     
     /**

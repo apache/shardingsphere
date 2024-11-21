@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.util;
+package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -42,14 +42,14 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ExpressionExtractUtilsTest {
+class ExpressionExtractorTest {
     
     @Test
     void assertExtractAndPredicates() {
         ColumnSegment left = new ColumnSegment(26, 33, new IdentifierValue("order_id"));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(35, 35, 0);
         ExpressionSegment expressionSegment = new BinaryOperationExpression(26, 35, left, right, "=", "order_id=?");
-        Collection<AndPredicate> actual = ExpressionExtractUtils.getAndPredicates(expressionSegment);
+        Collection<AndPredicate> actual = ExpressionExtractor.getAndPredicates(expressionSegment);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getPredicates().iterator().next(), is(expressionSegment));
     }
@@ -63,7 +63,7 @@ class ExpressionExtractUtilsTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(54, 54, 1);
         ExpressionSegment rightExpressionSegment = new BinaryOperationExpression(28, 39, columnSegment2, parameterMarkerExpressionSegment2, "=", "status=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(28, 54, leftExpressionSegment, rightExpressionSegment, "AND", "order_id=? AND status=?");
-        Collection<AndPredicate> actual = ExpressionExtractUtils.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractor.getAndPredicates(expression);
         assertThat(actual.size(), is(1));
         AndPredicate andPredicate = actual.iterator().next();
         assertThat(andPredicate.getPredicates().size(), is(2));
@@ -81,7 +81,7 @@ class ExpressionExtractUtilsTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(47, 47, 1);
         ExpressionSegment expressionSegment2 = new BinaryOperationExpression(40, 47, columnSegment2, parameterMarkerExpressionSegment2, "=", "status=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(28, 47, expressionSegment1, expressionSegment2, "OR", "status=? OR status=?");
-        Collection<AndPredicate> actual = ExpressionExtractUtils.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractor.getAndPredicates(expression);
         assertThat(actual.size(), is(2));
         Iterator<AndPredicate> andPredicateIterator = actual.iterator();
         AndPredicate andPredicate1 = andPredicateIterator.next();
@@ -101,7 +101,7 @@ class ExpressionExtractUtilsTest {
         ExpressionSegment subRightExpression = new BinaryOperationExpression(0, 0, countColumn, countParameterExpression, "=", "count=?");
         BinaryOperationExpression rightExpression = new BinaryOperationExpression(0, 0, subLeftExpression, subRightExpression, "AND", "status=? AND count=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, leftExpression, rightExpression, "OR", "status=? OR status=? AND count=?");
-        Collection<AndPredicate> actual = ExpressionExtractUtils.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractor.getAndPredicates(expression);
         assertThat(actual.size(), is(2));
         Iterator<AndPredicate> iterator = actual.iterator();
         AndPredicate andPredicate1 = iterator.next();
@@ -121,14 +121,14 @@ class ExpressionExtractUtilsTest {
         functionSegment.getParameters().add(param1);
         functionSegment.getParameters().add(param2);
         functionSegment.getParameters().add(param3);
-        assertThat(ExpressionExtractUtils.getParameterMarkerExpressions(Collections.singleton(functionSegment)).size(), is(1));
+        assertThat(ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(functionSegment)).size(), is(1));
     }
     
     @Test
     void assertGetParameterMarkerExpressionsFromTypeCastExpression() {
         ParameterMarkerExpressionSegment expected = new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.DOLLAR);
         Collection<ExpressionSegment> input = Collections.singleton(new TypeCastExpression(0, 0, "$2::varchar", expected, "varchar"));
-        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(input);
+        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractor.getParameterMarkerExpressions(input);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
     }
@@ -139,7 +139,7 @@ class ExpressionExtractUtilsTest {
         listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.QUESTION));
         listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 2, ParameterMarkerType.QUESTION));
         Collection<ExpressionSegment> inExpressions = Collections.singleton(new InExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), listExpression, false));
-        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(inExpressions);
+        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractor.getParameterMarkerExpressions(inExpressions);
         assertThat(actual.size(), is(2));
     }
     
@@ -148,7 +148,7 @@ class ExpressionExtractUtilsTest {
         Collection<BinaryOperationExpression> actual = new LinkedList<>();
         BinaryOperationExpression binaryExpression =
                 new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), new ColumnSegment(0, 0, new IdentifierValue("order_id")), "=", "");
-        ExpressionExtractUtils.extractJoinConditions(actual, Collections.singleton(new WhereSegment(0, 0, binaryExpression)));
+        ExpressionExtractor.extractJoinConditions(actual, Collections.singleton(new WhereSegment(0, 0, binaryExpression)));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(binaryExpression));
     }

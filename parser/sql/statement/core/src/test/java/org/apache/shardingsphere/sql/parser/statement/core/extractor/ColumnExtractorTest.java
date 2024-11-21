@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.util;
+package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -32,12 +32,12 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ColumnExtractUtilsTest {
+class ColumnExtractorTest {
     
     @Test
     void assertExtractColumnSegments() {
         Collection<ColumnSegment> columnSegments = new LinkedList<>();
-        ColumnExtractUtils.extractColumnSegments(columnSegments, createWhereSegments());
+        ColumnExtractor.extractColumnSegments(columnSegments, createWhereSegments());
         assertThat(columnSegments.size(), is(2));
         Iterator<ColumnSegment> iterator = columnSegments.iterator();
         ColumnSegment firstColumn = iterator.next();

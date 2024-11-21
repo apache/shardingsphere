@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.util;
+package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -51,10 +51,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Column extract utility class.
+ * Column extractor.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ColumnExtractUtils {
+public final class ColumnExtractor {
     
     /**
      * Extract column segment collection.
@@ -95,7 +95,7 @@ public final class ColumnExtractUtils {
      */
     public static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final Collection<WhereSegment> whereSegments) {
         for (WhereSegment each : whereSegments) {
-            for (AndPredicate andPredicate : ExpressionExtractUtils.getAndPredicates(each.getExpr())) {
+            for (AndPredicate andPredicate : ExpressionExtractor.getAndPredicates(each.getExpr())) {
                 extractColumnSegments(columnSegments, andPredicate);
             }
         }
@@ -150,20 +150,20 @@ public final class ColumnExtractUtils {
             }
             if (each instanceof AggregationProjectionSegment) {
                 for (ExpressionSegment parameter : ((AggregationProjectionSegment) each).getParameters()) {
-                    columnSegments.addAll(ExpressionExtractUtils.extractColumns(parameter, containsSubQuery));
+                    columnSegments.addAll(ExpressionExtractor.extractColumns(parameter, containsSubQuery));
                 }
             }
             if (each instanceof DatetimeProjectionSegment) {
-                columnSegments.addAll(ExpressionExtractUtils.extractColumns(((DatetimeProjectionSegment) each).getLeft(), containsSubQuery));
-                columnSegments.addAll(ExpressionExtractUtils.extractColumns(((DatetimeProjectionSegment) each).getRight(), containsSubQuery));
+                columnSegments.addAll(ExpressionExtractor.extractColumns(((DatetimeProjectionSegment) each).getLeft(), containsSubQuery));
+                columnSegments.addAll(ExpressionExtractor.extractColumns(((DatetimeProjectionSegment) each).getRight(), containsSubQuery));
             }
             if (each instanceof ExpressionProjectionSegment) {
-                columnSegments.addAll(ExpressionExtractUtils.extractColumns(((ExpressionProjectionSegment) each).getExpr(), containsSubQuery));
+                columnSegments.addAll(ExpressionExtractor.extractColumns(((ExpressionProjectionSegment) each).getExpr(), containsSubQuery));
             }
             if (each instanceof IntervalExpressionProjection) {
-                columnSegments.addAll(ExpressionExtractUtils.extractColumns(((IntervalExpressionProjection) each).getLeft(), containsSubQuery));
-                columnSegments.addAll(ExpressionExtractUtils.extractColumns(((IntervalExpressionProjection) each).getRight(), containsSubQuery));
-                columnSegments.addAll(ExpressionExtractUtils.extractColumns(((IntervalExpressionProjection) each).getMinus(), containsSubQuery));
+                columnSegments.addAll(ExpressionExtractor.extractColumns(((IntervalExpressionProjection) each).getLeft(), containsSubQuery));
+                columnSegments.addAll(ExpressionExtractor.extractColumns(((IntervalExpressionProjection) each).getRight(), containsSubQuery));
+                columnSegments.addAll(ExpressionExtractor.extractColumns(((IntervalExpressionProjection) each).getMinus(), containsSubQuery));
             }
             if (each instanceof SubqueryProjectionSegment && containsSubQuery) {
                 extractFromSelectStatement(columnSegments, ((SubqueryProjectionSegment) each).getSubquery().getSelect(), true);
@@ -173,12 +173,12 @@ public final class ColumnExtractUtils {
     
     private static void extractFromTable(final Collection<ColumnSegment> columnSegments, final TableSegment tableSegment, final boolean containsSubQuery) {
         if (tableSegment instanceof CollectionTableSegment) {
-            columnSegments.addAll(ExpressionExtractUtils.extractColumns(((CollectionTableSegment) tableSegment).getExpressionSegment(), containsSubQuery));
+            columnSegments.addAll(ExpressionExtractor.extractColumns(((CollectionTableSegment) tableSegment).getExpressionSegment(), containsSubQuery));
         }
         if (tableSegment instanceof JoinTableSegment) {
             extractFromTable(columnSegments, ((JoinTableSegment) tableSegment).getLeft(), containsSubQuery);
             extractFromTable(columnSegments, ((JoinTableSegment) tableSegment).getRight(), containsSubQuery);
-            columnSegments.addAll(ExpressionExtractUtils.extractColumns(((JoinTableSegment) tableSegment).getCondition(), containsSubQuery));
+            columnSegments.addAll(ExpressionExtractor.extractColumns(((JoinTableSegment) tableSegment).getCondition(), containsSubQuery));
             columnSegments.addAll(((JoinTableSegment) tableSegment).getUsing());
             columnSegments.addAll(((JoinTableSegment) tableSegment).getDerivedUsing());
         }
@@ -198,7 +198,7 @@ public final class ColumnExtractUtils {
      * @param containsSubQuery contains sub query
      */
     public static void extractFromWhere(final Collection<ColumnSegment> columnSegments, final WhereSegment whereSegment, final boolean containsSubQuery) {
-        columnSegments.addAll(ExpressionExtractUtils.extractColumns(whereSegment.getExpr(), containsSubQuery));
+        columnSegments.addAll(ExpressionExtractor.extractColumns(whereSegment.getExpr(), containsSubQuery));
     }
     
     private static void extractFromGroupBy(final Collection<ColumnSegment> columnSegments, final GroupBySegment groupBySegment, final boolean containsSubQuery) {
@@ -207,13 +207,13 @@ public final class ColumnExtractUtils {
                 columnSegments.add(((ColumnOrderByItemSegment) each).getColumn());
             }
             if (each instanceof ExpressionOrderByItemSegment) {
-                columnSegments.addAll(ExpressionExtractUtils.extractColumns(((ExpressionOrderByItemSegment) each).getExpr(), containsSubQuery));
+                columnSegments.addAll(ExpressionExtractor.extractColumns(((ExpressionOrderByItemSegment) each).getExpr(), containsSubQuery));
             }
         }
     }
     
     private static void extractFromHaving(final Collection<ColumnSegment> columnSegments, final HavingSegment havingSegment, final boolean containsSubQuery) {
-        columnSegments.addAll(ExpressionExtractUtils.extractColumns(havingSegment.getExpr(), containsSubQuery));
+        columnSegments.addAll(ExpressionExtractor.extractColumns(havingSegment.getExpr(), containsSubQuery));
     }
     
     private static void extractFromOrderBy(final Collection<ColumnSegment> columnSegments, final OrderBySegment orderBySegment, final boolean containsSubQuery) {
@@ -222,7 +222,7 @@ public final class ColumnExtractUtils {
                 columnSegments.add(((ColumnOrderByItemSegment) each).getColumn());
             }
             if (each instanceof ExpressionOrderByItemSegment) {
-                columnSegments.addAll(ExpressionExtractUtils.extractColumns(((ExpressionOrderByItemSegment) each).getExpr(), containsSubQuery));
+                columnSegments.addAll(ExpressionExtractor.extractColumns(((ExpressionOrderByItemSegment) each).getExpr(), containsSubQuery));
             }
         }
     }

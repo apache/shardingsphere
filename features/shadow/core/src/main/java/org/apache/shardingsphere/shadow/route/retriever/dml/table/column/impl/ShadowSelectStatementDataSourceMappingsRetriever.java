@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
     protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
         Collection<ShadowColumnCondition> result = new LinkedList<>();
         for (ExpressionSegment each : getWhereSegment()) {
-            Collection<ColumnSegment> columns = ColumnExtractUtils.extract(each);
+            Collection<ColumnSegment> columns = ColumnExtractor.extract(each);
             if (1 != columns.size()) {
                 continue;
             }
@@ -68,7 +68,7 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
     private Collection<ExpressionSegment> getWhereSegment() {
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (WhereSegment each : sqlStatementContext.getWhereSegments()) {
-            for (AndPredicate predicate : ExpressionExtractUtils.getAndPredicates(each.getExpr())) {
+            for (AndPredicate predicate : ExpressionExtractor.getAndPredicates(each.getExpr())) {
                 result.addAll(predicate.getPredicates());
             }
         }

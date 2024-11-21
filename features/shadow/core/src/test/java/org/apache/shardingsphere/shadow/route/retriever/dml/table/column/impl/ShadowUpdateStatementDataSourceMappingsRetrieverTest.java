@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ColumnExtractUtils.class, ShadowExtractor.class})
+@StaticMockSettings({ColumnExtractor.class, ShadowExtractor.class})
 class ShadowUpdateStatementDataSourceMappingsRetrieverTest {
     
     @Test
@@ -51,7 +51,7 @@ class ShadowUpdateStatementDataSourceMappingsRetrieverTest {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         when(whereSegment.getExpr()).thenReturn(expressionSegment);
         when(sqlStatementContext.getWhereSegments()).thenReturn(Arrays.asList(whereSegment, mock(WhereSegment.class, RETURNS_DEEP_STUBS)));
-        when(ColumnExtractUtils.extract(expressionSegment)).thenReturn(Collections.singleton(mock(ColumnSegment.class)));
+        when(ColumnExtractor.extract(expressionSegment)).thenReturn(Collections.singleton(mock(ColumnSegment.class)));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         ShadowUpdateStatementDataSourceMappingsRetriever retriever = new ShadowUpdateStatementDataSourceMappingsRetriever(sqlStatementContext, Collections.singletonList("foo"));

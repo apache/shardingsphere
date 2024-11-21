@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.util;
+package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -53,10 +53,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Expression extract utility class.
+ * Expression extractor.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExpressionExtractUtils {
+public final class ExpressionExtractor {
     
     /**
      * Get and predicate collection.
@@ -232,10 +232,10 @@ public final class ExpressionExtractUtils {
             }
         }
         if (expression instanceof SubquerySegment && containsSubQuery) {
-            ColumnExtractUtils.extractFromSelectStatement(result, ((SubquerySegment) expression).getSelect(), true);
+            ColumnExtractor.extractFromSelectStatement(result, ((SubquerySegment) expression).getSelect(), true);
         }
         if (expression instanceof SubqueryExpressionSegment && containsSubQuery) {
-            ColumnExtractUtils.extractFromSelectStatement(result, ((SubqueryExpressionSegment) expression).getSubquery().getSelect(), true);
+            ColumnExtractor.extractFromSelectStatement(result, ((SubqueryExpressionSegment) expression).getSubquery().getSelect(), true);
         }
         return result;
     }
