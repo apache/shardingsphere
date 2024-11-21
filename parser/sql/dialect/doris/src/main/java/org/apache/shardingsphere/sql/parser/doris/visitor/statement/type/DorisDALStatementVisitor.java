@@ -982,7 +982,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         int stopIndex = null == ctx.CHARSET() ? ctx.SET(1).getSymbol().getStopIndex() : ctx.CHARSET().getSymbol().getStopIndex();
         // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
         VariableSegment variable = new VariableSegment(startIndex, stopIndex, (null == ctx.CHARSET()) ? "character_set_client" : ctx.CHARSET().getText());
-        String assignValue = (null == ctx.DEFAULT()) ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
+        String assignValue = null == ctx.DEFAULT() ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
         VariableAssignSegment characterSet = new VariableAssignSegment(startIndex, stopIndex, variable, assignValue);
         DorisSetStatement result = new DorisSetStatement();
         result.getVariableAssigns().add(characterSet);

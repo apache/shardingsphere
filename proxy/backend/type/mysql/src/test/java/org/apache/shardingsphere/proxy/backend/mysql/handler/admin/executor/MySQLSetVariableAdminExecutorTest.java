@@ -87,8 +87,7 @@ class MySQLSetVariableAdminExecutorTest {
     }
     
     private SetStatement prepareSetStatement() {
-        VariableSegment maxConnectionVariableSegment = new VariableSegment(0, 0, "max_connections");
-        maxConnectionVariableSegment.setScope("global");
+        VariableSegment maxConnectionVariableSegment = new VariableSegment(0, 0, "max_connections", "global");
         VariableAssignSegment setGlobalMaxConnectionAssignSegment = new VariableAssignSegment(0, 0, maxConnectionVariableSegment, "151");
         VariableSegment characterSetClientSegment = new VariableSegment(0, 0, "character_set_client");
         VariableAssignSegment setCharacterSetClientVariableSegment = new VariableAssignSegment(0, 0, characterSetClientSegment, "'utf8mb4'");
