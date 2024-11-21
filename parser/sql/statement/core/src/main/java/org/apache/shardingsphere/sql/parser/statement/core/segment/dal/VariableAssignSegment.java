@@ -17,23 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dal;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
-@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class VariableAssignSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private VariableSegment variable;
+    private final VariableSegment variable;
     
-    private String assignValue;
+    private final String assignValue;
 }

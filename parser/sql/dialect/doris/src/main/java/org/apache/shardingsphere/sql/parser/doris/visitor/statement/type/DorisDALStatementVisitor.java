@@ -913,45 +913,63 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     private Collection<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
         Collection<VariableAssignSegment> result = new LinkedList<>();
-        if (null == ctx.optionValueNoOptionType()) {
-            VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
-            variable.setScope(ctx.optionType().getText());
-            result.add(new VariableAssignSegment(ctx.start.getStartIndex(), ctx.setExprOrDefault().stop.getStopIndex(), variable, ctx.setExprOrDefault().getText()));
-        } else {
-            result.add(getVariableAssign(ctx.optionValueNoOptionType()));
-        }
+        result.add(null == ctx.optionValueNoOptionType() ? getVariableAssignSegment(ctx) : getVariableAssignSegment(ctx.optionValueNoOptionType()));
         for (OptionValueContext each : ctx.optionValue()) {
-            result.add(getVariableAssign(each));
+            result.add(getVariableAssignSegment(each));
         }
         return result;
     }
     
-    private VariableAssignSegment getVariableAssign(final OptionValueNoOptionTypeContext ctx) {
-        VariableAssignSegment result = new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+    private VariableAssignSegment getVariableAssignSegment(final OptionValueListContext ctx) {
+        VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
+        variable.setScope(ctx.optionType().getText());
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.setExprOrDefault().stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
+    }
+    
+    private VariableAssignSegment getVariableAssignSegment(final OptionValueNoOptionTypeContext ctx) {
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getVariableSegment(ctx), getAssignValue(ctx));
+    }
+    
+    private VariableSegment getVariableSegment(final OptionValueNoOptionTypeContext ctx) {
         if (null != ctx.NAMES()) {
             // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
-            result.setVariable(new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "character_set_client"));
-            result.setAssignValue(ctx.charsetName().getText());
-        } else if (null != ctx.internalVariableName()) {
-            result.setVariable(new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText()));
-            result.setAssignValue(ctx.setExprOrDefault().getText());
-        } else if (null != ctx.userVariable()) {
-            result.setVariable(new VariableSegment(ctx.userVariable().start.getStartIndex(), ctx.userVariable().stop.getStopIndex(), ctx.userVariable().getText()));
-            result.setAssignValue(ctx.expr().getText());
-        } else if (null != ctx.setSystemVariable()) {
-            VariableSegment variable = new VariableSegment(
+            return new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "character_set_client");
+        }
+        if (null != ctx.internalVariableName()) {
+            return new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
+        }
+        if (null != ctx.userVariable()) {
+            return new VariableSegment(ctx.userVariable().start.getStartIndex(), ctx.userVariable().stop.getStopIndex(), ctx.userVariable().getText());
+        }
+        if (null != ctx.setSystemVariable()) {
+            VariableSegment result = new VariableSegment(
                     ctx.setSystemVariable().start.getStartIndex(), ctx.setSystemVariable().stop.getStopIndex(), ctx.setSystemVariable().internalVariableName().getText());
             OptionTypeContext optionType = ctx.setSystemVariable().optionType();
-            variable.setScope(null == optionType ? "SESSION" : optionType.getText());
-            result.setVariable(variable);
-            result.setAssignValue(ctx.setExprOrDefault().getText());
+            result.setScope(null == optionType ? "SESSION" : optionType.getText());
+            return result;
         }
-        return result;
+        return null;
     }
     
-    private VariableAssignSegment getVariableAssign(final OptionValueContext ctx) {
+    private String getAssignValue(final OptionValueNoOptionTypeContext ctx) {
+        if (null != ctx.NAMES()) {
+            return ctx.charsetName().getText();
+        }
+        if (null != ctx.internalVariableName()) {
+            return ctx.setExprOrDefault().getText();
+        }
+        if (null != ctx.userVariable()) {
+            return ctx.expr().getText();
+        }
+        if (null != ctx.setSystemVariable()) {
+            return ctx.setExprOrDefault().getText();
+        }
+        return null;
+    }
+    
+    private VariableAssignSegment getVariableAssignSegment(final OptionValueContext ctx) {
         if (null != ctx.optionValueNoOptionType()) {
-            return getVariableAssign(ctx.optionValueNoOptionType());
+            return getVariableAssignSegment(ctx.optionValueNoOptionType());
         }
         VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
         variable.setScope(ctx.optionType().getText());
