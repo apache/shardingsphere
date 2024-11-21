@@ -40,7 +40,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LockClusterContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshDatabaseMetadataContext;
@@ -101,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -140,16 +140,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitStorageUnitDefinition(final StorageUnitDefinitionContext ctx) {
         String user = getIdentifierValue(ctx.user());
-        String password = null == ctx.password() ? "" : getPassword(ctx.password());
+        String password = null == ctx.password() ? "" : new StringLiteralValue(StringUtils.replaceStandardEscapes(ctx.password().getText())).getValue();
         Properties props = getProperties(ctx.propertiesDefinition());
         return null == ctx.urlSource()
                 ? new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()),
                         getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props)
                 : new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
-    }
-    
-    private String getPassword(final PasswordContext ctx) {
-        return null == ctx ? null : StringUtils.replaceStandardEscapes(ctx.getText());
     }
     
     @Override
