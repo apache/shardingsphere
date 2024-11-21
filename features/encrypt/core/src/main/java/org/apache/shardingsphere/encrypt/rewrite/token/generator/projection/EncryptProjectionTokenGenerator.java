@@ -204,10 +204,10 @@ public final class EncryptProjectionTokenGenerator {
     
     private Collection<Projection> generateProjections(final EncryptColumn encryptColumn, final ColumnProjection columnProjection,
                                                        final SubqueryType subqueryType, final boolean newAddedColumn) {
-        if (null == subqueryType || SubqueryType.PROJECTION == subqueryType || SubqueryType.WITH == subqueryType) {
+        if (null == subqueryType || SubqueryType.PROJECTION == subqueryType) {
             return Collections.singleton(generateProjection(encryptColumn, columnProjection));
         }
-        if (SubqueryType.TABLE == subqueryType || SubqueryType.JOIN == subqueryType) {
+        if (SubqueryType.TABLE == subqueryType || SubqueryType.JOIN == subqueryType || SubqueryType.WITH == subqueryType) {
             return generateProjectionsInTableSegmentSubquery(encryptColumn, columnProjection, newAddedColumn);
         }
         if (SubqueryType.PREDICATE == subqueryType) {
