@@ -86,11 +86,9 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
             variableAssigns.add(variableAssignSegment);
         }
         if (null != ctx.encoding()) {
-            VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
-            variableAssignSegment.setVariable(new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "client_encoding"));
-            String value = ctx.encoding().getText();
-            variableAssignSegment.setAssignValue(value);
-            variableAssigns.add(variableAssignSegment);
+            VariableSegment variable = new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "client_encoding");
+            VariableAssignSegment variableAssign = new VariableAssignSegment(ctx.encoding().start.getStartIndex(), ctx.encoding().stop.getStopIndex(), variable, ctx.encoding().getText());
+            variableAssigns.add(variableAssign);
         }
         result.getVariableAssigns().addAll(variableAssigns);
         return result;
@@ -98,17 +96,18 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitConfigurationParameterClause(final ConfigurationParameterClauseContext ctx) {
-        VariableAssignSegment result = new VariableAssignSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setVariable(new VariableSegment(ctx.varName().start.getStartIndex(), ctx.varName().stop.getStopIndex(), ctx.varName().getText()));
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+                new VariableSegment(ctx.varName().start.getStartIndex(), ctx.varName().stop.getStopIndex(), ctx.varName().getText()), getAssignValue(ctx));
+    }
+    
+    private String getAssignValue(final ConfigurationParameterClauseContext ctx) {
         if (null != ctx.varList()) {
-            result.setAssignValue(ctx.varList().getText());
+            return ctx.varList().getText();
         }
         if (null != ctx.DEFAULT()) {
-            result.setAssignValue(ctx.DEFAULT().getText());
+            return ctx.DEFAULT().getText();
         }
-        return result;
+        return null;
     }
     
     @Override
