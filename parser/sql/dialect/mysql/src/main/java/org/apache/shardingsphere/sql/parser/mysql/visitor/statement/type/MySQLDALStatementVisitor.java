@@ -934,9 +934,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     }
     
     private VariableAssignSegment getVariableAssign(final OptionValueNoOptionTypeContext ctx) {
-        VariableAssignSegment result = new VariableAssignSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
+        VariableAssignSegment result = new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.NAMES()) {
             // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
             result.setVariable(new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "character_set_client"));
