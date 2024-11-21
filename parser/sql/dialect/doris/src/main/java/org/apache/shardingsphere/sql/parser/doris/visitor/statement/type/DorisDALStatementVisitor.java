@@ -920,6 +920,15 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         return result;
     }
     
+    private VariableAssignSegment getVariableAssignSegment(final OptionValueContext ctx) {
+        if (null != ctx.optionValueNoOptionType()) {
+            return getVariableAssignSegment(ctx.optionValueNoOptionType());
+        }
+        VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
+        variable.setScope(ctx.optionType().getText());
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
+    }
+    
     private VariableAssignSegment getVariableAssignSegment(final OptionValueListContext ctx) {
         VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
         variable.setScope(ctx.optionType().getText());
@@ -965,15 +974,6 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             return ctx.setExprOrDefault().getText();
         }
         return null;
-    }
-    
-    private VariableAssignSegment getVariableAssignSegment(final OptionValueContext ctx) {
-        if (null != ctx.optionValueNoOptionType()) {
-            return getVariableAssignSegment(ctx.optionValueNoOptionType());
-        }
-        VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
-        variable.setScope(ctx.optionType().getText());
-        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
     
     @Override
