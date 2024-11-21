@@ -693,11 +693,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"add","parameterTypes":["long"] }, {"name":"sum","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask"},
-  "name":"java.util.concurrent.atomic.Striped64$Cell",
-  "fields":[{"name":"value"}]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
   "name":"java.util.function.DoubleFunction",
   "queryAllPublicMethods":true
@@ -2075,7 +2070,7 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener$$Lambda/0x00007f401fb273a8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener$$Lambda/0x00007f47f3b26e30"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.MetaDataChangedSubscriber"
 },
 {

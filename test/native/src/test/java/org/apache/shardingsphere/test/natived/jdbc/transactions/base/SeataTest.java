@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.natived.jdbc.transactions.base;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.HttpStatus;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,10 +28,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.jdbc.ContainerDatabaseDriver;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,12 +64,15 @@ class SeataTest {
     
     @AfterAll
     static void afterAll() {
+        ContainerDatabaseDriver.killContainers();
         System.clearProperty(SERVICE_DEFAULT_GROUP_LIST_KEY);
     }
     
     /**
-     * TODO Just checking `/health` of `7091` port of Seata Server is not enough to indicate that Seata Server is ready.
-     * @throws SQLException An exception that provides information on a database access error or other errors.
+     * TODO Need to investigate why {@link org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager#close()} is not called.
+     *  The manual call {@link org.apache.shardingsphere.mode.manager.ContextManager#close()} is not intuitive.
+     *
+     * @throws SQLException SQL exception
      */
     @Test
     void assertShardingInSeataTransactions() throws SQLException {
@@ -75,6 +81,9 @@ class SeataTest {
         initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
+        try (Connection connection = dataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
     }
     
     private void initEnvironment() throws SQLException {

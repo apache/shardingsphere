@@ -130,6 +130,17 @@ If you add the following statement in your custom `Dockerfile`, it will copy the
 COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
 ```
 
+#### Community Build
+
+Since ShardingSphere 5.5.2, ShardingSphere Agent has released community builds at https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-agent .
+This Docker Image is not part of the ASF distribution, but is provided for convenience.
+
+If you add the following statement in a custom `Dockerfile`, it will copy the ShardingSphere Agent directory to `/shardingsphere-agent/`.
+
+```dockerfile
+COPY --from=ghcr.io/apache/shardingsphere-agent:5.5.2 /usr/agent/ /shardingsphere-agent/
+```
+
 #### Nightly Build
 
 ShardingSphere Agent has a nightly built Docker Image at https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-agent .

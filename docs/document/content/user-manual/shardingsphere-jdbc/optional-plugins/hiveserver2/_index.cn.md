@@ -233,16 +233,6 @@ ShardingSphere 仅针对 HiveServer2 `4.0.1` 进行集成测试。
 HiveServer2 JDBC Driver `4.0.1` 不支持 Hadoop `3.4.1`，
 参考 https://github.com/apache/hive/pull/5500 。
 
-### 数据库连接池限制
-
-由于 `org.apache.hive.jdbc.DatabaseMetaData` 未实现 `java.sql.DatabaseMetaData#getURL()`， 
-ShardingSphere 在`org.apache.shardingsphere.infra.database.DatabaseTypeEngine#getStorageType(javax.sql.DataSource)`处做了模糊处理，
-因此用户暂时仅可通过 `com.zaxxer.hikari.HikariDataSource` 的数据库连接池连接 HiveServer2。
-
-若用户需要通过 `com.alibaba.druid.pool.DruidDataSource` 的数据库连接池连接 HiveServer2，
-用户应当考虑在 Hive 的主分支实现 `java.sql.DatabaseMetaData#getURL()`，
-而不是尝试修改 ShardingSphere 的内部类。
-
 ### SQL 限制
 
 ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `SET` 语句，`CREATE TABLE` 语句和 `TRUNCATE TABLE` 语句。
