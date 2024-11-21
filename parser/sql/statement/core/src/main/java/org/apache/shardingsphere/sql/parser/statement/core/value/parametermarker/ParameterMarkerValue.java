@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.ValueASTNode;
 @Getter
 public final class ParameterMarkerValue implements ValueASTNode<Integer> {
     
-    private final Integer value;
+    private final int value;
     
     private final ParameterMarkerType type;
 }
