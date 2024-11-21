@@ -275,4 +275,8 @@
     <sql-case id="select_bitxor" value="SELECT BITXOR(3,5)" db-types="Doris" />
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
     <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
+    <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
+    <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
+    <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
+    <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
 </sql-cases>

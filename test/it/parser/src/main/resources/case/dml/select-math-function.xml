@@ -162,4 +162,35 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_least">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="LEAST(2, 0)">
+                <expr>
+                    <function start-index="7" stop-index="17" function-name="LEAST" text="LEAST(2, 0)">
+                        <parameter>
+                            <literal-expression start-index="13" stop-index="13" value="2"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="16" stop-index="16" value="0"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ln">
+        <projections start-index="7" stop-index="11">
+            <expression-projection start-index="7" stop-index="11" text="LN(2)">
+                <expr>
+                    <function start-index="7" stop-index="11" function-name="LN" text="LN(2)">
+                        <parameter>
+                            <literal-expression start-index="10" stop-index="10" value="2"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

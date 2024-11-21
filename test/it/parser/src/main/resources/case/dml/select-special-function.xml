@@ -4764,4 +4764,63 @@
             </expression-projection>
         </projections>
     </select>
+  
+    <select sql-case-id="select_lcase_function">
+        <projections start-index="7" stop-index="28">
+            <expression-projection start-index="7" stop-index="28" text="LCASE('QUADRATICALLY')">
+                <expr>
+                    <function start-index="7" stop-index="28" function-name="LCASE" text="LCASE('QUADRATICALLY')">
+                        <parameter>
+                            <literal-expression start-index="13" stop-index="27" value="QUADRATICALLY"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+  
+    <select sql-case-id="select_lower_function">
+        <projections start-index="7" stop-index="28">
+            <expression-projection start-index="7" stop-index="28" text="LOWER('QUADRATICALLY')">
+                <expr>
+                    <function start-index="7" stop-index="28" function-name="LOWER" text="LOWER('QUADRATICALLY')">
+                        <parameter>
+                            <literal-expression start-index="13" stop-index="27" value="QUADRATICALLY"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+  
+    <select sql-case-id="select_length">
+        <projections start-index="7" stop-index="20">
+            <expression-projection start-index="7" stop-index="20" text="LENGTH('TEXT')">
+                <expr>
+                    <function start-index="7" stop-index="20" function-name="LENGTH" text="LENGTH('TEXT')">
+                        <parameter>
+                            <literal-expression start-index="14" stop-index="19" value="TEXT"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+  
+    <select sql-case-id="select_locate">
+        <projections start-index="7" stop-index="31">
+            <expression-projection start-index="7" stop-index="31" text="LOCATE('bar','foobarbar')">
+                <expr>
+                    <function start-index="7" stop-index="31" function-name="LOCATE" text="LOCATE('bar','foobarbar')">
+                        <parameter>
+                            <literal-expression  value="bar" start-index="14" stop-index="18"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression  value="foobarbar" start-index="20" stop-index="30"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
