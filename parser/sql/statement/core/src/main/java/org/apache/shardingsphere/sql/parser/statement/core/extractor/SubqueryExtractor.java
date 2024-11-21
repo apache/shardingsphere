@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.util;
+package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -51,10 +51,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Subquery extract utility class.
+ * Subquery extractor.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SubqueryExtractUtils {
+public final class SubqueryExtractor {
     
     /**
      * Get subquery segment from SelectStatement.

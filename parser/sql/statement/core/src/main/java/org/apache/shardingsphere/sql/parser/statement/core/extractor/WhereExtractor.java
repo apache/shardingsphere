@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.util;
+package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,10 +31,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Where extract utility class.
+ * Where extractor.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class WhereExtractUtils {
+public final class WhereExtractor {
     
     /**
      * Get join where segment from SelectStatement.
@@ -43,7 +43,7 @@ public final class WhereExtractUtils {
      * @return join where segment collection
      */
     public static Collection<WhereSegment> getJoinWhereSegments(final SelectStatement selectStatement) {
-        return selectStatement.getFrom().map(WhereExtractUtils::getJoinWhereSegments).orElseGet(Collections::emptyList);
+        return selectStatement.getFrom().map(WhereExtractor::getJoinWhereSegments).orElseGet(Collections::emptyList);
     }
     
     private static Collection<WhereSegment> getJoinWhereSegments(final TableSegment tableSegment) {
@@ -71,7 +71,7 @@ public final class WhereExtractUtils {
      */
     public static Collection<WhereSegment> getSubqueryWhereSegments(final SelectStatement selectStatement) {
         Collection<WhereSegment> result = new LinkedList<>();
-        for (SubquerySegment each : SubqueryExtractUtils.getSubquerySegments(selectStatement, false)) {
+        for (SubquerySegment each : SubqueryExtractor.getSubquerySegments(selectStatement, false)) {
             each.getSelect().getWhere().ifPresent(result::add);
             result.addAll(getJoinWhereSegments(each.getSelect()));
         }

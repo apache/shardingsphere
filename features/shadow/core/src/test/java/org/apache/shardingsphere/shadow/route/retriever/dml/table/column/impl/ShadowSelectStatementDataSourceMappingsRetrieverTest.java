@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ColumnExtractUtils.class, ShadowExtractor.class})
+@StaticMockSettings({ColumnExtractor.class, ShadowExtractor.class})
 class ShadowSelectStatementDataSourceMappingsRetrieverTest {
     
     @Test
@@ -55,7 +55,7 @@ class ShadowSelectStatementDataSourceMappingsRetrieverTest {
         when(sqlStatementContext.getWhereSegments()).thenReturn(Arrays.asList(whereSegment, mock(WhereSegment.class, RETURNS_DEEP_STUBS)));
         ColumnSegment columnSegment = mock(ColumnSegment.class);
         when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("foo"))));
-        when(ColumnExtractUtils.extract(expressionSegment)).thenReturn(Collections.singleton(columnSegment));
+        when(ColumnExtractor.extract(expressionSegment)).thenReturn(Collections.singleton(columnSegment));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         when(sqlStatementContext.getTablesContext().getTableAliasNameMap().get("foo")).thenReturn("foo_tbl");
@@ -74,7 +74,7 @@ class ShadowSelectStatementDataSourceMappingsRetrieverTest {
         when(sqlStatementContext.getWhereSegments()).thenReturn(Arrays.asList(whereSegment, mock(WhereSegment.class, RETURNS_DEEP_STUBS)));
         ColumnSegment columnSegment = mock(ColumnSegment.class);
         when(columnSegment.getOwner()).thenReturn(Optional.empty());
-        when(ColumnExtractUtils.extract(expressionSegment)).thenReturn(Collections.singleton(columnSegment));
+        when(ColumnExtractor.extract(expressionSegment)).thenReturn(Collections.singleton(columnSegment));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         ShadowSelectStatementDataSourceMappingsRetriever retriever = new ShadowSelectStatementDataSourceMappingsRetriever(sqlStatementContext, Collections.singletonList("foo"));
