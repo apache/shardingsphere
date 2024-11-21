@@ -79,6 +79,7 @@ import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.AlterTransmissionRuleStatement;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -250,7 +251,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
         }
         return result;
     }

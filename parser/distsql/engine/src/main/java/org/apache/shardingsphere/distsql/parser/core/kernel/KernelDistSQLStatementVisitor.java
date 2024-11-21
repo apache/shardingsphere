@@ -95,6 +95,7 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Unregi
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
@@ -203,7 +204,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
         }
         return result;
     }
@@ -318,7 +319,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
         }
         return result;
     }
