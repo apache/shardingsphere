@@ -582,7 +582,7 @@ public final class ShardingRule implements DatabaseRule {
         Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size(), 1F);
         Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size(), 1F);
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractor.getAndPredicates(each.getExpr());
+            Collection<AndPredicate> andPredicates = ExpressionExtractor.extractAndPredicates(each.getExpr());
             if (andPredicates.size() > 1) {
                 return false;
             }

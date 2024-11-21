@@ -74,7 +74,7 @@ public final class RowNumberPaginationContextEngine {
         if (!rowNumberAlias.isPresent()) {
             return new PaginationContext(null, null, params);
         }
-        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractor.getAndPredicates(each).stream()).collect(Collectors.toList());
+        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractor.extractAndPredicates(each).stream()).collect(Collectors.toList());
         Collection<BinaryOperationExpression> rowNumberPredicates = getRowNumberPredicates(andPredicates, rowNumberAlias.get());
         return rowNumberPredicates.isEmpty() ? new PaginationContext(null, null, params) : createPaginationWithRowNumber(rowNumberPredicates, params);
     }

@@ -61,7 +61,7 @@ public final class ShadowDeleteStatementDataSourceMappingsRetriever extends Shad
     private Collection<ExpressionSegment> getWhereSegment() {
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (WhereSegment each : sqlStatementContext.getWhereSegments()) {
-            for (AndPredicate predicate : ExpressionExtractor.getAndPredicates(each.getExpr())) {
+            for (AndPredicate predicate : ExpressionExtractor.extractAndPredicates(each.getExpr())) {
                 result.addAll(predicate.getPredicates());
             }
         }

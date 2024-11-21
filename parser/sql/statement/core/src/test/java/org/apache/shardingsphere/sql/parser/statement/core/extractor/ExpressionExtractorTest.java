@@ -49,7 +49,7 @@ class ExpressionExtractorTest {
         ColumnSegment left = new ColumnSegment(26, 33, new IdentifierValue("order_id"));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(35, 35, 0);
         ExpressionSegment expressionSegment = new BinaryOperationExpression(26, 35, left, right, "=", "order_id=?");
-        Collection<AndPredicate> actual = ExpressionExtractor.getAndPredicates(expressionSegment);
+        Collection<AndPredicate> actual = ExpressionExtractor.extractAndPredicates(expressionSegment);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getPredicates().iterator().next(), is(expressionSegment));
     }
@@ -63,7 +63,7 @@ class ExpressionExtractorTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(54, 54, 1);
         ExpressionSegment rightExpressionSegment = new BinaryOperationExpression(28, 39, columnSegment2, parameterMarkerExpressionSegment2, "=", "status=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(28, 54, leftExpressionSegment, rightExpressionSegment, "AND", "order_id=? AND status=?");
-        Collection<AndPredicate> actual = ExpressionExtractor.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractor.extractAndPredicates(expression);
         assertThat(actual.size(), is(1));
         AndPredicate andPredicate = actual.iterator().next();
         assertThat(andPredicate.getPredicates().size(), is(2));
@@ -81,7 +81,7 @@ class ExpressionExtractorTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(47, 47, 1);
         ExpressionSegment expressionSegment2 = new BinaryOperationExpression(40, 47, columnSegment2, parameterMarkerExpressionSegment2, "=", "status=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(28, 47, expressionSegment1, expressionSegment2, "OR", "status=? OR status=?");
-        Collection<AndPredicate> actual = ExpressionExtractor.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractor.extractAndPredicates(expression);
         assertThat(actual.size(), is(2));
         Iterator<AndPredicate> andPredicateIterator = actual.iterator();
         AndPredicate andPredicate1 = andPredicateIterator.next();
@@ -101,7 +101,7 @@ class ExpressionExtractorTest {
         ExpressionSegment subRightExpression = new BinaryOperationExpression(0, 0, countColumn, countParameterExpression, "=", "count=?");
         BinaryOperationExpression rightExpression = new BinaryOperationExpression(0, 0, subLeftExpression, subRightExpression, "AND", "status=? AND count=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, leftExpression, rightExpression, "OR", "status=? OR status=? AND count=?");
-        Collection<AndPredicate> actual = ExpressionExtractor.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractor.extractAndPredicates(expression);
         assertThat(actual.size(), is(2));
         Iterator<AndPredicate> iterator = actual.iterator();
         AndPredicate andPredicate1 = iterator.next();

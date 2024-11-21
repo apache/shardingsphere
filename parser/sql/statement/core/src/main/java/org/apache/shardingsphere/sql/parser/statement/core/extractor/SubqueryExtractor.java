@@ -57,13 +57,13 @@ import java.util.List;
 public final class SubqueryExtractor {
     
     /**
-     * Get subquery segment from SelectStatement.
+     * Extract subquery segment from select statement.
      *
-     * @param selectStatement SelectStatement
+     * @param selectStatement select statement
      * @param needRecursive need recursive
-     * @return subquery segment collection
+     * @return subquery segments
      */
-    public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement, final boolean needRecursive) {
+    public static Collection<SubquerySegment> extractSubquerySegments(final SelectStatement selectStatement, final boolean needRecursive) {
         List<SubquerySegment> result = new LinkedList<>();
         SubqueryType parentSubqueryType = selectStatement.getSubqueryType().orElse(null);
         extractSubquerySegments(result, selectStatement, needRecursive, parentSubqueryType);
