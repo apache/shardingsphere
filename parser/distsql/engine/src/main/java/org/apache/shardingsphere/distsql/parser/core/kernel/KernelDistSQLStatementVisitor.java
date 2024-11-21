@@ -305,7 +305,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitImportMetaData(final ImportMetaDataContext ctx) {
-        return new ImportMetaDataStatement(null == ctx.metaDataValue() ? null : getQuotedContent(ctx.metaDataValue()), getIdentifierValue(ctx.filePath()));
+        return new ImportMetaDataStatement(null == ctx.metaDataValue() ? null : QuoteCharacter.unwrapText(ctx.metaDataValue().getText()), getIdentifierValue(ctx.filePath()));
     }
     
     @Override
@@ -336,10 +336,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     private String getIdentifierValue(final ParseTree context) {
         return null == context ? null : new IdentifierValue(context.getText()).getValue();
-    }
-    
-    private String getQuotedContent(final ParseTree context) {
-        return IdentifierValue.getQuotedContent(context.getText());
     }
     
     @Override
