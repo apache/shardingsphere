@@ -59,10 +59,11 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private DatabaseConnector databaseConnector;
+    private final DatabaseConnector databaseConnector;
     
-    @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket packet, final ConnectionSession connectionSession) {
+        this.packet = packet;
+        this.connectionSession = connectionSession;
         String databaseName = connectionSession.getCurrentDatabaseName();
         String sql = String.format(SQL, packet.getTable(), databaseName);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
@@ -73,8 +74,12 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
         databaseConnector = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
+    }
+    
+    @Override
+    public Collection<DatabasePacket> execute() throws SQLException {
         databaseConnector.execute();
-        return createColumnDefinition41Packets(databaseName);
+        return createColumnDefinition41Packets(connectionSession.getCurrentDatabaseName());
     }
     
     private Collection<DatabasePacket> createColumnDefinition41Packets(final String databaseName) throws SQLException {

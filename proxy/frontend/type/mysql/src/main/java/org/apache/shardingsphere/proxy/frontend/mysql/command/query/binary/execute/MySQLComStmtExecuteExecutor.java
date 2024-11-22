@@ -63,13 +63,14 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private ProxyBackendHandler proxyBackendHandler;
+    private final ProxyBackendHandler proxyBackendHandler;
     
     @Getter
     private ResponseType responseType;
     
-    @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
+    public MySQLComStmtExecuteExecutor(final MySQLComStmtExecutePacket packet, final ConnectionSession connectionSession) throws SQLException {
+        this.packet = packet;
+        this.connectionSession = connectionSession;
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet(), preparedStatement.getParameterColumnDefinitionFlags());
         preparedStatement.getLongData().forEach(params::set);
@@ -81,8 +82,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
         connectionSession.setQueryContext(queryContext);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "MySQL"), queryContext, connectionSession, true);
-        ResponseHeader responseHeader = proxyBackendHandler.execute();
-        return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
     }
     
     private MySQLServerPreparedStatement updateAndGetPreparedStatement() {
@@ -92,6 +91,12 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             result.getParameterTypes().addAll(packet.getNewParameterTypes());
         }
         return result;
+    }
+    
+    @Override
+    public Collection<DatabasePacket> execute() throws SQLException {
+        ResponseHeader responseHeader = proxyBackendHandler.execute();
+        return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
     }
     
     private Collection<DatabasePacket> processQuery(final QueryResponseHeader queryResponseHeader) {
