@@ -96,12 +96,6 @@ services:
       SERVICE_NAME: hiveserver2
     ports:
       - "10000:10000"
-    expose:
-      - 10002
-    volumes:
-      - warehouse:/opt/hive/data/warehouse
-volumes:
-  warehouse:
 ```
 
 ### Create business tables
@@ -115,7 +109,9 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-In DBeaver Community, connect to HiveServer2 using the `jdbcUrl` of `jdbc:hive2://localhost:10000/`, leaving `username` and `password` blank.
+In DBeaver Community, use the `jdbcUrl` of `jdbc:hive2://localhost:10000/` to connect to HiveServer2, 
+and leave `username` and `password` blank.
+Execute the following SQL,
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -202,6 +198,211 @@ public class ExampleUtils {
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.execute("DELETE FROM t_order WHERE order_id=1");
+        }
+    }
+}
+```
+
+## External Integration
+
+### Connect to HiveServer2 with ZooKeeper Service Discovery enabled
+
+`jdbcUrl` in the ShardingSphere configuration file can be configured to connect to HiveServer2 with ZooKeeper Service Discovery enabled.
+
+For discussion, assume that there is the following Docker Compose file to start HiveServer2 with ZooKeeper Service Discovery.
+
+```yaml
+name: test-1
+services:
+  zookeeper:
+    image: zookeeper:3.9.3-jre-17
+    ports:
+      - "2181:2181"
+  apache-hive-1:
+    image: apache/hive:4.0.1
+    depends_on:
+      - zookeeper
+    environment:
+      SERVICE_NAME: hiveserver2
+      SERVICE_OPTS: >-
+        -Dhive.server2.support.dynamic.service.discovery=true
+        -Dhive.zookeeper.quorum=zookeeper:2181
+        -Dhive.server2.thrift.bind.host=0.0.0.0
+        -Dhive.server2.thrift.port=10000
+    ports:
+      - "10000:10000"
+```
+
+In DBeaver Community,
+use `jdbcUrl` of `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` to connect to HiveServer2,
+leave `username` and `password` blank.
+Execute the following SQL,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+CREATE DATABASE demo_ds_0;
+CREATE DATABASE demo_ds_1;
+CREATE DATABASE demo_ds_2;
+```
+
+Use `jdbcUrl` of `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`,
+`jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
+and `jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
+to connect to HiveServer2 and execute the following SQL,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+set iceberg.mr.schema.auto.conversion=true;
+
+CREATE TABLE IF NOT EXISTS t_order
+(
+    order_id   BIGINT,
+    order_type INT,
+    user_id    INT    NOT NULL,
+    address_id BIGINT NOT NULL,
+    status     VARCHAR(50),
+    PRIMARY KEY (order_id) disable novalidate
+) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
+
+TRUNCATE TABLE t_order;
+```
+
+After the business project introduces the dependencies involved in the `prerequisites`,
+write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
+
+```yaml
+dataSources:
+    ds_0:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+    ds_1:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+    ds_2:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+rules:
+- !SHARDING
+    tables:
+      t_order:
+        actualDataNodes:
+        keyGenerateStrategy:
+          column: order_id
+          keyGeneratorName: snowflake
+    defaultDatabaseStrategy:
+      standard:
+        shardingColumn: user_id
+        shardingAlgorithmName: inline
+    shardingAlgorithms:
+      inline:
+        type: INLINE
+        props:
+          algorithm-expression: ds_${user_id % 2}
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+```
+
+At this point, you can create the ShardingSphere data source normally and execute logical SQL on the virtual data source.
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+public class ExampleUtils {
+    void test() throws SQLException {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml");
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        try (HikariDataSource dataSource = new HikariDataSource(config);
+             Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.execute("DELETE FROM t_order WHERE order_id=1");
+        }
+    }
+}
+```
+
+At this point, if the HiveServer2 example with the `service` named `apache-hive-1` is manually destroyed,
+start the second HiveServer2 instance through another Docker Compose file with the following content,
+
+```yaml
+name: test-2
+services:
+  apache-hive-2:
+    image: apache/hive:4.0.1
+    environment:
+      SERVICE_NAME: hiveserver2
+      SERVICE_OPTS: >-
+        -Dhive.server2.support.dynamic.service.discovery=true
+        -Dhive.zookeeper.quorum=zookeeper:2181
+        -Dhive.server2.thrift.bind.host=0.0.0.0
+        -Dhive.server2.thrift.port=20000
+    ports:
+      - "20000:20000"
+    networks:
+      - test-1_default
+networks:
+  test-1_default:
+    external: true
+```
+
+In DBeaver Community,
+use `jdbcUrl` of `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` to connect to HiveServer2,
+leave `username` and `password` blank.
+Execute the following SQL,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+CREATE DATABASE demo_ds_0;
+CREATE DATABASE demo_ds_1;
+CREATE DATABASE demo_ds_2;
+```
+
+Use `jdbcUrl` of `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`,
+`jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
+and `jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
+to connect to HiveServer2 and execute the following SQL,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+set iceberg.mr.schema.auto.conversion=true;
+
+CREATE TABLE IF NOT EXISTS t_order
+(
+    order_id   BIGINT,
+    order_type INT,
+    user_id    INT    NOT NULL,
+    address_id BIGINT NOT NULL,
+    status     VARCHAR(50),
+    PRIMARY KEY (order_id) disable novalidate
+) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
+
+TRUNCATE TABLE t_order;
+```
+
+At this point,
+the old ShardingSphere JDBC DataSource can still be switched to the HiveServer2 instance named `apache-hive-2` in the `service` to execute the logical SQL without recreating the JDBC DataSource.
+
+```java
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+public class ExampleUtils {
+    void test(HikariDataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
@@ -305,4 +506,4 @@ For more discussion, please visit https://cwiki.apache.org/confluence/display/Hi
 
 When users use DBeaver Community to connect to HiveServer2, they need to ensure that the DBeaver Community version is greater than or equal to `24.2.5`.
 
-See https://github.com/dbeaver/dbeaver/pull/35059.
+See https://github.com/dbeaver/dbeaver/pull/35059 .

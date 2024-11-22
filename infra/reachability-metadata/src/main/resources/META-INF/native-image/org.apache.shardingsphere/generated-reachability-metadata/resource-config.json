@@ -229,7 +229,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine"},
@@ -1961,7 +1961,10 @@
     "pattern":"\\Qtest-native/yaml/jdbc/databases/clickhouse.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive/simple.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive/zookeeper-sde.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
     "pattern":"\\Qtest-native/yaml/jdbc/databases/mysql.yaml\\E"

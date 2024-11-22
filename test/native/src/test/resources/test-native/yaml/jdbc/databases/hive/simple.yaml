@@ -24,15 +24,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.hive.ds0.jdbc-url::}
+    jdbcUrl: $${fixture.test-native.yaml.database.hive.simple.ds0.jdbc-url::}
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.hive.ds1.jdbc-url::}
+    jdbcUrl: $${fixture.test-native.yaml.database.hive.simple.ds1.jdbc-url::}
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.apache.hive.jdbc.HiveDriver
-    jdbcUrl: $${fixture.test-native.yaml.database.hive.ds2.jdbc-url::}
+    jdbcUrl: $${fixture.test-native.yaml.database.hive.simple.ds2.jdbc-url::}
 
 rules:
 - !SHARDING
