@@ -237,16 +237,6 @@ Users can only use Hadoop `3.3.6` as the underlying Hadoop dependency of HiveSer
 HiveServer2 JDBC Driver `4.0.1` does not support Hadoop `3.4.1`,
 Reference https://github.com/apache/hive/pull/5500.
 
-### Database connection pool limitation
-
-Since `org.apache.hive.jdbc.DatabaseMetaData` does not implement `java.sql.DatabaseMetaData#getURL()`,
-ShardingSphere has done fuzzy processing at `org.apache.shardingsphere.infra.database.DatabaseTypeEngine#getStorageType(javax.sql.DataSource)`,
-so users can only connect to HiveServer2 through the database connection pool of `com.zaxxer.hikari.HikariDataSource` for the time being.
-
-If users need to connect to HiveServer2 through the database connection pool of `com.alibaba.druid.pool.DruidDataSource`,
-users should consider implementing `java.sql.DatabaseMetaData#getURL()` in the main branch of Hive,
-rather than trying to modify the internal classes of ShardingSphere.
-
 ### SQL Limitations
 
 ShardingSphere JDBC DataSource does not yet support executing HiveServer2's `SET` statement, 
