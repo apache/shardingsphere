@@ -42,7 +42,6 @@ import java.util.Collection;
  * SQL rewrite context decorator for sharding.
  */
 @HighFrequencyInvocation
-@Setter
 public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {
     
     @Override
