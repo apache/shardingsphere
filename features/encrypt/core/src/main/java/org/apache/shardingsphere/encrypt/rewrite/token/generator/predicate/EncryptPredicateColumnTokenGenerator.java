@@ -61,7 +61,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private Map<String, ShardingSphereSchema> schemas;
     
@@ -87,7 +87,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : columnSegments) {
             String tableName = columnExpressionTableNames.getOrDefault(each.getExpression(), "");
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+            Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getIdentifier().getValue())) {
                 result.add(buildSubstitutableColumnNameToken(encryptTable.get().getEncryptColumn(each.getIdentifier().getValue()), each, whereSegments, databaseType));
             }

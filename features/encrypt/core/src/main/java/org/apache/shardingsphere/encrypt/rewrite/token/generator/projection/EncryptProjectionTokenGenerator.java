@@ -64,7 +64,7 @@ public final class EncryptProjectionTokenGenerator {
     
     private final List<SQLToken> previousSQLTokens;
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private final DatabaseType databaseType;
     
@@ -103,7 +103,7 @@ public final class EncryptProjectionTokenGenerator {
         ColumnProjection columnProjection = buildColumnProjection(columnSegment);
         String columnName = columnProjection.getOriginalColumn().getValue();
         boolean newAddedColumn = existColumnNames.add(columnProjection.getOriginalTable().getValue() + "." + columnName);
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnProjection.getOriginalTable().getValue());
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnProjection.getOriginalTable().getValue());
         if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnName) && isNeedRewrite(selectStatementContext, columnSegment)) {
             EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
             Collection<Projection> projections = generateProjections(encryptColumn, columnProjection, selectStatementContext.getSubqueryType(), newAddedColumn);
@@ -122,7 +122,7 @@ public final class EncryptProjectionTokenGenerator {
             if (each instanceof ColumnProjection) {
                 ColumnProjection columnProjection = (ColumnProjection) each;
                 boolean newAddedColumn = existColumnNames.add(columnProjection.getOriginalTable().getValue() + "." + columnProjection.getOriginalColumn().getValue());
-                Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnProjection.getOriginalTable().getValue());
+                Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnProjection.getOriginalTable().getValue());
                 if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnProjection.getOriginalColumn().getValue()) && isNeedRewrite(selectStatementContext, subqueryType)) {
                     EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnProjection.getOriginalColumn().getValue());
                     projections.addAll(generateProjections(encryptColumn, columnProjection, subqueryType, newAddedColumn));

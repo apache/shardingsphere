@@ -43,7 +43,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptCreateTableTokenGenerator implements CollectionSQLTokenGenerator<CreateTableStatementContext> {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -54,7 +54,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     public Collection<SQLToken> generateSQLTokens(final CreateTableStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        EncryptTable encryptTable = rule.getEncryptTable(tableName);
         List<ColumnDefinitionSegment> columns = new ArrayList<>(sqlStatementContext.getSqlStatement().getColumnDefinitions());
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
