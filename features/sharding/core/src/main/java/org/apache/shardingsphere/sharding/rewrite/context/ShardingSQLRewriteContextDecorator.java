@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.SQLTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewritersRegistry;
@@ -53,7 +54,8 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
             Collection<ParameterRewriter> parameterRewriters = new ParameterRewritersBuilder(sqlStatementContext).build(new ShardingParameterRewritersRegistry(routeContext));
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
-        sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(rule, routeContext, sqlStatementContext).getSQLTokenGenerators());
+        SQLTokenGeneratorBuilder sqlTokenGeneratorBuilder = new ShardingTokenGenerateBuilder(rule, routeContext, sqlStatementContext);
+        sqlRewriteContext.addSQLTokenGenerators(sqlTokenGeneratorBuilder.getSQLTokenGenerators());
     }
     
     private boolean isAlterOrDropIndexStatement(final SQLStatementContext sqlStatementContext) {
