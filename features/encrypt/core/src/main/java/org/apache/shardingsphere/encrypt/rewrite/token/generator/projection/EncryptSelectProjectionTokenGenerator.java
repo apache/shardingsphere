@@ -40,7 +40,7 @@ import java.util.List;
 @Setter
 public final class EncryptSelectProjectionTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, PreviousSQLTokensAware, DatabaseTypeAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private List<SQLToken> previousSQLTokens;
     
@@ -53,6 +53,6 @@ public final class EncryptSelectProjectionTokenGenerator implements CollectionSQ
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SelectStatementContext sqlStatementContext) {
-        return new EncryptProjectionTokenGenerator(previousSQLTokens, encryptRule, databaseType).generateSQLTokens(sqlStatementContext);
+        return new EncryptProjectionTokenGenerator(previousSQLTokens, rule, databaseType).generateSQLTokens(sqlStatementContext);
     }
 }

@@ -50,7 +50,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptIndexColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, DatabaseTypeAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private DatabaseType databaseType;
     
@@ -63,7 +63,7 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().iterator().next();
-        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        EncryptTable encryptTable = rule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : ((IndexAvailable) sqlStatementContext).getIndexColumns()) {
             if (encryptTable.isEncryptColumn(each.getIdentifier().getValue())) {

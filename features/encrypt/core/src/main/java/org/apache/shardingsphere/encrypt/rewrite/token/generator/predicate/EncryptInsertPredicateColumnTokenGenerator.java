@@ -39,7 +39,7 @@ import java.util.Map;
 @Setter
 public final class EncryptInsertPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private Map<String, ShardingSphereSchema> schemas;
     
@@ -53,7 +53,7 @@ public final class EncryptInsertPredicateColumnTokenGenerator implements Collect
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        EncryptPredicateColumnTokenGenerator generator = new EncryptPredicateColumnTokenGenerator(encryptRule);
+        EncryptPredicateColumnTokenGenerator generator = new EncryptPredicateColumnTokenGenerator(rule);
         generator.setSchemas(schemas);
         generator.setDefaultSchema(defaultSchema);
         return generator.generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext());

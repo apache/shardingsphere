@@ -59,7 +59,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptInsertValuesTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, PreviousSQLTokensAware, DatabaseNameAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private List<SQLToken> previousSQLTokens;
     
@@ -91,7 +91,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     private void processPreviousSQLToken(final InsertStatementContext insertStatementContext, final InsertValuesToken insertValuesToken) {
         String tableName = insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
-        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        EncryptTable encryptTable = rule.getEncryptTable(tableName);
         int count = 0;
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
@@ -105,7 +105,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         String tableName = insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        EncryptTable encryptTable = rule.getEncryptTable(tableName);
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
@@ -142,7 +142,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             if (!encryptTable.isEncryptColumn(columnName)) {
                 continue;
             }
-            EncryptColumn encryptColumn = encryptRule.getEncryptTable(tableName).getEncryptColumn(columnName);
+            EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(columnName);
             int columnIndex = useDefaultInsertColumnsToken
                     .map(optional -> ((UseDefaultInsertColumnsToken) optional).getColumns().indexOf(columnName)).orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
             Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);

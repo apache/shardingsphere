@@ -46,7 +46,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptAssignmentTokenGenerator {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private final String databaseName;
     
@@ -61,7 +61,7 @@ public final class EncryptAssignmentTokenGenerator {
      */
     public Collection<SQLToken> generateSQLTokens(final TablesContext tablesContext, final SetAssignmentSegment setAssignmentSegment) {
         String tableName = tablesContext.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
-        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        EncryptTable encryptTable = rule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
         String schemaName = tablesContext.getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName));
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
