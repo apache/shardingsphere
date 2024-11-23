@@ -243,7 +243,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         for (int i = 0; i < dropSQLTokens.size(); i++) {
             SQLToken token = dropSQLTokens.get(i);
             if (token instanceof RemoveToken) {
-                result.add(0 == i ? token : new RemoveToken(lastStartIndex, ((RemoveToken) token).getStopIndex()));
+                result.add(0 == i ? token : new RemoveToken(lastStartIndex, token.getStopIndex()));
             } else {
                 EncryptAlterTableToken encryptAlterTableToken = (EncryptAlterTableToken) token;
                 dropColumns.add(encryptAlterTableToken.getColumnName());
