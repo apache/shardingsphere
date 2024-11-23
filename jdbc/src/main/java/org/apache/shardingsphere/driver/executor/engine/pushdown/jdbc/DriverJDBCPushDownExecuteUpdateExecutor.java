@@ -41,6 +41,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.firebird.FirebirdStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -106,6 +109,9 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
                     .newInstance(database, executionContext.getQueryContext().getSqlStatementContext().getSqlStatement(), updateCallback);
             List<Integer> updateCounts = jdbcExecutor.execute(executionGroupContext, callback);
             if (MetaDataRefreshEngine.isRefreshMetaDataRequired(executionContext.getQueryContext().getSqlStatementContext())) {
+                if (isNeedImplicitCommit(executionContext.getQueryContext().getSqlStatementContext().getSqlStatement())) {
+                    connection.commit();
+                }
                 new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, props)
                         .refresh(executionContext.getQueryContext().getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
             }
@@ -121,6 +127,10 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
             result.add(each.getStorageResource());
         }
         return result;
+    }
+    
+    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
+        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && sqlStatement instanceof FirebirdStatement;
     }
     
     private Collection<List<Object>> getParameterSets(final ExecutionGroup<JDBCExecutionUnit> executionGroup) {
