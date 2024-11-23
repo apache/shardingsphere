@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.context;
 
-import lombok.Setter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
@@ -42,7 +41,6 @@ import java.util.Collection;
  * SQL rewrite context decorator for sharding.
  */
 @HighFrequencyInvocation
-@Setter
 public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {
     
     @Override
