@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
@@ -148,9 +149,9 @@ public final class EncryptProjectionTokenGenerator {
         SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
         if (sqlStatement.getWithSegment().isPresent() && !(sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof SubqueryTableSegment)
                 && columnSegment.getColumn().getOwner().isPresent()) {
-            if (columnSegment.getStopIndex() < sqlStatement.getWithSegment().get().getStartIndex() || columnSegment.getStartIndex() > sqlStatement.getWithSegment().get().getStopIndex()) {
-                Set<String> withTableAlias =
-                        sqlStatement.getWithSegment().get().getCommonTableExpressions().stream().map(each -> each.getAliasSegment().getIdentifier().getValue()).collect(Collectors.toSet());
+            WithSegment withSegment = sqlStatement.getWithSegment().get();
+            if (columnSegment.getStopIndex() < withSegment.getStartIndex() || columnSegment.getStartIndex() > withSegment.getStopIndex()) {
+                Set<String> withTableAlias = withSegment.getCommonTableExpressions().stream().map(each -> each.getAliasSegment().getIdentifier().getValue()).collect(Collectors.toSet());
                 return !withTableAlias.contains(columnSegment.getColumn().getOwner().get().getIdentifier().getValue());
             }
         }
