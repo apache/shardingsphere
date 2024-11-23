@@ -136,8 +136,10 @@ public final class DatabaseTypeEngine {
                     return DatabaseTypeFactory.get(connectedUrl);
                 }
                 throw new SQLWrapperException(sqlFeatureNotSupportedException);
-            } catch (final SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
-                throw new RuntimeException(exception);
+            } catch (final SQLException ex) {
+                throw new SQLWrapperException(ex);
+            } catch (final ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+                throw new SQLWrapperException(new SQLException(ex));
             }
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
