@@ -141,7 +141,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(database.containsSchema("public")).thenReturn(true);
         when(database.getSchema("public").containsTable("t")).thenReturn(true);
-        when(database.getSchema("public").getTable("t").getColumnValues()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false),
+        when(database.getSchema("public").getTable("t").getAllColumns()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, false)));
         when(result.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);

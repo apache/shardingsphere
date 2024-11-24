@@ -77,7 +77,7 @@ public final class TableRowDataPersistService {
      */
     public ShardingSphereTableData load(final String databaseName, final String schemaName, final String tableName, final ShardingSphereTable table) {
         ShardingSphereTableData result = new ShardingSphereTableData(tableName);
-        YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getColumnValues()));
+        YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getAllColumns()));
         for (String each : repository.getChildrenKeys(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName))) {
             String yamlRow = repository.query(ShardingSphereDataNode.getTableRowPath(databaseName, schemaName, tableName, each));
             if (!Strings.isNullOrEmpty(yamlRow)) {

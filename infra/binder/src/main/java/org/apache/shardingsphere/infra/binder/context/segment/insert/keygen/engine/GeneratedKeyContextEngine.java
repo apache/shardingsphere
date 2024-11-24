@@ -62,7 +62,7 @@ public final class GeneratedKeyContextEngine {
         if (!schema.containsTable(tableName)) {
             return Optional.empty();
         }
-        for (ShardingSphereColumn each : schema.getTable(tableName).getColumnValues()) {
+        for (ShardingSphereColumn each : schema.getTable(tableName).getAllColumns()) {
             if (each.isGenerated()) {
                 return Optional.of(each.getName());
             }
@@ -111,7 +111,6 @@ public final class GeneratedKeyContextEngine {
     
     private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
-        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnNamesAndIndexes(tableName).get(generateKeyColumnName)
-                : insertColumnNamesAndIndexes.get(generateKeyColumnName);
+        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnAndIndexMap(tableName).get(generateKeyColumnName) : insertColumnNamesAndIndexes.get(generateKeyColumnName);
     }
 }

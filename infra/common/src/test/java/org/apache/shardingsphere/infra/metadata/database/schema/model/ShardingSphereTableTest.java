@@ -43,12 +43,12 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void assertGetColumnValues() {
+    void assertGetAllColumns() {
         ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col_1", Types.INTEGER, true, true, false, true, false, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("foo_col_2", Types.INTEGER, false, true, false, true, false, false);
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
-        assertThat(shardingSphereTable.getColumnValues(), hasItems(column1, column2));
-        assertThat(shardingSphereTable.getColumnValues(), hasSize(2));
+        assertThat(shardingSphereTable.getAllColumns(), hasItems(column1, column2));
+        assertThat(shardingSphereTable.getAllColumns(), hasSize(2));
     }
     
     @Test

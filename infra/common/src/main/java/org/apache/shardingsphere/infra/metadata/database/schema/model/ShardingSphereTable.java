@@ -44,17 +44,17 @@ public final class ShardingSphereTable {
     @Getter(AccessLevel.NONE)
     private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereColumn> columns;
     
-    private final Map<String, ShardingSphereIndex> indexes;
-    
-    private final Map<String, ShardingSphereConstraint> constraints;
-    
     private final List<String> columnNames = new ArrayList<>();
+    
+    private final List<String> primaryKeyColumns = new ArrayList<>();
     
     private final List<String> visibleColumns = new ArrayList<>();
     
-    private final Map<String, Integer> visibleColumnsAndIndexMap = new CaseInsensitiveMap<>();
+    private final Map<String, Integer> visibleColumnAndIndexMap = new CaseInsensitiveMap<>();
     
-    private final List<String> primaryKeyColumns = new ArrayList<>();
+    private final Map<String, ShardingSphereIndex> indexes;
+    
+    private final Map<String, ShardingSphereConstraint> constraints;
     
     private final TableType type;
     
@@ -87,7 +87,7 @@ public final class ShardingSphereTable {
             }
             if (each.isVisible()) {
                 visibleColumns.add(each.getName());
-                visibleColumnsAndIndexMap.put(each.getName(), index++);
+                visibleColumnAndIndexMap.put(each.getName(), index++);
             }
         }
         return result;
@@ -110,21 +110,21 @@ public final class ShardingSphereTable {
     }
     
     /**
-     * Get column meta data via column name.
+     * Get column.
      *
      * @param columnName column name
-     * @return column meta data
+     * @return column
      */
     public ShardingSphereColumn getColumn(final String columnName) {
         return columns.get(new ShardingSphereMetaDataIdentifier(columnName));
     }
     
     /**
-     * Get column meta data list.
+     * Get all columns.
      *
-     * @return column meta data list
+     * @return columns
      */
-    public Collection<ShardingSphereColumn> getColumnValues() {
+    public Collection<ShardingSphereColumn> getAllColumns() {
         return columns.values();
     }
     
@@ -139,16 +139,16 @@ public final class ShardingSphereTable {
     }
     
     /**
-     * Put index meta data.
+     * Put index.
      *
-     * @param index index meta data
+     * @param index index
      */
     public void putIndex(final ShardingSphereIndex index) {
         indexes.put(index.getName(), index);
     }
     
     /**
-     * Remove index meta data via index name.
+     * Remove index.
      *
      * @param indexName index name
      */
@@ -157,38 +157,38 @@ public final class ShardingSphereTable {
     }
     
     /**
-     * Get index meta data via index name.
+     * Get index.
      *
      * @param indexName index name
-     * @return index meta data
+     * @return index
      */
     public ShardingSphereIndex getIndex(final String indexName) {
         return indexes.get(indexName);
     }
     
     /**
-     * Get index meta data collection.
+     * Get indexes.
      *
-     * @return index meta data collection
+     * @return indexes
      */
     public Collection<ShardingSphereIndex> getIndexValues() {
         return indexes.values();
     }
     
     /**
-     * Judge whether contains index or not.
+     * Judge whether contains index.
      *
      * @param indexName index name
-     * @return whether contains index or not
+     * @return contains index or not
      */
     public boolean containsIndex(final String indexName) {
         return null != indexName && indexes.containsKey(indexName);
     }
     
     /**
-     * Get constraint meta data collection.
+     * Get constraint.
      *
-     * @return constraint meta data collection
+     * @return constraint
      */
     public Collection<ShardingSphereConstraint> getConstraintValues() {
         return constraints.values();

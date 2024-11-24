@@ -65,7 +65,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumnValues(), table.getIndexValues(), table.getConstraintValues(), table.getType());
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getIndexValues(), table.getConstraintValues(), table.getType());
         result.getColumnNames().addAll(table.getColumnNames());
         result.getVisibleColumns().addAll(table.getVisibleColumns());
         result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
