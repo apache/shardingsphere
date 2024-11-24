@@ -28,7 +28,7 @@ public interface DatabaseDialectMetaDataIdentifierHandler extends DatabaseTypedS
     
     /**
      * Whether identifier is case-sensitive.
-     * 
+     *
      * @return is case-sensitive or insensitive
      */
     boolean isCaseSensitive();

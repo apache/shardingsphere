@@ -56,7 +56,7 @@ public final class ShardingSphereMetaDataIdentifier {
     
     /**
      * Get identifier value.
-     * 
+     *
      * @return identifier value
      */
     public String getValue() {
