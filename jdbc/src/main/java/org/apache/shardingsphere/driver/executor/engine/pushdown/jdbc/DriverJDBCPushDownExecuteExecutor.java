@@ -27,6 +27,8 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -43,10 +45,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.FirebirdStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -104,7 +104,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
             processEngine.executeSQL(executionGroupContext, executionContext.getQueryContext());
             List<Boolean> results = jdbcExecutor.execute(executionGroupContext,
                     new ExecuteCallbackFactory(prepareEngine.getType()).newInstance(database, executeCallback, executionContext.getSqlStatementContext().getSqlStatement()));
-            if (isNeedImplicitCommit(executionContext.getQueryContext().getSqlStatementContext().getSqlStatement())) {
+            if (isNeedImplicitCommit(executionContext.getQueryContext().getSqlStatementContext())) {
                 connection.commit();
             }
             if (MetaDataRefreshEngine.isRefreshMetaDataRequired(executionContext.getSqlStatementContext())) {
@@ -125,16 +125,17 @@ public final class DriverJDBCPushDownExecuteExecutor {
         return result;
     }
     
-    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
-        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && sqlStatement instanceof FirebirdStatement;
-    }
-    
     private Collection<List<Object>> getParameterSets(final ExecutionGroup<JDBCExecutionUnit> executionGroup) {
         Collection<List<Object>> result = new LinkedList<>();
         for (JDBCExecutionUnit each : executionGroup.getInputs()) {
             result.add(each.getExecutionUnit().getSqlUnit().getParameters());
         }
         return result;
+    }
+    
+    private boolean isNeedImplicitCommit(final SQLStatementContext sqlStatementContext) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatementContext.getDatabaseType());
+        return !connection.getAutoCommit() && sqlStatementContext.getSqlStatement() instanceof DDLStatement && dialectDatabaseMetaData.isDDLNeedImplicitCommit();
     }
     
     /**
