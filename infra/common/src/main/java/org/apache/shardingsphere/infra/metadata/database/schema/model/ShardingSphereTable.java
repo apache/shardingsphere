@@ -44,17 +44,17 @@ public final class ShardingSphereTable {
     @Getter(AccessLevel.NONE)
     private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereColumn> columns;
     
-    private final Map<String, ShardingSphereIndex> indexes;
-    
-    private final Map<String, ShardingSphereConstraint> constraints;
-    
     private final List<String> columnNames = new ArrayList<>();
+    
+    private final List<String> primaryKeyColumns = new ArrayList<>();
     
     private final List<String> visibleColumns = new ArrayList<>();
     
     private final Map<String, Integer> visibleColumnAndIndexMap = new CaseInsensitiveMap<>();
     
-    private final List<String> primaryKeyColumns = new ArrayList<>();
+    private final Map<String, ShardingSphereIndex> indexes;
+    
+    private final Map<String, ShardingSphereConstraint> constraints;
     
     private final TableType type;
     
