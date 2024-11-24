@@ -43,7 +43,10 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.firebird.FirebirdStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -101,6 +104,9 @@ public final class DriverJDBCPushDownExecuteExecutor {
             processEngine.executeSQL(executionGroupContext, executionContext.getQueryContext());
             List<Boolean> results = jdbcExecutor.execute(executionGroupContext,
                     new ExecuteCallbackFactory(prepareEngine.getType()).newInstance(database, executeCallback, executionContext.getSqlStatementContext().getSqlStatement()));
+            if (isNeedImplicitCommit(executionContext.getQueryContext().getSqlStatementContext().getSqlStatement())) {
+                connection.commit();
+            }
             if (MetaDataRefreshEngine.isRefreshMetaDataRequired(executionContext.getSqlStatementContext())) {
                 new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps())
                         .refresh(executionContext.getQueryContext().getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
@@ -117,6 +123,10 @@ public final class DriverJDBCPushDownExecuteExecutor {
             result.add(each.getStorageResource());
         }
         return result;
+    }
+    
+    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
+        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && sqlStatement instanceof FirebirdStatement;
     }
     
     private Collection<List<Object>> getParameterSets(final ExecutionGroup<JDBCExecutionUnit> executionGroup) {

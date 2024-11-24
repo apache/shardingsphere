@@ -51,4 +51,17 @@
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_plsql_block" />
+    <create-procedure sql-case-id="create_procedure_with_insert_into_values">
+        <procedure-name name="T522_PROC" />
+        <sql-statements>
+            <sql-statement start-index="41" stop-index="85" statement-class-simple-name="FirebirdInsertStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_declare_and_cursor_for_in_select_and_open">
+        <procedure-name name="F865_PROC" />
+        <sql-statements>
+            <sql-statement start-index="53" stop-index="146" statement-class-simple-name="FirebirdDeclareCursorStatement" />
+            <sql-statement start-index="152" stop-index="169" statement-class-simple-name="FirebirdOpenCursorStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>

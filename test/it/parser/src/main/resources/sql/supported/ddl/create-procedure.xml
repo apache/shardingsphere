@@ -47,4 +47,6 @@
     <sql-case id="create_procedure_with_cursor_definition" value="CREATE OR REPLACE EDITIONABLE PROCEDURE my_proc AS cursor cursor1 is select distinct a from tbl; var1 varchar2(500); var2 varchar2(500); BEGIN INSERT INTO t VALUES (var1, var2); END;" db-types="Oracle" />
     <sql-case id="create_procedure_with_collection_type_definition" value="CREATE OR REPLACE EDITIONABLE PROCEDURE my_proc AS TYPE my_type is table of my_table.id%TYPE; BEGIN INSERT INTO t VALUES (var1, var2); END;" db-types="Oracle" />
     <sql-case id="create_plsql_block" value="DECLARE warehouse NUMBER := 1;   ground    NUMBER := 1;   insured   NUMBER := 1;   result    NUMBER; BEGIN   SELECT BIN_TO_NUM(warehouse, ground, insured) INTO result FROM DUAL;   UPDATE orders SET order_status = result WHERE order_id = 2441; END;" db-types="Oracle" />
+    <sql-case id="create_procedure_with_insert_into_values" value="create procedure T522_PROC (i int =10) as begin insert into T522 (ROW_INT) values (:i); end" db-types="Firebird"/>
+    <sql-case id="create_procedure_with_declare_and_cursor_for_in_select_and_open" value="CREATE PROCEDURE F865_PROC (offset_value INT, page_size INT) as DECLARE catalog_page CURSOR FOR (SELECT * FROM company ORDER BY namecompany OFFSET :offset_value ROWS FETCH NEXT :page_size ROWS ONLY); BEGIN OPEN catalog_page; END" db-types="Firebird"/>
 </sql-cases>

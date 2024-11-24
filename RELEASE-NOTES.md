@@ -4,6 +4,8 @@
 
 ### New Features
 
+1. Kernel: Add firebird sql parser module and database type [#33773](https://github.com/apache/shardingsphere/pull/33773)
+
 ### Enhancements
 
 1. Kernel: Add arguments not null check when creating RouteUnit - [#33382](https://github.com/apache/shardingsphere/pull/33382)
