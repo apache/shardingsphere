@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,10 +51,10 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     }
     
     private ShardingSphereSchema prepareSchema() {
-        ShardingSphereTable table = new ShardingSphereTable();
-        table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false));
-        table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false));
-        table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false));
+        ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(
+                new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
+                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema result = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME);
         result.getTables().put("user", table);
         return result;
