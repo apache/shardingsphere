@@ -101,3 +101,7 @@ public class ExampleUtils {
     }
 }
 ```
+
+`org.testcontainers.jdbc.ContainerDatabaseDriver#killContainers()`
+将立刻销毁所有由 `org.testcontainers.jdbc.ContainerDatabaseDriver` 创建的 Docker Container。
+默认情况下，通过 Junit 5 创建的单元测试是串行执行的，因此这一般不会造成问题。

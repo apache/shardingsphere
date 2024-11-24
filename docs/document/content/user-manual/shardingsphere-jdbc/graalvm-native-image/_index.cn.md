@@ -264,6 +264,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 原则上，ShardingSphere 的 GraalVM Native Image 集成不希望使用 classifier 为 `all` 的 `com.clickhouse:clickhouse-jdbc`，
 因为 Uber Jar 会导致采集重复的 GraalVM Reachability Metadata。
 可能的配置例子如下，
+
 ```xml
 <project>
     <dependencies>
@@ -286,8 +287,6 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
     </dependencies>
 </project>
 ```
-
-ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务和 Seata AT 模式事务，更多讨论位于 https://github.com/ClickHouse/clickhouse-docs/issues/2300 。
 
 7. 受 https://github.com/grpc/grpc-java/issues/10601 影响，用户如果在项目中引入了 `org.apache.hive:hive-jdbc`，
 则需要在项目的 classpath 的 `META-INF/native-image/io.grpc/grpc-netty-shaded` 文件夹下创建包含如下内容的文件 `native-image.properties`，
@@ -401,10 +400,16 @@ cd ./shardingsphere/
    "resources":{
       "includes":[{
          "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\QcustomPath/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml\\E"
+         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml\\E"
       }, {
          "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\QcustomPath/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/\\E"
+         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/\\E"
+      }, {
+         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
+         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/features/sharding//global.yaml\\E"
+      }, {
+         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
+         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/features/sharding/\\E"
       }]},
    "bundles":[]
 }

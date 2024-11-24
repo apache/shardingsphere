@@ -41,7 +41,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 /**
  * Cannot use testcontainers-java style jdbcURL for Clickhouse Server due to unresolved
@@ -84,7 +83,7 @@ class ClickHouseTest {
         jdbcUrlPrefix = "jdbc:ch://localhost:" + CONTAINER.getMappedPort(8123) + "/";
         DataSource dataSource = createDataSource();
         testShardingService = new TestShardingService(dataSource);
-        assertDoesNotThrow(() -> testShardingService.processSuccessInClickHouse());
+        testShardingService.processSuccessInClickHouse();
     }
     
     /**
