@@ -203,13 +203,13 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Get visible column names and indexes via table.
+     * Get visible column name and indexe map.
      *
      * @param tableName table name
-     * @return visible column names and indexes
+     * @return visible column name and index map
      */
-    public Map<String, Integer> getVisibleColumnNamesAndIndexes(final String tableName) {
-        return containsTable(tableName) ? getTable(tableName).getVisibleColumnsAndIndexMap() : Collections.emptyMap();
+    public Map<String, Integer> getVisibleColumnAndIndexMap(final String tableName) {
+        return containsTable(tableName) ? getTable(tableName).getVisibleColumnAndIndexMap() : Collections.emptyMap();
     }
     
     /**
