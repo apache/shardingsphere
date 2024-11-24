@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereMetaDataIdentifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +41,8 @@ public final class ShardingSphereTable {
     
     private final String name;
     
-    private final Map<String, ShardingSphereColumn> columns;
+    @Getter(AccessLevel.NONE)
+    private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereColumn> columns;
     
     private final Map<String, ShardingSphereIndex> indexes;
     
@@ -77,11 +80,11 @@ public final class ShardingSphereTable {
         this.type = type;
     }
     
-    private Map<String, ShardingSphereColumn> createColumns(final Collection<ShardingSphereColumn> columns) {
-        Map<String, ShardingSphereColumn> result = new CaseInsensitiveMap<>(columns.size(), 1F);
+    private Map<ShardingSphereMetaDataIdentifier, ShardingSphereColumn> createColumns(final Collection<ShardingSphereColumn> columns) {
+        Map<ShardingSphereMetaDataIdentifier, ShardingSphereColumn> result = new CaseInsensitiveMap<>(columns.size(), 1F);
         int index = 0;
         for (ShardingSphereColumn each : columns) {
-            result.put(each.getName(), each);
+            result.put(new ShardingSphereMetaDataIdentifier(each.getName()), each);
             columnNames.add(each.getName());
             if (each.isPrimaryKey()) {
                 primaryKeyColumns.add(each.getName());
@@ -116,7 +119,7 @@ public final class ShardingSphereTable {
      * @param column column meta data
      */
     public void putColumn(final ShardingSphereColumn column) {
-        columns.put(column.getName(), column);
+        columns.put(new ShardingSphereMetaDataIdentifier(column.getName()), column);
     }
     
     /**
@@ -126,13 +129,13 @@ public final class ShardingSphereTable {
      * @return column meta data
      */
     public ShardingSphereColumn getColumn(final String columnName) {
-        return columns.get(columnName);
+        return columns.get(new ShardingSphereMetaDataIdentifier(columnName));
     }
     
     /**
-     * Get column meta data collection.
+     * Get column meta data list.
      *
-     * @return column meta data collection
+     * @return column meta data list
      */
     public Collection<ShardingSphereColumn> getColumnValues() {
         return columns.values();
@@ -145,7 +148,7 @@ public final class ShardingSphereTable {
      * @return whether contains column or not
      */
     public boolean containsColumn(final String columnName) {
-        return null != columnName && columns.containsKey(columnName);
+        return null != columnName && columns.containsKey(new ShardingSphereMetaDataIdentifier(columnName));
     }
     
     /**
