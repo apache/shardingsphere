@@ -244,6 +244,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
+  "allPublicMethods": true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

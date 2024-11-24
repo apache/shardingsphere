@@ -164,5 +164,32 @@
   "condition":{"typeReachable":"org.testcontainers.junit.jupiter.Testcontainers"},
   "name":"org.testcontainers.junit.jupiter.Testcontainers",
   "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl"},
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl$NetworkingConfig",
+  "allDeclaredFields": true,
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors": true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
+  "name":"com.github.dockerjava.api.model.Network",
+  "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
+  "name":"com.github.dockerjava.api.model.Network$Ipam",
+  "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
+  "name":"com.github.dockerjava.api.model.Network$Ipam$Config",
+  "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
+  "name":"com.github.dockerjava.api.model.Network$ContainerNetworkConfig",
+  "allDeclaredMethods": true
 }
 ]

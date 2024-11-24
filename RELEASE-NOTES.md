@@ -23,6 +23,7 @@
 1. DistSQL: Check inline expression when create sharding table rule with inline sharding algorithm - [#33735](https://github.com/apache/shardingsphere/pull/33735)
 1. Infra: Support setting `hive_conf_list`, `hive_var_list` and `sess_var_list` for jdbcURL when connecting to HiveServer2 - [#33749](https://github.com/apache/shardingsphere/pull/33749)
 1. Infra: Support connecting to HiveServer2 through database connection pools other than HikariCP - [#33762](https://github.com/apache/shardingsphere/pull/33762)
+1. Proxy Native: Support connecting to HiveServer2 with ZooKeeper Service Discovery enabled in GraalVM Native Image - [#33768](https://github.com/apache/shardingsphere/pull/33768)
 
 ### Bug Fixes
 

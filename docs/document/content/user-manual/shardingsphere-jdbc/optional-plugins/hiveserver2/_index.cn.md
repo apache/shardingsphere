@@ -94,12 +94,6 @@ services:
       SERVICE_NAME: hiveserver2
     ports:
       - "10000:10000"
-    expose:
-      - 10002
-    volumes:
-      - warehouse:/opt/hive/data/warehouse
-volumes:
-  warehouse:
 ```
 
 ### 创建业务表
@@ -113,7 +107,8 @@ sudo snap install dbeaver-ce
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内使用 `jdbc:hive2://localhost:10000/` 的 `jdbcUrl` 连接至 HiveServer2，`username` 和 `password` 留空。
+在 DBeaver Community 内，使用 `jdbc:hive2://localhost:10000/` 的 `jdbcUrl` 连接至 HiveServer2，`username` 和 `password` 留空。
+执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -199,6 +194,210 @@ public class ExampleUtils {
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.execute("DELETE FROM t_order WHERE order_id=1");
+        }
+    }
+}
+```
+
+## 外部集成
+
+### 连接至开启 ZooKeeper Service Discovery 的 HiveServer2
+
+ShardingSphere 配置文件中的 `jdbcUrl` 可配置连接至开启 ZooKeeper Service Discovery 的 HiveServer2。
+
+引入讨论，假设存在如下 Docker Compose 文件来启动开启 ZooKeeper Service Discovery 的 HiveServer2。
+
+```yaml
+name: test-1
+services:
+  zookeeper:
+    image: zookeeper:3.9.3-jre-17
+    ports:
+      - "2181:2181"
+  apache-hive-1:
+    image: apache/hive:4.0.1
+    depends_on:
+      - zookeeper
+    environment:
+      SERVICE_NAME: hiveserver2
+      SERVICE_OPTS: >-
+        -Dhive.server2.support.dynamic.service.discovery=true
+        -Dhive.zookeeper.quorum=zookeeper:2181
+        -Dhive.server2.thrift.bind.host=0.0.0.0
+        -Dhive.server2.thrift.port=10000
+    ports:
+      - "10000:10000"
+```
+
+在 DBeaver Community 内，
+使用 `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 的 `jdbcUrl` 连接至 HiveServer2，
+`username` 和 `password` 留空。
+执行如下 SQL，
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+CREATE DATABASE demo_ds_0;
+CREATE DATABASE demo_ds_1;
+CREATE DATABASE demo_ds_2;
+```
+
+分别使用 `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` ，
+`jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 和
+`jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
+的 `jdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+set iceberg.mr.schema.auto.conversion=true;
+
+CREATE TABLE IF NOT EXISTS t_order
+(
+    order_id   BIGINT,
+    order_type INT,
+    user_id    INT    NOT NULL,
+    address_id BIGINT NOT NULL,
+    status     VARCHAR(50),
+    PRIMARY KEY (order_id) disable novalidate
+) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
+
+TRUNCATE TABLE t_order;
+```
+
+在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
+
+```yaml
+dataSources:
+    ds_0:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+    ds_1:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+    ds_2:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        driverClassName: org.apache.hive.jdbc.HiveDriver
+        jdbcUrl: jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+rules:
+- !SHARDING
+    tables:
+      t_order:
+        actualDataNodes:
+        keyGenerateStrategy:
+          column: order_id
+          keyGeneratorName: snowflake
+    defaultDatabaseStrategy:
+      standard:
+        shardingColumn: user_id
+        shardingAlgorithmName: inline
+    shardingAlgorithms:
+      inline:
+        type: INLINE
+        props:
+          algorithm-expression: ds_${user_id % 2}
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+```
+
+此时可正常创建 ShardingSphere 的数据源并在虚拟数据源上执行逻辑 SQL，
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+public class ExampleUtils {
+    void test() throws SQLException {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml");
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        try (HikariDataSource dataSource = new HikariDataSource(config);
+             Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.execute("DELETE FROM t_order WHERE order_id=1");
+        }
+    }
+}
+```
+
+此时，若上文通过 Docker Compose 文件启动的，对于 `service` 名为 `apache-hive-1` 的 HiveServer2 示例被手动销毁，
+通过另一份如下内容的 Docker Compose 文件启动第2个 HiveServer2 实例，
+
+```yaml
+name: test-2
+services:
+  apache-hive-2:
+    image: apache/hive:4.0.1
+    environment:
+      SERVICE_NAME: hiveserver2
+      SERVICE_OPTS: >-
+        -Dhive.server2.support.dynamic.service.discovery=true
+        -Dhive.zookeeper.quorum=zookeeper:2181
+        -Dhive.server2.thrift.bind.host=0.0.0.0
+        -Dhive.server2.thrift.port=20000
+    ports:
+      - "20000:20000"
+    networks:
+      - test-1_default
+networks:
+  test-1_default:
+    external: true
+```
+
+在 DBeaver Community 内，
+使用 `jdbc:hive2://127.0.0.1:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 的 `jdbcUrl` 连接至 HiveServer2，
+`username` 和 `password` 留空。
+执行如下 SQL，
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+CREATE DATABASE demo_ds_0;
+CREATE DATABASE demo_ds_1;
+CREATE DATABASE demo_ds_2;
+```
+
+分别使用 `jdbc:hive2://127.0.0.1:2181/demo_ds_0;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` ，
+`jdbc:hive2://127.0.0.1:2181/demo_ds_1;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2` 和
+`jdbc:hive2://127.0.0.1:2181/demo_ds_2;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
+的 `jdbcUrl` 连接至 HiveServer2 来执行如下 SQL，
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+set iceberg.mr.schema.auto.conversion=true;
+
+CREATE TABLE IF NOT EXISTS t_order
+(
+    order_id   BIGINT,
+    order_type INT,
+    user_id    INT    NOT NULL,
+    address_id BIGINT NOT NULL,
+    status     VARCHAR(50),
+    PRIMARY KEY (order_id) disable novalidate
+) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
+
+TRUNCATE TABLE t_order;
+```
+
+此时，旧的 ShardingSphere JDBC DataSource 仍可在不重新创建 JDBC DataSource 的情况下，
+正常切换到 `service` 名为 `apache-hive-2` 的 HiveServer2 实例执行逻辑 SQL，
+
+```java
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+public class ExampleUtils {
+    void test(HikariDataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
