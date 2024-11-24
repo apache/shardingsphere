@@ -42,6 +42,11 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public boolean isDDLNeedImplicitCommit() {
+        return true;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "Firebird";
     }
