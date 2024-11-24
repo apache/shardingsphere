@@ -62,7 +62,7 @@ public final class GeneratedKeyContextEngine {
         if (!schema.containsTable(tableName)) {
             return Optional.empty();
         }
-        for (ShardingSphereColumn each : schema.getTable(tableName).getColumnValues()) {
+        for (ShardingSphereColumn each : schema.getTable(tableName).getAllColumns()) {
             if (each.isGenerated()) {
                 return Optional.of(each.getName());
             }

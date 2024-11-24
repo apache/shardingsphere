@@ -59,7 +59,7 @@ public final class ShowTableMetaDataExecutor implements DistSQLQueryExecutor<Sho
     private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         ShardingSphereTable table = schema.getTable(tableName);
-        result.addAll(table.getColumnValues().stream().map(each -> buildColumnRow(databaseName, tableName, each)).collect(Collectors.toList()));
+        result.addAll(table.getAllColumns().stream().map(each -> buildColumnRow(databaseName, tableName, each)).collect(Collectors.toList()));
         result.addAll(table.getIndexValues().stream().map(each -> buildIndexRow(databaseName, tableName, each)).collect(Collectors.toList()));
         return result;
     }

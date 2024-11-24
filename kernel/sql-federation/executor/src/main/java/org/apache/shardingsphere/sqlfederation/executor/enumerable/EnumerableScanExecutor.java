@@ -168,7 +168,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new MemoryRowEnumerator(tableData.getRows(), table.getColumnValues(), databaseType);
+                return new MemoryRowEnumerator(tableData.getRows(), table.getAllColumns(), databaseType);
             }
         };
     }

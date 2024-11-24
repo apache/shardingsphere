@@ -42,7 +42,7 @@ public final class ShardingSphereTableDataCollectorUtils {
      */
     public static List<Object> createRowValue(final Map<String, Object> columnValues, final ShardingSphereTable table) {
         List<Object> result = new LinkedList<>();
-        for (ShardingSphereColumn each : table.getColumnValues()) {
+        for (ShardingSphereColumn each : table.getAllColumns()) {
             result.add(columnValues.getOrDefault(each.getName(), mockValue(each.getDataType())));
         }
         return result;
