@@ -209,7 +209,7 @@ public final class ShardingSphereSchema {
      * @return visible column names and indexes
      */
     public Map<String, Integer> getVisibleColumnNamesAndIndexes(final String tableName) {
-        return containsTable(tableName) ? getTable(tableName).getVisibleColumnsAndIndexes() : Collections.emptyMap();
+        return containsTable(tableName) ? getTable(tableName).getVisibleColumnsAndIndexMap() : Collections.emptyMap();
     }
     
     /**

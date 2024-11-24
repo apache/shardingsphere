@@ -52,7 +52,7 @@ public final class ShardingSphereTable {
     
     private final List<String> visibleColumns = new ArrayList<>();
     
-    private final Map<String, Integer> visibleColumnsAndIndexes = new CaseInsensitiveMap<>();
+    private final Map<String, Integer> visibleColumnsAndIndexMap = new CaseInsensitiveMap<>();
     
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
@@ -64,11 +64,7 @@ public final class ShardingSphereTable {
     
     public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
                                final Collection<ShardingSphereIndex> indexes, final Collection<ShardingSphereConstraint> constraints) {
-        this.name = name;
-        this.columns = createColumns(columns);
-        this.indexes = createIndexes(indexes);
-        this.constraints = createConstraints(constraints);
-        type = TableType.TABLE;
+        this(name, columns, indexes, constraints, TableType.TABLE);
     }
     
     public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
@@ -91,7 +87,7 @@ public final class ShardingSphereTable {
             }
             if (each.isVisible()) {
                 visibleColumns.add(each.getName());
-                visibleColumnsAndIndexes.put(each.getName(), index++);
+                visibleColumnsAndIndexMap.put(each.getName(), index++);
             }
         }
         return result;
@@ -111,15 +107,6 @@ public final class ShardingSphereTable {
             result.put(each.getName(), each);
         }
         return result;
-    }
-    
-    /**
-     * Put column meta data.
-     *
-     * @param column column meta data
-     */
-    public void putColumn(final ShardingSphereColumn column) {
-        columns.put(new ShardingSphereMetaDataIdentifier(column.getName()), column);
     }
     
     /**
