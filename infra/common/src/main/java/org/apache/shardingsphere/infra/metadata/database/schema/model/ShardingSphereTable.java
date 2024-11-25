@@ -110,6 +110,16 @@ public final class ShardingSphereTable {
     }
     
     /**
+     * Judge whether contains column.
+     *
+     * @param columnName column name
+     * @return contains column or not
+     */
+    public boolean containsColumn(final String columnName) {
+        return null != columnName && columns.containsKey(new ShardingSphereMetaDataIdentifier(columnName));
+    }
+    
+    /**
      * Get column.
      *
      * @param columnName column name
@@ -126,16 +136,6 @@ public final class ShardingSphereTable {
      */
     public Collection<ShardingSphereColumn> getAllColumns() {
         return columns.values();
-    }
-    
-    /**
-     * Judge whether contains column or not.
-     *
-     * @param columnName column name
-     * @return whether contains column or not
-     */
-    public boolean containsColumn(final String columnName) {
-        return null != columnName && columns.containsKey(new ShardingSphereMetaDataIdentifier(columnName));
     }
     
     /**
