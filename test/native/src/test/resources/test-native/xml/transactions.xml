@@ -18,8 +18,8 @@
     <allow_experimental_transactions>1</allow_experimental_transactions>
     <zookeeper>
         <node index="1">
-            <host>foo</host>
-            <port>2181</port>
+            <host>clickhouse-keeper-01</host>
+            <port>9181</port>
         </node>
     </zookeeper>
 </clickhouse>

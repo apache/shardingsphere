@@ -130,7 +130,7 @@ set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -260,7 +260,7 @@ set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -380,7 +380,7 @@ set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -438,8 +438,9 @@ HiveServer2 JDBC Driver `4.0.1` 不支持 Hadoop `3.4.1`，
 
 ### SQL 限制
 
-ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `SET` 语句，`CREATE TABLE` 语句和 `TRUNCATE TABLE` 语句。
+HiveServer2 并不能保证每一条 `insert` 相关的 DML SQL 都能成功执行，尽管可能没有任何异常被抛出。
 
+ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `set`，`create table`，`truncate table` 和 `drop table` 语句。
 用户应考虑为 ShardingSphere 提交包含单元测试的 PR。
 
 ### 在 ShardingSphere 数据源上使用 DML SQL 语句的前提条件
@@ -462,7 +463,7 @@ set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -480,7 +481,7 @@ set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,

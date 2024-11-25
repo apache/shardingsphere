@@ -33,6 +33,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -57,22 +58,24 @@ class ClickHouseTest {
     private static final Network NETWORK = Network.newNetwork();
     
     @Container
-    private static final GenericContainer<?> ZOOKEEPER_CONTAINER = new GenericContainer<>("zookeeper:3.9.3-jre-17")
+    private static final GenericContainer<?> CLICKHOUSE_KEEPER_CONTAINER = new GenericContainer<>("clickhouse/clickhouse-keeper:24.10.2.80")
+            .withCopyFileToContainer(
+                    MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/keeper_config.xml").toAbsolutePath()),
+                    "/etc/clickhouse-keeper/keeper_config.xml")
             .withNetwork(NETWORK)
-            .withNetworkAliases("foo");
+            .withNetworkAliases("clickhouse-keeper-01");
     
     @Container
     public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.10.2.80")
-            .withCopyFileToContainer(MountableFile.forClasspathResource("test-native/xml/clickhouse-transactions.xml"),
+            .withCopyFileToContainer(
+                    MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/transactions.xml").toAbsolutePath()),
                     "/etc/clickhouse-server/config.d/transactions.xml")
             .withNetwork(NETWORK)
-            .dependsOn(ZOOKEEPER_CONTAINER);
+            .dependsOn(CLICKHOUSE_KEEPER_CONTAINER);
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.clickhouse.";
     
     private String jdbcUrlPrefix;
-    
-    private TestShardingService testShardingService;
     
     @BeforeAll
     static void beforeAll() {
@@ -90,31 +93,15 @@ class ClickHouseTest {
     }
     
     /**
-     * TODO Need to fix `shardingsphere-parser-sql-clickhouse` module to use {@link TestShardingService#cleanEnvironment()}
-     *      after {@link TestShardingService#processSuccessInClickHouse()}.
+     * TODO The {@code shardingsphere-parser-sql-clickhouse} module needs to be fixed to use SQL like `create table`,
+     *  `truncate table` and `drop table`.
      */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:ch://localhost:" + CONTAINER.getMappedPort(8123) + "/";
         DataSource dataSource = createDataSource();
-        testShardingService = new TestShardingService(dataSource);
+        TestShardingService testShardingService = new TestShardingService(dataSource);
         testShardingService.processSuccessInClickHouse();
-    }
-    
-    /**
-     * TODO Need to fix `shardingsphere-parser-sql-clickhouse` module to use `initEnvironment()`
-     * before {@link TestShardingService#processSuccessInClickHouse()}.
-     *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    @SuppressWarnings("unused")
-    private void initEnvironment() throws SQLException {
-        testShardingService.getOrderRepository().createTableIfNotExistsInClickHouse();
-        testShardingService.getOrderItemRepository().createTableIfNotExistsInClickHouse();
-        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
-        testShardingService.getOrderRepository().truncateTable();
-        testShardingService.getOrderItemRepository().truncateTable();
-        testShardingService.getAddressRepository().truncateTable();
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {
@@ -146,6 +133,13 @@ class ClickHouseTest {
         return new HikariDataSource(config);
     }
     
+    /**
+     * ClickHouse does not support `AUTO_INCREMENT`,
+     * refer to <a href="https://github.com/ClickHouse/ClickHouse/issues/56228">ClickHouse/ClickHouse#56228</a> .
+     *
+     * @param databaseName database name
+     * @throws RuntimeException SQL exception
+     */
     private void initTable(final String databaseName) {
         try (
                 Connection connection = openConnection(databaseName);
@@ -156,7 +150,7 @@ class ClickHouseTest {
                     + "    order_type Int32,\n"
                     + "    user_id    Int32 NOT NULL,\n"
                     + "    address_id Int64 NOT NULL,\n"
-                    + "    status     String\n"
+                    + "    status     VARCHAR(50)\n"
                     + ") engine = MergeTree\n"
                     + "      primary key (order_id)\n"
                     + "      order by (order_id)");
@@ -165,8 +159,8 @@ class ClickHouseTest {
                     + "    order_item_id Int64 NOT NULL,\n"
                     + "    order_id      Int64 NOT NULL,\n"
                     + "    user_id       Int32 NOT NULL,\n"
-                    + "    phone         String,\n"
-                    + "    status        String\n"
+                    + "    phone         VARCHAR(50),\n"
+                    + "    status        VARCHAR(50)\n"
                     + ") engine = MergeTree\n"
                     + "      primary key (order_item_id)\n"
                     + "      order by (order_item_id)");

@@ -176,14 +176,14 @@ public final class TestShardingService {
     
     /**
      * Delete data in ClickHouse.
-     * TODO It is necessary to avoid the use of {@code Awaitility.await().pollDelay(Duration.ofSeconds(9L)).until(()->true)}.
+     * TODO It is necessary to avoid the use of {@code Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(()->true)}.
      *  After ClickHouse enables experimental transactions, performance drops significantly.
      *
      * @param orderIds orderId of the insert statement.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void deleteDataInClickHouse(final Collection<Long> orderIds) throws SQLException {
-        Awaitility.await().pollDelay(Duration.ofSeconds(9L)).until(() -> true);
+        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
         long count = 1L;
         for (Long each : orderIds) {
             orderRepository.deleteInClickHouse(each);
