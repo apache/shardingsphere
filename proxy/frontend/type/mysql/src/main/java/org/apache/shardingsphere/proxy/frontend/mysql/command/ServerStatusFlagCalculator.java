@@ -32,16 +32,6 @@ public final class ServerStatusFlagCalculator {
      * Calculate server status flag for specified connection.
      *
      * @param connectionSession connection session
-     * @return server status flag
-     */
-    public static int calculateFor(final ConnectionSession connectionSession) {
-        return calculateFor(connectionSession, true);
-    }
-    
-    /**
-     * Calculate server status flag for specified connection.
-     *
-     * @param connectionSession connection session
      * @param lastPacket last packet
      * @return server status flag
      */

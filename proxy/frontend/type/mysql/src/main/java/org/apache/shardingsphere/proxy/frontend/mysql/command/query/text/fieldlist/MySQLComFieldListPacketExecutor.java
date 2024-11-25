@@ -85,7 +85,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
             result.add(new MySQLColumnDefinition41Packet(
                     characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.VARCHAR, 0, true));
         }
-        result.add(new MySQLEofPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
+        result.add(new MySQLEofPacket(ServerStatusFlagCalculator.calculateFor(connectionSession, true)));
         return result;
     }
     

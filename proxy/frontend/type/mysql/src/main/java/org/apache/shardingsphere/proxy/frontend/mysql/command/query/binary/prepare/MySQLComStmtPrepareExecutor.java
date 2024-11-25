@@ -109,7 +109,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         ShardingSpherePreconditions.checkState(parameterCount <= MAX_PARAMETER_COUNT, TooManyPlaceholdersException::new);
         result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-        int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession);
+        int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession, true);
         if (parameterCount > 0) {
             result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement));
             result.add(new MySQLEofPacket(statusFlags));

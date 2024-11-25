@@ -37,6 +37,7 @@ public final class FirebirdSelectStatement extends SelectStatement implements Fi
      *
      * @return order by segment
      */
+    @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
