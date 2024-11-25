@@ -67,7 +67,7 @@ class ShardingSphereTableTest {
         assertThat(shardingSphereTable.getIndex("foo_idx_1"), is(index1));
         assertThat(shardingSphereTable.getIndex("foo_idx_2"), is(index2));
         assertNull(shardingSphereTable.getIndex("invalid"));
-        assertThat(shardingSphereTable.getIndexValues(), hasSize(2));
+        assertThat(shardingSphereTable.getAllIndexes(), hasSize(2));
     }
     
     @Test
@@ -88,7 +88,7 @@ class ShardingSphereTableTest {
         assertNull(shardingSphereTable.getIndex("foo_idx_1"));
         shardingSphereTable.removeIndex("invalid");
         assertThat(shardingSphereTable.getIndex("foo_idx_2"), is(index2));
-        assertThat(shardingSphereTable.getIndexValues(), hasSize(1));
+        assertThat(shardingSphereTable.getAllIndexes(), hasSize(1));
     }
     
     @Test
@@ -96,8 +96,8 @@ class ShardingSphereTableTest {
         ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1");
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2");
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Arrays.asList(index1, index2), Collections.emptyList());
-        assertThat(shardingSphereTable.getIndexValues(), hasItems(index1, index2));
-        assertThat(shardingSphereTable.getIndexValues(), hasSize(2));
+        assertThat(shardingSphereTable.getAllIndexes(), hasItems(index1, index2));
+        assertThat(shardingSphereTable.getAllIndexes(), hasSize(2));
     }
     
     @Test
@@ -114,8 +114,8 @@ class ShardingSphereTableTest {
     void assertGetConstraints() {
         ShardingSphereConstraint constraint = new ShardingSphereConstraint("foo_tbl_foreign_key", "foo_tbl");
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.singletonList(constraint));
-        assertThat(table.getConstraintValues(), hasItems(constraint));
-        assertThat(table.getConstraintValues(), hasSize(1));
+        assertThat(table.getAllConstraints(), hasItems(constraint));
+        assertThat(table.getAllConstraints(), hasSize(1));
     }
     
     @Test

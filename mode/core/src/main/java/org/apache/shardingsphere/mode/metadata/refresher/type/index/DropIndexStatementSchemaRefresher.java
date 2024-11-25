@@ -66,7 +66,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getIndexValues(), table.getConstraintValues(), table.getType());
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
         result.getColumnNames().addAll(table.getColumnNames());
         result.getVisibleColumns().addAll(table.getVisibleColumns());
         result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
