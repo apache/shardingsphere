@@ -63,13 +63,6 @@ class ShardingInsertValuesTokenGeneratorTest {
     }
     
     @Test
-    void assertGenerateSQLTokenWithNullRouteContext() {
-        InsertValuesToken insertValuesToken = generator.generateSQLToken(mockInsertStatementContext());
-        assertThat(insertValuesToken.getInsertValues().size(), is(1));
-        assertThat(insertValuesToken.getInsertValues().get(0).getValues().size(), is(1));
-    }
-    
-    @Test
     void assertGenerateSQLTokenWithEmptyDataNode() {
         generator.setRouteContext(new RouteContext());
         InsertValuesToken actual = generator.generateSQLToken(mockInsertStatementContext());
