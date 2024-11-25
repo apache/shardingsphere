@@ -18,8 +18,17 @@
 
 <e2e-test-cases>
     <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
+        <assertion parameters="3:int, 3:int, insert:String" expected-data-file="insert_for_order_3.xml" />
+        <assertion parameters="4:int, 4:int, insert:String" expected-data-file="insert_for_order_4.xml" />
+    </test-case>
+
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08') ON DUPLICATE KEY UPDATE status = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="1:int, 1:int, insert:String, test:String" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int, insert:String, test:String" expected-data-file="insert_for_order_2.xml" />
+        <assertion parameters="3:int, 3:int, insert:String, test:String" expected-data-file="insert_for_order_3.xml" />
+        <assertion parameters="4:int, 4:int, insert:String, test:String" expected-data-file="insert_for_order_4.xml" />
     </test-case>
     
     <!--    TODO Fix https://github.com/apache/shardingsphere/issues/23764 -->

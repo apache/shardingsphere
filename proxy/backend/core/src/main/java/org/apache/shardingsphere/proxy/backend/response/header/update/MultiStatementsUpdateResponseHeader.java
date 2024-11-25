@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.constant;
+package org.apache.shardingsphere.proxy.backend.response.header.update;
 
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collection;
 
-class MySQLCapabilityFlagTest {
+/**
+ * Multi statements update response header.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class MultiStatementsUpdateResponseHeader implements ResponseHeader {
     
-    @Test
-    void assertGetValue() {
-        assertThat(MySQLCapabilityFlag.CLIENT_LONG_PASSWORD.getValue(), is(0x00000001));
-    }
-    
-    @Test
-    void assertCalculateHandshakeCapabilityFlagsLower() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
-    }
-    
-    @Test
-    void assertCalculateHandshakeCapabilityFlagsUpper() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0x000f));
-    }
+    private final Collection<UpdateResponseHeader> updateResponseHeaders;
 }

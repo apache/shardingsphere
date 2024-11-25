@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -68,10 +70,23 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
                 result.add(column);
             }
         }
+        insertStatement.getOnDuplicateKeyColumns().ifPresent(optional -> appendOnDuplicateKeyParameterMarkers(optional.getColumns(), table, result));
         return result;
     }
     
     private static List<String> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
         return insertStatement.getColumns().isEmpty() ? table.getColumnNames() : insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+    }
+    
+    private static void appendOnDuplicateKeyParameterMarkers(final Collection<ColumnAssignmentSegment> onDuplicateKeyColumns,
+                                                             final ShardingSphereTable table, final List<ShardingSphereColumn> result) {
+        for (ColumnAssignmentSegment each : onDuplicateKeyColumns) {
+            if (!(each.getValue() instanceof ParameterMarkerExpressionSegment)) {
+                continue;
+            }
+            String columnName = each.getColumns().iterator().next().getIdentifier().getValue();
+            ShardingSphereColumn column = table.getColumn(columnName);
+            result.add(column);
+        }
     }
 }

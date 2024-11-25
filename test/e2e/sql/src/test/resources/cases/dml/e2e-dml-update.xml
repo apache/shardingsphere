@@ -20,6 +20,13 @@
     <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </test-case>
+
+    <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update_batch_1.xml" />
+        <assertion parameters="update:String, 1101:int, 11:int" expected-data-file="update_batch_2.xml" />
+        <assertion parameters="update:String, 2400:int, 24:int" expected-data-file="update_batch_3.xml" />
+        <assertion parameters="update:String, 2800:int, 28:int" expected-data-file="update_batch_4.xml" />
+    </test-case>
     
     <test-case sql="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />

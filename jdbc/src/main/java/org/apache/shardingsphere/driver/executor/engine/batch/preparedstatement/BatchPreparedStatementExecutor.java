@@ -178,7 +178,7 @@ public final class BatchPreparedStatementExecutor {
     
     private void accumulate(final int[] executeResult, final int[] addBatchCounts, final JDBCExecutionUnit executionUnit) {
         for (Entry<Integer, Integer> entry : getJDBCAndActualAddBatchCallTimesMap(executionUnit).entrySet()) {
-            int value = null == executeResult ? 0 : executeResult[entry.getValue()];
+            int value = null == executeResult || 0 == executeResult.length ? 0 : executeResult[entry.getValue()];
             addBatchCounts[entry.getKey()] += value;
         }
     }

@@ -35,9 +35,21 @@ public final class ServerStatusFlagCalculator {
      * @return server status flag
      */
     public static int calculateFor(final ConnectionSession connectionSession) {
+        return calculateFor(connectionSession, true);
+    }
+    
+    /**
+     * Calculate server status flag for specified connection.
+     *
+     * @param connectionSession connection session
+     * @param lastPacket last packet
+     * @return server status flag
+     */
+    public static int calculateFor(final ConnectionSession connectionSession, final boolean lastPacket) {
         int result = 0;
         result |= connectionSession.isAutoCommit() ? MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue() : 0;
         result |= connectionSession.getTransactionStatus().isInTransaction() ? MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue() : 0;
+        result |= lastPacket ? 0 : MySQLStatusFlag.SERVER_MORE_RESULTS_EXISTS.getValue();
         return result;
     }
 }
