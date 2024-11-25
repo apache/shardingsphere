@@ -100,3 +100,7 @@ public class ExampleUtils {
     }
 }
 ```
+
+`org.testcontainers.jdbc.ContainerDatabaseDriver#killContainers()`
+will immediately destroy all Docker Containers created by `org.testcontainers.jdbc.ContainerDatabaseDriver`.
+By default, unit tests created by JUnit 5 are executed serially, so this is generally not a problem.

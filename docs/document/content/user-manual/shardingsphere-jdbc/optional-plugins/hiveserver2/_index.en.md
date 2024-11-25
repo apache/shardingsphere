@@ -77,6 +77,10 @@ The following is an example of a possible configuration,
                 <groupId>com.fasterxml.woodstox</groupId>
                 <artifactId>woodstox-core</artifactId>
             </exclusion>
+            <exclusion>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+            </exclusion>
         </exclusions>
     </dependency>
 </dependencies>
