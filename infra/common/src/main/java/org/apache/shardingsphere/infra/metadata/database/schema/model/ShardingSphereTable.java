@@ -54,8 +54,10 @@ public final class ShardingSphereTable {
     
     private final Map<String, Integer> visibleColumnAndIndexMap = new CaseInsensitiveMap<>();
     
+    @Getter(AccessLevel.NONE)
     private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereIndex> indexes;
     
+    @Getter(AccessLevel.NONE)
     private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereConstraint> constraints;
     
     private final TableType type;
