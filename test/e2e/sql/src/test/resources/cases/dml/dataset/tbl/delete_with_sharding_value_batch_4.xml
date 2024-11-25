@@ -24,7 +24,7 @@
         <column name="remark" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <row data-node="tbl.t_order_1" values="1000, 10, init, 1, test, 2017-08-08" />
+    <row data-node="tbl.t_order_0" values="1000, 10, init, 1, test, 2017-08-08" />
     <row data-node="tbl.t_order_1" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="tbl.t_order_2" values="1002, 10, init, 3, test, 2017-08-08" />
     <row data-node="tbl.t_order_3" values="1003, 10, init, 4, test, 2017-08-08" />
