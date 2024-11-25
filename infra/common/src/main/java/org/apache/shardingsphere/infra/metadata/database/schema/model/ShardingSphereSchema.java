@@ -203,7 +203,7 @@ public final class ShardingSphereSchema {
     
     /**
      * Whether empty schema.
-     * 
+     *
      * @return empty schema or not
      */
     public boolean isEmpty() {
