@@ -155,7 +155,7 @@ public final class ShardingSphereSchema {
      *
      * @param tableName table name
      * @param indexName index name
-     * @return whether contains index name or not
+     * @return contains index name or not
      */
     public boolean containsIndex(final String tableName, final String indexName) {
         return containsTable(tableName) && getTable(tableName).containsIndex(indexName);

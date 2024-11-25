@@ -28,8 +28,10 @@ import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereMetaDat
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere table.
@@ -52,9 +54,9 @@ public final class ShardingSphereTable {
     
     private final Map<String, Integer> visibleColumnAndIndexMap = new CaseInsensitiveMap<>();
     
-    private final Map<String, ShardingSphereIndex> indexes;
+    private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereIndex> indexes;
     
-    private final Map<String, ShardingSphereConstraint> constraints;
+    private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereConstraint> constraints;
     
     private final TableType type;
     
@@ -77,7 +79,7 @@ public final class ShardingSphereTable {
     }
     
     private Map<ShardingSphereMetaDataIdentifier, ShardingSphereColumn> createColumns(final Collection<ShardingSphereColumn> columns) {
-        Map<ShardingSphereMetaDataIdentifier, ShardingSphereColumn> result = new CaseInsensitiveMap<>(columns.size(), 1F);
+        Map<ShardingSphereMetaDataIdentifier, ShardingSphereColumn> result = new LinkedHashMap<>(columns.size(), 1F);
         int index = 0;
         for (ShardingSphereColumn each : columns) {
             result.put(new ShardingSphereMetaDataIdentifier(each.getName()), each);
@@ -93,20 +95,13 @@ public final class ShardingSphereTable {
         return result;
     }
     
-    private Map<String, ShardingSphereIndex> createIndexes(final Collection<ShardingSphereIndex> indexes) {
-        Map<String, ShardingSphereIndex> result = new CaseInsensitiveMap<>(indexes.size(), 1F);
-        for (ShardingSphereIndex each : indexes) {
-            result.put(each.getName(), each);
-        }
-        return result;
+    private Map<ShardingSphereMetaDataIdentifier, ShardingSphereIndex> createIndexes(final Collection<ShardingSphereIndex> indexes) {
+        return indexes.stream().collect(Collectors.toMap(each -> new ShardingSphereMetaDataIdentifier(each.getName()), each -> each, (a, b) -> b, () -> new LinkedHashMap<>(indexes.size(), 1F)));
     }
     
-    private Map<String, ShardingSphereConstraint> createConstraints(final Collection<ShardingSphereConstraint> constraints) {
-        Map<String, ShardingSphereConstraint> result = new CaseInsensitiveMap<>(constraints.size(), 1F);
-        for (ShardingSphereConstraint each : constraints) {
-            result.put(each.getName(), each);
-        }
-        return result;
+    private Map<ShardingSphereMetaDataIdentifier, ShardingSphereConstraint> createConstraints(final Collection<ShardingSphereConstraint> constraints) {
+        return constraints.stream()
+                .collect(Collectors.toMap(each -> new ShardingSphereMetaDataIdentifier(each.getName()), each -> each, (a, b) -> b, () -> new LinkedHashMap<>(constraints.size(), 1F)));
     }
     
     /**
@@ -139,41 +134,13 @@ public final class ShardingSphereTable {
     }
     
     /**
-     * Put index.
-     *
-     * @param index index
-     */
-    public void putIndex(final ShardingSphereIndex index) {
-        indexes.put(index.getName(), index);
-    }
-    
-    /**
-     * Remove index.
-     *
-     * @param indexName index name
-     */
-    public void removeIndex(final String indexName) {
-        indexes.remove(indexName);
-    }
-    
-    /**
      * Judge whether contains index.
      *
      * @param indexName index name
      * @return contains index or not
      */
     public boolean containsIndex(final String indexName) {
-        return null != indexName && indexes.containsKey(indexName);
-    }
-    
-    /**
-     * Get index.
-     *
-     * @param indexName index name
-     * @return index
-     */
-    public ShardingSphereIndex getIndex(final String indexName) {
-        return indexes.get(indexName);
+        return null != indexName && indexes.containsKey(new ShardingSphereMetaDataIdentifier(indexName));
     }
     
     /**
@@ -183,6 +150,24 @@ public final class ShardingSphereTable {
      */
     public Collection<ShardingSphereIndex> getAllIndexes() {
         return indexes.values();
+    }
+    
+    /**
+     * Put index.
+     *
+     * @param index index
+     */
+    public void putIndex(final ShardingSphereIndex index) {
+        indexes.put(new ShardingSphereMetaDataIdentifier(index.getName()), index);
+    }
+    
+    /**
+     * Remove index.
+     *
+     * @param indexName index name
+     */
+    public void removeIndex(final String indexName) {
+        indexes.remove(new ShardingSphereMetaDataIdentifier(indexName));
     }
     
     /**
