@@ -189,7 +189,7 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - OWASP
     needs: global-environment
-    runs-on: self-hosted-cluster
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -213,7 +213,7 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Jacoco
     needs: global-environment
-    runs-on: self-hosted-cluster
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
