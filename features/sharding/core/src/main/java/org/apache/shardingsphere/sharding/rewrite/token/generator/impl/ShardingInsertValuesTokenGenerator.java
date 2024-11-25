@@ -55,12 +55,10 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
     public InsertValuesToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new ShardingInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        Iterator<Collection<DataNode>> originalDataNodesIterator = null == routeContext || routeContext.getOriginalDataNodes().isEmpty()
-                ? null
-                : routeContext.getOriginalDataNodes().iterator();
+        Iterator<Collection<DataNode>> dataNodesIterator = routeContext.getOriginalDataNodes().isEmpty() ? Collections.emptyIterator() : routeContext.getOriginalDataNodes().iterator();
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
-            Collection<DataNode> dataNodes = null == originalDataNodesIterator ? Collections.emptyList() : originalDataNodesIterator.next();
+            Collection<DataNode> dataNodes = dataNodesIterator.hasNext() ? dataNodesIterator.next() : Collections.emptyList();
             result.getInsertValues().add(new ShardingInsertValue(expressionSegments, dataNodes));
         }
         return result;
