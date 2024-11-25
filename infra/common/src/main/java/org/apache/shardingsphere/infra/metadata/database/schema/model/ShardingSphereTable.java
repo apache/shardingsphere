@@ -151,7 +151,7 @@ public final class ShardingSphereTable {
     public Collection<ShardingSphereIndex> getAllIndexes() {
         return indexes.values();
     }
-    
+     
     /**
      * Put index.
      *
