@@ -80,7 +80,7 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Install Project
-        run: ./mvnw clean install -DskipTests -Djacoco.skip=true -T1C
+        run: ./mvnw clean install -DskipTests -T1C
       - name: Set up JDK 8 for Jacoco
         uses: actions/setup-java@v4
         with:
