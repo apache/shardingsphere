@@ -58,4 +58,10 @@ class ServerStatusFlagCalculatorTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue()));
     }
+    
+    @Test
+    void assertCalculateForWithMultiStatements() {
+        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, false), is(MySQLStatusFlag.SERVER_MORE_RESULTS_EXISTS.getValue()));
+        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, true), is(0));
+    }
 }

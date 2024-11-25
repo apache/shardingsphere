@@ -43,6 +43,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.MultiStatementsUpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
@@ -58,6 +59,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.plugins.MemberAccessor;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
@@ -65,6 +67,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -132,6 +135,28 @@ class MySQLComQueryPacketExecutorTest {
         Collection<DatabasePacket> actualPackets = actual.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), instanceOf(MySQLOKPacket.class));
+    }
+    
+    @Test
+    void assertExecuteMultiInsertOnDuplicateKeyStatements() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        when(connectionSession.getAttributeMap().hasAttr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(true);
+        when(connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).get()).thenReturn(0);
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        when(packet.getSQL()).thenReturn("insert into t (id, v) values(1,1) on duplicate key update v=2;insert into t (id, v) values(2,1) on duplicate key update v=3");
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
+        when(proxyBackendHandler.execute())
+                .thenReturn(new MultiStatementsUpdateResponseHeader(Arrays.asList(new UpdateResponseHeader(mock(SQLStatement.class)), new UpdateResponseHeader(mock(SQLStatement.class)))));
+        Collection<DatabasePacket> actualPackets = actual.execute();
+        assertThat(actualPackets.size(), is(2));
+        Iterator<DatabasePacket> iterator = actualPackets.iterator();
+        assertThat(iterator.next(), instanceOf(MySQLOKPacket.class));
+        assertThat(iterator.next(), instanceOf(MySQLOKPacket.class));
     }
     
     private MetaDataContexts mockMetaDataContexts() {

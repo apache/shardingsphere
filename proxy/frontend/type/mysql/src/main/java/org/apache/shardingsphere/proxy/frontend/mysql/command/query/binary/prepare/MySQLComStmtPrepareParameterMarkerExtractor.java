@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -64,6 +65,16 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
                     continue;
                 }
                 String columnName = columnNamesOfInsert.get(columnIndex);
+                ShardingSphereColumn column = table.getColumn(columnName);
+                result.add(column);
+            }
+        }
+        if (insertStatement.getOnDuplicateKeyColumns().isPresent()) {
+            for (ColumnAssignmentSegment each : insertStatement.getOnDuplicateKeyColumns().get().getColumns()) {
+                if (!(each.getValue() instanceof ParameterMarkerExpressionSegment)) {
+                    continue;
+                }
+                String columnName = each.getColumns().iterator().next().getIdentifier().getValue();
                 ShardingSphereColumn column = table.getColumn(columnName);
                 result.add(column);
             }
