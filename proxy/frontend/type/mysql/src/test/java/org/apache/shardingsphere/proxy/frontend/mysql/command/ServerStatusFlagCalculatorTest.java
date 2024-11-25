@@ -38,25 +38,25 @@ class ServerStatusFlagCalculatorTest {
     @Test
     void assertAutoCommitNotInTransaction() {
         when(connectionSession.isAutoCommit()).thenReturn(true);
-        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, true), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
     void assertAutoCommitInTransaction() {
         when(connectionSession.isAutoCommit()).thenReturn(true);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue() | MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, true), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue() | MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
     void assertNotAutoCommitNotInTransaction() {
-        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(0));
+        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, true), is(0));
     }
     
     @Test
     void assertNotAutoCommitInTransaction() {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue()));
+        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, true), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue()));
     }
     
     @Test
