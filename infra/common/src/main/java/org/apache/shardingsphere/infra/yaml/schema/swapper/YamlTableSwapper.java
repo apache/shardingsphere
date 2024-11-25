@@ -49,8 +49,8 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
         YamlShardingSphereTable result = new YamlShardingSphereTable();
         result.setName(table.getName());
         result.setColumns(swapToYamlColumns(table.getAllColumns()));
-        result.setIndexes(swapToYamlIndexes(table.getIndexValues()));
-        result.setConstraints(swapToYamlConstraints(table.getConstraintValues()));
+        result.setIndexes(swapToYamlIndexes(table.getAllIndexes()));
+        result.setConstraints(swapToYamlConstraints(table.getAllConstraints()));
         result.setType(table.getType());
         return result;
     }

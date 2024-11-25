@@ -157,25 +157,6 @@ public final class ShardingSphereTable {
     }
     
     /**
-     * Get index.
-     *
-     * @param indexName index name
-     * @return index
-     */
-    public ShardingSphereIndex getIndex(final String indexName) {
-        return indexes.get(indexName);
-    }
-    
-    /**
-     * Get indexes.
-     *
-     * @return indexes
-     */
-    public Collection<ShardingSphereIndex> getIndexValues() {
-        return indexes.values();
-    }
-    
-    /**
      * Judge whether contains index.
      *
      * @param indexName index name
@@ -186,11 +167,30 @@ public final class ShardingSphereTable {
     }
     
     /**
-     * Get constraint.
+     * Get index.
+     *
+     * @param indexName index name
+     * @return index
+     */
+    public ShardingSphereIndex getIndex(final String indexName) {
+        return indexes.get(indexName);
+    }
+    
+    /**
+     * Get all indexes.
+     *
+     * @return indexes
+     */
+    public Collection<ShardingSphereIndex> getAllIndexes() {
+        return indexes.values();
+    }
+    
+    /**
+     * Get all constraint.
      *
      * @return constraint
      */
-    public Collection<ShardingSphereConstraint> getConstraintValues() {
+    public Collection<ShardingSphereConstraint> getAllConstraints() {
         return constraints.values();
     }
 }
