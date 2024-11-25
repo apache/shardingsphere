@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -57,7 +58,7 @@ class YamlTableSwapperTest {
     @Test
     void assertSwapToObjectWithEmptySchema() {
         ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile(EMPTY_YAML_FILE), YamlShardingSphereTable.class));
-        ShardingSphereTable expected = new ShardingSphereTable();
+        ShardingSphereTable expected = new ShardingSphereTable("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
         assertThat(actual, deepEqual(expected));
     }
     

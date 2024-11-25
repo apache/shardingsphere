@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereMetaDat
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +60,6 @@ public final class ShardingSphereTable {
     private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereConstraint> constraints;
     
     private final TableType type;
-    
-    public ShardingSphereTable() {
-        this("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
-    }
     
     public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
                                final Collection<ShardingSphereIndex> indexes, final Collection<ShardingSphereConstraint> constraints) {
