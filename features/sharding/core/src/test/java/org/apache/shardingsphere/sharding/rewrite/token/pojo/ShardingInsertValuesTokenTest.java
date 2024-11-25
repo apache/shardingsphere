@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShardingInsertValuesTokenTest {
     
@@ -66,5 +68,13 @@ class ShardingInsertValuesTokenTest {
         result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
         result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
         return result;
+    }
+    
+    @Test
+    void assertToStringWithEmptyInsertValues() {
+        ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        List<ExpressionSegment> values = Collections.emptyList();
+        assertThrows(UnsupportedSQLOperationException.class, () -> result.getInsertValues().add(new ShardingInsertValue(values, dataNodes)));
     }
 }
