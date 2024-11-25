@@ -78,13 +78,6 @@ class ShardingSphereSchemaTest {
     }
     
     @Test
-    void assertContainsColumn() {
-        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
-                new ShardingSphereColumn("col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertTrue(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).containsColumn("tbl", "col"));
-    }
-    
-    @Test
     void assertGetAllColumnNamesWhenContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
                 new ShardingSphereColumn("col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());

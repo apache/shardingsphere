@@ -151,17 +151,6 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Judge whether contains column name.
-     *
-     * @param tableName table name
-     * @param columnName column name
-     * @return contains column name or not
-     */
-    public boolean containsColumn(final String tableName, final String columnName) {
-        return containsTable(tableName) && getTable(tableName).containsColumn(columnName);
-    }
-    
-    /**
      * Judge whether contains index name.
      *
      * @param tableName table name
