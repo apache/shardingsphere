@@ -15,11 +15,6 @@
 # limitations under the License.
 #
 
-mode:
-  type: Standalone
-  repository:
-    type: JDBC
-
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -82,6 +77,3 @@ sqlParser:
   parseTreeCache:
     initialCapacity: 2000
     maximumSize: 65535
-
-props:
-  sql-show: false

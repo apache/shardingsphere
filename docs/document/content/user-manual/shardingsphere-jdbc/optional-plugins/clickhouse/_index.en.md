@@ -77,7 +77,7 @@ to connect to ClickHouse and execute the following SQL.
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
 create table IF NOT EXISTS t_order (
-    order_id   Int64 NOT NULL DEFAULT rand(),
+    order_id   Int64 NOT NULL,
     order_type Int32,
     user_id    Int32 NOT NULL,
     address_id Int64 NOT NULL,

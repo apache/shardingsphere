@@ -26,8 +26,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.clickhouse.ClickHouseContainer;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,13 +49,24 @@ import static org.hamcrest.Matchers.nullValue;
  * Cannot use testcontainers-java style jdbcURL for Clickhouse Server due to unresolved
  * <a href="https://github.com/testcontainers/testcontainers-java/issues/8736">testcontainers/testcontainers-java#8736</a>.
  */
-@SuppressWarnings("SqlNoDataSourceInspection")
+@SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
 @EnabledInNativeImage
 @Testcontainers
 class ClickHouseTest {
     
+    private static final Network NETWORK = Network.newNetwork();
+    
     @Container
-    public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.10.2.80");
+    private static final GenericContainer<?> ZOOKEEPER_CONTAINER = new GenericContainer<>("zookeeper:3.9.3-jre-17")
+            .withNetwork(NETWORK)
+            .withNetworkAliases("foo");
+    
+    @Container
+    public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.10.2.80")
+            .withCopyFileToContainer(MountableFile.forClasspathResource("test-native/xml/clickhouse-transactions.xml"),
+                    "/etc/clickhouse-server/config.d/transactions.xml")
+            .withNetwork(NETWORK)
+            .dependsOn(ZOOKEEPER_CONTAINER);
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.clickhouse.";
     
@@ -69,6 +83,7 @@ class ClickHouseTest {
     
     @AfterAll
     static void afterAll() {
+        NETWORK.close();
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
@@ -125,9 +140,9 @@ class ClickHouseTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/clickhouse.yaml?placeholder-type=system_props");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
+        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0?transactionSupport=true");
+        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1?transactionSupport=true");
+        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2?transactionSupport=true");
         return new HikariDataSource(config);
     }
     
@@ -137,7 +152,7 @@ class ClickHouseTest {
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("create table IF NOT EXISTS t_order\n"
                     + "(\n"
-                    + "    order_id   Int64 NOT NULL DEFAULT rand(),\n"
+                    + "    order_id   Int64 NOT NULL,\n"
                     + "    order_type Int32,\n"
                     + "    user_id    Int32 NOT NULL,\n"
                     + "    address_id Int64 NOT NULL,\n"
@@ -147,7 +162,7 @@ class ClickHouseTest {
                     + "      order by (order_id)");
             statement.executeUpdate("create table IF NOT EXISTS t_order_item\n"
                     + "(\n"
-                    + "    order_item_id Int64 NOT NULL DEFAULT rand(),\n"
+                    + "    order_item_id Int64 NOT NULL,\n"
                     + "    order_id      Int64 NOT NULL,\n"
                     + "    user_id       Int32 NOT NULL,\n"
                     + "    phone         String,\n"

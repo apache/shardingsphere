@@ -76,6 +76,3 @@ rules:
   - !BROADCAST
     tables:
       - t_address
-
-props:
-  sql-show: false

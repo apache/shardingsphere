@@ -107,7 +107,7 @@ public final class OrderRepository {
      */
     public void createTableIfNotExistsInClickHouse() throws SQLException {
         String sql = "create table IF NOT EXISTS t_order( \n"
-                + "order_id Int64 NOT NULL DEFAULT rand(), \n"
+                + "order_id Int64 NOT NULL, \n"
                 + "order_type Int32, \n"
                 + "user_id Int32 NOT NULL, \n"
                 + "address_id Int64 NOT NULL,\n"
