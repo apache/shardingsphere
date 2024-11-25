@@ -88,7 +88,7 @@ jobs:
           java-version: 8
       - name: Build with maven and execute jacoco aggregation script
         run: |
-          ./mvnw -V -B -ntp verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
+          ./mvnw -V -B -ntp verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
       - name: Upload coverage reports to codecov
