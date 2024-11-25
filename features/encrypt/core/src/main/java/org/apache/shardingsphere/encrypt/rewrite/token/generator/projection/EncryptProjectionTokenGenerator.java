@@ -244,12 +244,12 @@ public final class EncryptProjectionTokenGenerator {
         result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), cipherColumnName, alias, databaseType, leftParentheses, rightParentheses));
         if (newAddedColumn) {
             result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), cipherColumnName, null, databaseType));
+            IdentifierValue assistedColumOwner = columnProjection.getOwner().orElse(null);
+            encryptColumn.getAssistedQuery().ifPresent(
+                    optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType, leftParentheses, rightParentheses)));
+            encryptColumn.getLikeQuery().ifPresent(
+                    optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType, leftParentheses, rightParentheses)));
         }
-        IdentifierValue assistedColumOwner = columnProjection.getOwner().orElse(null);
-        encryptColumn.getAssistedQuery().ifPresent(
-                optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType, leftParentheses, rightParentheses)));
-        encryptColumn.getLikeQuery().ifPresent(
-                optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType, leftParentheses, rightParentheses)));
         return result;
     }
     
