@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.junit.jupiter.api.Test;
@@ -57,14 +58,16 @@ class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeAddedTables() {
-        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeAddedTables(Collections.singletonMap("foo_table", new ShardingSphereTable()), Collections.emptyMap());
+        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeAddedTables(Collections.singletonMap("foo_table",
+                new ShardingSphereTable("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyMap());
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_table"));
     }
     
     @Test
     void assertGetToBeDroppedTables() {
-        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(Collections.emptyMap(), Collections.singletonMap("foo_table", new ShardingSphereTable()));
+        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(Collections.emptyMap(), Collections.singletonMap("foo_table",
+                new ShardingSphereTable("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_table"));
     }
