@@ -62,5 +62,5 @@ jobs:
         run: ./mvnw -nsu -B install -f parser/sql/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
       - uses: actions/upload-artifact@v4
         with:
-          name: sql-report
+          name: sql-report-${{ matrix.database }}
           path: /tmp/*.csv
