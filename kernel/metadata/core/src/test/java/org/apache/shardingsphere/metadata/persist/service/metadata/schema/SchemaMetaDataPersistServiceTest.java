@@ -83,10 +83,11 @@ class SchemaMetaDataPersistServiceTest {
     
     @Test
     void assertAlterByRefreshWithTables() {
-        Map<String, ShardingSphereTable> tables = Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class));
-        persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", tables, Collections.emptyMap()));
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getName()).thenReturn("foo_tbl");
+        persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList()));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", tables);
+        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", table));
     }
     
     @Test

@@ -67,10 +67,12 @@ class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeDroppedTables() {
-        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(Collections.emptyMap(), Collections.singletonMap("foo_table",
-                new ShardingSphereTable("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)));
+        ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_schema",
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
+        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(reloadSchema, currentSchema);
         assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("foo_table"));
+        assertTrue(actual.containsKey("foo_tbl"));
     }
     
     @Test

@@ -79,18 +79,19 @@ public final class GenericSchemaManager {
     }
     
     private static ShardingSphereSchema getToBeDroppedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return new ShardingSphereSchema(currentSchema.getName(), getToBeDroppedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
+        return new ShardingSphereSchema(currentSchema.getName(), getToBeDroppedTables(reloadSchema, currentSchema), new LinkedHashMap<>());
     }
     
     /**
      * Get to be drop tables.
      *
-     * @param reloadTables reload tables
-     * @param currentTables current tables
+     * @param reloadSchema reload schema
+     * @param currentSchema current schema
      * @return to be dropped table
      */
-    public static Map<String, ShardingSphereTable> getToBeDroppedTables(final Map<String, ShardingSphereTable> reloadTables, final Map<String, ShardingSphereTable> currentTables) {
-        return currentTables.entrySet().stream().filter(entry -> !reloadTables.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    public static Map<String, ShardingSphereTable> getToBeDroppedTables(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
+        return currentSchema.getAllTables().stream()
+                .filter(each -> !reloadSchema.containsTable(each.getName().toLowerCase())).collect(Collectors.toMap(each -> each.getName().toLowerCase(), each -> each));
     }
     
     /**
