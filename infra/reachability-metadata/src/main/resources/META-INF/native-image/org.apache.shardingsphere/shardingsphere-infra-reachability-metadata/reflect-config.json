@@ -305,21 +305,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer"},
-  "name":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer",
-  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser"},
-  "name":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser",
-  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"},
-  "name":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlBaseShardingStrategyConfiguration"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlBaseShardingStrategyConfiguration",
   "allPublicMethods": true

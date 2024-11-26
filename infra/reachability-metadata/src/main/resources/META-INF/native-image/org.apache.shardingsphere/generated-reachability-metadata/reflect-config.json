@@ -16,7 +16,7 @@
   "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007fb05bce1828"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007ff897cab858"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -73,10 +73,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -2078,7 +2074,7 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener$$Lambda/0x00007fb05bb277d8"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.listener.DatabaseMetaDataChangedListener$$Lambda/0x00007ff897b26e30"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.MetaDataChangedSubscriber"
 },
 {
@@ -3132,12 +3128,27 @@
   "allDeclaredFields":true
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"},
   "name":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParserFacade"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -3324,6 +3335,11 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseSelectStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -3607,5 +3623,10 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfigurationCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"},
+  "name":"sun.security.provider.SecureRandom",
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
 }
 ]

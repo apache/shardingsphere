@@ -56,11 +56,9 @@ class HiveSimpleTest {
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.hive.simple.";
     
     // Due to https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter of HiveServer2 JDBC Driver must be an absolute path.
-    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive.sql").toAbsolutePath().normalize().toString();
+    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive.sql").toAbsolutePath().toString();
     
     private String jdbcUrlPrefix;
-    
-    private TestShardingService testShardingService;
     
     @BeforeAll
     static void beforeAll() {
@@ -76,33 +74,12 @@ class HiveSimpleTest {
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
     }
     
-    /**
-     * TODO Need to fix `shardingsphere-parser-sql-hive` module to use {@link TestShardingService#cleanEnvironment()}
-     *      after {@link TestShardingService#processSuccessInHive()}.
-     *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:hive2://localhost:" + CONTAINER.getMappedPort(10000) + "/";
         DataSource dataSource = createDataSource();
-        testShardingService = new TestShardingService(dataSource);
+        TestShardingService testShardingService = new TestShardingService(dataSource);
         testShardingService.processSuccessInHive();
-    }
-    
-    /**
-     * TODO Need to fix `shardingsphere-parser-sql-hive` module to use `initEnvironment()` before {@link TestShardingService#processSuccessInHive()}.
-     *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    @SuppressWarnings("unused")
-    private void initEnvironment() throws SQLException {
-        testShardingService.getOrderRepository().createTableIfNotExistsInHive();
-        testShardingService.getOrderItemRepository().createTableIfNotExistsInHive();
-        testShardingService.getAddressRepository().createTableIfNotExistsInHive();
-        testShardingService.getOrderRepository().truncateTable();
-        testShardingService.getOrderItemRepository().truncateTable();
-        testShardingService.getAddressRepository().truncateTable();
     }
     
     private Connection openConnection() throws SQLException {

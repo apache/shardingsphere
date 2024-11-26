@@ -71,25 +71,6 @@ public final class AddressRepository {
     }
     
     /**
-     * create table t_address if not exists in Hive.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void createTableIfNotExistsInHive() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_address\n"
-                + "(\n"
-                + "    address_id   BIGINT       NOT NULL,\n"
-                + "    address_name VARCHAR(100) NOT NULL,\n"
-                + "    PRIMARY KEY (address_id) disable novalidate\n"
-                + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')";
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
-        }
-    }
-    
-    /**
      * drop table t_address.
      *
      * @throws SQLException SQL exception

@@ -24,10 +24,12 @@ import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
 import org.apache.shardingsphere.test.natived.commons.repository.AddressRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderRepository;
+import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,6 +86,7 @@ public final class TestShardingService {
         assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
+        orderItemRepository.assertRollbackWithTransactions();
     }
     
     private void extracted() throws SQLException {
@@ -173,11 +176,14 @@ public final class TestShardingService {
     
     /**
      * Delete data in ClickHouse.
+     * TODO It is necessary to avoid the use of {@code Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(()->true)}.
+     *  After ClickHouse enables experimental transactions, performance drops significantly.
      *
      * @param orderIds orderId of the insert statement.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void deleteDataInClickHouse(final Collection<Long> orderIds) throws SQLException {
+        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
         long count = 1L;
         for (Long each : orderIds) {
             orderRepository.deleteInClickHouse(each);

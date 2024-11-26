@@ -76,6 +76,12 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.recovery.OltpLogFactory\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager"},
+    "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007ff897b369d0"},
+    "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {

@@ -67,6 +67,7 @@ class HiveZookeeperServiceDiscoveryTest {
     /**
      * TODO Maybe we should be able to find a better solution than {@link InstanceSpec#getRandomPort()} to use a random available port on the host.
      *  It is not a good practice to use {@link FixedHostPortGenericContainer}.
+     *  See <a href="https://github.com/testcontainers/testcontainers-java/issues/9553">testcontainers/testcontainers-java#9553</a> .
      */
     @SuppressWarnings("unused")
     @Container
@@ -83,13 +84,11 @@ class HiveZookeeperServiceDiscoveryTest {
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.hive.zookeeper.sde.";
     
     // Due to https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter of HiveServer2 JDBC Driver must be an absolute path.
-    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive.sql").toAbsolutePath().normalize().toString();
+    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive.sql").toAbsolutePath().toString();
     
     private final String jdbcUrlSuffix = ";serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2";
     
     private String jdbcUrlPrefix;
-    
-    private TestShardingService testShardingService;
     
     @BeforeAll
     static void beforeAll() {
@@ -107,8 +106,6 @@ class HiveZookeeperServiceDiscoveryTest {
     }
     
     /**
-     * TODO Need to fix `shardingsphere-parser-sql-hive` module to use {@link TestShardingService#cleanEnvironment()}
-     *      after {@link TestShardingService#processSuccessInHive()}.
      * TODO Same problem {@link InstanceSpec#getRandomPort()} as {@code HIVE_SERVER2_1_CONTAINER}.
      *
      * @throws SQLException An exception that provides information on a database access error or other errors.
@@ -117,7 +114,7 @@ class HiveZookeeperServiceDiscoveryTest {
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:hive2://" + ZOOKEEPER_CONTAINER.getHost() + ":" + ZOOKEEPER_CONTAINER.getMappedPort(2181) + "/";
         DataSource dataSource = createDataSource();
-        testShardingService = new TestShardingService(dataSource);
+        TestShardingService testShardingService = new TestShardingService(dataSource);
         testShardingService.processSuccessInHive();
         HIVE_SERVER2_1_CONTAINER.stop();
         int randomPortSecond = InstanceSpec.getRandomPort();
@@ -135,21 +132,6 @@ class HiveZookeeperServiceDiscoveryTest {
             extracted(hiveServer2SecondContainer.getMappedPort(randomPortSecond));
             testShardingService.processSuccessInHive();
         }
-    }
-    
-    /**
-     * TODO Need to fix `shardingsphere-parser-sql-hive` module to use `initEnvironment()` before {@link TestShardingService#processSuccessInHive()}.
-     *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    @SuppressWarnings("unused")
-    private void initEnvironment() throws SQLException {
-        testShardingService.getOrderRepository().createTableIfNotExistsInHive();
-        testShardingService.getOrderItemRepository().createTableIfNotExistsInHive();
-        testShardingService.getAddressRepository().createTableIfNotExistsInHive();
-        testShardingService.getOrderRepository().truncateTable();
-        testShardingService.getOrderItemRepository().truncateTable();
-        testShardingService.getAddressRepository().truncateTable();
     }
     
     private Connection openConnection() throws SQLException {

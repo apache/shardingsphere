@@ -67,7 +67,7 @@ class PostgresTest {
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
             statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
-        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().normalize().toString();
+        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
             openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();

@@ -15,11 +15,6 @@
 # limitations under the License.
 #
 
-mode:
-  type: Standalone
-  repository:
-    type: JDBC
-
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -67,6 +62,3 @@ rules:
 - !BROADCAST
   tables:
     - t_address
-
-props:
-  sql-show: false

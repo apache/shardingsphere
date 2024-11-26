@@ -68,7 +68,7 @@ class ShardingTest {
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
             statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
-        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/features/sharding").toAbsolutePath().normalize().toString();
+        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/features/sharding").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
             openConnection("root", "root", "jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort()).close();

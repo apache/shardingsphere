@@ -133,7 +133,7 @@ set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -264,7 +264,7 @@ set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -385,7 +385,7 @@ set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -444,9 +444,10 @@ Reference https://github.com/apache/hive/pull/5500.
 
 ### SQL Limitations
 
-ShardingSphere JDBC DataSource does not yet support executing HiveServer2's `SET` statement, 
-`CREATE TABLE` statement, and `TRUNCATE TABLE` statement.
+HiveServer2 does not guarantee that every `insert` related DML SQL can be executed successfully, although no exception may be thrown.
 
+ShardingSphere JDBC DataSource does not yet support executing HiveServer2's `set`, `create table`, `truncate table`, 
+and `drop table` statements.
 Users should consider submitting a PR containing unit tests for ShardingSphere.
 
 ### Prerequisites for using DML SQL statements on ShardingSphere data sources
@@ -471,7 +472,7 @@ set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -489,7 +490,7 @@ set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
