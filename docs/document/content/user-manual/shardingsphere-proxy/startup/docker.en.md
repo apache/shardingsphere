@@ -26,8 +26,13 @@ docker pull apache/shardingsphere-proxy
 ```bash
 git clone https://github.com/apache/shardingsphere
 ./mvnw clean install
-cd shardingsphere-distribution/shardingsphere-proxy-distribution
-./mvnw clean package -Prelease,docker
+cd distribution/proxy
+../../mvnw clean package -Prelease,docker
+```
+
+To speed up the build, use the following command instead```./mvnw clean install```：
+```
+./mvnw clean install -Prelease -T16C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
 ```
 
 If the following problems emerge, please make sure Docker daemon Process is running.

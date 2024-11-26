@@ -29,6 +29,10 @@ git clone https://github.com/apache/shardingsphere
 cd distribution/proxy
 ../../mvnw clean package -Prelease,docker
 ```
+为加快构建速度，可用如下命令代替```./mvnw clean install```：
+```
+./mvnw clean install -Prelease -T16C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
+```
 
 如果遇到以下问题，请确保 Docker daemon 进程已经运行。
 ```
