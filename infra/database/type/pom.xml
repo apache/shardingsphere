@@ -38,6 +38,7 @@
         <module>doris</module>
         <module>hive</module>
         <module>presto</module>
+        <module>firebird</module>
         <module>h2</module>
         <module>sql92</module>
         <module>p6spy</module>

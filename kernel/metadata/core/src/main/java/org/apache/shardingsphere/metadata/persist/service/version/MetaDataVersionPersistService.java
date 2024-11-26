@@ -42,7 +42,9 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
                 continue;
             }
             repository.persist(each.getActiveVersionNodePath(), each.getNextActiveVersion());
-            repository.delete(each.getVersionsNodePath());
+            getVersions(each.getVersionsPath()).stream()
+                    .filter(version -> !version.equals(each.getNextActiveVersion()))
+                    .forEach(version -> repository.delete(each.getVersionsNodePath(version)));
         }
     }
     
@@ -59,7 +61,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     @Override
     public List<String> getVersions(final String path) {
         List<String> result = repository.getChildrenKeys(path);
-        if (result.size() > 1) {
+        if (result.size() > 2) {
             log.warn("There are multiple versions of ：{}, please check the configuration.", path);
             result.sort((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)));
         }

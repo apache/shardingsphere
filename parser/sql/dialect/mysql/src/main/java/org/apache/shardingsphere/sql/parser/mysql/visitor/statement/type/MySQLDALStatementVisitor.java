@@ -919,74 +919,75 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     private Collection<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
         Collection<VariableAssignSegment> result = new LinkedList<>();
-        if (null == ctx.optionValueNoOptionType()) {
-            VariableAssignSegment variableAssign = new VariableAssignSegment();
-            variableAssign.setStartIndex(ctx.start.getStartIndex());
-            variableAssign.setStopIndex(ctx.setExprOrDefault().stop.getStopIndex());
-            VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
-            variable.setScope(ctx.optionType().getText());
-            variableAssign.setVariable(variable);
-            variableAssign.setAssignValue(ctx.setExprOrDefault().getText());
-            result.add(variableAssign);
-        } else {
-            result.add(getVariableAssign(ctx.optionValueNoOptionType()));
-        }
+        result.add(null == ctx.optionValueNoOptionType() ? getVariableAssignSegment(ctx) : getVariableAssignSegment(ctx.optionValueNoOptionType()));
         for (OptionValueContext each : ctx.optionValue()) {
-            result.add(getVariableAssign(each));
+            result.add(getVariableAssignSegment(each));
         }
         return result;
     }
     
-    private VariableAssignSegment getVariableAssign(final OptionValueNoOptionTypeContext ctx) {
-        VariableAssignSegment result = new VariableAssignSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
+    private VariableAssignSegment getVariableAssignSegment(final OptionValueContext ctx) {
+        if (null != ctx.optionValueNoOptionType()) {
+            return getVariableAssignSegment(ctx.optionValueNoOptionType());
+        }
+        VariableSegment variable = new VariableSegment(
+                ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText());
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
+    }
+    
+    private VariableAssignSegment getVariableAssignSegment(final OptionValueListContext ctx) {
+        VariableSegment variable = new VariableSegment(
+                ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText());
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.setExprOrDefault().stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
+    }
+    
+    private VariableAssignSegment getVariableAssignSegment(final OptionValueNoOptionTypeContext ctx) {
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getVariableSegment(ctx), getAssignValue(ctx));
+    }
+    
+    private VariableSegment getVariableSegment(final OptionValueNoOptionTypeContext ctx) {
         if (null != ctx.NAMES()) {
             // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
-            result.setVariable(new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "character_set_client"));
-            result.setAssignValue(ctx.charsetName().getText());
-        } else if (null != ctx.internalVariableName()) {
-            result.setVariable(new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText()));
-            result.setAssignValue(ctx.setExprOrDefault().getText());
-        } else if (null != ctx.userVariable()) {
-            result.setVariable(new VariableSegment(ctx.userVariable().start.getStartIndex(), ctx.userVariable().stop.getStopIndex(), ctx.userVariable().getText()));
-            result.setAssignValue(ctx.expr().getText());
-        } else if (null != ctx.setSystemVariable()) {
-            VariableSegment variable = new VariableSegment(
-                    ctx.setSystemVariable().start.getStartIndex(), ctx.setSystemVariable().stop.getStopIndex(), ctx.setSystemVariable().internalVariableName().getText());
-            result.setVariable(variable);
-            result.setAssignValue(ctx.setExprOrDefault().getText());
-            OptionTypeContext optionType = ctx.setSystemVariable().optionType();
-            variable.setScope(null != optionType ? optionType.getText() : "SESSION");
+            return new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "character_set_client");
         }
-        return result;
+        if (null != ctx.internalVariableName()) {
+            return new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
+        }
+        if (null != ctx.userVariable()) {
+            return new VariableSegment(ctx.userVariable().start.getStartIndex(), ctx.userVariable().stop.getStopIndex(), ctx.userVariable().getText());
+        }
+        if (null != ctx.setSystemVariable()) {
+            VariableSegment result = new VariableSegment(
+                    ctx.setSystemVariable().start.getStartIndex(), ctx.setSystemVariable().stop.getStopIndex(), ctx.setSystemVariable().internalVariableName().getText());
+            OptionTypeContext optionType = ctx.setSystemVariable().optionType();
+            result.setScope(null == optionType ? "SESSION" : optionType.getText());
+            return result;
+        }
+        return null;
     }
     
-    private VariableAssignSegment getVariableAssign(final OptionValueContext ctx) {
-        if (null != ctx.optionValueNoOptionType()) {
-            return getVariableAssign(ctx.optionValueNoOptionType());
+    private String getAssignValue(final OptionValueNoOptionTypeContext ctx) {
+        if (null != ctx.NAMES()) {
+            return ctx.charsetName().getText();
+        } else if (null != ctx.internalVariableName()) {
+            return ctx.setExprOrDefault().getText();
+        } else if (null != ctx.userVariable()) {
+            return ctx.expr().getText();
+        } else if (null != ctx.setSystemVariable()) {
+            return ctx.setExprOrDefault().getText();
         }
-        VariableAssignSegment result = new VariableAssignSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
-        variable.setScope(ctx.optionType().getText());
-        result.setVariable(variable);
-        result.setAssignValue(ctx.setExprOrDefault().getText());
-        return result;
+        return null;
     }
     
     @Override
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
-        VariableAssignSegment characterSet = new VariableAssignSegment();
         int startIndex = null == ctx.CHARSET() ? ctx.CHARACTER().getSymbol().getStartIndex() : ctx.CHARSET().getSymbol().getStartIndex();
         int stopIndex = null == ctx.CHARSET() ? ctx.SET(1).getSymbol().getStopIndex() : ctx.CHARSET().getSymbol().getStopIndex();
         // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
-        String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "character_set_client";
+        String variableName = (null == ctx.CHARSET()) ? "character_set_client" : ctx.CHARSET().getText();
         VariableSegment variable = new VariableSegment(startIndex, stopIndex, variableName);
-        characterSet.setVariable(variable);
-        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.charsetName().getText();
-        characterSet.setAssignValue(assignValue);
+        String assignValue = (null == ctx.DEFAULT()) ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
+        VariableAssignSegment characterSet = new VariableAssignSegment(startIndex, stopIndex, variable, assignValue);
         MySQLSetStatement result = new MySQLSetStatement();
         result.getVariableAssigns().add(characterSet);
         return result;

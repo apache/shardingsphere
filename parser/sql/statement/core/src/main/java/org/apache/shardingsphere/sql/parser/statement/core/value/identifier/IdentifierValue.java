@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.value.identifier;
 
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -54,22 +53,5 @@ public final class IdentifierValue implements ValueASTNode<String> {
      */
     public String getValueWithQuoteCharacters() {
         return null == value ? "" : quoteCharacter.wrap(value);
-    }
-    
-    /**
-     * Get quoted content.
-     *
-     * @param text text
-     * @return quote content
-     */
-    public static String getQuotedContent(final String text) {
-        if (Strings.isNullOrEmpty(text)) {
-            return text;
-        }
-        QuoteCharacter quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
-        if (QuoteCharacter.NONE == quoteCharacter) {
-            return text.trim();
-        }
-        return text.substring(1, text.length() - 1);
     }
 }

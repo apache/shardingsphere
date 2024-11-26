@@ -159,7 +159,7 @@ jobs:
           days-before-pr-stale: -1
           days-before-close: -1
           stale-issue-label: "stale"
-          any-of-issue-labels: "status: need more info,type: question"
+          any-of-issue-labels: "status: need more info,type: question,type: duplicate"
           operations-per-run: 100
           remove-stale-when-updated: true
           stale-issue-message: >
@@ -171,7 +171,7 @@ jobs:
     name: Check - Dependency Convergence
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
-    timeout-minutes: 10
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -189,7 +189,7 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - OWASP
     needs: global-environment
-    runs-on: self-hosted-cluster
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -213,7 +213,7 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Jacoco
     needs: global-environment
-    runs-on: self-hosted-cluster
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
@@ -238,7 +238,7 @@ jobs:
           java-version: 8
       - name: Build with maven and execute jacoco aggregation script
         run: |
-          ./mvnw --show-version --batch-mode --no-transfer-progress verify -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
+          ./mvnw -V -B -ntp verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&
           chmod +x ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh &&
           ./.github/workflows/resources/scripts/unit-test-coverage-merge/code-coverage-merge.sh ${{ github.workspace }}
       - uses: actions/upload-artifact@v4

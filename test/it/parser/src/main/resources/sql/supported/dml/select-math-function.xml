@@ -26,4 +26,6 @@
     <sql-case id="select_power" value="SELECT POWER(2,2)" db-types="MySQL" />
     <sql-case id="select_rand" value="SELECT RAND()" db-types="MySQL" />
     <sql-case id="select_radians" value="SELECT RADIANS(90)" db-types="MySQL" />
+    <sql-case id="select_least" value="SELECT LEAST(2, 0)" db-types="MySQL" />
+    <sql-case id="select_ln" value="SELECT LN(2)" db-types="MySQL" />
 </sql-cases>

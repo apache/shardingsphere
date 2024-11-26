@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.merge.ddl.ShardingDDLResultMerger;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.DirectionType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
@@ -36,24 +37,28 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Di
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussFetchStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussSelectStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -62,6 +67,8 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class FetchStreamMergedResultTest {
     
     private FetchStatementContext fetchCountStatementContext;
@@ -70,6 +77,7 @@ class FetchStreamMergedResultTest {
     
     private ShardingDDLResultMerger resultMerger;
     
+    @Mock
     private ShardingSphereDatabase database;
     
     private ConnectionContext connectionContext;
@@ -79,46 +87,43 @@ class FetchStreamMergedResultTest {
         fetchCountStatementContext = createFetchStatementContext(false);
         fetchAllStatementContext = createFetchStatementContext(true);
         resultMerger = new ShardingDDLResultMerger();
-        database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorContext()).thenReturn(new CursorConnectionContext());
     }
     
     private static FetchStatementContext createFetchStatementContext(final boolean containsAllDirectionType) {
-        FetchStatementContext result = new FetchStatementContext(createFetchStatement(containsAllDirectionType), DefaultDatabase.LOGIC_NAME);
-        result.setCursorStatementContext(createCursorStatementContext());
+        FetchStatementContext result = new FetchStatementContext(createFetchStatement(containsAllDirectionType), "foo_db");
+        result.setCursorStatementContext(mockCursorStatementContext());
         return result;
     }
     
     private static FetchStatement createFetchStatement(final boolean containsAllDirectionType) {
-        FetchStatement result = new OpenGaussFetchStatement();
-        result.setCursorName(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor")));
+        FetchStatement result = mock(FetchStatement.class);
+        when(result.getCursorName()).thenReturn(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")));
         if (containsAllDirectionType) {
-            DirectionSegment direction = new DirectionSegment(0, 0);
-            direction.setDirectionType(DirectionType.ALL);
-            result.setDirection(direction);
+            when(result.getDirection()).thenReturn(Optional.of(new DirectionSegment(0, 0, DirectionType.ALL)));
         }
+        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
     
-    private static CursorStatementContext createCursorStatementContext() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        OpenGaussCursorStatement cursorStatement = new OpenGaussCursorStatement();
-        cursorStatement.setSelect(createSelectStatement());
-        return new CursorStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), cursorStatement, DefaultDatabase.LOGIC_NAME);
+    private static CursorStatementContext mockCursorStatementContext() {
+        CursorStatement cursorStatement = mock(CursorStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
+        when(cursorStatement.getSelect()).thenReturn(selectStatement);
+        when(cursorStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        return new CursorStatementContext(createShardingSphereMetaData(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), cursorStatement, "foo_db");
     }
     
     private static ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        return new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
-    private static SelectStatement createSelectStatement() {
-        SelectStatement result = new OpenGaussSelectStatement();
-        result.setProjections(new ProjectionsSegment(0, 0));
-        result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+    private static SelectStatement mockSelectStatement() {
+        SelectStatement result = mock(SelectStatement.class);
+        when(result.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
+        when(result.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
+        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
     

@@ -19,39 +19,34 @@ package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LogicalOperatorTest {
     
     @Test
     void assertValueFromAndText() {
-        assertTrue(LogicalOperator.valueFrom("AND").isPresent());
-        assertThat(LogicalOperator.valueFrom("AND").get(), is(LogicalOperator.AND));
-        assertTrue(LogicalOperator.valueFrom("and").isPresent());
-        assertThat(LogicalOperator.valueFrom("and").get(), is(LogicalOperator.AND));
+        assertThat(LogicalOperator.valueFrom("AND"), is(Optional.of(LogicalOperator.AND)));
+        assertThat(LogicalOperator.valueFrom("and"), is(Optional.of(LogicalOperator.AND)));
     }
     
     @Test
     void assertValueFromAndSymbol() {
-        assertTrue(LogicalOperator.valueFrom("&&").isPresent());
-        assertThat(LogicalOperator.valueFrom("&&").get(), is(LogicalOperator.AND));
+        assertThat(LogicalOperator.valueFrom("&&"), is(Optional.of(LogicalOperator.AND)));
     }
     
     @Test
     void assertValueFromOrText() {
-        assertTrue(LogicalOperator.valueFrom("OR").isPresent());
-        assertThat(LogicalOperator.valueFrom("OR").get(), is(LogicalOperator.OR));
-        assertTrue(LogicalOperator.valueFrom("or").isPresent());
-        assertThat(LogicalOperator.valueFrom("or").get(), is(LogicalOperator.OR));
+        assertThat(LogicalOperator.valueFrom("OR"), is(Optional.of(LogicalOperator.OR)));
+        assertThat(LogicalOperator.valueFrom("or"), is(Optional.of(LogicalOperator.OR)));
     }
     
     @Test
     void assertValueFromOrSymbol() {
-        assertTrue(LogicalOperator.valueFrom("||").isPresent());
-        assertThat(LogicalOperator.valueFrom("||").get(), is(LogicalOperator.OR));
+        assertThat(LogicalOperator.valueFrom("||"), is(Optional.of(LogicalOperator.OR)));
     }
     
     @Test

@@ -24,11 +24,12 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
-import org.apache.shardingsphere.infra.route.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
+import org.apache.shardingsphere.infra.route.type.EntranceSQLRouter;
+import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngineFactory;
@@ -44,7 +45,7 @@ import java.util.LinkedList;
  * Single SQL router.
  */
 @HighFrequencyInvocation
-public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, DecorateSQLRouter<SingleRule> {
+public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, DecorateSQLRouter<SingleRule>, TableSQLRouter<SingleRule> {
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,

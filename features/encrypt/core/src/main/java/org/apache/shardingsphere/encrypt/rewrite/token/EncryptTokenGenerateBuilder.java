@@ -53,7 +53,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuilder {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -64,23 +64,23 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        addSQLTokenGenerator(result, new EncryptSelectProjectionTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertSelectProjectionTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertAssignmentTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptUpdateAssignmentTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptPredicateColumnTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertPredicateColumnTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptPredicateRightValueTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertPredicateRightValueTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertValuesTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertDefaultColumnsTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertCipherNameTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertDerivedColumnsTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptInsertOnUpdateTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptGroupByItemTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptIndexColumnTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptCreateTableTokenGenerator(encryptRule));
-        addSQLTokenGenerator(result, new EncryptAlterTableTokenGenerator(encryptRule));
+        addSQLTokenGenerator(result, new EncryptSelectProjectionTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertSelectProjectionTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertAssignmentTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptUpdateAssignmentTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptPredicateColumnTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertPredicateColumnTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptPredicateRightValueTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertPredicateRightValueTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertValuesTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertDefaultColumnsTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertCipherNameTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertDerivedColumnsTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptInsertOnUpdateTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptGroupByItemTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptIndexColumnTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptCreateTableTokenGenerator(rule));
+        addSQLTokenGenerator(result, new EncryptAlterTableTokenGenerator(rule));
         return result;
     }
     

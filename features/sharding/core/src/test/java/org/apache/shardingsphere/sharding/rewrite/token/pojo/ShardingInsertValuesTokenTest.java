@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -31,13 +32,13 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShardingInsertValuesTokenTest {
     
     @Test
-    void assertToStringWithRouteUnit() {
-        // TODO This test case may not necessary; the trailing parentheses should not be there. Is there too much protective coding in main code? @duanzhengqiang
-        assertThat(createInsertValuesToken().toString(createRouteUnit()), is("('foo', 'bar'), ()"));
+    void assertToStringForInsertValue() {
+        assertThat(createInsertValuesToken().toString(createRouteUnit()), is("('foo', 'bar')"));
     }
     
     private ShardingInsertValuesToken createInsertValuesToken() {
@@ -45,8 +46,6 @@ class ShardingInsertValuesTokenTest {
         Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
         List<ExpressionSegment> values = Arrays.asList(new LiteralExpressionSegment(0, 0, "foo"), new LiteralExpressionSegment(0, 0, "bar"));
         result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
-        result.getInsertValues().add(new ShardingInsertValue(Collections.emptyList(), Collections.singleton(new DataNode("bar_ds", "tbl_1"))));
-        result.getInsertValues().add(new ShardingInsertValue(Collections.emptyList(), Collections.emptyList()));
         return result;
     }
     
@@ -58,8 +57,24 @@ class ShardingInsertValuesTokenTest {
     }
     
     @Test
-    void assertToStringWithoutRouteUnit() {
-        // TODO This test case may not necessary; the trailing parentheses should not be there. Is there too much protective coding in main code? @duanzhengqiang
-        assertThat(createInsertValuesToken().toString(), is("('foo', 'bar'), (), ()"));
+    void assertToStringForMultipleInsertValues() {
+        assertThat(createMultipleInsertValuesToken().toString(), is("('foo', 'bar'), ('foo', 'bar')"));
+    }
+    
+    private ShardingInsertValuesToken createMultipleInsertValuesToken() {
+        ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        List<ExpressionSegment> values = Arrays.asList(new LiteralExpressionSegment(0, 0, "foo"), new LiteralExpressionSegment(0, 0, "bar"));
+        result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
+        result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
+        return result;
+    }
+    
+    @Test
+    void assertToStringWithEmptyInsertValues() {
+        ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        List<ExpressionSegment> values = Collections.emptyList();
+        assertThrows(UnsupportedSQLOperationException.class, () -> result.getInsertValues().add(new ShardingInsertValue(values, dataNodes)));
     }
 }

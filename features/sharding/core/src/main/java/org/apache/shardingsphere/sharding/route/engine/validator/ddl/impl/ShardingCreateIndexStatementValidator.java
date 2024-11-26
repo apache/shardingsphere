@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -52,9 +53,7 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
         validateTableExist(schema, Collections.singleton(createIndexStatement.getTable()));
         String tableName = createIndexStatement.getTable().getTableName().getIdentifier().getValue();
         String indexName = createIndexStatementContext.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).findFirst().orElse(null);
-        if (schema.containsIndex(tableName, indexName)) {
-            throw new DuplicateIndexException(indexName);
-        }
+        ShardingSpherePreconditions.checkState(!schema.containsIndex(tableName, indexName), () -> new DuplicateIndexException(indexName));
     }
     
     @Override

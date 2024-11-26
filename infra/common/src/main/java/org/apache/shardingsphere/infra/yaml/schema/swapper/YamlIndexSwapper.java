@@ -37,9 +37,6 @@ public final class YamlIndexSwapper implements YamlConfigurationSwapper<YamlShar
     
     @Override
     public ShardingSphereIndex swapToObject(final YamlShardingSphereIndex yamlConfig) {
-        ShardingSphereIndex result = new ShardingSphereIndex(yamlConfig.getName());
-        result.getColumns().addAll(yamlConfig.getColumns());
-        result.setUnique(yamlConfig.isUnique());
-        return result;
+        return new ShardingSphereIndex(yamlConfig.getName(), yamlConfig.getColumns(), yamlConfig.isUnique());
     }
 }

@@ -15,18 +15,13 @@
 # limitations under the License.
 #
 
-mode:
-  type: Standalone
-  repository:
-    type: JDBC
-
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:local_encrypt_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
-    password: 123456
+    username: sa
+    password:
 
 rules:
 - !ENCRYPT
@@ -57,6 +52,3 @@ rules:
       props:
         aes-key-value: 123456
         digest-algorithm-name: SHA-1
-
-props:
-  sql-show: false

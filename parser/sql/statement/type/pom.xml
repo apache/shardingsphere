@@ -30,6 +30,7 @@
     <modules>
         <module>clickhouse</module>
         <module>doris</module>
+        <module>firebird</module>
         <module>hive</module>
         <module>mysql</module>
         <module>opengauss</module>

@@ -45,6 +45,9 @@ public final class DataSetRow {
     @XmlAttribute(required = true)
     private String values;
     
+    @XmlAttribute
+    private boolean updated;
+    
     /**
      * Split values with vertical bar.
      *

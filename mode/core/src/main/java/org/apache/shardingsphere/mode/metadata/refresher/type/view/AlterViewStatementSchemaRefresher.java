@@ -81,8 +81,8 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), material);
         Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
         ShardingSphereSchema result = new ShardingSphereSchema(schemaName);
-        actualViewMetaData.ifPresent(optional -> result.putTable(viewName, optional));
-        result.putView(viewName, new ShardingSphereView(viewName, viewDefinition));
+        actualViewMetaData.ifPresent(result::putTable);
+        result.putView(new ShardingSphereView(viewName, viewDefinition));
         return result;
     }
     

@@ -25,10 +25,13 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.Ins
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -60,18 +63,11 @@ class ShardingInsertValuesTokenGeneratorTest {
     }
     
     @Test
-    void assertGenerateSQLTokenWithNullRouteContext() {
-        InsertValuesToken insertValuesToken = generator.generateSQLToken(mockInsertStatementContext());
-        assertThat(insertValuesToken.getInsertValues().size(), is(1));
-        assertTrue(insertValuesToken.getInsertValues().get(0).getValues().isEmpty());
-    }
-    
-    @Test
     void assertGenerateSQLTokenWithEmptyDataNode() {
         generator.setRouteContext(new RouteContext());
         InsertValuesToken actual = generator.generateSQLToken(mockInsertStatementContext());
         assertThat(actual.getInsertValues().size(), is(1));
-        assertTrue(actual.getInsertValues().get(0).getValues().isEmpty());
+        assertThat(actual.getInsertValues().get(0).getValues().size(), is(1));
     }
     
     @Test
@@ -86,8 +82,9 @@ class ShardingInsertValuesTokenGeneratorTest {
     
     private InsertStatementContext mockInsertStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 4)));
-        when(result.getSqlStatement().getValues()).thenReturn(Collections.singleton(new InsertValuesSegment(1, 2, Collections.emptyList())));
+        List<ExpressionSegment> assignments = Collections.singletonList(new LiteralExpressionSegment(0, 0, "foo"));
+        when(result.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(assignments, Collections.emptyList(), 4)));
+        when(result.getSqlStatement().getValues()).thenReturn(Collections.singleton(new InsertValuesSegment(1, 2, assignments)));
         return result;
     }
 }

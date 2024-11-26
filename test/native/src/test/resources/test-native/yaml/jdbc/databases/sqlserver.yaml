@@ -15,35 +15,30 @@
 # limitations under the License.
 #
 
-mode:
-  type: Standalone
-  repository:
-    type: JDBC
-
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:sqlserver:2022-CU14-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_0;
+    jdbcUrl: jdbc:tc:sqlserver:2022-CU16-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_0;
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:sqlserver:2022-CU14-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_1;
+    jdbcUrl: jdbc:tc:sqlserver:2022-CU16-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_1;
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:sqlserver:2022-CU14-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_2;
+    jdbcUrl: jdbc:tc:sqlserver:2022-CU16-ubuntu-22.04://test-native-databases-mssqlserver;databaseName=demo_ds_2;
 
 rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes:
+      actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
     t_order_item:
-      actualDataNodes:
+      actualDataNodes: <LITERAL>ds_0.t_order_item, ds_1.t_order_item, ds_2.t_order_item
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -67,6 +62,3 @@ rules:
 - !BROADCAST
   tables:
     - t_address
-
-props:
-  sql-show: false

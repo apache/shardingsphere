@@ -74,4 +74,5 @@
     <sql-case id="create_function_with_create_view" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create view v1 as select 1; return 1; END" db-types="MySQL" />
     <sql-case id="create_function_with_loop" value="CREATE FUNCTION f(cur SYS_REFCURSOR, mgr_hiredate DATE) RETURN NUMBER IS emp_hiredate DATE; before number :=0; after number:=0; begin loop fetch cur into emp_hiredate; exit when cur%NOTFOUND; if emp_hiredate > mgr_hiredate then after:=after+1; else before:=before+1; end if; end loop; close cur; if before > after then return 1; else return 0; end if; end;" db-types="Oracle" />
     <sql-case id="create_function_with_aggregate_using_function" value="CREATE OR REPLACE EDITIONABLE FUNCTION MY_FUNC (P1 VARCHAR2) RETURN VARCHAR2 AGGREGATE USING MY_AGG_FUNC AS LANGUAGE JAVA NAME 'test';" db-types="Oracle" />
+    <sql-case id="create_function_with_simple_arithmetic" value="CREATE FUNCTION ADD_INT(A INT, B INT DEFAULT 0) RETURNS INT AS BEGIN RETURN A+B; END" db-types="Firebird"/>
 </sql-cases>

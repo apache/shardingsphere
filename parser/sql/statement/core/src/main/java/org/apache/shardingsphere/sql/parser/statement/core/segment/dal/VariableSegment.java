@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dal;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ import java.util.Optional;
 /**
  * Variable segment.
  */
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 @Setter

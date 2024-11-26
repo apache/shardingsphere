@@ -30,4 +30,5 @@
     <create-function sql-case-id="create_function_with_create_view" />
     <create-function sql-case-id="create_function_with_loop" />
     <create-function sql-case-id="create_function_with_aggregate_using_function" />
+    <create-function sql-case-id="create_function_with_simple_arithmetic" />
 </sql-parser-test-cases>

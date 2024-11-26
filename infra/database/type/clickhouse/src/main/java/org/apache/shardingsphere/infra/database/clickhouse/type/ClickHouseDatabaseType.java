@@ -29,7 +29,7 @@ public final class ClickHouseDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:ch:", "jdbc:clickhouse:");
+        return Arrays.asList("jdbc:ch:", "jdbc:clickhouse:", "jdbc:chdb");
     }
     
     @Override

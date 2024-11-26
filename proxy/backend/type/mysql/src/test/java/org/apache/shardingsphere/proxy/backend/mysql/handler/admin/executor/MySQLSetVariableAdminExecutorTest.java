@@ -87,15 +87,10 @@ class MySQLSetVariableAdminExecutorTest {
     }
     
     private SetStatement prepareSetStatement() {
-        VariableAssignSegment setGlobalMaxConnectionAssignSegment = new VariableAssignSegment();
-        VariableSegment maxConnectionVariableSegment = new VariableSegment(0, 0, "max_connections");
-        maxConnectionVariableSegment.setScope("global");
-        setGlobalMaxConnectionAssignSegment.setVariable(maxConnectionVariableSegment);
-        setGlobalMaxConnectionAssignSegment.setAssignValue("151");
-        VariableAssignSegment setCharacterSetClientVariableSegment = new VariableAssignSegment();
+        VariableSegment maxConnectionVariableSegment = new VariableSegment(0, 0, "max_connections", "global");
+        VariableAssignSegment setGlobalMaxConnectionAssignSegment = new VariableAssignSegment(0, 0, maxConnectionVariableSegment, "151");
         VariableSegment characterSetClientSegment = new VariableSegment(0, 0, "character_set_client");
-        setCharacterSetClientVariableSegment.setVariable(characterSetClientSegment);
-        setCharacterSetClientVariableSegment.setAssignValue("'utf8mb4'");
+        VariableAssignSegment setCharacterSetClientVariableSegment = new VariableAssignSegment(0, 0, characterSetClientSegment, "'utf8mb4'");
         SetStatement result = new MySQLSetStatement();
         result.getVariableAssigns().add(setGlobalMaxConnectionAssignSegment);
         result.getVariableAssigns().add(setCharacterSetClientVariableSegment);
@@ -112,22 +107,16 @@ class MySQLSetVariableAdminExecutorTest {
     
     @Test
     void assertSetUnknownSystemVariable() {
-        VariableAssignSegment unknownVariableAssignSegment = new VariableAssignSegment();
-        unknownVariableAssignSegment.setVariable(new VariableSegment(0, 0, "unknown_variable"));
-        unknownVariableAssignSegment.setAssignValue("");
         SetStatement setStatement = new MySQLSetStatement();
-        setStatement.getVariableAssigns().add(unknownVariableAssignSegment);
+        setStatement.getVariableAssigns().add(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), ""));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
     }
     
     @Test
     void assertSetVariableWithIncorrectScope() {
-        VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
-        variableAssignSegment.setVariable(new VariableSegment(0, 0, "max_connections"));
-        variableAssignSegment.setAssignValue("");
         SetStatement setStatement = new MySQLSetStatement();
-        setStatement.getVariableAssigns().add(variableAssignSegment);
+        setStatement.getVariableAssigns().add(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), ""));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(ErrorGlobalVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
     }

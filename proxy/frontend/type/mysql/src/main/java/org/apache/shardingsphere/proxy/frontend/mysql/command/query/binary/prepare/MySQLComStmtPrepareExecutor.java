@@ -109,7 +109,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         ShardingSpherePreconditions.checkState(parameterCount <= MAX_PARAMETER_COUNT, TooManyPlaceholdersException::new);
         result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-        int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession);
+        int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession, true);
         if (parameterCount > 0) {
             result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement));
             result.add(new MySQLEofPacket(statusFlags));
@@ -155,7 +155,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             // TODO Calculate column definition flag for other projection types
             if (each instanceof ColumnProjection) {
                 result.add(Optional.ofNullable(schema.getTable(((ColumnProjection) each).getOriginalTable().getValue()))
-                        .map(table -> table.getColumns().get(((ColumnProjection) each).getOriginalColumn().getValue()))
+                        .map(table -> table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue()))
                         .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
                         .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
             } else {

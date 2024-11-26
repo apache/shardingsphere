@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.hive.connector;
 
+import org.apache.hive.jdbc.JdbcUriParseException;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -55,7 +56,10 @@ class HiveConnectionPropertiesParserTest {
     
     @Test
     void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse("jdbc:hive2:xxxxxxxx", null, null));
+        assertThrows(JdbcUriParseException.class, () -> parser.parse("jdbc:hive2://localhost:10000;principal=test", null, null));
+        assertThrows(JdbcUriParseException.class, () -> parser.parse("jdbc:hive2://localhost:10000;principal=hive/HiveServer2Host@YOUR-REALM.COM", null, null));
+        assertThrows(JdbcUriParseException.class, () -> parser.parse("jdbc:hive2://localhost:10000test", null, null));
+        assertThrows(RuntimeException.class, () -> parser.parse("jdbc:hive2://", null, null));
     }
     
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
@@ -63,9 +67,15 @@ class HiveConnectionPropertiesParserTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of("simple", "jdbc:hive2:///foo_ds", "localhost", 10000, "foo_ds", null, new Properties()),
-                    Arguments.of("complex", "jdbc:hive2://127.0.0.1:9999/foo_ds?transportMode=http", "127.0.0.1", 9999, "foo_ds", null,
-                            PropertiesBuilder.build(new PropertiesBuilder.Property("transportMode", "http"))));
+                    Arguments.of("simple_first", "jdbc:hive2://localhost:10001/default", "localhost", 10001, "default", null, new Properties()),
+                    Arguments.of("simple_second", "jdbc:hive2://localhost/notdefault", "localhost", 10000, "notdefault", null, new Properties()),
+                    Arguments.of("simple_third", "jdbc:hive2://foo:1243", "foo", 1243, "default", null, new Properties()),
+                    Arguments.of("complex", "jdbc:hive2://server:10002/db;user=foo;password=bar?transportMode=http;httpPath=hs2",
+                            "server", 10002, "db", null, PropertiesBuilder.build(
+                                    new Property("user", "foo"),
+                                    new Property("password", "bar"),
+                                    new Property("transportMode", "http"),
+                                    new Property("httpPath", "hs2"))));
         }
     }
 }

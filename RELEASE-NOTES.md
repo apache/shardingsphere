@@ -4,6 +4,8 @@
 
 ### New Features
 
+1. Kernel: Add firebird sql parser module and database type [#33773](https://github.com/apache/shardingsphere/pull/33773)
+
 ### Enhancements
 
 1. Kernel: Add arguments not null check when creating RouteUnit - [#33382](https://github.com/apache/shardingsphere/pull/33382)
@@ -21,6 +23,14 @@
 1. Proxy: Add query parameters and check for mysql kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Build: Avoid using `-proc:full` when compiling ShardingSphere with OpenJDK23 - [#33681](https://github.com/apache/shardingsphere/pull/33681)
+1. Doc: Adds documentation for HiveServer2 support - [#33717](https://github.com/apache/shardingsphere/pull/33717)
+1. DistSQL: Check inline expression when create sharding table rule with inline sharding algorithm - [#33735](https://github.com/apache/shardingsphere/pull/33735)
+1. Infra: Support setting `hive_conf_list`, `hive_var_list` and `sess_var_list` for jdbcURL when connecting to HiveServer2 - [#33749](https://github.com/apache/shardingsphere/pull/33749)
+1. Infra: Support connecting to HiveServer2 through database connection pools other than HikariCP - [#33762](https://github.com/apache/shardingsphere/pull/33762)
+1. Infra: Partial support for connecting to embedded ClickHouse `chDB` - [#33786](https://github.com/apache/shardingsphere/pull/33786)
+1. Proxy Native: Support connecting to HiveServer2 with ZooKeeper Service Discovery enabled in GraalVM Native Image - [#33768](https://github.com/apache/shardingsphere/pull/33768)
+1. Proxy Native: Support local transactions of ClickHouse under GraalVM Native Image - [#33801](https://github.com/apache/shardingsphere/pull/33801)
+1. Doc: Adds documentation for ClickHouse support - [#33779](https://github.com/apache/shardingsphere/pull/33779)
 
 ### Bug Fixes
 
@@ -36,6 +46,7 @@
 1. Sharding: Fix avg, sum, min, max function return empty data when no query result return - [#33449](https://github.com/apache/shardingsphere/pull/33449)
 1. Encrypt: Fix merge exception without encrypt rule in database - [#33708](https://github.com/apache/shardingsphere/pull/33708)
 1. SQL Parser: Fix mysql parse zone unreserved keyword error - [#33720](https://github.com/apache/shardingsphere/pull/33720)
+1. Proxy: Fix BatchUpdateException when execute INSERT INTO ON DUPLICATE KEY UPDATE in proxy adapter - [#33796](https://github.com/apache/shardingsphere/pull/33796)
 
 ### Change Logs
 

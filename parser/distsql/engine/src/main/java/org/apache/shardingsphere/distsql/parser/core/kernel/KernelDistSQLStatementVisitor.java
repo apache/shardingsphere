@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.core.kernel;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.groovy.parser.antlr4.util.StringUtils;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterComputeNodeContext;
@@ -39,7 +40,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LockClusterContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshDatabaseMetadataContext;
@@ -95,6 +95,7 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Unregi
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
@@ -139,16 +140,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitStorageUnitDefinition(final StorageUnitDefinitionContext ctx) {
         String user = getIdentifierValue(ctx.user());
-        String password = null == ctx.password() ? "" : getPassword(ctx.password());
+        String password = null == ctx.password() ? "" : new StringLiteralValue(StringUtils.replaceStandardEscapes(ctx.password().getText())).getValue();
         Properties props = getProperties(ctx.propertiesDefinition());
         return null == ctx.urlSource()
                 ? new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()),
                         getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props)
                 : new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
-    }
-    
-    private String getPassword(final PasswordContext ctx) {
-        return null == ctx ? null : StringLiteralValue.getStandardEscapesStringLiteralValue(ctx.getText()).getValue();
     }
     
     @Override
@@ -203,7 +200,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
         }
         return result;
     }
@@ -304,7 +301,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitImportMetaData(final ImportMetaDataContext ctx) {
-        return new ImportMetaDataStatement(null == ctx.metaDataValue() ? null : getQuotedContent(ctx.metaDataValue()), getIdentifierValue(ctx.filePath()));
+        return new ImportMetaDataStatement(null == ctx.metaDataValue() ? null : QuoteCharacter.unwrapText(ctx.metaDataValue().getText()), getIdentifierValue(ctx.filePath()));
     }
     
     @Override
@@ -318,7 +315,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
         }
         return result;
     }
@@ -335,10 +332,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     private String getIdentifierValue(final ParseTree context) {
         return null == context ? null : new IdentifierValue(context.getText()).getValue();
-    }
-    
-    private String getQuotedContent(final ParseTree context) {
-        return IdentifierValue.getQuotedContent(context.getText());
     }
     
     @Override

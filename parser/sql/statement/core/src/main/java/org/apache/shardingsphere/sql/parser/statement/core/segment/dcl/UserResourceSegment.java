@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType.UserResourceSpecifiedLimitType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.UserResourceSpecifiedLimitType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
 /**

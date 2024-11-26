@@ -85,4 +85,15 @@ class QuoteCharacterTest {
     void assertIsNotWrapped() {
         assertFalse(QuoteCharacter.SINGLE_QUOTE.isWrapped("'test\""));
     }
+    
+    @Test
+    void assertUnwrapText() {
+        assertThat(QuoteCharacter.unwrapText("test"), is("test"));
+        assertThat(QuoteCharacter.unwrapText("`test`"), is("test"));
+        assertThat(QuoteCharacter.unwrapText("'test'"), is("test"));
+        assertThat(QuoteCharacter.unwrapText("\"test\""), is("test"));
+        assertThat(QuoteCharacter.unwrapText("[test]"), is("test"));
+        assertThat(QuoteCharacter.unwrapText("(test)"), is("test"));
+        assertThat(QuoteCharacter.unwrapText("{test}"), is("{test}"));
+    }
 }

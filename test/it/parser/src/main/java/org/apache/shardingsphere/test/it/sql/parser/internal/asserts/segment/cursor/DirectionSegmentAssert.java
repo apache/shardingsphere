@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.cursor.ExpectedDirectionSegment;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -49,12 +49,7 @@ public final class DirectionSegmentAssert {
     }
     
     private static void assertDirectionType(final SQLCaseAssertContext assertContext, final DirectionSegment actual, final ExpectedDirectionSegment expected) {
-        if (null == expected.getDirectionType()) {
-            assertFalse(actual.getDirectionType().isPresent(), assertContext.getText("Actual direction type should not exist."));
-        } else {
-            assertTrue(actual.getDirectionType().isPresent(), assertContext.getText("Actual direction type should exist."));
-            assertThat(assertContext.getText("Direction type assertion error: "), actual.getDirectionType().get().name(), is(expected.getDirectionType()));
-        }
+        assertThat(assertContext.getText("Direction type assertion error: "), actual.getDirectionType().name(), is(expected.getDirectionType()));
     }
     
     private static void assertCount(final SQLCaseAssertContext assertContext, final DirectionSegment actual, final ExpectedDirectionSegment expected) {

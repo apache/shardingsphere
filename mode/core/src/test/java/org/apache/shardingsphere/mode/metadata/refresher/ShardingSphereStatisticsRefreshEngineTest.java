@@ -96,7 +96,7 @@ class ShardingSphereStatisticsRefreshEngineTest {
         Collection<ShardingSphereColumn> columns = new LinkedList<>();
         columns.add(new ShardingSphereColumn("column1", Types.INTEGER, false, false, false, true, false, false));
         columns.add(new ShardingSphereColumn("column2", Types.INTEGER, false, false, false, true, false, false));
-        when(table.getColumnValues()).thenReturn(columns);
+        when(table.getAllColumns()).thenReturn(columns);
         return result;
     }
 }

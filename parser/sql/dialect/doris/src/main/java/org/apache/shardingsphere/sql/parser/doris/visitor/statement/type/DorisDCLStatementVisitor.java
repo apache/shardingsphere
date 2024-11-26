@@ -89,7 +89,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Usernam
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType.UserResourceSpecifiedLimitType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.UserResourceSpecifiedLimitType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordOrLockOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;

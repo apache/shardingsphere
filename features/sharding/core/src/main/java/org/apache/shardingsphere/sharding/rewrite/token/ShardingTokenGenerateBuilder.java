@@ -52,7 +52,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuilder {
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     private final RouteContext routeContext;
     
@@ -61,13 +61,13 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        addSQLTokenGenerator(result, new ShardingTableTokenGenerator(shardingRule));
+        addSQLTokenGenerator(result, new ShardingTableTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingDistinctProjectionPrefixTokenGenerator());
         addSQLTokenGenerator(result, new ShardingProjectionsTokenGenerator());
         addSQLTokenGenerator(result, new ShardingOrderByTokenGenerator());
         addSQLTokenGenerator(result, new ShardingAggregationDistinctTokenGenerator());
-        addSQLTokenGenerator(result, new ShardingIndexTokenGenerator(shardingRule));
-        addSQLTokenGenerator(result, new ShardingConstraintTokenGenerator(shardingRule));
+        addSQLTokenGenerator(result, new ShardingIndexTokenGenerator(rule));
+        addSQLTokenGenerator(result, new ShardingConstraintTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingOffsetTokenGenerator());
         addSQLTokenGenerator(result, new ShardingRowCountTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertColumnTokenGenerator());
@@ -76,7 +76,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new ShardingInsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new ShardingRemoveTokenGenerator());
-        addSQLTokenGenerator(result, new ShardingCursorTokenGenerator(shardingRule));
+        addSQLTokenGenerator(result, new ShardingCursorTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingFetchDirectionTokenGenerator());
         return result;
     }

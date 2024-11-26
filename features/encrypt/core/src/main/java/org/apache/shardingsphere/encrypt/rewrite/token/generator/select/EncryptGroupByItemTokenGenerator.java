@@ -54,7 +54,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptGroupByItemTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, SchemaMetaDataAware, DatabaseTypeAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private Map<String, ShardingSphereSchema> schemas;
     
@@ -95,7 +95,7 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
     
     private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnSegment columnSegment, final Map<String, String> columnTableNames) {
         String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         String columnName = columnSegment.getIdentifier().getValue();
         if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {
             return Optional.empty();

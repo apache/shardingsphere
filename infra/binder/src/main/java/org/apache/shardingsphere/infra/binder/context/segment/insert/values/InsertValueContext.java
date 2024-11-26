@@ -23,7 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public final class InsertValueContext {
     
     public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> params, final int parametersOffset) {
         valueExpressions = getValueExpressions(assignments);
-        parameterMarkerExpressions = ExpressionExtractUtils.getParameterMarkerExpressions(assignments);
+        parameterMarkerExpressions = ExpressionExtractor.getParameterMarkerExpressions(assignments);
         parameterCount = parameterMarkerExpressions.size();
         parameters = getParameters(params, parametersOffset);
     }
