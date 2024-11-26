@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -54,7 +55,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
         ShardingSphereTable newTable = newShardingSphereTable(table);
         newTable.removeIndex(indexName);
         String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
-        newTable.putIndex(new ShardingSphereIndex(renameIndexName));
+        newTable.putIndex(new ShardingSphereIndex(renameIndexName, new LinkedList<>(), false));
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName);
         alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
         metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);

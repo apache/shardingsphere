@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Schema refresher for create index statement.
@@ -46,7 +47,7 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
         Preconditions.checkArgument(!Strings.isNullOrEmpty(indexName), "Index name is not exist.");
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereTable table = newShardingSphereTable(database.getSchema(schemaName).getTable(tableName));
-        table.putIndex(new ShardingSphereIndex(indexName));
+        table.putIndex(new ShardingSphereIndex(indexName, new LinkedList<>(), false));
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         alterSchemaMetaDataPOJO.getAlteredTables().add(table);
         metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
