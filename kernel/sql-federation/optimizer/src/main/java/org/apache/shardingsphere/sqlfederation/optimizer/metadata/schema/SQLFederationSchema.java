@@ -51,8 +51,8 @@ public final class SQLFederationSchema extends AbstractSchema {
     }
     
     private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
-        Map<String, Table> result = new CaseInsensitiveMap<>(schema.getTables().size(), 1F);
-        for (ShardingSphereTable each : schema.getTables().values()) {
+        Map<String, Table> result = new CaseInsensitiveMap<>(schema.getAllTables().size(), 1F);
+        for (ShardingSphereTable each : schema.getAllTables()) {
             if (schema.containsView(each.getName())) {
                 result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
             } else {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -30,14 +29,13 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * ShardingSphere schema.
  */
-@Getter
 public final class ShardingSphereSchema {
     
+    @Getter
     private final String name;
     
     private final Map<String, ShardingSphereTable> tables;
     
-    @Getter(AccessLevel.NONE)
     private final Map<String, ShardingSphereView> views;
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")

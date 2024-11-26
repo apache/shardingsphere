@@ -113,7 +113,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
         verify(databaseMetaDataFacade.getSchema(), times(0)).add("foo_db", "bar_schema");
-        verify(databaseMetaDataFacade.getTable()).persist("foo_db", "bar_schema", new HashMap<>());
+        verify(databaseMetaDataFacade.getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(databaseMetaDataFacade.getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(databaseMetaDataFacade.getSchema()).drop("foo_db", "foo_schema");
     }
@@ -132,7 +132,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
         verify(databaseMetaDataFacade.getSchema()).add("foo_db", "bar_schema");
-        verify(databaseMetaDataFacade.getTable()).persist("foo_db", "bar_schema", new HashMap<>());
+        verify(databaseMetaDataFacade.getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(databaseMetaDataFacade.getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(databaseMetaDataFacade.getSchema()).drop("foo_db", "foo_schema");
     }
