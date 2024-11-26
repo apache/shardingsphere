@@ -79,6 +79,29 @@ public final class TableMetaDataPersistService {
      * @param schemaName to be persisted schema name
      * @param tables to be persisted tables
      */
+    public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
+        Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
+        for (ShardingSphereTable each : tables) {
+            String tableName = each.getName().toLowerCase();
+            List<String> versions = metaDataVersionPersistService.getVersions(TableMetaDataNode.getTableVersionsNode(databaseName, schemaName, tableName));
+            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            repository.persist(
+                    TableMetaDataNode.getTableVersionNode(databaseName, schemaName, tableName, nextActiveVersion), YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(each)));
+            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, tableName))) {
+                repository.persist(TableMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName), MetaDataVersion.DEFAULT_VERSION);
+            }
+            metaDataVersions.add(new MetaDataVersion(TableMetaDataNode.getTableNode(databaseName, schemaName, tableName), getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
+        }
+        metaDataVersionPersistService.switchActiveVersion(metaDataVersions);
+    }
+    
+    /**
+     * Persist tables.
+     *
+     * @param databaseName to be persisted database name
+     * @param schemaName to be persisted schema name
+     * @param tables to be persisted tables
+     */
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {

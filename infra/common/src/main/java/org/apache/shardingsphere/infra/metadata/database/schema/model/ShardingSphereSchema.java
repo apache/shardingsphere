@@ -73,6 +73,15 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Get all tables.
+     *
+     * @return all tables
+     */
+    public Collection<ShardingSphereTable> getAllTables() {
+        return tables.values();
+    }
+    
+    /**
      * Judge whether contains table.
      *
      * @param tableName table name

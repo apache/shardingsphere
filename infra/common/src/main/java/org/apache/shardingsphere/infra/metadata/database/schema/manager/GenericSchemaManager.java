@@ -49,18 +49,19 @@ public final class GenericSchemaManager {
     }
     
     private static ShardingSphereSchema getToBeAddedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return new ShardingSphereSchema(currentSchema.getName(), getToBeAddedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
+        return new ShardingSphereSchema(currentSchema.getName(), getToBeAddedTables(reloadSchema, currentSchema), new LinkedHashMap<>());
     }
     
     /**
      * Get to be added tables.
      *
-     * @param reloadTables  reload tables
-     * @param currentTables current tables
+     * @param reloadSchema reload schema
+     * @param currentSchema current schema
      * @return to be added tables
      */
-    public static Map<String, ShardingSphereTable> getToBeAddedTables(final Map<String, ShardingSphereTable> reloadTables, final Map<String, ShardingSphereTable> currentTables) {
-        return reloadTables.entrySet().stream().filter(entry -> !entry.getValue().equals(currentTables.get(entry.getKey()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    public static Map<String, ShardingSphereTable> getToBeAddedTables(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
+        return reloadSchema.getAllTables().stream()
+                .filter(each -> !each.equals(currentSchema.getTable(each.getName().toLowerCase()))).collect(Collectors.toMap(each -> each.getName().toLowerCase(), each -> each));
     }
     
     /**

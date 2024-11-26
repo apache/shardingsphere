@@ -27,6 +27,7 @@ import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersio
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,7 +81,8 @@ public final class SchemaMetaDataPersistService {
             add(databaseName, schemaName);
         }
         Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
-        tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, currentTables, Collections.emptyMap());
+        tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema, currentSchema));
         GenericSchemaManager.getToBeDroppedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.drop(databaseName, schemaName, key));
     }
     

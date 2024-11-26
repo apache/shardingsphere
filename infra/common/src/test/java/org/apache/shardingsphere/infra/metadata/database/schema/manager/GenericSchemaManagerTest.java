@@ -58,8 +58,9 @@ class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeAddedTables() {
-        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeAddedTables(Collections.singletonMap("foo_table",
-                new ShardingSphereTable("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyMap());
+        ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema",
+                Collections.singleton(new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
+        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeAddedTables(reloadSchema, new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList()));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_table"));
     }

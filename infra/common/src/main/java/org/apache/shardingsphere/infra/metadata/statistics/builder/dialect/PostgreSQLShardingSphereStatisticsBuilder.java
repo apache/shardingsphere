@@ -94,10 +94,9 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     }
     
     private void initTables(final ShardingSphereSchema schema, final Collection<String> tables, final ShardingSphereSchemaData schemaData) {
-        for (Entry<String, ShardingSphereTable> entry : schema.getTables().entrySet()) {
-            if (tables.contains(entry.getValue().getName())) {
-                ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
-                schemaData.putTable(entry.getKey(), tableData);
+        for (ShardingSphereTable each : schema.getAllTables()) {
+            if (tables.contains(each.getName().toLowerCase())) {
+                schemaData.putTable(each.getName().toLowerCase(), new ShardingSphereTableData(each.getName()));
             }
         }
     }
