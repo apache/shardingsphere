@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine.dialect;
+package org.apache.shardingsphere.infra.route.type;
 
-import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutorDecider;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * SQL route executor decider for MySQL.
+ * Decorate SQL Router.
+ * 
+ * @param <T> type of rule
  */
-public final class MySQLSQLRouteExecutorDecider implements SQLRouteExecutorDecider {
-    
-    @Override
-    public boolean isNeedRouteAll(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof MySQLShowTablesStatement || sqlStatement instanceof MySQLShowTableStatusStatement;
-    }
+public interface TableSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
 }

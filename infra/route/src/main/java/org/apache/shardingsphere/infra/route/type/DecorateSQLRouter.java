@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route;
+package org.apache.shardingsphere.infra.route.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 /**
- * Entrance SQL Router.
+ * Decorate SQL Router.
  * 
  * @param <T> type of rule
  */
-public interface EntranceSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
+public interface DecorateSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
     
     /**
-     * Create route context.
+     * Decorate route context.
      *
+     * @param routeContext route context
      * @param queryContext query context
-     * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param rule rule
      * @param props configuration properties
-     * @return route context
      */
-    RouteContext createRouteContext(QueryContext queryContext,
-                                    RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
+    void decorateRouteContext(RouteContext routeContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
 }

@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine;
+package org.apache.shardingsphere.infra.route.type;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * SQL route executor decider.
+ * Decorate SQL Router.
+ * 
+ * @param <T> type of rule
  */
-@SingletonSPI
-public interface SQLRouteExecutorDecider {
-    
-    /**
-     * Judge is need route all resources.
-     *
-     * @param sqlStatement SQL statement
-     * @return is need route all resources or not
-     */
-    boolean isNeedRouteAll(SQLStatement sqlStatement);
+public interface DataSourceSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
 }

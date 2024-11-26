@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.route.fixture.decider;
 
-import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutorDecider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 public final class SQLRouteExecutorDeciderFixture implements SQLRouteExecutorDecider {
