@@ -155,7 +155,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, entry.getKey()));
             }
             Optional.ofNullable(toBeAddedTables.get(entry.getKey().toLowerCase())).ifPresent(optional -> database.getSchema(schemaName).putTable(entry.getKey(), optional));
-            database.getSchema(schemaName).putView(entry.getKey(), entry.getValue());
+            database.getSchema(schemaName).putView(entry.getValue());
         }
     }
     
