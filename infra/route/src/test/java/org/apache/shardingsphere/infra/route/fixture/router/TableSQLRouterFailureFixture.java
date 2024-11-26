@@ -19,12 +19,13 @@ package org.apache.shardingsphere.infra.route.fixture.router;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
+import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
+import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
-public final class SQLRouterFailureFixture implements DecorateSQLRouter<RouteFailureRuleFixture> {
+public final class TableSQLRouterFailureFixture implements DecorateSQLRouter<RouteFailureRuleFixture>, TableSQLRouter<RouteFailureRuleFixture> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,

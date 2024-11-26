@@ -15,5 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.route.fixture.router.SQLRouterFixture
-org.apache.shardingsphere.infra.route.fixture.router.SQLRouterFailureFixture
+org.apache.shardingsphere.infra.route.fixture.router.TableSQLRouterFixture
+org.apache.shardingsphere.infra.route.fixture.router.DataSourceSQLRouterFixture
+org.apache.shardingsphere.infra.route.fixture.router.TableSQLRouterFailureFixture
