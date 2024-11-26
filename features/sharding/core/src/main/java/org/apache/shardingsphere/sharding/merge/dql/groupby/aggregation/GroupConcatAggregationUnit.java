@@ -21,25 +21,24 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class GroupConcatAggregationUnit implements AggregationUnit {
-    
+
+    private static final String DEFAULT_SEPARATOR = ",";
+
     private final Collection<Comparable<?>> values = new ArrayList<>();
-    
-    private final static String DEFAULT_SEPARATOR = ",";
-    
+
     private String separator;
     
-    public GroupConcatAggregationUnit(String separator) {
+    public GroupConcatAggregationUnit(final String separator) {
         this.separator = separator;
     }
     
     @Override
-    public void merge(List<Comparable<?>> values) {
+    public void merge(final List<Comparable<?>> values) {
         if (null == values || null == values.get(0)) {
             return;
         }
