@@ -67,7 +67,7 @@ class ShardingSphereSchemaTest {
         actual.removeTable("tbl");
         assertNull(actual.getTable("tbl"));
     }
-     
+    
     @Test
     void assertContainsTable() {
         assertTrue(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", mock(ShardingSphereTable.class)), Collections.emptyMap()).containsTable("tbl"));
