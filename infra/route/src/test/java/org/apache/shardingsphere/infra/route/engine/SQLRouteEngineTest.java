@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.fixture.decider.RouteAllSQLStatementFixture;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
-import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
+import org.apache.shardingsphere.infra.route.fixture.rule.TableRouteRuleFixture;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -54,7 +54,8 @@ class SQLRouteEngineTest {
     void assertRouteToPartial() {
         ShardingSphereDatabase database = createDatabase();
         QueryContext queryContext = mockQueryContext(database, mock(SQLStatement.class));
-        RouteContext actual = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database);
+        RouteContext actual =
+                new SQLRouteEngine(Collections.singleton(new TableRouteRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -66,7 +67,8 @@ class SQLRouteEngineTest {
     void assertRouteToAll() {
         ShardingSphereDatabase database = createDatabase();
         QueryContext queryContext = mockQueryContext(database, new RouteAllSQLStatementFixture());
-        RouteContext actual = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database);
+        RouteContext actual =
+                new SQLRouteEngine(Collections.singleton(new TableRouteRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database);
         assertTrue(actual.getRouteUnits().isEmpty());
     }
     
@@ -79,7 +81,7 @@ class SQLRouteEngineTest {
     }
     
     private ShardingSphereDatabase createDatabase() {
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new RouteRuleFixture()));
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new TableRouteRuleFixture()));
         return new ShardingSphereDatabase("logic_schema", mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
     }
     

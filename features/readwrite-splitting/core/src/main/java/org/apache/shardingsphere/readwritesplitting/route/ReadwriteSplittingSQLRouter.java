@@ -20,10 +20,11 @@ package org.apache.shardingsphere.readwritesplitting.route;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.route.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.type.DataSourceSQLRouter;
+import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -35,7 +36,7 @@ import java.util.LinkedList;
  * Readwrite-splitting SQL router.
  */
 @HighFrequencyInvocation
-public final class ReadwriteSplittingSQLRouter implements DecorateSQLRouter<ReadwriteSplittingRule> {
+public final class ReadwriteSplittingSQLRouter implements DecorateSQLRouter<ReadwriteSplittingRule>, DataSourceSQLRouter<ReadwriteSplittingRule> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,

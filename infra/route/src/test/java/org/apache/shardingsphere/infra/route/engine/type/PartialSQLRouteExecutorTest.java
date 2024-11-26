@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.fixture.rule.DataSourceRouteRuleFixture;
+import org.apache.shardingsphere.infra.route.fixture.rule.TableRouteRuleFixture;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +39,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +55,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PartialSQLRouteExecutorTest {
     
-    private final PartialSQLRouteExecutor sqlRouteExecutor = new PartialSQLRouteExecutor(Collections.emptyList(), new ConfigurationProperties(new Properties()));
+    private final PartialSQLRouteExecutor sqlRouteExecutor =
+            new PartialSQLRouteExecutor(Arrays.asList(new TableRouteRuleFixture(), new DataSourceRouteRuleFixture()), new ConfigurationProperties(new Properties()));
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -111,5 +115,23 @@ class PartialSQLRouteExecutorTest {
             QueryContext logicSQL = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
             assertThrows(DataSourceHintNotExistsException.class, () -> sqlRouteExecutor.route(logicSQL, mock(RuleMetaData.class), database));
         }
+    }
+    
+    @Test
+    void assertRouteWithShardingSphereRule() {
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+        RouteContext routeContext = sqlRouteExecutor.route(queryContext, mock(RuleMetaData.class), database);
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_0"));
+    }
+    
+    @Test
+    void assertRouteWithEmptyRouteContext() {
+        PartialSQLRouteExecutor sqlRouteExecutor = new PartialSQLRouteExecutor(Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
+        RouteContext routeContext = sqlRouteExecutor.route(queryContext, mock(RuleMetaData.class), database);
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_0"));
     }
 }
