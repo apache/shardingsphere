@@ -142,7 +142,7 @@ public final class TableMetaDataPersistService {
      * @param schemaName to be dropped schema name
      * @param tables to be dropped tables
      */
-    public void drop(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
-        tables.forEach((key, value) -> drop(databaseName, schemaName, key));
+    public void drop(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
+        tables.forEach(each -> drop(databaseName, schemaName, each.getName()));
     }
 }

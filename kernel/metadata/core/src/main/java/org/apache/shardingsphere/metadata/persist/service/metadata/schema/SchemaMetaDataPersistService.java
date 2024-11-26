@@ -97,7 +97,7 @@ public final class SchemaMetaDataPersistService {
         if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
+        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getAllTables());
     }
     
     /**
@@ -108,7 +108,7 @@ public final class SchemaMetaDataPersistService {
      * @param schema to be altered schema
      */
     public void alterByRuleDropped(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
+        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getAllTables());
     }
     
     /**

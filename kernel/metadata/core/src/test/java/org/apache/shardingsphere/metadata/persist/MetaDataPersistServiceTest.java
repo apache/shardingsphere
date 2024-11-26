@@ -151,7 +151,7 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_added", toBeAddedSchema));
         metaDataPersistService.persistReloadDatabaseByAlter("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
         verify(databaseMetaDataFacade.getSchema()).alterByRuleAltered("foo_db", toBeAddedSchema);
-        verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
+        verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyList());
     }
     
     @Test
@@ -162,6 +162,6 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_altered", toBeAlterSchema));
         metaDataPersistService.persistReloadDatabaseByDrop("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
         verify(databaseMetaDataFacade.getSchema()).alterByRuleDropped("foo_db", "to_be_altered", toBeAlterSchema);
-        verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyMap());
+        verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyList());
     }
 }

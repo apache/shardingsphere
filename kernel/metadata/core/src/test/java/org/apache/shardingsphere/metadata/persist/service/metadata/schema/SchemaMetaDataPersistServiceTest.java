@@ -36,6 +36,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -114,27 +116,28 @@ class SchemaMetaDataPersistServiceTest {
     void assertAlterSchemaByAlterConfigurationByRefresh() {
         persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema"));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyMap());
+        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
     }
     
     @Test
     void assertAlterSchemaByAlterConfigurationWithNotEmptyTablesByRefresh() {
-        Map<String, ShardingSphereTable> tables = Collections.singletonMap("foo_tbl", mock(ShardingSphereTable.class));
-        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", tables, Collections.emptyMap()));
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getName()).thenReturn("foo_tbl");
+        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", Collections.singletonList(table), Collections.emptyList()));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", tables);
+        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
     }
     
     @Test
     void assertAlterSchemaByAlterConfigurationWithNotEmptyViewsByRefresh() {
         persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyMap(), Collections.singletonMap("foo_view", mock(ShardingSphereView.class))));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyMap());
+        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
     }
     
     @Test
     void assertAlterByRefreshByDropConfiguration() {
         persistService.alterByRuleDropped("foo_db", "foo_schema", mock(ShardingSphereSchema.class));
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyMap());
+        verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
     }
 }

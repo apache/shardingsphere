@@ -60,11 +60,11 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     
     private Collection<ShardingSphereRowData> collectForSchema(final Long oid, final Long relNamespace, final ShardingSphereSchema schema, final ShardingSphereTable table) {
         Collection<ShardingSphereRowData> result = new LinkedList<>();
-        for (Entry<String, ShardingSphereTable> entry : schema.getTables().entrySet()) {
+        for (ShardingSphereTable each : schema.getAllTables()) {
             Map<String, Object> columnValues = new CaseInsensitiveMap<>(4, 1F);
             columnValues.put("oid", oid);
             columnValues.put("relnamespace", relNamespace);
-            columnValues.put("relname", entry.getKey());
+            columnValues.put("relname", each.getName());
             columnValues.put("relkind", "r");
             result.add(new ShardingSphereRowData(ShardingSphereTableDataCollectorUtils.createRowValue(columnValues, table)));
         }
