@@ -15,25 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine;
+package org.apache.shardingsphere.infra.route.engine.tableless.router;
 
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngineFactory;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 /**
- * SQL route executor.
+ * Tableless sql router.
  */
-public interface SQLRouteExecutor {
+public final class TablelessSQLRouter {
     
     /**
      * Route.
      *
      * @param queryContext query context
      * @param globalRuleMetaData global rule meta data
-     * @param database database
+     * @param database sharding sphere database
+     * @param routeContext route context
      * @return route context
      */
-    RouteContext route(QueryContext queryContext, RuleMetaData globalRuleMetaData, ShardingSphereDatabase database);
+    public RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final RouteContext routeContext) {
+        if (routeContext.getRouteUnits().isEmpty() && SQLStatementContextExtractor.getTableNames(database, queryContext.getSqlStatementContext()).isEmpty()) {
+            return TablelessRouteEngineFactory.newInstance(queryContext).route(globalRuleMetaData, database);
+        }
+        return routeContext;
+    }
 }

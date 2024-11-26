@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.fixture.decider;
+package org.apache.shardingsphere.infra.route.engine.tableless.type.ignore;
 
-import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutorDecider;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
 
-public final class SQLRouteExecutorDeciderFixture implements SQLRouteExecutorDecider {
+/**
+ * Ignore route engine.
+ */
+public final class IgnoreRouteEngine implements TablelessRouteEngine {
     
     @Override
-    public boolean isNeedRouteAll(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof RouteAllSQLStatementFixture;
+    public RouteContext route(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+        return new RouteContext();
     }
 }
