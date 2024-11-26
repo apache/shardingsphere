@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
@@ -915,7 +916,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 ? createAggregationSegment(ctx, aggregationType)
                 : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
-    
+
+    @Override
+    public ASTNode visitSeparatorName(final MySQLStatementParser.SeparatorNameContext ctx) {
+        return new StringLiteralValue(ctx.string_().getText());
+    }
+
     @Override
     public final ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
         JsonFunctionNameContext functionNameContext = ctx.jsonFunctionName();
@@ -965,7 +971,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx));
         if (null != ctx.separatorName()) {
-            result.setSeparator(ctx.separatorName().string_().getText());
+            result.setSeparator(new StringLiteralValue(ctx.separatorName().string_().getText()).getValue());
         }
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;

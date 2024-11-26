@@ -28,24 +28,24 @@ class GroupConcatAggregationUnitTest {
     
     @Test
     void assertGroupConcatAggregation() {
-        GroupConcatAggregationUnit comparableAggregation = new GroupConcatAggregationUnit(" ");
-        comparableAggregation.merge(null);
-        comparableAggregation.merge(Collections.singletonList(null));
-        comparableAggregation.merge(Collections.singletonList("001"));
-        comparableAggregation.merge(Collections.singletonList("002"));
-        comparableAggregation.merge(Collections.singletonList("002 003"));
-        assertThat(comparableAggregation.getResult(), is("001 002 002 003"));
+        GroupConcatAggregationUnit groupConcatAggregationUnit = new GroupConcatAggregationUnit(" ");
+        groupConcatAggregationUnit.merge(null);
+        groupConcatAggregationUnit.merge(Collections.singletonList(null));
+        groupConcatAggregationUnit.merge(Collections.singletonList("001"));
+        groupConcatAggregationUnit.merge(Collections.singletonList("002"));
+        groupConcatAggregationUnit.merge(Collections.singletonList("002 003"));
+        assertThat(groupConcatAggregationUnit.getResult(), is("001 002 002 003"));
     }
     
     @Test
     void assertDistinctGroupConcatAggregation() {
-        GroupConcatAggregationUnit comparableAggregation = new GroupConcatAggregationUnit(" ");
-        comparableAggregation.merge(null);
-        comparableAggregation.merge(Collections.singletonList(null));
-        comparableAggregation.merge(Collections.singletonList(""));
-        comparableAggregation.merge(Collections.singletonList("001"));
-        comparableAggregation.merge(Collections.singletonList("001"));
-        comparableAggregation.merge(Collections.singletonList("001 003"));
-        assertThat(comparableAggregation.getResult(), is(" 001 003"));
+        DistinctGroupConcatAggregationUnit distinctGroupConcatAggregationUnit = new DistinctGroupConcatAggregationUnit(" ");
+        distinctGroupConcatAggregationUnit.merge(null);
+        distinctGroupConcatAggregationUnit.merge(Collections.singletonList(null));
+        distinctGroupConcatAggregationUnit.merge(Collections.singletonList(""));
+        distinctGroupConcatAggregationUnit.merge(Collections.singletonList("001"));
+        distinctGroupConcatAggregationUnit.merge(Collections.singletonList("001"));
+        distinctGroupConcatAggregationUnit.merge(Collections.singletonList("001 003"));
+        assertThat(distinctGroupConcatAggregationUnit.getResult(), is(" 001 003"));
     }
 }

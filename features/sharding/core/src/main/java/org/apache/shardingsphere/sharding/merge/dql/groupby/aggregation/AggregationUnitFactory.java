@@ -64,7 +64,7 @@ public final class AggregationUnitFactory {
             case BIT_XOR:
                 return new BitXorAggregationUnit();
             case GROUP_CONCAT:
-                return isDistinct ? new GroupConcatAggregationUnit(separator) : new DistinctGroupConcatAggregationUnit(separator);
+                return isDistinct ? new DistinctGroupConcatAggregationUnit(separator) : new GroupConcatAggregationUnit(separator);
             default:
                 throw new UnsupportedSQLOperationException(type.name());
         }
