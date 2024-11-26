@@ -38,12 +38,6 @@ class ShardingSphereSchemaTest {
     }
     
     @Test
-    void assertGetAllViewNames() {
-        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", mock(ShardingSphereTable.class)),
-                Collections.singletonMap("tbl_view", mock(ShardingSphereView.class))).getAllViewNames(), is(new HashSet<>(Collections.singleton("tbl_view"))));
-    }
-    
-    @Test
     void assertGetTable() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).getTable("tbl"), is(table));

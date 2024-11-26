@@ -63,15 +63,6 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Get all view names.
-     *
-     * @return all view names
-     */
-    public Collection<String> getAllViewNames() {
-        return views.keySet();
-    }
-    
-    /**
      * Get table.
      *
      * @param tableName table name
