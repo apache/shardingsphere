@@ -85,11 +85,10 @@ public final class ShardingSphereSchema {
     /**
      * Add table.
      *
-     * @param tableName table name
      * @param table table
      */
-    public void putTable(final String tableName, final ShardingSphereTable table) {
-        tables.put(tableName.toLowerCase(), table);
+    public void putTable(final ShardingSphereTable table) {
+        tables.put(table.getName().toLowerCase(), table);
     }
     
     /**
@@ -99,7 +98,7 @@ public final class ShardingSphereSchema {
      */
     public void putTables(final Map<String, ShardingSphereTable> tables) {
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
-            putTable(entry.getKey(), entry.getValue());
+            putTable(entry.getValue());
         }
     }
     

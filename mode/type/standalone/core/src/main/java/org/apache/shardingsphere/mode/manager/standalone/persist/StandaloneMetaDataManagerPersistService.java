@@ -144,7 +144,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(entry.getKey(), database)) {
                 database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
             }
-            database.getSchema(schemaName).putTable(entry.getKey(), entry.getValue());
+            database.getSchema(schemaName).putTable(entry.getValue());
         }
     }
     
@@ -154,7 +154,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(entry.getKey(), database)) {
                 database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, entry.getKey()));
             }
-            Optional.ofNullable(toBeAddedTables.get(entry.getKey().toLowerCase())).ifPresent(optional -> database.getSchema(schemaName).putTable(entry.getKey(), optional));
+            Optional.ofNullable(toBeAddedTables.get(entry.getKey().toLowerCase())).ifPresent(optional -> database.getSchema(schemaName).putTable(optional));
             database.getSchema(schemaName).putView(entry.getValue());
         }
     }
@@ -366,7 +366,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(table.getName(), database)) {
             database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, table.getName()));
         }
-        database.getSchema(schemaName).putTable(table.getName(), table);
+        database.getSchema(schemaName).putTable(table);
     }
     
     private void clearServiceCache() {

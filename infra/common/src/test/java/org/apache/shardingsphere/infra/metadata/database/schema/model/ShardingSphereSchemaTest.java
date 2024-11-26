@@ -28,6 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ShardingSphereSchemaTest {
     
@@ -55,7 +56,8 @@ class ShardingSphereSchemaTest {
     void assertPutTable() {
         ShardingSphereSchema actual = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyMap());
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        actual.putTable("tbl", table);
+        when(table.getName()).thenReturn("tbl");
+        actual.putTable(table);
         assertThat(actual.getTable("tbl"), is(table));
     }
     

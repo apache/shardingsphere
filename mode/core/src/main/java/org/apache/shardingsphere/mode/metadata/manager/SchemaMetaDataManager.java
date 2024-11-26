@@ -155,7 +155,7 @@ public final class SchemaMetaDataManager {
         if (TableRefreshUtils.isSingleTable(beBoChangedTable.getName(), database)) {
             database.reloadRules();
         }
-        database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
+        database.getSchema(schemaName).putTable(beBoChangedTable);
     }
     
     private void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
