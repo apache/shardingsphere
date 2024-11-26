@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 
-import lombok.NoArgsConstructor;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 public class DistinctGroupConcatAggregationUnit implements AggregationUnit {
-    
+
+    private static final String DEFAULT_SEPARATOR = ",";
+
     private final Collection<String> values = new HashSet<>();
-    
-    private final static String DEFAULT_SEPARATOR = ",";
-    
+
     private final String separator;
     
-    public DistinctGroupConcatAggregationUnit(String separator) {
+    public DistinctGroupConcatAggregationUnit(final String separator) {
         this.separator = null == separator ? DEFAULT_SEPARATOR : separator;
     }
     
     @Override
-    public void merge(List<Comparable<?>> values) {
+    public void merge(final List<Comparable<?>> values) {
         if (null == values || null == values.get(0)) {
             return;
         }
