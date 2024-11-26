@@ -34,10 +34,10 @@ class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeAddedTablesBySchemas() {
-        Map<String, ShardingSphereSchema> reloadSchemas = Collections.singletonMap("foo_schema",
-                new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_table", new ShardingSphereTable("foo_table",
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap()));
-        Map<String, ShardingSphereSchema> currentSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyMap()));
+        Map<String, ShardingSphereSchema> reloadSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME,
+                Collections.singleton(new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList()));
+        Map<String, ShardingSphereSchema> currentSchemas = Collections.singletonMap(
+                "foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyMap()));
         Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadSchemas, currentSchemas);
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_schema").getAllTables().size(), is(1));
@@ -46,9 +46,8 @@ class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeDroppedTablesBySchemas() {
-        Map<String, ShardingSphereSchema> currentSchemas = Collections.singletonMap("foo_schema",
-                new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_table", new ShardingSphereTable("foo_table",
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap()));
+        Map<String, ShardingSphereSchema> currentSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME,
+                Collections.singleton(new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList()));
         Map<String, ShardingSphereSchema> reloadSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyMap()));
         Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadSchemas, currentSchemas);
         assertThat(actual.size(), is(1));

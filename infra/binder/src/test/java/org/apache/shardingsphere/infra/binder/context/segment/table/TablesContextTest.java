@@ -37,8 +37,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -129,8 +127,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
         ShardingSphereTable table = new ShardingSphereTable("TABLE_1",
                 Collections.singletonList(new ShardingSphereColumn("COL", 0, false, false, true, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema =
-                new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)), Collections.emptyMap());
+        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(table), Collections.emptyList());
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
                 databaseType, DefaultDatabase.LOGIC_NAME).findTableNames(Collections.singletonList(columnSegment), schema);
