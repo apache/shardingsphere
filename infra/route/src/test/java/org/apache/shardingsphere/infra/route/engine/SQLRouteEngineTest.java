@@ -18,81 +18,120 @@
 package org.apache.shardingsphere.infra.route.engine;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.hint.DataSourceHintNotExistsException;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.fixture.decider.RouteAllSQLStatementFixture;
-import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
+import org.apache.shardingsphere.infra.route.fixture.rule.DataSourceRouteRuleFixture;
 import org.apache.shardingsphere.infra.route.fixture.rule.TableRouteRuleFixture;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class SQLRouteEngineTest {
     
-    @Test
-    void assertRouteToPartial() {
-        ShardingSphereDatabase database = createDatabase();
-        QueryContext queryContext = mockQueryContext(database, mock(SQLStatement.class));
-        RouteContext actual =
-                new SQLRouteEngine(Collections.singleton(new TableRouteRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database);
-        assertThat(actual.getRouteUnits().size(), is(1));
-        RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
-        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
-        assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_0"));
-        assertTrue(routeUnit.getTableMappers().isEmpty());
+    private final SQLRouteEngine sqlRouteEngine =
+            new SQLRouteEngine(Arrays.asList(new TableRouteRuleFixture(), new DataSourceRouteRuleFixture()), new ConfigurationProperties(new Properties()));
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
+    
+    @Mock
+    private ShardingSphereMetaData metaData;
+    
+    @Mock
+    private CommonSQLStatementContext sqlStatementContext;
+    
+    @Mock
+    private HintValueContext hintValueContext;
+    
+    private final ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
+    
+    @BeforeEach
+    void setup() {
+        Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
+        storageUnits.put("ds_0", mock(StorageUnit.class));
+        storageUnits.put("ds_1", mock(StorageUnit.class));
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
+        connectionContext.setCurrentDatabaseName(DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
-    void assertRouteToAll() {
-        ShardingSphereDatabase database = createDatabase();
-        QueryContext queryContext = mockQueryContext(database, new RouteAllSQLStatementFixture());
-        RouteContext actual =
-                new SQLRouteEngine(Collections.singleton(new TableRouteRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database);
-        assertTrue(actual.getRouteUnits().isEmpty());
+    void assertRouteBySQLCommentHint() {
+        when(hintValueContext.findHintDataSourceName()).thenReturn(Optional.of("ds_1"));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, connectionContext, metaData);
+        RouteContext routeContext = sqlRouteEngine.route(queryContext, mock(RuleMetaData.class), database);
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));
     }
     
     @Test
-    void assertRouteFailed() {
-        ShardingSphereDatabase database = createDatabase();
-        QueryContext queryContext = mockQueryContext(database, mock(SQLStatement.class));
-        assertThrows(UnsupportedOperationException.class, () -> new SQLRouteEngine(
-                Collections.singleton(new RouteFailureRuleFixture()), new ConfigurationProperties(new Properties())).route(queryContext, mock(RuleMetaData.class), database));
+    void assertRouteByHintManagerHint() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDataSourceName("ds_1");
+            QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+            RouteContext routeContext = sqlRouteEngine.route(queryContext, mock(RuleMetaData.class), database);
+            assertThat(routeContext.getRouteUnits().size(), is(1));
+            assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));
+        }
     }
     
-    private ShardingSphereDatabase createDatabase() {
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new TableRouteRuleFixture()));
-        return new ShardingSphereDatabase("logic_schema", mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+    @Test
+    void assertRouteBySQLCommentHintWithException() {
+        when(hintValueContext.findHintDataSourceName()).thenReturn(Optional.of("ds_3"));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, connectionContext, metaData);
+        assertThrows(DataSourceHintNotExistsException.class, () -> sqlRouteEngine.route(queryContext, mock(RuleMetaData.class), database));
     }
     
-    private QueryContext mockQueryContext(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        ConnectionContext connectionContext = mock(ConnectionContext.class);
-        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("logic_schema"));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabase("logic_schema")).thenReturn(database);
-        when(metaData.containsDatabase("logic_schema")).thenReturn(true);
-        SQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new QueryContext(sqlStatementContext, "SELECT 1", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+    @Test
+    void assertRouteByHintManagerHintWithException() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDataSourceName("ds_3");
+            QueryContext logicSQL = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+            assertThrows(DataSourceHintNotExistsException.class, () -> sqlRouteEngine.route(logicSQL, mock(RuleMetaData.class), database));
+        }
+    }
+    
+    @Test
+    void assertRouteWithShardingSphereRule() {
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+        RouteContext routeContext = sqlRouteEngine.route(queryContext, mock(RuleMetaData.class), database);
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_0"));
+    }
+    
+    @Test
+    void assertRouteWithEmptyRouteContext() {
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
+        RouteContext routeContext = sqlRouteEngine.route(queryContext, mock(RuleMetaData.class), database);
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_0"));
     }
 }
