@@ -43,6 +43,9 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     private final String expression;
     
+    @Setter
+    private String separator;
+    
     private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
     @Setter

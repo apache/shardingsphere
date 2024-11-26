@@ -37,6 +37,19 @@ public final class AggregationUnitFactory {
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static AggregationUnit create(final AggregationType type, final boolean isDistinct) {
+        return create(type, isDistinct, null);
+    }
+    
+    /**
+     * Create aggregation unit instance.
+     *
+     * @param type aggregation function type
+     * @param isDistinct is distinct
+     * @param separator is separator for group_concat
+     * @return aggregation unit instance
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
+     */
+    public static AggregationUnit create(final AggregationType type, final boolean isDistinct, final String separator) {
         switch (type) {
             case MAX:
                 return new ComparableAggregationUnit(false);
@@ -50,6 +63,8 @@ public final class AggregationUnitFactory {
                 return isDistinct ? new DistinctAverageAggregationUnit() : new AverageAggregationUnit();
             case BIT_XOR:
                 return new BitXorAggregationUnit();
+            case GROUP_CONCAT:
+                return isDistinct ? new GroupConcatAggregationUnit(separator) : new DistinctGroupConcatAggregationUnit(separator);
             default:
                 throw new UnsupportedSQLOperationException(type.name());
         }

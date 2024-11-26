@@ -964,6 +964,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return result;
         }
         AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx));
+        if (null != ctx.separatorName()) {
+            result.setSeparator(ctx.separatorName().string_().getText());
+        }
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }

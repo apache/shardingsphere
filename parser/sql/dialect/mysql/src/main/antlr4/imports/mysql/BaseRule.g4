@@ -961,8 +961,12 @@ udfFunction
     : functionName LP_ (expr? | expr (COMMA_ expr)*) RP_
     ;
 
+separatorName
+    : SEPARATOR string_
+    ;
+
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? orderByClause? separatorName? RP_ overClause?
     ;
 
 jsonFunction

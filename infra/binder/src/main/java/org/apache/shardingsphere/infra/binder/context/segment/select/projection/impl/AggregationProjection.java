@@ -50,7 +50,17 @@ public class AggregationProjection implements Projection {
     
     private final DatabaseType databaseType;
     
+    private final String separator;
+    
     private final List<AggregationProjection> derivedAggregationProjections = new ArrayList<>(2);
+    
+    public AggregationProjection(AggregationType type, String expression, IdentifierValue alias, DatabaseType databaseType) {
+        this.type = type;
+        this.expression = expression;
+        this.alias = alias;
+        this.databaseType = databaseType;
+        this.separator = null;
+    }
     
     @Setter
     private int index = -1;

@@ -131,7 +131,8 @@ public final class ProjectionEngine {
     }
     
     private AggregationProjection createProjection(final AggregationProjectionSegment projectionSegment) {
-        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), projectionSegment.getExpression(), projectionSegment.getAlias().orElse(null), databaseType);
+        AggregationProjection result =
+                new AggregationProjection(projectionSegment.getType(), projectionSegment.getExpression(), projectionSegment.getAlias().orElse(null), databaseType, projectionSegment.getSeparator());
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
             // TODO replace avg to constant, avoid calculate useless avg

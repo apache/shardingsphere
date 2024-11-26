@@ -61,4 +61,10 @@ class AggregationUnitFactoryTest {
     void assertCreateBitXorAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.BIT_XOR, false), instanceOf(BitXorAggregationUnit.class));
     }
+    
+    @Test
+    void assertGroupConcatAggregationUnit() {
+        assertThat(AggregationUnitFactory.create(AggregationType.GROUP_CONCAT, true), instanceOf(DistinctGroupConcatAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.GROUP_CONCAT, true, " "), instanceOf(DistinctGroupConcatAggregationUnit.class));
+    }
 }
