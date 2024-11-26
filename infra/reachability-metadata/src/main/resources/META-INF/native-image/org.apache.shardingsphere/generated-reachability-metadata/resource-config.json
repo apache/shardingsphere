@@ -79,7 +79,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007ff897b369d0"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f547fb36cb8"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
@@ -259,7 +259,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.type.PartialSQLRouteExecutor"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.SQLRouteEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.route.SQLRouter\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
@@ -1964,10 +1964,13 @@
     "pattern":"\\Qtest-native/yaml/jdbc/databases/clickhouse.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive/simple.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive/acid.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
-    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive/zookeeper-sde.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive/iceberg.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
+    "pattern":"\\Qtest-native/yaml/jdbc/databases/hive/zsd.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"},
     "pattern":"\\Qtest-native/yaml/jdbc/databases/mysql.yaml\\E"

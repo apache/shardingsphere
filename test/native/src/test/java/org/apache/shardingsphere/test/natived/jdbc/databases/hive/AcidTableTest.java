@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.nullValue;
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
 @EnabledInNativeImage
 @Testcontainers
-class HiveSimpleTest {
+class AcidTableTest {
     
     @SuppressWarnings("resource")
     @Container
@@ -53,10 +53,10 @@ class HiveSimpleTest {
             .withEnv("SERVICE_NAME", "hiveserver2")
             .withExposedPorts(10000);
     
-    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.hive.simple.";
+    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.hive.acid.";
     
     // Due to https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter of HiveServer2 JDBC Driver must be an absolute path.
-    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive.sql").toAbsolutePath().toString();
+    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive-acid.sql").toAbsolutePath().toString();
     
     private String jdbcUrlPrefix;
     
@@ -101,7 +101,7 @@ class HiveSimpleTest {
         }
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/simple.yaml?placeholder-type=system_props");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/acid.yaml?placeholder-type=system_props");
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0" + ";initFile=" + ABSOLUTE_PATH);
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1" + ";initFile=" + ABSOLUTE_PATH);
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2" + ";initFile=" + ABSOLUTE_PATH);

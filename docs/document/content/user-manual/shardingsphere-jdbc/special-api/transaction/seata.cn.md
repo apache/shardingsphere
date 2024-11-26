@@ -308,7 +308,7 @@ public class DemoService {
 }
 ```
 
-此时在微服务实例 `a-service` 和 `b-service` 均需要添加自定义的 `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` 实现。
+此时在微服务实例 `a-service` 需要添加自定义的 `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` 实现。
 
 ```java
 import org.apache.seata.integration.http.TransactionPropagationInterceptor;
@@ -356,7 +356,7 @@ public class DemoService {
 }
 ```
 
-此时在微服务实例 `a-service` 和 `b-service` 均需要添加自定义的 `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` 实现。
+此时在微服务实例 `a-service` 需要添加自定义的 `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` 实现。
 
 ```java
 import org.apache.seata.integration.http.JakartaTransactionPropagationInterceptor;
@@ -380,7 +380,8 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 用户需要考虑更改把 XID 通过服务调用传递到微服务实例 `a-service` 使用的 HTTP Header，或使用 RPC 框架把 XID 通过服务调用传递到微服务实例 `a-service`。
 参考 https://github.com/apache/incubator-seata/tree/v2.1.0/integration 。
 
-4. 微服务实例 `a-service` 和 `b-service` 均为 Quarkus，Micronaut Framework 和 Helidon 等微服务。此情况下无法使用 Spring WebMVC HandlerInterceptor。
+4. 微服务实例 `a-service` 和 `b-service` 均为 Quarkus，Micronaut Framework 和 Helidon 等微服务。
+此情况下无法使用 Spring WebMVC HandlerInterceptor。
 可参考如下 Spring Boot 3 的自定义 WebMvcConfigurer 实现，来实现 Filter。
 
 ```java
@@ -393,7 +394,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 @Configuration
 public class CustomWebMvcConfigurer implements WebMvcConfigurer {
     @Override
@@ -408,7 +408,6 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
                 }
                 return true;
             }
-
             @Override
             public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex) {
                 if (RootContext.inGlobalTransaction()) {
