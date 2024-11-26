@@ -163,7 +163,7 @@ public final class SchemaMetaDataManager {
         if (TableRefreshUtils.isSingleTable(beBoChangedView.getName(), database)) {
             database.reloadRules();
         }
-        database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
+        database.getSchema(schemaName).putView(beBoChangedView);
     }
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {

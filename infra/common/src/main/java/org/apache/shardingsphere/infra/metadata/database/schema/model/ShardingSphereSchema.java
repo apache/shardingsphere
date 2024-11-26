@@ -93,16 +93,6 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Add view.
-     *
-     * @param viewName view name
-     * @param view view
-     */
-    public void putView(final String viewName, final ShardingSphereView view) {
-        views.put(viewName.toLowerCase(), view);
-    }
-    
-    /**
      * Add tables.
      *
      * @param tables tables
@@ -111,6 +101,15 @@ public final class ShardingSphereSchema {
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
             putTable(entry.getKey(), entry.getValue());
         }
+    }
+    
+    /**
+     * Add view.
+     *
+     * @param view view
+     */
+    public void putView(final ShardingSphereView view) {
+        views.put(view.getName().toLowerCase(), view);
     }
     
     /**
