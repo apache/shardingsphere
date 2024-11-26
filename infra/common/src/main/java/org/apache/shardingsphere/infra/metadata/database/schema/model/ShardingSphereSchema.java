@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -36,6 +37,7 @@ public final class ShardingSphereSchema {
     
     private final Map<String, ShardingSphereTable> tables;
     
+    @Getter(AccessLevel.NONE)
     private final Map<String, ShardingSphereView> views;
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
@@ -117,6 +119,15 @@ public final class ShardingSphereSchema {
      */
     public void removeTable(final String tableName) {
         tables.remove(tableName.toLowerCase());
+    }
+    
+    /**
+     * Get all views.
+     * 
+     * @return all views
+     */
+    public Collection<ShardingSphereView> getAllViews() {
+        return views.values();
     }
     
     /**

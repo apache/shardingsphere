@@ -96,7 +96,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, alterSchemaPOJO.getRenameSchemaName());
         }
         metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema.getTables());
-        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema.getViews().values());
+        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema.getAllViews());
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
     }
     

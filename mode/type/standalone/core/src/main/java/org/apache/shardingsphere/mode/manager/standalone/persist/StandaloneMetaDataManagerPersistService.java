@@ -115,7 +115,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, alteredSchemaName);
         }
         metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, alteredSchemaName, alteredSchema.getTables());
-        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, alteredSchemaName, alteredSchema.getViews().values());
+        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, alteredSchemaName, alteredSchema.getAllViews());
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, alterSchemaPOJO.getSchemaName());
     }
     
@@ -160,7 +160,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {
-        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, database.getSchema(schemaName).getTables().values(), database.getSchema(schemaName).getViews().values());
+        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, database.getSchema(schemaName).getTables().values(), database.getSchema(schemaName).getAllViews());
         database.dropSchema(schemaName);
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singletonList(schemaName), schema.getAllTableNames());
     }
@@ -197,7 +197,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().get().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         for (String each : schemaNames) {
-            ShardingSphereSchema schema = new ShardingSphereSchema(each, database.getSchema(each).getTables().values(), database.getSchema(each).getViews().values());
+            ShardingSphereSchema schema = new ShardingSphereSchema(each, database.getSchema(each).getTables().values(), database.getSchema(each).getAllViews());
             database.dropSchema(each);
             Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());

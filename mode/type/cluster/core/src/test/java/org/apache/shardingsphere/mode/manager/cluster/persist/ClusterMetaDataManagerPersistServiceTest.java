@@ -114,8 +114,7 @@ class ClusterMetaDataManagerPersistServiceTest {
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(schema);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "bar_schema", Collections.emptyMap());
-        // TODO zhangliang FIXME
-//        verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist("foo_db", "bar_schema", Collections.emptyList());
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
     }
     
