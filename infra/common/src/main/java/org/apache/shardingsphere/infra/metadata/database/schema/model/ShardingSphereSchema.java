@@ -63,6 +63,16 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Judge whether contains table.
+     *
+     * @param tableName table name
+     * @return contains table or not
+     */
+    public boolean containsTable(final String tableName) {
+        return tables.containsKey(tableName.toLowerCase());
+    }
+    
+    /**
      * Get table.
      *
      * @param tableName table name
@@ -70,16 +80,6 @@ public final class ShardingSphereSchema {
      */
     public ShardingSphereTable getTable(final String tableName) {
         return tables.get(tableName.toLowerCase());
-    }
-    
-    /**
-     * Get view.
-     *
-     * @param viewName view name
-     * @return view
-     */
-    public ShardingSphereView getView(final String viewName) {
-        return views.get(viewName.toLowerCase());
     }
     
     /**
@@ -103,21 +103,41 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Add view.
-     *
-     * @param view view
-     */
-    public void putView(final ShardingSphereView view) {
-        views.put(view.getName().toLowerCase(), view);
-    }
-    
-    /**
      * Remove table.
      *
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
         tables.remove(tableName.toLowerCase());
+    }
+    
+    /**
+     * Judge whether contains view.
+     *
+     * @param viewName view name
+     * @return contains view or not
+     */
+    public boolean containsView(final String viewName) {
+        return views.containsKey(viewName.toLowerCase());
+    }
+    
+    /**
+     * Get view.
+     *
+     * @param viewName view name
+     * @return view
+     */
+    public ShardingSphereView getView(final String viewName) {
+        return views.get(viewName.toLowerCase());
+    }
+    
+    /**
+     * Add view.
+     *
+     * @param view view
+     */
+    public void putView(final ShardingSphereView view) {
+        views.put(view.getName().toLowerCase(), view);
     }
     
     /**
@@ -130,16 +150,6 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Judge whether contains table.
-     *
-     * @param tableName table name
-     * @return contains table or not
-     */
-    public boolean containsTable(final String tableName) {
-        return tables.containsKey(tableName.toLowerCase());
-    }
-    
-    /**
      * Judge whether contains index.
      *
      * @param tableName table name
@@ -148,16 +158,6 @@ public final class ShardingSphereSchema {
      */
     public boolean containsIndex(final String tableName, final String indexName) {
         return containsTable(tableName) && getTable(tableName).containsIndex(indexName);
-    }
-    
-    /**
-     * Judge whether contains view.
-     *
-     * @param viewName view name
-     * @return contains view or not
-     */
-    public boolean containsView(final String viewName) {
-        return views.containsKey(viewName.toLowerCase());
     }
     
     /**
