@@ -204,7 +204,7 @@ class SchemaMetaDataManagerTest {
     void assertAlterSchemaForViewDropped() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", createToBeAlteredSchema()));
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "foo_view", null);
-        assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getViews().containsKey("foo_view"));
+        assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsView("foo_view"));
     }
     
     private ShardingSphereSchema createToBeAlteredSchema() {

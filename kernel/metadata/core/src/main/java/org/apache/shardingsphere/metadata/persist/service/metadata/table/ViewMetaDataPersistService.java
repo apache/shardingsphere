@@ -79,6 +79,29 @@ public final class ViewMetaDataPersistService {
      * @param schemaName schema name
      * @param views views
      */
+    public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereView> views) {
+        Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
+        for (ShardingSphereView each : views) {
+            String viewName = each.getName().toLowerCase();
+            List<String> versions = metaDataVersionPersistService.getVersions(ViewMetaDataNode.getViewVersionsNode(databaseName, schemaName, viewName));
+            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            repository.persist(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion),
+                    YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(each)));
+            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, viewName))) {
+                repository.persist(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName), MetaDataVersion.DEFAULT_VERSION);
+            }
+            metaDataVersions.add(new MetaDataVersion(ViewMetaDataNode.getViewNode(databaseName, schemaName, viewName), getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
+        }
+        metaDataVersionPersistService.switchActiveVersion(metaDataVersions);
+    }
+    
+    /**
+     * Persist views.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param views views
+     */
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> views) {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (Entry<String, ShardingSphereView> entry : views.entrySet()) {

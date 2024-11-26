@@ -76,7 +76,7 @@ public final class SchemaMetaDataPersistService {
      */
     public void alterByRefresh(final String databaseName, final ShardingSphereSchema schema) {
         String schemaName = schema.getName().toLowerCase();
-        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+        if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
         Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
@@ -92,7 +92,7 @@ public final class SchemaMetaDataPersistService {
      */
     public void alterByRuleAltered(final String databaseName, final ShardingSphereSchema schema) {
         String schemaName = schema.getName().toLowerCase();
-        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+        if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
         tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());

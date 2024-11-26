@@ -45,6 +45,14 @@ public final class ShardingSphereSchema {
         views = new ConcurrentHashMap<>();
     }
     
+    public ShardingSphereSchema(final String name, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views) {
+        this.name = name;
+        this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
+        this.views = new ConcurrentHashMap<>(views.size(), 1F);
+        tables.forEach((each) -> this.tables.put(each.getName().toLowerCase(), each));
+        views.forEach((each) -> this.views.put(each.getName().toLowerCase(), each));
+    }
+    
     public ShardingSphereSchema(final String name, final Map<String, ShardingSphereTable> tables, final Map<String, ShardingSphereView> views) {
         this.name = name;
         this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
@@ -138,6 +146,17 @@ public final class ShardingSphereSchema {
      */
     public void putView(final ShardingSphereView view) {
         views.put(view.getName().toLowerCase(), view);
+    }
+    
+    /**
+     * Add views.
+     *
+     * @param views views
+     */
+    public void putViews(final Map<String, ShardingSphereView> views) {
+        for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
+            putView(entry.getValue());
+        }
     }
     
     /**
