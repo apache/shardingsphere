@@ -94,7 +94,8 @@ class ShardingSphereSchemaTest {
     
     @Test
     void assertContainsIndex() {
-        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.emptyList(), Collections.singletonList(new ShardingSphereIndex("col_idx")), Collections.emptyList());
+        ShardingSphereTable table = new ShardingSphereTable(
+                "tbl", Collections.emptyList(), Collections.singletonList(new ShardingSphereIndex("col_idx", Collections.emptyList(), false)), Collections.emptyList());
         assertTrue(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap()).containsIndex("tbl", "col_idx"));
     }
     

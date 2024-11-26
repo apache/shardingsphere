@@ -61,8 +61,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertPutIndex() {
-        ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1");
-        ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2");
+        ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1", Collections.emptyList(), false);
+        ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2", Collections.emptyList(), false);
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Arrays.asList(index1, index2), Collections.emptyList());
         assertTrue(shardingSphereTable.containsIndex("foo_idx_1"));
         assertTrue(shardingSphereTable.containsIndex("foo_idx_2"));
@@ -72,7 +72,7 @@ class ShardingSphereTableTest {
     
     @Test
     void assertGetIndex() {
-        ShardingSphereIndex index = new ShardingSphereIndex("foo_idx");
+        ShardingSphereIndex index = new ShardingSphereIndex("foo_idx", Collections.emptyList(), false);
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.singleton(index), Collections.emptyList());
         assertTrue(shardingSphereTable.containsIndex("foo_idx"));
         assertTrue(shardingSphereTable.containsIndex("FOO_IDX"));
@@ -81,8 +81,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertRemoveIndex() {
-        ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1");
-        ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2");
+        ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1", Collections.emptyList(), false);
+        ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2", Collections.emptyList(), false);
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Arrays.asList(index1, index2), Collections.emptyList());
         shardingSphereTable.removeIndex("foo_idx_1");
         assertFalse(shardingSphereTable.containsIndex("foo_idx_1"));
@@ -93,8 +93,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertGetIndexes() {
-        ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1");
-        ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2");
+        ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1", Collections.emptyList(), false);
+        ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2", Collections.emptyList(), false);
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Arrays.asList(index1, index2), Collections.emptyList());
         assertThat(shardingSphereTable.getAllIndexes(), hasItems(index1, index2));
         assertThat(shardingSphereTable.getAllIndexes(), hasSize(2));
@@ -102,8 +102,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertContainsIndex() {
-        ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1");
-        ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2");
+        ShardingSphereIndex index1 = new ShardingSphereIndex("foo_idx_1", Collections.emptyList(), false);
+        ShardingSphereIndex index2 = new ShardingSphereIndex("foo_idx_2", Collections.emptyList(), false);
         ShardingSphereTable shardingSphereTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Arrays.asList(index1, index2), Collections.emptyList());
         assertTrue(shardingSphereTable.containsIndex("foo_idx_1"));
         assertTrue(shardingSphereTable.containsIndex("foo_idx_2"));
@@ -122,10 +122,10 @@ class ShardingSphereTableTest {
     void assertEquals() {
         ShardingSphereTable table1 = new ShardingSphereTable("foo_tbl",
                 Collections.singleton(new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false)),
-                Collections.singleton(new ShardingSphereIndex("foo_idx")), Collections.emptyList());
+                Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
         ShardingSphereTable table2 = new ShardingSphereTable("foo_tbl",
                 Collections.singleton(new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false)),
-                Collections.singleton(new ShardingSphereIndex("foo_idx")), Collections.emptyList());
+                Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
         assertThat(table1, is(table2));
     }
 }
