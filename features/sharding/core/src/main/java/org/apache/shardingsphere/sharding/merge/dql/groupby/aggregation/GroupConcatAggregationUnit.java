@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class GroupConcatAggregationUnit implements AggregationUnit {
-
+    
     private static final String DEFAULT_SEPARATOR = ",";
-
+    
     private final Collection<Comparable<?>> values = new ArrayList<>();
-
+    
     private String separator;
     
     public GroupConcatAggregationUnit(final String separator) {

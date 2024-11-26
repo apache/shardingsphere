@@ -23,11 +23,11 @@ import java.util.HashSet;
 import java.util.List;
 
 public class DistinctGroupConcatAggregationUnit implements AggregationUnit {
-
+    
     private static final String DEFAULT_SEPARATOR = ",";
-
+    
     private final Collection<String> values = new HashSet<>();
-
+    
     private final String separator;
     
     public DistinctGroupConcatAggregationUnit(final String separator) {

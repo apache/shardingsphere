@@ -56,7 +56,7 @@ public class AggregationProjection implements Projection {
     
     @Setter
     private int index = -1;
-
+    
     public AggregationProjection(final AggregationType type, final String expression, final IdentifierValue alias, final DatabaseType databaseType) {
         this.type = type;
         this.expression = expression;
