@@ -916,12 +916,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 ? createAggregationSegment(ctx, aggregationType)
                 : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
-
+    
     @Override
     public ASTNode visitSeparatorName(final MySQLStatementParser.SeparatorNameContext ctx) {
         return new StringLiteralValue(ctx.string_().getText());
     }
-
+    
     @Override
     public final ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
         JsonFunctionNameContext functionNameContext = ctx.jsonFunctionName();

@@ -63,7 +63,7 @@ public final class AggregationProjectionConverter {
     private static void register(final SqlAggFunction sqlAggFunction) {
         REGISTRY.put(sqlAggFunction.getName(), sqlAggFunction);
     }
-
+    
     private static void register(final SqlAggFunction sqlAggFunction, final String alias) {
         REGISTRY.put(alias, sqlAggFunction);
     }
