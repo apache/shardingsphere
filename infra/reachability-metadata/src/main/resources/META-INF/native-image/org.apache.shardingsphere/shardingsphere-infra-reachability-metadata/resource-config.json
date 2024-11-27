@@ -19,5 +19,8 @@
   }, {
     "name":"org.postgresql.translation.messages",
     "locales":["en"]
+  }, {
+    "name":"org.opengauss.translation.messages",
+    "locales":["zh"]
   }]
 }

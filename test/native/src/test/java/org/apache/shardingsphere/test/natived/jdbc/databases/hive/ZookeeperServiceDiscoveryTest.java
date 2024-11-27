@@ -52,7 +52,7 @@ import static org.hamcrest.Matchers.nullValue;
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection", "resource", "deprecation"})
 @EnabledInNativeImage
 @Testcontainers
-class HiveZookeeperServiceDiscoveryTest {
+class ZookeeperServiceDiscoveryTest {
     
     private static final int RANDOM_PORT_FIRST = InstanceSpec.getRandomPort();
     
@@ -81,10 +81,10 @@ class HiveZookeeperServiceDiscoveryTest {
             .withFixedExposedPort(RANDOM_PORT_FIRST, RANDOM_PORT_FIRST)
             .dependsOn(ZOOKEEPER_CONTAINER);
     
-    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.hive.zookeeper.sde.";
+    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.hive.zsd.";
     
     // Due to https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter of HiveServer2 JDBC Driver must be an absolute path.
-    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive.sql").toAbsolutePath().toString();
+    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive-iceberg.sql").toAbsolutePath().toString();
     
     private final String jdbcUrlSuffix = ";serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2";
     
@@ -108,7 +108,7 @@ class HiveZookeeperServiceDiscoveryTest {
     /**
      * TODO Same problem {@link InstanceSpec#getRandomPort()} as {@code HIVE_SERVER2_1_CONTAINER}.
      *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
+     * @throws SQLException SQL exception.
      */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
@@ -143,7 +143,7 @@ class HiveZookeeperServiceDiscoveryTest {
         extracted(HIVE_SERVER2_1_CONTAINER.getMappedPort(RANDOM_PORT_FIRST));
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/zookeeper-sde.yaml?placeholder-type=system_props");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/zsd.yaml?placeholder-type=system_props");
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0" + ";initFile=" + ABSOLUTE_PATH + jdbcUrlSuffix);
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1" + ";initFile=" + ABSOLUTE_PATH + jdbcUrlSuffix);
         System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2" + ";initFile=" + ABSOLUTE_PATH + jdbcUrlSuffix);
@@ -159,7 +159,7 @@ class HiveZookeeperServiceDiscoveryTest {
                 client.start();
                 List<String> children = client.getChildren().forPath("/hiveserver2");
                 assertThat(children.size(), is(1));
-                return children.get(0).contains(":" + hiveServer2Port + ";version=");
+                return children.get(0).startsWith("serverUri=0.0.0.0:" + hiveServer2Port + ";version=4.0.1;sequence=");
             }
         });
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {

@@ -126,15 +126,13 @@ CREATE DATABASE demo_ds_2;
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-set iceberg.mr.schema.auto.conversion=true;
-
 CREATE TABLE IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
@@ -256,15 +254,13 @@ CREATE DATABASE demo_ds_2;
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-set iceberg.mr.schema.auto.conversion=true;
-
 CREATE TABLE IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
@@ -376,15 +372,13 @@ CREATE DATABASE demo_ds_2;
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-set iceberg.mr.schema.auto.conversion=true;
-
 CREATE TABLE IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
@@ -443,25 +437,108 @@ HiveServer2 并不能保证每一条 `insert` 相关的 DML SQL 都能成功执�
 ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `set`，`create table`，`truncate table` 和 `drop table` 语句。
 用户应考虑为 ShardingSphere 提交包含单元测试的 PR。
 
-### 在 ShardingSphere 数据源上使用 DML SQL 语句的前提条件
+以 `set` 为代表的 SQL 语句很容易在 HiveServer2 Client 级别被动态配置。
+即便 ShardingSphere JDBC 不支持在虚拟 DataSource 上执行 HiveServer2 的 `set` 语句，
+用户也可以通过 `initFile` 的 Hive Session 参数来直接为真实 DataSource 执行一系列 SQL。
+引入讨论，可能的 ShardingSphere 配置文件如下，
 
-为了能够使用 `delete` 等 DML SQL 语句，当连接到 HiveServer2 时，用户应当考虑在 ShardingSphere JDBC 中仅使用支持 ACID 的表。
-`apache/hive` 提供了多种事务解决方案。
+```yaml
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+  ds_2:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+```
 
-第1种选择是使用 ACID 表，可能的建表流程如下。
-由于其过时的基于目录的表格式，用户可能不得不在 DML 语句执行前后进行等待，以让 HiveServer2 完成低效的 DML 操作。
+`/tmp/init.sql` 的可能内容如下，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
 set metastore.compactor.initiator.on=true;
 set metastore.compactor.cleaner.on=true;
-set metastore.compactor.worker.threads=5;
+set metastore.compactor.worker.threads=1;
+
+set hive.support.concurrency=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
+```
+
+受 https://issues.apache.org/jira/browse/HIVE-28317 影响，`initFile` 参数仅可使用绝对路径。
+但 ShardingSphere JDBC Driver 存在 `placeholder-type` 参数来动态定义 YAML 属性。
+进一步讨论，可能的 ShardingSphere 配置文件如下，
+
+```yaml
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: $${fixture.hive.ds0.jdbc-url::}
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: $${fixture.hive.ds1.jdbc-url::}
+  ds_2:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: $${fixture.hive.ds2.jdbc-url::}
+```
+
+此时使用 ShardingSphere JDBC Driver 时可以通过拼接字符串的手段传入业务项目的 classpath 上的文件的绝对路径。
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
+import java.nio.file.Paths;
+public class ExampleUtils {
+    public DataSource createDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml?placeholder-type=system_props");
+        try {
+            assert null == System.getProperty("fixture.hive.ds0.jdbc-url");
+            assert null == System.getProperty("fixture.hive.ds1.jdbc-url");
+            assert null == System.getProperty("fixture.hive.ds2.jdbc-url");
+            String absolutePath = Paths.get("src/test/resources/init.sql").toAbsolutePath().toString();
+            System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_0;initFile=" + absolutePath);
+            System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_1;initFile=" + absolutePath);
+            System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_2;initFile=" + absolutePath);
+            return new HikariDataSource(config);
+        } finally {
+            System.clearProperty("fixture.hive.ds0.jdbc-url");
+            System.clearProperty("fixture.hive.ds1.jdbc-url");
+            System.clearProperty("fixture.hive.ds2.jdbc-url");
+        }
+    }
+}
+```
+
+### 在 ShardingSphere 数据源上使用 DML SQL 语句的前提条件
+
+为了能够使用 `delete` 等 DML SQL 语句，当连接到 HiveServer2 时，用户应当考虑在 ShardingSphere JDBC 中仅使用支持 ACID 的表。
+`apache/hive` 提供了多种事务解决方案。
+
+第1种选择是使用 ACID 表，可能的建表流程如下。ACID 表使用过时的基于目录的表格式。
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+set metastore.compactor.initiator.on=true;
+set metastore.compactor.cleaner.on=true;
+set metastore.compactor.worker.threads=1;
 
 set hive.support.concurrency=true;
 set hive.exec.dynamic.partition.mode=nonstrict;
 set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
 
-CREATE TABLE IF NOT EXISTS t_order
+create table IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
@@ -477,25 +554,27 @@ CREATE TABLE IF NOT EXISTS t_order
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-set iceberg.mr.schema.auto.conversion=true;
-
 CREATE TABLE IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 ```
 
-Iceberg 表格式支持的 Hive type 相对较少，设置`iceberg.mr.schema.auto.conversion`为`true`有助于缓解这一问题。
+Iceberg 表格式支持的 Hive type 相对较少，为 HiveServer2 执行 SQL `set iceberg.mr.schema.auto.conversion=true;`有助于缓解这一问题。
+SQL `set iceberg.mr.schema.auto.conversion=true;` 存在 https://issues.apache.org/jira/browse/HIVE-26507 涉及的弊端。
 
 ### 事务限制
 
 HiveServer2 不支持 ShardingSphere 集成级别的本地事务，XA 事务或 Seata 的 AT 模式事务，
 更多讨论位于 https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions 。
+
+这与 https://iceberg.apache.org/docs/1.7.0/hive/#table-rollback 为 HiveServer2 提供的 `Table rollback` 功能无关，
+仅与 `org.apache.hive.jdbc.HiveConnection` 未实现 `java.sql.Connection#rollback()` 有关。
 
 ### DBeaver Community 版本限制
 

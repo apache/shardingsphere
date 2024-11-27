@@ -15,37 +15,31 @@
 -- limitations under the License.
 --
 
---  TODO `shardingsphere-parser-sql-hive` module does not support `create table`, `truncate table` and `drop table` statements yet,
+--  TODO `shardingsphere-parser-sql-hive` module does not support `set`, `create table`, `truncate table` and `drop table` statements yet,
 --   we always need to execute the following Hive Session-level SQL in the current `javax.sql.DataSource`.
 -- Hive does not support `AUTO_INCREMENT`, refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a> .
 
--- Fixes `Unsupported Hive type VARCHAR, use string instead or enable automatic type conversion, set 'iceberg.mr.schema.auto.conversion' to true`
-set iceberg.mr.schema.auto.conversion=true;
-
-CREATE TABLE IF NOT EXISTS t_order
-(
+CREATE TABLE IF NOT EXISTS t_order (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
-CREATE TABLE IF NOT EXISTS t_order_item
-(
+CREATE TABLE IF NOT EXISTS t_order_item (
     order_item_id BIGINT NOT NULL,
     order_id      BIGINT NOT NULL,
     user_id       INT    NOT NULL,
-    phone         VARCHAR(50),
-    status        VARCHAR(50),
+    phone         string,
+    status        string,
     PRIMARY KEY (order_item_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
-CREATE TABLE IF NOT EXISTS t_address
-(
+CREATE TABLE IF NOT EXISTS t_address (
     address_id   BIGINT       NOT NULL,
-    address_name VARCHAR(100) NOT NULL,
+    address_name string NOT NULL,
     PRIMARY KEY (address_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
