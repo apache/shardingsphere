@@ -65,7 +65,7 @@ class ViewMetaDataPersistServiceTest {
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(view.getName()).thenReturn("foo_view");
         persistService.persist("foo_db", "foo_schema", Collections.singleton(view));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", "name: foo_view" + System.lineSeparator());
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0");
     }
     
@@ -76,7 +76,7 @@ class ViewMetaDataPersistServiceTest {
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(view.getName()).thenReturn("foo_view");
         persistService.persist("foo_db", "foo_schema", Collections.singleton(view));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/11", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/11", "name: foo_view" + System.lineSeparator());
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "11");
     }
     

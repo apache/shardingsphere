@@ -65,7 +65,7 @@ class TableMetaDataPersistServiceTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
         persistService.persist("foo_db", "foo_schema", Collections.singleton(table));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0", "name: foo_tbl" + System.lineSeparator());
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0");
     }
     
@@ -76,7 +76,7 @@ class TableMetaDataPersistServiceTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
         persistService.persist("foo_db", "foo_schema", Collections.singleton(table));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/11", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/11", "name: foo_tbl" + System.lineSeparator());
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "11");
     }
     

@@ -89,7 +89,7 @@ class SchemaMetaDataPersistServiceTest {
         when(table.getName()).thenReturn("foo_tbl");
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList()));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singleton(table));
+        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singletonList(table));
     }
     
     @Test
