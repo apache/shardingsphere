@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.route.engine;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.hint.DataSourceHintNotExistsException;
 import org.apache.shardingsphere.infra.hint.HintManager;
@@ -93,9 +94,10 @@ public final class SQLRouteEngine {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), Collections.emptyList()));
             return result;
         }
-        result = route(queryContext, globalRuleMetaData, database, tableRouters, result);
+        Collection<String> tableNames = SQLStatementContextExtractor.getTableNames(database, queryContext.getSqlStatementContext());
+        result = route(queryContext, globalRuleMetaData, database, tableRouters, tableNames, result);
         result = new TablelessSQLRouter().route(queryContext, globalRuleMetaData, database, result);
-        result = route(queryContext, globalRuleMetaData, database, dataSourceRouters, result);
+        result = route(queryContext, globalRuleMetaData, database, dataSourceRouters, tableNames, result);
         if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnits().size()) {
             String singleDataSourceName = database.getResourceMetaData().getStorageUnits().keySet().iterator().next();
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceName, singleDataSourceName), Collections.emptyList()));
@@ -104,14 +106,14 @@ public final class SQLRouteEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Map<ShardingSphereRule, SQLRouter> routers,
-                               final RouteContext routeContext) {
+    private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
+                               final Map<ShardingSphereRule, SQLRouter> routers, final Collection<String> tableNames, final RouteContext routeContext) {
         RouteContext result = routeContext;
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
             if (result.getRouteUnits().isEmpty() && entry.getValue() instanceof EntranceSQLRouter) {
-                result = ((EntranceSQLRouter) entry.getValue()).createRouteContext(queryContext, globalRuleMetaData, database, entry.getKey(), props);
+                result = ((EntranceSQLRouter) entry.getValue()).createRouteContext(queryContext, globalRuleMetaData, database, entry.getKey(), tableNames, props);
             } else if (entry.getValue() instanceof DecorateSQLRouter) {
-                ((DecorateSQLRouter) entry.getValue()).decorateRouteContext(result, queryContext, database, entry.getKey(), props);
+                ((DecorateSQLRouter) entry.getValue()).decorateRouteContext(result, queryContext, database, entry.getKey(), tableNames, props);
             }
         }
         return result;

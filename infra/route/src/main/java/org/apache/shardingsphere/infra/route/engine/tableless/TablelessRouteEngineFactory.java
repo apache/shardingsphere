@@ -21,11 +21,25 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.DataSourceBroadcastRouteEngine;
+import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.DatabaseInstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.ignore.IgnoreRouteEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 
 /**
  * Tableless route engine factory.
@@ -45,6 +59,27 @@ public final class TablelessRouteEngineFactory {
         if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) {
             return new DataSourceBroadcastRouteEngine();
         }
+        if (sqlStatement instanceof TCLStatement) {
+            return new DataSourceBroadcastRouteEngine();
+        }
+        if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof LoadStatement) {
+            return new DataSourceBroadcastRouteEngine();
+        }
+        boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
+        if (functionStatement) {
+            return new DataSourceBroadcastRouteEngine();
+        }
+        if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
+            return new DatabaseInstanceBroadcastRouteEngine();
+        }
+        if (isResourceGroupStatement(sqlStatement)) {
+            return new DatabaseInstanceBroadcastRouteEngine();
+        }
         return new IgnoreRouteEngine();
+    }
+    
+    private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
+        // TODO add dropResourceGroupStatement, alterResourceGroupStatement
+        return sqlStatement instanceof CreateResourceGroupStatement || sqlStatement instanceof SetResourceGroupStatement;
     }
 }

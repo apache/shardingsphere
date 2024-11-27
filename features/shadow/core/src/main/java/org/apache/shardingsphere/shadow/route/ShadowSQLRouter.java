@@ -43,7 +43,7 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule>, Dat
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final ShadowRule rule, final ConfigurationProperties props) {
+                                     final ShadowRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemovedRouteUnit = new LinkedList<>();
         Collection<RouteUnit> toBeAddedRouteUnit = new LinkedList<>();
         Map<String, String> shadowDataSourceMappings = ShadowDataSourceMappingsRetrieverFactory.newInstance(queryContext).retrieve(rule);
