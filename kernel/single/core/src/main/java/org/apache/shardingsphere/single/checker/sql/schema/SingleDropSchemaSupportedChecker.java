@@ -15,26 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.route.validator.ddl;
+package org.apache.shardingsphere.single.checker.sql.schema;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.single.exception.DropNotEmptySchemaException;
-import org.apache.shardingsphere.single.route.validator.SingleMetaDataValidator;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
- * Single drop schema meta data validator.
+ * Drop schema supported checker for single.
  */
-public final class SingleDropSchemaMetaDataValidator implements SingleMetaDataValidator {
+@HighFrequencyInvocation
+public final class SingleDropSchemaSupportedChecker implements SupportedSQLChecker<SQLStatementContext, SingleRule> {
     
     @Override
-    public void validate(final SingleRule rule, final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
+    public boolean isCheck(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext.getSqlStatement() instanceof DropSchemaStatement;
+    }
+    
+    @Override
+    public void check(final SingleRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         DropSchemaStatement dropSchemaStatement = (DropSchemaStatement) sqlStatementContext.getSqlStatement();
         boolean containsCascade = dropSchemaStatement.isContainsCascade();
         for (IdentifierValue each : dropSchemaStatement.getSchemaNames()) {
