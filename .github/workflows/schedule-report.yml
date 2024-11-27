@@ -96,15 +96,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ github.workspace }}/target/mergeReport/jacoco.xml
-      - name: Set up JDK 17 for sonar plugin
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-      - name: Upload jacoco report to sonar
-        env:
-          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/target/mergeReport/jacoco.xml
       - uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
