@@ -27,7 +27,10 @@ import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.Ins
 import org.apache.shardingsphere.infra.route.engine.tableless.type.ignore.IgnoreRouteEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
@@ -57,43 +60,57 @@ public final class TablelessRouteEngineFactory {
      * @return created instance
      */
     public static TablelessRouteEngine newInstance(final QueryContext queryContext) {
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) {
-            return new DataSourceBroadcastRouteEngine();
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        if (sqlStatement instanceof DALStatement) {
+            return getDALRouteEngine(sqlStatement);
         }
+        // TODO remove this logic when savepoint handle in proxy and jdbc adapter
         if (sqlStatement instanceof TCLStatement) {
             return new DataSourceBroadcastRouteEngine();
         }
-        if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof LoadStatement) {
+        if (sqlStatement instanceof DDLStatement) {
+            return getDDLRouteEngine(queryContext.getSqlStatementContext());
+        }
+        return new IgnoreRouteEngine();
+    }
+    
+    private static TablelessRouteEngine getDALRouteEngine(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof SetStatement) {
             return new DataSourceBroadcastRouteEngine();
         }
-        boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
-        if (functionStatement) {
+        if (sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof LoadStatement) {
             return new DataSourceBroadcastRouteEngine();
-        }
-        if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
-            return new InstanceBroadcastRouteEngine();
         }
         if (isResourceGroupStatement(sqlStatement)) {
             return new InstanceBroadcastRouteEngine();
-        }
-        if (sqlStatement instanceof DDLStatement) {
-            if (sqlStatementContext instanceof CursorAvailable) {
-                return getCursorRouteEngine(sqlStatementContext);
-            }
         }
         return new IgnoreRouteEngine();
     }
     
     private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
-        // TODO add dropResourceGroupStatement, alterResourceGroupStatement
-        return sqlStatement instanceof CreateResourceGroupStatement || sqlStatement instanceof SetResourceGroupStatement;
+        return sqlStatement instanceof CreateResourceGroupStatement || sqlStatement instanceof AlterResourceGroupStatement || sqlStatement instanceof DropResourceGroupStatement
+                || sqlStatement instanceof SetResourceGroupStatement;
+    }
+    
+    private static TablelessRouteEngine getDDLRouteEngine(final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext instanceof CursorAvailable) {
+            return getCursorRouteEngine(sqlStatementContext);
+        }
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
+        if (functionStatement) {
+            return new DataSourceBroadcastRouteEngine();
+        }
+        return new IgnoreRouteEngine();
     }
     
     private static TablelessRouteEngine getCursorRouteEngine(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
             return new DataSourceBroadcastRouteEngine();
+        }
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
+            return new InstanceBroadcastRouteEngine();
         }
         return new IgnoreRouteEngine();
     }
