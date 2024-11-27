@@ -130,7 +130,7 @@ public final class ShardingSphereSchema {
     
     /**
      * Get all views.
-     * 
+     *
      * @return all views
      */
     public Collection<ShardingSphereView> getAllViews() {
