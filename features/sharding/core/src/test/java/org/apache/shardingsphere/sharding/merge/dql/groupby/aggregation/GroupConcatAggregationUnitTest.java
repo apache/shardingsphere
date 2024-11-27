@@ -45,7 +45,7 @@ class GroupConcatAggregationUnitTest {
         distinctGroupConcatAggregationUnit.merge(Collections.singletonList(""));
         distinctGroupConcatAggregationUnit.merge(Collections.singletonList("001"));
         distinctGroupConcatAggregationUnit.merge(Collections.singletonList("001"));
-        distinctGroupConcatAggregationUnit.merge(Collections.singletonList("001 003"));
+        distinctGroupConcatAggregationUnit.merge(Collections.singletonList("003"));
         assertThat(distinctGroupConcatAggregationUnit.getResult(), is(" 001 003"));
     }
 }
