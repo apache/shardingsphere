@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.route.engine.tableless;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.DataSourceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.InstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.ignore.IgnoreRouteEngine;
@@ -37,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFu
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
@@ -75,11 +78,23 @@ public final class TablelessRouteEngineFactory {
         if (isResourceGroupStatement(sqlStatement)) {
             return new InstanceBroadcastRouteEngine();
         }
+        if (sqlStatement instanceof DDLStatement) {
+            if (sqlStatementContext instanceof CursorAvailable) {
+                return getCursorRouteEngine(sqlStatementContext);
+            }
+        }
         return new IgnoreRouteEngine();
     }
     
     private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
         // TODO add dropResourceGroupStatement, alterResourceGroupStatement
         return sqlStatement instanceof CreateResourceGroupStatement || sqlStatement instanceof SetResourceGroupStatement;
+    }
+    
+    private static TablelessRouteEngine getCursorRouteEngine(final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
+            return new DataSourceBroadcastRouteEngine();
+        }
+        return new IgnoreRouteEngine();
     }
 }

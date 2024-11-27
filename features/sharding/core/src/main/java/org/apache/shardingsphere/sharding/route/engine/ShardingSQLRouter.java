@@ -64,8 +64,8 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule>,
     
     private RouteContext createRouteContext0(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
                                              final Collection<String> tableNames, final ConfigurationProperties props) {
-        Collection<String> shardingTableNames = rule.getShardingLogicTableNames(tableNames);
-        if (shardingTableNames.isEmpty()) {
+        Collection<String> logicTableNames = rule.getShardingLogicTableNames(tableNames);
+        if (logicTableNames.isEmpty()) {
             return new RouteContext();
         }
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
@@ -75,7 +75,7 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule>,
         if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
             shardingConditions.merge();
         }
-        RouteContext result = ShardingRouteEngineFactory.newInstance(rule, database, queryContext, shardingConditions, props).route(rule);
+        RouteContext result = ShardingRouteEngineFactory.newInstance(rule, database, queryContext, shardingConditions, logicTableNames, props).route(rule);
         validator.ifPresent(optional -> optional.postValidate(rule, queryContext.getSqlStatementContext(), queryContext.getHintValueContext(), queryContext.getParameters(), database, props, result));
         return result;
     }
