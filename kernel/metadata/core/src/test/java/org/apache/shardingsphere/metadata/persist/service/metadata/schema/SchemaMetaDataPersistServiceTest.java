@@ -80,7 +80,7 @@ class SchemaMetaDataPersistServiceTest {
     void assertAlterByRefreshWithoutTablesAndViews() {
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema"));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyMap());
+        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyList());
     }
     
     @Test
@@ -89,23 +89,27 @@ class SchemaMetaDataPersistServiceTest {
         when(table.getName()).thenReturn("foo_tbl");
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList()));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singletonMap("foo_tbl", table));
+        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singleton(table));
     }
     
     @Test
     void assertAlterByRefreshWithViews() {
-        persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyMap(), Collections.singletonMap("foo_view", mock(ShardingSphereView.class))));
+        ShardingSphereView view = mock(ShardingSphereView.class);
+        when(view.getName()).thenReturn("foo_view");
+        persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(view)));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
-        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyMap());
+        verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyList());
     }
     
     @Test
     void assertLoad() {
         when(repository.getChildrenKeys("/metadata/foo_db/schemas")).thenReturn(Collections.singletonList("foo_schema"));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(tableMetaDataPersistService.load("foo_db", "foo_schema")).thenReturn(Collections.singletonMap("foo_tbl", table));
+        when(table.getName()).thenReturn("foo_tbl");
+        when(tableMetaDataPersistService.load("foo_db", "foo_schema")).thenReturn(Collections.singleton(table));
         ShardingSphereView view = mock(ShardingSphereView.class);
-        when(viewMetaDataPersistService.load("foo_db", "foo_schema")).thenReturn(Collections.singletonMap("foo_view", view));
+        when(view.getName()).thenReturn("foo_view");
+        when(viewMetaDataPersistService.load("foo_db", "foo_schema")).thenReturn(Collections.singleton(view));
         Map<String, ShardingSphereSchema> actual = persistService.load("foo_db");
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_schema").getTable("foo_tbl"), is(table));
@@ -130,7 +134,9 @@ class SchemaMetaDataPersistServiceTest {
     
     @Test
     void assertAlterSchemaByAlterConfigurationWithNotEmptyViewsByRefresh() {
-        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyMap(), Collections.singletonMap("foo_view", mock(ShardingSphereView.class))));
+        ShardingSphereView view = mock(ShardingSphereView.class);
+        when(view.getName()).thenReturn("foo_view");
+        persistService.alterByRuleAltered("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(view)));
         verify(repository, times(0)).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
         verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
     }

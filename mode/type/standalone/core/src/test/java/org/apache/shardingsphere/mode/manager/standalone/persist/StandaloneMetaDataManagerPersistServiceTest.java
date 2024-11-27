@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.standalone.persist;
 
 import lombok.SneakyThrows;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
@@ -51,7 +50,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
@@ -152,7 +150,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.alterSchemaMetaData(new AlterSchemaMetaDataPOJO("foo_db", "foo_schema", Collections.singleton("foo_ds")));
-        verify(databaseMetaDataFacade.getTable()).persist("foo_db", "foo_schema", new HashMap<>());
+        verify(databaseMetaDataFacade.getTable()).persist("foo_db", "foo_schema", new LinkedList<>());
     }
     
     @Test
@@ -233,7 +231,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertCreateTable() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
         metaDataManagerPersistService.createTable("foo_db", "foo_schema", table, "foo_ds");
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Maps.of("foo_tbl", table));
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
     }
     
     @Test

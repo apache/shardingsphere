@@ -19,7 +19,6 @@ package org.apache.shardingsphere.metadata.persist.service.metadata.schema;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.metadata.table.TableMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.metadata.table.ViewMetaDataPersistService;
@@ -80,10 +79,9 @@ public final class SchemaMetaDataPersistService {
         if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
-        Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
-        ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, currentTables, Collections.emptyMap());
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, tableMetaDataPersistService.load(databaseName, schemaName), Collections.emptyList());
         tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema, currentSchema));
-        GenericSchemaManager.getToBeDroppedTables(schema, currentSchema).forEach((key, value) -> tableMetaDataPersistService.drop(databaseName, schemaName, key));
+        GenericSchemaManager.getToBeDroppedTables(schema, currentSchema).forEach(each -> tableMetaDataPersistService.drop(databaseName, schemaName, each.getName()));
     }
     
     /**

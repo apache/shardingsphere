@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -51,14 +50,6 @@ public final class ShardingSphereSchema {
         this.views = new ConcurrentHashMap<>(views.size(), 1F);
         tables.forEach(each -> this.tables.put(each.getName().toLowerCase(), each));
         views.forEach(each -> this.views.put(each.getName().toLowerCase(), each));
-    }
-    
-    public ShardingSphereSchema(final String name, final Map<String, ShardingSphereTable> tables, final Map<String, ShardingSphereView> views) {
-        this.name = name;
-        this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
-        this.views = new ConcurrentHashMap<>(views.size(), 1F);
-        tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
-        views.forEach((key, value) -> this.views.put(key.toLowerCase(), value));
     }
     
     /**
@@ -109,17 +100,6 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Add tables.
-     *
-     * @param tables tables
-     */
-    public void putTables(final Map<String, ShardingSphereTable> tables) {
-        for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
-            putTable(entry.getValue());
-        }
-    }
-    
-    /**
      * Remove table.
      *
      * @param tableName table name
@@ -164,17 +144,6 @@ public final class ShardingSphereSchema {
      */
     public void putView(final ShardingSphereView view) {
         views.put(view.getName().toLowerCase(), view);
-    }
-    
-    /**
-     * Add views.
-     *
-     * @param views views
-     */
-    public void putViews(final Map<String, ShardingSphereView> views) {
-        for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
-            putView(entry.getValue());
-        }
     }
     
     /**

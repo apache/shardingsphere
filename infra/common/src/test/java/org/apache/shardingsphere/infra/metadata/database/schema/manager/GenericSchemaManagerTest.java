@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -35,33 +36,34 @@ class GenericSchemaManagerTest {
     @Test
     void assertGetToBeAddedTablesBySchemas() {
         Map<String, ShardingSphereSchema> reloadSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME,
-                Collections.singleton(new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList()));
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList()));
         Map<String, ShardingSphereSchema> currentSchemas = Collections.singletonMap(
-                "foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyMap()));
+                "foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyList(), Collections.emptyList()));
         Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadSchemas, currentSchemas);
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_schema").getAllTables().size(), is(1));
-        assertTrue(actual.get("foo_schema").containsTable("foo_table"));
+        assertTrue(actual.get("foo_schema").containsTable("foo_tbl"));
     }
     
     @Test
     void assertGetToBeDroppedTablesBySchemas() {
         Map<String, ShardingSphereSchema> currentSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME,
-                Collections.singleton(new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList()));
-        Map<String, ShardingSphereSchema> reloadSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyMap()));
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList()));
+        Map<String, ShardingSphereSchema> reloadSchemas = Collections.singletonMap("foo_schema",
+                new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.emptyList(), Collections.emptyList()));
         Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadSchemas, currentSchemas);
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_schema").getAllTables().size(), is(1));
-        assertTrue(actual.get("foo_schema").containsTable("foo_table"));
+        assertTrue(actual.get("foo_schema").containsTable("foo_tbl"));
     }
     
     @Test
     void assertGetToBeAddedTables() {
         ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema",
-                Collections.singleton(new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
-        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeAddedTables(reloadSchema, new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList()));
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
+        Collection<ShardingSphereTable> actual = GenericSchemaManager.getToBeAddedTables(reloadSchema, new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList()));
         assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("foo_table"));
+        assertThat(actual.iterator().next().getName(), is("foo_tbl"));
     }
     
     @Test
@@ -69,9 +71,9 @@ class GenericSchemaManagerTest {
         ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_schema",
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
-        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(reloadSchema, currentSchema);
+        Collection<ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(reloadSchema, currentSchema);
         assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("foo_tbl"));
+        assertThat(actual.iterator().next().getName(), is("foo_tbl"));
     }
     
     @Test

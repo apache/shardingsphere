@@ -29,11 +29,8 @@ import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersio
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -53,9 +50,8 @@ public final class ViewMetaDataPersistService {
      * @param schemaName schema name
      * @return loaded views
      */
-    public Map<String, ShardingSphereView> load(final String databaseName, final String schemaName) {
-        List<String> viewNames = repository.getChildrenKeys(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName));
-        return viewNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> load(databaseName, schemaName, each), (a, b) -> b, () -> new LinkedHashMap<>(viewNames.size(), 1F)));
+    public Collection<ShardingSphereView> load(final String databaseName, final String schemaName) {
+        return repository.getChildrenKeys(ViewMetaDataNode.getMetaDataViewsNode(databaseName, schemaName)).stream().map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
     }
     
     /**
@@ -87,29 +83,6 @@ public final class ViewMetaDataPersistService {
             String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion),
                     YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(each)));
-            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, viewName))) {
-                repository.persist(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName), MetaDataVersion.DEFAULT_VERSION);
-            }
-            metaDataVersions.add(new MetaDataVersion(ViewMetaDataNode.getViewNode(databaseName, schemaName, viewName), getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
-        }
-        metaDataVersionPersistService.switchActiveVersion(metaDataVersions);
-    }
-    
-    /**
-     * Persist views.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param views views
-     */
-    public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> views) {
-        Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
-        for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
-            String viewName = entry.getKey().toLowerCase();
-            List<String> versions = metaDataVersionPersistService.getVersions(ViewMetaDataNode.getViewVersionsNode(databaseName, schemaName, viewName));
-            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(ViewMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion),
-                    YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(entry.getValue())));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, viewName))) {
                 repository.persist(ViewMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName), MetaDataVersion.DEFAULT_VERSION);
             }

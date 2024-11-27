@@ -209,7 +209,7 @@ class SchemaMetaDataManagerTest {
     
     private ShardingSphereSchema createToBeAlteredSchema() {
         ShardingSphereTable beforeChangedTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereView beforeChangedView = new ShardingSphereView("foo_tbl", "");
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_tbl", beforeChangedTable), Collections.singletonMap("foo_view", beforeChangedView));
+        ShardingSphereView beforeChangedView = new ShardingSphereView("foo_view", "");
+        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(beforeChangedTable), Collections.singleton(beforeChangedView));
     }
 }
