@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.DataSourceBroadcastRouteEngine;
-import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.DatabaseInstanceBroadcastRouteEngine;
+import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.InstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.ignore.IgnoreRouteEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -70,10 +70,10 @@ public final class TablelessRouteEngineFactory {
             return new DataSourceBroadcastRouteEngine();
         }
         if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
-            return new DatabaseInstanceBroadcastRouteEngine();
+            return new InstanceBroadcastRouteEngine();
         }
         if (isResourceGroupStatement(sqlStatement)) {
-            return new DatabaseInstanceBroadcastRouteEngine();
+            return new InstanceBroadcastRouteEngine();
         }
         return new IgnoreRouteEngine();
     }
