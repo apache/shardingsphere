@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.route.validator.ddl;
+package org.apache.shardingsphere.single.checker.sql;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedDropCascadeTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.single.exception.DropNotEmptySchemaException;
+import org.apache.shardingsphere.single.checker.sql.table.SingleDropTableSupportedChecker;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTableStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -38,25 +37,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SingleDropSchemaMetaDataValidatorTest {
+class SingleDropTableSupportedCheckerTest {
     
     @Test
-    void assertValidateWithoutCascadeSchema() {
-        assertThrows(DropNotEmptySchemaException.class,
-                () -> new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", false), mockDatabase()));
+    void assertCheckWithCascade() {
+        assertThrows(UnsupportedDropCascadeTableException.class,
+                () -> new SingleDropTableSupportedChecker().check(mock(SingleRule.class, RETURNS_DEEP_STUBS), mockDatabase(), mock(ShardingSphereSchema.class),
+                        createSQLStatementContext(true)));
     }
     
     @Test
-    void assertValidateWithNotExistedSchema() {
-        ShardingSphereDatabase database = mockDatabase();
-        when(database.getSchema("not_existed_schema")).thenReturn(null);
-        assertThrows(SchemaNotFoundException.class,
-                () -> new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("not_existed_schema", true), database));
-    }
-    
-    @Test
-    void assertValidate() {
-        new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", true), mockDatabase());
+    void assertCheckWithoutCascade() {
+        new SingleDropTableSupportedChecker().check(mock(SingleRule.class, RETURNS_DEEP_STUBS), mockDatabase(), mock(ShardingSphereSchema.class), createSQLStatementContext(false));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -67,10 +59,9 @@ class SingleDropSchemaMetaDataValidatorTest {
         return result;
     }
     
-    private SQLStatementContext createSQLStatementContext(final String schemaName, final boolean isCascade) {
-        PostgreSQLDropSchemaStatement dropSchemaStatement = mock(PostgreSQLDropSchemaStatement.class, RETURNS_DEEP_STUBS);
-        when(dropSchemaStatement.isContainsCascade()).thenReturn(isCascade);
-        when(dropSchemaStatement.getSchemaNames()).thenReturn(Collections.singleton(new IdentifierValue(schemaName)));
+    private SQLStatementContext createSQLStatementContext(final boolean containsCascade) {
+        PostgreSQLDropTableStatement dropSchemaStatement = mock(PostgreSQLDropTableStatement.class, RETURNS_DEEP_STUBS);
+        when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
         return new UnknownSQLStatementContext(dropSchemaStatement);
     }
 }

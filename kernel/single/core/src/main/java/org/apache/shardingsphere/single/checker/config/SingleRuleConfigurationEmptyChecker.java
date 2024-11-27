@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.route.engine;
+package org.apache.shardingsphere.single.checker.config;
 
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.single.rule.SingleRule;
-
-import java.util.Collections;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 /**
- * Single databases broadcast route engine.
+ * Single rule configuration empty checker.
  */
-public final class SingleDatabaseBroadcastRouteEngine implements SingleRouteEngine {
+public final class SingleRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<SingleRuleConfiguration> {
     
     @Override
-    public void route(final RouteContext routeContext, final SingleRule singleRule) {
-        for (String each : singleRule.getDataSourceNames()) {
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
-        }
+    public boolean isEmpty(final SingleRuleConfiguration ruleConfig) {
+        return ruleConfig.getTables().isEmpty() && !ruleConfig.getDefaultDataSource().isPresent();
+    }
+    
+    @Override
+    public Class<SingleRuleConfiguration> getType() {
+        return SingleRuleConfiguration.class;
     }
 }

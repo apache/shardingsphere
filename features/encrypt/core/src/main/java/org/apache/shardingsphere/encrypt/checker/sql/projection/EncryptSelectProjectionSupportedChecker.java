@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -48,7 +49,7 @@ public final class EncryptSelectProjectionSupportedChecker implements SupportedS
     }
     
     @Override
-    public void check(final EncryptRule rule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext) {
+    public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SelectStatementContext sqlStatementContext) {
         checkSelectStatementContext(rule, sqlStatementContext);
         for (SelectStatementContext each : sqlStatementContext.getSubqueryContexts().values()) {
             checkSelectStatementContext(rule, each);

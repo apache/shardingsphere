@@ -39,11 +39,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 
@@ -97,11 +100,18 @@ public final class TablelessRouteEngineFactory {
             return getCursorRouteEngine(sqlStatementContext);
         }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
-        if (functionStatement) {
+        if (isFunctionDDLStatement(sqlStatement) || isSchemaDDLStatement(sqlStatement)) {
             return new DataSourceBroadcastRouteEngine();
         }
         return new IgnoreRouteEngine();
+    }
+    
+    private static boolean isFunctionDDLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
+    }
+    
+    private static boolean isSchemaDDLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof CreateSchemaStatement || sqlStatement instanceof AlterSchemaStatement || sqlStatement instanceof DropSchemaStatement;
     }
     
     private static TablelessRouteEngine getCursorRouteEngine(final SQLStatementContext sqlStatementContext) {
