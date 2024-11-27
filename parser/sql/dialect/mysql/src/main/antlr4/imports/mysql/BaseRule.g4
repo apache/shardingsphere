@@ -965,8 +965,12 @@ separatorName
     : SEPARATOR string_
     ;
 
+aggregationExpression
+    : expr (COMMA_ expr)* | ASTERISK_
+    ;
+
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? orderByClause? separatorName? RP_ overClause?
+    : aggregationFunctionName LP_ distinct? aggregationExpression? collateClause? orderByClause? separatorName? RP_ overClause?
     ;
 
 jsonFunction

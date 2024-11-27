@@ -43,8 +43,7 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     private final String expression;
     
-    @Setter
-    private String separator;
+    private final String separator;
     
     private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
@@ -56,6 +55,15 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
         this.stopIndex = stopIndex;
         this.type = type;
         this.expression = expression;
+        this.separator = null;
+    }
+    
+    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression, final String separator) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.type = type;
+        this.expression = expression;
+        this.separator = separator;
     }
     
     @Override
