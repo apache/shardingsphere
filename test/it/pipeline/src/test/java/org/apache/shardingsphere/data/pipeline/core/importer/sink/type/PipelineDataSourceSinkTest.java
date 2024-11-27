@@ -28,9 +28,9 @@ import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.algorithm.FixtureTransmissionJobItemContext;
@@ -154,9 +154,9 @@ class PipelineDataSourceSinkTest {
     
     private DataRecord getUpdatePrimaryKeyDataRecord() {
         DataRecord result = new DataRecord(PipelineSQLOperationType.UPDATE, TABLE_NAME, new IngestPlaceholderPosition(), 3);
-        result.addColumn(new Column("id", 1, 2, true, true));
-        result.addColumn(new Column("user", 0, 10, true, false));
-        result.addColumn(new Column("status", null, PipelineSQLOperationType.UPDATE, true, false));
+        result.addColumn(new NormalColumn("id", 1, 2, true, true));
+        result.addColumn(new NormalColumn("user", 0, 10, true, false));
+        result.addColumn(new NormalColumn("status", null, PipelineSQLOperationType.UPDATE, true, false));
         return result;
     }
     
@@ -192,9 +192,9 @@ class PipelineDataSourceSinkTest {
             statusOldValue = type;
         }
         DataRecord result = new DataRecord(type, TABLE_NAME, new IngestPlaceholderPosition(), 3);
-        result.addColumn(new Column("id", idOldValue, idValue, false, true));
-        result.addColumn(new Column("user", userOldValue, userValue, true, false));
-        result.addColumn(new Column("status", statusOldValue, statusValue, true, false));
+        result.addColumn(new NormalColumn("id", idOldValue, idValue, false, true));
+        result.addColumn(new NormalColumn("user", userOldValue, userValue, true, false));
+        result.addColumn(new NormalColumn("status", statusOldValue, statusValue, true, false));
         return result;
     }
 }

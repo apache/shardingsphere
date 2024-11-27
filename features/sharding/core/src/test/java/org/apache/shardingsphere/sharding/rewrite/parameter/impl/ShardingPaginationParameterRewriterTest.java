@@ -53,9 +53,8 @@ class ShardingPaginationParameterRewriterTest {
     
     @Test
     void assertIsNeedRewrite() {
-        ShardingPaginationParameterRewriter paramRewriter = new ShardingPaginationParameterRewriter();
         RouteContext routeContext = mock(RouteContext.class);
-        paramRewriter.setRouteContext(routeContext);
+        ShardingPaginationParameterRewriter paramRewriter = new ShardingPaginationParameterRewriter(routeContext);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         assertFalse(paramRewriter.isNeedRewrite(insertStatementContext));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
@@ -81,7 +80,7 @@ class ShardingPaginationParameterRewriterTest {
         when(pagination.getRevisedOffset()).thenReturn(TEST_REVISED_OFFSET);
         when(pagination.getRevisedRowCount(selectStatementContext)).thenReturn(TEST_REVISED_ROW_COUNT);
         when(selectStatementContext.getPaginationContext()).thenReturn(pagination);
-        new ShardingPaginationParameterRewriter().rewrite(standardParamBuilder, selectStatementContext, null);
+        new ShardingPaginationParameterRewriter(null).rewrite(standardParamBuilder, selectStatementContext, null);
         assertTrue(addOffsetParametersFlag);
         assertTrue(addRowCountParameterFlag);
     }

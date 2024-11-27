@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,7 +30,7 @@ class TestcontainersDatabaseTypeTest {
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-ClickHouse").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:tc:clickhouse:", "jdbc:tc:shardingsphere0clickhouse:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-ClickHouse").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:clickhouse:")));
         assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-MariaDB").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:mariadb:")));
         assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-MySQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:mysql:")));
         assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-Oracle").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:oracle:")));

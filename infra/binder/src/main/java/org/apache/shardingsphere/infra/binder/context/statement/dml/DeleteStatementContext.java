@@ -22,14 +22,14 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
-import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ColumnExtractUtils;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,8 +54,8 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType(), currentDatabaseName);
         getSqlStatement().getWhere().ifPresent(whereSegments::add);
-        ColumnExtractUtils.extractColumnSegments(columnSegments, whereSegments);
-        ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);
+        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {

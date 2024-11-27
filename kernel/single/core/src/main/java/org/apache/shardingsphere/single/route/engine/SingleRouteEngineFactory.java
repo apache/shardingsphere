@@ -21,10 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.single.route.engine.standard.SingleStandardRouteEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -44,17 +42,6 @@ public final class SingleRouteEngineFactory {
      * @return created instance
      */
     public static Optional<SingleRouteEngine> newInstance(final Collection<QualifiedTable> singleTables, final SQLStatement sqlStatement, final HintValueContext hintValueContext) {
-        if (!singleTables.isEmpty()) {
-            return Optional.of(new SingleStandardRouteEngine(singleTables, sqlStatement, hintValueContext));
-        }
-        // TODO move this logic to common route logic
-        if (isSchemaDDLStatement(sqlStatement)) {
-            return Optional.of(new SingleDatabaseBroadcastRouteEngine());
-        }
-        return Optional.empty();
-    }
-    
-    private static boolean isSchemaDDLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof CreateSchemaStatement || sqlStatement instanceof AlterSchemaStatement || sqlStatement instanceof DropSchemaStatement;
+        return singleTables.isEmpty() ? Optional.empty() : Optional.of(new SingleStandardRouteEngine(singleTables, sqlStatement, hintValueContext));
     }
 }

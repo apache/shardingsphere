@@ -97,12 +97,12 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private Collection<DatabasePacket> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-        return ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
+        return ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession, true));
     }
     
     private Collection<DatabasePacket> processUpdate(final UpdateResponseHeader updateResponseHeader) {
         responseType = ResponseType.UPDATE;
-        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession));
+        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession, true));
     }
     
     @Override

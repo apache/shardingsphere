@@ -123,7 +123,7 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
         }
         ShardingSpherePreconditions.checkNotNull(shardingStrategy.getShardingAlgorithmName(), () -> new MissingRequiredShardingConfigurationException("Sharding algorithm name", databaseName));
         ShardingSpherePreconditions.checkContains(shardingAlgorithms, shardingStrategy.getShardingAlgorithmName(),
-                () -> new UnregisteredAlgorithmException("Key generate", shardingStrategy.getShardingAlgorithmName(), new SQLExceptionIdentifier(databaseName)));
+                () -> new UnregisteredAlgorithmException("sharding", shardingStrategy.getShardingAlgorithmName(), new SQLExceptionIdentifier(databaseName)));
     }
     
     @Override

@@ -106,14 +106,6 @@
   "allDeclaredFields": true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.HiveTest"},
-  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.HiveTest",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allPublicMethods": true,
-  "allDeclaredFields": true
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.PostgresTest"},
   "name":"org.apache.shardingsphere.test.natived.jdbc.databases.PostgresTest",
   "allDeclaredConstructors": true,
@@ -152,5 +144,21 @@
   "allDeclaredMethods": true,
   "allPublicMethods": true,
   "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.HiveZookeeperServiceDiscoveryTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.HiveZookeeperServiceDiscoveryTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.HiveSimpleTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.HiveSimpleTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
 }
 ]

@@ -104,7 +104,7 @@ public final class ShardingSphereDataPersistService {
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereSchemaData schemaData) {
         schemaData.getTableData().values().forEach(each -> {
             YamlShardingSphereRowDataSwapper swapper =
-                    new YamlShardingSphereRowDataSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getColumnValues()));
+                    new YamlShardingSphereRowDataSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getAllColumns()));
             persistTableData(database.getName(), schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
         });
     }

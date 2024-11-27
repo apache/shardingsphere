@@ -31,12 +31,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -63,24 +64,7 @@ public final class TestShardingService {
      */
     public void processSuccess() throws SQLException {
         final Collection<Long> orderIds = insertData(Statement.RETURN_GENERATED_KEYS);
-        Collection<Order> orders = orderRepository.selectAll();
-        assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
-                equalTo(Arrays.asList(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)));
-        assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(2, 4, 6, 8, 10, 1, 3, 5, 7, 9))));
-        assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(2L, 4L, 6L, 8L, 10L, 1L, 3L, 5L, 7L, 9L))));
-        assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
-        Collection<OrderItem> orderItems = orderItemRepository.selectAll();
-        assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(2, 4, 6, 8, 10, 1, 3, 5, 7, 9))));
-        assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
-        assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
-        assertThat(addressRepository.selectAll(),
-                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
+        extracted();
         deleteData(orderIds);
         assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
@@ -90,8 +74,6 @@ public final class TestShardingService {
     
     /**
      * Process success in ClickHouse.
-     * TODO On low-performance devices like Github Actions, it takes longer to execute DELETE statements,
-     *  which leads to the use of {@code org.awaitility.Awaitility.await()} here. Maybe there is room for improvement in Clickhouse JDBC Driver.
      * ClickHouse has not fully supported transactions. Refer to <a href="https://github.com/ClickHouse/clickhouse-docs/issues/2300">ClickHouse/clickhouse-docs#2300</a>.
      * So ShardingSphere should not use {@link OrderItemRepository#assertRollbackWithTransactions()} in the method here.
      *
@@ -99,29 +81,33 @@ public final class TestShardingService {
      */
     public void processSuccessInClickHouse() throws SQLException {
         final Collection<Long> orderIds = insertData(Statement.NO_GENERATED_KEYS);
+        extracted();
+        deleteDataInClickHouse(orderIds);
+        assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
+        orderItemRepository.assertRollbackWithTransactions();
+    }
+    
+    private void extracted() throws SQLException {
         Collection<Order> orders = orderRepository.selectAll();
         assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
-                equalTo(Arrays.asList(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)));
-        assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(2, 4, 6, 8, 10, 1, 3, 5, 7, 9))));
-        assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(2L, 4L, 6L, 8L, 10L, 1L, 3L, 5L, 7L, 9L))));
+                equalTo(Stream.of(0, 0, 0, 0, 0, 1, 1, 1, 1, 1).collect(Collectors.toList())));
+        assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toSet()),
+                equalTo(Stream.of(2, 4, 6, 8, 10, 1, 3, 5, 7, 9).collect(Collectors.toSet())));
+        assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toSet()),
+                equalTo(Stream.of(2L, 4L, 6L, 8L, 10L, 1L, 3L, 5L, 7L, 9L).collect(Collectors.toSet())));
         assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
         Collection<OrderItem> orderItems = orderItemRepository.selectAll();
-        assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
-                equalTo(new ArrayList<>(Arrays.asList(2, 4, 6, 8, 10, 1, 3, 5, 7, 9))));
+        assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toSet()),
+                equalTo(Stream.of(2, 4, 6, 8, 10, 1, 3, 5, 7, 9).collect(Collectors.toSet())));
         assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
         assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
-        assertThat(addressRepository.selectAll(),
-                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
-        deleteDataInClickHouse(orderIds);
-        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
-        assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
-        assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
-        assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertThat(new HashSet<>(addressRepository.selectAll()),
+                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toSet())));
     }
     
     /**
@@ -130,14 +116,14 @@ public final class TestShardingService {
      * So ShardingSphere should not use {@link OrderItemRepository#assertRollbackWithTransactions()}
      * TODO It looks like HiveServer2 insert statements are inserted out of order. Waiting for further investigation.
      *  The result of the insert is not currently asserted.
-     * TODO It is currently not convenient to operate on the `t_order` and `t_order_item` tables because
-     *  {@link org.apache.hive.jdbc.HiveStatement} does not implement {@link org.apache.hive.jdbc.HiveStatement#getGeneratedKeys()}
      *
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void processSuccessInHive() throws SQLException {
-        insertDataInHive();
-        deleteDataInHive();
+        final Collection<Long> orderIds = insertData(Statement.RETURN_GENERATED_KEYS);
+        deleteData(orderIds);
+        assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
     }
     
@@ -174,20 +160,6 @@ public final class TestShardingService {
     }
     
     /**
-     * Insert data in Hive.
-     */
-    public void insertDataInHive() {
-        LongStream.range(1L, 11L).forEach(action -> {
-            Address address = new Address(action, "address_test_" + action);
-            try {
-                addressRepository.insert(address);
-            } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-    }
-    
-    /**
      * Delete data.
      *
      * @param orderIds orderId of the insert statement.
@@ -204,28 +176,19 @@ public final class TestShardingService {
     
     /**
      * Delete data in ClickHouse.
+     * TODO It is necessary to avoid the use of {@code Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(()->true)}.
+     *  After ClickHouse enables experimental transactions, performance drops significantly.
      *
      * @param orderIds orderId of the insert statement.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void deleteDataInClickHouse(final Collection<Long> orderIds) throws SQLException {
+        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
         long count = 1L;
         for (Long each : orderIds) {
             orderRepository.deleteInClickHouse(each);
             orderItemRepository.deleteInClickHouse(each);
             addressRepository.deleteInClickHouse(count++);
-        }
-    }
-    
-    /**
-     * Delete data in Hive.
-     *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    public void deleteDataInHive() throws SQLException {
-        long count = 1L;
-        for (int i = 1; i <= 10; i++) {
-            addressRepository.delete(count++);
         }
     }
     

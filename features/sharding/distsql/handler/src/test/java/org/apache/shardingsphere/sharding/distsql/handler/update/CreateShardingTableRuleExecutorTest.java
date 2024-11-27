@@ -202,6 +202,28 @@ class CreateShardingTableRuleExecutorTest {
     }
     
     @Test
+    void assertCheckWithInvalidDataSourceInlineExpression() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order_${0..1}'),"
+                + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='foo_${user_id % 2}')))),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
+                + ");";
+        CreateShardingTableRuleStatement sqlStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        assertThrows(AlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+    }
+    
+    @Test
+    void assertCheckWithInvalidTableInlineExpression() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order_${0..1}'),"
+                + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}')))),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='bar_${order_id % 2}'))))"
+                + ");";
+        CreateShardingTableRuleStatement sqlStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        assertThrows(AlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+    }
+    
+    @Test
     void assertUpdateWithIfNotExistsStatement() {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);

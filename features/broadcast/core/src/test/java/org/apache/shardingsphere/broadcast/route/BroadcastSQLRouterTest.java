@@ -74,7 +74,7 @@ class BroadcastSQLRouterTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         BroadcastRouteEngine routeEngine = mock(BroadcastRouteEngine.class);
         when(BroadcastRouteEngineFactory.newInstance(rule, database, queryContext)).thenReturn(routeEngine);
-        getSQLRouter(rule).createRouteContext(queryContext, mock(RuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()));
+        getSQLRouter(rule).createRouteContext(queryContext, mock(RuleMetaData.class), database, rule, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         verify(routeEngine).route(any(), eq(rule));
     }
     
@@ -86,7 +86,7 @@ class BroadcastSQLRouterTest {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("foo_ds", "foo_ds"), Lists.newArrayList()));
         BroadcastSQLRouter sqlRouter = getSQLRouter(rule);
-        sqlRouter.decorateRouteContext(routeContext, createQueryContext(), mockSingleDatabase(), rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(routeContext, createQueryContext(), mockSingleDatabase(), rule, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is("foo_ds"));
     }

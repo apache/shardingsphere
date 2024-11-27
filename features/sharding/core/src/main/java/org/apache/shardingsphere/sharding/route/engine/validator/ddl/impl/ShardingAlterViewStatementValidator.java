@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.util.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 
 import java.util.Arrays;
 import java.util.List;

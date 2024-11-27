@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.auditor;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
@@ -27,15 +28,16 @@ import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAudi
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Sharding SQL auditor.
  */
 public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
     
+    @HighFrequencyInvocation
     @Override
     public void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(queryContext.getSqlStatementContext(), rule);
@@ -43,11 +45,16 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
             return;
         }
         Collection<String> disableAuditNames = queryContext.getHintValueContext().getDisableAuditNames();
-        for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
-            for (String auditorName : auditStrategy.getAuditorNames()) {
-                if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(auditorName.toLowerCase())) {
-                    rule.getAuditors().get(auditorName).check(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, database);
-                }
+        for (ShardingAuditStrategyConfiguration each : auditStrategies) {
+            audit(queryContext, globalRuleMetaData, database, rule, each, disableAuditNames);
+        }
+    }
+    
+    private void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
+                       final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> disableAuditNames) {
+        for (String each : auditStrategy.getAuditorNames()) {
+            if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(each.toLowerCase())) {
+                rule.getAuditors().get(each).check(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, database);
             }
         }
     }
@@ -56,9 +63,8 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
         if (!(sqlStatementContext instanceof TableAvailable)) {
             return Collections.emptyList();
         }
-        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
-        Collection<ShardingAuditStrategyConfiguration> result = new ArrayList<>(tableNames.size());
-        for (String each : tableNames) {
+        Collection<ShardingAuditStrategyConfiguration> result = new LinkedList<>();
+        for (String each : ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()) {
             rule.findShardingTable(each).ifPresent(optional -> result.add(rule.getAuditStrategyConfiguration(optional)));
         }
         return result;

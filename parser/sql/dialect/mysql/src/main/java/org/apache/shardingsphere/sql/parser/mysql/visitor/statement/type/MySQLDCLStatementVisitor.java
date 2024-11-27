@@ -89,7 +89,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Usernam
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType.UserResourceSpecifiedLimitType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.UserResourceSpecifiedLimitType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordOrLockOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;

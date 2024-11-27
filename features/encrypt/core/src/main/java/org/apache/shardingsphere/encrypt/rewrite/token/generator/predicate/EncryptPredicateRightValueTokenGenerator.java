@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryp
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionValues;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
@@ -56,7 +57,7 @@ import java.util.Map;
 @Setter
 public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware, DatabaseNameAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private List<Object> parameters;
     
@@ -75,7 +76,7 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
         String schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (EncryptCondition each : encryptConditions) {
-            encryptRule.findEncryptTable(each.getTableName()).ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
+            rule.findEncryptTable(each.getTableName()).ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
         }
         return result;
     }
@@ -84,7 +85,7 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
         int startIndex = encryptCondition.getStartIndex();
         int stopIndex = encryptCondition.getStopIndex();
         Map<Integer, Object> indexValues = getPositionValues(
-                encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptTable, encryptCondition, encryptCondition.getValues(parameters)));
+                encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptTable, encryptCondition, new EncryptConditionValues(encryptCondition).get(parameters)));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
         if (encryptCondition instanceof EncryptBinaryCondition && ((EncryptBinaryCondition) encryptCondition).getExpressionSegment() instanceof FunctionSegment) {
             FunctionSegment functionSegment = (FunctionSegment) ((EncryptBinaryCondition) encryptCondition).getExpressionSegment();

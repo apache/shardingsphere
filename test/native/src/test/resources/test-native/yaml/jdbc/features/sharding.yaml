@@ -15,41 +15,36 @@
 # limitations under the License.
 #
 
-mode:
-  type: Standalone
-  repository:
-    type: JDBC
-
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:local_sharding_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
-    password: 123456
+    username: sa
+    password:
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:local_sharding_ds_1;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
-    password: 123456
+    username: sa
+    password:
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:local_sharding_ds_2;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
-    password: 123456
+    username: sa
+    password:
 
 rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes:
+      actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
     t_order_item:
-      actualDataNodes:
+      actualDataNodes: <LITERAL>ds_0.t_order_item, ds_1.t_order_item, ds_2.t_order_item
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake

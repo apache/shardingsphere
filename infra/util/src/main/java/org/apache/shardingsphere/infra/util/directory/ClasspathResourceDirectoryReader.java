@@ -116,9 +116,6 @@ public final class ClasspathResourceDirectoryReader {
     @SneakyThrows(IOException.class)
     public static Stream<String> read(final ClassLoader classLoader, final String directory) {
         Enumeration<URL> directoryUrlEnumeration = classLoader.getResources(directory);
-        if (null == directoryUrlEnumeration) {
-            return Stream.empty();
-        }
         return Collections.list(directoryUrlEnumeration).stream().flatMap(directoryUrl -> {
             if (JAR_URL_PROTOCOLS.contains(directoryUrl.getProtocol())) {
                 return readDirectoryInJar(directory, directoryUrl);

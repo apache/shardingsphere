@@ -20,6 +20,13 @@
     <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
     </test-case>
+
+    <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value_batch_1.xml" />
+        <assertion parameters="2000:int, 20:int, init:String" expected-data-file="delete_with_sharding_value_batch_2.xml" />
+        <assertion parameters="2800:int, 28:int, init:String" expected-data-file="delete_with_sharding_value_batch_3.xml" />
+        <assertion parameters="2900:int, 29:int, init:String" expected-data-file="delete_with_sharding_value_batch_4.xml" />
+    </test-case>
     
     <test-case sql="DELETE FROM t_order WHERE status= ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
@@ -67,9 +74,7 @@
         <assertion parameters="0:int, 4:int, 5:int" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
     
-    <test-case
-            sql="DELETE FROM t_order WHERE order_id = 1000 AND user_id = 10;DELETE FROM t_order WHERE order_id = 1001 AND user_id = 11;DELETE FROM t_order WHERE user_id &lt; 29;" db-types="MySQL"
-            scenario-types="db" sql-case-types="LITERAL" adapters="proxy">
+    <test-case sql="DELETE FROM t_order WHERE order_id = 1000 AND user_id = 10;DELETE FROM t_order WHERE order_id = 1001 AND user_id = 11;DELETE FROM t_order WHERE user_id &lt; 29;" db-types="MySQL" scenario-types="db" sql-case-types="LITERAL" adapters="proxy">
         <assertion expected-data-file="delete_with_multiple.xml" />
     </test-case>
 </e2e-test-cases>

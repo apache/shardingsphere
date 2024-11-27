@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.shardingsphere.test.it.rewrite.engine.type.SQLExecuteType;
 import org.apache.shardingsphere.test.it.rewrite.entity.RewriteAssertionEntity;
 import org.apache.shardingsphere.test.it.rewrite.entity.RewriteAssertionsRootEntity;
 import org.apache.shardingsphere.test.it.rewrite.entity.RewriteOutputEntity;
@@ -97,8 +98,10 @@ public final class SQLRewriteEngineTestParametersBuilder {
         Collection<SQLRewriteEngineTestParameters> result = new LinkedList<>();
         for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
             for (String databaseType : getDatabaseTypes(each.getDatabaseTypes())) {
+                // TODO support appendLiteralCases for exits cases and remove duplicate cases
+                SQLExecuteType sqlExecuteType = null == each.getInput().getParameters() || each.getInput().getParameters().isEmpty() ? SQLExecuteType.LITERAL : SQLExecuteType.PLACEHOLDER;
                 result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(),
-                        createParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType));
+                        createParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType, sqlExecuteType));
             }
         }
         return result;

@@ -47,10 +47,9 @@ public enum QuoteCharacter {
     
     static {
         for (QuoteCharacter each : values()) {
-            if (NONE == each) {
-                continue;
+            if (NONE != each) {
+                BY_FIRST_CHAR.put(each.startDelimiter.charAt(0), each);
             }
-            BY_FIRST_CHAR.put(each.startDelimiter.charAt(0), each);
         }
     }
     
@@ -65,10 +64,7 @@ public enum QuoteCharacter {
      * @return value of quote character
      */
     public static QuoteCharacter getQuoteCharacter(final String value) {
-        if (Strings.isNullOrEmpty(value)) {
-            return NONE;
-        }
-        return BY_FIRST_CHAR.getOrDefault(value.charAt(0), NONE);
+        return Strings.isNullOrEmpty(value) ? NONE : BY_FIRST_CHAR.getOrDefault(value.charAt(0), NONE);
     }
     
     /**
@@ -99,5 +95,27 @@ public enum QuoteCharacter {
      */
     public boolean isWrapped(final String value) {
         return value.startsWith(startDelimiter) && value.endsWith(endDelimiter);
+    }
+    
+    /**
+     * Unwrap text.
+     *
+     * @param text text to be unwrapped
+     * @return unwrapped text
+     */
+    public static String unwrapText(final String text) {
+        return QuoteCharacter.getQuoteCharacter(text).unwrap(text);
+    }
+    
+    /**
+     * Unwrap and trim text.
+     *
+     * @param text text to be unwrapped and trimmed
+     * @return unwrapped and trimmed test
+     */
+    // TODO Should use unwrap instead of this method after new rules defined in G4's property key and property key, which should include string but cannot permit blank on first and last of the value
+    // TODO @longtao
+    public static String unwrapAndTrimText(final String text) {
+        return unwrapText(text).trim();
     }
 }

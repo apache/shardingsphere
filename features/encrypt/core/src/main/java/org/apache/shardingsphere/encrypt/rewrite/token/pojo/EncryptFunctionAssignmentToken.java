@@ -70,11 +70,7 @@ public final class EncryptFunctionAssignmentToken extends EncryptAssignmentToken
         
         @Override
         public String toString() {
-            return String.format("%s = %s", columnName, toString(value));
-        }
-        
-        private String toString(final Object value) {
-            return String.class == value.getClass() ? String.format("%s", value) : value.toString();
+            return String.format("%s = %s", columnName, value);
         }
     }
 }

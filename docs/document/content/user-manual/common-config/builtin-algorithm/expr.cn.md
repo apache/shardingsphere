@@ -30,6 +30,8 @@ weight = 10
 ## 基于固定时间范围的 Key-Value 语法的行表达式
 
 `INTERVAL` 实现引入了 Key-Value 风格的属性语法，来通过单行字符串定义一组时间范围内的字符串。这通常用于简化对 `数据分片` 功能的 `actualDataNodes` 的定义。
+`INTERVAL` 生成的字符串仅适用于单个真实库中的多张表。
+若需要处理多个真实库中的多张表，考虑自行创建 `org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser` 的 SPI 实现类。
 
 `INTERVAL` 实现定义多个属性的方式为 `Key1=Value1;Key2=Value2`，通过 `;` 号分割键值对，通过 `=` 号分割 `Key` 值和 `Value` 值。
 
@@ -111,6 +113,49 @@ Truffle 与 JDK 的向后兼容性矩阵位于 https://medium.com/graalvm/40027a
 
 - `<ESPRESSO>t_order_${1..3}` 将被转化为 `t_order_1, t_order_2, t_order_3`
 - `<ESPRESSO>${['online', 'offline']}_table${1..3}` 将被转化为 `online_table1, online_table2, online_table3, offline_table1, offline_table2, offline_table3`
+
+## 自定义实现
+
+用户总是可以自行创建 `org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser` 的实现类，
+以覆盖更复杂的场景，包括连接至远程 `ElasticSearch` 集群执行 `ES|QL` 以获得 `java.util.List<String>`。
+
+考虑一个简单的 SPI 实现类，
+
+```java
+package org.example;
+import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+public final class CustomInlineExpressionParserFixture implements InlineExpressionParser {
+    private String inlineExpression;
+    @Override
+    public void init(final Properties props) {
+        inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
+    }
+    @Override
+    public List<String> splitAndEvaluate() {
+        if ("spring".equals(inlineExpression)) {
+            return Arrays.asList("t_order_2024_01", "t_order_2024_02");
+        }
+        return Arrays.asList("t_order_2024_03", "t_order_2024_04");
+    }
+    @Override
+    public Object getType() {
+        return "CUSTOM.FIXTURE";
+    }
+}
+```
+
+并在项目的 classpath 添加 `META-INF/services/org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser`文件，
+
+```
+org.example.CustomInlineExpressionParserFixture
+```
+
+此时对于 ShardingSphere 配置文件中的 `actualDataNodes`，
+1. 若配置为 `<CUSTOM.FIXTURE>spring`，将被转化为 `t_order_2024_01, t_order_2024_02`。
+2. 若配置为 `<CUSTOM.FIXTURE>summer`，将被转化为 `t_order_2024_03, t_order_2024_04`。
 
 ## 操作步骤
 

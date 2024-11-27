@@ -70,7 +70,7 @@ class UpdateStatementBinderTest {
     
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getTable("t_order").getColumnValues()).thenReturn(Arrays.asList(
+        when(schema.getTable("t_order").getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.encrypt.checker.sql;
 
 import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptInsertSelectProjectionSupportedChecker;
 import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptSelectProjectionSupportedChecker;
+import org.apache.shardingsphere.encrypt.checker.sql.orderby.EncryptOrderByItemSupportedChecker;
+import org.apache.shardingsphere.encrypt.checker.sql.predicate.EncryptPredicateColumnSupportedChecker;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;

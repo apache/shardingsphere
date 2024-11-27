@@ -33,14 +33,14 @@ import java.util.Optional;
  */
 public final class PostgreSQLShardingStatisticsTableCollector implements DialectShardingStatisticsTableCollector {
     
-    private static final String POSTGRESQL_TABLE_ROWS_LENGTH = "SELECT RELTUPLES FROM PG_CLASS WHERE RELNAMESPACE = (SELECT OID FROM PG_NAMESPACE WHERE NSPNAME= ?) AND RELNAME = ?";
+    private static final String FETCH_TABLE_ROWS_LENGTH_SQL = "SELECT RELTUPLES FROM PG_CLASS WHERE RELNAMESPACE = (SELECT OID FROM PG_NAMESPACE WHERE NSPNAME= ?) AND RELNAME = ?";
     
-    private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME= ? AND RELNAME = ?";
+    private static final String FETCH_TABLE_DATA_LENGTH_SQL = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME= ? AND RELNAME = ?";
     
     @Override
     public boolean appendRow(final Connection connection, final DataNode dataNode, final List<Object> row) throws SQLException {
-        row.add(getRowValue(connection, dataNode, POSTGRESQL_TABLE_ROWS_LENGTH, TABLE_ROWS_COLUMN_NAME).orElse(BigDecimal.ZERO));
-        row.add(getRowValue(connection, dataNode, POSTGRESQL_TABLE_DATA_LENGTH, DATA_LENGTH_COLUMN_NAME).orElse(BigDecimal.ZERO));
+        row.add(getRowValue(connection, dataNode, FETCH_TABLE_ROWS_LENGTH_SQL, TABLE_ROWS_COLUMN_NAME).orElse(BigDecimal.ZERO));
+        row.add(getRowValue(connection, dataNode, FETCH_TABLE_DATA_LENGTH_SQL, DATA_LENGTH_COLUMN_NAME).orElse(BigDecimal.ZERO));
         return true;
     }
     

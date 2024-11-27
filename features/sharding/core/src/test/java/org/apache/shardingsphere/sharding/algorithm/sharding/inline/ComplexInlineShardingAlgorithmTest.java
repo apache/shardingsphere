@@ -19,11 +19,14 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -39,10 +42,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ComplexInlineShardingAlgorithmTest {
     
+    private ComplexInlineShardingAlgorithm shardingAlgorithm;
+    
+    @BeforeEach
+    void setUp() {
+        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("sharding-columns", "type,order_id"),
+                new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString()));
+        shardingAlgorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);
+    }
+    
     @Test
     void assertInitWithNullClass() {
-        assertThrows(AlgorithmInitializationException.class,
-                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", PropertiesBuilder.build(new Property("wrong", ""))));
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", PropertiesBuilder.build(new Property("wrong", ""))));
     }
     
     @Test
@@ -52,20 +63,16 @@ class ComplexInlineShardingAlgorithmTest {
     }
     
     @Test
-    void assertDoSharding() {
-        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("sharding-columns", "type,order_id"));
-        ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);
+    void assertDoShardingWithSingleValue() {
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
-        Collection<String> actual = algorithm.doSharding(availableTargetNames, createComplexKeysShardingValue(Collections.singletonList(2)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, createComplexKeysShardingValue(Collections.singletonList(2)));
         assertTrue(1 == actual.size() && actual.contains("t_order_0_0"));
     }
     
     @Test
-    void assertDoShardingWithMultiValue() {
-        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("sharding-columns", "type,order_id"));
-        ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);
+    void assertDoShardingWithMultiValues() {
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
-        Collection<String> actual = algorithm.doSharding(availableTargetNames, createComplexKeysShardingValue(Arrays.asList(1, 2)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, createComplexKeysShardingValue(Arrays.asList(1, 2)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
     
@@ -78,11 +85,36 @@ class ComplexInlineShardingAlgorithmTest {
     
     @Test
     void assertDoShardingWithRangeValue() {
-        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"),
-                new Property("sharding-columns", "type,order_id"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString()));
-        ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
-        Collection<String> actual = algorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", Collections.emptyMap(), Collections.singletonMap("type", Range.all())));
+        Collection<String> actual = shardingAlgorithm.doSharding(
+                availableTargetNames, new ComplexKeysShardingValue<>("t_order", Collections.emptyMap(), Collections.singletonMap("type", Range.all())));
         assertTrue(actual.containsAll(availableTargetNames));
+    }
+    
+    @Test
+    void assertDoShardingWithRangeValueAndEmptyColumns() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
+        Properties props = PropertiesBuilder.build(
+                new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString()));
+        shardingAlgorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", Collections.emptyMap(), Collections.emptyMap()));
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertDoShardingWithRangeValueButNotAllowRangeQuery() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
+        Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap = Collections.singletonMap("type", Arrays.asList(1, 2));
+        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("sharding-columns", "type,order_id"));
+        shardingAlgorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);
+        assertThrows(UnsupportedSQLOperationException.class,
+                () -> shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", columnNameAndShardingValuesMap, Collections.singletonMap("type", Range.all()))));
+    }
+    
+    @Test
+    void assertDoShardingWithRangeValueAndMismatchedComplexInlineShardingAlgorithmColumnAndValueSize() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
+        assertThrows(MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException.class,
+                () -> shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", Collections.emptyMap(), Collections.emptyMap())));
     }
 }

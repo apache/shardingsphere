@@ -54,7 +54,21 @@
     <sql-case id="select_from_open_row_set_with_provider_string" value="SELECT d.* FROM OPENROWSET('SQLNCLI','Server=Seattle1;Trusted_Connection=yes;',AdventureWorks2022.HumanResources.Department) AS d;" db-types="SQLServer"/>
     <sql-case id="select_json_object_simple_key_value" value="SELECT JSON_OBJECT('name':'value', 'type':1)" db-types="SQLServer" />
     <sql-case id="select_json_object_absent_not_null" value="SELECT JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" db-types="SQLServer" />
-    <sql-case id="select_json_array" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" db-types="SQLServer" />
+    <sql-case id="select_json_object_with_json_array" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" db-types="SQLServer" />
+    <sql-case id="select_json_array" value="SELECT JSON_ARRAY(1, 'abc', NULL, TRUE, CURTIME());" db-types="MySQL" />
+    <sql-case id="select_json_array_append" value="SELECT JSON_ARRAY_APPEND('[&quot;a&quot;, [&quot;b&quot;, &quot;c&quot;], &quot;d&quot;]', '$[1]', 1);" db-types="MySQL" />
+    <sql-case id="select_json_array_insert" value="SELECT JSON_ARRAY_INSERT('[&quot;a&quot;, {&quot;b&quot;: [1, 2]}, [3, 4]]', '$[1]', 'x');" db-types="MySQL" />
+    <sql-case id="select_json_arrayagg" value="SELECT o_id, JSON_ARRAYAGG(attribute) AS 'attributes' FROM t3 GROUP BY o_id" db-types="MySQL" />
+    <sql-case id="select_json_contains" value="SELECT JSON_CONTAINS('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', '1', '$.a')" db-types="MySQL" />
+    <sql-case id="select_json_contains_one" value="SELECT JSON_CONTAINS_PATH('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', 'one', '$.a', '$.e')" db-types="MySQL" />
+    <sql-case id="select_json_contains_all" value="SELECT JSON_CONTAINS_PATH('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', 'all', '$.a', '$.e')" db-types="MySQL" />
+    <sql-case id="select_json_depth" value="SELECT JSON_DEPTH('[10, {&quot;a&quot;: 20}]')" db-types="MySQL" />
+    <sql-case id="select_json_extract" value="SELECT JSON_EXTRACT('[10, 20, [30, 40]]', '$[1]', '$[0]')" db-types="MySQL" />
+    <sql-case id="select_json_keys" value="SELECT JSON_KEYS('{&quot;a&quot;: 1, &quot;b&quot;: {&quot;c&quot;: 30}}')" db-types="MySQL" />
+    <sql-case id="select_json_length" value="SELECT JSON_LENGTH('[1, 2, {&quot;a&quot;: 3}]')" db-types="MySQL" />
+    <sql-case id="select_json_merge" value="SELECT JSON_MERGE('[1, 2]', '[true, false]')" db-types="MySQL" />
+    <sql-case id="select_json_merge_patch" value="SELECT JSON_MERGE_PATCH('[1, 2]', '[true, false]')" db-types="MySQL" />
+    <sql-case id="select_json_merge_preserve" value="SELECT JSON_MERGE_PRESERVE('[1, 2]', '[true, false]')" db-types="MySQL" />
     <sql-case id="select_nest_json_object" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" db-types="SQLServer" />
     <sql-case id="select_json_object_with_subquery" value="SELECT JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" db-types="SQLServer" />
     <sql-case id="select_dm_exec_sessions_with_json_object_function" value="SELECT s.session_id, JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status) as info FROM sys.dm_exec_sessions AS s WHERE s.is_user_process = 1" db-types="SQLServer" />
@@ -167,6 +181,18 @@
     <sql-case id="select_greatest" value="SELECT GREATEST(2,0)" db-types="MySQL" />
     <sql-case id="select_grouping" value="SELECT GROUPING(status) FROM t_order order by status" db-types="MySQL" />
     <sql-case id="select_gtid_subset" value="SELECT GTID_SUBSET('3E11FA47-71CA-11E1-9E33-C80AA9429562:23','3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57')" db-types="MySQL" />
+    <sql-case id="select_gtid_subtract" value="SELECT GTID_SUBTRACT('3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57','3E11FA47-71CA-11E1-9E33-C80AA9429562:21')" db-types="MySQL" />
+    <sql-case id="select_hex" value="SELECT HEX('abc')" db-types="MySQL" />
+    <sql-case id="select_hour" value="SELECT HOUR('10:05:03')" db-types="MySQL" />
+    <sql-case id="select_is_ipv4" value="SELECT IS_IPV4('10.0.5.9')" db-types="MySQL" />
+    <sql-case id="select_is_ipv4_compat" value="SELECT IS_IPV4_COMPAT(INET6_ATON('::10.0.5.9'))" db-types="MySQL" />
+    <sql-case id="select_is_ipv4_mapped" value="SELECT IS_IPV4_MAPPED(INET6_ATON('::10.0.5.9'))" db-types="MySQL" />
+    <sql-case id="select_is_ipv6" value="SELECT IS_IPV6('10.0.5.9')" db-types="MySQL" />
+    <sql-case id="select_is_free_lock" value="SELECT IS_FREE_LOCK('lock1')" db-types="MySQL" />
+    <sql-case id="select_is_used_lock" value="SELECT IS_USED_LOCK('lock1')" db-types="MySQL" />
+    <sql-case id="select_is_null" value="SELECT ISNULL(1+1)" db-types="MySQL" />
+    <sql-case id="select_is_not_null" value="SELECT 1 IS NOT NULL" db-types="MySQL" />
+    <sql-case id="select_is_uuid" value="SELECT IS_UUID('6ccd780c-baba-1026-9564-5b8c656024db')" db-types="MySQL" />
     <sql-case id="select_random_bytes" value="SELECT RANDOM_BYTES(16)" db-types="MySQL" />
     <sql-case id="select_rank" value="SELECT RANK() FROM numbers" db-types="MySQL" />
     <sql-case id="select_regexp_instr" value="SELECT REGEXP_INSTR('dog cat dog', 'dog')" db-types="MySQL" />
@@ -249,4 +275,8 @@
     <sql-case id="select_bitxor" value="SELECT BITXOR(3,5)" db-types="Doris" />
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
     <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
+    <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
+    <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
+    <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
+    <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
 </sql-cases>

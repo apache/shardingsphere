@@ -82,6 +82,6 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
                 count = 0;
             }
         }
-        context.write(new MySQLEofPacket(ServerStatusFlagCalculator.calculateFor(databaseConnectionManager.getConnectionSession())));
+        context.write(new MySQLEofPacket(ServerStatusFlagCalculator.calculateFor(databaseConnectionManager.getConnectionSession(), true)));
     }
 }

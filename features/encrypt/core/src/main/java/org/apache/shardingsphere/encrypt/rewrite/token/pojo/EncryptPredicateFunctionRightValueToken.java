@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -90,17 +89,5 @@ public final class EncryptPredicateFunctionRightValueToken extends SQLToken impl
             }
         }
         builder.append(COMMA_SEPARATOR);
-    }
-    
-    @Override
-    public boolean equals(final Object obj) {
-        return obj instanceof EncryptPredicateFunctionRightValueToken && ((EncryptPredicateFunctionRightValueToken) obj).getStartIndex() == getStartIndex()
-                && ((EncryptPredicateFunctionRightValueToken) obj).getStopIndex() == stopIndex && ((EncryptPredicateFunctionRightValueToken) obj).indexValues.equals(indexValues)
-                && ((EncryptPredicateFunctionRightValueToken) obj).paramMarkerIndexes.equals(paramMarkerIndexes);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(getStartIndex(), stopIndex, indexValues, paramMarkerIndexes);
     }
 }

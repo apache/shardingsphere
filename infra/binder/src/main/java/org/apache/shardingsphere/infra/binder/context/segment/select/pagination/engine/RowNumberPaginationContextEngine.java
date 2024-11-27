@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -74,7 +74,7 @@ public final class RowNumberPaginationContextEngine {
         if (!rowNumberAlias.isPresent()) {
             return new PaginationContext(null, null, params);
         }
-        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractUtils.getAndPredicates(each).stream()).collect(Collectors.toList());
+        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractor.extractAndPredicates(each).stream()).collect(Collectors.toList());
         Collection<BinaryOperationExpression> rowNumberPredicates = getRowNumberPredicates(andPredicates, rowNumberAlias.get());
         return rowNumberPredicates.isEmpty() ? new PaginationContext(null, null, params) : createPaginationWithRowNumber(rowNumberPredicates, params);
     }

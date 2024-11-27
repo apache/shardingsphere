@@ -57,7 +57,7 @@ public final class KernelProcessor {
     
     private void check(final QueryContext queryContext) {
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
-        new SupportedSQLCheckEngine().checkSQL(database.getRuleMetaData().getRules(), queryContext.getSqlStatementContext(), database.getSchemas(), database.getName());
+        new SupportedSQLCheckEngine().checkSQL(database.getRuleMetaData().getRules(), queryContext.getSqlStatementContext(), database);
     }
     
     private RouteContext route(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {

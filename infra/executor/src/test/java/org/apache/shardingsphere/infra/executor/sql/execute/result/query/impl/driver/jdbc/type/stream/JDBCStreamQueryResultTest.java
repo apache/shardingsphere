@@ -28,6 +28,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -163,6 +166,13 @@ class JDBCStreamQueryResultTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(0L));
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Timestamp.class), is(new Timestamp(0L)));
+    }
+    
+    @Test
+    void assertGetValueByZonedDateTime() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1, ZonedDateTime.class)).thenReturn(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1), ZoneId.systemDefault()));
+        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, ZonedDateTime.class), is(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1), ZoneId.systemDefault())));
     }
     
     @Test

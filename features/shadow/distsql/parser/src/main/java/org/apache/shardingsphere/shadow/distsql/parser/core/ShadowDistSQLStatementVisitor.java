@@ -40,6 +40,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementPa
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.statement.AlterDefaultShadowAlgorithmStatement;
@@ -117,7 +118,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
         }
         return result;
     }

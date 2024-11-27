@@ -128,6 +128,17 @@ cd ./shardingsphere/
 COPY --from=ghcr.io/apache/shardingsphere-agent:latest /usr/agent/ /shardingsphere-agent/
 ```
 
+#### 社区构建
+
+自 ShardingSphere 5.5.2 开始，ShardingSphere Agent 在 https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-agent 发布社区构建。
+此 Docker Image 不属于 ASF 分发产物之一，只是为了方便而提供。
+
+若在自定义 `Dockerfile` 中添加以下语句，这会将 ShardingSphere Agent 的目录复制到 `/shardingsphere-agent/` 。
+
+```dockerfile
+COPY --from=ghcr.io/apache/shardingsphere-agent:5.5.2 /usr/agent/ /shardingsphere-agent/
+```
+
 #### 夜间构建
 
 ShardingSphere Agent 在 https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-agent 存在夜间构建的 Docker Image。

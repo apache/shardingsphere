@@ -45,7 +45,7 @@ import java.util.Properties;
 class PostgresTest {
     
     @Container
-    public static final GenericContainer<?> POSTGRES_CONTAINER = new GenericContainer<>("postgres:16.3-bookworm")
+    public static final GenericContainer<?> POSTGRES_CONTAINER = new GenericContainer<>("postgres:17.1-bookworm")
             .withEnv("POSTGRES_PASSWORD", "yourStrongPassword123!")
             .withExposedPorts(5432);
     
@@ -67,7 +67,7 @@ class PostgresTest {
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
             statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
-        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().normalize().toString();
+        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/postgresql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
             openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/postgres").close();

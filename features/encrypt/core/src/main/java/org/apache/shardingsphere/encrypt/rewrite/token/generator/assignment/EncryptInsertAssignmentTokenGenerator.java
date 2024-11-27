@@ -38,20 +38,20 @@ import java.util.Collection;
 @Setter
 public final class EncryptInsertAssignmentTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, DatabaseNameAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private String databaseName;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent()
-                && encryptRule.findEncryptTable(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).isPresent();
+                && rule.findEncryptTable(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).isPresent();
     }
     
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
-        return new EncryptAssignmentTokenGenerator(encryptRule, databaseName, sqlStatementContext.getDatabaseType()).generateSQLTokens(
+        return new EncryptAssignmentTokenGenerator(rule, databaseName, sqlStatementContext.getDatabaseType()).generateSQLTokens(
                 sqlStatementContext.getTablesContext(), sqlStatementContext.getSqlStatement().getSetAssignment().get());
     }
 }

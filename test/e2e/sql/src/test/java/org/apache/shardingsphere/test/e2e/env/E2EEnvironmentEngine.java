@@ -27,13 +27,15 @@ import org.apache.shardingsphere.test.e2e.engine.TotalSuitesCountCalculator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.h2.tools.RunScript;
+import org.h2.util.ScriptReader;
+import org.h2.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -92,7 +94,19 @@ public final class E2EEnvironmentEngine {
         try (
                 Connection connection = dataSource.getConnection();
                 FileReader reader = new FileReader(logicDatabaseInitSQLFile)) {
-            RunScript.execute(connection, reader);
+            Statement stat = connection.createStatement();
+            ScriptReader r = new ScriptReader(reader);
+            r.setSkipRemarks(true);
+            while (true) {
+                String sql = r.readStatement();
+                if (null == sql) {
+                    break;
+                }
+                if (StringUtils.isWhitespaceOrEmpty(sql)) {
+                    continue;
+                }
+                stat.execute(sql);
+            }
         }
     }
 }

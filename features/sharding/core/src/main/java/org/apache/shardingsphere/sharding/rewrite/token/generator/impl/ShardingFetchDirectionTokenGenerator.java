@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchSt
 /**
  * Sharding fetch direction token generator.
  */
+@HighFrequencyInvocation
 @Setter
 public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext>, ConnectionContextAware {
     
@@ -49,7 +51,7 @@ public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTo
         CursorNameSegment cursorName = fetchStatement.getCursorName();
         int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);
         int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet("FETCH"::length);
-        DirectionType directionType = fetchStatement.getDirection().flatMap(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
+        DirectionType directionType = fetchStatement.getDirection().map(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         long fetchCount = fetchStatement.getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
         return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase(), connectionContext);
     }

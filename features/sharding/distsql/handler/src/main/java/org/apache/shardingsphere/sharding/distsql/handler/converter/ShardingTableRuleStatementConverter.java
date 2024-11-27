@@ -224,7 +224,13 @@ public final class ShardingTableRuleStatementConverter {
         return result;
     }
     
-    private static Collection<DataNode> getActualDataNodes(final TableRuleSegment ruleSegment) {
+    /**
+     * Get actual data nodes for sharding table rule segment.
+     *
+     * @param ruleSegment sharding table rule segment
+     * @return data nodes
+     */
+    public static Collection<DataNode> getActualDataNodes(final TableRuleSegment ruleSegment) {
         Collection<DataNode> result = new LinkedList<>();
         for (String each : ruleSegment.getDataSourceNodes()) {
             List<String> dataNodes = InlineExpressionParserFactory.newInstance(each).splitAndEvaluate();
@@ -233,7 +239,13 @@ public final class ShardingTableRuleStatementConverter {
         return result;
     }
     
-    private static Collection<DataNode> getActualDataNodes(final AutoTableRuleSegment ruleSegment) {
+    /**
+     * Get actual data nodes for auto sharding table rule segment.
+     *
+     * @param ruleSegment auto sharding table rule segment
+     * @return data nodes
+     */
+    public static Collection<DataNode> getActualDataNodes(final AutoTableRuleSegment ruleSegment) {
         ShardingAlgorithm shardingAlgorithm =
                 TypedSPILoader.getService(ShardingAlgorithm.class, ruleSegment.getShardingAlgorithmSegment().getName(), ruleSegment.getShardingAlgorithmSegment().getProps());
         ShardingSpherePreconditions.checkState(shardingAlgorithm instanceof ShardingAutoTableAlgorithm,

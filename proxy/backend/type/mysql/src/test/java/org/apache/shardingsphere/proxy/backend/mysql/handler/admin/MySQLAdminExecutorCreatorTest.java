@@ -209,8 +209,7 @@ class MySQLAdminExecutorCreatorTest {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        VariableSegment variableSegment = new VariableSegment(0, 0, "transaction_read_only");
-        variableSegment.setScope("SESSION");
+        VariableSegment variableSegment = new VariableSegment(0, 0, "transaction_read_only", "SESSION");
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "@@session.transaction_read_only", variableSegment)));
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -225,8 +224,7 @@ class MySQLAdminExecutorCreatorTest {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        VariableSegment variableSegment = new VariableSegment(0, 0, "transaction_isolation");
-        variableSegment.setScope("SESSION");
+        VariableSegment variableSegment = new VariableSegment(0, 0, "transaction_isolation", "SESSION");
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "@@session.transaction_isolation", variableSegment)));
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);

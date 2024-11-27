@@ -151,7 +151,7 @@ class ImportMetaDataExecutorTest {
     
     private Map<String, ShardingSphereTable> createTables() {
         Collection<ShardingSphereColumn> columns = Collections.singleton(new ShardingSphereColumn("order_id", 0, false, false, false, true, false, false));
-        Collection<ShardingSphereIndex> indexes = Collections.singleton(new ShardingSphereIndex("primary"));
+        Collection<ShardingSphereIndex> indexes = Collections.singleton(new ShardingSphereIndex("primary", Collections.emptyList(), false));
         return Collections.singletonMap("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
     }
 }

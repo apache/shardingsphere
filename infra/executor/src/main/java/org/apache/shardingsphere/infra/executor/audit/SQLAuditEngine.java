@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.audit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -42,6 +43,7 @@ public final class SQLAuditEngine {
      * @param globalRuleMetaData global rule meta data
      * @param database database
      */
+    @HighFrequencyInvocation
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void audit(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());

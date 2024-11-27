@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -35,6 +36,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VolumeBasedRangeShardingAlgorithmTest {
@@ -50,6 +52,12 @@ class VolumeBasedRangeShardingAlgorithmTest {
     
     private Properties createProperties() {
         return PropertiesBuilder.build(new Property("range-lower", "10"), new Property("range-upper", "45"), new Property("sharding-volume", "10"));
+    }
+    
+    @Test
+    void assertInitFailedWithInvalidRange() {
+        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "VOLUME_RANGE",
+                PropertiesBuilder.build(new Property("range-lower", "20"), new Property("range-upper", "15"), new Property("sharding-volume", "10"))));
     }
     
     @Test

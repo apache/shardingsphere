@@ -25,9 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainState
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -88,7 +86,6 @@ class EncryptDALResultDecoratorTest {
     void assertMergedResultWithOtherStatement() {
         sqlStatementContext = mock(SQLStatementContext.class);
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator(mock(RuleMetaData.class));
-        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, rule), instanceOf(TransparentMergedResult.class));
         assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(MergedResult.class));
     }
     

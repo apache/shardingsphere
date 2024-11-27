@@ -248,8 +248,8 @@ public final class SQLUtils {
     /**
      * Trim the comment of SQL.
      *
-     * @param sql SQL to be trim
-     * @return remove comment from SQL
+     * @param sql to be trimmed SQL
+     * @return trimmed SQL
      */
     public static String trimComment(final String sql) {
         String result = sql;

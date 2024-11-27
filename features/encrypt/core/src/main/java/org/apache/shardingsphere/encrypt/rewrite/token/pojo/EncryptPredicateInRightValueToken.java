@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutab
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Predicate in right value token for encrypt.
@@ -62,17 +61,5 @@ public final class EncryptPredicateInRightValueToken extends SQLToken implements
         }
         result.delete(result.length() - 2, result.length()).append(')');
         return result.toString();
-    }
-    
-    @Override
-    public boolean equals(final Object obj) {
-        return obj instanceof EncryptPredicateInRightValueToken && ((EncryptPredicateInRightValueToken) obj).getStartIndex() == getStartIndex()
-                && ((EncryptPredicateInRightValueToken) obj).getStopIndex() == stopIndex && ((EncryptPredicateInRightValueToken) obj).indexValues.equals(indexValues)
-                && ((EncryptPredicateInRightValueToken) obj).paramMarkerIndexes.equals(paramMarkerIndexes);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(getStartIndex(), stopIndex, indexValues, paramMarkerIndexes);
     }
 }

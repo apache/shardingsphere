@@ -56,12 +56,12 @@ import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableNamesRuleA
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.util.ExpressionExtractUtils;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -338,6 +338,7 @@ public final class ShardingRule implements DatabaseRule {
      * @param logicTableNames logic table names
      * @return whether logic table is all binding tables
      */
+    // TODO rename the method name, add sharding condition judgement in method name @duanzhengqiang
     public boolean isAllBindingTables(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final Collection<String> logicTableNames) {
         if (!(sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())) {
             return isAllBindingTables(logicTableNames);
@@ -543,16 +544,6 @@ public final class ShardingRule implements DatabaseRule {
     }
     
     /**
-     * Get sharding rule table names.
-     *
-     * @param logicTableNames logic table names
-     * @return sharding rule table names
-     */
-    public Collection<String> getShardingRuleTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(this::isShardingTable).collect(Collectors.toList());
-    }
-    
-    /**
      * Get logic and actual binding tables.
      *
      * @param dataSourceName data source name
@@ -581,7 +572,7 @@ public final class ShardingRule implements DatabaseRule {
         Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size(), 1F);
         Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size(), 1F);
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(each.getExpr());
+            Collection<AndPredicate> andPredicates = ExpressionExtractor.extractAndPredicates(each.getExpr());
             if (andPredicates.size() > 1) {
                 return false;
             }

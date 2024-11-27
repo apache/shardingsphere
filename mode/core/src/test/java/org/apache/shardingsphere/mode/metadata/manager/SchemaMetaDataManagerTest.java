@@ -159,7 +159,7 @@ class SchemaMetaDataManagerTest {
         ShardingSphereTable toBeChangedTable = new ShardingSphereTable("foo_tbl", Collections.singleton(toBeChangedColumn), Collections.emptyList(), Collections.emptyList());
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", toBeChangedTable, null);
         ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTables().get("foo_tbl");
-        assertThat(table.getColumnValues().size(), is(1));
+        assertThat(table.getAllColumns().size(), is(1));
         assertTrue(table.containsColumn("foo_col"));
     }
     

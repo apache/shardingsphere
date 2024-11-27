@@ -15,15 +15,16 @@
 -- limitations under the License.
 --
 
---  TODO `shardingsphere-parser-sql-hive` module does not support `CREATE`, `SET`, `TRUNCATE` statements yet,
+--  TODO `shardingsphere-parser-sql-hive` module does not support `create table`, `truncate table` and `drop table` statements yet,
 --   we always need to execute the following Hive Session-level SQL in the current `javax.sql.DataSource`.
+-- Hive does not support `AUTO_INCREMENT`, refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a> .
 
 -- Fixes `Unsupported Hive type VARCHAR, use string instead or enable automatic type conversion, set 'iceberg.mr.schema.auto.conversion' to true`
 set iceberg.mr.schema.auto.conversion=true;
 
 CREATE TABLE IF NOT EXISTS t_order
 (
-    order_id   BIGINT,
+    order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE IF NOT EXISTS t_order
 
 CREATE TABLE IF NOT EXISTS t_order_item
 (
-    order_item_id BIGINT,
+    order_item_id BIGINT NOT NULL,
     order_id      BIGINT NOT NULL,
     user_id       INT    NOT NULL,
     phone         VARCHAR(50),

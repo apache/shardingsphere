@@ -51,7 +51,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptInsertDefaultColumnsTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, PreviousSQLTokensAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private List<SQLToken> previousSQLTokens;
     
@@ -81,7 +81,7 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
     }
     
     private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext insertStatementContext, final String tableName) {
-        List<String> columnNames = getColumnNames(insertStatementContext, encryptRule.getEncryptTable(tableName), previousSQLToken.getColumns());
+        List<String> columnNames = getColumnNames(insertStatementContext, rule.getEncryptTable(tableName), previousSQLToken.getColumns());
         previousSQLToken.getColumns().clear();
         previousSQLToken.getColumns().addAll(columnNames);
     }
@@ -93,11 +93,11 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
             Collection<ColumnSegment> derivedInsertColumns = insertStatementContext.getSqlStatement().getDerivedInsertColumns();
             Collection<Projection> projections = insertStatementContext.getInsertSelectContext().getSelectStatementContext().getProjectionsContext().getExpandProjections();
             ShardingSpherePreconditions.checkState(derivedInsertColumns.size() == projections.size(), () -> new UnsupportedSQLOperationException("Column count doesn't match value count."));
-            ShardingSpherePreconditions.checkState(InsertSelectColumnsEncryptorComparator.isSame(derivedInsertColumns, projections, encryptRule),
+            ShardingSpherePreconditions.checkState(InsertSelectColumnsEncryptorComparator.isSame(derivedInsertColumns, projections, rule),
                     () -> new UnsupportedSQLOperationException("Can not use different encryptor in insert select columns"));
         }
         return new UseDefaultInsertColumnsToken(
-                insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, encryptRule.getEncryptTable(tableName), insertStatementContext.getColumnNames()));
+                insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, rule.getEncryptTable(tableName), insertStatementContext.getColumnNames()));
     }
     
     private List<String> getColumnNames(final InsertStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {

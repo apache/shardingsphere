@@ -18,31 +18,29 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class OrderByTokenTest {
     
-    private OrderByToken orderByToken;
-    
-    @BeforeEach
-    void setup() {
-        orderByToken = new OrderByToken(0);
-        List<String> columnLabels = orderByToken.getColumnLabels();
-        List<OrderDirection> orderDirections = orderByToken.getOrderDirections();
-        columnLabels.add(0, "Test1");
-        columnLabels.add(1, "Test2");
-        orderDirections.add(0, OrderDirection.ASC);
-        orderDirections.add(1, OrderDirection.ASC);
+    @Test
+    void assertGetStopIndex() {
+        assertThat(new OrderByToken(10).getStopIndex(), is(10));
     }
     
     @Test
     void assertToString() {
-        assertThat(orderByToken.toString(), is(" ORDER BY Test1 ASC,Test2 ASC "));
+        assertThat(createOrderByToken().toString(), is(" ORDER BY foo_col ASC,bar_col ASC "));
+    }
+    
+    private OrderByToken createOrderByToken() {
+        OrderByToken result = new OrderByToken(0);
+        result.getColumnLabels().add(0, "foo_col");
+        result.getColumnLabels().add(1, "bar_col");
+        result.getOrderDirections().add(0, OrderDirection.ASC);
+        result.getOrderDirections().add(1, OrderDirection.ASC);
+        return result;
     }
 }

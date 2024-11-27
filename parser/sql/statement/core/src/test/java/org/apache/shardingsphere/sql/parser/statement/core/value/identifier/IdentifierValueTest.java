@@ -53,4 +53,15 @@ class IdentifierValueTest {
         String text = "ds_${[1,2]}.t_order";
         assertThat(new IdentifierValue(text, "[]").getValue(), is("ds_${[1,2]}.t_order"));
     }
+    
+    @Test
+    void assertGetValueWithQuoteCharactersWithNullValue() {
+        assertThat(new IdentifierValue(null).getValueWithQuoteCharacters(), is(""));
+    }
+    
+    @Test
+    void assertGetValueWithQuoteCharactersWithValue() {
+        String text = "[foo]";
+        assertThat(new IdentifierValue(text).getValueWithQuoteCharacters(), is("[foo]"));
+    }
 }

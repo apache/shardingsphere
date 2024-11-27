@@ -41,7 +41,7 @@ import java.util.List;
 @Setter
 public final class EncryptInsertPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware, DatabaseNameAware {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRule rule;
     
     private List<Object> parameters;
     
@@ -57,7 +57,7 @@ public final class EncryptInsertPredicateRightValueTokenGenerator implements Col
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        EncryptPredicateRightValueTokenGenerator generator = new EncryptPredicateRightValueTokenGenerator(encryptRule);
+        EncryptPredicateRightValueTokenGenerator generator = new EncryptPredicateRightValueTokenGenerator(rule);
         generator.setParameters(parameters);
         generator.setEncryptConditions(encryptConditions);
         generator.setDatabaseName(databaseName);

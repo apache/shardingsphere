@@ -18,54 +18,63 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValue;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShardingInsertValuesTokenTest {
     
-    private ShardingInsertValuesToken shardingInsertValuesToken;
+    @Test
+    void assertToStringForInsertValue() {
+        assertThat(createInsertValuesToken().toString(createRouteUnit()), is("('foo', 'bar')"));
+    }
     
-    private RouteUnit routeUnit;
+    private ShardingInsertValuesToken createInsertValuesToken() {
+        ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        List<ExpressionSegment> values = Arrays.asList(new LiteralExpressionSegment(0, 0, "foo"), new LiteralExpressionSegment(0, 0, "bar"));
+        result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
+        return result;
+    }
     
-    @BeforeEach
-    void setup() {
-        shardingInsertValuesToken = new ShardingInsertValuesToken(0, 2);
-        RouteMapper routeMapper = new RouteMapper("logic_ds", "actual_ds");
+    private RouteUnit createRouteUnit() {
+        RouteMapper routeMapper = new RouteMapper("foo_ds", "actual_ds");
         RouteMapper routeMapper1 = new RouteMapper("tbl", "tbl_0");
         RouteMapper routeMapper2 = new RouteMapper("tbl", "tbl_1");
-        routeUnit = new RouteUnit(routeMapper, Arrays.asList(routeMapper1, routeMapper2));
-        ExpressionSegment expressionSegment1 = new LiteralExpressionSegment(0, 0, "shardingsphere");
-        ExpressionSegment expressionSegment2 = new LiteralExpressionSegment(0, 0, "test");
-        List<ExpressionSegment> expressionSegment = new LinkedList<>();
-        expressionSegment.add(expressionSegment1);
-        expressionSegment.add(expressionSegment2);
-        Collection<DataNode> dataNodes = new LinkedList<>();
-        dataNodes.add(new DataNode("logic_ds", "tbl_0"));
-        ShardingInsertValue shardingInsertValue = new ShardingInsertValue(expressionSegment, dataNodes);
-        List<InsertValue> insertValues = shardingInsertValuesToken.getInsertValues();
-        insertValues.add(shardingInsertValue);
+        return new RouteUnit(routeMapper, Arrays.asList(routeMapper1, routeMapper2));
     }
     
     @Test
-    void assertToStringWithRouteUnit() {
-        assertThat(shardingInsertValuesToken.toString(routeUnit), is("('shardingsphere', 'test')"));
+    void assertToStringForMultipleInsertValues() {
+        assertThat(createMultipleInsertValuesToken().toString(), is("('foo', 'bar'), ('foo', 'bar')"));
+    }
+    
+    private ShardingInsertValuesToken createMultipleInsertValuesToken() {
+        ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        List<ExpressionSegment> values = Arrays.asList(new LiteralExpressionSegment(0, 0, "foo"), new LiteralExpressionSegment(0, 0, "bar"));
+        result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
+        result.getInsertValues().add(new ShardingInsertValue(values, dataNodes));
+        return result;
     }
     
     @Test
-    void assertToStringWithoutRouteUnit() {
-        assertThat(shardingInsertValuesToken.toString(), is("('shardingsphere', 'test')"));
+    void assertToStringWithEmptyInsertValues() {
+        ShardingInsertValuesToken result = new ShardingInsertValuesToken(0, 2);
+        Collection<DataNode> dataNodes = Collections.singleton(new DataNode("foo_ds", "tbl_0"));
+        List<ExpressionSegment> values = Collections.emptyList();
+        assertThrows(UnsupportedSQLOperationException.class, () -> result.getInsertValues().add(new ShardingInsertValue(values, dataNodes)));
     }
 }

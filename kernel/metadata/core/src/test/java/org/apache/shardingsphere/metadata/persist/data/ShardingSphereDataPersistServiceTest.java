@@ -78,7 +78,7 @@ class ShardingSphereDataPersistServiceTest {
         when(result.containsDatabase("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         when(result.getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl")).thenReturn(true);
-        when(result.getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl").getColumnValues()).thenReturn(Collections.emptyList());
+        when(result.getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl").getAllColumns()).thenReturn(Collections.emptyList());
         when(result.containsDatabase("bar_db")).thenReturn(true);
         when(result.getDatabase("bar_db")).thenReturn(mock(ShardingSphereDatabase.class));
         return result;
@@ -101,7 +101,7 @@ class ShardingSphereDataPersistServiceTest {
         when(schemaData.getTableData().values()).thenReturn(Collections.singleton(tableData));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("foo_schema").getTable("foo_tbl").getColumnValues()).thenReturn(Collections.singleton(mock(ShardingSphereColumn.class)));
+        when(database.getSchema("foo_schema").getTable("foo_tbl").getAllColumns()).thenReturn(Collections.singleton(mock(ShardingSphereColumn.class)));
         persistService.persist(database, "foo_schema", schemaData);
         verify(tableRowDataPersistService).persist("foo_db", "foo_schema", "foo_tbl", Collections.emptyList());
     }

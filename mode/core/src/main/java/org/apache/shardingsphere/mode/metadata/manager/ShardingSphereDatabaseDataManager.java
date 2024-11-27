@@ -138,7 +138,7 @@ public final class ShardingSphereDatabaseDataManager {
             return;
         }
         ShardingSphereTableData tableData = metaDataContexts.get().getStatistics().getDatabase(databaseName).getSchema(schemaName).getTable(tableName);
-        List<ShardingSphereColumn> columns = new ArrayList<>(metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getColumnValues());
+        List<ShardingSphereColumn> columns = new ArrayList<>(metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getAllColumns());
         tableData.getRows().add(new YamlShardingSphereRowDataSwapper(columns).swapToObject(yamlRowData));
     }
     

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 
-import lombok.Setter;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -32,10 +31,10 @@ import java.util.List;
 /**
  * Sharding pagination parameter rewriter.
  */
-@Setter
-public final class ShardingPaginationParameterRewriter implements ParameterRewriter, RouteContextAware {
+@RequiredArgsConstructor
+public final class ShardingPaginationParameterRewriter implements ParameterRewriter {
     
-    private RouteContext routeContext;
+    private final RouteContext routeContext;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
