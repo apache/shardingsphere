@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DistinctGroupConcatAggregationUnit implements AggregationUnit {
     
     private static final String DEFAULT_SEPARATOR = ",";
     
-    private final Collection<String> values = new HashSet<>();
+    private final Collection<Comparable<?>> values = new HashSet<>();
     
-    private final String separator;
+    private String separator;
     
     public DistinctGroupConcatAggregationUnit(final String separator) {
-        this.separator = null == separator ? DEFAULT_SEPARATOR : separator;
+        this.separator = separator;
     }
     
     @Override
@@ -39,11 +39,14 @@ public class DistinctGroupConcatAggregationUnit implements AggregationUnit {
         if (null == values || null == values.get(0)) {
             return;
         }
-        this.values.addAll(Arrays.asList(values.get(0).toString().split(separator)));
+        this.values.add(values.get(0));
     }
     
     @Override
     public Comparable<?> getResult() {
-        return String.join(separator, values);
+        if (null == separator) {
+            separator = DEFAULT_SEPARATOR;
+        }
+        return values.stream().map(Object::toString).collect(Collectors.joining(separator));
     }
 }
