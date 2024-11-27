@@ -68,13 +68,13 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData,
-                                           final ShardingSphereDatabase database, final BroadcastRule rule, final ConfigurationProperties props) {
+                                           final ShardingSphereDatabase database, final BroadcastRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         return BroadcastRouteEngineFactory.newInstance(rule, database, queryContext).route(new RouteContext(), rule);
     }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext,
-                                     final ShardingSphereDatabase database, final BroadcastRule rule, final ConfigurationProperties props) {
+                                     final ShardingSphereDatabase database, final BroadcastRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {

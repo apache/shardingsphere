@@ -49,7 +49,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
-                                           final SingleRule rule, final ConfigurationProperties props) {
+                                           final SingleRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         if (1 == database.getResourceMetaData().getStorageUnits().size()) {
             return createSingleDataSourceRouteContext(rule, database, queryContext);
         }
@@ -68,7 +68,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final SingleRule rule, final ConfigurationProperties props) {
+                                     final SingleRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         Collection<QualifiedTable> singleTables = getSingleTables(database, rule, routeContext, sqlStatementContext);
         SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).ifPresent(optional -> optional.route(routeContext, rule));

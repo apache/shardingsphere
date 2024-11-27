@@ -790,7 +790,7 @@ class ShardingRuleTest {
     @Test
     void assertGetShardingRuleTableNames() {
         ShardingRule actual = createMaximumShardingRule();
-        Collection<String> shardingRuleTableNames = actual.getShardingRuleTableNames(Collections.singleton("Logic_Table"));
+        Collection<String> shardingRuleTableNames = actual.getShardingLogicTableNames(Collections.singleton("Logic_Table"));
         assertTrue(shardingRuleTableNames.contains("Logic_Table"));
     }
     

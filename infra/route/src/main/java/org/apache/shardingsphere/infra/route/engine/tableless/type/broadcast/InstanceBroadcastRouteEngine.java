@@ -15,35 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.type;
+package org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
 
-import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Entrance SQL Router.
- * 
- * @param <T> type of rule
+ * Instance broadcast route engine.
  */
-public interface EntranceSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
+@RequiredArgsConstructor
+public final class InstanceBroadcastRouteEngine implements TablelessRouteEngine {
     
-    /**
-     * Create route context.
-     *
-     * @param queryContext query context
-     * @param globalRuleMetaData global rule meta data
-     * @param database database
-     * @param rule rule
-     * @param tableNames table names
-     * @param props configuration properties
-     * @return route context
-     */
-    RouteContext createRouteContext(QueryContext queryContext, RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, Collection<String> tableNames, ConfigurationProperties props);
+    @Override
+    public RouteContext route(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+        RouteContext result = new RouteContext();
+        for (String each : database.getResourceMetaData().getAllInstanceDataSourceNames()) {
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
+        }
+        return result;
+    }
 }

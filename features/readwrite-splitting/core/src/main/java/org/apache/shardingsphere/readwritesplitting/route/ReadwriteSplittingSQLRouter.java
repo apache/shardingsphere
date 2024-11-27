@@ -40,7 +40,7 @@ public final class ReadwriteSplittingSQLRouter implements DecorateSQLRouter<Read
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
+                                     final ReadwriteSplittingRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
