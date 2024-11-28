@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingCreateTableStatementValidatorTest {
+class ShardingCreateTableRouteContextCheckerTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -61,7 +61,7 @@ class ShardingCreateTableStatementValidatorTest {
     private RouteContext routeContext;
     
     @Test
-    void assertPostValidateCreateTableWithSameRouteResultShardingTableForPostgreSQL() {
+    void assertCheckWithSameRouteResultShardingTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -70,13 +70,13 @@ class ShardingCreateTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertDoesNotThrow(() -> new ShardingCreateTableStatementValidator().postValidate(
+        assertDoesNotThrow(() -> new ShardingCreateTableRouteContextChecker().check(
                 shardingRule, new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
                 routeContext));
     }
     
     @Test
-    void assertPostValidateCreateTableWithDifferentRouteResultShardingTableForPostgreSQL() {
+    void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -84,16 +84,16 @@ class ShardingCreateTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertThrows(ShardingDDLRouteException.class, () -> new ShardingCreateTableStatementValidator().postValidate(shardingRule,
+        assertThrows(ShardingDDLRouteException.class, () -> new ShardingCreateTableRouteContextChecker().check(shardingRule,
                 new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
                 routeContext));
     }
     
     @Test
-    void assertPostValidateCreateTableWithSameRouteResultBroadcastTableForPostgreSQL() {
+    void assertCheckWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        assertDoesNotThrow(() -> new ShardingCreateTableStatementValidator().postValidate(
+        assertDoesNotThrow(() -> new ShardingCreateTableRouteContextChecker().check(
                 shardingRule, new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
                 routeContext));
     }

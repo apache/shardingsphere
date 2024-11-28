@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ShardingCreateViewStatementValidatorTest {
+class ShardingCreateViewRouteContextCheckerTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RouteContext routeContext;
@@ -76,20 +76,20 @@ class ShardingCreateViewStatementValidatorTest {
     }
     
     @Test
-    void assertPostValidateCreateView() {
+    void assertCheck() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().postValidate(
+        assertDoesNotThrow(() -> new ShardingCreateViewRouteContextChecker().check(
                 shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateCreateViewWithException() {
+    void assertCheckWithException() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         assertThrows(UnsupportedCreateViewException.class,
-                () -> new ShardingCreateViewStatementValidator().postValidate(shardingRule,
+                () -> new ShardingCreateViewRouteContextChecker().check(shardingRule,
                         createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
 }

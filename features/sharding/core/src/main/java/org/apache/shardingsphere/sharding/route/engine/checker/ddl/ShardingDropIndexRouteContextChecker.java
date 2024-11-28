@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedCheckUtils;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
-import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
@@ -37,13 +37,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Sharding drop index statement validator.
+ * Sharding drop index route context checker.
  */
-public final class ShardingDropIndexStatementValidator implements ShardingStatementValidator {
+public final class ShardingDropIndexRouteContextChecker implements ShardingRouteContextChecker {
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
-                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+    public void check(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
+                      final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) sqlStatementContext.getSqlStatement();
         Collection<IndexSegment> indexSegments = dropIndexStatement.getIndexes();
         Optional<String> logicTableName = dropIndexStatement.getSimpleTable().map(optional -> optional.getTableName().getIdentifier().getValue());

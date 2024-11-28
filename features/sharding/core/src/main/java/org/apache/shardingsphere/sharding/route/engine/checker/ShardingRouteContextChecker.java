@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator;
+package org.apache.shardingsphere.sharding.route.engine.checker;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -27,12 +27,12 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import java.util.List;
 
 /**
- * Sharding statement validator.
+ * Sharding route context checker.
  */
-public interface ShardingStatementValidator {
+public interface ShardingRouteContextChecker {
     
     /**
-     * Validate whether sharding operation is supported after route.
+     * Check whether sharding operation is supported after route.
      *
      * @param shardingRule sharding rule
      * @param sqlStatementContext SQL statement context
@@ -42,6 +42,6 @@ public interface ShardingStatementValidator {
      * @param props props
      * @param routeContext route context
      */
-    void postValidate(ShardingRule shardingRule, SQLStatementContext sqlStatementContext, HintValueContext hintValueContext, List<Object> params,
-                      ShardingSphereDatabase database, ConfigurationProperties props, RouteContext routeContext);
+    void check(ShardingRule shardingRule, SQLStatementContext sqlStatementContext, HintValueContext hintValueContext, List<Object> params,
+               ShardingSphereDatabase database, ConfigurationProperties props, RouteContext routeContext);
 }

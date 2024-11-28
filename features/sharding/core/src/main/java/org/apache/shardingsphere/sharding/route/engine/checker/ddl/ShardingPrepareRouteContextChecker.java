@@ -15,30 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.syntax.DMLMultipleDataNodesWithLimitException;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.exception.connection.EmptyShardingRouteResultException;
+import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedPrepareRouteToSameDataSourceException;
+import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Sharding delete statement validator.
+ * Sharding prepare route context checker.
  */
-public final class ShardingDeleteStatementValidator extends ShardingDMLStatementValidator {
+public final class ShardingPrepareRouteContextChecker implements ShardingRouteContextChecker {
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
-                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        if (((DeleteStatement) sqlStatementContext.getSqlStatement()).getLimit().isPresent() && routeContext.getRouteUnits().size() > 1) {
-            throw new DMLMultipleDataNodesWithLimitException("DELETE");
+    public void check(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
+                      final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+        if (routeContext.getRouteUnits().isEmpty()) {
+            throw new EmptyShardingRouteResultException();
+        }
+        if (routeContext.getRouteUnits().stream().collect(Collectors.groupingBy(RouteUnit::getDataSourceMapper)).entrySet().stream().anyMatch(each -> each.getValue().size() > 1)) {
+            throw new UnsupportedPrepareRouteToSameDataSourceException();
         }
     }
 }

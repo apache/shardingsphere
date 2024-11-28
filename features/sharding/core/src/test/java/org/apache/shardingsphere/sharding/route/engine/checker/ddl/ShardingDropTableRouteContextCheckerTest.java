@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ShardingDropTableStatementValidatorTest {
+class ShardingDropTableRouteContextCheckerTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -77,7 +77,7 @@ class ShardingDropTableStatementValidatorTest {
     }
     
     @Test
-    void assertPostValidateWhenDropTableInUsedForMySQL() {
+    void assertCheckWhenDropTableInUsedForMySQL() {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -93,7 +93,7 @@ class ShardingDropTableStatementValidatorTest {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         assertThrows(InUsedTablesException.class,
-                () -> new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
+                () -> new ShardingDropTableRouteContextChecker().check(shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
                         Collections.emptyList(), database,
                         mock(ConfigurationProperties.class), routeContext));
     }
@@ -118,7 +118,7 @@ class ShardingDropTableStatementValidatorTest {
     }
     
     @Test
-    void assertPostValidateDropTableWithSameRouteResultShardingTableForPostgreSQL() {
+    void assertCheckWithSameRouteResultShardingTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -127,13 +127,13 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertDoesNotThrow(() -> new ShardingDropTableStatementValidator().postValidate(
+        assertDoesNotThrow(() -> new ShardingDropTableRouteContextChecker().check(
                 shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(),
                 mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateDropTableWithDifferentRouteResultShardingTableForPostgreSQL() {
+    void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -142,12 +142,12 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         assertThrows(ShardingDDLRouteException.class,
-                () -> new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
+                () -> new ShardingDropTableRouteContextChecker().check(shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
                         Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateDropTableWithSameRouteResultBroadcastTableForPostgreSQL() {
+    void assertCheckWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.getShardingTable("t_config")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_config"));
@@ -155,7 +155,7 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertDoesNotThrow(() -> new ShardingDropTableStatementValidator().postValidate(
+        assertDoesNotThrow(() -> new ShardingDropTableRouteContextChecker().check(
                 shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
                 Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
     }

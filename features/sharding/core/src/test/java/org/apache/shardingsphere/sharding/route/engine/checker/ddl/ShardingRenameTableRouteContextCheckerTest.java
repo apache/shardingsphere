@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
@@ -48,13 +48,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingRenameTableStatementValidatorTest {
+class ShardingRenameTableRouteContextCheckerTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Test
-    void assertPostValidateDifferentRouteUnitsAndDataNodesSize() {
+    void assertCheckDifferentRouteUnitsAndDataNodesSize() {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
         ShardingTable shardingTable = mock(ShardingTable.class);
@@ -65,11 +65,11 @@ class ShardingRenameTableStatementValidatorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
         assertThrows(ShardingDDLRouteException.class,
-                () -> new ShardingRenameTableStatementValidator().postValidate(shardingRule, sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, props, routeContext));
+                () -> new ShardingRenameTableRouteContextChecker().check(shardingRule, sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, props, routeContext));
     }
     
     @Test
-    void assertPostValidateNormalCase() {
+    void assertCheckNormalCase() {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
         ShardingTable shardingTable = mock(ShardingTable.class);
@@ -79,7 +79,7 @@ class ShardingRenameTableStatementValidatorTest {
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        assertDoesNotThrow(() -> new ShardingRenameTableStatementValidator().postValidate(
+        assertDoesNotThrow(() -> new ShardingRenameTableRouteContextChecker().check(
                 shardingRule, sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, props, routeContext));
     }
     

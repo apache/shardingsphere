@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator;
+package org.apache.shardingsphere.sharding.route.engine.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingAlterTableRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingCreateTableRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingCreateViewRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingDropIndexRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingDropTableRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingPrepareRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingRenameTableRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.dml.ShardingDeleteRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.dml.ShardingInsertRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.dml.ShardingUpdateRouteContextChecker;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterTableStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateTableStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateViewStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropIndexStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropTableStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingPrepareStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingRenameTableStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingInsertStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
@@ -47,62 +47,62 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateS
 import java.util.Optional;
 
 /**
- * Sharding statement validator factory.
+ * Sharding route context checker factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingStatementValidatorFactory {
+public final class ShardingRouteContextCheckerFactory {
     
     /**
-     * New instance of sharding statement validator.
+     * New instance of sharding route context checker.
      *
      * @param sqlStatement SQL statement
      * @param shardingConditions sharding conditions
      * @return created instance
      */
-    public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
+    public static Optional<ShardingRouteContextChecker> newInstance(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementValidator(sqlStatement);
+            return getDDLRouteContextChecker(sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementValidator(sqlStatement, shardingConditions);
+            return getDMLRouteContextChecker(sqlStatement, shardingConditions);
         }
         return Optional.empty();
     }
     
-    private static Optional<ShardingStatementValidator> getDDLStatementValidator(final SQLStatement sqlStatement) {
+    private static Optional<ShardingRouteContextChecker> getDDLRouteContextChecker(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
-            return Optional.of(new ShardingCreateTableStatementValidator());
+            return Optional.of(new ShardingCreateTableRouteContextChecker());
         }
         if (sqlStatement instanceof CreateViewStatement) {
-            return Optional.of(new ShardingCreateViewStatementValidator());
+            return Optional.of(new ShardingCreateViewRouteContextChecker());
         }
         if (sqlStatement instanceof AlterTableStatement) {
-            return Optional.of(new ShardingAlterTableStatementValidator());
+            return Optional.of(new ShardingAlterTableRouteContextChecker());
         }
         if (sqlStatement instanceof RenameTableStatement) {
-            return Optional.of(new ShardingRenameTableStatementValidator());
+            return Optional.of(new ShardingRenameTableRouteContextChecker());
         }
         if (sqlStatement instanceof DropTableStatement) {
-            return Optional.of(new ShardingDropTableStatementValidator());
+            return Optional.of(new ShardingDropTableRouteContextChecker());
         }
         if (sqlStatement instanceof DropIndexStatement) {
-            return Optional.of(new ShardingDropIndexStatementValidator());
+            return Optional.of(new ShardingDropIndexRouteContextChecker());
         }
         if (sqlStatement instanceof PrepareStatement) {
-            return Optional.of(new ShardingPrepareStatementValidator());
+            return Optional.of(new ShardingPrepareRouteContextChecker());
         }
         return Optional.empty();
     }
     
-    private static Optional<ShardingStatementValidator> getDMLStatementValidator(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
+    private static Optional<ShardingRouteContextChecker> getDMLRouteContextChecker(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         if (sqlStatement instanceof InsertStatement) {
-            return Optional.of(new ShardingInsertStatementValidator(shardingConditions));
+            return Optional.of(new ShardingInsertRouteContextChecker(shardingConditions));
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return Optional.of(new ShardingUpdateStatementValidator());
+            return Optional.of(new ShardingUpdateRouteContextChecker());
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return Optional.of(new ShardingDeleteStatementValidator());
+            return Optional.of(new ShardingDeleteRouteContextChecker());
         }
         return Optional.empty();
     }

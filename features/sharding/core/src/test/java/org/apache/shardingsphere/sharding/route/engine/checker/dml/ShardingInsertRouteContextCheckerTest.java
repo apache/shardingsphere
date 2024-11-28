@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.dml;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -76,7 +76,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingInsertStatementValidatorTest {
+class ShardingInsertRouteContextCheckerTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -91,10 +91,10 @@ class ShardingInsertStatementValidatorTest {
     private ShardingSphereDatabase database;
     
     @Test
-    void assertPostValidateWhenInsertWithSingleRouting() {
+    void assertCheckWhenInsertWithSingleRouting() {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, new HintValueContext(),
+        assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(shardingConditions).check(shardingRule, sqlStatementContext, new HintValueContext(),
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
@@ -106,56 +106,56 @@ class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    void assertPostValidateWhenInsertWithBroadcastTable() {
+    void assertCheckWhenInsertWithBroadcastTable() {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
-        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, new HintValueContext(),
+        assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(shardingConditions).check(shardingRule, sqlStatementContext, new HintValueContext(),
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateWhenInsertWithRoutingToSingleDataNode() {
+    void assertCheckWhenInsertWithRoutingToSingleDataNode() {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
         when(routeContext.getOriginalDataNodes()).thenReturn(getSingleRouteDataNodes());
-        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, new HintValueContext(),
+        assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(shardingConditions).check(shardingRule, sqlStatementContext, new HintValueContext(),
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateWhenInsertWithRoutingToMultipleDataNodes() {
+    void assertCheckWhenInsertWithRoutingToMultipleDataNodes() {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
         when(routeContext.getOriginalDataNodes()).thenReturn(getMultipleRouteDataNodes());
-        assertThrows(DuplicateInsertDataRecordException.class, () -> new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, new HintValueContext(),
+        assertThrows(DuplicateInsertDataRecordException.class, () -> new ShardingInsertRouteContextChecker(shardingConditions).check(shardingRule, sqlStatementContext, new HintValueContext(),
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateWhenNotOnDuplicateKeyUpdateShardingColumn() {
+    void assertCheckWhenNotOnDuplicateKeyUpdateShardingColumn() {
         List<Object> params = Collections.singletonList(1);
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isSingleRouting()).thenReturn(true);
         InsertStatementContext insertStatementContext = createInsertStatementContext(params, createInsertStatement());
-        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(mock(ShardingConditions.class)).postValidate(
+        assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(mock(ShardingConditions.class)).check(
                 shardingRule, insertStatementContext, new HintValueContext(), params, database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithSameRouteContext() {
+    void assertCheckWhenOnDuplicateKeyUpdateShardingColumnWithSameRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         List<Object> params = Collections.singletonList(1);
         InsertStatementContext insertStatementContext = createInsertStatementContext(params, createInsertStatement());
-        assertDoesNotThrow(() -> new ShardingInsertStatementValidator(mock(ShardingConditions.class)).postValidate(shardingRule,
+        assertDoesNotThrow(() -> new ShardingInsertRouteContextChecker(mock(ShardingConditions.class)).check(shardingRule,
                 insertStatementContext, new HintValueContext(), params, database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }
     
     @Test
-    void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithDifferentRouteContext() {
+    void assertCheckWhenOnDuplicateKeyUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         List<Object> params = Collections.singletonList(1);
         InsertStatementContext insertStatementContext = createInsertStatementContext(params, createInsertStatement());
-        assertThrows(UnsupportedUpdatingShardingValueException.class, () -> new ShardingInsertStatementValidator(mock(ShardingConditions.class)).postValidate(shardingRule,
+        assertThrows(UnsupportedUpdatingShardingValueException.class, () -> new ShardingInsertRouteContextChecker(mock(ShardingConditions.class)).check(shardingRule,
                 insertStatementContext, new HintValueContext(), params, database, mock(ConfigurationProperties.class), createFullRouteContext()));
     }
     
