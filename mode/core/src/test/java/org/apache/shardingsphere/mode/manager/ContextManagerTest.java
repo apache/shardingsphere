@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
@@ -50,6 +51,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -79,7 +83,7 @@ class ContextManagerTest {
     private ContextManager contextManager;
     
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShardingSphereDatabase database = mockDatabase();
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
@@ -90,7 +94,7 @@ class ContextManagerTest {
         contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
     }
     
-    private ShardingSphereDatabase mockDatabase() {
+    private ShardingSphereDatabase mockDatabase() throws SQLException {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
@@ -100,9 +104,17 @@ class ContextManagerTest {
         when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         when(result.containsSchema("foo_schema")).thenReturn(true);
-        when(result.getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME))));
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getName()).thenReturn("foo_tbl");
+        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(table), Collections.emptyList());
+        when(result.getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", schema)));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, false);
+        when(connection.getMetaData().getTables(null, null, "foo_tbl", null)).thenReturn(resultSet);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource(connection));
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         return result;
     }
@@ -139,7 +151,7 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertReloadSchema() {
+    void assertReloadSchema() throws SQLException {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         ShardingSphereDatabase database = mockDatabase();
         contextManager.reloadSchema(database, "foo_schema", "foo_ds");
@@ -147,16 +159,16 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertReloadTable() {
+    void assertReloadTable() throws SQLException {
         ShardingSphereDatabase database = mockDatabase();
-        contextManager.reloadTable(database, "foo_schema", "foo_table");
+        contextManager.reloadTable(database, "foo_schema", "foo_tbl");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits().containsKey("foo_ds"));
     }
     
     @Test
-    void assertReloadTableWithDataSourceName() {
+    void assertReloadTableWithDataSourceName() throws SQLException {
         ShardingSphereDatabase database = mockDatabase();
-        contextManager.reloadTable(database, "foo_schema", "foo_ds", "foo_table");
+        contextManager.reloadTable(database, "foo_schema", "foo_ds", "foo_tbl");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits().containsKey("foo_ds"));
     }
     
