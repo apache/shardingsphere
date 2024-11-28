@@ -24,34 +24,19 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedCheckUtils;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
-import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Sharding rename table statement validator.
  */
-public final class ShardingRenameTableStatementValidator extends ShardingDDLStatementValidator {
-    
-    @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
-                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        RenameTableStatementContext renameTableStatementContext = (RenameTableStatementContext) sqlStatementContext;
-        Collection<String> tableNames = renameTableStatementContext.getTablesContext().getSimpleTables().stream()
-                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        List<SimpleTableSegment> renameTables = renameTableStatementContext.getSqlStatement()
-                .getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(renameTables.isEmpty() || !shardingRule.containsShardingTable(tableNames),
-                () -> new UnsupportedShardingOperationException("RENAME TABLE", renameTables.get(0).getTableName().getIdentifier().getValue()));
-    }
+public final class ShardingRenameTableStatementValidator implements ShardingStatementValidator {
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
@@ -59,7 +44,7 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
         RenameTableStatement renameTableStatement = (RenameTableStatement) sqlStatementContext.getSqlStatement();
         for (RenameTableDefinitionSegment each : renameTableStatement.getRenameTables()) {
             String primaryTable = each.getTable().getTableName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(!isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable),
+            ShardingSpherePreconditions.checkState(!ShardingSupportedCheckUtils.isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable),
                     () -> new ShardingDDLRouteException("RENAME", "TABLE", ((RenameTableStatementContext) sqlStatementContext).getTablesContext().getTableNames()));
         }
     }

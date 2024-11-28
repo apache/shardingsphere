@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
@@ -50,7 +48,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,33 +67,6 @@ class ShardingUpdateStatementValidatorTest {
     
     @Mock
     private ShardingSphereDatabase database;
-    
-    @Test
-    void assertPreValidateWhenUpdateSingleTable() {
-        UpdateStatement updateStatement = createUpdateStatement();
-        updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement, DefaultDatabase.LOGIC_NAME);
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
-        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
-                mock(ConfigurationProperties.class)));
-    }
-    
-    @Test
-    void assertPreValidateWhenUpdateMultipleTables() {
-        UpdateStatement updateStatement = createUpdateStatement();
-        JoinTableSegment joinTableSegment = new JoinTableSegment();
-        joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
-        updateStatement.setTable(joinTableSegment);
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement, DefaultDatabase.LOGIC_NAME);
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
-        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class)));
-    }
     
     @Test
     void assertPostValidateWhenNotUpdateShardingColumn() {

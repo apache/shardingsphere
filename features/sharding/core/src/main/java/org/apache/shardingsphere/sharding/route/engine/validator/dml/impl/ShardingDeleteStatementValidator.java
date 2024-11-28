@@ -35,12 +35,6 @@ import java.util.List;
 public final class ShardingDeleteStatementValidator extends ShardingDMLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
-                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        validateMultipleTable(shardingRule, sqlStatementContext);
-    }
-    
-    @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         if (((DeleteStatement) sqlStatementContext.getSqlStatement()).getLimit().isPresent() && routeContext.getRouteUnits().size() > 1) {

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.single.checker.sql;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedDropCascadeTableException;
@@ -59,9 +58,10 @@ class SingleDropTableSupportedCheckerTest {
         return result;
     }
     
-    private SQLStatementContext createSQLStatementContext(final boolean containsCascade) {
+    private DropTableStatementContext createSQLStatementContext(final boolean containsCascade) {
         PostgreSQLDropTableStatement dropSchemaStatement = mock(PostgreSQLDropTableStatement.class, RETURNS_DEEP_STUBS);
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
-        return new UnknownSQLStatementContext(dropSchemaStatement);
+        when(dropSchemaStatement.getTables()).thenReturn(Collections.emptyList());
+        return new DropTableStatementContext(dropSchemaStatement, DefaultDatabase.LOGIC_NAME);
     }
 }
