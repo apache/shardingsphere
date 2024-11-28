@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.checker.sql.dml;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -44,7 +43,7 @@ public final class ShardingInsertSupportedChecker implements SupportedSQLChecker
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof DeleteStatementContext;
+        return sqlStatementContext instanceof InsertStatementContext;
     }
     
     @Override

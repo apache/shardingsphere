@@ -66,10 +66,10 @@ class ShardingDropTableSupportedCheckerTest {
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         DropTableStatementContext sqlStatementContext = new DropTableStatementContext(sqlStatement, "db_schema");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("db_schema");
-        when(database.getSchema("db_schema").containsTable("t_order_item")).thenReturn(true);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.containsTable("t_order_item")).thenReturn(true);
         ShardingDropTableSupportedChecker checker = new ShardingDropTableSupportedChecker();
-        assertDoesNotThrow(() -> checker.check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
+        assertDoesNotThrow(() -> checker.check(shardingRule, database, schema, sqlStatementContext));
     }
     
     private ShardingTable createShardingTable(final String tableName) {
