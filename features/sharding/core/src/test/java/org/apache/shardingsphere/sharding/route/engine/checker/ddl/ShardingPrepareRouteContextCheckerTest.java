@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.connection.EmptyShardingRouteResultException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedPrepareRouteToSameDataSourceException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -57,25 +53,23 @@ class ShardingPrepareRouteContextCheckerTest {
     @Mock
     private RouteContext routeContext;
     
+    @Mock
+    private QueryContext queryContext;
+    
     @Test
     void assertCheckWithEmptyRouteResultForPostgreSQL() {
-        PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
         assertThrows(EmptyShardingRouteResultException.class,
-                () -> new ShardingPrepareRouteContextChecker().check(shardingRule, new PrepareStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
-                        Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
+                () -> new ShardingPrepareRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
     void assertCheckWithDifferentDataSourceForPostgreSQL() {
-        PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertDoesNotThrow(() -> new ShardingPrepareRouteContextChecker().check(
-                shardingRule, new PrepareStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
-                routeContext));
+        assertDoesNotThrow(() -> new ShardingPrepareRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
@@ -86,9 +80,7 @@ class ShardingPrepareRouteContextCheckerTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_1"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
-        assertThrows(UnsupportedPrepareRouteToSameDataSourceException.class, () -> new ShardingPrepareRouteContextChecker().check(
-                shardingRule, new PrepareStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
-                routeContext));
+        assertThrows(UnsupportedPrepareRouteToSameDataSourceException.class,
+                () -> new ShardingPrepareRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
 }

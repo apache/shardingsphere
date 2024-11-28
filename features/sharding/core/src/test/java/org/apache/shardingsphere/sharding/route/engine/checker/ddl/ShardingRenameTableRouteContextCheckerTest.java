@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableS
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
@@ -53,6 +53,9 @@ class ShardingRenameTableRouteContextCheckerTest {
     @Mock
     private ShardingRule shardingRule;
     
+    @Mock
+    private QueryContext queryContext;
+    
     @Test
     void assertCheckDifferentRouteUnitsAndDataNodesSize() {
         RouteContext routeContext = new RouteContext();
@@ -64,8 +67,8 @@ class ShardingRenameTableRouteContextCheckerTest {
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        assertThrows(ShardingDDLRouteException.class,
-                () -> new ShardingRenameTableRouteContextChecker().check(shardingRule, sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, props, routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        assertThrows(ShardingDDLRouteException.class, () -> new ShardingRenameTableRouteContextChecker().check(shardingRule, queryContext, database, props, routeContext));
     }
     
     @Test
@@ -79,8 +82,8 @@ class ShardingRenameTableRouteContextCheckerTest {
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        assertDoesNotThrow(() -> new ShardingRenameTableRouteContextChecker().check(
-                shardingRule, sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, props, routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        assertDoesNotThrow(() -> new ShardingRenameTableRouteContextChecker().check(shardingRule, queryContext, database, props, routeContext));
     }
     
     private SQLStatementContext createRenameTableStatementContext() {

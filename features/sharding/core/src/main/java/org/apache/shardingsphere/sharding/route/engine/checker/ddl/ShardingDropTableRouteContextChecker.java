@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedCheckUtils;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.exception.metadata.InUsedTablesException;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,9 +44,8 @@ import java.util.stream.Collectors;
 public final class ShardingDropTableRouteContextChecker implements ShardingRouteContextChecker {
     
     @Override
-    public void check(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
-                      final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        DropTableStatementContext dropTableStatementContext = (DropTableStatementContext) sqlStatementContext;
+    public void check(final ShardingRule shardingRule, final QueryContext queryContext, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+        DropTableStatementContext dropTableStatementContext = (DropTableStatementContext) queryContext.getSqlStatementContext();
         DropTableStatement dropTableStatement = dropTableStatementContext.getSqlStatement();
         checkTableInUsed(shardingRule, dropTableStatementContext, routeContext);
         for (SimpleTableSegment each : dropTableStatement.getTables()) {

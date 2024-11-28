@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.sharding.route.engine.checker.dml;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLMultipleDataNodesWithLimitException;
 import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-
-import java.util.List;
 
 /**
  * Sharding delete route context checker.
@@ -35,9 +32,8 @@ import java.util.List;
 public final class ShardingDeleteRouteContextChecker implements ShardingRouteContextChecker {
     
     @Override
-    public void check(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
-                      final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        if (((DeleteStatement) sqlStatementContext.getSqlStatement()).getLimit().isPresent() && routeContext.getRouteUnits().size() > 1) {
+    public void check(final ShardingRule shardingRule, final QueryContext queryContext, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+        if (((DeleteStatement) queryContext.getSqlStatementContext().getSqlStatement()).getLimit().isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new DMLMultipleDataNodesWithLimitException("DELETE");
         }
     }
