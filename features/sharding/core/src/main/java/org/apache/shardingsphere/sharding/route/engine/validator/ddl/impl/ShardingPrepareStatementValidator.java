@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.connection.EmptyShardingRouteResultException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedPrepareRouteToSameDataSourceException;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.List;
@@ -34,12 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Sharding prepare statement validator.
  */
-public final class ShardingPrepareStatementValidator extends ShardingDDLStatementValidator {
-    
-    @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
-                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-    }
+public final class ShardingPrepareStatementValidator implements ShardingStatementValidator {
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,

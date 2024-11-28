@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -32,13 +30,8 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -52,7 +45,6 @@ import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,71 +59,6 @@ class ShardingCreateTableStatementValidatorTest {
     
     @Mock
     private RouteContext routeContext;
-    
-    @Test
-    void assertPreValidateCreateTableForMySQL() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
-    }
-    
-    @Test
-    void assertPreValidateCreateTableForOracle() {
-        OracleCreateTableStatement sqlStatement = new OracleCreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
-    }
-    
-    @Test
-    void assertPreValidateCreateTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "public"));
-    }
-    
-    @Test
-    void assertPreValidateCreateTableForSQL92() {
-        SQL92CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
-    }
-    
-    @Test
-    void assertPreValidateCreateTableForSQLServer() {
-        SQLServerCreateTableStatement sqlStatement = new SQLServerCreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "dbo"));
-    }
-    
-    private void assertPreValidateCreateTable(final CreateTableStatement sqlStatement, final String schemaName) {
-        SQLStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, "sharding_db");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("sharding_db");
-        when(database.getSchema(schemaName).containsTable("t_order")).thenReturn(true);
-        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
-                mock(ConfigurationProperties.class));
-    }
-    
-    @Test
-    void assertPreValidateCreateTableIfNotExistsForMySQL() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(true);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertPreValidateCreateTableIfNotExists(sqlStatement);
-    }
-    
-    @Test
-    void assertPreValidateCreateTableIfNotExistsForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(true);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertPreValidateCreateTableIfNotExists(sqlStatement);
-    }
-    
-    private void assertPreValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
-        SQLStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, mock(HintValueContext.class), Collections.emptyList(), database,
-                mock(ConfigurationProperties.class));
-    }
     
     @Test
     void assertPostValidateCreateTableWithSameRouteResultShardingTableForPostgreSQL() {
