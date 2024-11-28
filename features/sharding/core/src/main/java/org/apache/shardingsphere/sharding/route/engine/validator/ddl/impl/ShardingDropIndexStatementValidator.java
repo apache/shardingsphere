@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedCheckUtils;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
-import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
@@ -39,24 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Sharding drop index statement validator.
  */
-public final class ShardingDropIndexStatementValidator extends ShardingDDLStatementValidator {
-    
-    @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
-                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        DropIndexStatement dropIndexStatement = (DropIndexStatement) sqlStatementContext.getSqlStatement();
-        if (dropIndexStatement.isIfExists()) {
-            return;
-        }
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        for (IndexSegment each : dropIndexStatement.getIndexes()) {
-            ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue())
-                    .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
-            if (!isSchemaContainsIndex(schema, each)) {
-                throw new IndexNotExistedException(each.getIndexName().getIdentifier().getValue());
-            }
-        }
-    }
+public final class ShardingDropIndexStatementValidator implements ShardingStatementValidator {
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
@@ -79,7 +62,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     }
     
     private void validateDropIndexRouteUnit(final ShardingRule shardingRule, final RouteContext routeContext, final Collection<IndexSegment> indexSegments, final String logicTableName) {
-        if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, logicTableName)) {
+        if (ShardingSupportedCheckUtils.isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, logicTableName)) {
             Collection<String> indexNames = indexSegments.stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList());
             throw new ShardingDDLRouteException("DROP", "INDEX", indexNames);
         }

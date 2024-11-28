@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.checker.sql.schema;
 
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 /**
  * Drop schema supported checker for single.
  */
-@HighFrequencyInvocation
 public final class SingleDropSchemaSupportedChecker implements SupportedSQLChecker<SQLStatementContext, SingleRule> {
     
     @Override

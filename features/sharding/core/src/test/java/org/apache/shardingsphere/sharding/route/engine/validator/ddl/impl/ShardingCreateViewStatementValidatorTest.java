@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedCreateViewException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -45,7 +44,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -75,21 +73,6 @@ class ShardingCreateViewStatementValidatorTest {
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         when(createViewStatement.getView()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_view"))));
         when(routeContext.getRouteUnits().size()).thenReturn(2);
-    }
-    
-    @Test
-    void assertPreValidateCreateView() {
-        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, mock(HintValueContext.class), Collections.emptyList(),
-                mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
-    }
-    
-    @Test
-    void assertPreValidateCreateViewWithException() {
-        when(shardingRule.isShardingTable(any())).thenReturn(true);
-        when(shardingRule.isAllBindingTables(any())).thenReturn(false);
-        ConfigurationProperties props = mock(ConfigurationProperties.class);
-        assertThrows(EngagedViewException.class, () -> new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, mock(HintValueContext.class),
-                Collections.emptyList(), mock(ShardingSphereDatabase.class), props));
     }
     
     @Test

@@ -19,11 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
@@ -46,19 +44,6 @@ import java.util.Optional;
  * Sharding DML statement validator.
  */
 public abstract class ShardingDMLStatementValidator implements ShardingStatementValidator {
-    
-    /**
-     * Validate multiple table.
-     *
-     * @param shardingRule sharding rule
-     * @param sqlStatementContext sqlStatementContext
-     */
-    protected void validateMultipleTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
-        boolean isAllShardingTables = shardingRule.isAllShardingTables(tableNames) && (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames));
-        boolean isAllSingleTables = !shardingRule.containsShardingTable(tableNames);
-        ShardingSpherePreconditions.checkState(isAllShardingTables || isAllSingleTables, () -> new DMLWithMultipleShardingTablesException(tableNames));
-    }
     
     /**
      * Judge whether is same route context or not.

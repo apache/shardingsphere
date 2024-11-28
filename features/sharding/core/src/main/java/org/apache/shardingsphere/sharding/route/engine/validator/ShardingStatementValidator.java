@@ -32,19 +32,6 @@ import java.util.List;
 public interface ShardingStatementValidator {
     
     /**
-     * Validate whether sharding operation is supported before route.
-     *
-     * @param shardingRule sharding rule
-     * @param sqlStatementContext SQL statement context
-     * @param hintValueContext hint value context
-     * @param params SQL parameters
-     * @param database database
-     * @param props props
-     */
-    void preValidate(ShardingRule shardingRule, SQLStatementContext sqlStatementContext, HintValueContext hintValueContext, List<Object> params, ShardingSphereDatabase database,
-                     ConfigurationProperties props);
-    
-    /**
      * Validate whether sharding operation is supported after route.
      *
      * @param shardingRule sharding rule

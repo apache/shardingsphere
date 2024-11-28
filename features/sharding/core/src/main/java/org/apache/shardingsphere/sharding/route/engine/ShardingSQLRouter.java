@@ -71,7 +71,6 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule>,
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         ShardingConditions shardingConditions = createShardingConditions(queryContext, globalRuleMetaData, database, rule);
         Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement, shardingConditions);
-        validator.ifPresent(optional -> optional.preValidate(rule, queryContext.getSqlStatementContext(), queryContext.getHintValueContext(), queryContext.getParameters(), database, props));
         if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
             shardingConditions.merge();
         }

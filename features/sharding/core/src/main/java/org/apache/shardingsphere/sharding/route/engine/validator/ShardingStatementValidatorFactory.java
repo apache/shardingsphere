@@ -20,31 +20,18 @@ package org.apache.shardingsphere.sharding.route.engine.validator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterTableStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateFunctionStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateIndexStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateProcedureStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateTableStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateViewStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropIndexStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropTableStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingPrepareStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingRenameTableStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingCopyStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingInsertStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingLoadDataStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingLoadXMLStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
@@ -52,13 +39,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropInd
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Optional;
 
@@ -89,29 +73,14 @@ public final class ShardingStatementValidatorFactory {
         if (sqlStatement instanceof CreateTableStatement) {
             return Optional.of(new ShardingCreateTableStatementValidator());
         }
-        if (sqlStatement instanceof CreateFunctionStatement) {
-            return Optional.of(new ShardingCreateFunctionStatementValidator());
-        }
-        if (sqlStatement instanceof CreateProcedureStatement) {
-            return Optional.of(new ShardingCreateProcedureStatementValidator());
-        }
         if (sqlStatement instanceof CreateViewStatement) {
             return Optional.of(new ShardingCreateViewStatementValidator());
-        }
-        if (sqlStatement instanceof CreateIndexStatement) {
-            return Optional.of(new ShardingCreateIndexStatementValidator());
         }
         if (sqlStatement instanceof AlterTableStatement) {
             return Optional.of(new ShardingAlterTableStatementValidator());
         }
         if (sqlStatement instanceof RenameTableStatement) {
             return Optional.of(new ShardingRenameTableStatementValidator());
-        }
-        if (sqlStatement instanceof AlterViewStatement) {
-            return Optional.of(new ShardingAlterViewStatementValidator());
-        }
-        if (sqlStatement instanceof AlterIndexStatement) {
-            return Optional.of(new ShardingAlterIndexStatementValidator());
         }
         if (sqlStatement instanceof DropTableStatement) {
             return Optional.of(new ShardingDropTableStatementValidator());
@@ -134,15 +103,6 @@ public final class ShardingStatementValidatorFactory {
         }
         if (sqlStatement instanceof DeleteStatement) {
             return Optional.of(new ShardingDeleteStatementValidator());
-        }
-        if (sqlStatement instanceof CopyStatement) {
-            return Optional.of(new ShardingCopyStatementValidator());
-        }
-        if (sqlStatement instanceof MySQLLoadDataStatement) {
-            return Optional.of(new ShardingLoadDataStatementValidator());
-        }
-        if (sqlStatement instanceof MySQLLoadXMLStatement) {
-            return Optional.of(new ShardingLoadXMLStatementValidator());
         }
         return Optional.empty();
     }
