@@ -56,12 +56,12 @@ class ShardingDropIndexSupportedCheckerTest {
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchema("public").getTable("t_order")).thenReturn(table);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(schema.getTable("t_order")).thenReturn(table);
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
-        assertDoesNotThrow(
-                () -> new ShardingDropIndexSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
+        assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(shardingRule, database, schema, new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
     }
     
     @Test
@@ -72,7 +72,6 @@ class ShardingDropIndexSupportedCheckerTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        when(table.containsIndex("t_order_index")).thenReturn(false);
         assertThrows(IndexNotExistedException.class,
                 () -> new ShardingDropIndexSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
     }

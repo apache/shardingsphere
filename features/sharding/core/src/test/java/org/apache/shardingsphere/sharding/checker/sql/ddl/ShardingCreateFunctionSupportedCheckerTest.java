@@ -65,10 +65,10 @@ class ShardingCreateFunctionSupportedCheckerTest {
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
         CreateFunctionStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingCreateFunctionSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.containsTable("t_order_item")).thenReturn(true);
+        assertDoesNotThrow(() -> new ShardingCreateFunctionSupportedChecker().check(shardingRule, database, schema, sqlStatementContext));
     }
     
     @Test
@@ -83,7 +83,6 @@ class ShardingCreateFunctionSupportedCheckerTest {
         sqlStatement.setRoutineBody(routineBody);
         CreateFunctionStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("db_schema");
         assertThrows(NoSuchTableException.class, () -> new ShardingCreateFunctionSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
     }
     
@@ -99,7 +98,6 @@ class ShardingCreateFunctionSupportedCheckerTest {
         sqlStatement.setRoutineBody(routineBody);
         CreateFunctionStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("db_schema");
         assertThrows(NoSuchTableException.class, () -> new ShardingCreateFunctionSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
     }
     
@@ -115,8 +113,8 @@ class ShardingCreateFunctionSupportedCheckerTest {
         sqlStatement.setRoutineBody(routineBody);
         CreateFunctionStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
-        assertThrows(TableExistsException.class, () -> new ShardingCreateFunctionSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.containsTable("t_order")).thenReturn(true);
+        assertThrows(TableExistsException.class, () -> new ShardingCreateFunctionSupportedChecker().check(shardingRule, database, schema, sqlStatementContext));
     }
 }

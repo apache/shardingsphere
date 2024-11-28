@@ -61,6 +61,7 @@ class SingleDropTableSupportedCheckerTest {
     private DropTableStatementContext createSQLStatementContext(final boolean containsCascade) {
         PostgreSQLDropTableStatement dropSchemaStatement = mock(PostgreSQLDropTableStatement.class, RETURNS_DEEP_STUBS);
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
+        when(dropSchemaStatement.getTables()).thenReturn(Collections.emptyList());
         return new DropTableStatementContext(dropSchemaStatement, DefaultDatabase.LOGIC_NAME);
     }
 }

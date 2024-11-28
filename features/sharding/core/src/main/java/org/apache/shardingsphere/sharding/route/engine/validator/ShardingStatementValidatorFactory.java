@@ -43,8 +43,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Optional;
 
@@ -105,12 +103,6 @@ public final class ShardingStatementValidatorFactory {
         }
         if (sqlStatement instanceof DeleteStatement) {
             return Optional.of(new ShardingDeleteStatementValidator());
-        }
-        if (sqlStatement instanceof MySQLLoadDataStatement) {
-            return Optional.of(new ShardingLoadDataStatementValidator());
-        }
-        if (sqlStatement instanceof MySQLLoadXMLStatement) {
-            return Optional.of(new ShardingLoadXMLStatementValidator());
         }
         return Optional.empty();
     }
