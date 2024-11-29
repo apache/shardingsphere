@@ -127,7 +127,7 @@ public final class ContextManager implements AutoCloseable {
     public void reloadSchema(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName) {
         try {
             ShardingSphereSchema reloadedSchema = loadSchema(database, schemaName, dataSourceName);
-            if (reloadedSchema.getTables().isEmpty()) {
+            if (reloadedSchema.getAllTables().isEmpty()) {
                 database.dropSchema(schemaName);
                 persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getSchema().drop(database.getName(), schemaName);
             } else {
@@ -146,7 +146,7 @@ public final class ContextManager implements AutoCloseable {
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource()),
                 database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(material).get(schemaName);
-        result.getViews().putAll(persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(database.getName(), schemaName));
+        persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(database.getName(), schemaName).forEach(result::putView);
         return result;
     }
     
@@ -189,8 +189,7 @@ public final class ContextManager implements AutoCloseable {
     
     private void persistTable(final ShardingSphereDatabase database, final String schemaName, final String tableName, final GenericSchemaBuilderMaterial material) throws SQLException {
         ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singleton(tableName), material).getOrDefault(schemaName, new ShardingSphereSchema(schemaName));
-        persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getTable()
-                .persist(database.getName(), schemaName, Collections.singletonMap(tableName, schema.getTable(tableName)));
+        persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(schema.getTable(tableName)));
     }
     
     /**

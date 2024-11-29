@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist;
 
 import lombok.SneakyThrows;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -98,7 +97,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterNotEmptySchema() {
-        assertAlterSchema(mock(ShardingSphereSchema.class));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        assertAlterSchema(schema);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema(), times(0)).add("foo_db", "bar_schema");
     }
     
@@ -113,8 +113,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     private void assertAlterSchema(final ShardingSphereSchema schema) {
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(schema);
         metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "bar_schema", Collections.emptyMap());
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist("foo_db", "bar_schema", Collections.emptyMap());
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
     }
     
@@ -127,8 +127,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterSchemaMetaData() {
         metaDataManagerPersistService.alterSchemaMetaData(new AlterSchemaMetaDataPOJO("foo_db", "foo_schema", Collections.singleton("foo_ds")));
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.emptyMap());
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist("foo_db", "foo_schema", Collections.emptyMap());
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.emptyList());
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist("foo_db", "foo_schema", Collections.emptyList());
     }
     
     @Test
@@ -189,9 +189,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertCreateTable() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(table.getName()).thenReturn("foo_tbl");
         metaDataManagerPersistService.createTable("foo_db", "foo_schema", table, "foo_ds");
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Maps.of("foo_tbl", table));
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
     }
     
     @Test

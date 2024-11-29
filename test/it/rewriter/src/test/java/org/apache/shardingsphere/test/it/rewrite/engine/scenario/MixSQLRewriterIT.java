@@ -38,7 +38,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -53,25 +53,24 @@ class MixSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
-        Map<String, ShardingSphereTable> tables = new LinkedHashMap<>();
-        tables.put("t_account", new ShardingSphereTable("t_account", Arrays.asList(
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("t_account", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)),
                 Collections.singletonList(new ShardingSphereIndex("index_name", Collections.emptyList(), false)), Collections.emptyList()));
-        tables.put("t_account_bak", new ShardingSphereTable("t_account_bak", Arrays.asList(
+        tables.add(new ShardingSphereTable("t_account_bak", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Arrays.asList(
+        tables.add(new ShardingSphereTable("t_account_detail", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereSchema result = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
-        return Collections.singletonMap(schemaName, result);
+        return Collections.singletonMap(schemaName, new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyList()));
     }
     
     @Override

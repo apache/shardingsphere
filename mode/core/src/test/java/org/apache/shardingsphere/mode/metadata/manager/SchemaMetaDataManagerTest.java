@@ -158,7 +158,7 @@ class SchemaMetaDataManagerTest {
         ShardingSphereColumn toBeChangedColumn = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, false, true, false, false);
         ShardingSphereTable toBeChangedTable = new ShardingSphereTable("foo_tbl", Collections.singleton(toBeChangedColumn), Collections.emptyList(), Collections.emptyList());
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", toBeChangedTable, null);
-        ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTables().get("foo_tbl");
+        ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl");
         assertThat(table.getAllColumns().size(), is(1));
         assertTrue(table.containsColumn("foo_col"));
     }
@@ -197,19 +197,19 @@ class SchemaMetaDataManagerTest {
     void assertAlterSchemaForTableDropped() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", createToBeAlteredSchema()));
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "foo_tbl", null);
-        assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTables().containsKey("foo_tbl"));
+        assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl"));
     }
     
     @Test
     void assertAlterSchemaForViewDropped() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", createToBeAlteredSchema()));
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "foo_view", null);
-        assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getViews().containsKey("foo_view"));
+        assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsView("foo_view"));
     }
     
     private ShardingSphereSchema createToBeAlteredSchema() {
         ShardingSphereTable beforeChangedTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereView beforeChangedView = new ShardingSphereView("foo_tbl", "");
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_tbl", beforeChangedTable), Collections.singletonMap("foo_view", beforeChangedView));
+        ShardingSphereView beforeChangedView = new ShardingSphereView("foo_view", "");
+        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(beforeChangedTable), Collections.singleton(beforeChangedView));
     }
 }

@@ -129,7 +129,7 @@ class ImportMetaDataExecutorTest {
                 .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"))));
         if (null != feature) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, createTables(), Collections.emptyMap()));
+            when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, createTables(), Collections.emptyList()));
             Map<String, StorageUnit> storageUnits = createStorageUnits();
             when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
             when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));
@@ -149,9 +149,9 @@ class ImportMetaDataExecutorTest {
         return result;
     }
     
-    private Map<String, ShardingSphereTable> createTables() {
+    private Collection<ShardingSphereTable> createTables() {
         Collection<ShardingSphereColumn> columns = Collections.singleton(new ShardingSphereColumn("order_id", 0, false, false, false, true, false, false));
         Collection<ShardingSphereIndex> indexes = Collections.singleton(new ShardingSphereIndex("primary", Collections.emptyList(), false));
-        return Collections.singletonMap("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
+        return Collections.singletonList(new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
     }
 }

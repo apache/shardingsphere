@@ -26,8 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -54,16 +54,18 @@ class ViewMetaDataPersistServiceTest {
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/views")).thenReturn(Collections.singletonList("foo_view"));
         when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("0");
         when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0")).thenReturn("{name: foo_view}");
-        Map<String, ShardingSphereView> actual = persistService.load("foo_db", "foo_schema");
+        Collection<ShardingSphereView> actual = persistService.load("foo_db", "foo_schema");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_view").getName(), is("foo_view"));
+        assertThat(actual.iterator().next().getName(), is("foo_view"));
     }
     
     @Test
     void assertPersistWithoutVersion() {
         when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("", "0");
-        persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", mock(ShardingSphereView.class)));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", "{}" + System.lineSeparator());
+        ShardingSphereView view = mock(ShardingSphereView.class);
+        when(view.getName()).thenReturn("foo_view");
+        persistService.persist("foo_db", "foo_schema", Collections.singleton(view));
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", "name: foo_view" + System.lineSeparator());
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0");
     }
     
@@ -71,8 +73,10 @@ class ViewMetaDataPersistServiceTest {
     void assertPersistWithVersion() {
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions")).thenReturn(Collections.singletonList("10"));
         when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("10");
-        persistService.persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", mock(ShardingSphereView.class)));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/11", "{}" + System.lineSeparator());
+        ShardingSphereView view = mock(ShardingSphereView.class);
+        when(view.getName()).thenReturn("foo_view");
+        persistService.persist("foo_db", "foo_schema", Collections.singleton(view));
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/11", "name: foo_view" + System.lineSeparator());
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "11");
     }
     

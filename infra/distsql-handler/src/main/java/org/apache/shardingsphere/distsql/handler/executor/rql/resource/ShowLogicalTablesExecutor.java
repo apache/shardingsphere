@@ -67,7 +67,7 @@ public final class ShowLogicalTablesExecutor implements DistSQLQueryExecutor<Sho
     }
     
     private Collection<ShardingSphereTable> getTables(final String schemaName, final ShowLogicalTablesStatement sqlStatement) {
-        Collection<ShardingSphereTable> tables = database.getSchema(schemaName).getTables().values();
+        Collection<ShardingSphereTable> tables = database.getSchema(schemaName).getAllTables();
         Collection<ShardingSphereTable> filteredTables = filterByLike(tables, sqlStatement);
         return filteredTables.stream().sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList());
     }

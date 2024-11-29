@@ -38,6 +38,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CDCSchemaTableUtilsTest {
     
@@ -65,17 +66,19 @@ class CDCSchemaTableUtilsTest {
     }
     
     private ShardingSphereSchema mockedPublicSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
-        tables.put("t_order", mock(ShardingSphereTable.class));
-        tables.put("t_order2", mock(ShardingSphereTable.class));
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
+        ShardingSphereTable table1 = mock(ShardingSphereTable.class);
+        when(table1.getName()).thenReturn("t_order");
+        ShardingSphereTable table2 = mock(ShardingSphereTable.class);
+        when(table2.getName()).thenReturn("t_order2");
+        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Arrays.asList(table1, table2), Collections.emptyList());
     }
     
     private ShardingSphereSchema mockedTestSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
-        tables.put("t_order_item", mock(ShardingSphereTable.class));
-        tables.put("t_order_item2", mock(ShardingSphereTable.class));
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
+        ShardingSphereTable table1 = mock(ShardingSphereTable.class);
+        when(table1.getName()).thenReturn("t_order_item");
+        ShardingSphereTable table2 = mock(ShardingSphereTable.class);
+        when(table2.getName()).thenReturn("t_order_item2");
+        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Arrays.asList(table1, table2), Collections.emptyList());
     }
     
     @Test

@@ -49,8 +49,8 @@ class LogicTablesMergedResultTest {
     @BeforeEach
     void setUp() {
         rule = createShardingRule();
-        schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("table",
-                new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap());
+        schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME,
+                Collections.singleton(new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
     }
     
     private ShardingRule createShardingRule() {

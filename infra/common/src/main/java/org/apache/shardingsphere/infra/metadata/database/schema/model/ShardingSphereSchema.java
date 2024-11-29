@@ -23,15 +23,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere schema.
  */
-@Getter
 public final class ShardingSphereSchema {
     
+    @Getter
     private final String name;
     
     private final Map<String, ShardingSphereTable> tables;
@@ -45,12 +44,12 @@ public final class ShardingSphereSchema {
         views = new ConcurrentHashMap<>();
     }
     
-    public ShardingSphereSchema(final String name, final Map<String, ShardingSphereTable> tables, final Map<String, ShardingSphereView> views) {
+    public ShardingSphereSchema(final String name, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views) {
         this.name = name;
         this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
         this.views = new ConcurrentHashMap<>(views.size(), 1F);
-        tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
-        views.forEach((key, value) -> this.views.put(key.toLowerCase(), value));
+        tables.forEach(each -> this.tables.put(each.getName().toLowerCase(), each));
+        views.forEach(each -> this.views.put(each.getName().toLowerCase(), each));
     }
     
     /**
@@ -63,70 +62,12 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Get table.
+     * Get all tables.
      *
-     * @param tableName table name
-     * @return table
+     * @return all tables
      */
-    public ShardingSphereTable getTable(final String tableName) {
-        return tables.get(tableName.toLowerCase());
-    }
-    
-    /**
-     * Get view.
-     *
-     * @param viewName view name
-     * @return view
-     */
-    public ShardingSphereView getView(final String viewName) {
-        return views.get(viewName.toLowerCase());
-    }
-    
-    /**
-     * Add table.
-     *
-     * @param table table
-     */
-    public void putTable(final ShardingSphereTable table) {
-        tables.put(table.getName().toLowerCase(), table);
-    }
-    
-    /**
-     * Add tables.
-     *
-     * @param tables tables
-     */
-    public void putTables(final Map<String, ShardingSphereTable> tables) {
-        for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
-            putTable(entry.getValue());
-        }
-    }
-    
-    /**
-     * Add view.
-     *
-     * @param view view
-     */
-    public void putView(final ShardingSphereView view) {
-        views.put(view.getName().toLowerCase(), view);
-    }
-    
-    /**
-     * Remove table.
-     *
-     * @param tableName table name
-     */
-    public void removeTable(final String tableName) {
-        tables.remove(tableName.toLowerCase());
-    }
-    
-    /**
-     * Remove view.
-     *
-     * @param viewName view name
-     */
-    public void removeView(final String viewName) {
-        views.remove(viewName.toLowerCase());
+    public Collection<ShardingSphereTable> getAllTables() {
+        return tables.values();
     }
     
     /**
@@ -140,14 +81,40 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Judge whether contains index.
+     * Get table.
      *
      * @param tableName table name
-     * @param indexName index name
-     * @return contains index or not
+     * @return table
      */
-    public boolean containsIndex(final String tableName, final String indexName) {
-        return containsTable(tableName) && getTable(tableName).containsIndex(indexName);
+    public ShardingSphereTable getTable(final String tableName) {
+        return tables.get(tableName.toLowerCase());
+    }
+    
+    /**
+     * Add table.
+     *
+     * @param table table
+     */
+    public void putTable(final ShardingSphereTable table) {
+        tables.put(table.getName().toLowerCase(), table);
+    }
+    
+    /**
+     * Remove table.
+     *
+     * @param tableName table name
+     */
+    public void removeTable(final String tableName) {
+        tables.remove(tableName.toLowerCase());
+    }
+    
+    /**
+     * Get all views.
+     *
+     * @return all views
+     */
+    public Collection<ShardingSphereView> getAllViews() {
+        return views.values();
     }
     
     /**
@@ -158,6 +125,45 @@ public final class ShardingSphereSchema {
      */
     public boolean containsView(final String viewName) {
         return views.containsKey(viewName.toLowerCase());
+    }
+    
+    /**
+     * Get view.
+     *
+     * @param viewName view name
+     * @return view
+     */
+    public ShardingSphereView getView(final String viewName) {
+        return views.get(viewName.toLowerCase());
+    }
+    
+    /**
+     * Add view.
+     *
+     * @param view view
+     */
+    public void putView(final ShardingSphereView view) {
+        views.put(view.getName().toLowerCase(), view);
+    }
+    
+    /**
+     * Remove view.
+     *
+     * @param viewName view name
+     */
+    public void removeView(final String viewName) {
+        views.remove(viewName.toLowerCase());
+    }
+    
+    /**
+     * Judge whether contains index.
+     *
+     * @param tableName table name
+     * @param indexName index name
+     * @return contains index or not
+     */
+    public boolean containsIndex(final String tableName, final String indexName) {
+        return containsTable(tableName) && getTable(tableName).containsIndex(indexName);
     }
     
     /**
