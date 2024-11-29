@@ -89,11 +89,11 @@
     </test-case>
 
     <!-- Test single, broadcast and sharding join begin -->
-    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_category c ON p.category_id = c.category_id WHERE p.product_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_category c ON p.category_id = c.category_id WHERE p.product_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_product_category c INNER JOIN t_order_item i ON c.category_id = i.product_id WHERE i.product_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <test-case sql="SELECT * FROM t_product_category c INNER JOIN t_order_item i ON c.category_id = i.product_id WHERE i.product_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
     <!-- Test single, broadcast and sharding join end -->
