@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
@@ -60,41 +60,44 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingUpdateStatementValidatorTest {
+class ShardingUpdateRouteContextCheckerTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Mock
+    private QueryContext queryContext;
+    
+    @Mock
     private ShardingSphereDatabase database;
     
     @Test
-    void assertPostValidateWhenNotUpdateShardingColumn() {
+    void assertCheckWhenNotUpdateShardingColumn() {
         UpdateStatementContext sqlStatementContext = new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME);
-        assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().postValidate(shardingRule,
-                sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), mock(RouteContext.class)));
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), mock(RouteContext.class)));
     }
     
     @Test
-    void assertPostValidateWhenUpdateShardingColumnWithSameRouteContext() {
+    void assertCheckWhenUpdateShardingColumnWithSameRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
-        assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME),
-                new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), createSingleRouteContext()));
+        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME));
+        assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }
     
     @Test
-    void assertPostValidateWhenTableNameIsBroadcastTable() {
+    void assertCheckWhenTableNameIsBroadcastTable() {
         mockShardingRuleForUpdateShardingColumn();
-        assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME),
-                new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), createSingleRouteContext()));
+        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME));
+        assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }
     
     @Test
-    void assertPostValidateWhenUpdateShardingColumnWithDifferentRouteContext() {
+    void assertCheckWhenUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
+        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME));
         assertThrows(UnsupportedUpdatingShardingValueException.class,
-                () -> new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME), new HintValueContext(),
-                        Collections.emptyList(), database, mock(ConfigurationProperties.class), createFullRouteContext()));
+                () -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createFullRouteContext()));
     }
     
     private void mockShardingRuleForUpdateShardingColumn() {

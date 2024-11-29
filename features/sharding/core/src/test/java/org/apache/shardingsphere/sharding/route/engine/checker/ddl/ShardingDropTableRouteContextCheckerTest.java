@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.exception.metadata.InUsedTablesException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -60,13 +60,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ShardingDropTableStatementValidatorTest {
+class ShardingDropTableRouteContextCheckerTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Mock
     private RouteContext routeContext;
+    
+    @Mock
+    private QueryContext queryContext;
     
     @BeforeEach
     void init() {
@@ -77,7 +80,7 @@ class ShardingDropTableStatementValidatorTest {
     }
     
     @Test
-    void assertPostValidateWhenDropTableInUsedForMySQL() {
+    void assertCheckWhenDropTableInUsedForMySQL() {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -92,10 +95,8 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(routeUnit);
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertThrows(InUsedTablesException.class,
-                () -> new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
-                        Collections.emptyList(), database,
-                        mock(ConfigurationProperties.class), routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        assertThrows(InUsedTablesException.class, () -> new ShardingDropTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
     private ShardingTable createShardingTable(final String tableName) {
@@ -118,7 +119,7 @@ class ShardingDropTableStatementValidatorTest {
     }
     
     @Test
-    void assertPostValidateDropTableWithSameRouteResultShardingTableForPostgreSQL() {
+    void assertCheckWithSameRouteResultShardingTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -127,13 +128,13 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertDoesNotThrow(() -> new ShardingDropTableStatementValidator().postValidate(
-                shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(),
-                mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        assertDoesNotThrow(() -> new ShardingDropTableRouteContextChecker().check(shardingRule, queryContext, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS),
+                mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateDropTableWithDifferentRouteResultShardingTableForPostgreSQL() {
+    void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -141,13 +142,13 @@ class ShardingDropTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertThrows(ShardingDDLRouteException.class,
-                () -> new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
-                        Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        assertThrows(ShardingDDLRouteException.class, () -> new ShardingDropTableRouteContextChecker().check(shardingRule, queryContext, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS),
+                mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateDropTableWithSameRouteResultBroadcastTableForPostgreSQL() {
+    void assertCheckWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.getShardingTable("t_config")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_config"));
@@ -155,8 +156,8 @@ class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertDoesNotThrow(() -> new ShardingDropTableStatementValidator().postValidate(
-                shardingRule, new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(),
-                Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        assertDoesNotThrow(() -> new ShardingDropTableRouteContextChecker().check(shardingRule, queryContext, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS),
+                mock(ConfigurationProperties.class), routeContext));
     }
 }

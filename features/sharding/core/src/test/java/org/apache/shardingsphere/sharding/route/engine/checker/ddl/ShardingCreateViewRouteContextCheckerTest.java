@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedCreateViewException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -39,7 +39,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -49,7 +48,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ShardingCreateViewStatementValidatorTest {
+class ShardingCreateViewRouteContextCheckerTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RouteContext routeContext;
@@ -66,6 +65,9 @@ class ShardingCreateViewStatementValidatorTest {
     @Mock
     private SelectStatement selectStatement;
     
+    @Mock
+    private QueryContext queryContext;
+    
     @BeforeEach
     void setUp() {
         when(createViewStatementContext.getSqlStatement()).thenReturn(createViewStatement);
@@ -76,20 +78,20 @@ class ShardingCreateViewStatementValidatorTest {
     }
     
     @Test
-    void assertPostValidateCreateView() {
+    void assertCheck() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().postValidate(
-                shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(createViewStatementContext);
+        assertDoesNotThrow(() -> new ShardingCreateViewRouteContextChecker().check(shardingRule, queryContext, mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateCreateViewWithException() {
+    void assertCheckWithException() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        when(queryContext.getSqlStatementContext()).thenReturn(createViewStatementContext);
         assertThrows(UnsupportedCreateViewException.class,
-                () -> new ShardingCreateViewStatementValidator().postValidate(shardingRule,
-                        createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
+                () -> new ShardingCreateViewRouteContextChecker().check(shardingRule, queryContext, mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
 }

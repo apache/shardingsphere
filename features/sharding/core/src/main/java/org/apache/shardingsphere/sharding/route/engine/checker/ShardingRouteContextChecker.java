@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator;
+package org.apache.shardingsphere.sharding.route.engine.checker;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import java.util.List;
-
 /**
- * Sharding statement validator.
+ * Sharding route context checker.
  */
-public interface ShardingStatementValidator {
+public interface ShardingRouteContextChecker {
     
     /**
-     * Validate whether sharding operation is supported after route.
+     * Check whether sharding operation is supported after route.
      *
      * @param shardingRule sharding rule
-     * @param sqlStatementContext SQL statement context
-     * @param hintValueContext hint value context
-     * @param params SQL parameters
+     * @param queryContext query context
      * @param database database
      * @param props props
      * @param routeContext route context
      */
-    void postValidate(ShardingRule shardingRule, SQLStatementContext sqlStatementContext, HintValueContext hintValueContext, List<Object> params,
-                      ShardingSphereDatabase database, ConfigurationProperties props, RouteContext routeContext);
+    void check(ShardingRule shardingRule, QueryContext queryContext, ShardingSphereDatabase database, ConfigurationProperties props, RouteContext routeContext);
 }

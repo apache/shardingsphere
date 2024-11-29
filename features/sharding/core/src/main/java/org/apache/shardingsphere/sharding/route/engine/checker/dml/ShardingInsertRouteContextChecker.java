@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.dml;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.algorithm.DuplicateInsertDataRecordException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
+import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.util.ShardingRouteContextCheckUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRouteEngine;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -38,20 +39,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertS
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding insert statement validator.
+ * Sharding insert route context checker.
  */
 @RequiredArgsConstructor
-public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator {
+public final class ShardingInsertRouteContextChecker implements ShardingRouteContextChecker {
     
     private final ShardingConditions shardingConditions;
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
-                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+    public void check(final ShardingRule shardingRule, final QueryContext queryContext,
+                      final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         InsertStatement insertStatement = (InsertStatement) sqlStatementContext.getSqlStatement();
         Optional<SubquerySegment> insertSelect = insertStatement.getInsertSelect();
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
@@ -59,12 +60,12 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
             ShardingSpherePreconditions.checkState(singleRoutingOrSameShardingCondition, () -> new UnsupportedShardingOperationException("INSERT ... SELECT ...", tableName));
         }
-        Collection<ColumnAssignmentSegment> assignments = insertStatement.getOnDuplicateKeyColumns()
-                .map(OnDuplicateKeyColumnsSegment::getColumns).orElse(Collections.emptyList());
-        Optional<ShardingConditions> onDuplicateKeyShardingConditions = createShardingConditions(sqlStatementContext, shardingRule, assignments, params);
-        Optional<RouteContext> onDuplicateKeyRouteContext = onDuplicateKeyShardingConditions.map(optional -> new ShardingStandardRouteEngine(tableName, optional,
-                sqlStatementContext, hintValueContext, props).route(shardingRule));
-        if (onDuplicateKeyRouteContext.isPresent() && !isSameRouteContext(routeContext, onDuplicateKeyRouteContext.get())) {
+        Collection<ColumnAssignmentSegment> assignments = insertStatement.getOnDuplicateKeyColumns().map(OnDuplicateKeyColumnsSegment::getColumns).orElse(Collections.emptyList());
+        Optional<ShardingConditions> onDuplicateKeyShardingConditions =
+                ShardingRouteContextCheckUtils.createShardingConditions(sqlStatementContext, shardingRule, assignments, queryContext.getParameters());
+        Optional<RouteContext> onDuplicateKeyRouteContext = onDuplicateKeyShardingConditions
+                .map(optional -> new ShardingStandardRouteEngine(tableName, optional, sqlStatementContext, queryContext.getHintValueContext(), props).route(shardingRule));
+        if (onDuplicateKeyRouteContext.isPresent() && !ShardingRouteContextCheckUtils.isSameRouteContext(routeContext, onDuplicateKeyRouteContext.get())) {
             throw new UnsupportedUpdatingShardingValueException(tableName);
         }
         if (!routeContext.isSingleRouting()) {

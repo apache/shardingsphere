@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterTableStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingCreateTableStatementValidatorTest {
+class ShardingAlterTableRouteContextCheckerTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -60,9 +60,12 @@ class ShardingCreateTableStatementValidatorTest {
     @Mock
     private RouteContext routeContext;
     
+    @Mock
+    private QueryContext queryContext;
+    
     @Test
-    void assertPostValidateCreateTableWithSameRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
+    void assertCheckWithSameRouteResultShardingTableForPostgreSQL() {
+        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -70,31 +73,20 @@ class ShardingCreateTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertDoesNotThrow(() -> new ShardingCreateTableStatementValidator().postValidate(
-                shardingRule, new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
-                routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(new AlterTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        assertDoesNotThrow(() -> new ShardingAlterTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    void assertPostValidateCreateTableWithDifferentRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
+    void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
+        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        assertThrows(ShardingDDLRouteException.class, () -> new ShardingCreateTableStatementValidator().postValidate(shardingRule,
-                new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
-                routeContext));
-    }
-    
-    @Test
-    void assertPostValidateCreateTableWithSameRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        assertDoesNotThrow(() -> new ShardingCreateTableStatementValidator().postValidate(
-                shardingRule, new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class),
-                routeContext));
+        when(queryContext.getSqlStatementContext()).thenReturn(new AlterTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        assertThrows(ShardingDDLRouteException.class, () -> new ShardingAlterTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
 }

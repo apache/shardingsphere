@@ -15,41 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
+package org.apache.shardingsphere.sharding.route.engine.checker.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLMultipleDataNodesWithLimitException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
+import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.util.ShardingRouteContextCheckUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRouteEngine;
-import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding update statement validator.
+ * Sharding update route context checker.
  */
-public final class ShardingUpdateStatementValidator extends ShardingDMLStatementValidator {
+public final class ShardingUpdateRouteContextChecker implements ShardingRouteContextChecker {
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
-                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+    public void check(final ShardingRule shardingRule, final QueryContext queryContext, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         UpdateStatementContext updateStatementContext = (UpdateStatementContext) sqlStatementContext;
         String tableName = updateStatementContext.getTablesContext().getTableNames().iterator().next();
         UpdateStatement updateStatement = updateStatementContext.getSqlStatement();
-        Optional<ShardingConditions> shardingConditions = createShardingConditions(sqlStatementContext, shardingRule, updateStatement.getSetAssignment().getAssignments(), params);
-        Optional<RouteContext> setAssignmentRouteContext = shardingConditions.map(optional -> new ShardingStandardRouteEngine(tableName, optional, sqlStatementContext,
-                hintValueContext, props).route(shardingRule));
-        if (setAssignmentRouteContext.isPresent() && !isSameRouteContext(routeContext, setAssignmentRouteContext.get())) {
+        Optional<ShardingConditions> shardingConditions =
+                ShardingRouteContextCheckUtils.createShardingConditions(sqlStatementContext, shardingRule, updateStatement.getSetAssignment().getAssignments(), queryContext.getParameters());
+        Optional<RouteContext> setAssignmentRouteContext =
+                shardingConditions.map(optional -> new ShardingStandardRouteEngine(tableName, optional, sqlStatementContext, queryContext.getHintValueContext(), props).route(shardingRule));
+        if (setAssignmentRouteContext.isPresent() && !ShardingRouteContextCheckUtils.isSameRouteContext(routeContext, setAssignmentRouteContext.get())) {
             throw new UnsupportedUpdatingShardingValueException(tableName);
         }
         ShardingSpherePreconditions.checkState(!updateStatement.getLimit().isPresent()

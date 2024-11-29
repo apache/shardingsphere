@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.dml;
+package org.apache.shardingsphere.sharding.route.engine.checker.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -26,7 +28,6 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -41,9 +42,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding DML statement validator.
+ * Sharding route context check utility class.
  */
-public abstract class ShardingDMLStatementValidator implements ShardingStatementValidator {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingRouteContextCheckUtils {
     
     /**
      * Judge whether is same route context or not.
@@ -52,7 +54,7 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
      * @param subRouteContext  sub route context
      * @return whether is same route context or not
      */
-    protected boolean isSameRouteContext(final RouteContext routeContext, final RouteContext subRouteContext) {
+    public static boolean isSameRouteContext(final RouteContext routeContext, final RouteContext subRouteContext) {
         if (routeContext.getRouteUnits().size() != subRouteContext.getRouteUnits().size()) {
             return false;
         }
@@ -72,7 +74,7 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
         return true;
     }
     
-    private boolean isSameTableMapper(final Collection<RouteMapper> tableMappers, final Collection<RouteMapper> setAssignmentTableMappers) {
+    private static boolean isSameTableMapper(final Collection<RouteMapper> tableMappers, final Collection<RouteMapper> setAssignmentTableMappers) {
         if (tableMappers.size() != setAssignmentTableMappers.size()) {
             return false;
         }
@@ -90,7 +92,7 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
     }
     
     /**
-     * Create shardingConditions.
+     * Create sharding conditions.
      *
      * @param sqlStatementContext SQL statement context
      * @param shardingRule shardingRule
@@ -99,8 +101,8 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
      * @return sharding conditions
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected Optional<ShardingConditions> createShardingConditions(final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule,
-                                                                    final Collection<ColumnAssignmentSegment> assignments, final List<Object> params) {
+    public static Optional<ShardingConditions> createShardingConditions(final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule,
+                                                                        final Collection<ColumnAssignmentSegment> assignments, final List<Object> params) {
         Collection<ShardingConditionValue> values = new LinkedList<>();
         String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().iterator().next();
         for (ColumnAssignmentSegment each : assignments) {
@@ -118,7 +120,7 @@ public abstract class ShardingDMLStatementValidator implements ShardingStatement
         return Optional.of(new ShardingConditions(Collections.singletonList(shardingCondition), sqlStatementContext, shardingRule));
     }
     
-    private Optional<Object> getShardingColumnAssignmentValue(final ColumnAssignmentSegment assignmentSegment, final List<Object> params) {
+    private static Optional<Object> getShardingColumnAssignmentValue(final ColumnAssignmentSegment assignmentSegment, final List<Object> params) {
         ExpressionSegment segment = assignmentSegment.getValue();
         int shardingSetAssignIndex = -1;
         if (segment instanceof ParameterMarkerExpressionSegment) {
