@@ -146,16 +146,24 @@
   "allDeclaredFields": true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.HiveZookeeperServiceDiscoveryTest"},
-  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.HiveZookeeperServiceDiscoveryTest",
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.ZookeeperServiceDiscoveryTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.ZookeeperServiceDiscoveryTest",
   "allDeclaredFields": true,
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.HiveSimpleTest"},
-  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.HiveSimpleTest",
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.IcebergTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.IcebergTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.AcidTableTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.AcidTableTest",
   "allDeclaredFields": true,
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,

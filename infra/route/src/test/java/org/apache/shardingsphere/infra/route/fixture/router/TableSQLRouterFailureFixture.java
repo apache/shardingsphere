@@ -25,11 +25,13 @@ import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
+import java.util.Collection;
+
 public final class TableSQLRouterFailureFixture implements DecorateSQLRouter<RouteFailureRuleFixture>, TableSQLRouter<RouteFailureRuleFixture> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final RouteFailureRuleFixture rule, final ConfigurationProperties props) {
+                                     final RouteFailureRuleFixture rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         throw new UnsupportedOperationException("Route failure.");
     }
     

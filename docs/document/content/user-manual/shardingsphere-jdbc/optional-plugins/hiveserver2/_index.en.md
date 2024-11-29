@@ -129,15 +129,13 @@ Use the `jdbcUrl` of `jdbc:hive2://localhost:10000/demo_ds_0`,
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-set iceberg.mr.schema.auto.conversion=true;
-
 CREATE TABLE IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
@@ -260,15 +258,13 @@ to connect to HiveServer2 and execute the following SQL,
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-set iceberg.mr.schema.auto.conversion=true;
-
 CREATE TABLE IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
@@ -381,15 +377,13 @@ to connect to HiveServer2 and execute the following SQL,
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-set iceberg.mr.schema.auto.conversion=true;
-
 CREATE TABLE IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 
@@ -450,27 +444,111 @@ ShardingSphere JDBC DataSource does not yet support executing HiveServer2's `set
 and `drop table` statements.
 Users should consider submitting a PR containing unit tests for ShardingSphere.
 
+SQL statements represented by `set` can be easily configured dynamically at the HiveServer2 Client level.
+Even though ShardingSphere JDBC does not support executing HiveServer2's `set` statement on a virtual DataSource,
+users can directly execute a series of SQLs for the real DataSource through the Hive Session parameter of `initFile`.
+For discussion, the possible ShardingSphere configuration files are as follows,
+
+```yaml
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+  ds_2:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: jdbc:hive2://localhost:10000/demo_ds_0;initFile=/tmp/init.sql
+```
+
+The possible contents of `/tmp/init.sql` are as follows,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+set metastore.compactor.initiator.on=true;
+set metastore.compactor.cleaner.on=true;
+set metastore.compactor.worker.threads=1;
+
+set hive.support.concurrency=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
+```
+
+Affected by https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter can only use absolute paths.
+However, ShardingSphere JDBC Driver has a `placeholder-type` parameter to dynamically define YAML properties.
+Further discussion, possible ShardingSphere configuration files are as follows,
+
+```yaml
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: $${fixture.hive.ds0.jdbc-url::}
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: $${fixture.hive.ds1.jdbc-url::}
+  ds_2:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.apache.hive.jdbc.HiveDriver
+    jdbcUrl: $${fixture.hive.ds2.jdbc-url::}
+```
+
+When using ShardingSphere JDBC Driver, 
+user can pass in the absolute path of the file on the classpath of the business project by concatenating strings.
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
+import java.nio.file.Paths;
+public class ExampleUtils {
+    public DataSource createDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml?placeholder-type=system_props");
+        try {
+            assert null == System.getProperty("fixture.hive.ds0.jdbc-url");
+            assert null == System.getProperty("fixture.hive.ds1.jdbc-url");
+            assert null == System.getProperty("fixture.hive.ds2.jdbc-url");
+            String absolutePath = Paths.get("src/test/resources/init.sql").toAbsolutePath().toString();
+            System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_0;initFile=" + absolutePath);
+            System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_1;initFile=" + absolutePath);
+            System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_2;initFile=" + absolutePath);
+            return new HikariDataSource(config);
+        } finally {
+            System.clearProperty("fixture.hive.ds0.jdbc-url");
+            System.clearProperty("fixture.hive.ds1.jdbc-url");
+            System.clearProperty("fixture.hive.ds2.jdbc-url");
+        }
+    }
+}
+```
+
 ### Prerequisites for using DML SQL statements on ShardingSphere data sources
 
 In order to be able to use DML SQL statements such as `delete`, 
 users should consider using only ACID-supported tables in ShardingSphere JDBC when connecting to HiveServer2.
 `apache/hive` provides multiple transaction solutions.
 
-The first option is to use ACID tables, and the possible table creation process is as follows.
-Due to its outdated catalog-based table format, 
-users may have to wait before and after the execution of DML statements to allow HiveServer2 to complete inefficient DML operations.
+The first option is to use ACID tables. The possible table creation process is as follows.
+ACID tables use the outdated directory-based table format.
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
 set metastore.compactor.initiator.on=true;
 set metastore.compactor.cleaner.on=true;
-set metastore.compactor.worker.threads=5;
+set metastore.compactor.worker.threads=1;
 
 set hive.support.concurrency=true;
 set hive.exec.dynamic.partition.mode=nonstrict;
 set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
 
-CREATE TABLE IF NOT EXISTS t_order
+create table IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
@@ -486,26 +564,28 @@ Refer to https://blog.cloudera.com/from-hive-tables-to-iceberg-tables-hassle-fre
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
-set iceberg.mr.schema.auto.conversion=true;
-
 CREATE TABLE IF NOT EXISTS t_order
 (
     order_id   BIGINT NOT NULL,
     order_type INT,
     user_id    INT    NOT NULL,
     address_id BIGINT NOT NULL,
-    status     VARCHAR(50),
+    status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
 ```
 
-The Iceberg table format supports relatively few Hive types. 
-Setting `iceberg.mr.schema.auto.conversion` to `true` can help alleviate this problem.
+Iceberg table format supports relatively few Hive types. 
+Executing SQL `set iceberg.mr.schema.auto.conversion=true;` for HiveServer2 can help alleviate this problem.
+SQL `set iceberg.mr.schema.auto.conversion=true;` has the drawbacks mentioned in https://issues.apache.org/jira/browse/HIVE-26507 .
 
 ### Transaction Limitations
 
 HiveServer2 does not support local transactions at the ShardingSphere integration level, XA transactions, or Seata's AT mode transactions.
 For more discussion, please visit https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions.
+
+This has nothing to do with the `Table rollback` feature provided by https://iceberg.apache.org/docs/1.7.0/hive/#table-rollback for HiveServer2,
+but only with `org.apache.hive.jdbc.HiveConnection` not implementing `java.sql.Connection#rollback()`.
 
 ### DBeaver Community Version Limitations
 

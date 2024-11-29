@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.route;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
@@ -30,12 +31,11 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.type.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.route.engine.SingleRouteEngineFactory;
-import org.apache.shardingsphere.single.route.validator.SingleMetaDataValidatorFactory;
+import org.apache.shardingsphere.single.route.engine.SingleRouteEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,29 +49,28 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
-                                           final SingleRule rule, final ConfigurationProperties props) {
+                                           final SingleRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         if (1 == database.getResourceMetaData().getStorageUnits().size()) {
             return createSingleDataSourceRouteContext(rule, database, queryContext);
         }
-        RouteContext result = new RouteContext();
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        SingleMetaDataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.validate(rule, sqlStatementContext, database));
-        Collection<QualifiedTable> singleTables = getSingleTables(database, rule, result, sqlStatementContext);
-        SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).ifPresent(optional -> optional.route(result, rule));
-        return result;
-    }
-    
-    private Collection<QualifiedTable> getSingleTables(final ShardingSphereDatabase database, final SingleRule rule, final RouteContext routeContext, final SQLStatementContext sqlStatementContext) {
-        Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
-        return routeContext.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? qualifiedTables : rule.getSingleTables(qualifiedTables);
+        RouteContext routeContext = new RouteContext();
+        Collection<QualifiedTable> singleTables = getSingleTables(database, rule, sqlStatementContext);
+        if (singleTables.isEmpty()) {
+            return routeContext;
+        }
+        return new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule);
     }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
-                                     final SingleRule rule, final ConfigurationProperties props) {
+                                     final SingleRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        Collection<QualifiedTable> singleTables = getSingleTables(database, rule, routeContext, sqlStatementContext);
-        SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).ifPresent(optional -> optional.route(routeContext, rule));
+        Collection<QualifiedTable> singleTables = getSingleTables(database, rule, sqlStatementContext);
+        if (singleTables.isEmpty()) {
+            return;
+        }
+        new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule);
     }
     
     private RouteContext createSingleDataSourceRouteContext(final SingleRule rule, final ShardingSphereDatabase database, final QueryContext queryContext) {
@@ -89,6 +88,26 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         Collection<RouteMapper> result = new LinkedList<>();
         for (String each : tableNames) {
             result.add(new RouteMapper(each, each));
+        }
+        return result;
+    }
+    
+    private Collection<QualifiedTable> getSingleTables(final ShardingSphereDatabase database, final SingleRule rule, final SQLStatementContext sqlStatementContext) {
+        Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
+        Collection<String> distributedTableNames = getDistributedTableNames(database);
+        Collection<QualifiedTable> result = new LinkedList<>();
+        for (QualifiedTable each : qualifiedTables) {
+            if (!distributedTableNames.contains(each.getTableName())) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getDistributedTableNames(final ShardingSphereDatabase database) {
+        Collection<String> result = new CaseInsensitiveSet<>();
+        for (TableMapperRuleAttribute each : database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)) {
+            result.addAll(each.getDistributedTableNames());
         }
         return result;
     }

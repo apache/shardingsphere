@@ -55,17 +55,13 @@ class SeataTest {
     
     private static final String SERVICE_DEFAULT_GROUP_LIST_KEY = "service.default.grouplist";
     
+    private static DataSource logicDataSource;
+    
     private TestShardingService testShardingService;
     
     @BeforeAll
     static void beforeAll() {
         assertThat(System.getProperty(SERVICE_DEFAULT_GROUP_LIST_KEY), is(nullValue()));
-    }
-    
-    @AfterAll
-    static void afterAll() {
-        ContainerDatabaseDriver.killContainers();
-        System.clearProperty(SERVICE_DEFAULT_GROUP_LIST_KEY);
     }
     
     /**
@@ -74,16 +70,22 @@ class SeataTest {
      *
      * @throws SQLException SQL exception
      */
+    @AfterAll
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
+        ContainerDatabaseDriver.killContainers();
+        System.clearProperty(SERVICE_DEFAULT_GROUP_LIST_KEY);
+    }
+    
     @Test
     void assertShardingInSeataTransactions() throws SQLException {
-        DataSource dataSource = createDataSource(CONTAINER.getMappedPort(8091));
-        testShardingService = new TestShardingService(dataSource);
+        logicDataSource = createDataSource(CONTAINER.getMappedPort(8091));
+        testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
-        try (Connection connection = dataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
-        }
     }
     
     private void initEnvironment() throws SQLException {
