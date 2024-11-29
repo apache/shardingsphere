@@ -198,8 +198,32 @@
     <sql-case id="select_projection_with_parameter" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_chinese_comma" value="SELECT 1， 2，3 FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_chinese_whitespace" value="SELECT 1， 2，3 FROM　DUAL" db-types="Oracle"  />
-    <sql-case id="select_with_keyword_system" value="SELECT * FROM vtx_project WHERE system = ?" />
+    <sql-case id="select_with_auto_keyword" value="SELECT * FROM t_auto WHERE auto = ?" db-types="MySQL"/>
+    <sql-case id="select_with_authentication_keyword" value="SELECT auth_id, authentication FROM t_auth" db-types="MySQL"/>
+    <sql-case id="select_with_bernoulli_keyword" value="SELECT bernoulli.id FROM t bernoulli" db-types="MySQL"/>
+    <sql-case id="select_with_binlogbit_keyword" value="SELECT log_id, binlogbit FROM t_log" db-types="MySQL"/>
+    <sql-case id="select_with_bulk_keyword" value="SELECT * FROM t_bulk WHERE bulk = ?" db-types="MySQL"/>
+    <sql-case id="select_with_challenge_responsechanged_keyword" value="SELECT challenge_responsechanged.id FROM t challenge_responsechanged" db-types="MySQL"/>
+    <sql-case id="select_with_finish_keyword" value="SELECT finish.id FROM t finish" db-types="MySQL"/>
+    <sql-case id="select_with_initial_keyword" value="SELECT initial.id FROM t initial" db-types="MySQL"/>
+    <sql-case id="select_with_gtids_keyword" value="SELECT WAIT_FOR_EXECUTED_GTID_SET('3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5') as gtids" db-types="MySQL"/>
+    <sql-case id="select_with_keyword_system" value="SELECT * FROM vtx_project WHERE system = ?" db-types="MySQL"/>
+    <sql-case id="select_with_keyword_manual" value="SELECT * FROM vtx_project WHERE manual = ?" db-types="MySQL"/>
+    <sql-case id="select_with_match_keyword" value="SELECT *,MATCH (order_id) AGAINST (1 IN NATURAL LANGUAGE MODE) as match FROM t_order" db-types="MySQL" />
+    <sql-case id="select_with_qualify_keyword" value="SELECT qualify.id FROM t qualify" db-types="MySQL"/>
+    <sql-case id="select_with_registration_keyword" value="SELECT registration.id FROM t registration" db-types="MySQL"/>
+    <sql-case id="select_with_keyword_modifies" value="SELECT * FROM vtx_project WHERE modifies = ?" db-types="MySQL"/>
+    <sql-case id="select_with_natural_keyword" value="SELECT natural.id FROM t natural" db-types="MySQL"/>
+    <sql-case id="select_with_of_keyword" value="SELECT WEEKOFYEAR('2019-02-20') as of;" db-types="MySQL"/>
+    <sql-case id="select_min_rows_keyword" value="SELECT MIN(user_id) AS min_rows FROM t_order" />
+    <sql-case id="select_with_maxvalue_keyword" value="SELECT maxvalue.id FROM t maxvalue" db-types="MySQL"/>
+    <sql-case id="select_with_kill_keyword" value="SELECT kill.id FROM t kill" db-types="MySQL"/>
+    <sql-case id="select_with_s3_keyword" value="SELECT s3.id FROM t s3" db-types="MySQL"/>
+    <sql-case id="select_with_url_keyword" value="SELECT url.id FROM t url" db-types="MySQL"/>
+    <sql-case id="select_with_keyring_keyword" value="SELECT JSON_KEYS('{&quot;a&quot;: 1, &quot;b&quot;: {&quot;c&quot;: 30}}') keyring" db-types="MySQL" />
     <sql-case id="select_with_keyword_groups_and_rank" value="SELECT t.groups, t.rank FROM t_order t" db-types="MySQL" />
+    <sql-case id="select_with_loop_keyword" value="SELECT loop.id FROM t loop" db-types="MySQL"/>
+    <sql-case id="select_with_parse_tree_keyword" value="SELECT parse_tree.id FROM t parse_tree" db-types="MySQL"/>
     <sql-case id="select_with_format_function" value="SELECT wi.code.format(null,'PURE_IDENTITY') as PURE_IDENTITY FROM warehouse_info wi;" db-types="Oracle" />
     <sql-case id="select_with_xml_is_schema_valid_function" value="SELECT x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder') FROM po_tab x;" db-types="Oracle" />
     <sql-case id="select_with_last_value_function" value="SELECT LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE) from TEST;" db-types="Oracle" />
