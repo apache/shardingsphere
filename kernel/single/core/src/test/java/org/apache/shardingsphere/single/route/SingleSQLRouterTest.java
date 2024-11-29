@@ -58,7 +58,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,6 +68,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -197,7 +197,8 @@ class SingleSQLRouterTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new RuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
         sqlRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
-        assertThat(routeContext.getActualDataSourceNames(), is(new HashSet<>(Arrays.asList("write_ds", "readwrite_ds"))));
+        assertThat(routeContext.getActualDataSourceNames().size(), is(1));
+        assertTrue(Arrays.asList("write_ds", "readwrite_ds").contains(routeContext.getActualDataSourceNames().iterator().next()));
     }
     
     @Test
@@ -207,11 +208,10 @@ class SingleSQLRouterTest {
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.emptyList()));
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.emptyList()));
         SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
-        sqlRouter.decorateRouteContext(
-                routeContext, createQueryContext(), mockDatabaseWithMultipleResources(), rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is("ds_1"));
-        assertThat(routedDataSourceNames.next(), is("ds_0"));
+        sqlRouter.decorateRouteContext(routeContext, createQueryContext(), mockDatabaseWithMultipleResources(), rule, Collections.singletonList("t_order"),
+                new ConfigurationProperties(new Properties()));
+        assertThat(routeContext.getActualDataSourceNames().size(), is(1));
+        assertTrue(Arrays.asList("ds_0", "ds_1").contains(routeContext.getActualDataSourceNames().iterator().next()));
     }
     
     private QueryContext createQueryContext() {

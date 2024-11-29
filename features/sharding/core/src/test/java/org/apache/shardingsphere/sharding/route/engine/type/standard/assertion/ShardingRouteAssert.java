@@ -35,6 +35,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -50,10 +52,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Sharding route assert.
@@ -74,16 +78,20 @@ public final class ShardingRouteAssert {
         SingleRule singleRule = ShardingRouteEngineFixtureBuilder.createSingleRule(Collections.singleton(shardingRule));
         TimestampServiceRule timestampServiceRule = ShardingRouteEngineFixtureBuilder.createTimeServiceRule();
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
-        ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
                 new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
-        RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, singleRule, timestampServiceRule));
+        ShardingSphereRule broadcastRule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class);
+        when(ruleAttribute.getDistributedTableNames()).thenReturn(Collections.singleton("t_product"));
+        when(broadcastRule.getAttributes().findAttribute(TableMapperRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
+        RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, broadcastRule, singleRule, timestampServiceRule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, schemas);
         ShardingSphereMetaData metaData = createShardingSphereMetaData(database);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatementParserEngine.parse(sql, false), params);
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
         connectionContext.setCurrentDatabaseName(DefaultDatabase.LOGIC_NAME);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), connectionContext, metaData);
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
         return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(queryContext, mock(RuleMetaData.class), database);
     }
     

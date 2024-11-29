@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRu
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.route.engine.standard.SingleStandardRouteEngine;
+import org.apache.shardingsphere.single.route.engine.SingleRouteEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -61,11 +61,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SingleStandardRouteEngineTest {
+class SingleRouteEngineTest {
     
     @Test
     void assertRouteInSameDataSource() throws SQLException {
-        SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), null, mock(HintValueContext.class));
+        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), null, mock(HintValueContext.class));
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(mockDataNode("t_order")));
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(mockDataNode("t_order_item")));
@@ -96,7 +96,7 @@ class SingleStandardRouteEngineTest {
     
     @Test
     void assertRouteWithoutSingleRule() throws SQLException {
-        SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false), mock(HintValueContext.class));
+        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false), mock(HintValueContext.class));
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
@@ -111,7 +111,7 @@ class SingleStandardRouteEngineTest {
     
     @Test
     void assertRouteWithDefaultSingleRule() throws SQLException {
-        SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false), mock(HintValueContext.class));
+        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false), mock(HintValueContext.class));
         SingleRule singleRule =
                 new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -137,15 +137,15 @@ class SingleStandardRouteEngineTest {
     
     @Test
     void assertRouteDuplicateSingleTable() {
-        SingleStandardRouteEngine engine =
-                new SingleStandardRouteEngine(Collections.singleton(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(false), mock(HintValueContext.class));
+        SingleRouteEngine engine =
+                new SingleRouteEngine(Collections.singleton(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(false), mock(HintValueContext.class));
         assertThrows(TableExistsException.class, () -> engine.route(new RouteContext(), mockSingleRule()));
     }
     
     @Test
     void assertRouteIfNotExistsDuplicateSingleTable() {
-        SingleStandardRouteEngine engine =
-                new SingleStandardRouteEngine(Collections.singleton(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(true), mock(HintValueContext.class));
+        SingleRouteEngine engine =
+                new SingleRouteEngine(Collections.singleton(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(true), mock(HintValueContext.class));
         assertDoesNotThrow(() -> engine.route(new RouteContext(), mockSingleRule()));
     }
     

@@ -93,7 +93,7 @@ class BroadcastUnicastRouteEngineTest {
     @SafeVarargs
     private final void assertRoute(final SQLStatementContext sqlStatementContext, final Matcher<String>... matchers) {
         BroadcastUnicastRouteEngine engine = new BroadcastUnicastRouteEngine(sqlStatementContext, Collections.singleton("foo_tbl"), connectionContext);
-        RouteContext actual = engine.route(new RouteContext(), rule);
+        RouteContext actual = engine.route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteMapper actualDataSourceRouteMapper = actual.getRouteUnits().iterator().next().getDataSourceMapper();
         assertThat(actualDataSourceRouteMapper.getLogicName(), anyOf(matchers));
@@ -111,7 +111,7 @@ class BroadcastUnicastRouteEngineTest {
     @Test
     void assertRouteWithEmptyTables() {
         BroadcastUnicastRouteEngine engine = new BroadcastUnicastRouteEngine(mock(SQLStatementContext.class), Collections.emptyList(), connectionContext);
-        RouteContext actual = engine.route(new RouteContext(), rule);
+        RouteContext actual = engine.route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
         Collection<RouteMapper> actualTableRouteMappers = actual.getRouteUnits().iterator().next().getTableMappers();
         assertTrue(actualTableRouteMappers.isEmpty());
