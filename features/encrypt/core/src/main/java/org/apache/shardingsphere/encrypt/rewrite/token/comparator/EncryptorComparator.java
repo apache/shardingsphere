@@ -19,13 +19,29 @@ package org.apache.shardingsphere.encrypt.rewrite.token.comparator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 /**
  * Encryptor comparator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptorComparator {
+    
+    /**
+     * Compare whether same encryptor.
+     *
+     * @param encryptRule encrypt rule
+     * @param leftColumnInfo left column info
+     * @param rightColumnInfo right column info
+     * @return whether is same encryptors or not
+     */
+    public static boolean isSame(final EncryptRule encryptRule, final ColumnSegmentBoundInfo leftColumnInfo, final ColumnSegmentBoundInfo rightColumnInfo) {
+        EncryptAlgorithm leftColumnEncryptor = encryptRule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
+        EncryptAlgorithm rightColumnEncryptor = encryptRule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
+        return EncryptorComparator.isSame(leftColumnEncryptor, rightColumnEncryptor);
+    }
     
     /**
      * Compare whether same encryptor.
