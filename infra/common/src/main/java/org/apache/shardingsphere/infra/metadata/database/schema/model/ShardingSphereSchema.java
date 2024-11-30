@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere schema.
@@ -52,15 +51,6 @@ public final class ShardingSphereSchema {
         this.views = new ConcurrentHashMap<>(views.size(), 1F);
         tables.forEach(each -> this.tables.put(new ShardingSphereMetaDataIdentifier(each.getName()), each));
         views.forEach(each -> this.views.put(new ShardingSphereMetaDataIdentifier(each.getName()), each));
-    }
-    
-    /**
-     * Get all table names.
-     *
-     * @return all table names
-     */
-    public Collection<String> getAllTableNames() {
-        return tables.keySet().stream().map(ShardingSphereMetaDataIdentifier::getValue).collect(Collectors.toSet());
     }
     
     /**
