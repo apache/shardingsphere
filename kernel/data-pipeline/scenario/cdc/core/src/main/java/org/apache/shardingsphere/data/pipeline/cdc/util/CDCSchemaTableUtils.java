@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -79,21 +78,21 @@ public final class CDCSchemaTableUtils {
     }
     
     private static Map<String, Set<String>> parseTableExpressionWithAllTables(final ShardingSphereDatabase database, final Collection<String> systemSchemas) {
-        Map<String, Set<String>> result = new HashMap<>(database.getSchemas().size(), 1F);
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            if (!systemSchemas.contains(entry.getKey())) {
-                entry.getValue().getAllTables().forEach(each -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(each.getName()));
+        Map<String, Set<String>> result = new HashMap<>(database.getAllSchemas().size(), 1F);
+        for (ShardingSphereSchema schema : database.getAllSchemas()) {
+            if (!systemSchemas.contains(schema.getName())) {
+                schema.getAllTables().forEach(each -> result.computeIfAbsent(each.getName(), ignored -> new HashSet<>()).add(each.getName()));
             }
         }
         return result;
     }
     
     private static Map<String, Set<String>> parseTableExpressionWithAllSchema(final ShardingSphereDatabase database, final Collection<String> systemSchemas, final SchemaTable table) {
-        Map<String, Set<String>> result = new HashMap<>(database.getSchemas().size(), 1F);
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            if (!systemSchemas.contains(entry.getKey())) {
-                entry.getValue().getAllTables().stream().filter(each -> each.getName().equals(table.getTable())).findFirst()
-                        .ifPresent(optional -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(optional.getName()));
+        Map<String, Set<String>> result = new HashMap<>(database.getAllSchemas().size(), 1F);
+        for (ShardingSphereSchema schema : database.getAllSchemas()) {
+            if (!systemSchemas.contains(schema.getName())) {
+                schema.getAllTables().stream().filter(each -> each.getName().equals(table.getTable())).findFirst()
+                        .ifPresent(optional -> result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>()).add(optional.getName()));
             }
         }
         return result;

@@ -93,6 +93,6 @@ public final class SQLRewriteContext {
      * Generate SQL tokens.
      */
     public void generateSQLTokens() {
-        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(database.getName(), database.getSchemas(), sqlStatementContext, parameters, connectionContext));
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(database, sqlStatementContext, parameters, connectionContext));
     }
 }

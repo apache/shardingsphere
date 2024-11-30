@@ -19,14 +19,13 @@ package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -38,15 +37,15 @@ public final class GenericSchemaManager {
     /**
      * Get to be added tables by schemas.
      *
-     * @param reloadSchemas reload schemas
-     * @param currentSchemas current schemas
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
      * @return To be added table meta data
      */
-    public static Map<String, ShardingSphereSchema> getToBeAddedTablesBySchemas(final Map<String, ShardingSphereSchema> reloadSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(currentSchemas.size(), 1F);
-        reloadSchemas.entrySet().stream().filter(entry -> !currentSchemas.containsKey(entry.getKey())).forEach(entry -> result.put(entry.getKey(), entry.getValue()));
-        reloadSchemas.entrySet().stream().filter(entry -> currentSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue))
-                .forEach((key, value) -> result.put(key, getToBeAddedTablesBySchema(value, currentSchemas.get(key))));
+    public static Collection<ShardingSphereSchema> getToBeAddedTablesBySchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        Collection<ShardingSphereSchema> result = new LinkedList<>();
+        reloadDatabase.getAllSchemas().stream().filter(each -> !currentDatabase.containsSchema(each.getName())).forEach(result::add);
+        reloadDatabase.getAllSchemas().stream().filter(each -> currentDatabase.containsSchema(each.getName())).collect(Collectors.toList())
+                .forEach(each -> result.add(getToBeAddedTablesBySchema(each, currentDatabase.getSchema(each.getName()))));
         return result;
     }
     
@@ -68,14 +67,14 @@ public final class GenericSchemaManager {
     /**
      * Get to be dropped tables by schemas.
      *
-     * @param reloadSchemas reload schemas
-     * @param currentSchemas current schemas
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
      * @return to be dropped table
      */
-    public static Map<String, ShardingSphereSchema> getToBeDroppedTablesBySchemas(final Map<String, ShardingSphereSchema> reloadSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(currentSchemas.size(), 1F);
-        currentSchemas.entrySet().stream().filter(entry -> reloadSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue))
-                .forEach((key, value) -> result.put(key, getToBeDroppedTablesBySchema(reloadSchemas.get(key), value)));
+    public static Collection<ShardingSphereSchema> getToBeDroppedTablesBySchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        Collection<ShardingSphereSchema> result = new LinkedList<>();
+        currentDatabase.getAllSchemas().stream().filter(entry -> reloadDatabase.containsSchema(entry.getName())).collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each))
+                .forEach((key, value) -> result.add(getToBeDroppedTablesBySchema(reloadDatabase.getSchema(key), value)));
         return result;
     }
     
@@ -97,11 +96,11 @@ public final class GenericSchemaManager {
     /**
      * Get to be dropped schemas.
      *
-     * @param reloadSchemas reload schemas
-     * @param currentSchemas current schemas
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
      * @return to be dropped schemas
      */
-    public static Map<String, ShardingSphereSchema> getToBeDroppedSchemas(final Map<String, ShardingSphereSchema> reloadSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {
-        return currentSchemas.entrySet().stream().filter(entry -> !reloadSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    public static Map<String, ShardingSphereSchema> getToBeDroppedSchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        return currentDatabase.getAllSchemas().stream().filter(each -> !reloadDatabase.containsSchema(each.getName())).collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each));
     }
 }

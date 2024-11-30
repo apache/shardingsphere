@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
@@ -34,9 +33,7 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -110,12 +107,5 @@ public final class DatabaseRuleConfigurationManager {
         MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createByAlterRule(databaseName, false,
                 database.getRuleMetaData().getConfigurations(), metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
         metaDataContexts.set(reloadMetaDataContexts);
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(buildShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
-    }
-    
-    private Map<String, ShardingSphereSchema> buildShardingSphereSchemas(final ShardingSphereDatabase database) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(database.getSchemas().size(), 1F);
-        database.getSchemas().forEach((key, value) -> result.put(key, new ShardingSphereSchema(key, value.getAllTables(), value.getAllViews())));
-        return result;
     }
 }

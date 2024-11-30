@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -135,7 +134,7 @@ class SchemaMetaDataManagerTest {
     @Test
     void assertAlterNotExistedSchema() {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", toBeAlteredSchema));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         schemaMetaDataManager.alterSchema("foo_db", "bar_schema", null, (ShardingSphereView) null);
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
@@ -144,7 +143,7 @@ class SchemaMetaDataManagerTest {
     @Test
     void assertAlterSchemaForNothingAltered() {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", toBeAlteredSchema));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", null, (ShardingSphereView) null);
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
@@ -153,7 +152,7 @@ class SchemaMetaDataManagerTest {
     @Test
     void assertAlterSchemaForTableAltered() {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", toBeAlteredSchema));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         ShardingSphereColumn toBeChangedColumn = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, false, true, false, false);
         ShardingSphereTable toBeChangedTable = new ShardingSphereTable("foo_tbl", Collections.singleton(toBeChangedColumn), Collections.emptyList(), Collections.emptyList());
@@ -166,7 +165,7 @@ class SchemaMetaDataManagerTest {
     @Test
     void assertAlterSchemaForViewAltered() {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", toBeAlteredSchema));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         ShardingSphereView toBeChangedView = new ShardingSphereView("foo_view", "select `foo_view`.`foo_view`.`id` AS `id` from `foo_view`.`foo_view`");
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", null, toBeChangedView);
@@ -178,7 +177,7 @@ class SchemaMetaDataManagerTest {
     @Test
     void assertAlterNotExistedSchemaForTableDropped() {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", toBeAlteredSchema));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         schemaMetaDataManager.alterSchema("foo_db", "bar_schema", "", "");
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
@@ -187,7 +186,7 @@ class SchemaMetaDataManagerTest {
     @Test
     void assertAlterSchemaForNothingTableDropped() {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", toBeAlteredSchema));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "", "");
         verify(metaDataContexts.getMetaData().getGlobalRuleMetaData(), times(0)).getRules();
@@ -195,14 +194,14 @@ class SchemaMetaDataManagerTest {
     
     @Test
     void assertAlterSchemaForTableDropped() {
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", createToBeAlteredSchema()));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "foo_tbl", null);
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl"));
     }
     
     @Test
     void assertAlterSchemaForViewDropped() {
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", createToBeAlteredSchema()));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
         schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "foo_view", null);
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsView("foo_view"));
     }
@@ -210,6 +209,6 @@ class SchemaMetaDataManagerTest {
     private ShardingSphereSchema createToBeAlteredSchema() {
         ShardingSphereTable beforeChangedTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereView beforeChangedView = new ShardingSphereView("foo_view", "");
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(beforeChangedTable), Collections.singleton(beforeChangedView));
+        return new ShardingSphereSchema("foo_schema", Collections.singleton(beforeChangedTable), Collections.singleton(beforeChangedView));
     }
 }

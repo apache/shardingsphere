@@ -120,9 +120,9 @@ public final class StorageUnitManager {
     }
     
     private Map<String, ShardingSphereSchema> buildSchemas(final ShardingSphereDatabase originalDatabase) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(originalDatabase.getSchemas().size(), 1F);
-        originalDatabase.getSchemas().keySet().forEach(schemaName -> result.put(schemaName.toLowerCase(), new ShardingSphereSchema(schemaName, originalDatabase.getSchema(schemaName).getAllTables(),
-                metaDataPersistService.getDatabaseMetaDataFacade().getView().load(originalDatabase.getName(), schemaName))));
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(originalDatabase.getAllSchemas().size(), 1F);
+        originalDatabase.getAllSchemas().forEach(each -> result.put(each.getName().toLowerCase(),
+                new ShardingSphereSchema(each.getName(), each.getAllTables(), metaDataPersistService.getDatabaseMetaDataFacade().getView().load(originalDatabase.getName(), each.getName()))));
         return result;
     }
     

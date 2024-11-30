@@ -37,7 +37,7 @@ import java.util.Map.Entry;
 
 public final class MySQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
     
-    private static final String SHARDING_SPHERE = "shardingsphere";
+    private static final String SHARDINGSPHERE = "shardingsphere";
     
     private static final String CLUSTER_INFORMATION = "cluster_information";
     
@@ -57,12 +57,12 @@ public final class MySQLShardingSphereStatisticsBuilder implements ShardingSpher
     }
     
     private void initSchemas(final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            if (SHARDING_SPHERE.equals(entry.getKey())) {
+        for (ShardingSphereSchema each : database.getAllSchemas()) {
+            if (SHARDINGSPHERE.equals(each.getName())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
                 initClusterInformationTable(schemaData);
                 initShardingTableStatisticsTable(schemaData);
-                databaseData.putSchema(SHARDING_SPHERE, schemaData);
+                databaseData.putSchema(SHARDINGSPHERE, schemaData);
             }
         }
     }
