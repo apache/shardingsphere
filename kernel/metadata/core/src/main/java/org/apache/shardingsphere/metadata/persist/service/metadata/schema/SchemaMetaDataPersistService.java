@@ -102,11 +102,10 @@ public final class SchemaMetaDataPersistService {
      * Alter schema by rule dropped.
      *
      * @param databaseName database name
-     * @param schemaName schema name
      * @param schema to be altered schema
      */
-    public void alterByRuleDropped(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getAllTables());
+    public void alterByRuleDropped(final String databaseName, final ShardingSphereSchema schema) {
+        tableMetaDataPersistService.persist(databaseName, schema.getName(), schema.getAllTables());
     }
     
     /**

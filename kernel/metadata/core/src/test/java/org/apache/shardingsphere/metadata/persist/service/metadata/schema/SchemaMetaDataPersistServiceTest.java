@@ -143,7 +143,9 @@ class SchemaMetaDataPersistServiceTest {
     
     @Test
     void assertAlterByRefreshByDropConfiguration() {
-        persistService.alterByRuleDropped("foo_db", "foo_schema", mock(ShardingSphereSchema.class));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getName()).thenReturn("foo_schema");
+        persistService.alterByRuleDropped("foo_db", schema);
         verify(tableMetaDataPersistService).persist(eq("foo_db"), eq("foo_schema"), anyCollection());
     }
 }
