@@ -75,7 +75,7 @@ public abstract class AbstractMigrationE2EIT {
                 .replace("${ds2}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true))
                 .replace("${ds3}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true))
                 .replace("${ds4}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true));
-        containerComposer.proxyExecuteWithLog(addTargetResource, 15);
+        containerComposer.proxyExecuteWithLog(addTargetResource, 0);
         Awaitility.await().ignoreExceptions().atMost(60L, TimeUnit.SECONDS).pollInterval(3L, TimeUnit.SECONDS).until(() -> 3 == containerComposer.showStorageUnitsName().size());
     }
     
