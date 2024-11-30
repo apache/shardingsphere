@@ -45,11 +45,9 @@ class SQLTokenGeneratorsTest {
         when(generator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
         SQLTokenGenerators generators = new SQLTokenGenerators();
         generators.addAll(Collections.singleton(generator));
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getName()).thenReturn("test");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("sharding_db");
-        when(database.getSchema("test")).thenReturn(schema);
+        when(database.getSchema("test")).thenReturn(new ShardingSphereSchema("test"));
         Collection<SQLToken> actualSqlTokens = generators.generateSQLTokens(database, mock(SQLStatementContext.class), Collections.emptyList(), mock(ConnectionContext.class));
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
@@ -63,8 +61,6 @@ class SQLTokenGeneratorsTest {
         doReturn(expectedTokens).when(generator).generateSQLTokens(any());
         SQLTokenGenerators generators = new SQLTokenGenerators();
         generators.addAll(Collections.singleton(generator));
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getName()).thenReturn("test");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("sharding_db");
         Collection<SQLToken> actualSQLTokens = generators.generateSQLTokens(database, mock(SQLStatementContext.class), Collections.emptyList(), mock(ConnectionContext.class));
