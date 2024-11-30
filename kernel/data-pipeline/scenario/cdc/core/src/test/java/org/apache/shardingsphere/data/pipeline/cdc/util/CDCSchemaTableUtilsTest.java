@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -70,7 +69,7 @@ class CDCSchemaTableUtilsTest {
         when(table1.getName()).thenReturn("t_order");
         ShardingSphereTable table2 = mock(ShardingSphereTable.class);
         when(table2.getName()).thenReturn("t_order2");
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Arrays.asList(table1, table2), Collections.emptyList());
+        return new ShardingSphereSchema("public", Arrays.asList(table1, table2), Collections.emptyList());
     }
     
     private ShardingSphereSchema mockedTestSchema() {
@@ -78,7 +77,7 @@ class CDCSchemaTableUtilsTest {
         when(table1.getName()).thenReturn("t_order_item");
         ShardingSphereTable table2 = mock(ShardingSphereTable.class);
         when(table2.getName()).thenReturn("t_order_item2");
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Arrays.asList(table1, table2), Collections.emptyList());
+        return new ShardingSphereSchema("test", Arrays.asList(table1, table2), Collections.emptyList());
     }
     
     @Test
