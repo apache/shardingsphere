@@ -34,7 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,7 +51,7 @@ class BroadcastSQLRouterTest {
         BroadcastRouteEngine routeEngine = mock(BroadcastRouteEngine.class);
         when(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.singleton("t_config"))).thenReturn(routeEngine);
         getSQLRouter(rule).createRouteContext(queryContext, mock(RuleMetaData.class), database, rule, Collections.singleton("t_config"), new ConfigurationProperties(new Properties()));
-        verify(routeEngine).route(eq(rule));
+        verify(routeEngine).route(rule);
     }
     
     private BroadcastSQLRouter getSQLRouter(final BroadcastRule rule) {
