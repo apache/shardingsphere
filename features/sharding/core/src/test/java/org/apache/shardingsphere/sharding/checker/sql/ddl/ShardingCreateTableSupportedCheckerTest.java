@@ -46,49 +46,49 @@ import static org.mockito.Mockito.when;
 class ShardingCreateTableSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
+    private ShardingRule rule;
     
     @Test
     void assertCheckForMySQL() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement, "sharding_db"));
+        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
     
     @Test
     void assertCheckForOracle() {
         OracleCreateTableStatement sqlStatement = new OracleCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement, "sharding_db"));
+        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
     
     @Test
     void assertCheckForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement, "public"));
+        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
     
     @Test
     void assertCheckForSQL92() {
         SQL92CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement, "sharding_db"));
+        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
     
     @Test
     void assertCheckForSQLServer() {
         SQLServerCreateTableStatement sqlStatement = new SQLServerCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement, "dbo"));
+        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
     
-    private void assertCheck(final CreateTableStatement sqlStatement, final String schemaName) {
+    private void assertCheck(final CreateTableStatement sqlStatement) {
         CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, "sharding_db");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);
-        new ShardingCreateTableSupportedChecker().check(shardingRule, database, schema, sqlStatementContext);
+        new ShardingCreateTableSupportedChecker().check(rule, database, schema, sqlStatementContext);
     }
     
     @Test
@@ -108,6 +108,6 @@ class ShardingCreateTableSupportedCheckerTest {
     private void assertCheckIfNotExists(final CreateTableStatement sqlStatement) {
         CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        new ShardingCreateTableSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext);
+        new ShardingCreateTableSupportedChecker().check(rule, database, mock(ShardingSphereSchema.class), sqlStatementContext);
     }
 }
