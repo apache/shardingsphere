@@ -161,7 +161,7 @@ class MetaDataPersistServiceTest {
         when(GenericSchemaManager.getToBeDroppedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_deleted", toBeDeletedSchema));
         when(GenericSchemaManager.getToBeAddedTablesBySchemas(any(), any())).thenReturn(Collections.singletonMap("to_be_altered", toBeAlterSchema));
         metaDataPersistService.persistReloadDatabaseByDrop("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(databaseMetaDataFacade.getSchema()).alterByRuleDropped("foo_db", "to_be_altered", toBeAlterSchema);
+        verify(databaseMetaDataFacade.getSchema()).alterByRuleDropped("foo_db", toBeAlterSchema);
         verify(databaseMetaDataFacade.getTable()).drop("foo_db", "to_be_deleted", Collections.emptyList());
     }
 }
