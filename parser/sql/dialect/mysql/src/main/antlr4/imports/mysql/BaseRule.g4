@@ -144,6 +144,7 @@ identifierKeywordsUnambiguous
     | AT
     | ATTRIBUTE
     | AUTOEXTEND_SIZE
+    | AUTO_INCREMENT
     | AUTHENTICATION
     | AUTO
     | AVG_ROW_LENGTH
@@ -281,6 +282,7 @@ identifierKeywordsUnambiguous
     | KEYS
     | KEY_BLOCK_SIZE
     | KEYRING
+    | KILL
     | LAST
     | LEAVES
     | LESS
@@ -291,6 +293,7 @@ identifierKeywordsUnambiguous
     | LOCKS
     | LOGFILE
     | LOGS
+    | LOOP
     | MANUAL
     | MATCH
     | MAXVALUE
@@ -324,7 +327,6 @@ identifierKeywordsUnambiguous
     | MAX_CONNECTIONS_PER_HOUR
     | MAX_QUERIES_PER_HOUR
     | MAX_ROWS
-    | MIN_ROWS
     | MAX_SIZE
     | MAX_UPDATES_PER_HOUR
     | MAX_USER_CONNECTIONS
