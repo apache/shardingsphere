@@ -41,6 +41,17 @@ The possible Maven dependencies are as follows.
         <artifactId>hive-service</artifactId>
         <version>4.0.1</version>
     </dependency>
+    <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-mapreduce-client-core</artifactId>
+        <version>3.3.6</version>
+        <exclusions>
+            <exclusion>
+                <groupId>*</groupId>
+                <artifactId>*</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
 </dependencies>
 ```
 
@@ -80,6 +91,17 @@ The following is an example of a possible configuration,
             <exclusion>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-mapreduce-client-core</artifactId>
+        <version>3.3.6</version>
+        <exclusions>
+            <exclusion>
+                <groupId>*</groupId>
+                <artifactId>*</artifactId>
             </exclusion>
         </exclusions>
     </dependency>
@@ -433,8 +455,31 @@ Reference https://issues.apache.org/jira/browse/HIVE-28418.
 ### Hadoop Limitations
 
 Users can only use Hadoop `3.3.6` as the underlying Hadoop dependency of HiveServer2 JDBC Driver `4.0.1`.
-HiveServer2 JDBC Driver `4.0.1` does not support Hadoop `3.4.1`,
-Reference https://github.com/apache/hive/pull/5500.
+HiveServer2 JDBC Driver `4.0.1` does not support Hadoop `3.4.1`. Reference https://github.com/apache/hive/pull/5500 .
+
+For HiveServer2 JDBC Driver `org.apache.hive:hive-jdbc:4.0.1` or `org.apache.hive:hive-jdbc:4.0.1` with `classifier` as `standalone`,
+there is actually no additional dependency on `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6`.
+
+But `org.apache.shardingsphere:shardingsphere-infra-database-hive`'s
+`org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader` uses `org.apache.hadoop.hive.conf.HiveConf`,
+which further uses `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6`'s `org.apache.hadoop.mapred.JobConf` class.
+
+ShardingSphere only needs to use the `org.apache.hadoop.mapred.JobConf` class,
+so it is reasonable to exclude all additional dependencies of `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6`.
+
+```xml
+<dependency>
+    <groupId>org.apache.hadoop</groupId>
+    <artifactId>hadoop-mapreduce-client-core</artifactId>
+    <version>3.3.6</version>
+    <exclusions>
+        <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
 
 ### SQL Limitations
 

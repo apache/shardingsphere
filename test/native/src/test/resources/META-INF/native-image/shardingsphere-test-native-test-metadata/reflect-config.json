@@ -168,5 +168,13 @@
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.StandaloneMetastoreTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.StandaloneMetastoreTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
 }
 ]

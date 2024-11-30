@@ -4,6 +4,10 @@
     "interfaces":["java.sql.Connection"]
   },
   {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"},
+    "interfaces":["org.apache.hadoop.metrics2.MetricsSystem$Callback"]
+  },
+  {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "interfaces":["org.apache.hive.service.rpc.thrift.TCLIService$Iface"]
   },
