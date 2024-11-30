@@ -172,7 +172,7 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      * @return column names
      */
-    public List<String> getAllColumnNames(final String tableName) {
+    public Collection<String> getAllColumnNames(final String tableName) {
         return containsTable(tableName) ? getTable(tableName).getColumnNames() : Collections.emptyList();
     }
     

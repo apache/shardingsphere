@@ -80,7 +80,7 @@ public final class CDCSchemaTableUtils {
         Map<String, Set<String>> result = new HashMap<>(database.getSchemas().size(), 1F);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             if (!systemSchemas.contains(entry.getKey())) {
-                entry.getValue().getAllTableNames().forEach(tableName -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(tableName));
+                entry.getValue().getAllTableNames().forEach(each -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(each));
             }
             
         }
@@ -91,7 +91,7 @@ public final class CDCSchemaTableUtils {
         Map<String, Set<String>> result = new HashMap<>(database.getSchemas().size(), 1F);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             if (!systemSchemas.contains(entry.getKey())) {
-                entry.getValue().getAllTableNames().stream().filter(tableName -> tableName.equals(table.getTable())).findFirst()
+                entry.getValue().getAllTableNames().stream().filter(each -> each.equals(table.getTable())).findFirst()
                         .ifPresent(optional -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(optional));
             }
         }
