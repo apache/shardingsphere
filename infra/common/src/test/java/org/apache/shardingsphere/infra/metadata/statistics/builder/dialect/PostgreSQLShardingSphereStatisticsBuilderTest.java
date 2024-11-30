@@ -54,6 +54,7 @@ class PostgreSQLShardingSphereStatisticsBuilderTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mockSchema();
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(database.getSchema("pg_catalog")).thenReturn(schema);
         return Collections.singletonMap("logic_db", database);
     }
     
