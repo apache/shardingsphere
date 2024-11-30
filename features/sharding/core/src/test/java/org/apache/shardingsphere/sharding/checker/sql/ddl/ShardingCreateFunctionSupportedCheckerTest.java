@@ -85,7 +85,8 @@ class ShardingCreateFunctionSupportedCheckerTest {
         CreateFunctionStatementContext sqlStatementContext = new CreateFunctionStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingCreateFunctionSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
+        assertThrows(UnsupportedShardingOperationException.class,
+                () -> new ShardingCreateFunctionSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
     }
     
     @Test
