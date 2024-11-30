@@ -62,7 +62,7 @@ public final class GenericSchemaManager {
      * @return to be added tables
      */
     public static Collection<ShardingSphereTable> getToBeAddedTables(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return reloadSchema.getAllTables().stream().filter(each -> !each.equals(currentSchema.getTable(each.getName().toLowerCase()))).collect(Collectors.toList());
+        return reloadSchema.getAllTables().stream().filter(each -> !each.equals(currentSchema.getTable(each.getName()))).collect(Collectors.toList());
     }
     
     /**
@@ -91,7 +91,7 @@ public final class GenericSchemaManager {
      * @return to be dropped table
      */
     public static Collection<ShardingSphereTable> getToBeDroppedTables(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return currentSchema.getAllTables().stream().filter(each -> !reloadSchema.containsTable(each.getName().toLowerCase())).collect(Collectors.toList());
+        return currentSchema.getAllTables().stream().filter(each -> !reloadSchema.containsTable(each.getName())).collect(Collectors.toList());
     }
     
     /**
