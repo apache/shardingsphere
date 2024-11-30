@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import lombok.SneakyThrows;
+import org.apache.seata.config.ConfigurationFactory;
 import org.apache.seata.config.FileConfiguration;
 import org.apache.seata.core.context.RootContext;
 import org.apache.seata.core.exception.TransactionException;
@@ -156,6 +157,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
         SeataTransactionHolder.clear();
         RmNettyRemotingClient.getInstance().destroy();
         TmNettyRemotingClient.getInstance().destroy();
+        ConfigurationFactory.reload();
     }
     
     @Override

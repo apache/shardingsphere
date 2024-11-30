@@ -220,10 +220,20 @@ config {
 }
 ```
 
-### Create ShardingSphere configuration file in business project
+### Add JDBC Driver to the business project and create ShardingSphere configuration file
 
 After the business project introduces the dependencies involved in the prerequisites, 
-write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project,
+add the Maven dependency of MySQL JDBC Driver.
+
+```xml
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>9.1.0</version>
+</dependency>
+```
+
+Write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
 
 ```yaml
 dataSources:

@@ -92,10 +92,6 @@ class ClickHouseTest {
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
     }
     
-    /**
-     * TODO The {@code shardingsphere-parser-sql-clickhouse} module needs to be fixed to use SQL like `create table`,
-     *  `truncate table` and `drop table`.
-     */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:ch://localhost:" + CONTAINER.getMappedPort(8123) + "/";
@@ -136,6 +132,8 @@ class ClickHouseTest {
     /**
      * ClickHouse does not support `AUTO_INCREMENT`,
      * refer to <a href="https://github.com/ClickHouse/ClickHouse/issues/56228">ClickHouse/ClickHouse#56228</a> .
+     * TODO The {@code shardingsphere-parser-sql-clickhouse} module needs to be fixed to use SQL like `create table`,
+     *  `truncate table` and `drop table`.
      *
      * @param databaseName database name
      * @throws RuntimeException SQL exception

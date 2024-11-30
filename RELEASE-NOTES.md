@@ -32,6 +32,7 @@
 1. Doc: Adds documentation for ClickHouse support - [#33779](https://github.com/apache/shardingsphere/pull/33779)
 1. Doc: Removes use of `iceberg.mr.schema.auto.conversion` from documentation due to HIVE-26507 - [#33828](https://github.com/apache/shardingsphere/pull/33828)
 1. Kernel: Bump the minimum Seata Client version for Seata AT integration to 2.2.0 - [#33872](https://github.com/apache/shardingsphere/pull/33872)
+1. Proxy Native: Support Seata AT integration under Proxy Native in GraalVM Native Image - [#33889](https://github.com/apache/shardingsphere/pull/33889)
 
 ### Bug Fixes
 
