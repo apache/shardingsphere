@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 
@@ -99,9 +100,9 @@ public final class IndexMetaDataUtils {
     }
     
     private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {
-        for (String each : schema.getAllTableNames()) {
-            if (schema.getTable(each).containsIndex(logicIndexName)) {
-                return Optional.of(each);
+        for (ShardingSphereTable each : schema.getAllTables()) {
+            if (each.containsIndex(logicIndexName)) {
+                return Optional.of(each.getName());
             }
         }
         return Optional.empty();

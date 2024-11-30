@@ -52,8 +52,8 @@ public final class ShowTableMetaDataExecutor implements DistSQLQueryExecutor<Sho
     public Collection<LocalDataQueryResultRow> getRows(final ShowTableMetaDataStatement sqlStatement, final ContextManager contextManager) {
         String defaultSchema = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
         ShardingSphereSchema schema = database.getSchema(defaultSchema);
-        return sqlStatement.getTableNames().stream().filter(each -> schema.getAllTableNames().contains(each.toLowerCase()))
-                .map(each -> buildTableRows(database.getName(), schema, each.toLowerCase())).flatMap(Collection::stream).collect(Collectors.toList());
+        return sqlStatement.getTableNames().stream()
+                .filter(schema::containsTable).map(each -> buildTableRows(database.getName(), schema, each.toLowerCase())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {

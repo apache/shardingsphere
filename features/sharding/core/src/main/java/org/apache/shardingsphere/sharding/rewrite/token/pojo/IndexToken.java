@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -79,9 +80,9 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     }
     
     private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
-        for (String each : schema.getAllTableNames()) {
-            if (schema.getTable(each).containsIndex(logicIndexName)) {
-                return Optional.of(each);
+        for (ShardingSphereTable each : schema.getAllTables()) {
+            if (each.containsIndex(logicIndexName)) {
+                return Optional.of(each.getName());
             }
         }
         return Optional.empty();

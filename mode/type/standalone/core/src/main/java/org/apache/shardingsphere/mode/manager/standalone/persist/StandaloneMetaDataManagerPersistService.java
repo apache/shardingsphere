@@ -57,6 +57,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Standalone meta data manager persist service.
@@ -119,15 +120,15 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     private void putSchemaMetaData(final ShardingSphereDatabase database, final String schemaName, final String renameSchemaName, final String logicDataSourceName) {
         ShardingSphereSchema schema = database.getSchema(schemaName);
         database.addSchema(renameSchemaName, schema);
-        addDataNode(database, logicDataSourceName, schemaName, schema.getAllTableNames());
+        addDataNode(database, logicDataSourceName, schemaName, schema.getAllTables());
     }
     
-    private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Collection<String> tobeAddedTableNames) {
-        tobeAddedTableNames.forEach(each -> {
-            if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(each, database)) {
-                database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, each));
+    private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Collection<ShardingSphereTable> tobeAddedTables) {
+        for (ShardingSphereTable each : tobeAddedTables) {
+            if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(each.getName(), database)) {
+                database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, each.getName()));
             }
-        });
+        }
     }
     
     private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Collection<ShardingSphereTable> toBeAddedTables,
@@ -159,7 +160,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {
         ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, database.getSchema(schemaName).getAllTables(), database.getSchema(schemaName).getAllViews());
         database.dropSchema(schemaName);
-        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singletonList(schemaName), schema.getAllTableNames());
+        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singleton(schemaName),
+                schema.getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet()));
     }
     
     private void removeDataNode(final Collection<MutableDataNodeRuleAttribute> ruleAttributes, final Collection<String> schemaNames, final Collection<String> tobeRemovedTables) {
@@ -196,7 +198,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         for (String each : schemaNames) {
             ShardingSphereSchema schema = new ShardingSphereSchema(each, database.getSchema(each).getAllTables(), database.getSchema(each).getAllViews());
             database.dropSchema(each);
-            Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
+            Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet())));
             tobeRemovedSchemas.add(each.toLowerCase());
         }
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), new HashSet<>(tobeRemovedSchemas), new HashSet<>(tobeRemovedTables));

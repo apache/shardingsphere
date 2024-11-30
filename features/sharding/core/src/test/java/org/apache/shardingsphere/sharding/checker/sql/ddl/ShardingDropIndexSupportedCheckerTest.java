@@ -55,10 +55,9 @@ class ShardingDropIndexSupportedCheckerTest {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(schema.getTable("t_order")).thenReturn(table);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(shardingRule, database, schema, new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
@@ -70,7 +69,7 @@ class ShardingDropIndexSupportedCheckerTest {
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         assertThrows(IndexNotExistedException.class,
                 () -> new ShardingDropIndexSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));

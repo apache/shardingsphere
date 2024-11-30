@@ -73,10 +73,10 @@ public final class StatisticsAssembleUtils {
     
     private static void assembleOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas) {
         for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
-            for (String each : entry.getValue().getAllTableNames()) {
+            for (ShardingSphereTable each : entry.getValue().getAllTables()) {
                 Object[] rows = new Object[10];
                 rows[0] = entry.getKey();
-                rows[1] = each;
+                rows[1] = each.getName();
                 tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
             }
         }
