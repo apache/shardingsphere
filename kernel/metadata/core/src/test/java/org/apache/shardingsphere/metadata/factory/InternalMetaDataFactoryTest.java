@@ -44,7 +44,7 @@ class InternalMetaDataFactoryTest {
     @Test
     void assertCreateWithDatabaseName() {
         MetaDataPersistService persistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(persistService.getDatabaseMetaDataFacade().getSchema().load("foo_db")).thenReturn(Collections.emptyMap());
+        when(persistService.getDatabaseMetaDataFacade().getSchema().load("foo_db")).thenReturn(Collections.emptyList());
         ShardingSphereDatabase database = InternalMetaDataFactory.create(
                 "foo_db", persistService, mock(DatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertThat(database.getName(), is("foo_db"));
@@ -67,7 +67,7 @@ class InternalMetaDataFactoryTest {
     @Test
     void assertCreateWithDatabasesWithStorageUnits() {
         MetaDataPersistService persistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(persistService.getDatabaseMetaDataFacade().getSchema().load("foo_db")).thenReturn(Collections.emptyMap());
+        when(persistService.getDatabaseMetaDataFacade().getSchema().load("foo_db")).thenReturn(Collections.emptyList());
         DatabaseConfiguration databaseConfig = mock(DatabaseConfiguration.class);
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
