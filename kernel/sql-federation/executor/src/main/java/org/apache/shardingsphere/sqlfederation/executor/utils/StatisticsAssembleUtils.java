@@ -49,9 +49,9 @@ public final class StatisticsAssembleUtils {
         // TODO move this logic to ShardingSphere statistics
         ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
         if (EnumerableConstants.PG_DATABASE.equalsIgnoreCase(table.getName())) {
-            assembleOpenGaussDatabaseData(result, metaData.getDatabases().values());
+            assembleOpenGaussDatabaseData(result, metaData.getAllDatabases());
         } else if (EnumerableConstants.PG_TABLES.equalsIgnoreCase(table.getName())) {
-            for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
+            for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
                 assembleOpenGaussTableData(result, each.getAllSchemas());
             }
         } else if (EnumerableConstants.PG_ROLES.equalsIgnoreCase(table.getName())) {

@@ -67,7 +67,7 @@ class SchemaMetaDataManagerTest {
         ShardingSphereDatabase database = mockDatabase();
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabases().values()).thenReturn(Collections.singleton(database));
+        when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         schemaMetaDataManager = new SchemaMetaDataManager(new AtomicReference<>(metaDataContexts), mock(PersistRepository.class));
     }
     

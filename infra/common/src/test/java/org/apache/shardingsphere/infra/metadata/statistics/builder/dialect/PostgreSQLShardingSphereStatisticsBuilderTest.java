@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -45,17 +45,18 @@ class PostgreSQLShardingSphereStatisticsBuilderTest {
     
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        Map<String, ShardingSphereDatabase> databaseMap = mockDatabaseMap();
-        when(result.getDatabases()).thenReturn(databaseMap);
+        Collection<ShardingSphereDatabase> databases = mockDatabases();
+        when(result.getAllDatabases()).thenReturn(databases);
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
+    private Collection<ShardingSphereDatabase> mockDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("logic_db");
         ShardingSphereSchema schema = mockSchema();
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.getSchema("pg_catalog")).thenReturn(schema);
-        return Collections.singletonMap("logic_db", database);
+        return Collections.singleton(database);
     }
     
     private ShardingSphereSchema mockSchema() {

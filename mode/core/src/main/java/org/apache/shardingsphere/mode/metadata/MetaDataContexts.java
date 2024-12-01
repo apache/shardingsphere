@@ -53,7 +53,7 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private Collection<ShardingSphereRule> getAllRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>(metaData.getGlobalRuleMetaData().getRules());
-        metaData.getDatabases().values().stream().map(each -> each.getRuleMetaData().getRules()).forEach(result::addAll);
+        metaData.getAllDatabases().stream().map(each -> each.getRuleMetaData().getRules()).forEach(result::addAll);
         return result;
     }
 }

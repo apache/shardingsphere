@@ -168,10 +168,10 @@ public final class MetaDataContextsFactory {
     }
     
     private static ShardingSphereStatistics initStatistics(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
-        if (metaData.getDatabases().isEmpty()) {
+        if (metaData.getAllDatabases().isEmpty()) {
             return new ShardingSphereStatistics();
         }
-        DatabaseType protocolType = metaData.getDatabases().values().iterator().next().getProtocolType();
+        DatabaseType protocolType = metaData.getAllDatabases().iterator().next().getProtocolType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
         DatabaseType databaseType = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
@@ -238,7 +238,7 @@ public final class MetaDataContextsFactory {
     }
     
     private static void persistMetaData(final MetaDataContexts metaDataContexts, final MetaDataPersistService persistService) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getAllSchemas().forEach(schema -> {
+        metaDataContexts.getMetaData().getAllDatabases().forEach(each -> each.getAllSchemas().forEach(schema -> {
             if (schema.isEmpty()) {
                 persistService.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schema.getName());
             }
@@ -247,7 +247,7 @@ public final class MetaDataContextsFactory {
         for (Entry<String, ShardingSphereDatabaseData> databaseDataEntry : metaDataContexts.getStatistics().getDatabaseData().entrySet()) {
             for (Entry<String, ShardingSphereSchemaData> schemaDataEntry : databaseDataEntry.getValue().getSchemaData().entrySet()) {
                 persistService.getShardingSphereDataPersistService().persist(
-                        metaDataContexts.getMetaData().getDatabases().get(databaseDataEntry.getKey().toLowerCase()), schemaDataEntry.getKey(), schemaDataEntry.getValue());
+                        metaDataContexts.getMetaData().getDatabase(databaseDataEntry.getKey()), schemaDataEntry.getKey(), schemaDataEntry.getValue());
             }
         }
     }
