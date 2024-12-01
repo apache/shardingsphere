@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment.EncryptInsertAssignmentTokenGenerator;
@@ -93,14 +92,11 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     }
     
     private void setUpSQLTokenGenerator(final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
-        if (toBeAddedSQLTokenGenerator instanceof EncryptConditionsAware) {
-            ((EncryptConditionsAware) toBeAddedSQLTokenGenerator).setEncryptConditions(encryptConditions);
-        }
         if (toBeAddedSQLTokenGenerator instanceof DatabaseAware) {
             ((DatabaseAware) toBeAddedSQLTokenGenerator).setDatabase(database);
         }
-        if (toBeAddedSQLTokenGenerator instanceof DatabaseTypeAware) {
-            ((DatabaseTypeAware) toBeAddedSQLTokenGenerator).setDatabaseType(sqlStatementContext.getDatabaseType());
+        if (toBeAddedSQLTokenGenerator instanceof EncryptConditionsAware) {
+            ((EncryptConditionsAware) toBeAddedSQLTokenGenerator).setEncryptConditions(encryptConditions);
         }
     }
 }
