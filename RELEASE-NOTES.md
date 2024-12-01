@@ -14,6 +14,7 @@
 1. SQL Parser: Support parsing Doris BITXOR - [#33258](https://github.com/apache/shardingsphere/pull/33258)
 1. SQL Parser: Support parsing Doris INSTR - [#33289](https://github.com/apache/shardingsphere/pull/33289)
 1. SQL Parser: Support parsing Doris STRRIGHT - [#33393](https://github.com/apache/shardingsphere/pull/33393)
+1. SQL Parser: Support parsing MySQL by adding non-reserved keywords in BaseRule.g4 file according to MySQL 8.4 doc - [#33846](https://github.com/apache/shardingsphere/pull/33846)
 1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
 1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
 1. JDBC: Support ZonedDateTime on ResultSet - [#33660](https://github.com/apache/shardingsphere/issues/33660)

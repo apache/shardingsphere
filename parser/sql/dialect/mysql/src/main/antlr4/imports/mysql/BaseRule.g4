@@ -145,22 +145,28 @@ identifierKeywordsUnambiguous
     | ATTRIBUTE
     | AUTOEXTEND_SIZE
     | AUTO_INCREMENT
+    | AUTHENTICATION
+    | AUTO
     | AVG_ROW_LENGTH
     | AVG
     | BACKUP
     | BEFORE
+    | BERNOULLI
     | BINLOG
     | BIT
+    | BINLOGBIT
     | BLOCK
     | BOOLEAN
     | BOOL
     | BTREE
     | BUCKETS
+    | BULK
     | CASCADED
     | CATALOG_NAME
     | CHAIN
     | CHANGED
     | CHANNEL
+    | CHALLENGE_RESPONSECHANGED
     | CIPHER
     | CLASS_ORIGIN
     | CLIENT
@@ -234,6 +240,7 @@ identifierKeywordsUnambiguous
     | FAULTS
     | FILE_BLOCK_SIZE
     | FILTER
+    | FINISH
     | FIRST
     | FIXED
     | FOLLOWING
@@ -248,6 +255,7 @@ identifierKeywordsUnambiguous
     | GRANTS
     | GROUP_REPLICATION
     | GROUPS
+    | GTIDS
     | HASH
     | HISTOGRAM
     | HISTORY
@@ -258,6 +266,7 @@ identifierKeywordsUnambiguous
     | IGNORE_SERVER_IDS
     | INACTIVE
     | INDEXES
+    | INITIAL
     | INITIAL_SIZE
     | INSERT_METHOD
     | INSTANCE
@@ -272,6 +281,8 @@ identifierKeywordsUnambiguous
     | KEY
     | KEYS
     | KEY_BLOCK_SIZE
+    | KEYRING
+    | KILL
     | LAST
     | LEAVES
     | LESS
@@ -282,6 +293,10 @@ identifierKeywordsUnambiguous
     | LOCKS
     | LOGFILE
     | LOGS
+    | LOOP
+    | MANUAL
+    | MATCH
+    | MAXVALUE
     | MASTER_AUTO_POSITION
     | MASTER_COMPRESSION_ALGORITHM
     | MASTER_CONNECT_RETRY
@@ -326,6 +341,7 @@ identifierKeywordsUnambiguous
     | MIN_ROWS
     | MODE
     | MODIFY
+    | MODIFIES
     | MONTH
     | MULTILINESTRING
     | MULTIPOINT
@@ -335,6 +351,7 @@ identifierKeywordsUnambiguous
     | NAMES
     | NAME
     | NATIONAL
+    | NATURAL
     | NCHAR
     | NDBCLUSTER
     | NESTED
@@ -347,6 +364,7 @@ identifierKeywordsUnambiguous
     | NULLS
     | NUMBER
     | NVARCHAR
+    | OF
     | OFF
     | OFFSET
     | OJ
@@ -364,6 +382,7 @@ identifierKeywordsUnambiguous
     | PAGE
     | PARSER
     | PARTIAL
+    | PARSE_TREE
     | PARTITIONING
     | PARTITIONS
     | PASSWORD
@@ -384,6 +403,7 @@ identifierKeywordsUnambiguous
     | PROCESSLIST
     | PROFILES
     | PROFILE
+    | QUALIFY
     | QUARTER
     | QUERY
     | QUICK
@@ -417,6 +437,7 @@ identifierKeywordsUnambiguous
     | RESTORE
     | RESUME
     | RETAIN
+    | REGISTRATION
     | RETURNED_SQLSTATE
     | RETURNING
     | RETURNS
@@ -429,6 +450,7 @@ identifierKeywordsUnambiguous
     | ROW_COUNT
     | ROW_FORMAT
     | RTREE
+    | S3
     | SCHEDULE
     | SCHEMA_NAME
     | SECONDARY_ENGINE
@@ -503,6 +525,7 @@ identifierKeywordsUnambiguous
     | UNKNOWN
     | UNTIL
     | UPGRADE
+    | URL
     | USER
     | USE_FRM
     | VALIDATION

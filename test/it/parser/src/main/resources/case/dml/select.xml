@@ -6264,6 +6264,145 @@
         </from>
     </select>
 
+    <select sql-case-id="select_with_auto_keyword" parameters="0">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <simple-table name="t_auto" start-index="14" stop-index="19"/>
+        </from>
+        <where start-index="21" stop-index="34">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="34">
+                    <left>
+                        <column name="auto" start-index="27" stop-index="30"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="0" start-index="34" stop-index="34"/>
+                        <parameter-marker-expression parameter-index="0" start-index="34" stop-index="34"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_authentication_keyword">
+        <projections start-index="7" stop-index="29">
+            <column-projection name="auth_id" start-index="7" stop-index="13" />
+            <column-projection name="authentication" start-index="16" stop-index="29" />
+        </projections>
+        <from>
+            <simple-table name="t_auth" start-index="36" stop-index="41" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_binlogbit_keyword">
+        <projections start-index="7" stop-index="23">
+            <column-projection name="log_id" start-index="7" stop-index="12" />
+            <column-projection name="binlogbit" start-index="15" stop-index="23" />
+        </projections>
+        <from>
+            <simple-table name="t_log" start-index="30" stop-index="34" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_bernoulli_keyword" >
+        <from>
+            <simple-table name="t" alias="bernoulli" start-index="25" stop-index="35" />
+        </from>
+        <projections start-index="7" stop-index="18">
+            <column-projection name = "id" start-index="7" stop-index="18">
+                <owner name = "bernoulli" start-index="7" stop-index="15"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_bulk_keyword" parameters="0">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <simple-table name="t_bulk" start-index="14" stop-index="19"/>
+        </from>
+        <where start-index="21" stop-index="34">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="34">
+                    <left>
+                        <column name="bulk" start-index="27" stop-index="30"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="0" start-index="34" stop-index="34"/>
+                        <parameter-marker-expression parameter-index="0" start-index="34" stop-index="34"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_challenge_responsechanged_keyword" >
+        <from>
+            <simple-table name="t" alias="challenge_responsechanged" start-index="41" stop-index="67" />
+        </from>
+        <projections start-index="7" stop-index="34">
+            <column-projection name = "id" start-index="7" stop-index="34">
+                <owner name = "challenge_responsechanged" start-index="7" stop-index="31"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_finish_keyword" >
+        <from>
+            <simple-table name="t" alias="finish" start-index="22" stop-index="29" />
+        </from>
+        <projections start-index="7" stop-index="15">
+            <column-projection name = "id" start-index="7" stop-index="15">
+                <owner name = "finish" start-index="7" stop-index="12"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_initial_keyword" >
+        <from>
+            <simple-table name="t" alias="initial" start-index="23" stop-index="31" />
+        </from>
+        <projections start-index="7" stop-index="16">
+            <column-projection name = "id" start-index="7" stop-index="16">
+                <owner name = "initial" start-index="7" stop-index="13"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_gtids_keyword">
+        <projections start-index="7" stop-index="85">
+            <expression-projection text="WAIT_FOR_EXECUTED_GTID_SET('3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5')" start-index="7" stop-index="85" alias="gtids">
+
+                <expr>
+                    <function function-name="WAIT_FOR_EXECUTED_GTID_SET" start-index="7" stop-index="76" text="WAIT_FOR_EXECUTED_GTID_SET('3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5')">
+                        <parameter>
+                            <literal-expression value="3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5" start-index="34" stop-index="75"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_keyring_keyword">
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="JSON_KEYS('{&quot;a&quot;: 1, &quot;b&quot;: {&quot;c&quot;: 30}}')" start-index="7" stop-index="51" alias = "keyring">
+                <expr>
+                    <function function-name="JSON_KEYS" text="JSON_KEYS('{&quot;a&quot;: 1, &quot;b&quot;: {&quot;c&quot;: 30}}')" start-index="7" stop-index="43">
+                        <parameter>
+                            <literal-expression value="{&quot;a&quot;: 1, &quot;b&quot;: {&quot;c&quot;: 30}}" start-index="17" stop-index="42"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_keyword_system" parameters="0">
         <from>
             <simple-table name="vtx_project" start-index="14" stop-index="24" />
@@ -6287,6 +6426,148 @@
         </where>
     </select>
 
+    <select sql-case-id="select_with_keyword_manual" parameters="0">
+        <from>
+            <simple-table name="vtx_project" start-index="14" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="26" stop-index="41">
+            <expr>
+                <binary-operation-expression start-index="32" stop-index="41">
+                    <left>
+                        <column name="manual" start-index="32" stop-index="37"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="0" start-index="41" stop-index="41"/>
+                        <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_match_keyword">
+        <from>
+            <simple-table name="t_order" start-index="77" stop-index="83" />
+        </from>
+        <projections start-index="7" stop-index="70" literal-start-index="7" >
+            <shorthand-projection start-index="7" stop-index="7"/>
+            <expression-projection text="MATCH (order_id) AGAINST (1 IN NATURAL LANGUAGE MODE)" start-index="9" stop-index="70" alias="match">
+                <expr>
+                    <match-expression start-index="9" stop-index="61">
+                        <expr>
+                            <literal-expression value="1" start-index="35" stop-index="35"/>
+                        </expr>
+                    </match-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_maxvalue_keyword" >
+        <from>
+            <simple-table name="t" alias="maxvalue" start-index="24" stop-index="33" />
+        </from>
+        <projections start-index="7" stop-index="17">
+            <column-projection name = "id" start-index="7" stop-index="17">
+                <owner name = "maxvalue" start-index="7" stop-index="14"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_qualify_keyword" >
+        <from>
+            <simple-table name="t" alias="qualify" start-index="23" stop-index="31" />
+        </from>
+        <projections start-index="7" stop-index="16">
+            <column-projection name = "id" start-index="7" stop-index="16">
+                <owner name = "qualify" start-index="7" stop-index="13"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_registration_keyword" >
+        <from>
+            <simple-table name="t" alias="registration" start-index="28" stop-index="41" />
+        </from>
+        <projections start-index="7" stop-index="21">
+            <column-projection name = "id" start-index="7" stop-index="21">
+                <owner name = "registration" start-index="7" stop-index="18"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_min_rows_keyword">
+        <from>
+            <simple-table name="t_order" start-index="37" stop-index="43" />
+        </from>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="MIN" expression="MIN(user_id)" alias="min_rows" start-index="7" stop-index="18" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_keyword_modifies" parameters="0">
+        <from>
+            <simple-table name="vtx_project" start-index="14" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="26" stop-index="43">
+            <expr>
+                <binary-operation-expression start-index="32" stop-index="43">
+                    <left>
+                        <column name="modifies" start-index="32" stop-index="39"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="0" start-index="43" stop-index="43"/>
+                        <parameter-marker-expression parameter-index="0" start-index="43" stop-index="43"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_natural_keyword" >
+        <from>
+            <simple-table name="t" alias="natural" start-index="23" stop-index="31" />
+        </from>
+        <projections start-index="7" stop-index="16">
+            <column-projection name = "id" start-index="7" stop-index="16">
+                <owner name = "natural" start-index="7" stop-index="13"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_of_keyword">
+        <projections start-index="7" stop-index="36">
+            <expression-projection text="WEEKOFYEAR('2019-02-20')" start-index="7" stop-index="36" alias="of">
+                <expr>
+                    <function function-name="WEEKOFYEAR" start-index="7" stop-index="30" text="WEEKOFYEAR('2019-02-20')" >
+                        <parameter>
+                            <literal-expression value="2019-02-20" start-index="18" stop-index="29" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_kill_keyword" >
+        <from>
+            <simple-table name="t" alias="kill" start-index="20" stop-index="25" />
+        </from>
+        <projections start-index="7" stop-index="13">
+            <column-projection name = "id" start-index="7" stop-index="13">
+                <owner name = "kill" start-index="7" stop-index="10"/>
+            </column-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_keyword_groups_and_rank">
         <from>
             <simple-table alias="t" name="t_order" start-index="29" stop-index="37" literal-start-index="29" literal-stop-index="37"/>
@@ -6300,7 +6581,52 @@
             </column-projection>
         </projections>
     </select>
-    
+
+    <select sql-case-id="select_with_loop_keyword" >
+        <from>
+            <simple-table name="t" alias="loop" start-index="20" stop-index="25" />
+        </from>
+        <projections start-index="7" stop-index="13">
+            <column-projection name = "id" start-index="7" stop-index="13">
+                <owner name = "loop" start-index="7" stop-index="10"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_parse_tree_keyword" >
+        <from>
+            <simple-table name="t" alias="parse_tree" start-index="26" stop-index="37" />
+        </from>
+        <projections start-index="7" stop-index="19">
+            <column-projection name = "id" start-index="7" stop-index="19">
+                <owner name = "parse_tree" start-index="7" stop-index="16"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_s3_keyword" >
+        <from>
+            <simple-table name="t" alias="s3" start-index="18" stop-index="21" />
+        </from>
+        <projections start-index="7" stop-index="11">
+            <column-projection name = "id" start-index="7" stop-index="11">
+                <owner name = "s3" start-index="7" stop-index="8"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_url_keyword" >
+        <from>
+            <simple-table name="t" alias="url" start-index="19" stop-index="23" />
+        </from>
+        <projections start-index="7" stop-index="12">
+            <column-projection name = "id" start-index="7" stop-index="12">
+                <owner name = "url" start-index="7" stop-index="9"/>
+            </column-projection>
+        </projections>
+    </select>
+
+
     <select sql-case-id="select_with_format_function">
         <projections start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
             <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
