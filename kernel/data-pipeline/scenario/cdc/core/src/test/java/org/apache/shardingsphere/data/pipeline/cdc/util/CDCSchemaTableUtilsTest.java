@@ -80,7 +80,7 @@ class CDCSchemaTableUtilsTest {
     
     @Test
     void assertParseTableExpressionWithoutSchema() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), null, null, Collections.singleton(mockedPublicSchema()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("public", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), null, null, Collections.singleton(mockedPublicSchema()));
         List<String> schemaTables = Collections.singletonList("*");
         Collection<String> actualWildcardTable = CDCSchemaTableUtils.parseTableExpressionWithoutSchema(database, schemaTables);
         Set<String> expectedWildcardTable = new HashSet<>(Arrays.asList("t_order", "t_order2"));
