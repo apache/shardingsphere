@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +35,7 @@ import static org.mockito.Mockito.when;
 class GenericSchemaManagerTest {
     
     @Test
-    void assertGetToBeAddedTablesBySchemas() {
+    void assertGetToBeAddedSchemas() {
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class);
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema",
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList())));
@@ -45,7 +44,7 @@ class GenericSchemaManagerTest {
         when(currentDatabase.getAllSchemas()).thenReturn(Collections.singleton(currentSchemas));
         when(currentDatabase.containsSchema("foo_schema")).thenReturn(true);
         when(currentDatabase.getSchema("foo_schema")).thenReturn(currentSchemas);
-        Collection<ShardingSphereSchema> actual = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadDatabase, currentDatabase);
+        Collection<ShardingSphereSchema> actual = GenericSchemaManager.getToBeAddedSchemas(reloadDatabase, currentDatabase);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getAllTables().size(), is(1));
         assertTrue(actual.iterator().next().containsTable("foo_tbl"));
@@ -85,13 +84,10 @@ class GenericSchemaManagerTest {
     }
     
     @Test
-    void assertGetToBeDroppedSchemas() {
+    void assertGetToBeDroppedSchemaNames() {
         ShardingSphereDatabase currentDatabase = mock(ShardingSphereDatabase.class);
         when(currentDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema")));
-        Map<String, ShardingSphereSchema> actual =
-                GenericSchemaManager.getToBeDroppedSchemas(mock(ShardingSphereDatabase.class), currentDatabase);
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("foo_schema"));
-        
+        Collection<String> actual = GenericSchemaManager.getToBeDroppedSchemaNames(mock(ShardingSphereDatabase.class), currentDatabase);
+        assertThat(actual, is(Collections.singleton("foo_schema")));
     }
 }
