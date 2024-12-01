@@ -77,7 +77,7 @@ class ShardingStatisticsTableCollectorTest {
         storageUnits.put("ds_0", mock(StorageUnit.class, RETURNS_DEEP_STUBS));
         storageUnits.put("ds_1", mock(StorageUnit.class, RETURNS_DEEP_STUBS));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), Collections.singletonMap("foo_db", database), mock(RuleMetaData.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sharding_table_statistics"));

@@ -183,7 +183,7 @@ public abstract class SQLRewriterIT {
     
     protected abstract YamlRootConfiguration createRootConfiguration(SQLRewriteEngineTestParameters testParams) throws IOException;
     
-    protected abstract Map<String, ShardingSphereSchema> mockSchemas(String schemaName);
+    protected abstract Collection<ShardingSphereSchema> mockSchemas(String schemaName);
     
     protected abstract void mockRules(Collection<ShardingSphereRule> rules, String schemaName, SQLStatement sqlStatement);
     

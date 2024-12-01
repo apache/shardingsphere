@@ -41,14 +41,12 @@ import static org.mockito.Mockito.when;
 
 class CDCSchemaTableUtilsTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @Test
     void assertParseTableExpression() {
-        Map<String, ShardingSphereSchema> schemas = new HashMap<>(2, 1F);
-        schemas.put("public", mockedPublicSchema());
-        schemas.put("test", mockedTestSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "openGauss"), null, null, schemas);
-        List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(),
-                SchemaTable.newBuilder().setSchema("test").setTable("*").build());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", databaseType, null, null, Arrays.asList(mockedPublicSchema(), mockedTestSchema()));
+        List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(), SchemaTable.newBuilder().setSchema("test").setTable("*").build());
         Map<String, Set<String>> expected = new HashMap<>(2, 1F);
         expected.put("test", new HashSet<>(Arrays.asList("t_order_item", "t_order_item2")));
         expected.put("public", Collections.singleton("t_order"));
@@ -82,8 +80,7 @@ class CDCSchemaTableUtilsTest {
     
     @Test
     void assertParseTableExpressionWithoutSchema() {
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("sharding_db", mockedPublicSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), null, null, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("public", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), null, null, Collections.singleton(mockedPublicSchema()));
         List<String> schemaTables = Collections.singletonList("*");
         Collection<String> actualWildcardTable = CDCSchemaTableUtils.parseTableExpressionWithoutSchema(database, schemaTables);
         Set<String> expectedWildcardTable = new HashSet<>(Arrays.asList("t_order", "t_order2"));

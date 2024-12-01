@@ -52,7 +52,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -78,7 +77,6 @@ public final class ShardingRouteAssert {
         ShardingRule shardingRule = ShardingRouteEngineFixtureBuilder.createAllShardingRule();
         SingleRule singleRule = ShardingRouteEngineFixtureBuilder.createSingleRule(Collections.singleton(shardingRule));
         TimestampServiceRule timestampServiceRule = ShardingRouteEngineFixtureBuilder.createTimeServiceRule();
-        Map<String, ShardingSphereSchema> schemas = buildSchemas();
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
                 new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
         ShardingSphereRule broadcastRule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
@@ -86,7 +84,7 @@ public final class ShardingRouteAssert {
         when(ruleAttribute.getDistributedTableNames()).thenReturn(Collections.singleton("t_product"));
         when(broadcastRule.getAttributes().findAttribute(TableMapperRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
         RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, broadcastRule, singleRule, timestampServiceRule));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, buildSchemas());
         ShardingSphereMetaData metaData = createShardingSphereMetaData(database);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatementParserEngine.parse(sql, false), params);
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
@@ -101,7 +99,7 @@ public final class ShardingRouteAssert {
                 mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
-    private static Map<String, ShardingSphereSchema> buildSchemas() {
+    private static Collection<ShardingSphereSchema> buildSchemas() {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         tables.add(new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
@@ -123,6 +121,6 @@ public final class ShardingRouteAssert {
                 Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_hint_test", Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyList()));
     }
 }

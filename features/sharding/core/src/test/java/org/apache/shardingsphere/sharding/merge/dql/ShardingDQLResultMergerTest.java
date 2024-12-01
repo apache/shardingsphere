@@ -515,7 +515,7 @@ class ShardingDQLResultMergerTest {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2, column3), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(table), Collections.emptyList());
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
+                mock(RuleMetaData.class), Collections.singleton(schema));
     }
     
     private ShardingSphereDatabase createSQLServerDatabase() {
@@ -523,9 +523,9 @@ class ShardingDQLResultMergerTest {
         ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true, false, false);
         ShardingSphereColumn column3 = new ShardingSphereColumn("col3", 0, false, false, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2, column3), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(table), Collections.emptyList());
-        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "SQLServer"), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), Collections.singletonMap("dbo", schema));
+        ShardingSphereSchema schema = new ShardingSphereSchema("dbo", Collections.singleton(table), Collections.emptyList());
+        return new ShardingSphereDatabase(
+                DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "SQLServer"), mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
     }
     
     private SelectStatement buildSelectStatement(final SelectStatement result) {
