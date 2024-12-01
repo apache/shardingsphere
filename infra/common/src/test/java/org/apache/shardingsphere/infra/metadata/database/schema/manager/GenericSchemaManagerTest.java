@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 class GenericSchemaManagerTest {
     
     @Test
-    void assertGetToBeAddedSchemas() {
+    void assertGetToBeAlteredSchemasWithTablesAdded() {
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class);
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema",
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList())));
@@ -44,21 +44,21 @@ class GenericSchemaManagerTest {
         when(currentDatabase.getAllSchemas()).thenReturn(Collections.singleton(currentSchemas));
         when(currentDatabase.containsSchema("foo_schema")).thenReturn(true);
         when(currentDatabase.getSchema("foo_schema")).thenReturn(currentSchemas);
-        Collection<ShardingSphereSchema> actual = GenericSchemaManager.getToBeAddedSchemas(reloadDatabase, currentDatabase);
+        Collection<ShardingSphereSchema> actual = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getAllTables().size(), is(1));
         assertTrue(actual.iterator().next().containsTable("foo_tbl"));
     }
     
     @Test
-    void assertGetToBeDroppedTablesBySchemas() {
+    void assertGetToBeAlteredSchemasWithTablesDropped() {
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class);
         when(reloadDatabase.containsSchema("foo_schema")).thenReturn(true);
         when(reloadDatabase.getSchema("foo_schema")).thenReturn(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList()));
         ShardingSphereDatabase currentDatabase = mock(ShardingSphereDatabase.class);
         when(currentDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema",
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList())));
-        Collection<ShardingSphereSchema> actual = GenericSchemaManager.getToBeDroppedTablesBySchemas(reloadDatabase, currentDatabase);
+        Collection<ShardingSphereSchema> actual = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getAllTables().size(), is(1));
         assertTrue(actual.iterator().next().containsTable("foo_tbl"));
