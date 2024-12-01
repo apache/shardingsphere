@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -35,21 +34,21 @@ import java.util.stream.Collectors;
 public final class GenericSchemaManager {
     
     /**
-     * Get to be added tables by schemas.
+     * Get to be added schemas.
      *
      * @param reloadDatabase reload database
      * @param currentDatabase current database
-     * @return To be added table meta data
+     * @return to be added schemas
      */
-    public static Collection<ShardingSphereSchema> getToBeAddedTablesBySchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+    public static Collection<ShardingSphereSchema> getToBeAddedSchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
         reloadDatabase.getAllSchemas().stream().filter(each -> !currentDatabase.containsSchema(each.getName())).forEach(result::add);
         reloadDatabase.getAllSchemas().stream().filter(each -> currentDatabase.containsSchema(each.getName())).collect(Collectors.toList())
-                .forEach(each -> result.add(getToBeAddedTablesBySchema(each, currentDatabase.getSchema(each.getName()))));
+                .forEach(each -> result.add(getToBeAddedSchema(each, currentDatabase.getSchema(each.getName()))));
         return result;
     }
     
-    private static ShardingSphereSchema getToBeAddedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
+    private static ShardingSphereSchema getToBeAddedSchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
         return new ShardingSphereSchema(currentSchema.getName(), getToBeAddedTables(reloadSchema, currentSchema), new LinkedList<>());
     }
     
@@ -73,7 +72,7 @@ public final class GenericSchemaManager {
      */
     public static Collection<ShardingSphereSchema> getToBeDroppedTablesBySchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
-        currentDatabase.getAllSchemas().stream().filter(entry -> reloadDatabase.containsSchema(entry.getName())).collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each))
+        currentDatabase.getAllSchemas().stream().filter(each -> reloadDatabase.containsSchema(each.getName())).collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each))
                 .forEach((key, value) -> result.add(getToBeDroppedTablesBySchema(reloadDatabase.getSchema(key), value)));
         return result;
     }
@@ -94,13 +93,13 @@ public final class GenericSchemaManager {
     }
     
     /**
-     * Get to be dropped schemas.
+     * Get to be dropped schema names.
      *
      * @param reloadDatabase reload database
      * @param currentDatabase current database
-     * @return to be dropped schemas
+     * @return to be dropped schema names
      */
-    public static Map<String, ShardingSphereSchema> getToBeDroppedSchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        return currentDatabase.getAllSchemas().stream().filter(each -> !reloadDatabase.containsSchema(each.getName())).collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each));
+    public static Collection<String> getToBeDroppedSchemaNames(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        return currentDatabase.getAllSchemas().stream().map(ShardingSphereSchema::getName).filter(each -> !reloadDatabase.containsSchema(each)).collect(Collectors.toSet());
     }
 }
