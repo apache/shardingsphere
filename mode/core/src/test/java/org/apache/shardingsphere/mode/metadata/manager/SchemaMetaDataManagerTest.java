@@ -109,14 +109,14 @@ class SchemaMetaDataManagerTest {
     @Test
     void assertAddNotExistedSchema() {
         schemaMetaDataManager.addSchema("foo_db", "bar_schema");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).addSchema(anyString(), any(ShardingSphereSchema.class));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).addSchema(any(ShardingSphereSchema.class));
     }
     
     @Test
     void assertAddExistedSchema() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         schemaMetaDataManager.addSchema("foo_db", "foo_schema");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).addSchema(anyString(), any(ShardingSphereSchema.class));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).addSchema(any(ShardingSphereSchema.class));
     }
     
     @Test

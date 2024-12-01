@@ -101,9 +101,8 @@ public final class ShardingSphereDatabase {
                                                 final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         ResourceMetaData resourceMetaData = createResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder
-                .build(new GenericSchemaBuilderMaterial(protocolType, storageTypes, resourceMetaData.getDataSourceMap(), databaseRules,
-                        props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name))));
+        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterial(
+                protocolType, storageTypes, resourceMetaData.getDataSourceMap(), databaseRules, props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name))));
         SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
         return create(name, protocolType, databaseRules, schemas, resourceMetaData);
     }
@@ -187,11 +186,10 @@ public final class ShardingSphereDatabase {
     /**
      * Add schema.
      *
-     * @param schemaName schema name
      * @param schema schema
      */
-    public void addSchema(final String schemaName, final ShardingSphereSchema schema) {
-        schemas.put(new ShardingSphereMetaDataIdentifier(schemaName), schema);
+    public void addSchema(final ShardingSphereSchema schema) {
+        schemas.put(new ShardingSphereMetaDataIdentifier(schema.getName()), schema);
     }
     
     /**
