@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.projection.Encr
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 class EncryptTokenGenerateBuilderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private EncryptRule encryptRule;
+    private EncryptRule rule;
     
     @Test
     void assertGetSQLTokenGenerators() {
@@ -54,7 +54,7 @@ class EncryptTokenGenerateBuilderTest {
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(Collections.singleton(mock(OrderByItem.class)));
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
-        EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(encryptRule, selectStatementContext, Collections.emptyList(), DefaultDatabase.LOGIC_NAME);
+        EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(rule, selectStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class));
         Collection<SQLTokenGenerator> sqlTokenGenerators = encryptTokenGenerateBuilder.getSQLTokenGenerators();
         assertThat(sqlTokenGenerators.size(), is(1));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
