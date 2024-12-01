@@ -133,6 +133,29 @@ public final class ShardingSphereDatabase {
      * @return database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
+                                                final ComputeNodeInstanceContext computeNodeInstanceContext, final Collection<ShardingSphereSchema> schemas) {
+        ResourceMetaData resourceMetaData = createResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
+        Collection<ShardingSphereRule> rules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
+        return create(name, protocolType, rules, schemas, resourceMetaData);
+    }
+    
+    private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final Collection<ShardingSphereRule> rules,
+                                                 final Collection<ShardingSphereSchema> schemas, final ResourceMetaData resourceMetaData) {
+        RuleMetaData ruleMetaData = new RuleMetaData(rules);
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
+    }
+    
+    /**
+     * Create database.
+     *
+     * @param name database name
+     * @param protocolType database protocol type
+     * @param databaseConfig database configuration
+     * @param computeNodeInstanceContext compute node instance context
+     * @param schemas schemas
+     * @return database
+     */
+    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final ComputeNodeInstanceContext computeNodeInstanceContext, final Map<String, ShardingSphereSchema> schemas) {
         ResourceMetaData resourceMetaData = createResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         Collection<ShardingSphereRule> rules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
