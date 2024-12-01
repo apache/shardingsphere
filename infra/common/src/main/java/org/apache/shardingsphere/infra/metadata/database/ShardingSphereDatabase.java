@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -62,6 +63,7 @@ public final class ShardingSphereDatabase {
     
     private final RuleMetaData ruleMetaData;
     
+    @Getter(AccessLevel.NONE)
     private final Map<String, ShardingSphereSchema> schemas;
     
     public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
