@@ -87,7 +87,7 @@ class ContextManagerTest {
         ShardingSphereDatabase database = mockDatabase();
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabases().values()).thenReturn(Collections.singleton(database));
+        when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new ProxyInstanceMetaData("foo_id", 3307), Collections.emptyList()));
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
         contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
@@ -174,7 +174,9 @@ class ContextManagerTest {
     @Test
     void assertGetPreSelectedDatabaseNameWithJDBC() {
         when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new JDBCInstanceMetaData("foo_id", "foo_db"), Collections.emptyList()));
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class)));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         assertThat(contextManager.getPreSelectedDatabaseName(), is("foo_db"));
     }
     

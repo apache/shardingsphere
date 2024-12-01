@@ -104,7 +104,7 @@ class ProxySQLExecutorTest {
         when(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
-        when(metaData.getDatabases().values().iterator().next().getProtocolType()).thenReturn(databaseType);
+        when(metaData.getAllDatabases().iterator().next().getProtocolType()).thenReturn(databaseType);
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(SQLFederationRule.class), transactionRule)));

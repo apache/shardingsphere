@@ -198,7 +198,7 @@ public final class ContextManager implements AutoCloseable {
      * @return pre-selected database name
      */
     public String getPreSelectedDatabaseName() {
-        return InstanceType.JDBC == computeNodeInstanceContext.getInstance().getMetaData().getType() ? metaDataContexts.get().getMetaData().getDatabases().keySet().iterator().next() : null;
+        return InstanceType.JDBC == computeNodeInstanceContext.getInstance().getMetaData().getType() ? metaDataContexts.get().getMetaData().getAllDatabases().iterator().next().getName() : null;
     }
     
     @Override

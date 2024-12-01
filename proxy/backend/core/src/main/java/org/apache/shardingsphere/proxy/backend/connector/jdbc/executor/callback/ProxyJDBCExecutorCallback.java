@@ -111,9 +111,9 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
         if (null != configuredDatabaseType) {
             return configuredDatabaseType;
         }
-        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().isEmpty()) {
+        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getAllDatabases().isEmpty()) {
             return TypedSPILoader.getService(DatabaseType.class, "MySQL");
         }
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().values().iterator().next().getProtocolType();
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getAllDatabases().iterator().next().getProtocolType();
     }
 }

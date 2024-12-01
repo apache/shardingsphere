@@ -184,7 +184,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
                 .getSchema().alterByRuleAltered(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), each));
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
-                        .persist(originalMetaDataContexts.getMetaData().getDatabases().get(databaseName.toLowerCase()), schemaName, schemaData)));
+                        .persist(originalMetaDataContexts.getMetaData().getDatabase(databaseName), schemaName, schemaData)));
         metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
@@ -194,7 +194,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
                 .getSchema().alterByRuleDropped(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), each));
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
-                        .persist(originalMetaDataContexts.getMetaData().getDatabases().get(databaseName.toLowerCase()), schemaName, schemaData)));
+                        .persist(originalMetaDataContexts.getMetaData().getDatabase(databaseName), schemaName, schemaData)));
         metaDataPersistService.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }

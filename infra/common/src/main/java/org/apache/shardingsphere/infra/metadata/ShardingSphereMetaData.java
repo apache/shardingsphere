@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourc
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -66,6 +67,15 @@ public final class ShardingSphereMetaData {
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
         temporaryProps = new TemporaryConfigurationProperties(props.getProps());
+    }
+    
+    /**
+     * Get all databases.
+     *
+     * @return all databases
+     */
+    public Collection<ShardingSphereDatabase> getAllDatabases() {
+        return databases.values();
     }
     
     /**

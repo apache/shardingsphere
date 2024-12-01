@@ -57,11 +57,11 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     @Override
     public ShardingSphereStatistics build(final ShardingSphereMetaData metaData) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
-        for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
+        for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
             ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-            initSchemas(entry.getValue(), databaseData);
+            initSchemas(each, databaseData);
             if (!databaseData.getSchemaData().isEmpty()) {
-                result.putDatabase(entry.getKey(), databaseData);
+                result.putDatabase(each.getName(), databaseData);
             }
         }
         return result;

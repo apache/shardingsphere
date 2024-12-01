@@ -83,7 +83,7 @@ class ShardingSphereStatisticsRefreshEngineTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("logic_db");
-        when(result.getDatabases()).thenReturn(Collections.singletonMap("logic_db", database));
+        when(result.getAllDatabases()).thenReturn(Collections.singleton(database));
         when(result.getDatabase("logic_db")).thenReturn(database);
         when(result.containsDatabase("logic_db")).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
