@@ -119,7 +119,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private void putSchemaMetaData(final ShardingSphereDatabase database, final String schemaName, final String renameSchemaName, final String logicDataSourceName) {
         ShardingSphereSchema schema = database.getSchema(schemaName);
-        database.addSchema(renameSchemaName, schema);
+        ShardingSphereSchema renameSchema = new ShardingSphereSchema(renameSchemaName, schema.getAllTables(), schema.getAllViews());
+        database.addSchema(renameSchemaName, renameSchema);
         addDataNode(database, logicDataSourceName, schemaName, schema.getAllTables());
     }
     
