@@ -62,7 +62,7 @@ class EncryptPredicateColumnSupportedCheckerTest {
     @Test
     void assertCheckWithDifferentEncryptorsInJoinCondition() {
         assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptPredicateColumnSupportedChecker()
-                .check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, mockSelectStatementContextWithDifferentEncryptorsInJoinCondition()));
+                .check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, mockSelectStatementContextWithDifferentEncryptorsInJoinCondition()));
     }
     
     private SQLStatementContext mockSelectStatementContextWithDifferentEncryptorsInJoinCondition() {
@@ -80,7 +80,7 @@ class EncryptPredicateColumnSupportedCheckerTest {
     @Test
     void assertCheckWithNotMatchedLikeQueryEncryptor() {
         assertThrows(MissingMatchedEncryptQueryAlgorithmException.class, () -> new EncryptPredicateColumnSupportedChecker()
-                .check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, mockSelectStatementContextWithLike()));
+                .check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, mockSelectStatementContextWithLike()));
     }
     
     private SQLStatementContext mockSelectStatementContextWithLike() {
@@ -98,7 +98,7 @@ class EncryptPredicateColumnSupportedCheckerTest {
     
     @Test
     void assertCheckSuccess() {
-        assertDoesNotThrow(() -> new EncryptPredicateColumnSupportedChecker().check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, mockSelectStatementContextWithEqual()));
+        assertDoesNotThrow(() -> new EncryptPredicateColumnSupportedChecker().check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, mockSelectStatementContextWithEqual()));
     }
     
     private SQLStatementContext mockSelectStatementContextWithEqual() {

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
 /**
@@ -36,7 +37,7 @@ public final class EncryptInsertSelectProjectionSupportedChecker implements Supp
     }
     
     @Override
-    public void check(final EncryptRule rule, final ShardingSphereSchema schema, final InsertStatementContext sqlStatementContext) {
-        new EncryptSelectProjectionSupportedChecker().check(rule, schema, sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
+    public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final InsertStatementContext sqlStatementContext) {
+        new EncryptSelectProjectionSupportedChecker().check(rule, database, currentSchema, sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
     }
 }

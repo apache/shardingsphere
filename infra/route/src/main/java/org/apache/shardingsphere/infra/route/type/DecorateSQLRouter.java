@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
+import java.util.Collection;
+
 /**
  * Decorate SQL Router.
  * 
@@ -38,7 +40,8 @@ public interface DecorateSQLRouter<T extends ShardingSphereRule> extends SQLRout
      * @param queryContext query context
      * @param database database
      * @param rule rule
+     * @param tableNames table names
      * @param props configuration properties
      */
-    void decorateRouteContext(RouteContext routeContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
+    void decorateRouteContext(RouteContext routeContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, Collection<String> tableNames, ConfigurationProperties props);
 }

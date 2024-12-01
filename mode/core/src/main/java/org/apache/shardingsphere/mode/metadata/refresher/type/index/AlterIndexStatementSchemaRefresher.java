@@ -62,7 +62,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereSchema schema, final String indexName) {
-        return schema.getAllTableNames().stream().filter(each -> schema.getTable(each).containsIndex(indexName)).findFirst();
+        return schema.getAllTables().stream().filter(each -> each.containsIndex(indexName)).findFirst().map(ShardingSphereTable::getName);
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {

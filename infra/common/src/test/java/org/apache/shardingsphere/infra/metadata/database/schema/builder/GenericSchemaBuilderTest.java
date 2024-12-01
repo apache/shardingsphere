@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaM
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
@@ -75,14 +74,14 @@ class GenericSchemaBuilderTest {
     void assertLoadWithExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("data_node_routed_table1");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        assertFalse(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
+        assertFalse(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getAllTables().isEmpty());
     }
     
     @Test
     void assertLoadWithNotExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("invalid_table");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        assertTrue(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
+        assertTrue(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getAllTables().isEmpty());
     }
     
     @Test
@@ -91,7 +90,7 @@ class GenericSchemaBuilderTest {
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, material);
         assertThat(actual.size(), is(1));
-        assertTables(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, actual.values().iterator().next().getTables(), Collections.emptyMap()).getTables());
+        assertTables(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, actual.values().iterator().next().getAllTables(), Collections.emptyList()));
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {
@@ -103,9 +102,9 @@ class GenericSchemaBuilderTest {
         return Collections.emptyMap();
     }
     
-    private void assertTables(final Map<String, ShardingSphereTable> actual) {
-        assertThat(actual.size(), is(2));
-        assertTrue(actual.get("data_node_routed_table1").getAllColumns().isEmpty());
-        assertTrue(actual.get("data_node_routed_table2").getAllColumns().isEmpty());
+    private void assertTables(final ShardingSphereSchema actual) {
+        assertThat(actual.getAllTables().size(), is(2));
+        assertTrue(actual.getTable("data_node_routed_table1").getAllColumns().isEmpty());
+        assertTrue(actual.getTable("data_node_routed_table2").getAllColumns().isEmpty());
     }
 }

@@ -56,12 +56,12 @@ import org.apache.shardingsphere.sharding.rule.attribute.ShardingTableNamesRuleA
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -541,16 +541,6 @@ public final class ShardingRule implements DatabaseRule {
             }
         }
         return result;
-    }
-    
-    /**
-     * Get sharding rule table names.
-     *
-     * @param logicTableNames logic table names
-     * @return sharding rule table names
-     */
-    public Collection<String> getShardingRuleTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(this::isShardingTable).collect(Collectors.toList());
     }
     
     /**

@@ -39,11 +39,12 @@ public final class BroadcastTableBroadcastRouteEngine implements BroadcastRouteE
     private final Collection<String> broadcastTableNames;
     
     @Override
-    public RouteContext route(final RouteContext routeContext, final BroadcastRule rule) {
-        Collection<String> logicTableNames = rule.filterBroadcastTableNames(broadcastTableNames);
+    public RouteContext route(final BroadcastRule rule) {
+        RouteContext result = new RouteContext();
+        Collection<String> logicTableNames = rule.getBroadcastTableNames(broadcastTableNames);
         RouteContext toBeAddedRouteContext = logicTableNames.isEmpty() ? getRouteContext(rule) : getRouteContext(rule, logicTableNames);
-        routeContext.getRouteUnits().addAll(toBeAddedRouteContext.getRouteUnits());
-        return routeContext;
+        result.getRouteUnits().addAll(toBeAddedRouteContext.getRouteUnits());
+        return result;
     }
     
     private RouteContext getRouteContext(final BroadcastRule rule) {

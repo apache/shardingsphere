@@ -327,7 +327,7 @@ public class DemoService {
 }
 ```
 
-At this time, custom `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` implementations need to be added to the microservice instances `a-service` and `b-service`.
+At this time, a custom `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` implementation needs to be added to the microservice instance `a-service`.
 
 ```java
 import org.apache.seata.integration.http.TransactionPropagationInterceptor;
@@ -376,7 +376,8 @@ public class DemoService {
 }
 ```
 
-At this time, custom `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` implementations need to be added to the microservice instances `a-service` and `b-service`.
+At this time, 
+a custom `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` implementation needs to be added to the microservice instance `a-service`.
 
 ```java
 import org.apache.seata.integration.http.JakartaTransactionPropagationInterceptor;
@@ -403,8 +404,8 @@ The user needs to consider changing the HTTP Header used to pass XID to the micr
 or use the RPC framework to pass XID to the microservice instance `a-service` through service calls.
 Refer to https://github.com/apache/incubator-seata/tree/v2.1.0/integration .
 
-4. The microservice instances `a-service` and `b-service` are both microservices such as Quarkus, Micronaut Framework and Helidon. 
-In this case, Spring WebMVC HandlerInterceptor cannot be used.
+4. The microservice instances `a-service` and `b-service` are both microservices such as Quarkus, 
+Micronaut Framework and Helidon. In this case, Spring WebMVC HandlerInterceptor cannot be used.
 You can refer to the following Spring Boot 3 custom WebMvcConfigurer implementation to implement Filter.
 
 ```java
@@ -417,7 +418,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 @Configuration
 public class CustomWebMvcConfigurer implements WebMvcConfigurer {
     @Override
@@ -432,7 +432,6 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
                 }
                 return true;
             }
-
             @Override
             public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex) {
                 if (RootContext.inGlobalTransaction()) {

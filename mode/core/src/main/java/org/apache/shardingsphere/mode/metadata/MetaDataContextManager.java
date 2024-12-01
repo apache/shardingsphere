@@ -123,7 +123,7 @@ public class MetaDataContextManager {
                         if (schema.isEmpty()) {
                             metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(database.getName(), schemaName);
                         }
-                        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, schema.getTables());
+                        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, schema.getAllTables());
                     });
         } catch (final SQLException ex) {
             log.error("Refresh database meta data: {} failed", database.getName(), ex);

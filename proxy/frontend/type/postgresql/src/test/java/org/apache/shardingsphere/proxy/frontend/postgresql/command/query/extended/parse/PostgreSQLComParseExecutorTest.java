@@ -197,8 +197,8 @@ class PostgreSQLComParseExecutorTest {
                 new ShardingSphereColumn("c", Types.VARCHAR, false, false, false, false, true, false),
                 new ShardingSphereColumn("pad", Types.VARCHAR, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME);
-        schema.getTables().put("t_test", testTable);
-        schema.getTables().put("sbtest1", sbTestTable);
+        schema.putTable(testTable);
+        schema.putTable(sbTestTable);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
                 new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singletonMap("public", schema));
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);

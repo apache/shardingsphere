@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Broadcast rule.
@@ -85,13 +84,19 @@ public final class BroadcastRule implements DatabaseRule {
     }
     
     /**
-     * Filter broadcast table names.
+     * Get broadcast table names.
      *
-     * @param logicTableNames to be filtered logic table names
-     * @return filtered broadcast table names
+     * @param logicTableNames all logic table names
+     * @return broadcast table names
      */
-    public Collection<String> filterBroadcastTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(tables::contains).collect(Collectors.toSet());
+    public Collection<String> getBroadcastTableNames(final Collection<String> logicTableNames) {
+        Collection<String> result = new CaseInsensitiveSet<>();
+        for (String each : logicTableNames) {
+            if (tables.contains(each)) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     /**

@@ -67,9 +67,9 @@ class BroadcastRuleTest {
     }
     
     @Test
-    void assertFilterBroadcastTableNames() {
+    void assertGetBroadcastTableNames() {
         BroadcastRule rule = new BroadcastRule(new BroadcastRuleConfiguration(Collections.singleton("foo_tbl")), Collections.emptyMap(), Collections.emptyList());
-        assertThat(rule.filterBroadcastTableNames(Arrays.asList("foo_tbl", "bar_tbl")), is(Collections.singleton("foo_tbl")));
+        assertThat(rule.getBroadcastTableNames(Arrays.asList("foo_tbl", "bar_tbl")), is(Collections.singleton("foo_tbl")));
     }
     
     @Test

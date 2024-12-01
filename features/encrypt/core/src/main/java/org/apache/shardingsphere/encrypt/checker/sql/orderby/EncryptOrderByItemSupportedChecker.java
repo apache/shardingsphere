@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -60,10 +61,10 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
     }
     
     @Override
-    public void check(final EncryptRule rule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext) {
+    public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SelectStatementContext sqlStatementContext) {
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
-                checkColumnOrderByItem(rule, schema, sqlStatementContext, ((ColumnOrderByItemSegment) each.getSegment()).getColumn());
+                checkColumnOrderByItem(rule, currentSchema, sqlStatementContext, ((ColumnOrderByItemSegment) each.getSegment()).getColumn());
             }
         }
     }

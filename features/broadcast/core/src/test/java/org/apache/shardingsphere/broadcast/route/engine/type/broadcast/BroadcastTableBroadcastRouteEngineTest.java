@@ -42,8 +42,8 @@ class BroadcastTableBroadcastRouteEngineTest {
         BroadcastTableBroadcastRouteEngine engine = new BroadcastTableBroadcastRouteEngine(broadcastRuleTableNames);
         BroadcastRule rule = mock(BroadcastRule.class);
         when(rule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
-        when(rule.filterBroadcastTableNames(any())).thenReturn(Collections.singleton("t_address"));
-        RouteContext routeContext = engine.route(new RouteContext(), rule);
+        when(rule.getBroadcastTableNames(any())).thenReturn(Collections.singleton("t_address"));
+        RouteContext routeContext = engine.route(rule);
         assertThat(routeContext.getRouteUnits().size(), is(2));
         Iterator<RouteUnit> iterator = routeContext.getRouteUnits().iterator();
         assertRouteMapper(iterator.next(), "ds_0", "t_address");
@@ -56,8 +56,8 @@ class BroadcastTableBroadcastRouteEngineTest {
         BroadcastTableBroadcastRouteEngine engine = new BroadcastTableBroadcastRouteEngine(broadcastRuleTableNames);
         BroadcastRule rule = mock(BroadcastRule.class);
         when(rule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
-        when(rule.filterBroadcastTableNames(any())).thenReturn(Collections.emptyList());
-        RouteContext routeContext = engine.route(new RouteContext(), rule);
+        when(rule.getBroadcastTableNames(any())).thenReturn(Collections.emptyList());
+        RouteContext routeContext = engine.route(rule);
         assertThat(routeContext.getRouteUnits().size(), is(2));
         Iterator<RouteUnit> iterator = routeContext.getRouteUnits().iterator();
         assertRouteMapper(iterator.next(), "ds_0", "");

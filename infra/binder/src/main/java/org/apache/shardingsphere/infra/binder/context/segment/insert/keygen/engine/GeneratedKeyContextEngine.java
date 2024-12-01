@@ -50,8 +50,8 @@ public final class GeneratedKeyContextEngine {
      * @param params SQL parameters
      * @return generate key context
      */
-    public Optional<GeneratedKeyContext> createGenerateKeyContext(final Map<String, Integer> insertColumnNamesAndIndexes, final List<InsertValueContext> insertValueContexts,
-                                                                  final List<Object> params) {
+    public Optional<GeneratedKeyContext> createGenerateKeyContext(final Map<String, Integer> insertColumnNamesAndIndexes,
+                                                                  final List<InsertValueContext> insertValueContexts, final List<Object> params) {
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNamesAndIndexes, optional)
                 ? findGeneratedKey(insertColumnNamesAndIndexes, insertValueContexts, params, optional)

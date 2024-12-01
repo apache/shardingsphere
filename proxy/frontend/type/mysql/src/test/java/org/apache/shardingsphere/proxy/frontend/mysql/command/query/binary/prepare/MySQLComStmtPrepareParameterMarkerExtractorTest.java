@@ -56,7 +56,7 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema result = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME);
-        result.getTables().put("user", table);
+        result.putTable(table);
         return result;
     }
 }
