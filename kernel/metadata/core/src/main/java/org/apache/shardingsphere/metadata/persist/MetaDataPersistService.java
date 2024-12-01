@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
@@ -148,9 +149,10 @@ public final class MetaDataPersistService {
      * @param currentDatabase current database
      */
     public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase).forEach(each -> databaseMetaDataFacade.getSchema().alterByRuleAltered(databaseName, each));
-        GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase)
-                .forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, each.getName(), each.getAllTables()));
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> databaseMetaDataFacade.getSchema().alterByRuleAltered(databaseName, each));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, each.getName(), each.getAllTables()));
     }
     
     /**
@@ -161,8 +163,9 @@ public final class MetaDataPersistService {
      * @param currentDatabase current database
      */
     public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase).forEach(each -> databaseMetaDataFacade.getSchema().alterByRuleDropped(databaseName, each));
-        GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase)
-                .forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, each.getName(), each.getAllTables()));
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> databaseMetaDataFacade.getSchema().alterByRuleDropped(databaseName, each));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, each.getName(), each.getAllTables()));
     }
 }
