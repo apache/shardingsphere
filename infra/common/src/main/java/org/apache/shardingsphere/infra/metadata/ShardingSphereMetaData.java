@@ -71,7 +71,7 @@ public final class ShardingSphereMetaData {
     
     /**
      * Get all databases.
-     * 
+     *
      * @return all databases
      */
     public Collection<ShardingSphereDatabase> getAllDatabases() {
