@@ -34,21 +34,21 @@ import java.util.stream.Collectors;
 public final class GenericSchemaManager {
     
     /**
-     * Get to be added schemas.
+     * Get to be altered schemas with tables added.
      *
      * @param reloadDatabase reload database
      * @param currentDatabase current database
-     * @return to be added schemas
+     * @return to be altered schemas with tables added
      */
-    public static Collection<ShardingSphereSchema> getToBeAddedSchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+    public static Collection<ShardingSphereSchema> getToBeAlteredSchemasWithTablesAdded(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
         reloadDatabase.getAllSchemas().stream().filter(each -> !currentDatabase.containsSchema(each.getName())).forEach(result::add);
         reloadDatabase.getAllSchemas().stream().filter(each -> currentDatabase.containsSchema(each.getName())).collect(Collectors.toList())
-                .forEach(each -> result.add(getToBeAddedSchema(each, currentDatabase.getSchema(each.getName()))));
+                .forEach(each -> result.add(getToBeAlteredSchemaWithTablesAdded(each, currentDatabase.getSchema(each.getName()))));
         return result;
     }
     
-    private static ShardingSphereSchema getToBeAddedSchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
+    private static ShardingSphereSchema getToBeAlteredSchemaWithTablesAdded(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
         return new ShardingSphereSchema(currentSchema.getName(), getToBeAddedTables(reloadSchema, currentSchema), new LinkedList<>());
     }
     
@@ -64,20 +64,20 @@ public final class GenericSchemaManager {
     }
     
     /**
-     * Get to be dropped tables by schemas.
+     * Get to be altered schemas with tables dropped.
      *
      * @param reloadDatabase reload database
      * @param currentDatabase current database
-     * @return to be dropped table
+     * @return to be altered schemas with tables dropped
      */
-    public static Collection<ShardingSphereSchema> getToBeDroppedTablesBySchemas(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+    public static Collection<ShardingSphereSchema> getToBeAlteredSchemasWithTablesDropped(final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
         currentDatabase.getAllSchemas().stream().filter(each -> reloadDatabase.containsSchema(each.getName())).collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each))
-                .forEach((key, value) -> result.add(getToBeDroppedTablesBySchema(reloadDatabase.getSchema(key), value)));
+                .forEach((key, value) -> result.add(getToBeAlteredSchemaWithTablesDropped(reloadDatabase.getSchema(key), value)));
         return result;
     }
     
-    private static ShardingSphereSchema getToBeDroppedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
+    private static ShardingSphereSchema getToBeAlteredSchemaWithTablesDropped(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
         return new ShardingSphereSchema(currentSchema.getName(), getToBeDroppedTables(reloadSchema, currentSchema), new LinkedList<>());
     }
     
