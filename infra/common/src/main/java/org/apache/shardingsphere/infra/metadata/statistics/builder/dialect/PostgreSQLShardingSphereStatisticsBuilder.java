@@ -74,10 +74,10 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
             initShardingTableStatisticsTable(schemaData);
             databaseData.putSchema(SHARDINGSPHERE, schemaData);
         }
-        for (String each : INIT_DATA_SCHEMA_TABLES.keySet()) {
+        for (Entry<String, Collection<String>> entry : INIT_DATA_SCHEMA_TABLES.entrySet()) {
             ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-            initTables(database.getSchema(each), INIT_DATA_SCHEMA_TABLES.get(each), schemaData);
-            databaseData.putSchema(each, schemaData);
+            initTables(database.getSchema(entry.getKey()), entry.getValue(), schemaData);
+            databaseData.putSchema(entry.getKey(), schemaData);
         }
     }
     
