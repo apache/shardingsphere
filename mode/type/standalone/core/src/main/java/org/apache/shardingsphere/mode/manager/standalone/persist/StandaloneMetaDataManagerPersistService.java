@@ -229,12 +229,12 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases().putAll(changedDatabases);
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getGlobalRuleMetaData().getRules()
                 .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
-        metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getSchemas()
-                .forEach((schemaName, schema) -> {
-                    if (schema.isEmpty()) {
-                        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, schemaName);
+        metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getAllSchemas()
+                .forEach(each -> {
+                    if (each.isEmpty()) {
+                        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, each.getName());
                     }
-                    metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, schema.getAllTables());
+                    metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, each.getName(), each.getAllTables());
                 });
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
         metaDataPersistService.getMetaDataVersionPersistService()

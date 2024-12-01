@@ -31,8 +31,6 @@ import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConst
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Statistics assemble utils.
@@ -54,7 +52,7 @@ public final class StatisticsAssembleUtils {
             assembleOpenGaussDatabaseData(result, metaData.getDatabases().values());
         } else if (EnumerableConstants.PG_TABLES.equalsIgnoreCase(table.getName())) {
             for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
-                assembleOpenGaussTableData(result, each.getSchemas());
+                assembleOpenGaussTableData(result, each.getAllSchemas());
             }
         } else if (EnumerableConstants.PG_ROLES.equalsIgnoreCase(table.getName())) {
             assembleOpenGaussRoleData(result, metaData);
@@ -71,11 +69,11 @@ public final class StatisticsAssembleUtils {
         }
     }
     
-    private static void assembleOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas) {
-        for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
-            for (ShardingSphereTable each : entry.getValue().getAllTables()) {
+    private static void assembleOpenGaussTableData(final ShardingSphereTableData tableData, final Collection<ShardingSphereSchema> schemas) {
+        for (ShardingSphereSchema schema : schemas) {
+            for (ShardingSphereTable each : schema.getAllTables()) {
                 Object[] rows = new Object[10];
-                rows[0] = entry.getKey();
+                rows[0] = schema.getName();
                 rows[1] = each.getName();
                 tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
             }

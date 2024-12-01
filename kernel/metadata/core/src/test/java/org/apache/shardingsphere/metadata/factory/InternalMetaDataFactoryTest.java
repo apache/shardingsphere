@@ -48,7 +48,7 @@ class InternalMetaDataFactoryTest {
         assertThat(database.getName(), is("foo_db"));
         assertThat(database.getProtocolType(), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
         assertTrue(database.getRuleMetaData().getRules().isEmpty());
-        assertTrue(database.getSchemas().isEmpty());
+        assertTrue(database.getAllSchemas().isEmpty());
     }
     
     @Test
@@ -59,7 +59,7 @@ class InternalMetaDataFactoryTest {
         assertThat(databases.get("foo_db").getName(), is("foo_db"));
         assertThat(databases.get("foo_db").getProtocolType(), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
         assertTrue(databases.get("foo_db").getRuleMetaData().getRules().isEmpty());
-        assertTrue(databases.get("foo_db").getSchemas().isEmpty());
+        assertTrue(databases.get("foo_db").getAllSchemas().isEmpty());
     }
     
     @Test
@@ -74,6 +74,6 @@ class InternalMetaDataFactoryTest {
         assertThat(databases.get("foo_db").getName(), is("foo_db"));
         assertThat(databases.get("foo_db").getProtocolType(), is(TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
         assertTrue(databases.get("foo_db").getRuleMetaData().getRules().isEmpty());
-        assertTrue(databases.get("foo_db").getSchemas().isEmpty());
+        assertTrue(databases.get("foo_db").getAllSchemas().isEmpty());
     }
 }

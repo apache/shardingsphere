@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSph
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -49,8 +48,8 @@ public final class PgNamespaceTableCollector implements ShardingSphereStatistics
                                                      final RuleMetaData globalRuleMetaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE);
         long oid = 1L;
-        for (Entry<String, ShardingSphereSchema> entry : databases.get(databaseName).getSchemas().entrySet()) {
-            result.getRows().add(new ShardingSphereRowData(getRow(PUBLIC_SCHEMA.equalsIgnoreCase(entry.getKey()) ? PUBLIC_SCHEMA_OID : oid++, entry.getKey(), table)));
+        for (ShardingSphereSchema each : databases.get(databaseName).getAllSchemas()) {
+            result.getRows().add(new ShardingSphereRowData(getRow(PUBLIC_SCHEMA.equalsIgnoreCase(each.getName()) ? PUBLIC_SCHEMA_OID : oid++, each.getName(), table)));
         }
         return Optional.of(result);
     }

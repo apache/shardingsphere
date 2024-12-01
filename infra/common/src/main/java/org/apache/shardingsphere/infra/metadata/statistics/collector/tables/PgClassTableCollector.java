@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -49,11 +48,9 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
                                                      final RuleMetaData globalRuleMetaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS);
-        long oid = 0L;
-        for (Entry<String, ShardingSphereSchema> entry : databases.get(databaseName).getSchemas().entrySet()) {
-            if (PUBLIC_SCHEMA.equalsIgnoreCase(entry.getKey())) {
-                result.getRows().addAll(collectForSchema(oid++, PUBLIC_SCHEMA_OID, entry.getValue(), table));
-            }
+        ShardingSphereSchema publicSchema = databases.get(databaseName).getSchema(PUBLIC_SCHEMA);
+        if (null != publicSchema) {
+            result.getRows().addAll(collectForSchema(0L, PUBLIC_SCHEMA_OID, publicSchema, table));
         }
         return Optional.of(result);
     }

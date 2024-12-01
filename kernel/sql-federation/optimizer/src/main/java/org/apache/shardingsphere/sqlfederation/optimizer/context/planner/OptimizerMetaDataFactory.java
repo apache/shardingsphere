@@ -60,9 +60,8 @@ public final class OptimizerMetaDataFactory {
      */
     public static OptimizerMetaData create(final ShardingSphereDatabase database) {
         Map<String, Schema> schemas = new CaseInsensitiveMap<>();
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            Schema sqlFederationSchema = new SQLFederationSchema(entry.getKey(), entry.getValue(), database.getProtocolType(), DEFAULT_DATA_TYPE_FACTORY);
-            schemas.put(entry.getKey(), sqlFederationSchema);
+        for (ShardingSphereSchema each : database.getAllSchemas()) {
+            schemas.put(each.getName(), new SQLFederationSchema(each.getName(), each, database.getProtocolType(), DEFAULT_DATA_TYPE_FACTORY));
         }
         return new OptimizerMetaData(schemas);
     }

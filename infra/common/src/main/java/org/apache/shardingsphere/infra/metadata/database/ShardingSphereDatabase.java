@@ -139,6 +139,15 @@ public final class ShardingSphereDatabase {
     }
     
     /**
+     * Get all schemas.
+     *
+     * @return all schemas
+     */
+    public Collection<ShardingSphereSchema> getAllSchemas() {
+        return schemas.values();
+    }
+    
+    /**
      * Judge contains schema from database or not.
      *
      * @param schemaName schema name

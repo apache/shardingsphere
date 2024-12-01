@@ -55,7 +55,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -106,8 +105,8 @@ class ContextManagerTest {
         when(result.containsSchema("foo_schema")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
-        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(table), Collections.emptyList());
-        when(result.getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", schema)));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList());
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);

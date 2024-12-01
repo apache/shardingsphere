@@ -42,7 +42,7 @@ import java.util.Map.Entry;
 
 public final class PostgreSQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
     
-    private static final String SHARDING_SPHERE = "shardingsphere";
+    private static final String SHARDINGSPHERE = "shardingsphere";
     
     private static final String CLUSTER_INFORMATION = "cluster_information";
     
@@ -68,18 +68,16 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     }
     
     private void initSchemas(final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            if (SHARDING_SPHERE.equals(entry.getKey())) {
-                ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-                initClusterInformationTable(schemaData);
-                initShardingTableStatisticsTable(schemaData);
-                databaseData.putSchema(SHARDING_SPHERE, schemaData);
-            }
-            if (INIT_DATA_SCHEMA_TABLES.containsKey(entry.getKey())) {
-                ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-                initTables(entry.getValue(), INIT_DATA_SCHEMA_TABLES.get(entry.getKey()), schemaData);
-                databaseData.putSchema(entry.getKey(), schemaData);
-            }
+        if (null != database.getSchema(SHARDINGSPHERE)) {
+            ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
+            initClusterInformationTable(schemaData);
+            initShardingTableStatisticsTable(schemaData);
+            databaseData.putSchema(SHARDINGSPHERE, schemaData);
+        }
+        for (String each : INIT_DATA_SCHEMA_TABLES.keySet()) {
+            ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
+            initTables(database.getSchema(each), INIT_DATA_SCHEMA_TABLES.get(each), schemaData);
+            databaseData.putSchema(each, schemaData);
         }
     }
     

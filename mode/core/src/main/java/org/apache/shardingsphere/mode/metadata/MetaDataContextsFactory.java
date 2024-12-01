@@ -238,11 +238,11 @@ public final class MetaDataContextsFactory {
     }
     
     private static void persistMetaData(final MetaDataContexts metaDataContexts, final MetaDataPersistService persistService) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas().forEach((schemaName, schema) -> {
+        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getAllSchemas().forEach(schema -> {
             if (schema.isEmpty()) {
-                persistService.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schemaName);
+                persistService.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schema.getName());
             }
-            persistService.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schemaName, schema.getAllTables());
+            persistService.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
         }));
         for (Entry<String, ShardingSphereDatabaseData> databaseDataEntry : metaDataContexts.getStatistics().getDatabaseData().entrySet()) {
             for (Entry<String, ShardingSphereSchemaData> schemaDataEntry : databaseDataEntry.getValue().getSchemaData().entrySet()) {

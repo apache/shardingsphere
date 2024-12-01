@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ConnectionContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ParametersAware;
@@ -30,7 +31,7 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * SQL token generators.
@@ -51,19 +52,18 @@ public final class SQLTokenGenerators {
     /**
      * Generate SQL tokens.
      *
-     * @param databaseName database name
+     * @param database database
      * @param sqlStatementContext SQL statement context
      * @param params SQL parameters
-     * @param schemas schema map
      * @param connectionContext connection context
      * @return SQL tokens
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public List<SQLToken> generateSQLTokens(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
+    public List<SQLToken> generateSQLTokens(final ShardingSphereDatabase database,
                                             final SQLStatementContext sqlStatementContext, final List<Object> params, final ConnectionContext connectionContext) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : generators) {
-            setUpSQLTokenGenerator(each, params, databaseName, schemas, sqlStatementContext, result, connectionContext);
+            setUpSQLTokenGenerator(each, params, database, sqlStatementContext, result, connectionContext);
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
                 if (!result.contains(sqlToken)) {
@@ -76,15 +76,14 @@ public final class SQLTokenGenerators {
         return result;
     }
     
-    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> params,
-                                        final String databaseName, final Map<String, ShardingSphereSchema> schemas,
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> params, final ShardingSphereDatabase database,
                                         final SQLStatementContext sqlStatementContext, final List<SQLToken> previousSQLTokens, final ConnectionContext connectionContext) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(params);
         }
         if (sqlTokenGenerator instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) sqlTokenGenerator).setSchemas(schemas);
-            ((SchemaMetaDataAware) sqlTokenGenerator).setDefaultSchema(schemas.get(new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName)));
+            ((SchemaMetaDataAware) sqlTokenGenerator).setSchemas(database.getAllSchemas().stream().collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each)));
+            ((SchemaMetaDataAware) sqlTokenGenerator).setDefaultSchema(database.getSchema(new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())));
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);

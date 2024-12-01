@@ -52,16 +52,18 @@ class PostgreSQLShardingSphereStatisticsBuilderTest {
     
     private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        Map<String, ShardingSphereSchema> schemaMap = mockSchemaMap();
-        when(database.getSchemas()).thenReturn(schemaMap);
+        ShardingSphereSchema schema = mockSchema();
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(database.getSchema("pg_catalog")).thenReturn(schema);
         return Collections.singletonMap("logic_db", database);
     }
     
-    private Map<String, ShardingSphereSchema> mockSchemaMap() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+    private ShardingSphereSchema mockSchema() {
+        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
+        when(result.getName()).thenReturn("pg_catalog");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("pg_class");
-        when(schema.getAllTables()).thenReturn(Collections.singleton(table));
-        return Collections.singletonMap("pg_catalog", schema);
+        when(result.getAllTables()).thenReturn(Collections.singleton(table));
+        return result;
     }
 }

@@ -77,7 +77,7 @@ class MySQLQueryHeaderBuilderTest {
     @Test
     void assertBuildWithNullSchema() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getSchemas()).thenReturn(Collections.emptyMap());
+        when(database.getAllSchemas()).thenReturn(Collections.emptyList());
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
         when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
