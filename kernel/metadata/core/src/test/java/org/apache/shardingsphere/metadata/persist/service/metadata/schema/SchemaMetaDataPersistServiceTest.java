@@ -31,8 +31,8 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -110,10 +110,10 @@ class SchemaMetaDataPersistServiceTest {
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(view.getName()).thenReturn("foo_view");
         when(viewMetaDataPersistService.load("foo_db", "foo_schema")).thenReturn(Collections.singleton(view));
-        Map<String, ShardingSphereSchema> actual = persistService.load("foo_db");
+        Collection<ShardingSphereSchema> actual = persistService.load("foo_db");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_schema").getTable("foo_tbl"), is(table));
-        assertThat(actual.get("foo_schema").getView("foo_view"), is(view));
+        assertThat(actual.iterator().next().getTable("foo_tbl"), is(table));
+        assertThat(actual.iterator().next().getView("foo_view"), is(view));
     }
     
     @Test
