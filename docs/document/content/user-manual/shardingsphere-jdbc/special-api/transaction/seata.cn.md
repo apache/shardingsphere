@@ -9,7 +9,7 @@ Apache ShardingSphere 提供 BASE 事务，集成了 Seata 的实现。本文所
 
 ## 前提条件
 
-ShardingSphere 的 Seata 集成仅在 `apache/incubator-seata:v2.1.0` 或更高版本可用。
+ShardingSphere 的 Seata 集成仅在 `apache/incubator-seata:v2.2.0` 或更高版本可用。
 对于 `org.apache.seata:seata-all` Maven 模块对应的 Seata Client，此限制同时作用于 HotSpot VM 和 GraalVM Native Image。
 引入 Maven 依赖，并排除 `org.apache.seata:seata-all` 中过时的 `org.antlr:antlr4-runtime:4.8` 的 Maven 依赖。
 
@@ -29,7 +29,7 @@ ShardingSphere 的 Seata 集成仅在 `apache/incubator-seata:v2.1.0` 或更高�
       <dependency>
          <groupId>org.apache.seata</groupId>
          <artifactId>seata-all</artifactId>
-         <version>2.1.0</version>
+         <version>2.2.0</version>
          <exclusions>
             <exclusion>
                <groupId>org.antlr</groupId>
@@ -42,47 +42,17 @@ ShardingSphere 的 Seata 集成仅在 `apache/incubator-seata:v2.1.0` 或更高�
 ```
 
 受 Calcite 的影响，ShardingSphere JDBC 使用的 `commons-lang:commons-lang` 和 `org.apache.commons:commons-pool2` 与 Seata Client 存在依赖冲突，
-需用户根据实际情景考虑是否需要解决依赖冲突。
+需用户根据实际情景考虑是否需要解决依赖冲突。如果不解决依赖冲突，Maven 等构建工具会在 classpath 随机使用一个冲突依赖的版本。
 
 使用 ShardingSphere 的 Seata 集成模块时，ShardingSphere 连接的数据库实例应同时实现 ShardingSphere 的方言解析支持与 Seata AT 模式的方言解析支持。
 这类数据库包括但不限于 `mysql`，`gvenzl/oracle-free`，`gvenzl/oracle-xe`，`postgres`，`mcr.microsoft.com/mssql/server` 等 Docker Image。
 
-## 操作步骤
+### `undo_log` 表限制
 
-1. 启动 Seata Server
-2. 创建日志表
-3. 添加 Seata 配置
+在每一个 ShardingSphere 涉及的真实数据库实例中均需要创建 `undo_log` 表。
+每种数据库的 SQL 的内容以 https://github.com/apache/incubator-seata/tree/v2.2.0/script/client/at/db 内对应的数据库为准。
 
-## 配置示例
-
-### 启动 Seata Server
-
-按照如下任一链接的步骤，下载并启动 Seata 服务器。
-合理的启动方式应通过 Docker Hub 中的 `apache/seata-server` 的 Docker Image 来实例化 Seata 服务器。
-
-- https://hub.docker.com/r/apache/seata-server
-
-### 创建 undo_log 表
-
-在每一个 ShardingSphere 涉及的真实数据库实例中创建 `undo_log` 表。
-SQL 的内容以 https://github.com/apache/incubator-seata/tree/v2.1.0/script/client/at/db 内对应的数据库为准。
-以下内容以 MySQL 为例。
-```sql
-CREATE TABLE IF NOT EXISTS `undo_log`
-(
-   `branch_id`     BIGINT       NOT NULL COMMENT 'branch transaction id',
-   `xid`           VARCHAR(128) NOT NULL COMMENT 'global transaction id',
-   `context`       VARCHAR(128) NOT NULL COMMENT 'undo_log context,such as serialization',
-   `rollback_info` LONGBLOB     NOT NULL COMMENT 'rollback info',
-   `log_status`    INT(11)      NOT NULL COMMENT '0:normal status,1:defense status',
-   `log_created`   DATETIME(6)  NOT NULL COMMENT 'create datetime',
-   `log_modified`  DATETIME(6)  NOT NULL COMMENT 'modify datetime',
-   UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
-   ) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT ='AT transaction mode undo table';
-ALTER TABLE `undo_log` ADD INDEX `ix_log_created` (`log_created`);
-```
-
-### 修改配置
+### 相关配置
 
 在自有项目的 ShardingSphere 的 YAML 配置文件写入如下内容，参考 [分布式事务](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction)。
 若初始化 ShardingSphere JDBC DataSource 时使用的是 Java API，参考 [分布式事务](/cn/user-manual/shardingsphere-jdbc/java-api/rules/transaction)。
@@ -93,8 +63,8 @@ transaction:
    providerType: Seata
 ```
 
-在 classpath 的根目录中增加 `seata.conf` 文件， 
-配置文件格式参考 `org.apache.seata.config.FileConfiguration` 的 [JavaDoc](https://github.com/apache/incubator-seata/blob/v2.1.0/config/seata-config-core/src/main/java/org/apache/seata/config/FileConfiguration.java)。
+在 classpath 的根目录中增加 `seata.conf` 文件，
+配置文件格式参考 `org.apache.seata.config.FileConfiguration` 的 [JavaDoc](https://github.com/apache/incubator-seata/blob/v2.2.0/config/seata-config-core/src/main/java/org/apache/seata/config/FileConfiguration.java)。
 
 `seata.conf` 存在四个属性，
 
@@ -102,7 +72,7 @@ transaction:
 2. `shardingsphere.transaction.seata.tx.timeout`，全局事务超时（秒）。存在默认值为 `60`
 3. `client.application.id`，应用唯一主键，用于设置 Seata Transaction Manager Client 和 Seata Resource Manager Client 的 `applicationId`
 4. `client.transaction.service.group`，所属事务组， 用于设置 Seata Transaction Manager Client 和 Seata Resource Manager Client 的 `transactionServiceGroup`。
-存在默认值为 `default`
+   存在默认值为 `default`
 
 一个完全配置的 `seata.conf` 如下，
 
@@ -117,7 +87,7 @@ client {
 ```
 
 一个最小配置的 `seata.conf` 如下。
-由 ShardingSphere 管理的 `seata.conf` 中， `client.transaction.service.group` 的默认值设置为 `default` 是出于历史原因。
+由 ShardingSphere 管理的 `seata.conf` 中， `client.transaction.service.group` 的默认值为 `default` 是出于历史原因。
 假设用户使用的 Seata Server 和 Seata Client 的 `registry.conf` 中，`registry.type` 和 `config.type` 均为 `file`，
 则对于 `registry.conf` 的 `config.file.name` 配置的 `.conf` 文件中，事务分组名在 `apache/incubator-seata:v1.5.1` 及之后默认值为 `default_tx_group`，
 在 `apache/incubator-seata:v1.5.1` 之前则为 `my_test_tx_group`。
@@ -128,6 +98,200 @@ client.application.id = example
 
 根据实际场景修改 Seata 的 `registry.conf` 文件。
 
+## 操作步骤
+
+1. 启动 Seata Server
+2. 创建 `undo_log` 表
+3. 添加 Seata 配置
+
+## 配置示例
+
+### 启动 Seata Server 和 MySQL Server
+
+编写 Docker Compose 文件来启动 Seata Server 和 MySQL Server。
+
+```yaml
+services:
+   apache-seata-server:
+      image: apache/seata-server:2.2.0
+      ports:
+         - "8091:8091"
+   mysql:
+      image: mysql:9.1.0
+      environment:
+         MYSQL_ROOT_PASSWORD: example
+      volumes:
+         - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      ports:
+         - "3306:3306"
+```
+
+`./docker-entrypoint-initdb.d` 文件夹包含文件为 `init.sh`，内容如下，
+
+```shell
+#!/bin/bash
+set -e
+
+mysql -uroot -p"$MYSQL_ROOT_PASSWORD" <<EOSQL
+CREATE DATABASE demo_ds_0;
+CREATE DATABASE demo_ds_1;
+CREATE DATABASE demo_ds_2;
+EOSQL
+
+for i in "demo_ds_0" "demo_ds_1" "demo_ds_2"
+do
+mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$i" <<'EOSQL'
+CREATE TABLE IF NOT EXISTS `undo_log`
+(
+    `branch_id`     BIGINT       NOT NULL COMMENT 'branch transaction id',
+    `xid`           VARCHAR(128) NOT NULL COMMENT 'global transaction id',
+    `context`       VARCHAR(128) NOT NULL COMMENT 'undo_log context,such as serialization',
+    `rollback_info` LONGBLOB     NOT NULL COMMENT 'rollback info',
+    `log_status`    INT(11)      NOT NULL COMMENT '0:normal status,1:defense status',
+    `log_created`   DATETIME(6)  NOT NULL COMMENT 'create datetime',
+    `log_modified`  DATETIME(6)  NOT NULL COMMENT 'modify datetime',
+    UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT ='AT transaction mode undo table';
+ALTER TABLE `undo_log` ADD INDEX `ix_log_created` (`log_created`);
+
+CREATE TABLE IF NOT EXISTS t_order (
+   order_id BIGINT NOT NULL AUTO_INCREMENT,
+   order_type INT(11),
+   user_id INT NOT NULL,
+   address_id BIGINT NOT NULL,
+   status VARCHAR(50),
+   PRIMARY KEY (order_id)
+);
+EOSQL
+done
+```
+
+### 在业务项目的 classpath 创建 `seata.conf`
+
+在业务项目的 classpath 创建 `seata.conf`，内容如下，
+
+```
+service {
+    default.grouplist = "127.0.0.1:8091"
+    vgroupMapping.default_tx_group = "default"
+}
+```
+
+### 在业务项目的 classpath 创建 `file.conf`
+
+在业务项目的 classpath 创建 `file.conf`，内容如下，
+
+```
+client {
+    application.id = test
+    transaction.service.group = default_tx_group
+}
+```
+
+### 在业务项目的 classpath 创建 `registry.conf`
+
+在业务项目的 classpath 创建 `registry.conf`，内容如下，
+
+```
+registry {
+  type = "file"
+  file {
+    name = "file.conf"
+  }
+}
+config {
+  type = "file"
+  file {
+    name = "file.conf"
+  }
+}
+```
+
+### 在业务项目创建 ShardingSphere 配置文件
+
+在业务项目引入前提条件涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
+
+```yaml
+dataSources:
+   ds_0:
+      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+      driverClassName: com.mysql.cj.jdbc.Driver
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?sslMode=REQUIRED
+      username: root
+      password: example
+   ds_1:
+      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+      driverClassName: com.mysql.cj.jdbc.Driver
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?sslMode=REQUIRED
+      username: root
+      password: example
+   ds_2:
+      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+      driverClassName: com.mysql.cj.jdbc.Driver
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_2?sslMode=REQUIRED
+      username: root
+      password: example
+rules:
+   - !SHARDING
+      tables:
+         t_order:
+            actualDataNodes: ds_$->{0..2}.t_order
+            keyGenerateStrategy:
+               column: order_id
+               keyGeneratorName: snowflake
+      defaultDatabaseStrategy:
+         standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: inline
+      shardingAlgorithms:
+         inline:
+            type: INLINE
+            props:
+               algorithm-expression: ds_${user_id % 2}
+      keyGenerators:
+         snowflake:
+            type: SNOWFLAKE
+transaction:
+   defaultType: BASE
+   providerType: Seata
+```
+
+### 享受集成
+
+在 ShardingSphere 的数据源上可开始享受集成，
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+@SuppressWarnings({"SqlNoDataSourceInspection", "AssertWithSideEffects"})
+public class ExampleTest {
+    void test() throws SQLException {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml");
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        try (HikariDataSource dataSource = new HikariDataSource(config)) {
+            try (Connection conn = dataSource.getConnection()) {
+                try {
+                    conn.setAutoCommit(false);
+                    conn.createStatement().executeUpdate("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (2024, 1, 2024, 'INSERT_TEST')");
+                    conn.createStatement().executeUpdate("INSERT INTO t_order_does_not_exist (test_id_does_not_exist) VALUES (2024)");
+                    conn.commit();
+                } catch (final SQLException ignored) {
+                    conn.rollback();
+                } finally {
+                    conn.setAutoCommit(true);
+                }
+            }
+            try (Connection conn = dataSource.getConnection()) {
+                assert !conn.createStatement().executeQuery("SELECT * FROM t_order_item WHERE user_id = 2024").next();
+            }
+        }
+    }
+}
+```
+
 ## 使用限制
 
 ShardingSphere 的 Seata 集成不支持隔离级别。
@@ -137,7 +301,7 @@ ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的
 这意味着用户在使用 ShardingSphere 的 Seata 集成时，用户应避免使用 `org.apache.seata:seata-all` 的 Java API，
 除非用户正在混合使用 ShardingSphere 的 Seata 集成与 Seata Client 的 TCC 模式特性。
 
-针对 ShardingSphere 数据源，讨论 6 种情况，
+针对 ShardingSphere 数据源，讨论 7 种情况，
 
 1. 手动获取从 ShardingSphere 数据源创建的 `java.sql.Connection` 实例，并手动调用 `setAutoCommit()`, `commit()` 和 `rollback()` 方法，
 这是被允许的。
@@ -148,9 +312,13 @@ ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的
 
 4. 在函数上使用 Spring Framework 的 `org.springframework.transaction.annotation.Transactional` 注解，这是被允许的。
 
-5. 在函数上使用 `org.apache.seata.spring.annotation.GlobalTransactional` 注解，这是**不被允许的**。
+5. 手动获取从 `org.springframework.transaction.PlatformTransactionManager` 实例创建的 `org.springframework.transaction.support.TransactionTemplate` 实例，
+并使用 `org.springframework.transaction.support.TransactionTemplate#execute(org.springframework.transaction.support.TransactionCallback)`，
+这是被允许的。
 
-6. 手动从 `org.apache.seata.tm.api.GlobalTransactionContext ` 创建 `org.apache.seata.tm.api.GlobalTransaction` 实例，
+6. 在函数上使用 `org.apache.seata.spring.annotation.GlobalTransactional` 注解，这是**不被允许的**。
+
+7. 手动从 `org.apache.seata.tm.api.GlobalTransactionContext ` 创建 `org.apache.seata.tm.api.GlobalTransaction` 实例，
 调用 `org.apache.seata.tm.api.GlobalTransaction` 实例的 `begin()`, `commit()` 和 `rollback()` 方法，这是**不被允许的**。
 
 在使用 Spring Boot 的实际情景中，
@@ -173,7 +341,7 @@ ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的
       <dependency>
          <groupId>org.apache.seata</groupId>
          <artifactId>seata-spring-boot-starter</artifactId>
-         <version>2.1.0</version>
+         <version>2.2.0</version>
          <exclusions>
             <exclusion>
                <groupId>org.antlr</groupId>
@@ -378,7 +546,7 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 
 3. 微服务实例 `a-service` 和 `b-service` 均为 Spring Boot 微服务，但使用的 API 网关中间件阻断了所有包含 `TX_XID` 的 HTTP Header 的 HTTP 请求。
 用户需要考虑更改把 XID 通过服务调用传递到微服务实例 `a-service` 使用的 HTTP Header，或使用 RPC 框架把 XID 通过服务调用传递到微服务实例 `a-service`。
-参考 https://github.com/apache/incubator-seata/tree/v2.1.0/integration 。
+参考 https://github.com/apache/incubator-seata/tree/v2.2.0/integration 。
 
 4. 微服务实例 `a-service` 和 `b-service` 均为 Quarkus，Micronaut Framework 和 Helidon 等微服务。
 此情况下无法使用 Spring WebMVC HandlerInterceptor。

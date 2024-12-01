@@ -9,7 +9,7 @@ ShardingSphere does not provide support for `driverClassName` of `org.testcontai
 
 ## Prerequisites
 
-To use `jdbcUrl` like `jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0` for data nodes in ShardingSphere's configuration file,
+To use `jdbcUrl` like `jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0` for data nodes in ShardingSphere's configuration file,
 the possible Maven dependencies are as follows,
 
 ```xml
@@ -52,15 +52,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0
+    jdbcUrl: jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_1
+    jdbcUrl: jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_1
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_2
+    jdbcUrl: jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_2
 ```
 
 1. Maven module `org.testcontainers:clickhouse:1.20.3` that provides support for jdbcURL prefixes for `jdbc:tc:clickhouse:`
@@ -82,13 +82,13 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0
+    jdbcUrl: jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0
 ```
 
 testcontainers, by default, 
-stops the Docker Container created by `jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0` only after the last `java.sql.Connection` of `jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0` is closed.
+stops the Docker Container created by `jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0` only after the last `java.sql.Connection` of `jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0` is closed.
 But ShardingSphere's internal class will cache `java.sql.Connection`.
-As a result, the Docker Container created by `jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0` will not be closed until the JVM is closed.
+As a result, the Docker Container created by `jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0` will not be closed until the JVM is closed.
 If it is necessary to prevent the Container from being opened for a long time, `org.testcontainers.jdbc.ContainerDatabaseDriver` has a method available to quickly close the relevant Container in the unit test.
 The example is as follows,
 

@@ -74,8 +74,6 @@ public final class TestShardingService {
     
     /**
      * Process success in ClickHouse.
-     * ClickHouse has not fully supported transactions. Refer to <a href="https://github.com/ClickHouse/clickhouse-docs/issues/2300">ClickHouse/clickhouse-docs#2300</a>.
-     * So ShardingSphere should not use {@link OrderItemRepository#assertRollbackWithTransactions()} in the method here.
      *
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */

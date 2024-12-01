@@ -28,7 +28,7 @@
   "name":"io.seata.core.rpc.hook.RpcHook"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.core.serializer.SerializerServiceLoader"},
+  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
   "name":"io.seata.core.serializer.Serializer"
 },
 {
@@ -94,7 +94,7 @@
   "name":"org.apache.seata.config.Configuration"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.config.ConfigurationCache$$Lambda/0x00007fea13cd9cb0"},
+  "condition":{"typeReachable":"org.apache.seata.config.ConfigurationCache$$Lambda/0x00007fda3bd03530"},
   "name":"org.apache.seata.config.Configuration"
 },
 {
@@ -156,11 +156,11 @@
 },
 {
   "condition":{"typeReachable":"org.apache.seata.core.rpc.netty.NettyClientBootstrap$1"},
-  "name":"org.apache.seata.core.rpc.netty.v1.ProtocolV1Decoder"
+  "name":"org.apache.seata.core.rpc.netty.v1.ProtocolDecoderV1"
 },
 {
   "condition":{"typeReachable":"org.apache.seata.core.rpc.netty.NettyClientBootstrap$1"},
-  "name":"org.apache.seata.core.rpc.netty.v1.ProtocolV1Encoder"
+  "name":"org.apache.seata.core.rpc.netty.v1.ProtocolEncoderV1"
 },
 {
   "condition":{"typeReachable":"org.apache.seata.discovery.registry.RegistryFactory"},
@@ -186,6 +186,10 @@
 {
   "condition":{"typeReachable":"org.apache.seata.discovery.registry.RegistryFactory"},
   "name":"org.apache.seata.discovery.registry.nacos.NacosRegistryProvider"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.discovery.registry.RegistryFactory"},
+  "name":"org.apache.seata.discovery.registry.namingserver.NamingserverRegistryProvider"
 },
 {
   "condition":{"typeReachable":"org.apache.seata.discovery.registry.RegistryFactory"},
@@ -281,7 +285,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fda3bdf6300"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
@@ -306,7 +310,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fda3bde4000"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Field"
 },
 {
@@ -350,7 +354,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fda3bdf6300"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
@@ -375,7 +379,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fda3bde4000"},
   "name":"org.apache.seata.rm.datasource.sql.struct.Row"
 },
 {
@@ -407,7 +411,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fda3bdf6300"},
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
@@ -432,7 +436,7 @@
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fda3bde4000"},
   "name":"org.apache.seata.rm.datasource.sql.struct.TableRecords"
 },
 {
@@ -508,7 +512,7 @@
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fda3bdf6300"},
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
@@ -533,7 +537,7 @@
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fda3bde4000"},
   "name":"org.apache.seata.rm.datasource.undo.BranchUndoLog"
 },
 {
@@ -565,7 +569,7 @@
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fea13db8000"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.ConnectionProxy$$Lambda/0x00007fda3bdf6300"},
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
@@ -590,7 +594,7 @@
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fea13d17d98"},
+  "condition":{"typeReachable":"org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$$Lambda/0x00007fda3bde4000"},
   "name":"org.apache.seata.rm.datasource.undo.SQLUndoLog"
 },
 {
@@ -718,17 +722,21 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.core.serializer.SerializerServiceLoader"},
+  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
   "name":"org.apache.seata.serializer.hessian.HessianSerializer"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.core.serializer.SerializerServiceLoader"},
+  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
   "name":"org.apache.seata.serializer.kryo.KryoSerializer"
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.core.serializer.SerializerServiceLoader"},
+  "condition":{"typeReachable":"org.apache.seata.common.util.ReflectionUtil"},
+  "name":"org.apache.seata.serializer.protobuf.ProtobufSerializer"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
   "name":"org.apache.seata.serializer.seata.SeataSerializer",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Byte"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.seata.rm.datasource.PreparedStatementProxy"},
@@ -824,7 +832,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
+  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader"},
   "name":"io.seata.config.file.FileConfig"
 }
 ]

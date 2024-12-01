@@ -1,9 +1,6 @@
 {
   "resources":{
   "includes":[{
-    "condition":{"typeReachable":"org.apache.seata.sqlparser.druid.DruidDbTypeParserImpl"},
-    "pattern":"\\QMETA-INF/druid-driver.properties\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.seata.config.ConfigurationFactory"},
     "pattern":"\\QMETA-INF/seata/io.seata.config.ConfigurationProvider\\E"
   }, {
@@ -16,7 +13,7 @@
     "condition":{"typeReachable":"org.apache.seata.rm.DefaultResourceManager"},
     "pattern":"\\QMETA-INF/seata/io.seata.core.model.ResourceManager\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.seata.core.serializer.SerializerServiceLoader"},
+    "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
     "pattern":"\\QMETA-INF/seata/io.seata.core.serializer.Serializer\\E"
   }, {
     "condition":{"typeReachable":"org.apache.seata.discovery.registry.RegistryFactory"},
@@ -49,7 +46,7 @@
     "condition":{"typeReachable":"org.apache.seata.core.rpc.netty.AbstractNettyRemoting"},
     "pattern":"\\QMETA-INF/seata/org.apache.seata.core.rpc.hook.RpcHook\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.seata.core.serializer.SerializerServiceLoader"},
+    "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
     "pattern":"\\QMETA-INF/seata/org.apache.seata.core.serializer.Serializer\\E"
   }, {
     "condition":{"typeReachable":"org.apache.seata.discovery.registry.RegistryFactory"},
@@ -100,7 +97,7 @@
     "condition":{"typeReachable":"org.apache.seata.rm.DefaultResourceManager"},
     "pattern":"\\QMETA-INF/services/io.seata.core.model.ResourceManager\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.seata.core.serializer.SerializerServiceLoader"},
+    "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
     "pattern":"\\QMETA-INF/services/io.seata.core.serializer.Serializer\\E"
   }, {
     "condition":{"typeReachable":"org.apache.seata.discovery.registry.RegistryFactory"},
@@ -133,7 +130,7 @@
     "condition":{"typeReachable":"org.apache.seata.core.rpc.netty.AbstractNettyRemoting"},
     "pattern":"\\QMETA-INF/services/org.apache.seata.core.rpc.hook.RpcHook\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.seata.core.serializer.SerializerServiceLoader"},
+    "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"},
     "pattern":"\\QMETA-INF/services/org.apache.seata.core.serializer.Serializer\\E"
   }, {
     "condition":{"typeReachable":"org.apache.seata.discovery.registry.RegistryFactory"},

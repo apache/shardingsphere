@@ -58,7 +58,7 @@ class ClickHouseTest {
     private static final Network NETWORK = Network.newNetwork();
     
     @Container
-    private static final GenericContainer<?> CLICKHOUSE_KEEPER_CONTAINER = new GenericContainer<>("clickhouse/clickhouse-keeper:24.10.2.80")
+    private static final GenericContainer<?> CLICKHOUSE_KEEPER_CONTAINER = new GenericContainer<>("clickhouse/clickhouse-keeper:24.11.1.2557")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/keeper_config.xml").toAbsolutePath()),
                     "/etc/clickhouse-keeper/keeper_config.xml")
@@ -66,7 +66,7 @@ class ClickHouseTest {
             .withNetworkAliases("clickhouse-keeper-01");
     
     @Container
-    public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.10.2.80")
+    public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.11.1.2557")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/transactions.xml").toAbsolutePath()),
                     "/etc/clickhouse-server/config.d/transactions.xml")

@@ -26,7 +26,6 @@
     <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console" />
     </logger>
-
     <root>
         <level value="error" />
         <appender-ref ref="console" />

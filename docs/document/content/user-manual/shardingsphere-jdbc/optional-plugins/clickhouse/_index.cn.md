@@ -43,7 +43,7 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.10.2.80
+    image: clickhouse/clickhouse-server:24.11.1.2557
     ports:
       - "8123:8123"
 ```
@@ -221,11 +221,11 @@ ClickHouse 支持 ShardingSphere 集成级别的本地事务，但需要对 Clic
 ```yaml
 services:
   clickhouse-keeper-01:
-    image: clickhouse/clickhouse-keeper:24.10.2.80
+    image: clickhouse/clickhouse-keeper:24.11.1.2557
     volumes:
       - ./keeper_config.xml:/etc/clickhouse-keeper/keeper_config.xml
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.10.2.80
+    image: clickhouse/clickhouse-server:24.11.1.2557
     depends_on:
       - clickhouse-keeper-01
     ports:
