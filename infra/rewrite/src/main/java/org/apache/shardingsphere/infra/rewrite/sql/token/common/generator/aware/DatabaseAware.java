@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.aware;
+package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
