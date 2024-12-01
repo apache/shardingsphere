@@ -164,7 +164,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                                  final InsertValue insertValueToken, final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue) {
         if (valueExpression instanceof LiteralExpressionSegment) {
             insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(
-                    valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptColumn.getCipher().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue)));
+                    valueExpression.getStartIndex(), valueExpression.getStopIndex(),
+                    encryptColumn.getCipher().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue)));
         }
     }
     
