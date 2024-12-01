@@ -187,11 +187,10 @@ public final class ShardingSphereDatabase {
     /**
      * Add schema.
      *
-     * @param schemaName schema name
      * @param schema schema
      */
-    public void addSchema(final String schemaName, final ShardingSphereSchema schema) {
-        schemas.put(new ShardingSphereMetaDataIdentifier(schemaName), schema);
+    public void addSchema(final ShardingSphereSchema schema) {
+        schemas.put(new ShardingSphereMetaDataIdentifier(schema.getName()), schema);
     }
     
     /**

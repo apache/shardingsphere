@@ -81,10 +81,10 @@ class ShardingSphereDatabaseTest {
     void assertAddSchema() {
         DatabaseType databaseType = mock(DatabaseType.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        ShardingSphereSchema schema = new ShardingSphereSchema("new_schema");
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData, Collections.emptyMap());
         assertFalse(database.containsSchema("new_schema"));
-        database.addSchema("new_schema", schema);
+        database.addSchema(schema);
         assertTrue(database.containsSchema("new_schema"));
         assertThat(database.getSchema("new_schema"), is(schema));
     }
