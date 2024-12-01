@@ -75,6 +75,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class OpenGaussSystemCatalogAdminQueryExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @Test
     void assertExecuteSelectFromPgDatabase() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
@@ -82,7 +84,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(props);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
+        when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         Map<String, ShardingSphereDatabase> databases = createDatabases();
@@ -137,8 +139,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
                 new ShardingSphereColumn("datminmxid", 1111, false, false, false, true, false, false));
         ShardingSphereSchema schema = new ShardingSphereSchema("pg_catalog",
                 Collections.singleton(new ShardingSphereTable("pg_database", columns, Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
-        result.put("sharding_db", new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "openGauss"),
-                mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), mock(RuleMetaData.class), Collections.singletonMap("pg_catalog", schema)));
+        result.put("sharding_db", new ShardingSphereDatabase("sharding_db", databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), mock(RuleMetaData.class), Collections.singleton(schema)));
         return result;
     }
     
@@ -159,7 +160,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         OpenGaussSystemCatalogAdminQueryExecutor executor =
                 new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, "select VERSION()", "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
+        when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         executor.execute(connectionSession);
@@ -195,7 +196,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         OpenGaussSystemCatalogAdminQueryExecutor executor =
                 new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, "select intervaltonum(gs_password_deadline())", "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
+        when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         executor.execute(connectionSession);
@@ -233,7 +234,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         OpenGaussSystemCatalogAdminQueryExecutor executor =
                 new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, "select gs_password_notifytime()", "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
+        when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         executor.execute(connectionSession);

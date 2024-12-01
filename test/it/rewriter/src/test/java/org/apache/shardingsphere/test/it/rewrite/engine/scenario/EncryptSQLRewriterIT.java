@@ -64,7 +64,7 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
+    protected Collection<ShardingSphereSchema> mockSchemas(final String schemaName) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         tables.add(new ShardingSphereTable("t_account", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
@@ -95,7 +95,7 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap(schemaName, new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
     }
     
     @Override

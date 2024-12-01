@@ -66,6 +66,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings({ProxyContext.class, SystemSchemaUtils.class})
 class DefaultDatabaseMetaDataExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -120,9 +122,8 @@ class DefaultDatabaseMetaDataExecutorTest {
     }
     
     private ShardingSphereDatabase createDatabase(final Map<String, String> expectedResultSetMap) throws SQLException {
-        return new ShardingSphereDatabase("auth_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
-                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))),
-                mock(RuleMetaData.class), Collections.emptyMap());
+        return new ShardingSphereDatabase("auth_db",
+                databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(RuleMetaData.class), Collections.emptyList());
     }
     
     private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {

@@ -64,7 +64,7 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
+    protected Collection<ShardingSphereSchema> mockSchemas(final String schemaName) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         tables.add(new ShardingSphereTable("t_account", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false, false),
@@ -103,7 +103,7 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         tables.add(new ShardingSphereTable("t_account_view", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap(schemaName, new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
     }
     
     @Override

@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -92,8 +91,7 @@ class IndexMetaDataUtilsTest {
     private ShardingSphereDatabase buildDatabase() {
         ShardingSphereTable table = new ShardingSphereTable(
                 TABLE_NAME, Collections.emptyList(), Collections.singleton(new ShardingSphereIndex(INDEX_NAME, Collections.emptyList(), false)), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(
-                DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(table), Collections.emptyList()));
+        Collection<ShardingSphereSchema> schemas = Collections.singleton(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(table), Collections.emptyList()));
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas);
     }
 }

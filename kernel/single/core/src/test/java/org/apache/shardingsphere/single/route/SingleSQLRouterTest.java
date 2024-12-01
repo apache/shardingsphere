@@ -194,8 +194,8 @@ class SingleSQLRouterTest {
         routeContext.getRouteUnits().add(readWriteRouteUnit);
         routeContext.getRouteUnits().add(writeRouteUnit);
         SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS),
-                new RuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
+                mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         sqlRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
         assertThat(routeContext.getActualDataSourceNames().size(), is(1));
         assertTrue(Arrays.asList("write_ds", "readwrite_ds").contains(routeContext.getActualDataSourceNames().iterator().next()));
