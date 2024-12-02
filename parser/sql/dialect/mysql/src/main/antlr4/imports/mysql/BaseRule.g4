@@ -63,6 +63,7 @@ customKeyword
     | MAXVALUE
     | BIT_XOR
     | MYSQL_MAIN
+    | RANGE
     | UTC_DATE
     | UTC_TIME
     | UTC_TIMESTAMP

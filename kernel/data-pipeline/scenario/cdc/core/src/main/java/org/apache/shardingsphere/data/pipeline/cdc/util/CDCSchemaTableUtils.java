@@ -81,7 +81,7 @@ public final class CDCSchemaTableUtils {
         Map<String, Set<String>> result = new HashMap<>(database.getAllSchemas().size(), 1F);
         for (ShardingSphereSchema schema : database.getAllSchemas()) {
             if (!systemSchemas.contains(schema.getName())) {
-                schema.getAllTables().forEach(each -> result.computeIfAbsent(each.getName(), ignored -> new HashSet<>()).add(each.getName()));
+                schema.getAllTables().forEach(each -> result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>()).add(each.getName()));
             }
         }
         return result;
