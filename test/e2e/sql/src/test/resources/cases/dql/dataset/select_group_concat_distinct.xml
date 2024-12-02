@@ -17,12 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="order_id" />
-        <column name="user_id" />
-        <column name="status" />
-        <column name="merchant_id" />
-        <column name="remark" />
-        <column name="creation_date" />
+        <column name="order_id_group_concat" />
     </metadata>
-    <row values="1001,1100,1600" />
+    <row values="2 5" />
 </dataset>
