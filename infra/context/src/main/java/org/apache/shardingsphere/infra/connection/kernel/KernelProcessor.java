@@ -56,6 +56,9 @@ public final class KernelProcessor {
     }
     
     private void check(final QueryContext queryContext) {
+        if (queryContext.getHintValueContext().isSkipMetadataValidate()) {
+            return;
+        }
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
         new SupportedSQLCheckEngine().checkSQL(database.getRuleMetaData().getRules(), queryContext.getSqlStatementContext(), database);
     }

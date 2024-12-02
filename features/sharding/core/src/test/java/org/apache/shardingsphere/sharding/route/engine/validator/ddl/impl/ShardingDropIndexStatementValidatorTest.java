@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
-import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
@@ -61,33 +60,6 @@ class ShardingDropIndexStatementValidatorTest {
     
     @Mock
     private RouteContext routeContext;
-    
-    @Test
-    void assertPreValidateDropIndexWhenIndexExistForPostgreSQL() {
-        PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        when(table.containsIndex("t_order_index")).thenReturn(true);
-        when(table.containsIndex("t_order_index_new")).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
-                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
-    }
-    
-    @Test
-    void assertPreValidateDropIndexWhenIndexNotExistForPostgreSQL() {
-        PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        when(table.containsIndex("t_order_index")).thenReturn(false);
-        assertThrows(IndexNotExistedException.class, () -> new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME),
-                mock(HintValueContext.class), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
-    }
     
     @Test
     void assertPostValidateDropIndexWithSameRouteResultShardingTableIndexForPostgreSQL() {
