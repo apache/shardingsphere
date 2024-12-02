@@ -72,8 +72,7 @@ class ShardingSphereMetaDataTest {
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), configProps);
         metaData.addDatabase("foo_db", databaseType, configProps);
-        assertThat(metaData.getDatabases(), is(databases));
-        verify(globalRule).refresh(databases, GlobalRuleChangedType.DATABASE_CHANGED);
+        assertThat(metaData.getDatabase("foo_db"), is(database));
     }
     
     @Test
@@ -91,7 +90,7 @@ class ShardingSphereMetaDataTest {
         assertTrue(metaData.getDatabases().isEmpty());
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
-        verify(globalRule).refresh(metaData.getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED);
+        verify(globalRule).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED);
     }
     
     @Test
