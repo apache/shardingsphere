@@ -48,6 +48,7 @@
 1. SQL Parser: Fix mysql parse zone unreserved keyword error - [#33720](https://github.com/apache/shardingsphere/pull/33720)
 1. Proxy: Fix BatchUpdateException when execute INSERT INTO ON DUPLICATE KEY UPDATE in proxy adapter - [#33796](https://github.com/apache/shardingsphere/pull/33796)
 1. Infra: Fix the issue that ShardingSphere cannot connect to HiveServer2 using remote Hive Metastore Server - [#33837](https://github.com/apache/shardingsphere/pull/33837)
+1. SQL Parser: Fix mysql range parse error when use table owner - [#33874](https://github.com/apache/shardingsphere/pull/33874)
 
 ### Change Logs
 
