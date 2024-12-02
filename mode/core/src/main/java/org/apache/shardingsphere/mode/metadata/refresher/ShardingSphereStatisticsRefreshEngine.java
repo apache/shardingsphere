@@ -125,7 +125,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
         Optional<ShardingSphereTableData> tableData = Optional.empty();
         if (statisticsCollector.isPresent()) {
             try {
-                tableData = statisticsCollector.get().collect(databaseName, table, metaData.getDatabases(), metaData.getGlobalRuleMetaData());
+                tableData = statisticsCollector.get().collect(databaseName, table, metaData);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON

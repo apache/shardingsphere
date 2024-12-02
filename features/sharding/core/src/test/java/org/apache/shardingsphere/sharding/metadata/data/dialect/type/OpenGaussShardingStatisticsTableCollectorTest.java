@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sharding.metadata.data.dialect.type;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -44,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,7 +76,9 @@ class OpenGaussShardingStatisticsTableCollectorTest {
         storageUnits.put("ds_1", mockStorageUnit(mockResultSet(), false));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
-        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), Collections.singletonMap("foo_db", database), mock(RuleMetaData.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sharding_table_statistics"));
         List<ShardingSphereRowData> actualRows = new ArrayList<>(actual.get().getRows());
@@ -91,7 +96,9 @@ class OpenGaussShardingStatisticsTableCollectorTest {
         storageUnits.put("ds_1", mockStorageUnit(mockResultSet(), true));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
-        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), Collections.singletonMap("foo_db", database), mock(RuleMetaData.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sharding_table_statistics"));
         List<ShardingSphereRowData> actualRows = new ArrayList<>(actual.get().getRows());

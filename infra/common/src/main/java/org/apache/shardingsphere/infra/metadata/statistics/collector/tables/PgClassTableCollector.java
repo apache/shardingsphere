@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
@@ -45,10 +44,9 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     private static final Long PUBLIC_SCHEMA_OID = 0L;
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
-                                                     final RuleMetaData globalRuleMetaData) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS);
-        ShardingSphereSchema publicSchema = databases.get(databaseName).getSchema(PUBLIC_SCHEMA);
+        ShardingSphereSchema publicSchema = metaData.getDatabase(databaseName).getSchema(PUBLIC_SCHEMA);
         if (null != publicSchema) {
             result.getRows().addAll(collectForSchema(0L, PUBLIC_SCHEMA_OID, publicSchema, table));
         }
