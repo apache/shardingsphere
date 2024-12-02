@@ -144,4 +144,20 @@
     <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE CONCAT('%', CONCAT(?, '%'))" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="abc:String" expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT GROUP_CONCAT(o.order_id) FROM t_order o where o.order_id in (?, ?, ?)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="1000:int, 1001:int, 2000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT GROUP_CONCAT(o.order_id SEPARATOR ' ') FROM t_order o where o.order_id in (?, ?, ?)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="1000:int, 1001:int, 2000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT GROUP_CONCAT(distinct o.user_id) FROM t_order o where o.order_id in (?, ?, ?)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,db_tbl_sql_federation">
+        <assertion parameters="1000:int, 1001:int, 2000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT GROUP_CONCAT(distinct o.user_id SEPARATOR ' ') FROM t_order o where o.order_id in (?, ?, ?)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,db_tbl_sql_federation">
+        <assertion parameters="1000:int, 1001:int, 2000:int" expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

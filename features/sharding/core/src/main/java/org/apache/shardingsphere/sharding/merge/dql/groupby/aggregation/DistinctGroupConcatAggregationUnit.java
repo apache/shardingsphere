@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +26,7 @@ public class DistinctGroupConcatAggregationUnit implements AggregationUnit {
     
     private static final String DEFAULT_SEPARATOR = ",";
     
-    private final Collection<Comparable<?>> values = new HashSet<>();
+    private final Collection<Comparable<?>> values = new LinkedHashSet<>();
     
     private String separator;
     
