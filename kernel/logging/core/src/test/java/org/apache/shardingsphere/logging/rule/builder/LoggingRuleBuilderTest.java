@@ -44,7 +44,7 @@ class LoggingRuleBuilderTest {
         ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(
                 new Property(LoggingConstants.SQL_SHOW, Boolean.TRUE.toString()), new Property(LoggingConstants.SQL_SIMPLE, Boolean.TRUE.toString())));
         LoggingRuleBuilder ruleBuilder = (LoggingRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyMap(), props);
+        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyList(), props);
         assertThat(actual.getConfiguration(), is(ruleConfig));
         assertThat(logger.getProps().getProperty(LoggingConstants.SQL_LOG_ENABLE), is(Boolean.TRUE.toString()));
         assertThat(logger.getProps().getProperty(LoggingConstants.SQL_LOG_SIMPLE), is(Boolean.TRUE.toString()));
@@ -58,7 +58,7 @@ class LoggingRuleBuilderTest {
         LoggingRuleConfiguration ruleConfig = new LoggingRuleConfiguration(Collections.singleton(logger), Collections.emptyList());
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         LoggingRuleBuilder ruleBuilder = (LoggingRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyMap(), props);
+        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyList(), props);
         assertThat(actual.getConfiguration(), is(ruleConfig));
         assertThat(props.getProps().getProperty(LoggingConstants.SQL_SHOW), is(Boolean.TRUE.toString()));
         assertThat(props.getProps().getProperty(LoggingConstants.SQL_SIMPLE), is(Boolean.TRUE.toString()));
@@ -70,7 +70,7 @@ class LoggingRuleBuilderTest {
         LoggingRuleConfiguration ruleConfig = new LoggingRuleConfiguration(Collections.singleton(logger), Collections.emptyList());
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         LoggingRuleBuilder ruleBuilder = (LoggingRuleBuilder) OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyMap(), props);
+        LoggingRule actual = ruleBuilder.build(ruleConfig, Collections.emptyList(), props);
         assertThat(actual.getConfiguration(), is(ruleConfig));
         assertFalse(logger.getProps().containsKey(LoggingConstants.SQL_LOG_ENABLE));
         assertFalse(logger.getProps().containsKey(LoggingConstants.SQL_LOG_SIMPLE));
