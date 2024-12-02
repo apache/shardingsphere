@@ -102,8 +102,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
         }
     }
     
-    private void collectForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData,
-                                    final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
+    private void collectForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
         for (Entry<String, ShardingSphereSchemaData> entry : databaseData.getSchemaData().entrySet()) {
             if (metaData.getDatabase(databaseName).containsSchema(entry.getKey())) {
                 collectForSchema(databaseName, entry.getKey(), entry.getValue(), metaData, statistics);
@@ -122,11 +121,11 @@ public final class ShardingSphereStatisticsRefreshEngine {
     
     private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                  final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        Optional<ShardingSphereStatisticsCollector> dataCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, table.getName());
+        Optional<ShardingSphereStatisticsCollector> statisticsCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, table.getName());
         Optional<ShardingSphereTableData> tableData = Optional.empty();
-        if (dataCollector.isPresent()) {
+        if (statisticsCollector.isPresent()) {
             try {
-                tableData = dataCollector.get().collect(databaseName, table, metaData.getDatabases(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData());
+                tableData = statisticsCollector.get().collect(databaseName, table, metaData.getDatabases(), metaData.getGlobalRuleMetaData());
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
