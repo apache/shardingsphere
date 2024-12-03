@@ -57,6 +57,10 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         if (sqlDialectException instanceof DatabaseCreateExistsException) {
             return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.DUPLICATE_DATABASE, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName()));
         }
+        if (sqlDialectException instanceof NoSuchTableException) {
+            NoSuchTableException cause = (NoSuchTableException) sqlDialectException;
+            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.NO_SUCH_TABLE, cause.getTableName()));
+        }
         if (sqlDialectException instanceof TableExistsException) {
             return new PostgreSQLException(new ServerErrorMessage(ERROR_SEVERITY, PostgreSQLVendorError.DUPLICATE_TABLE, ((TableExistsException) sqlDialectException).getTableName()));
         }
@@ -95,10 +99,6 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         if (sqlDialectException instanceof ColumnNotFoundException) {
             ColumnNotFoundException cause = (ColumnNotFoundException) sqlDialectException;
             return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.UNDEFINED_COLUMN, cause.getTableName(), cause.getColumnName()));
-        }
-        if (sqlDialectException instanceof NoSuchTableException) {
-            NoSuchTableException cause = (NoSuchTableException) sqlDialectException;
-            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.NO_SUCH_TABLE, cause.getTableName()));
         }
         return new PostgreSQLException(sqlDialectException.getMessage(), PostgreSQLState.UNEXPECTED_ERROR.getValue());
     }
