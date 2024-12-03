@@ -66,7 +66,7 @@ public abstract class AbstractMigrationE2EIT {
         String registerMigrationSource = migrationDistSQL.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
                 .replace("${ds0}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_0, true));
-        containerComposer.proxyExecuteWithLog(registerMigrationSource, 0);
+        containerComposer.proxyExecuteWithLog(registerMigrationSource, 15);
     }
     
     protected void addMigrationTargetResource(final PipelineContainerComposer containerComposer) throws SQLException {
