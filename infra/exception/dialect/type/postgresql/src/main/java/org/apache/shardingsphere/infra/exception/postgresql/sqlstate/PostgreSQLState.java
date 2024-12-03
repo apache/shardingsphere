@@ -29,20 +29,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLS
 public enum PostgreSQLState implements SQLState {
     
     PROTOCOL_VIOLATION("08P01"),
-    
     SYNTAX_ERROR("42601"),
-    
     DUPLICATE_DATABASE("42P04"),
-    
     DUPLICATE_TABLE("42P07"),
-    
     INVALID_PASSWORD("28P01"),
-    
     UNDEFINED_COLUMN("42703"),
-    
+    UNDEFINED_TABLE("42P01"),
     SYSTEM_ERROR("58000"),
-    
     UNEXPECTED_ERROR("99999");
-    
     private final String value;
 }

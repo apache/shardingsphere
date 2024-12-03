@@ -48,9 +48,8 @@ public enum PostgreSQLVendorError implements VendorError {
     INVALID_AUTHORIZATION_SPECIFICATION(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, "unknown username: %s"),
     
     NO_USERNAME(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, "no PostgreSQL user name specified in startup packet"),
-    
+    NO_SUCH_TABLE(PostgreSQLState.UNDEFINED_TABLE, "Table '%s' doesn't exist"),
     INVALID_PASSWORD(PostgreSQLState.INVALID_PASSWORD, "password authentication failed for user \"%s\""),
-    
     INVALID_CATALOG_NAME(XOpenSQLState.INVALID_CATALOG_NAME, "database \"%s\" does not exist"),
     
     UNDEFINED_COLUMN(PostgreSQLState.UNDEFINED_COLUMN, "Column \"%s\" of table \"%s\" does not exist"),
