@@ -67,7 +67,7 @@ class ShowCurrentUserExecutorTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.emptyMap(), mock(ResourceMetaData.class), mockRuleMetaData(), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(Collections.emptyList(), mock(ResourceMetaData.class), mockRuleMetaData(), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }

@@ -136,7 +136,7 @@ public final class MetaDataContextsFactory {
         // TODO load global data sources from persist service
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(param.getGlobalDataSources());
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases.values(), props));
-        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props);
+        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases.values(), globalResourceMetaData, globalRuleMetaData, props);
         ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
         return new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
     }
@@ -272,7 +272,7 @@ public final class MetaDataContextsFactory {
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases.values(), props));
-        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases.values(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
     }
     
     /**
@@ -295,7 +295,7 @@ public final class MetaDataContextsFactory {
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases.values(), props));
-        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases.values(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
     }
     
     /**

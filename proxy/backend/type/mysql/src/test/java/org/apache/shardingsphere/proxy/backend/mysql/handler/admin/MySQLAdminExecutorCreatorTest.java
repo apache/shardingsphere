@@ -72,8 +72,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -205,7 +205,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementForTransactionReadOnly() {
-        initProxyContext(Collections.emptyMap());
+        initProxyContext(Collections.emptyList());
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -220,7 +220,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementForTransactionIsolation() {
-        initProxyContext(Collections.emptyMap());
+        initProxyContext(Collections.emptyList());
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -235,7 +235,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementForShowDatabase() {
-        initProxyContext(Collections.emptyMap());
+        initProxyContext(Collections.emptyList());
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -249,7 +249,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSelectStatementForNoResource() {
-        initProxyContext(Collections.emptyMap());
+        initProxyContext(Collections.emptyList());
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -265,8 +265,7 @@ class MySQLAdminExecutorCreatorTest {
     void assertCreateWithOtherSelectStatementForDatabaseName() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
-        initProxyContext(result);
+        initProxyContext(Collections.singleton(database));
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
         when(ProxyContext.getInstance().getContextManager().getDatabase("db_0")).thenReturn(database);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
@@ -283,8 +282,7 @@ class MySQLAdminExecutorCreatorTest {
     void assertCreateWithOtherSelectStatementForNullDatabaseName() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds_0", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
-        initProxyContext(result);
+        initProxyContext(Collections.singleton(database));
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
         when(ProxyContext.getInstance().getContextManager().getDatabase("db_0")).thenReturn(database);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
@@ -300,7 +298,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementFromInformationSchemaOfDefaultExecutorTables() {
-        initProxyContext(Collections.emptyMap());
+        initProxyContext(Collections.emptyList());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("ENGINES")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
@@ -313,7 +311,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementFromInformationSchemaOfSchemaTable() {
-        initProxyContext(Collections.emptyMap());
+        initProxyContext(Collections.emptyList());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("SCHEMATA")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
@@ -329,7 +327,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementFromInformationSchemaOfOtherTable() {
-        initProxyContext(Collections.emptyMap());
+        initProxyContext(Collections.emptyList());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("CHARACTER_SETS")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
@@ -341,7 +339,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSelectStatementFromPerformanceSchema() {
-        initProxyContext(Collections.emptyMap());
+        initProxyContext(Collections.emptyList());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("accounts")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("performance_schema")));
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
@@ -351,7 +349,7 @@ class MySQLAdminExecutorCreatorTest {
         assertFalse(actual.isPresent());
     }
     
-    private void initProxyContext(final Map<String, ShardingSphereDatabase> databases) {
+    private void initProxyContext(final Collection<ShardingSphereDatabase> databases) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));

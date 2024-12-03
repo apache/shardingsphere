@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere meta data.
@@ -56,13 +57,21 @@ public final class ShardingSphereMetaData {
     private final TemporaryConfigurationProperties temporaryProps;
     
     public ShardingSphereMetaData() {
-        this(new CaseInsensitiveMap<>(Collections.emptyMap(), new ConcurrentHashMap<>()),
-                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        this(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     
     public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
                                   final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
         this.databases = new CaseInsensitiveMap<>(databases, new ConcurrentHashMap<>());
+        this.globalResourceMetaData = globalResourceMetaData;
+        this.globalRuleMetaData = globalRuleMetaData;
+        this.props = props;
+        temporaryProps = new TemporaryConfigurationProperties(props.getProps());
+    }
+    
+    public ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
+                                  final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+        this.databases = new CaseInsensitiveMap<>(databases.stream().collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each)), new ConcurrentHashMap<>());
         this.globalResourceMetaData = globalResourceMetaData;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
