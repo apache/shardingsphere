@@ -88,7 +88,7 @@ class MetaDataContextsFactoryTest {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(ExternalMetaDataFactory.create(anyMap(), any(), any())).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", database)));
-        when(GlobalRulesBuilder.buildRules(anyCollection(), anyMap(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
+        when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
     }
     
     private DatabaseRulePersistService mockDatabaseRulePersistService() {
