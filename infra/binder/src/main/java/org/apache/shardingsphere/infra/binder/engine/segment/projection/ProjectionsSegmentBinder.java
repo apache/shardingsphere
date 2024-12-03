@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.binder.engine.segment.projection.type.Sho
 import org.apache.shardingsphere.infra.binder.engine.segment.projection.type.SubqueryProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -89,7 +91,36 @@ public final class ProjectionsSegmentBinder {
             result.setAlias(((ExpressionProjectionSegment) projectionSegment).getAliasSegment());
             return result;
         }
+        if (projectionSegment instanceof AggregationDistinctProjectionSegment) {
+            return bindAggregationDistinctProjection((AggregationDistinctProjectionSegment) projectionSegment, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (projectionSegment instanceof AggregationProjectionSegment) {
+            return bindAggregationProjection((AggregationProjectionSegment) projectionSegment, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
         // TODO support more ProjectionSegment bound
         return projectionSegment;
+    }
+    
+    private static AggregationDistinctProjectionSegment bindAggregationDistinctProjection(final AggregationDistinctProjectionSegment aggregationDistinctSegment,
+                                                                                          final SQLStatementBinderContext binderContext,
+                                                                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(aggregationDistinctSegment.getStartIndex(), aggregationDistinctSegment.getStopIndex(),
+                aggregationDistinctSegment.getType(), aggregationDistinctSegment.getExpression(), aggregationDistinctSegment.getDistinctInnerExpression());
+        aggregationDistinctSegment.getParameters()
+                .forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        aggregationDistinctSegment.getAliasSegment().ifPresent(result::setAlias);
+        return result;
+    }
+    
+    private static AggregationProjectionSegment bindAggregationProjection(final AggregationProjectionSegment aggregationSegment, final SQLStatementBinderContext binderContext,
+                                                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        AggregationProjectionSegment result =
+                new AggregationProjectionSegment(aggregationSegment.getStartIndex(), aggregationSegment.getStopIndex(), aggregationSegment.getType(), aggregationSegment.getExpression());
+        aggregationSegment.getParameters()
+                .forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        aggregationSegment.getAliasSegment().ifPresent(result::setAlias);
+        return result;
     }
 }

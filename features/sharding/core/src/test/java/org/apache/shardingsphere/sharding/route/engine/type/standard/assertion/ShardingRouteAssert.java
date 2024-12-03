@@ -102,6 +102,7 @@ public final class ShardingRouteAssert {
     private static Collection<ShardingSphereSchema> buildSchemas() {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         tables.add(new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("product_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));

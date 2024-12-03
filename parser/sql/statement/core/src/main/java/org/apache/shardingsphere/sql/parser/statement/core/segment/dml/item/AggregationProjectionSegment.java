@@ -70,6 +70,15 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
         return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
     
+    /**
+     * Get alias segment.
+     *
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
+    }
+    
     @Override
     public String getText() {
         return expression;
