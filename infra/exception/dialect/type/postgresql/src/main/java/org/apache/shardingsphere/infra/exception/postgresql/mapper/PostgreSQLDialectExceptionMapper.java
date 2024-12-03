@@ -58,8 +58,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.DUPLICATE_DATABASE, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName()));
         }
         if (sqlDialectException instanceof NoSuchTableException) {
-            NoSuchTableException cause = (NoSuchTableException) sqlDialectException;
-            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.NO_SUCH_TABLE, cause.getTableName()));
+            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.NO_SUCH_TABLE, ((NoSuchTableException) sqlDialectException).getTableName()));
         }
         if (sqlDialectException instanceof TableExistsException) {
             return new PostgreSQLException(new ServerErrorMessage(ERROR_SEVERITY, PostgreSQLVendorError.DUPLICATE_TABLE, ((TableExistsException) sqlDialectException).getTableName()));
