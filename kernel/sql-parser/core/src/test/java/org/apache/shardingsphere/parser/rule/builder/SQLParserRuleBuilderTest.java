@@ -35,7 +35,7 @@ class SQLParserRuleBuilderTest {
     @Test
     void assertBuild() {
         SQLParserRuleConfiguration ruleConfig = new SQLParserRuleConfiguration(new CacheOption(2, 5L), new CacheOption(4, 7L));
-        SQLParserRule actualResult = new SQLParserRuleBuilder().build(ruleConfig, Collections.emptyMap(), new ConfigurationProperties(new Properties()));
+        SQLParserRule actualResult = new SQLParserRuleBuilder().build(ruleConfig, Collections.emptyList(), new ConfigurationProperties(new Properties()));
         assertThat(actualResult.getConfiguration(), is(ruleConfig));
         assertThat(actualResult.getSqlStatementCache().getInitialCapacity(), is(4));
         assertThat(actualResult.getSqlStatementCache().getMaximumSize(), is(7L));

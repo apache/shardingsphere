@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -38,24 +37,25 @@ class OptimizerContextTest {
     
     @Test
     void assertGetSqlParserRule() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()));
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singleton(mockDatabase()));
         assertThat(actual.getSqlParserRule(), instanceOf(SQLParserRule.class));
     }
     
     @Test
     void assertGetParserContext() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()));
-        assertThat(actual.getParserContext(DefaultDatabase.LOGIC_NAME), instanceOf(OptimizerParserContext.class));
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singleton(mockDatabase()));
+        assertThat(actual.getParserContext("foo_db"), instanceOf(OptimizerParserContext.class));
     }
     
     @Test
     void assertGetOptimizerMetaData() {
-        OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()));
-        assertThat(actual.getMetaData(DefaultDatabase.LOGIC_NAME), instanceOf(OptimizerMetaData.class));
+        OptimizerContext actual = OptimizerContextFactory.create(Collections.singleton(mockDatabase()));
+        assertThat(actual.getMetaData("foo_db"), instanceOf(OptimizerMetaData.class));
     }
     
-    private ShardingSphereDatabase createShardingSphereDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         return result;
     }

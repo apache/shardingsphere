@@ -143,7 +143,7 @@ class OpenGaussAuthenticationEngineTest {
     private RuleMetaData buildGlobalRuleMetaData(final UserConfiguration userConfig) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
                 Collections.singleton(userConfig), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null);
-        return new RuleMetaData(Collections.singleton(new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class))));
+        return new RuleMetaData(Collections.singleton(new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyList(), mock(ConfigurationProperties.class))));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.logging.constant.LoggingOrder;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -36,7 +36,7 @@ import java.util.Properties;
 public final class LoggingRuleBuilder implements GlobalRuleBuilder<LoggingRuleConfiguration> {
     
     @Override
-    public LoggingRule build(final LoggingRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+    public LoggingRule build(final LoggingRuleConfiguration ruleConfig, final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         syncLoggingRuleConfiguration(ruleConfig, props);
         return new LoggingRule(ruleConfig);
     }

@@ -94,7 +94,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().get().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         database.addSchema(new ShardingSphereSchema(schemaName));
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, schemaName);
     }
     
@@ -104,7 +104,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereDatabase database = metaData.getDatabase(alterSchemaPOJO.getDatabaseName());
         putSchemaMetaData(database, alterSchemaPOJO.getSchemaName(), alterSchemaPOJO.getRenameSchemaName(), alterSchemaPOJO.getLogicDataSourceName());
         removeSchemaMetaData(database, alterSchemaPOJO.getSchemaName());
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         ShardingSphereSchema alteredSchema = database.getSchema(alterSchemaPOJO.getRenameSchemaName());
         String databaseName = alterSchemaPOJO.getDatabaseName();
         String alteredSchemaName = alterSchemaPOJO.getRenameSchemaName();
@@ -202,7 +202,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             tobeRemovedSchemas.add(each.toLowerCase());
         }
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), new HashSet<>(tobeRemovedSchemas), new HashSet<>(tobeRemovedTables));
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
     @Override
@@ -213,7 +213,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         addDataNode(database, alterSchemaMetaDataPOJO.getLogicDataSourceName(), schemaName, alterSchemaMetaDataPOJO.getAlteredTables(), alterSchemaMetaDataPOJO.getAlteredViews());
         removeDataNode(database, schemaName, alterSchemaMetaDataPOJO.getDroppedTables(), alterSchemaMetaDataPOJO.getDroppedViews());
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredTables());
         metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredViews());
         alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
@@ -228,7 +228,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 metaDataContextManager.getMetaDataContexts().get(), metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases().putAll(changedDatabases);
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getGlobalRuleMetaData().getRules()
-                .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
+                .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().get().getMetaData().getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getAllSchemas()
                 .forEach(each -> {
                     if (each.isEmpty()) {
@@ -250,7 +250,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 metaDataContextManager.getMetaDataContexts().get(), metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases().putAll(changedDatabases);
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getGlobalRuleMetaData().getRules()
-                .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
+                .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().get().getMetaData().getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
         metaDataPersistService.getMetaDataVersionPersistService()
                 .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
@@ -346,7 +346,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().get().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         addTableToDataNode(database, schemaName, logicDataSourceName, table);
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, Collections.singleton(table));
     }
     
@@ -355,7 +355,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().get().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         removeTablesToDataNode(database, schemaName, tableNames);
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
     }
     

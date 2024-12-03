@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.Optimize
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaDataFactory;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -44,7 +45,7 @@ public final class OptimizerContextFactory {
      * @param databases databases
      * @return created optimizer context
      */
-    public static OptimizerContext create(final Map<String, ShardingSphereDatabase> databases) {
+    public static OptimizerContext create(final Collection<ShardingSphereDatabase> databases) {
         Map<String, OptimizerParserContext> parserContexts = OptimizerParserContextFactory.create(databases);
         // TODO consider to use sqlParserRule in global rule
         SQLParserRule sqlParserRule = new SQLParserRuleBuilder().build(new DefaultSQLParserRuleConfigurationBuilder().build(), databases, new ConfigurationProperties(new Properties()));
