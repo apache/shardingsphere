@@ -135,7 +135,7 @@ public final class MetaDataContextsFactory {
                                                         final ConfigurationProperties props) {
         // TODO load global data sources from persist service
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(param.getGlobalDataSources());
-        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases.values(), props));
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props);
         ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
         return new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
@@ -219,7 +219,7 @@ public final class MetaDataContextsFactory {
             metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().removeIf(eachRule -> each.getRuleType() == eachRule.getClass());
             RuleConfiguration restoredRuleConfig = each.restore(rule.getConfiguration());
             ShardingSphereRule rebuiltRule = GlobalRulesBuilder.buildRules(
-                    Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
+                    Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
             metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().add(rebuiltRule);
         }
     }
@@ -271,7 +271,7 @@ public final class MetaDataContextsFactory {
                 createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, null, originalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
+                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases.values(), props));
         return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
     }
     
@@ -294,7 +294,7 @@ public final class MetaDataContextsFactory {
                 createChangedDatabases(databaseName, internalLoadMetaData, null, ruleConfigs, originalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
+                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases.values(), props));
         return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
     }
     

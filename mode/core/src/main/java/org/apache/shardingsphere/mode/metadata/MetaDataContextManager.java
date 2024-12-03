@@ -154,7 +154,7 @@ public class MetaDataContextManager {
                 .createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(ruleConfigPersistDecorateEngine.restore(metaDataPersistService.getGlobalRuleService().load()), changedDatabases, props));
+                GlobalRulesBuilder.buildRules(ruleConfigPersistDecorateEngine.restore(metaDataPersistService.getGlobalRuleService().load()), changedDatabases.values(), props));
         MetaDataContexts result = MetaDataContextsFactory.create(metaDataPersistService,
                 new ShardingSphereMetaData(changedDatabases, metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
         switchingResource.closeStaleDataSources();
