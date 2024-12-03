@@ -10,8 +10,8 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.features.ShardingTest"},
-  "name":"org.apache.shardingsphere.test.natived.proxy.features.ShardingTest",
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true,
