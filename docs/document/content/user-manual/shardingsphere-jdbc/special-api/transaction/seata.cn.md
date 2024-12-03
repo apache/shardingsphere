@@ -207,9 +207,19 @@ config {
 }
 ```
 
-### 在业务项目创建 ShardingSphere 配置文件
+### 在业务项目添加 JDBC Driver 和创建 ShardingSphere 配置文件
 
-在业务项目引入前提条件涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
+在业务项目引入前提条件涉及的依赖后，额外添加 MySQL JDBC Driver 的 Maven 依赖，
+
+```xml
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>9.1.0</version>
+</dependency>
+```
+
+在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
 
 ```yaml
 dataSources:

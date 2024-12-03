@@ -15,13 +15,14 @@
 # limitations under the License.
 #
 
-service {
-  vgroupMapping.default_tx_group = "default"
-  default.grouplist = "127.0.0.1:8891"
-}
-# TODO This is not a reasonable configuration, just affected by https://github.com/apache/incubator-seata/issues/7042 .
-client {
-    rm {
-        tableMetaCheckEnable = "false"
-    }
-}
+authority:
+  users:
+    - user: root@%
+      password: root
+  privilege:
+    type: ALL_PERMITTED
+transaction:
+  defaultType: BASE
+  providerType: Seata
+props:
+  proxy-frontend-database-protocol-type: PostgreSQL

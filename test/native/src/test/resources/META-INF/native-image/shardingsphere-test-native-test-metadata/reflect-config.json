@@ -176,5 +176,13 @@
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
 }
 ]
