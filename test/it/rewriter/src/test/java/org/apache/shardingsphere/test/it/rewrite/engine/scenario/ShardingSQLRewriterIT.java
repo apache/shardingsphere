@@ -56,7 +56,7 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
-        Optional<SingleRule> singleRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
+        Optional<SingleRule> singleRule = rules.stream().filter(SingleRule.class::isInstance).map(SingleRule.class::cast).findFirst();
         if (singleRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("db", schemaName, "t_single");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("db", schemaName, "t_single_extend");

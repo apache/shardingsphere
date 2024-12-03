@@ -79,7 +79,7 @@ public final class ShardingSphereMultiProxyClusterContainer implements AdapterCo
     
     @Override
     public Collection<ITContainer> getContainers() {
-        return proxyClusterContainers.stream().map(each -> (ITContainer) each).collect(Collectors.toList());
+        return proxyClusterContainers.stream().map(ITContainer.class::cast).collect(Collectors.toList());
     }
     
     private static class RandomDataSourceAdapter implements DataSource {
