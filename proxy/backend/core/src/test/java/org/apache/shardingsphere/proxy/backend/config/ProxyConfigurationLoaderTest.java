@@ -98,7 +98,7 @@ class ProxyConfigurationLoaderTest {
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_1"), "jdbc:mysql://127.0.0.1:3306/read_ds_1");
         assertFalse(actual.getRules().stream().filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast).isPresent());
         assertFalse(
-                actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
+                actual.getRules().stream().filter(YamlEncryptRuleConfiguration.class::isInstance).findFirst().map(YamlEncryptRuleConfiguration.class::cast).isPresent());
         Optional<YamlReadwriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream()
                 .filter(YamlReadwriteSplittingRuleConfiguration.class::isInstance).findFirst().map(YamlReadwriteSplittingRuleConfiguration.class::cast);
         assertTrue(ruleConfig.isPresent());
