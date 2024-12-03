@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Betw
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -81,10 +82,21 @@ public final class ColumnExtractor {
         if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
             result.add((ColumnSegment) ((InExpression) expression).getLeft());
         }
+        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof RowExpression) {
+            extractColumnInRowExpression((InExpression) expression, result);
+        }
         if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
             result.add((ColumnSegment) ((BetweenExpression) expression).getLeft());
         }
         return result;
+    }
+    
+    private static void extractColumnInRowExpression(final InExpression expression, final Collection<ColumnSegment> result) {
+        for (ExpressionSegment each : ((RowExpression) expression.getLeft()).getItems()) {
+            if (each instanceof ColumnSegment) {
+                result.add((ColumnSegment) each);
+            }
+        }
     }
     
     /**
