@@ -38,8 +38,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -74,24 +74,24 @@ class ShowCreateDatabaseExecutorTest {
     }
     
     private ContextManager mockContextManager() {
-        Map<String, ShardingSphereDatabase> databases = getDatabases();
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
         ShardingSphereDataPersistService shardingSphereDataPersistService = mock(ShardingSphereDataPersistService.class);
         when(shardingSphereDataPersistService.load(any())).thenReturn(Optional.empty());
         when(metaDataPersistService.getShardingSphereDataPersistService()).thenReturn(shardingSphereDataPersistService);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService,
-                new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(mockDatabases(), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabases() {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1F);
+    private Collection<ShardingSphereDatabase> mockDatabases() {
+        Collection<ShardingSphereDatabase> result = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, i));
             when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-            result.put(String.format(DATABASE_PATTERN, i), database);
+            result.add(database);
         }
         return result;
     }

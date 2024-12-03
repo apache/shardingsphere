@@ -70,8 +70,8 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -126,8 +126,8 @@ class ExportMetaDataExecutorTest {
     
     private ContextManager mockEmptyContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
-                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singletonList(new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build()))),
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData(new LinkedList<>(),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build()))),
                 new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
@@ -162,7 +162,7 @@ class ExportMetaDataExecutorTest {
     }
     
     private ContextManager mockContextManager() {
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singletonMap(database.getName(), database),
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singleton(database),
                 new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
                         new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build()))),

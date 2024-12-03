@@ -81,8 +81,8 @@ class RowNumberDecoratorMergedResultTest {
         selectStatement.setWhere(whereSegment);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), null, selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), null, selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
                 mock(ConnectionContext.class));
         assertFalse(actual.next());
@@ -92,10 +92,10 @@ class RowNumberDecoratorMergedResultTest {
     void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), null, selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
                 mock(ConnectionContext.class));
         for (int i = 0; i < 8; i++) {
@@ -129,8 +129,8 @@ class RowNumberDecoratorMergedResultTest {
         selectStatement.setWhere(whereSegment);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), null, selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), null, selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
                 mock(ConnectionContext.class));
         assertTrue(actual.next());
@@ -163,10 +163,10 @@ class RowNumberDecoratorMergedResultTest {
         selectStatement.setWhere(whereSegment);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), null, selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
-                mock(ConnectionContext.class));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), null, selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
+        MergedResult actual =
+                resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database, mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -174,8 +174,7 @@ class RowNumberDecoratorMergedResultTest {
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        return new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private QueryResult mockQueryResult() throws SQLException {

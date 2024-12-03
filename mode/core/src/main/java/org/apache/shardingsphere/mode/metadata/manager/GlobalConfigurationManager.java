@@ -69,8 +69,8 @@ public final class GlobalConfigurationManager {
         rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getProps()));
         metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
-                metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), metaDataContexts.get().getMetaData().getProps());
+        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getAllDatabases(),
+                metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), metaDataContexts.get().getMetaData().getProps());
         metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
     }
     
@@ -90,8 +90,8 @@ public final class GlobalConfigurationManager {
      * @param props properties to be altered
      */
     public synchronized void alterProperties(final Properties props) {
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),
-                metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props));
+        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getAllDatabases(),
+                metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props));
         metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
     }
     

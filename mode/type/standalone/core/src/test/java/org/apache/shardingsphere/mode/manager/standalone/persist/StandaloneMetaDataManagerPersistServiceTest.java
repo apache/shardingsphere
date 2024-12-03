@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
@@ -104,8 +102,8 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterSchemaWithEmptyAlteredSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        when(database.getName()).thenReturn("foo_db");
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
@@ -119,12 +117,12 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterSchemaWithNotEmptyAlteredSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.isEmpty()).thenReturn(true);
         when(database.getSchema("foo_schema")).thenReturn(schema);
         when(database.getSchema("bar_schema")).thenReturn(schema);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
@@ -138,8 +136,8 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertDropSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        when(database.getName()).thenReturn("foo_db");
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
         metaDataManagerPersistService.dropSchema("foo_db", Collections.singleton("foo_schema"));
         verify(database).dropSchema(any());
@@ -171,8 +169,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertAlterRuleConfiguration() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
         Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));

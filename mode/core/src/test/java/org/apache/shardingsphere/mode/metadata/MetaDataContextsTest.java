@@ -29,7 +29,6 @@ import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,10 +41,10 @@ class MetaDataContextsTest {
     @Test
     void assertGetDefaultMetaData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
         assertThat(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
     }
 }

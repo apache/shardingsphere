@@ -200,7 +200,7 @@ class PostgreSQLAuthenticationEngineTest {
     
     private MetaDataContexts getMetaDataContexts(final UserConfiguration userConfig) {
         return MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.emptyMap(), mock(ResourceMetaData.class), buildGlobalRuleMetaData(userConfig), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(Collections.emptyList(), mock(ResourceMetaData.class), buildGlobalRuleMetaData(userConfig), new ConfigurationProperties(new Properties())));
     }
     
     private RuleMetaData buildGlobalRuleMetaData(final UserConfiguration userConfig) {

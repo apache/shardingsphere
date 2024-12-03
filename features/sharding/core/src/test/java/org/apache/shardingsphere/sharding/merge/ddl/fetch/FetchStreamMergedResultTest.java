@@ -19,14 +19,11 @@ package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -71,6 +68,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FetchStreamMergedResultTest {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private FetchStatementContext fetchCountStatementContext;
     
     private FetchStatementContext fetchAllStatementContext;
@@ -103,7 +102,7 @@ class FetchStreamMergedResultTest {
         if (containsAllDirectionType) {
             when(result.getDirection()).thenReturn(Optional.of(new DirectionSegment(0, 0, DirectionType.ALL)));
         }
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getDatabaseType()).thenReturn(DATABASE_TYPE);
         return result;
     }
     
@@ -111,19 +110,17 @@ class FetchStreamMergedResultTest {
         CursorStatement cursorStatement = mock(CursorStatement.class);
         SelectStatement selectStatement = mockSelectStatement();
         when(cursorStatement.getSelect()).thenReturn(selectStatement);
-        when(cursorStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        return new CursorStatementContext(createShardingSphereMetaData(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), cursorStatement, "foo_db");
-    }
-    
-    private static ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        when(cursorStatement.getDatabaseType()).thenReturn(DATABASE_TYPE);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), cursorStatement, "foo_db");
     }
     
     private static SelectStatement mockSelectStatement() {
         SelectStatement result = mock(SelectStatement.class);
         when(result.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         when(result.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getDatabaseType()).thenReturn(DATABASE_TYPE);
         return result;
     }
     

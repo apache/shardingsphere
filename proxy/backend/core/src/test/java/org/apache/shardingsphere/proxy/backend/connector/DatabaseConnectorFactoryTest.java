@@ -97,8 +97,7 @@ class DatabaseConnectorFactoryTest {
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class),
-                        mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getDatabase("foo_db")).thenReturn(database);
@@ -107,6 +106,7 @@ class DatabaseConnectorFactoryTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("foo_db");
         when(result.containsDataSource()).thenReturn(true);
         when(result.isComplete()).thenReturn(true);
         when(result.getProtocolType()).thenReturn(databaseType);

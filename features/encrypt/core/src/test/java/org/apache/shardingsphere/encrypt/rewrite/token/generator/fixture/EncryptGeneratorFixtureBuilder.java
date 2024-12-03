@@ -106,14 +106,13 @@ public final class EncryptGeneratorFixtureBuilder {
      * @return created insert statement context
      */
     public static InsertStatementContext createInsertStatementContext(final List<Object> params) {
-        InsertStatement insertStatement = createInsertStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status", "pwd"));
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(metaData, params, insertStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        return new InsertStatementContext(metaData, params, createInsertStatement(), DefaultDatabase.LOGIC_NAME);
     }
     
     private static InsertStatement createInsertStatement() {
@@ -210,13 +209,12 @@ public final class EncryptGeneratorFixtureBuilder {
      * @return created insert select statement context
      */
     public static InsertStatementContext createInsertSelectStatementContext(final List<Object> params, final boolean containsInsertColumns) {
-        InsertStatement insertStatement = createInsertSelectStatement(containsInsertColumns);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("t_user")).thenReturn(Arrays.asList("user_id", "user_name", "pwd"));
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(metaData, params, insertStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        return new InsertStatementContext(metaData, params, createInsertSelectStatement(containsInsertColumns), DefaultDatabase.LOGIC_NAME);
     }
 }

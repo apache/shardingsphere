@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.merge.dql;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -486,8 +485,8 @@ class ShardingDQLResultMergerTest {
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        return new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
     }
     
     private List<QueryResult> createQueryResults() throws SQLException {
