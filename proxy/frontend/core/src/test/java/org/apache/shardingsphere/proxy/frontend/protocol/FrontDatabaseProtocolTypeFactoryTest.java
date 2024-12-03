@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
@@ -45,7 +43,6 @@ import org.mockito.quality.Strictness;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -63,14 +60,14 @@ class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
     void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
-        ContextManager contextManager = mockContextManager(Collections.emptyMap(), new Properties());
+        ContextManager contextManager = mockContextManager(Collections.emptyList(), new Properties());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("MySQL"));
     }
     
     @Test
     void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
-        ContextManager contextManager = mockContextManager(mockDatabase(), new Properties());
+        ContextManager contextManager = mockContextManager(Collections.singleton(mockDatabase()), new Properties());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
