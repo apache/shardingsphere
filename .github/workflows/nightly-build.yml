@@ -134,6 +134,7 @@ jobs:
       - name: Push Docker Image
         run: |
           ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} clean package
+  
   build-agent-image:
     if: github.repository == 'apache/shardingsphere'
     name: Build Agent Image
@@ -160,9 +161,10 @@ jobs:
       - name: Push Docker Image
         run: |
           ./mvnw -am -pl distribution/agent -Prelease,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.sha }} clean package
+  
   build-cache:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
-    name: Build Project
+    if: github.repository == 'apache/shardingsphere'
+    name: Build Project Cache
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 15
@@ -179,7 +181,7 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build with Maven
-        run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
+        run: ./mvnw clean install -B -ntp -T1C -DskipTests
   
   generate-and-test-examples:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
